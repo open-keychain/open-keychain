@@ -30,6 +30,7 @@
     <string name="title_export_keys">"Backup Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
     <string name="title_send_key">"Upload to Keyserver"</string>
+    <string name="title_backup">"Backup Key"</string>
     <string name="title_certify_key">"Confirm Key"</string>
     <string name="title_key_details">"Key Details"</string>
     <string name="title_help">"Help"</string>
@@ -107,7 +108,7 @@
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
     <string name="menu_help">"Help"</string>
-    <string name="menu_export_key">"Backup to file"</string>
+    <string name="menu_export_key">"Backup key"</string>
     <string name="menu_delete_key">"Delete key"</string>
     <string name="menu_manage_keys">"Manage my keys"</string>
     <string name="menu_search">"Search"</string>
@@ -1295,16 +1296,11 @@
         <item quantity="one">"Exporting one key"</item>
         <item quantity="other">"Exporting %d keys"</item>
     </plurals>
-    <string name="msg_export_file_name">"Filename: %s"</string>
     <string name="msg_export_all">"Exporting all keys"</string>
     <string name="msg_export_public">"Exporting public key %s"</string>
     <string name="msg_export_upload_public">"Uploading public key %s"</string>
     <string name="msg_export_secret">"Exporting secret key %s"</string>
-    <string name="msg_export_error_no_file">"No filename specified!"</string>
-    <string name="msg_export_error_fopen">"Error opening file!"</string>
-    <string name="msg_export_error_no_uri">"No URI specified!"</string>
     <string name="msg_export_error_uri_open">"Error opening URI stream!"</string>
-    <string name="msg_export_error_storage">"Storage is not ready for writing!"</string>
     <string name="msg_export_error_db">"Database error!"</string>
     <string name="msg_export_error_io">"Input/output error!"</string>
     <string name="msg_export_error_key">"Error preprocessing key data!"</string>
@@ -1555,6 +1551,7 @@
     <string name="error_reading_k9">"Received incomplete data, try pressing 'Download complete message' in K-9 Mail!"</string>
     <string name="filename_unknown">Unknown filename (click to open)</string>
     <string name="filename_unknown_text">Text (click to show)</string>
+    <string name="filename_keys">"Key Backup (click to import)"</string>
     <string name="intent_show">Show Signed/Encrypted Content</string>
     <string name="intent_share">Share Signed/Encrypted Content</string>
     <string name="view_internal">"View in OpenKeychain"</string>
@@ -1645,6 +1642,19 @@
     <string name="linked_error_http">"Communication error: %s"</string>
     <string name="linked_webview_title_github">"GitHub Authorization"</string>
     <string name="linked_gist_description">"OpenKeychain API Tests"</string>
+    <string name="snack_btn_overwrite">"Overwrite"</string>
+    <string name="backup_code_explanation">"The backup will be secured with a backup code. Write it down before you proceed!"</string>
+    <string name="backup_code_enter">"Please enter the backup code:"</string>
+    <string name="backup_code_ok">"Code accepted!"</string>
+    <string name="btn_code_wrotedown">"OK, I wrote it down!"</string>
+    <string name="backup_code_wrong">"The backup code you entered is wrong!\nDid you write it down correctly?"</string>
+    <string name="btn_backup_share">"Share backup"</string>
+    <string name="btn_backup_save">"Save backup"</string>
+    <string name="snack_backup_error_saving">"Error saving backup!"</string>
+    <string name="snack_backup_saved">"Backup saved"</string>
+    <string name="snack_backup_exists">"Backup already exists!"</string>
+    <string name="snack_backup_saved_dir">"Saved to OpenKeychain directory"</string>
+    <string name="btn_backup_back">Go back to check</string>
 
     <string name="share_log_dialog_title">"Share log?"</string>
     <string name="share_log_dialog_message">"While logs can be super helpful for developers to find bugs in OpenKeychain, they can contain potential sensitive information such as data about the updated keys. Please make sure you are okay with sharing this information."</string>

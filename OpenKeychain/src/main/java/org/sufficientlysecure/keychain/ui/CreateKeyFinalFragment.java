@@ -37,17 +37,17 @@ import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -69,7 +69,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
     SaveKeyringParcel mSaveKeyringParcel;
 
-    private CryptoOperationHelper<ExportKeyringParcel, ExportResult> mUploadOpHelper;
+    private CryptoOperationHelper<UploadKeyringParcel, UploadResult> mUploadOpHelper;
     private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mCreateOpHelper;
     private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mMoveToCardOpHelper;
 
@@ -407,20 +407,20 @@ public class CreateKeyFinalFragment extends Fragment {
         }
 
         // set data uri as path to keyring
-        final Uri blobUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(saveKeyResult.mMasterKeyId);
+        final long masterKeyId = saveKeyResult.mMasterKeyId;
         // upload to favorite keyserver
         final String keyserver = Preferences.getPreferences(activity).getPreferredKeyserver();
 
-        CryptoOperationHelper.Callback<ExportKeyringParcel, ExportResult> callback
-                = new CryptoOperationHelper.Callback<ExportKeyringParcel, ExportResult>() {
+        CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult> callback
+                = new CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult>() {
 
             @Override
-            public ExportKeyringParcel createOperationInput() {
-                return new ExportKeyringParcel(keyserver, blobUri);
+            public UploadKeyringParcel createOperationInput() {
+                return new UploadKeyringParcel(keyserver, masterKeyId);
             }
 
             @Override
-            public void onCryptoOperationSuccess(ExportResult result) {
+            public void onCryptoOperationSuccess(UploadResult result) {
                 handleResult(result);
             }
 
@@ -430,11 +430,11 @@ public class CreateKeyFinalFragment extends Fragment {
             }
 
             @Override
-            public void onCryptoOperationError(ExportResult result) {
+            public void onCryptoOperationError(UploadResult result) {
                 handleResult(result);
             }
 
-            public void handleResult(ExportResult result) {
+            public void handleResult(UploadResult result) {
                 saveKeyResult.getLog().add(result, 0);
                 finishWithResult(saveKeyResult);
             }

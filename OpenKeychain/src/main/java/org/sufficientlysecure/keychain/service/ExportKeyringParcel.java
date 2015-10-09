@@ -24,60 +24,31 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.util.Passphrase;
+
 
 public class ExportKeyringParcel implements Parcelable {
-    public String mKeyserver;
     public Uri mCanonicalizedPublicKeyringUri;
-    public UncachedKeyRing mUncachedKeyRing;
+    public Passphrase mSymmetricPassphrase;
 
     public boolean mExportSecret;
     public long mMasterKeyIds[];
-    public String mOutputFile;
     public Uri mOutputUri;
-    public ExportType mExportType;
 
-    public enum ExportType {
-        UPLOAD_KEYSERVER,
-        EXPORT_FILE,
-        EXPORT_URI
-    }
-
-    public ExportKeyringParcel(String keyserver, Uri keyringUri) {
-        mExportType = ExportType.UPLOAD_KEYSERVER;
-        mKeyserver = keyserver;
-        mCanonicalizedPublicKeyringUri = keyringUri;
-    }
-
-    public ExportKeyringParcel(String keyserver, UncachedKeyRing uncachedKeyRing) {
-        mExportType = ExportType.UPLOAD_KEYSERVER;
-        mKeyserver = keyserver;
-        mUncachedKeyRing = uncachedKeyRing;
-    }
-
-    public ExportKeyringParcel(long[] masterKeyIds, boolean exportSecret, String outputFile) {
-        mExportType = ExportType.EXPORT_FILE;
-        mMasterKeyIds = masterKeyIds;
-        mExportSecret = exportSecret;
-        mOutputFile = outputFile;
-    }
-
-    @SuppressWarnings("unused") // TODO: is it used?
-    public ExportKeyringParcel(long[] masterKeyIds, boolean exportSecret, Uri outputUri) {
-        mExportType = ExportType.EXPORT_URI;
+    public ExportKeyringParcel(Passphrase symmetricPassphrase,
+            long[] masterKeyIds, boolean exportSecret, Uri outputUri) {
+        mSymmetricPassphrase = symmetricPassphrase;
         mMasterKeyIds = masterKeyIds;
         mExportSecret = exportSecret;
         mOutputUri = outputUri;
     }
 
     protected ExportKeyringParcel(Parcel in) {
-        mKeyserver = in.readString();
         mCanonicalizedPublicKeyringUri = (Uri) in.readValue(Uri.class.getClassLoader());
-        mUncachedKeyRing = (UncachedKeyRing) in.readValue(UncachedKeyRing.class.getClassLoader());
         mExportSecret = in.readByte() != 0x00;
-        mOutputFile = in.readString();
         mOutputUri = (Uri) in.readValue(Uri.class.getClassLoader());
-        mExportType = (ExportType) in.readValue(ExportType.class.getClassLoader());
         mMasterKeyIds = in.createLongArray();
+        mSymmetricPassphrase = in.readParcelable(getClass().getClassLoader());
     }
 
     @Override
@@ -87,14 +58,11 @@ public class ExportKeyringParcel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mKeyserver);
         dest.writeValue(mCanonicalizedPublicKeyringUri);
-        dest.writeValue(mUncachedKeyRing);
         dest.writeByte((byte) (mExportSecret ? 0x01 : 0x00));
-        dest.writeString(mOutputFile);
         dest.writeValue(mOutputUri);
-        dest.writeValue(mExportType);
         dest.writeLongArray(mMasterKeyIds);
+        dest.writeParcelable(mSymmetricPassphrase, 0);
     }
 
     public static final Parcelable.Creator<ExportKeyringParcel> CREATOR = new Parcelable.Creator<ExportKeyringParcel>() {

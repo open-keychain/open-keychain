@@ -135,7 +135,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     || contentType != null
                         && !contentType.startsWith("multipart/")
                         && !contentType.startsWith("text/")
-                        && !contentType.startsWith("application/")) {
+                        && !"application/octet-stream".equals(contentType)) {
                 skipMimeParsing = true;
             }
         }

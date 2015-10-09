@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -36,6 +37,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -249,6 +251,7 @@ public class DecryptListFragment
         }
     }
 
+    @TargetApi(VERSION_CODES.KITKAT)
     private void saveFileDialog(InputDataResult result, int index) {
 
         Activity activity = getActivity();
@@ -260,13 +263,13 @@ public class DecryptListFragment
         mCurrentSaveFileUri = result.getOutputUris().get(index);
 
         String filename = metadata.getFilename();
-        if (filename == null) {
+        if (TextUtils.isEmpty(filename)) {
             String ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(metadata.getMimeType());
             filename = "decrypted" + (ext != null ? "."+ext : "");
         }
 
-        FileHelper.saveDocument(this, filename, metadata.getMimeType(),
-                REQUEST_CODE_OUTPUT);
+        // requires >=kitkat
+        FileHelper.saveDocument(this, metadata.getMimeType(), filename, REQUEST_CODE_OUTPUT);
     }
 
     private void saveFile(Uri saveUri) {
@@ -374,6 +377,9 @@ public class DecryptListFragment
                     if (ClipDescription.compareMimeTypes(type, "text/plain")) {
                         // noinspection deprecation, this should be called from Context, but not available in minSdk
                         icon = getResources().getDrawable(R.drawable.ic_chat_black_24dp);
+                    } else if (ClipDescription.compareMimeTypes(type, "application/pgp-keys")) {
+                            // noinspection deprecation, this should be called from Context, but not available in minSdk
+                            icon = getResources().getDrawable(R.drawable.ic_key_plus_grey600_24dp);
                     } else if (ClipDescription.compareMimeTypes(type, "image/*")) {
                         int px = FormattingUtils.dpToPx(context, 32);
                         Bitmap bitmap = FileHelper.getThumbnail(context, outputUri, new Point(px, px));
@@ -764,11 +770,14 @@ public class DecryptListFragment
                 String filename;
                 if (metadata == null) {
                     filename = getString(R.string.filename_unknown);
-                } else if (TextUtils.isEmpty(metadata.getFilename())) {
-                    filename = getString("text/plain".equals(metadata.getMimeType())
-                            ? R.string.filename_unknown_text : R.string.filename_unknown);
-                } else {
+                } else if ( ! TextUtils.isEmpty(metadata.getFilename())) {
                     filename = metadata.getFilename();
+                } else if (ClipDescription.compareMimeTypes(metadata.getMimeType(), "application/pgp-keys")) {
+                    filename = getString(R.string.filename_keys);
+                } else if (ClipDescription.compareMimeTypes(metadata.getMimeType(), "text/plain")) {
+                    filename = getString(R.string.filename_unknown_text);
+                } else {
+                    filename = getString(R.string.filename_unknown);
                 }
                 fileHolder.vFilename.setText(filename);
 

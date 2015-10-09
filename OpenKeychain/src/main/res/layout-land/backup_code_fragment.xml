@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="20dp">
+
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/title_animator"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        custom:initialView="0">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:text="@string/backup_code_explanation"
+            style="?android:textAppearanceMedium"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:text="@string/backup_code_enter"
+            style="?android:textAppearanceMedium"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:text="@string/backup_code_ok"
+            style="?android:textAppearanceMedium"
+            />
+
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/code_animator"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        custom:initialView="1">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_display_1"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                style="@android:style/Widget.EditText"
+                android:clickable="false"
+                android:focusable="false"
+                tools:text="ABCDEF"
+                tools:ignore="SpUsage"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                android:text="-"
+                tools:ignore="HardcodedText,SpUsage" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_display_2"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                style="@android:style/Widget.EditText"
+                android:clickable="false"
+                android:focusable="false"
+                tools:text="GHIJKL"
+                tools:ignore="SpUsage" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                android:text="-"
+                tools:ignore="HardcodedText,SpUsage"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_display_3"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                style="@android:style/Widget.EditText"
+                android:clickable="false"
+                android:focusable="false"
+                tools:text="MNOPQR"
+                tools:ignore="SpUsage"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                android:text="-"
+                tools:ignore="HardcodedText,SpUsage"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_display_4"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                android:singleLine="true"
+                style="@android:style/Widget.EditText"
+                android:clickable="false"
+                android:focusable="false"
+                tools:text="STUVWX"
+                tools:ignore="SpUsage"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            >
+
+            <!--
+            The most reliable way to correctly size these I found was to put a transparent hint on them.
+             Theoretically, this should be what the android:ems attribute is for - didn't work for me.
+            -->
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_1"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                android:singleLine="true"
+                android:inputType="textNoSuggestions|textCapCharacters"
+                android:hint="______"
+                android:textColorHint="@android:color/transparent"
+                android:maxLength="6"
+                tools:ignore="HardcodedText,SpUsage"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                android:text="-"
+                tools:ignore="HardcodedText,SpUsage"
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_2"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                android:singleLine="true"
+                android:inputType="textNoSuggestions|textCapCharacters"
+                android:hint="______"
+                android:textColorHint="@android:color/transparent"
+                android:maxLength="6"
+                tools:ignore="HardcodedText,SpUsage"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                android:text="-"
+                tools:ignore="HardcodedText,SpUsage"
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_3"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                android:singleLine="true"
+                android:inputType="textNoSuggestions|textCapCharacters"
+                android:hint="______"
+                android:textColorHint="@android:color/transparent"
+                android:maxLength="6"
+                tools:ignore="HardcodedText,SpUsage"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                android:text="-"
+                tools:ignore="HardcodedText,SpUsage"
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_4"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="18dp"
+                android:singleLine="true"
+                android:inputType="textNoSuggestions|textCapCharacters"
+                android:hint="______"
+                android:textColorHint="@android:color/transparent"
+                android:maxLength="6"
+                tools:ignore="HardcodedText,SpUsage"
+                />
+
+        </LinearLayout>
+
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/status_animator"
+        android:inAnimation="@anim/fade_in_delayed"
+        android:outAnimation="@anim/fade_out"
+        custom:initialView="2">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:text="@string/btn_code_wrotedown"
+            android:drawableLeft="@drawable/ic_mode_edit_grey_24dp"
+            android:drawablePadding="8dp"
+            android:padding="12dp"
+            android:id="@+id/button_backup_input"
+            style="?android:buttonBarButtonStyle"
+            />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/backup_code_wrong"
+                style="?android:textAppearanceMedium"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_gravity="center_horizontal"
+                android:padding="12dp"
+                android:text="@string/btn_backup_back"
+                android:drawableLeft="@drawable/ic_repeat_grey_24dp"
+                android:drawablePadding="8dp"
+                android:id="@+id/button_backup_back"
+                style="?android:buttonBarButtonStyle"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            style="?android:buttonBarStyle">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:padding="12dp"
+                android:text="@string/btn_backup_share"
+                android:drawableLeft="@drawable/ic_share_grey_24dp"
+                android:drawablePadding="8dp"
+                android:id="@+id/button_backup_share"
+                style="?android:buttonBarButtonStyle"
+                />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:padding="12dp"
+                android:text="@string/btn_backup_save"
+                android:drawableLeft="@drawable/ic_save_grey_24dp"
+                android:drawablePadding="8dp"
+                android:id="@+id/button_backup_save"
+                style="?android:buttonBarButtonStyle"
+                />
+
+        </LinearLayout>
+
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+
+</LinearLayout>

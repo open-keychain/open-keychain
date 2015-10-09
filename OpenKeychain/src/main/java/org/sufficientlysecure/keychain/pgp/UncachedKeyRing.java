@@ -18,6 +18,23 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.TreeSet;
+
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
@@ -43,23 +60,6 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Utf8Util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.TreeSet;
-
 /** Wrapper around PGPKeyRing class, to be constructed from bytes.
  *
  * This class and its relatives UncachedPublicKey and UncachedSecretKey are
@@ -78,8 +78,7 @@ import java.util.TreeSet;
  * @see org.sufficientlysecure.keychain.pgp.UncachedSecretKey
  *
  */
-@SuppressWarnings("unchecked")
-public class UncachedKeyRing implements Serializable {
+public class UncachedKeyRing {
 
     final PGPKeyRing mRing;
     final boolean mIsSecret;

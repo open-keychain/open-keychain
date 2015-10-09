@@ -346,13 +346,13 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         if (!"".equals(originalFilename)) {
             log.add(LogType.MSG_DC_CLEAR_META_FILE, indent + 1, originalFilename);
         }
-        log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1,
-                mimeType);
         log.add(LogType.MSG_DC_CLEAR_META_TIME, indent + 1,
                 new Date(literalData.getModificationTime().getTime()).toString());
 
         // return here if we want to decrypt the metadata only
         if (input.isDecryptMetadataOnly()) {
+
+            log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1, mimeType);
 
             // this operation skips the entire stream to find the data length!
             Long originalSize = literalData.findDataLength();
@@ -387,6 +387,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         long wholeSize = 0; // TODO inputData.getSize() - inputData.getStreamPosition();
         int length;
         byte[] buffer = new byte[1 << 16];
+        byte[] firstBytes = new byte[48];
         while ((length = dataIn.read(buffer)) > 0) {
             // Log.d(Constants.TAG, "read bytes: " + length);
             if (out != null) {
@@ -395,6 +396,11 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
             // update signature buffer if signature is also present
             signatureChecker.updateSignatureData(buffer, 0, length);
+
+            // note down first couple of bytes for "magic bytes" file type detection
+            if (alreadyWritten == 0) {
+                System.arraycopy(buffer, 0, firstBytes, 0, length > firstBytes.length ? firstBytes.length : length);
+            }
 
             alreadyWritten += length;
             // noinspection ConstantConditions, TODO progress
@@ -407,6 +413,17 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 progressScaler.setProgress((int) progress, 100);
             }
         }
+
+        // special treatment to detect pgp mime types
+        if (matchesPrefix(firstBytes, "-----BEGIN PGP PUBLIC KEY BLOCK-----")
+                || matchesPrefix(firstBytes, "-----BEGIN PGP PRIVATE KEY BLOCK-----")) {
+            mimeType = "application/pgp-keys";
+        } else if (matchesPrefix(firstBytes, "-----BEGIN PGP MESSAGE-----")) {
+            // this is NOT pgp/encrypted, see RFC 3156!
+            mimeType = "application/pgp-message";
+        }
+
+        log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1, mimeType);
 
         metadata = new OpenPgpMetadata(
                 originalFilename, mimeType, literalData.getModificationTime().getTime(), alreadyWritten, charset);
@@ -938,6 +955,18 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
     private static byte[] getLineSeparator() {
         String nl = System.getProperty("line.separator");
         return nl.getBytes();
+    }
+
+    /// Convenience method - Trivially checks if a byte array matches the bytes of a plain text string
+    // Assumes data.length >= needle.length()
+    static boolean matchesPrefix(byte[] data, String needle) {
+        byte[] needleBytes = needle.getBytes();
+        for (int i = 0; i < needle.length(); i++) {
+            if (data[i] != needleBytes[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

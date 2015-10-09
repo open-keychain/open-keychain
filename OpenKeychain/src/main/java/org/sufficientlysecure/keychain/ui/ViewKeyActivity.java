@@ -65,12 +65,14 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
@@ -345,7 +347,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 startActivity(homeIntent);
                 return true;
             }
-            case R.id.menu_key_view_export_file: {
+            case R.id.menu_key_view_backup: {
                 startPassphraseActivity(REQUEST_BACKUP);
                 return true;
             }
@@ -395,7 +397,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         MenuItem editKey = menu.findItem(R.id.menu_key_view_edit);
         editKey.setVisible(mIsSecret);
 
-        MenuItem exportKey = menu.findItem(R.id.menu_key_view_export_file);
+        MenuItem exportKey = menu.findItem(R.id.menu_key_view_backup);
         exportKey.setVisible(mIsSecret);
 
         MenuItem addLinked = menu.findItem(R.id.menu_key_view_add_linked_identity);
@@ -450,15 +452,40 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     private void startPassphraseActivity(int requestCode) {
-        Intent intent = new Intent(this, PassphraseDialogActivity.class);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mMasterKeyId);
-        startActivityForResult(intent, requestCode);
+
+        if (keyHasPassphrase()) {
+            Intent intent = new Intent(this, PassphraseDialogActivity.class);
+            intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mMasterKeyId);
+            startActivityForResult(intent, requestCode);
+        } else {
+            startBackupActivity();
+        }
     }
 
-    private void backupToFile() {
-        new ExportHelper(this).showExportKeysDialog(
-                mMasterKeyId, new File(Constants.Path.APP_DIR,
-                        KeyFormattingUtils.convertKeyIdToHex(mMasterKeyId) + ".sec.asc"), true);
+    private boolean keyHasPassphrase() {
+        try {
+            SecretKeyType secretKeyType =
+                    mProviderHelper.getCachedPublicKeyRing(mMasterKeyId).getSecretKeyType(mMasterKeyId);
+            switch (secretKeyType) {
+                // all of these make no sense to ask
+                case PASSPHRASE_EMPTY:
+                case GNU_DUMMY:
+                case DIVERT_TO_CARD:
+                case UNAVAILABLE:
+                    return false;
+                default:
+                    return true;
+            }
+        } catch (NotFoundException e) {
+            return false;
+        }
+    }
+
+    private void startBackupActivity() {
+        Intent intent = new Intent(this, BackupActivity.class);
+        intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[] { mMasterKeyId });
+        intent.putExtra(BackupActivity.EXTRA_SECRET, true);
+        startActivity(intent);
     }
 
     private void deleteKey() {
@@ -514,7 +541,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     return;
                 }
 
-                backupToFile();
+                startBackupActivity();
                 return;
             }
 

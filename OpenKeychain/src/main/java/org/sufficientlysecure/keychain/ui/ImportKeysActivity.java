@@ -21,8 +21,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -33,10 +33,8 @@ import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -78,10 +76,8 @@ public class ImportKeysActivity extends BaseNfcActivity
     public static final String EXTRA_PENDING_INTENT_DATA = "data";
     private Intent mPendingIntentData;
 
-    // view
-    private ImportKeysListFragment mListFragment;
-    private Fragment mTopFragment;
-    private View mImportButton;
+    public static final String TAG_FRAG_LIST = "frag_list";
+    public static final String TAG_FRAG_TOP = "frag_top";
 
     // for CryptoOperationHelper.Callback
     private String mKeyserver;
@@ -94,15 +90,22 @@ public class ImportKeysActivity extends BaseNfcActivity
         super.onCreate(savedInstanceState);
 
         setFullScreenDialogClose(Activity.RESULT_CANCELED, true);
-        mImportButton = findViewById(R.id.import_import);
-        mImportButton.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.import_import).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                importKeys();
+                importSelectedKeys();
             }
         });
 
-        handleActions(savedInstanceState, getIntent());
+        // only used for OpenPgpService
+        if (getIntent().hasExtra(EXTRA_PENDING_INTENT_DATA)) {
+            mPendingIntentData = getIntent().getParcelableExtra(EXTRA_PENDING_INTENT_DATA);
+        }
+
+        // if we aren't being restored, initialize fragments
+        if (savedInstanceState == null) {
+            handleActions(getIntent());
+        }
     }
 
     @Override
@@ -110,7 +113,7 @@ public class ImportKeysActivity extends BaseNfcActivity
         setContentView(R.layout.import_keys_activity);
     }
 
-    protected void handleActions(Bundle savedInstanceState, Intent intent) {
+    protected void handleActions(Intent intent) {
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
         Uri dataUri = intent.getData();
@@ -120,14 +123,8 @@ public class ImportKeysActivity extends BaseNfcActivity
             extras = new Bundle();
         }
 
-        if (action == null) {
-            startCloudFragment(savedInstanceState, null, false, null);
-            startListFragment(savedInstanceState, null, null, null, null);
-            return;
-        }
-
         if (Intent.ACTION_VIEW.equals(action)) {
-            if (scheme.equals("http") || scheme.equals("https")) {
+            if ("http".equals(scheme) || "https".equals(scheme)) {
                 action = ACTION_SEARCH_KEYSERVER_FROM_URL;
             } else {
                 // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
@@ -135,20 +132,24 @@ public class ImportKeysActivity extends BaseNfcActivity
                 action = ACTION_IMPORT_KEY;
             }
         }
+        if (action == null) {
+            // -> switch to default below
+            action = "";
+        }
 
         switch (action) {
             case ACTION_IMPORT_KEY: {
-                /* Keychain's own Actions */
-                startFileFragment(savedInstanceState);
-
                 if (dataUri != null) {
                     // action: directly load data
-                    startListFragment(savedInstanceState, null, dataUri, null, null);
+                    startListFragment(null, dataUri, null, null);
                 } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
                     byte[] importData = extras.getByteArray(EXTRA_KEY_BYTES);
 
                     // action: directly load data
-                    startListFragment(savedInstanceState, importData, null, null, null);
+                    startListFragment(importData, null, null, null);
+                } else {
+                    startTopFileFragment();
+                    startListFragment(null, null, null, null);
                 }
                 break;
             }
@@ -156,10 +157,6 @@ public class ImportKeysActivity extends BaseNfcActivity
             case ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE:
             case ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT: {
 
-                // only used for OpenPgpService
-                if (extras.containsKey(EXTRA_PENDING_INTENT_DATA)) {
-                    mPendingIntentData = extras.getParcelable(EXTRA_PENDING_INTENT_DATA);
-                }
                 if (extras.containsKey(EXTRA_QUERY) || extras.containsKey(EXTRA_KEY_ID)) {
                     /* simple search based on query or key id */
 
@@ -175,10 +172,10 @@ public class ImportKeysActivity extends BaseNfcActivity
 
                     if (query != null && query.length() > 0) {
                         // display keyserver fragment with query
-                        startCloudFragment(savedInstanceState, query, false, null);
+                        startTopCloudFragment(query, false, null);
 
                         // action: search immediately
-                        startListFragment(savedInstanceState, null, null, query, null);
+                        startListFragment(null, null, query, null);
                     } else {
                         Log.e(Constants.TAG, "Query is empty!");
                         return;
@@ -194,10 +191,10 @@ public class ImportKeysActivity extends BaseNfcActivity
                         String query = "0x" + fingerprint;
 
                         // display keyserver fragment with query
-                        startCloudFragment(savedInstanceState, query, true, null);
+                        startTopCloudFragment(query, true, null);
 
                         // action: search immediately
-                        startListFragment(savedInstanceState, null, null, query, null);
+                        startListFragment(null, null, query, null);
                     }
                 } else {
                     Log.e(Constants.TAG,
@@ -208,14 +205,6 @@ public class ImportKeysActivity extends BaseNfcActivity
                 }
                 break;
             }
-            case ACTION_IMPORT_KEY_FROM_FILE: {
-                // NOTE: this only displays the appropriate fragment, no actions are taken
-                startFileFragment(savedInstanceState);
-
-                // no immediate actions!
-                startListFragment(savedInstanceState, null, null, null, null);
-                break;
-            }
             case ACTION_SEARCH_KEYSERVER_FROM_URL: {
                 // need to process URL to get search query and keyserver authority
                 String query = dataUri.getQueryParameter("search");
@@ -223,120 +212,88 @@ public class ImportKeysActivity extends BaseNfcActivity
                 // if query not specified, we still allow users to search the keyserver in the link
                 if (query == null) {
                     Notify.create(this, R.string.import_url_warn_no_search_parameter, Notify.LENGTH_INDEFINITE,
-                            Notify.Style.WARN).show(mTopFragment);
+                            Notify.Style.WARN).show();
                     // we just set the keyserver
-                    startCloudFragment(savedInstanceState, null, false, keyserver);
+                    startTopCloudFragment(null, false, keyserver);
                     // we don't set the keyserver for ImportKeysListFragment since
                     // it'll be set in the cloudSearchPrefs of ImportKeysCloudFragment
                     // which is used when the user clicks on the search button
-                    startListFragment(savedInstanceState, null, null, null, null);
+                    startListFragment(null, null, null, null);
                 } else {
                     // we allow our users to edit the query if they wish
-                    startCloudFragment(savedInstanceState, query, false, keyserver);
+                    startTopCloudFragment(query, false, keyserver);
                     // search immediately
-                    startListFragment(savedInstanceState, null, null, query, keyserver);
+                    startListFragment(null, null, query, keyserver);
                 }
                 break;
             }
+            case ACTION_IMPORT_KEY_FROM_FILE:
             case ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN: {
                 // NOTE: this only displays the appropriate fragment, no actions are taken
-                startFileFragment(savedInstanceState);
-
-                // no immediate actions!
-                startListFragment(savedInstanceState, null, null, null, null);
+                startTopFileFragment();
+                startListFragment(null, null, null, null);
                 break;
             }
             default: {
-                startCloudFragment(savedInstanceState, null, false, null);
-                startListFragment(savedInstanceState, null, null, null, null);
+                startTopCloudFragment(null, false, null);
+                startListFragment(null, null, null, null);
                 break;
             }
         }
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // the only thing we need to take care of for restoring state is
+        // that the top layout is shown iff it contains a fragment
+        Fragment topFragment = getSupportFragmentManager().findFragmentByTag(TAG_FRAG_TOP);
+        boolean hasTopFragment = topFragment != null;
+        findViewById(R.id.import_keys_top_layout).setVisibility(hasTopFragment ? View.VISIBLE : View.GONE);
+    }
 
     /**
      * if the fragment is started with non-null bytes/dataUri/serverQuery, it will immediately
      * load content
      *
-     * @param savedInstanceState
      * @param bytes              bytes containing list of keyrings to import
      * @param dataUri            uri to file to import keyrings from
      * @param serverQuery        query to search for on the keyserver
      * @param keyserver          keyserver authority to search on. If null will use keyserver from
      *                           user preferences
      */
-    private void startListFragment(Bundle savedInstanceState, byte[] bytes, Uri dataUri,
-                                   String serverQuery, String keyserver) {
-        // However, if we're being restored from a previous state,
-        // then we don't need to do anything and should return or else
-        // we could end up with overlapping fragments.
-        if (mListFragment != null) {
-            return;
-        }
-
-        mListFragment = ImportKeysListFragment.newInstance(bytes, dataUri, serverQuery, false,
-                keyserver);
-
-        // Add the fragment to the 'fragment_container' FrameLayout
-        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
+    private void startListFragment(byte[] bytes, Uri dataUri, String serverQuery, String keyserver) {
+        Fragment listFragment =
+                ImportKeysListFragment.newInstance(bytes, dataUri, serverQuery, false, keyserver);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.import_keys_list_container, mListFragment)
-                .commitAllowingStateLoss();
-        // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+                .replace(R.id.import_keys_list_container, listFragment, TAG_FRAG_LIST)
+                .commit();
     }
 
-    private void startFileFragment(Bundle savedInstanceState) {
-        // However, if we're being restored from a previous state,
-        // then we don't need to do anything and should return or else
-        // we could end up with overlapping fragments.
-        if (mTopFragment != null) {
-            return;
-        }
-
-        // Create an instance of the fragment
-        mTopFragment = ImportKeysFileFragment.newInstance();
-
-        // Add the fragment to the 'fragment_container' FrameLayout
-        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
+    private void startTopFileFragment() {
+        findViewById(R.id.import_keys_top_layout).setVisibility(View.VISIBLE);
+        Fragment importFileFragment = ImportKeysFileFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.import_keys_top_container, mTopFragment)
-                .commitAllowingStateLoss();
-        // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+                .replace(R.id.import_keys_top_container, importFileFragment, TAG_FRAG_TOP)
+                .commit();
     }
 
     /**
      * loads the CloudFragment, which consists of the search bar, search button and settings icon
      * visually.
      *
-     * @param savedInstanceState
      * @param query              search query
      * @param disableQueryEdit   if true, user will not be able to edit the search query
      * @param keyserver          keyserver authority to use for search, if null will use keyserver
      *                           specified in user preferences
      */
-
-    private void startCloudFragment(Bundle savedInstanceState, String query, boolean disableQueryEdit, String
-            keyserver) {
-        // However, if we're being restored from a previous state,
-        // then we don't need to do anything and should return or else
-        // we could end up with overlapping fragments.
-        if (mTopFragment != null) {
-            return;
-        }
-
-        // Create an instance of the fragment
-        mTopFragment = ImportKeysCloudFragment.newInstance(query, disableQueryEdit, keyserver);
-
-        // Add the fragment to the 'fragment_container' FrameLayout
-        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
+    private void startTopCloudFragment(String query, boolean disableQueryEdit, String keyserver) {
+        findViewById(R.id.import_keys_top_layout).setVisibility(View.VISIBLE);
+        Fragment importCloudFragment = ImportKeysCloudFragment.newInstance(query, disableQueryEdit, keyserver);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.import_keys_top_container, mTopFragment)
-                .commitAllowingStateLoss();
-        // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+                .replace(R.id.import_keys_top_container, importCloudFragment, TAG_FRAG_TOP)
+                .commit();
     }
 
     private boolean isFingerprintValid(String fingerprint) {
@@ -350,63 +307,32 @@ public class ImportKeysActivity extends BaseNfcActivity
     }
 
     public void loadCallback(final ImportKeysListFragment.LoaderState loaderState) {
-        mListFragment.loadNew(loaderState);
+        FragmentManager fragMan = getSupportFragmentManager();
+        ImportKeysListFragment keyListFragment = (ImportKeysListFragment) fragMan.findFragmentByTag(TAG_FRAG_LIST);
+        keyListFragment.loadNew(loaderState);
     }
 
-    private void handleMessage(Message message) {
-        if (message.arg1 == ServiceProgressHandler.MessageStatus.OKAY.ordinal()) {
-            // get returned data bundle
-            Bundle returnData = message.getData();
-            if (returnData == null) {
-                return;
-            }
-            final ImportKeyResult result =
-                    returnData.getParcelable(OperationResult.EXTRA_RESULT);
-            if (result == null) {
-                Log.e(Constants.TAG, "result == null");
-                return;
-            }
+    private void importSelectedKeys() {
 
-            if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())
-                    || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(getIntent().getAction())) {
-                Intent intent = new Intent();
-                intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
-                ImportKeysActivity.this.setResult(RESULT_OK, intent);
-                ImportKeysActivity.this.finish();
-                return;
-            }
-            if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE.equals(getIntent().getAction())) {
-                ImportKeysActivity.this.setResult(RESULT_OK, mPendingIntentData);
-                ImportKeysActivity.this.finish();
-                return;
-            }
+        FragmentManager fragMan = getSupportFragmentManager();
+        ImportKeysListFragment keyListFragment = (ImportKeysListFragment) fragMan.findFragmentByTag(TAG_FRAG_LIST);
 
-            result.createNotify(ImportKeysActivity.this)
-                    .show((ViewGroup) findViewById(R.id.import_snackbar));
-        }
-    }
-
-    /**
-     * Import keys with mImportData
-     */
-    public void importKeys() {
-
-        if (mListFragment.getSelectedEntries().size() == 0) {
+        if (keyListFragment.getSelectedEntries().size() == 0) {
             Notify.create(this, R.string.error_nothing_import_selected, Notify.Style.ERROR)
                     .show((ViewGroup) findViewById(R.id.import_snackbar));
             return;
         }
 
-        mOperationHelper = new CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult>(
+        mOperationHelper = new CryptoOperationHelper<>(
                 1, this, this, R.string.progress_importing
         );
 
-        ImportKeysListFragment.LoaderState ls = mListFragment.getLoaderState();
+        ImportKeysListFragment.LoaderState ls = keyListFragment.getLoaderState();
         if (ls instanceof ImportKeysListFragment.BytesLoaderState) {
             Log.d(Constants.TAG, "importKeys started");
 
             // get DATA from selected key entries
-            IteratorWithSize<ParcelableKeyRing> selectedEntries = mListFragment.getSelectedData();
+            IteratorWithSize<ParcelableKeyRing> selectedEntries = keyListFragment.getSelectedData();
 
             // instead of giving the entries by Intent extra, cache them into a
             // file to prevent Java Binder problems on heavy imports
@@ -435,7 +361,7 @@ public class ImportKeysActivity extends BaseNfcActivity
             ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
             {
                 // change the format into ParcelableKeyRing
-                ArrayList<ImportKeysListEntry> entries = mListFragment.getSelectedEntries();
+                ArrayList<ImportKeysListEntry> entries = keyListFragment.getSelectedEntries();
                 for (ImportKeysListEntry entry : entries) {
                     keys.add(new ParcelableKeyRing(
                                     entry.getFingerprintHex(), entry.getKeyIdHex(), entry.getExtraData())
@@ -458,24 +384,28 @@ public class ImportKeysActivity extends BaseNfcActivity
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mOperationHelper == null ||
-                !mOperationHelper.handleActivityResult(requestCode, resultCode, data)) {
-            super.onActivityResult(requestCode, resultCode, data);
+        if (mOperationHelper != null &&
+                mOperationHelper.handleActivityResult(requestCode, resultCode, data)) {
+            return;
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void handleResult(ImportKeyResult result) {
-        if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())
-                || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(getIntent().getAction())) {
+        String intentAction = getIntent().getAction();
+
+        if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(intentAction)
+                || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(intentAction)) {
             Intent intent = new Intent();
             intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
-            ImportKeysActivity.this.setResult(RESULT_OK, intent);
-            ImportKeysActivity.this.finish();
+            setResult(RESULT_OK, intent);
+            finish();
             return;
         }
-        if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE.equals(getIntent().getAction())) {
-            ImportKeysActivity.this.setResult(RESULT_OK, mPendingIntentData);
-            ImportKeysActivity.this.finish();
+
+        if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE.equals(intentAction)) {
+            setResult(RESULT_OK, mPendingIntentData);
+            finish();
             return;
         }
 

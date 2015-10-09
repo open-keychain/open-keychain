@@ -22,29 +22,51 @@ import android.os.Parcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
-public class ExportResult extends InputPendingResult {
 
-    public ExportResult(int result, OperationLog log) {
+public class UploadResult extends InputPendingResult {
+
+    final int mOkPublic, mOkSecret;
+
+    public UploadResult(int result, OperationLog log) {
+        this(result, log, 0, 0);
+    }
+
+    public UploadResult(int result, OperationLog log, int okPublic, int okSecret) {
         super(result, log);
+        mOkPublic = okPublic;
+        mOkSecret = okSecret;
+    }
+
+
+    public UploadResult(OperationLog log, RequiredInputParcel requiredInputParcel,
+            CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInputParcel, cryptoInputParcel);
+        // we won't use these values
+        mOkPublic = -1;
+        mOkSecret = -1;
     }
 
     /** Construct from a parcel - trivial because we have no extra data. */
-    public ExportResult(Parcel source) {
+    public UploadResult(Parcel source) {
         super(source);
+        mOkPublic = source.readInt();
+        mOkSecret = source.readInt();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
+        dest.writeInt(mOkPublic);
+        dest.writeInt(mOkSecret);
     }
 
-    public static Creator<ExportResult> CREATOR = new Creator<ExportResult>() {
-        public ExportResult createFromParcel(final Parcel source) {
-            return new ExportResult(source);
+    public static Creator<UploadResult> CREATOR = new Creator<UploadResult>() {
+        public UploadResult createFromParcel(final Parcel source) {
+            return new UploadResult(source);
         }
 
-        public ExportResult[] newArray(final int size) {
-            return new ExportResult[size];
+        public UploadResult[] newArray(final int size) {
+            return new UploadResult[size];
         }
     };
 

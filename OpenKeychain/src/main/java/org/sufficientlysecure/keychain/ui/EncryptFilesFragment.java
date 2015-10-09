@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -34,6 +35,7 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -215,6 +217,7 @@ public class EncryptFilesFragment
         mSelectedFiles.requestFocus();
     }
 
+    @TargetApi(VERSION_CODES.KITKAT)
     private void showOutputFileDialog() {
         if (mFilesAdapter.getModelCount() != 1) {
             throw new IllegalStateException();
@@ -223,8 +226,7 @@ public class EncryptFilesFragment
         String targetName =
                 (mEncryptFilenames ? "1" : FileHelper.getFilename(getActivity(), model.inputUri))
                         + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
-        FileHelper.saveDocument(this, targetName,
-                REQUEST_CODE_OUTPUT);
+        FileHelper.saveDocument(this, targetName, REQUEST_CODE_OUTPUT);
     }
 
     public void addFile(Intent data) {

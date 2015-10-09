@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -361,7 +362,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 long alreadyWritten = 0;
                 int length;
                 byte[] buffer = new byte[1 << 16];
-                InputStream in = inputData.getInputStream();
+                InputStream in = new BufferedInputStream(inputData.getInputStream());
                 while ((length = in.read(buffer)) > 0) {
                     pOut.write(buffer, 0, length);
 
@@ -389,7 +390,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 // write -----BEGIN PGP SIGNED MESSAGE-----
                 armorOut.beginClearText(input.getSignatureHashAlgorithm());
 
-                InputStream in = inputData.getInputStream();
+                InputStream in = new BufferedInputStream(inputData.getInputStream());
                 final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
                 // update signature buffer with first line
@@ -421,7 +422,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 updateProgress(R.string.progress_signing, 8, 100);
                 log.add(LogType.MSG_PSE_SIGNING_DETACHED, indent);
 
-                InputStream in = inputData.getInputStream();
+                InputStream in = new BufferedInputStream(inputData.getInputStream());
 
                 // handle output stream separately for detached signatures
                 detachedByteOut = new ByteArrayOutputStream();
@@ -458,7 +459,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 updateProgress(R.string.progress_signing, 8, 100);
                 log.add(LogType.MSG_PSE_SIGNING, indent);
 
-                InputStream in = inputData.getInputStream();
+                InputStream in = new BufferedInputStream(inputData.getInputStream());
 
                 if (enableCompression) {
                     compressGen = new PGPCompressedDataGenerator(input.getCompressionAlgorithm());

@@ -16,7 +16,7 @@
         android:title="@string/key_view_action_update" />
 
     <item
-        android:id="@+id/menu_key_view_export_file"
+        android:id="@+id/menu_key_view_backup"
         app:showAsAction="never"
         android:title="@string/menu_export_key" />
 

@@ -439,6 +439,14 @@
             android:label="@string/title_key_server_preference"
             android:windowSoftInputMode="stateHidden" />
         <activity
+            android:name=".ui.BackupActivity"
+            android:configChanges="keyboardHidden|keyboard"
+            android:label="@string/title_backup">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
+        <activity
             android:name=".ui.CertifyKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_certify_key">

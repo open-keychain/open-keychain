@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.util.FabContainer;
  */
 public class Notify {
 
-    public static enum Style {
+    public enum Style {
         OK (R.color.android_green_light), WARN(R.color.android_orange_light), ERROR(R.color.android_red_light);
 
         public final int mLineColor;
@@ -140,6 +140,11 @@ public class Notify {
 
     public static Showable create(Activity activity, String text, Style style) {
         return create(activity, text, LENGTH_LONG, style);
+    }
+
+    public static Showable create(Activity activity, int textResId, Style style,
+            ActionListener actionListener, int actionResId) {
+        return create(activity, textResId, LENGTH_LONG, style, actionListener, actionResId);
     }
 
     public static Showable create(Activity activity, int textResId, int duration, Style style,

@@ -17,17 +17,21 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -35,16 +39,13 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
-import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
-
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An operation which implements a high level key edit operation.
@@ -134,20 +135,20 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         UncachedKeyRing ring = modifyResult.getRing();
 
         if (saveParcel.isUpload()) {
-            UncachedKeyRing publicKeyRing;
+            byte[] keyringBytes;
             try {
-                publicKeyRing = ring.extractPublicKeyRing();
+                UncachedKeyRing publicKeyRing = ring.extractPublicKeyRing();
+                keyringBytes = publicKeyRing.getEncoded();
             } catch (IOException e) {
                 log.add(LogType.MSG_ED_ERROR_EXTRACTING_PUBLIC_UPLOAD, 1);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
-            ExportKeyringParcel exportKeyringParcel =
-                    new ExportKeyringParcel(saveParcel.getUploadKeyserver(),
-                            publicKeyRing);
+            UploadKeyringParcel exportKeyringParcel =
+                    new UploadKeyringParcel(saveParcel.getUploadKeyserver(), keyringBytes);
 
-            ExportResult uploadResult =
-                    new ExportOperation(mContext, mProviderHelper, mProgressable)
+            UploadResult uploadResult =
+                    new UploadOperation(mContext, mProviderHelper, mProgressable)
                             .execute(exportKeyringParcel, cryptoInput);
 
             if (uploadResult.isPending()) {

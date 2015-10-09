@@ -19,6 +19,9 @@ package org.sufficientlysecure.keychain.util;
 
 import java.util.Random;
 
+import junit.framework.Assert;
+
+
 public class TestingUtils {
     public static Passphrase genPassphrase() {
         return genPassphrase(false);
@@ -35,4 +38,25 @@ public class TestingUtils {
         System.out.println("Generated passphrase: '" + passbuilder.toString() + "'");
         return new Passphrase(passbuilder.toString());
     }
+
+    public static void assertArrayEqualsPrefix(String msg, byte[] expected, byte[] actual) {
+
+        Assert.assertTrue("exepected must be shorter or equal to actual array length",
+                expected.length <= actual.length);
+        for (int i = 0; i < expected.length; i++) {
+            Assert.assertEquals(msg, expected[i], actual[i]);
+        }
+
+    }
+
+    public static void assertArrayEqualsSuffix(String msg, byte[] expected, byte[] actual) {
+
+        Assert.assertTrue("exepected must be shorter or equal to actual array length",
+                expected.length <= actual.length);
+        for (int i = 0; i < expected.length; i++) {
+            Assert.assertEquals(msg, expected[i], actual[actual.length -expected.length +i]);
+        }
+
+    }
+
 }
