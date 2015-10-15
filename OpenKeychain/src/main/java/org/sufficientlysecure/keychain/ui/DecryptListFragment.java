@@ -534,7 +534,7 @@ public class DecryptListFragment
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(outputUri, metadata.getMimeType());
 
-                if ("application/pgp-keys".equals(metadata.getMimeType())) {
+                if (!forceChooser && "application/pgp-keys".equals(metadata.getMimeType())) {
                     // bind Intent to this OpenKeychain, don't allow other apps to intercept here!
                     intent.setPackage(getActivity().getPackageName());
                 }
