@@ -52,7 +52,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
-import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
+import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
@@ -61,7 +61,7 @@ import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringParcel, ExportResult>
+public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult>
         implements OnBackStackChangedListener {
 
     public static final String ARG_BACKUP_CODE = "backup_code";
@@ -499,8 +499,8 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
 
     @Nullable
     @Override
-    public ExportKeyringParcel createOperationInput() {
-        return new ExportKeyringParcel(new Passphrase(mBackupCode), mMasterKeyIds, mExportSecret, mCachedBackupUri);
+    public BackupKeyringParcel createOperationInput() {
+        return new BackupKeyringParcel(new Passphrase(mBackupCode), mMasterKeyIds, mExportSecret, mCachedBackupUri);
     }
 
     @Override

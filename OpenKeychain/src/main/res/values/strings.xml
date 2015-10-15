@@ -293,7 +293,8 @@
     <string name="no_filemanager_installed">"No compatible file manager installed."</string>
     <string name="passphrases_do_not_match">"The passwords didn't match."</string>
     <string name="passphrase_must_not_be_empty">"Please enter a password."</string>
-    <string name="passphrase_for_symmetric_encryption">"Symmetric encryption."</string>
+    <string name="passphrase_for_symmetric_encryption">"Enter password"</string>
+    <string name="passphrase_for_backup">"Enter backup code"</string>
     <string name="passphrase_for">"Enter password for '%s'"</string>
     <string name="pin_for">"Enter PIN for '%s'"</string>
     <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
@@ -337,7 +338,6 @@
     <string name="key_copied_to_clipboard">"Key has been copied to the clipboard!"</string>
     <string name="fingerprint_copied_to_clipboard">"Fingerprint has been copied to the clipboard!"</string>
     <string name="select_key_to_certify">"Please select a key to be used for confirmation!"</string>
-    <string name="key_too_big_for_sharing">"Key is too big to be shared this way!"</string>
     <string name="text_copied_to_clipboard">"Text has been copied to the clipboard!"</string>
 
     <!--

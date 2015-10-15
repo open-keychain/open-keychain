@@ -55,7 +55,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
-import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
+import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -72,7 +72,7 @@ import org.sufficientlysecure.keychain.util.Log;
  * For the export operation, the input consists of a set of key ids and
  * either the name of a file or an output uri to write to.
  */
-public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
+public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
     private static final String[] PROJECTION = new String[] {
             KeyRings.MASTER_KEY_ID,
@@ -85,18 +85,18 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
     private static final int INDEX_SECKEY_DATA = 2;
     private static final int INDEX_HAS_ANY_SECRET = 3;
 
-    public ExportOperation(Context context, ProviderHelper providerHelper, Progressable
+    public BackupOperation(Context context, ProviderHelper providerHelper, Progressable
             progressable) {
         super(context, providerHelper, progressable);
     }
 
-    public ExportOperation(Context context, ProviderHelper providerHelper,
+    public BackupOperation(Context context, ProviderHelper providerHelper,
                            Progressable progressable, AtomicBoolean cancelled) {
         super(context, providerHelper, progressable, cancelled);
     }
 
     @NonNull
-    public ExportResult execute(@NonNull ExportKeyringParcel exportInput, @Nullable CryptoInputParcel cryptoInput) {
+    public ExportResult execute(@NonNull BackupKeyringParcel exportInput, @Nullable CryptoInputParcel cryptoInput) {
 
         OperationLog log = new OperationLog();
         if (exportInput.mMasterKeyIds != null) {

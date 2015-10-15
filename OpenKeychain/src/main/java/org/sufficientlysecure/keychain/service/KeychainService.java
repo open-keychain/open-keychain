@@ -33,7 +33,7 @@ import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.ConsolidateOperation;
 import org.sufficientlysecure.keychain.operations.DeleteOperation;
 import org.sufficientlysecure.keychain.operations.EditKeyOperation;
-import org.sufficientlysecure.keychain.operations.ExportOperation;
+import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.KeybaseVerificationOperation;
 import org.sufficientlysecure.keychain.operations.InputDataOperation;
@@ -125,8 +125,8 @@ public class KeychainService extends Service implements Progressable {
                     op = new PromoteKeyOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
                 } else if (inputParcel instanceof ImportKeyringParcel) {
                     op = new ImportOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
-                } else if (inputParcel instanceof ExportKeyringParcel) {
-                    op = new ExportOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
+                } else if (inputParcel instanceof BackupKeyringParcel) {
+                    op = new BackupOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
                 } else if (inputParcel instanceof UploadKeyringParcel) {
                     op = new UploadOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
                 } else if (inputParcel instanceof ConsolidateInputParcel) {

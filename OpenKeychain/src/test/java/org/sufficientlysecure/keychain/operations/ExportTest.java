@@ -56,7 +56,7 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
-import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
+import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
@@ -151,7 +151,7 @@ public class ExportTest {
 
     @Test
     public void testExportAllLocalStripped() throws Exception {
-        ExportOperation op = new ExportOperation(RuntimeEnvironment.application,
+        BackupOperation op = new BackupOperation(RuntimeEnvironment.application,
                 new ProviderHelper(RuntimeEnvironment.application), null);
 
         // make sure there is a local cert (so the later checks that there are none are meaningful)
@@ -251,10 +251,10 @@ public class ExportTest {
         Application spyApplication = spy(RuntimeEnvironment.application);
         when(spyApplication.getContentResolver()).thenReturn(mockResolver);
 
-        ExportOperation op = new ExportOperation(spyApplication,
+        BackupOperation op = new BackupOperation(spyApplication,
                 new ProviderHelper(RuntimeEnvironment.application), null);
 
-        ExportKeyringParcel parcel = new ExportKeyringParcel(null,
+        BackupKeyringParcel parcel = new BackupKeyringParcel(null,
                 new long[] { mStaticRing1.getMasterKeyId() }, false, fakeOutputUri);
 
         ExportResult result = op.execute(parcel, null);
@@ -310,10 +310,10 @@ public class ExportTest {
         Passphrase passphrase = new Passphrase("abcde");
 
         { // export encrypted
-            ExportOperation op = new ExportOperation(spyApplication,
+            BackupOperation op = new BackupOperation(spyApplication,
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
-            ExportKeyringParcel parcel = new ExportKeyringParcel(passphrase,
+            BackupKeyringParcel parcel = new BackupKeyringParcel(passphrase,
                     new long[] { mStaticRing1.getMasterKeyId() }, false, fakeOutputUri);
 
             ExportResult result = op.execute(parcel, null);

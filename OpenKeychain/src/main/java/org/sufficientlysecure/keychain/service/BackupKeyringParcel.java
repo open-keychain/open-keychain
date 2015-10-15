@@ -23,11 +23,10 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 
-public class ExportKeyringParcel implements Parcelable {
+public class BackupKeyringParcel implements Parcelable {
     public Uri mCanonicalizedPublicKeyringUri;
     public Passphrase mSymmetricPassphrase;
 
@@ -35,15 +34,15 @@ public class ExportKeyringParcel implements Parcelable {
     public long mMasterKeyIds[];
     public Uri mOutputUri;
 
-    public ExportKeyringParcel(Passphrase symmetricPassphrase,
-            long[] masterKeyIds, boolean exportSecret, Uri outputUri) {
+    public BackupKeyringParcel(Passphrase symmetricPassphrase,
+                               long[] masterKeyIds, boolean exportSecret, Uri outputUri) {
         mSymmetricPassphrase = symmetricPassphrase;
         mMasterKeyIds = masterKeyIds;
         mExportSecret = exportSecret;
         mOutputUri = outputUri;
     }
 
-    protected ExportKeyringParcel(Parcel in) {
+    protected BackupKeyringParcel(Parcel in) {
         mCanonicalizedPublicKeyringUri = (Uri) in.readValue(Uri.class.getClassLoader());
         mExportSecret = in.readByte() != 0x00;
         mOutputUri = (Uri) in.readValue(Uri.class.getClassLoader());
@@ -65,15 +64,15 @@ public class ExportKeyringParcel implements Parcelable {
         dest.writeParcelable(mSymmetricPassphrase, 0);
     }
 
-    public static final Parcelable.Creator<ExportKeyringParcel> CREATOR = new Parcelable.Creator<ExportKeyringParcel>() {
+    public static final Parcelable.Creator<BackupKeyringParcel> CREATOR = new Parcelable.Creator<BackupKeyringParcel>() {
         @Override
-        public ExportKeyringParcel createFromParcel(Parcel in) {
-            return new ExportKeyringParcel(in);
+        public BackupKeyringParcel createFromParcel(Parcel in) {
+            return new BackupKeyringParcel(in);
         }
 
         @Override
-        public ExportKeyringParcel[] newArray(int size) {
-            return new ExportKeyringParcel[size];
+        public BackupKeyringParcel[] newArray(int size) {
+            return new BackupKeyringParcel[size];
         }
     };
 }

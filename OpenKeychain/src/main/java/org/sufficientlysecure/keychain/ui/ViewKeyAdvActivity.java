@@ -41,13 +41,11 @@ import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
-import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class ViewKeyAdvActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
 
     protected Uri mDataUri;
@@ -75,7 +73,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             }
         });
 
-        mExportHelper = new ExportHelper(this);
         mProviderHelper = new ProviderHelper(this);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);

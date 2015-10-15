@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -86,7 +85,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
-import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -397,8 +395,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         MenuItem editKey = menu.findItem(R.id.menu_key_view_edit);
         editKey.setVisible(mIsSecret);
 
-        MenuItem exportKey = menu.findItem(R.id.menu_key_view_backup);
-        exportKey.setVisible(mIsSecret);
+        MenuItem backupKey = menu.findItem(R.id.menu_key_view_backup);
+        backupKey.setVisible(mIsSecret);
 
         MenuItem addLinked = menu.findItem(R.id.menu_key_view_add_linked_identity);
         addLinked.setVisible(mIsSecret
