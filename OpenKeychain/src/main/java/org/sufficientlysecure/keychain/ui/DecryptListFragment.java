@@ -378,8 +378,8 @@ public class DecryptListFragment
                         // noinspection deprecation, this should be called from Context, but not available in minSdk
                         icon = getResources().getDrawable(R.drawable.ic_chat_black_24dp);
                     } else if (ClipDescription.compareMimeTypes(type, "application/pgp-keys")) {
-                            // noinspection deprecation, this should be called from Context, but not available in minSdk
-                            icon = getResources().getDrawable(R.drawable.ic_key_plus_grey600_24dp);
+                        // noinspection deprecation, this should be called from Context, but not available in minSdk
+                        icon = getResources().getDrawable(R.drawable.ic_key_plus_grey600_24dp);
                     } else if (ClipDescription.compareMimeTypes(type, "image/*")) {
                         int px = FormattingUtils.dpToPx(context, 32);
                         Bitmap bitmap = FileHelper.getThumbnail(context, outputUri, new Point(px, px));
@@ -533,6 +533,11 @@ public class DecryptListFragment
             } else {
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(outputUri, metadata.getMimeType());
+
+                if ("application/pgp-keys".equals(metadata.getMimeType())) {
+                    // bind Intent to this OpenKeychain, don't allow other apps to intercept here!
+                    intent.setPackage(getActivity().getPackageName());
+                }
             }
 
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
