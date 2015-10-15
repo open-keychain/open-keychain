@@ -203,7 +203,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
 
     private void onBackupSelected() {
         mToolbar.setTitle(R.string.nav_backup);
-        mDrawer.setSelectionByIdentifier(ID_APPS, false);
+        mDrawer.setSelectionByIdentifier(ID_BACKUP, false);
         Fragment frag = new DrawerBackupFragment();
         setFragment(frag, true);
     }
