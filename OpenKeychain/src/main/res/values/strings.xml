@@ -132,6 +132,7 @@
     <string name="label_file_colon">"File:"</string>
     <string name="label_no_passphrase">"No Password"</string>
     <string name="label_passphrase">"Password"</string>
+    <string name="label_pin">"PIN"</string>
     <string name="label_unlock">"Unlocking…"</string>
     <string name="label_passphrase_again">"Repeat Password"</string>
     <string name="label_show_passphrase">"Show Password"</string>

@@ -149,6 +149,7 @@ public final class Constants {
     public static final class key {
         public static final int none = 0;
         public static final int symmetric = -1;
+        public static final int backup_code = -2;
     }
 
 }

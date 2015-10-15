@@ -117,6 +117,10 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     mSubKeyId = Constants.key.symmetric;
                     break;
                 }
+                case BACKUP_CODE: {
+                    mSubKeyId = Constants.key.backup_code;
+                    break;
+                }
                 case PASSPHRASE: {
 
                     // handle empty passphrases by directly returning an empty crypto input parcel
@@ -208,6 +212,17 @@ public class PassphraseDialogActivity extends FragmentActivity {
             // No title, see http://www.google.com/design/spec/components/dialogs.html#dialogs-alerts
             //alert.setTitle()
 
+            if (mSubKeyId == Constants.key.backup_code) {
+                LayoutInflater inflater = LayoutInflater.from(theme);
+                View view = inflater.inflate(R.layout.passphrase_dialog_backup_code, null);
+                alert.setView(view);
+
+                AlertDialog dialog = alert.create();
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                        activity.getString(R.string.btn_unlock), (DialogInterface.OnClickListener) null);
+                return dialog;
+            }
+
             LayoutInflater inflater = LayoutInflater.from(theme);
             View view = inflater.inflate(R.layout.passphrase_dialog, null);
             alert.setView(view);
@@ -229,8 +244,10 @@ public class PassphraseDialogActivity extends FragmentActivity {
             CanonicalizedSecretKey.SecretKeyType keyType = CanonicalizedSecretKey.SecretKeyType.PASSPHRASE;
 
             String message;
+            String hint;
             if (mSubKeyId == Constants.key.symmetric || mSubKeyId == Constants.key.none) {
                 message = getString(R.string.passphrase_for_symmetric_encryption);
+                hint = getString(R.string.label_passphrase);
             } else {
                 try {
                     ProviderHelper helper = new ProviderHelper(activity);
@@ -255,12 +272,15 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     switch (keyType) {
                         case PASSPHRASE:
                             message = getString(R.string.passphrase_for, userId);
+                            hint = getString(R.string.label_passphrase);
                             break;
                         case PIN:
                             message = getString(R.string.pin_for, userId);
+                            hint = getString(R.string.label_pin);
                             break;
                         case DIVERT_TO_CARD:
                             message = getString(R.string.yubikey_pin_for, userId);
+                            hint = getString(R.string.label_pin);
                             break;
                         // special case: empty passphrase just returns the empty passphrase
                         case PASSPHRASE_EMPTY:
@@ -283,6 +303,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             }
 
             mPassphraseText.setText(message);
+            mPassphraseEditText.setHint(hint);
 
             // Hack to open keyboard.
             // This is the only method that I found to work across all Android versions
