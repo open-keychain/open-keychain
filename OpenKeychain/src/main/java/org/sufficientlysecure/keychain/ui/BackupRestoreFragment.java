@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 
-public class DrawerBackupFragment extends Fragment {
+public class BackupRestoreFragment extends Fragment {
 
     // This ids for multiple key export.
     private ArrayList<Long> mIdsForRepeatAskPassphrase;

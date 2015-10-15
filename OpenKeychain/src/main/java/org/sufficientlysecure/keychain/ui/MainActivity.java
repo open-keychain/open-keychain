@@ -204,7 +204,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
     private void onBackupSelected() {
         mToolbar.setTitle(R.string.nav_backup);
         mDrawer.setSelectionByIdentifier(ID_BACKUP, false);
-        Fragment frag = new DrawerBackupFragment();
+        Fragment frag = new BackupRestoreFragment();
         setFragment(frag, true);
     }
 
@@ -265,7 +265,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
         } else if (frag instanceof AppsListFragment) {
             mToolbar.setTitle(R.string.nav_apps);
             mDrawer.setSelection(mDrawer.getPositionFromIdentifier(ID_APPS), false);
-        } else if (frag instanceof DrawerBackupFragment) {
+        } else if (frag instanceof BackupRestoreFragment) {
             mToolbar.setTitle(R.string.nav_backup);
             mDrawer.setSelection(mDrawer.getPositionFromIdentifier(ID_BACKUP), false);
         }
