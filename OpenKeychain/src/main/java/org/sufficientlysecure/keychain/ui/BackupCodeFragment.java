@@ -334,12 +334,6 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
             return;
         }
 
-        // TODO remove debug code
-        if (backupCodeInput.toString().startsWith("ABC")) {
-            switchState(BackupCodeState.STATE_OK, true);
-            return;
-        }
-
         switchState(BackupCodeState.STATE_INPUT_ERROR, true);
 
     }
@@ -506,9 +500,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     @Nullable
     @Override
     public ExportKeyringParcel createOperationInput() {
-        // TODO replace debug code with real thing
-        // return new ExportKeyringParcel(new Passphrase(mBackupCode), mMasterKeyIds, mExportSecret, mCachedBackupUri);
-        return new ExportKeyringParcel(new Passphrase("abc"), mMasterKeyIds, mExportSecret, mCachedBackupUri);
+        return new ExportKeyringParcel(new Passphrase(mBackupCode), mMasterKeyIds, mExportSecret, mCachedBackupUri);
     }
 
     @Override

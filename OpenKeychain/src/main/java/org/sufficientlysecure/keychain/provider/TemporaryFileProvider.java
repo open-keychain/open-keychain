@@ -63,7 +63,7 @@ public class TemporaryFileProvider extends ContentProvider {
 
     private static final String DB_NAME = "tempstorage.db";
     private static final String TABLE_FILES = "files";
-    public static final String AUTHORITY = Constants.TEMPSTORAGE_AUTHORITY;
+    public static final String AUTHORITY = Constants.TEMP_FILE_PROVIDER_AUTHORITY;
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     private static final int DB_VERSION = 3;
 
