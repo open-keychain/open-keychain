@@ -845,7 +845,7 @@
 
         <!-- Storage Provider for temporary decrypted files -->
         <provider
-            android:name=".provider.TemporaryStorageProvider"
+            android:name=".provider.TemporaryFileProvider"
             android:authorities="${applicationId}.tempstorage"
             android:exported="true"
             android:writePermission="${applicationId}.WRITE_TEMPORARY_STORAGE" />

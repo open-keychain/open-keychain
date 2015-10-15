@@ -33,7 +33,7 @@ import android.widget.Toast;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -102,7 +102,7 @@ public class KeychainApplication extends Application {
         TlsHelper.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
         TlsHelper.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
 
-        TemporaryStorageProvider.cleanUp(this);
+        TemporaryFileProvider.cleanUp(this);
 
         if (!checkConsolidateRecovery()) {
             // force DB upgrade, https://github.com/open-keychain/open-keychain/issues/1334

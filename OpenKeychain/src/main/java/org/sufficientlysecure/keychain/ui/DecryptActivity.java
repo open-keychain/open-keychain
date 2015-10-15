@@ -37,7 +37,7 @@ import android.widget.Toast;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
 
@@ -193,7 +193,7 @@ public class DecryptActivity extends BaseActivity {
 
     @Nullable
     public Uri readToTempFile(String text) throws IOException {
-        Uri tempFile = TemporaryStorageProvider.createFile(this);
+        Uri tempFile = TemporaryFileProvider.createFile(this);
         OutputStream outStream = getContentResolver().openOutputStream(tempFile);
         if (outStream == null) {
             return null;

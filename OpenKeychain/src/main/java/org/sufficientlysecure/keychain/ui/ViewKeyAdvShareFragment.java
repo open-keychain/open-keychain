@@ -57,7 +57,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -248,8 +248,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             // Bluetooth Share will convert text/plain sent via EXTRA_TEXT to HTML
             // Add replacement extra to send a text/plain file instead.
             try {
-                TemporaryStorageProvider shareFileProv = new TemporaryStorageProvider();
-                Uri contentUri = TemporaryStorageProvider.createFile(activity,
+                TemporaryFileProvider shareFileProv = new TemporaryFileProvider();
+                Uri contentUri = TemporaryFileProvider.createFile(activity,
                         KeyFormattingUtils.convertFingerprintToHex(mFingerprint) + Constants.FILE_EXTENSION_ASC);
 
                 BufferedWriter contentWriter = new BufferedWriter(new OutputStreamWriter(

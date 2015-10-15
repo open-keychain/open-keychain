@@ -57,7 +57,7 @@ import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
@@ -466,7 +466,7 @@ public class EncryptFilesFragment
                     String targetName = (mEncryptFilenames
                             ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), model.inputUri))
                                     + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
-                    mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName));
+                    mOutputUris.add(TemporaryFileProvider.createFile(getActivity(), targetName));
                     filenameCounter++;
                 }
                 return false;
@@ -489,7 +489,7 @@ public class EncryptFilesFragment
                 String targetName = (mEncryptFilenames
                         ? String.valueOf(1) : FileHelper.getFilename(getActivity(),
                         mFilesAdapter.getModelItem(0).inputUri)) + Constants.FILE_EXTENSION_ASC;
-                mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName, "text/plain"));
+                mOutputUris.add(TemporaryFileProvider.createFile(getActivity(), targetName, "text/plain"));
                 return false;
         }
 

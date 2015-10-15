@@ -48,7 +48,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
@@ -101,7 +101,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
             decryptInput.setInputUri(input.getInputUri());
 
-            currentInputUri = TemporaryStorageProvider.createFile(mContext);
+            currentInputUri = TemporaryFileProvider.createFile(mContext);
             decryptInput.setOutputUri(currentInputUri);
 
             decryptResult = op.execute(decryptInput, cryptoInput);
@@ -117,7 +117,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
             // inform the storage provider about the mime type for this uri
             if (decryptResult.getDecryptionMetadata() != null) {
-                TemporaryStorageProvider.setMimeType(mContext, currentInputUri,
+                TemporaryFileProvider.setMimeType(mContext, currentInputUri,
                         decryptResult.getDecryptionMetadata().getMimeType());
             }
 
@@ -195,7 +195,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
                 log.add(LogType.MSG_DATA_DETACHED_RAW, 3);
 
-                uncheckedSignedDataUri = TemporaryStorageProvider.createFile(mContext, mFilename, "text/plain");
+                uncheckedSignedDataUri = TemporaryFileProvider.createFile(mContext, mFilename, "text/plain");
                 OutputStream out = mContext.getContentResolver().openOutputStream(uncheckedSignedDataUri, "w");
 
                 if (out == null) {
@@ -297,7 +297,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     log.add(LogType.MSG_DATA_MIME_FILENAME, 3, mFilename);
                 }
 
-                Uri uri = TemporaryStorageProvider.createFile(mContext, mFilename, bd.getMimeType());
+                Uri uri = TemporaryFileProvider.createFile(mContext, mFilename, bd.getMimeType());
                 OutputStream out = mContext.getContentResolver().openOutputStream(uri, "w");
 
                 if (out == null) {

@@ -43,14 +43,14 @@ import java.util.UUID;
 /**
  * TemporaryStorageProvider stores decrypted files inside the app's cache directory previously to
  * sharing them with other applications.
- *
+ * <p/>
  * Security:
  * - It is writable by OpenKeychain only (see Manifest), but exported for reading files
  * - It uses UUIDs as identifiers which makes predicting files from outside impossible
  * - Querying a number of files is not allowed, only querying single files
  * -> You can only open a file if you know the Uri containing the precise UUID, this Uri is only
  * revealed when the user shares a decrypted file with another app.
- *
+ * <p/>
  * Why is support lib's FileProvider not used?
  * Because granting Uri permissions temporarily does not work correctly. See
  * - https://code.google.com/p/android/issues/detail?id=76683
@@ -59,30 +59,33 @@ import java.util.UUID;
  * - http://stackoverflow.com/q/18249007
  * - Comments at http://www.blogc.at/2014/03/23/share-private-files-with-other-apps-fileprovider/
  */
-public class TemporaryStorageProvider extends ContentProvider {
+public class TemporaryFileProvider extends ContentProvider {
 
     private static final String DB_NAME = "tempstorage.db";
     private static final String TABLE_FILES = "files";
-    private static final String COLUMN_ID = "id";
-    private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_TIME = "time";
-    private static final String COLUMN_TYPE = "mimetype";
     public static final String AUTHORITY = Constants.TEMPSTORAGE_AUTHORITY;
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     private static final int DB_VERSION = 3;
+
+    interface TemporaryFileColumns {
+        String COLUMN_UUID = "id";
+        String COLUMN_NAME = "name";
+        String COLUMN_TIME = "time";
+        String COLUMN_TYPE = "mimetype";
+    }
 
     private static File cacheDir;
 
     public static Uri createFile(Context context, String targetName, String mimeType) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_NAME, targetName);
-        contentValues.put(COLUMN_TYPE, mimeType);
+        contentValues.put(TemporaryFileColumns.COLUMN_NAME, targetName);
+        contentValues.put(TemporaryFileColumns.COLUMN_TYPE, mimeType);
         return context.getContentResolver().insert(CONTENT_URI, contentValues);
     }
 
     public static Uri createFile(Context context, String targetName) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_NAME, targetName);
+        contentValues.put(TemporaryFileColumns.COLUMN_NAME, targetName);
         return context.getContentResolver().insert(CONTENT_URI, contentValues);
     }
 
@@ -93,13 +96,16 @@ public class TemporaryStorageProvider extends ContentProvider {
 
     public static int setMimeType(Context context, Uri uri, String mimetype) {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_TYPE, mimetype);
+        values.put(TemporaryFileColumns.COLUMN_TYPE, mimetype);
         return context.getContentResolver().update(uri, values, null, null);
     }
 
     public static int cleanUp(Context context) {
-        return context.getContentResolver().delete(CONTENT_URI, COLUMN_TIME + "< ?",
-                new String[]{Long.toString(System.currentTimeMillis() - Constants.TEMPFILE_TTL)});
+        return context.getContentResolver().delete(
+                CONTENT_URI,
+                TemporaryFileColumns.COLUMN_TIME + "< ?",
+                new String[]{Long.toString(System.currentTimeMillis() - Constants.TEMPFILE_TTL)}
+        );
     }
 
     private class TemporaryStorageDatabase extends SQLiteOpenHelper {
@@ -111,10 +117,10 @@ public class TemporaryStorageProvider extends ContentProvider {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_FILES + " (" +
-                    COLUMN_ID + " TEXT PRIMARY KEY, " +
-                    COLUMN_NAME + " TEXT, " +
-                    COLUMN_TYPE + " TEXT, " +
-                    COLUMN_TIME + " INTEGER" +
+                    TemporaryFileColumns.COLUMN_UUID + " TEXT PRIMARY KEY, " +
+                    TemporaryFileColumns.COLUMN_NAME + " TEXT, " +
+                    TemporaryFileColumns.COLUMN_TYPE + " TEXT, " +
+                    TemporaryFileColumns.COLUMN_TIME + " INTEGER" +
                     ");");
         }
 
@@ -126,12 +132,12 @@ public class TemporaryStorageProvider extends ContentProvider {
                 case 1:
                     db.execSQL("DROP TABLE IF EXISTS files");
                     db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_FILES + " (" +
-                            COLUMN_ID + " TEXT PRIMARY KEY, " +
-                            COLUMN_NAME + " TEXT, " +
-                            COLUMN_TIME + " INTEGER" +
+                            TemporaryFileColumns.COLUMN_UUID + " TEXT PRIMARY KEY, " +
+                            TemporaryFileColumns.COLUMN_NAME + " TEXT, " +
+                            TemporaryFileColumns.COLUMN_TIME + " INTEGER" +
                             ");");
                 case 2:
-                    db.execSQL("ALTER TABLE files ADD COLUMN " + COLUMN_TYPE + " TEXT");
+                    db.execSQL("ALTER TABLE files ADD COLUMN " + TemporaryFileColumns.COLUMN_TYPE + " TEXT");
             }
         }
     }
@@ -176,7 +182,9 @@ public class TemporaryStorageProvider extends ContentProvider {
             return null;
         }
 
-        Cursor fileName = db.getReadableDatabase().query(TABLE_FILES, new String[]{COLUMN_NAME}, COLUMN_ID + "=?",
+        Cursor fileName = db.getReadableDatabase().query(TABLE_FILES,
+                new String[]{TemporaryFileColumns.COLUMN_NAME},
+                TemporaryFileColumns.COLUMN_UUID + "=?",
                 new String[]{uri.getLastPathSegment()}, null, null, null);
         if (fileName != null) {
             if (fileName.moveToNext()) {
@@ -200,7 +208,7 @@ public class TemporaryStorageProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
         Cursor cursor = db.getReadableDatabase().query(TABLE_FILES,
-                new String[]{COLUMN_TYPE}, COLUMN_ID + "=?",
+                new String[]{TemporaryFileColumns.COLUMN_TYPE}, TemporaryFileColumns.COLUMN_UUID + "=?",
                 new String[]{uri.getLastPathSegment()}, null, null, null);
         if (cursor != null) {
             try {
@@ -227,11 +235,11 @@ public class TemporaryStorageProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        if (!values.containsKey(COLUMN_TIME)) {
-            values.put(COLUMN_TIME, System.currentTimeMillis());
+        if (!values.containsKey(TemporaryFileColumns.COLUMN_TIME)) {
+            values.put(TemporaryFileColumns.COLUMN_TIME, System.currentTimeMillis());
         }
         String uuid = UUID.randomUUID().toString();
-        values.put(COLUMN_ID, uuid);
+        values.put(TemporaryFileColumns.COLUMN_UUID, uuid);
         int insert = (int) db.getWritableDatabase().insert(TABLE_FILES, null, values);
         if (insert == -1) {
             Log.e(Constants.TAG, "Insert failed!");
@@ -252,10 +260,10 @@ public class TemporaryStorageProvider extends ContentProvider {
             return 0;
         }
 
-        selection = DatabaseUtil.concatenateWhere(selection, COLUMN_ID + "=?");
+        selection = DatabaseUtil.concatenateWhere(selection, TemporaryFileColumns.COLUMN_UUID + "=?");
         selectionArgs = DatabaseUtil.appendSelectionArgs(selectionArgs, new String[]{uri.getLastPathSegment()});
 
-        Cursor files = db.getReadableDatabase().query(TABLE_FILES, new String[]{COLUMN_ID}, selection,
+        Cursor files = db.getReadableDatabase().query(TABLE_FILES, new String[]{TemporaryFileColumns.COLUMN_UUID}, selection,
                 selectionArgs, null, null, null);
         if (files != null) {
             while (files.moveToNext()) {
@@ -269,14 +277,14 @@ public class TemporaryStorageProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        if (values.size() != 1 || !values.containsKey(COLUMN_TYPE)) {
+        if (values.size() != 1 || !values.containsKey(TemporaryFileColumns.COLUMN_TYPE)) {
             throw new UnsupportedOperationException("Update supported only for type field!");
         }
         if (selection != null || selectionArgs != null) {
             throw new UnsupportedOperationException("Update supported only for plain uri!");
         }
         return db.getWritableDatabase().update(TABLE_FILES, values,
-                COLUMN_ID + " = ?", new String[]{uri.getLastPathSegment()});
+                TemporaryFileColumns.COLUMN_UUID + " = ?", new String[]{uri.getLastPathSegment()});
     }
 
     @Override

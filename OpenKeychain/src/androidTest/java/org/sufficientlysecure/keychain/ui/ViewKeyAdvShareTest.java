@@ -34,7 +34,7 @@ import org.junit.runners.MethodSorters;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -96,7 +96,7 @@ public class ViewKeyAdvShareTest {
                         hasType("text/plain"),
                         hasExtra(is(Intent.EXTRA_TEXT), is("openpgp4fpr:c619d53f7a5f96f391a84ca79d604d2f310716a3")),
                         hasExtra(is(Intent.EXTRA_STREAM),
-                                allOf(hasScheme("content"), hasHost(TemporaryStorageProvider.AUTHORITY)))
+                                allOf(hasScheme("content"), hasHost(TemporaryFileProvider.AUTHORITY)))
                 ))
         )).respondWith(new ActivityResult(Activity.RESULT_OK, null));
         onView(withId(R.id.view_key_action_fingerprint_share)).perform(click());
@@ -113,7 +113,7 @@ public class ViewKeyAdvShareTest {
                         hasType("text/plain"),
                         hasExtra(is(Intent.EXTRA_TEXT), startsWith("----")),
                         hasExtra(is(Intent.EXTRA_STREAM),
-                                allOf(hasScheme("content"), hasHost(TemporaryStorageProvider.AUTHORITY)))
+                                allOf(hasScheme("content"), hasHost(TemporaryFileProvider.AUTHORITY)))
                 ))
         )).respondWith(new ActivityResult(Activity.RESULT_OK, null));
         onView(withId(R.id.view_key_action_key_share)).perform(click());

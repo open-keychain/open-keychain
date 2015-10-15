@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.InputDataOperation;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
@@ -117,7 +117,7 @@ public class InputDataOperationTest {
 
         Uri fakeOutputUri1 = Uri.parse("content://fake/out/1");
         Uri fakeOutputUri2 = Uri.parse("content://fake/out/2");
-        when(mockResolver.insert(eq(TemporaryStorageProvider.CONTENT_URI), any(ContentValues.class)))
+        when(mockResolver.insert(eq(TemporaryFileProvider.CONTENT_URI), any(ContentValues.class)))
                 .thenReturn(fakeOutputUri1, fakeOutputUri2);
 
         // application which returns mockresolver
@@ -145,10 +145,10 @@ public class InputDataOperationTest {
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", "data.txt");
         contentValues.put("mimetype", "text/plain");
-        verify(mockResolver).insert(TemporaryStorageProvider.CONTENT_URI, contentValues);
+        verify(mockResolver).insert(TemporaryFileProvider.CONTENT_URI, contentValues);
         contentValues.put("name", (String) null);
         contentValues.put("mimetype", "text/testvalue");
-        verify(mockResolver).insert(TemporaryStorageProvider.CONTENT_URI, contentValues);
+        verify(mockResolver).insert(TemporaryFileProvider.CONTENT_URI, contentValues);
 
         // quoted-printable returns windows style line endings for some reason?
         Assert.assertEquals("first part must have expected content",

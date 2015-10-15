@@ -55,7 +55,7 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
@@ -296,7 +296,7 @@ public class ExportTest {
             PipedOutputStream pipedOutStream = new PipedOutputStream(pipedInStream);
             when(mockResolver.openOutputStream(fakePipedUri)).thenReturn(pipedOutStream);
             when(mockResolver.openInputStream(fakePipedUri)).thenReturn(pipedInStream);
-            when(mockResolver.insert(eq(TemporaryStorageProvider.CONTENT_URI), any(ContentValues.class)))
+            when(mockResolver.insert(eq(TemporaryFileProvider.CONTENT_URI), any(ContentValues.class)))
                     .thenReturn(fakePipedUri);
 
             fakeOutputUri = Uri.parse("content://fake/out/1");

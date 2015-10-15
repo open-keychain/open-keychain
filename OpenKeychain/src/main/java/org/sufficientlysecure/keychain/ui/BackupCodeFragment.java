@@ -51,7 +51,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -427,7 +427,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
         }
 
         if (mCachedBackupUri == null) {
-            mCachedBackupUri = TemporaryStorageProvider.createFile(activity);
+            mCachedBackupUri = TemporaryFileProvider.createFile(activity);
             cryptoOperation();
             return;
         }

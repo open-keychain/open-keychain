@@ -54,7 +54,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -111,7 +111,7 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
 
             Uri exportOutputUri = nonEncryptedOutput
                     ? exportInput.mOutputUri
-                    : TemporaryStorageProvider.createFile(mContext);
+                    : TemporaryFileProvider.createFile(mContext);
 
             int exportedDataSize;
 

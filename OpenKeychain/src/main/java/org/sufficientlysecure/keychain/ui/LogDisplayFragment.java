@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.dialog.ShareLogDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -140,7 +140,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
 
         // if there is no log temp file yet, create one
         if (mLogTempFile == null) {
-            mLogTempFile = TemporaryStorageProvider.createFile(getActivity(), "openkeychain_log.txt", "text/plain");
+            mLogTempFile = TemporaryFileProvider.createFile(getActivity(), "openkeychain_log.txt", "text/plain");
             try {
                 OutputStream outputStream = activity.getContentResolver().openOutputStream(mLogTempFile);
                 outputStream.write(log.getBytes());
