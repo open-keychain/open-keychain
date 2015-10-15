@@ -291,7 +291,7 @@ public class EncryptTextFragment
     private Intent createSendIntent(byte[] resultBytes) {
         Intent sendIntent;
         sendIntent = new Intent(Intent.ACTION_SEND);
-        sendIntent.setType(Constants.ENCRYPTED_TEXT_MIME);
+        sendIntent.setType(Constants.MIME_TYPE_TEXT);
         sendIntent.putExtra(Intent.EXTRA_TEXT, new String(resultBytes));
 
         EncryptActivity modeInterface = (EncryptActivity) getActivity();

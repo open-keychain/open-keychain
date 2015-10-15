@@ -431,14 +431,14 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
                 + (mExportSecret ? Constants.FILE_EXTENSION_PGP_MAIN : ".pub" + Constants.FILE_EXTENSION_PGP_MAIN);
 
         if (mCachedBackupUri == null) {
-            mCachedBackupUri = TemporaryFileProvider.createFile(activity, filename, Constants.ENCRYPTED_FILES_MIME);
+            mCachedBackupUri = TemporaryFileProvider.createFile(activity, filename, Constants.MIME_TYPE_ENCRYPTED_ALTERNATE);
             cryptoOperation();
             return;
         }
 
         if (mShareNotSave) {
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("application/octet-stream");
+            intent.setType(Constants.MIME_TYPE_ENCRYPTED_ALTERNATE);
             intent.putExtra(Intent.EXTRA_STREAM, mCachedBackupUri);
             startActivity(intent);
         } else {
@@ -455,7 +455,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
 
         // for kitkat and above, we have the document api
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            FileHelper.saveDocument(this, "application/octet-stream", filename, REQUEST_SAVE);
+            FileHelper.saveDocument(this, Constants.MIME_TYPE_ENCRYPTED_ALTERNATE, filename, REQUEST_SAVE);
             return;
         }
 

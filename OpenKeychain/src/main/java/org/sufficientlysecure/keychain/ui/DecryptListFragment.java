@@ -377,7 +377,7 @@ public class DecryptListFragment
                     if (ClipDescription.compareMimeTypes(type, "text/plain")) {
                         // noinspection deprecation, this should be called from Context, but not available in minSdk
                         icon = getResources().getDrawable(R.drawable.ic_chat_black_24dp);
-                    } else if (ClipDescription.compareMimeTypes(type, "application/pgp-keys")) {
+                    } else if (ClipDescription.compareMimeTypes(type, Constants.MIME_TYPE_KEYS)) {
                         // noinspection deprecation, this should be called from Context, but not available in minSdk
                         icon = getResources().getDrawable(R.drawable.ic_key_plus_grey600_24dp);
                     } else if (ClipDescription.compareMimeTypes(type, "image/*")) {
@@ -534,7 +534,7 @@ public class DecryptListFragment
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(outputUri, metadata.getMimeType());
 
-                if (!forceChooser && "application/pgp-keys".equals(metadata.getMimeType())) {
+                if (!forceChooser && Constants.MIME_TYPE_KEYS.equals(metadata.getMimeType())) {
                     // bind Intent to this OpenKeychain, don't allow other apps to intercept here!
                     intent.setPackage(getActivity().getPackageName());
                 }
@@ -777,7 +777,7 @@ public class DecryptListFragment
                     filename = getString(R.string.filename_unknown);
                 } else if ( ! TextUtils.isEmpty(metadata.getFilename())) {
                     filename = metadata.getFilename();
-                } else if (ClipDescription.compareMimeTypes(metadata.getMimeType(), "application/pgp-keys")) {
+                } else if (ClipDescription.compareMimeTypes(metadata.getMimeType(), Constants.MIME_TYPE_KEYS)) {
                     filename = getString(R.string.filename_keys);
                 } else if (ClipDescription.compareMimeTypes(metadata.getMimeType(), "text/plain")) {
                     filename = getString(R.string.filename_unknown_text);

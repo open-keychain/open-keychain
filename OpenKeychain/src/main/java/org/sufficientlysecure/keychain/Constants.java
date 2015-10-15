@@ -44,13 +44,14 @@ public final class Constants {
 
     public static final String CLIPBOARD_LABEL = "Keychain";
 
-    // as defined in http://tools.ietf.org/html/rfc3156, section 7
-    public static final String NFC_MIME = "application/pgp-keys";
-
     // as defined in http://tools.ietf.org/html/rfc3156
-    // we don't use application/pgp-encrypted as it only holds the version number
-    public static final String ENCRYPTED_FILES_MIME = "application/octet-stream";
-    public static final String ENCRYPTED_TEXT_MIME = "text/plain";
+    public static final String MIME_TYPE_KEYS = "application/pgp-keys";
+    // NOTE: don't use application/pgp-encrypted It only holds the version number!
+    public static final String MIME_TYPE_ENCRYPTED = "application/octet-stream";
+    // NOTE: Non-standard alternative, better use this, because application/octet-stream is too unspecific!
+    // also see https://tools.ietf.org/html/draft-bray-pgp-message-00
+    public static final String MIME_TYPE_ENCRYPTED_ALTERNATE = "application/pgp-message";
+    public static final String MIME_TYPE_TEXT = "text/plain";
 
     public static final String FILE_EXTENSION_PGP_MAIN = ".pgp";
     public static final String FILE_EXTENSION_PGP_ALTERNATE = ".gpg";

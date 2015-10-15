@@ -417,10 +417,10 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         // special treatment to detect pgp mime types
         if (matchesPrefix(firstBytes, "-----BEGIN PGP PUBLIC KEY BLOCK-----")
                 || matchesPrefix(firstBytes, "-----BEGIN PGP PRIVATE KEY BLOCK-----")) {
-            mimeType = "application/pgp-keys";
+            mimeType = Constants.MIME_TYPE_KEYS;
         } else if (matchesPrefix(firstBytes, "-----BEGIN PGP MESSAGE-----")) {
-            // this is NOT pgp/encrypted, see RFC 3156!
-            mimeType = "application/pgp-message";
+            // this is NOT application/pgp-encrypted, see RFC 3156!
+            mimeType = Constants.MIME_TYPE_ENCRYPTED_ALTERNATE;
         }
 
         log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1, mimeType);

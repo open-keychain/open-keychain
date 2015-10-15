@@ -608,7 +608,7 @@ public class EncryptFilesFragment
             sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             sendIntent.putExtra(Intent.EXTRA_STREAM, mOutputUris);
         }
-        sendIntent.setType(Constants.ENCRYPTED_FILES_MIME);
+        sendIntent.setType(Constants.MIME_TYPE_ENCRYPTED_ALTERNATE);
 
         EncryptActivity modeInterface = (EncryptActivity) getActivity();
         EncryptModeFragment modeFragment = modeInterface.getModeFragment();
