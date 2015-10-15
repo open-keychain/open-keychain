@@ -92,7 +92,8 @@ public class FileHelper {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(mimeType);
-        intent.putExtra("android.content.extra.SHOW_ADVANCED", true); // Note: This is not documented, but works
+        // Note: This is not documented, but works: Show the Internal Storage menu item in the drawer!
+        intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
         intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
         fragment.startActivityForResult(intent, requestCode);
     }
@@ -134,6 +135,8 @@ public class FileHelper {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(mimeType);
+        // Note: This is not documented, but works: Show the Internal Storage menu item in the drawer!
+        intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiple);
         fragment.startActivityForResult(intent, requestCode);
     }
@@ -325,7 +328,4 @@ public class FileHelper {
         }
     }
 
-    public interface FileDialogCallback {
-        void onFileSelected(File file, boolean checked);
-    }
 }
