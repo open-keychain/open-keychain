@@ -421,11 +421,13 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         }
 
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        String filename = "backup_" + date
-                + (mExportSecret ? Constants.FILE_EXTENSION_PGP_MAIN : ".pub" + Constants.FILE_EXTENSION_PGP_MAIN);
+        String filename = Constants.FILE_ENCRYPTED_BACKUP_PREFIX + date
+                + (mExportSecret ? Constants.FILE_EXTENSION_ENCRYPTED_BACKUP_SECRET
+                : Constants.FILE_EXTENSION_ENCRYPTED_BACKUP_PUBLIC);
 
         if (mCachedBackupUri == null) {
-            mCachedBackupUri = TemporaryFileProvider.createFile(activity, filename, Constants.MIME_TYPE_ENCRYPTED_ALTERNATE);
+            mCachedBackupUri = TemporaryFileProvider.createFile(activity, filename,
+                    Constants.MIME_TYPE_ENCRYPTED_ALTERNATE);
             cryptoOperation();
             return;
         }

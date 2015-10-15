@@ -147,12 +147,11 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
             String filename;
             if (exportInput.mMasterKeyIds != null && exportInput.mMasterKeyIds.length == 1) {
-                filename = "backup_" + KeyFormattingUtils.convertKeyIdToHex(exportInput.mMasterKeyIds[0]);
-                filename += exportInput.mExportSecret ? ".sec.asc" : ".pub.asc";
+                filename = Constants.FILE_BACKUP_PREFIX + KeyFormattingUtils.convertKeyIdToHex(exportInput.mMasterKeyIds[0]);
             } else {
-                filename = "backup_" + new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                filename += exportInput.mExportSecret ? ".asc" : ".pub.asc";
+                filename = Constants.FILE_BACKUP_PREFIX + new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
             }
+            filename += exportInput.mExportSecret ? Constants.FILE_EXTENSION_BACKUP_SECRET : Constants.FILE_EXTENSION_BACKUP_PUBLIC;
 
             InputData inputData = new InputData(inStream, exportedDataSize, filename);
 

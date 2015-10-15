@@ -57,6 +57,13 @@ public final class Constants {
     public static final String FILE_EXTENSION_PGP_ALTERNATE = ".gpg";
     public static final String FILE_EXTENSION_ASC = ".asc";
 
+    public static final String FILE_BACKUP_PREFIX = "backup_";
+    public static final String FILE_EXTENSION_BACKUP_SECRET = ".sec.asc";
+    public static final String FILE_EXTENSION_BACKUP_PUBLIC = ".pub.asc";
+    public static final String FILE_ENCRYPTED_BACKUP_PREFIX = "backup_";
+    public static final String FILE_EXTENSION_ENCRYPTED_BACKUP_SECRET = ".sec.asc";
+    public static final String FILE_EXTENSION_ENCRYPTED_BACKUP_PUBLIC = ".pub.asc";
+
     // used by QR Codes (Guardian Project, Monkeysphere compatiblity)
     public static final String FINGERPRINT_SCHEME = "openpgp4fpr";
 
