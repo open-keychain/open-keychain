@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -62,8 +61,7 @@ import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-
-public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringParcel,ExportResult>
+public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringParcel, ExportResult>
         implements OnBackStackChangedListener {
 
     public static final String ARG_BACKUP_CODE = "backup_code";
@@ -86,7 +84,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
 
     private Integer mBackStackLevel;
 
-    private Uri mCachedExportUri;
+    private Uri mCachedBackupUri;
     private boolean mShareNotSave;
 
     public static BackupCodeFragment newInstance(long[] masterKeyIds, boolean exportSecret) {
@@ -367,9 +365,9 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     }
 
     private static void setupEditTextFocusNext(final EditText[] backupCodes) {
-        for (int i = 0; i < backupCodes.length -1; i++) {
+        for (int i = 0; i < backupCodes.length - 1; i++) {
 
-            final int next = i+1;
+            final int next = i + 1;
 
             backupCodes[i].addTextChangedListener(new TextWatcher() {
                 @Override
@@ -428,8 +426,8 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
             return;
         }
 
-        if (mCachedExportUri == null) {
-            mCachedExportUri = TemporaryStorageProvider.createFile(activity);
+        if (mCachedBackupUri == null) {
+            mCachedBackupUri = TemporaryStorageProvider.createFile(activity);
             cryptoOperation();
             return;
         }
@@ -437,7 +435,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
         if (mShareNotSave) {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("application/octet-stream");
-            intent.putExtra(Intent.EXTRA_STREAM, mCachedExportUri);
+            intent.putExtra(Intent.EXTRA_STREAM, mCachedBackupUri);
             startActivity(intent);
         } else {
             saveFile(false);
@@ -453,7 +451,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
 
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         String filename = "backup_" + date
-                + (mExportSecret ? Constants.FILE_EXTENSION_PGP_MAIN :".pub" + Constants.FILE_EXTENSION_PGP_MAIN);
+                + (mExportSecret ? Constants.FILE_EXTENSION_PGP_MAIN : ".pub" + Constants.FILE_EXTENSION_PGP_MAIN);
 
         // for kitkat and above, we have the document api
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -474,7 +472,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
         }
 
         try {
-            FileHelper.copyUriData(activity, mCachedExportUri, Uri.fromFile(file));
+            FileHelper.copyUriData(activity, mCachedBackupUri, Uri.fromFile(file));
             Notify.create(activity, R.string.snack_backup_saved_dir, Style.OK).show();
         } catch (IOException e) {
             Notify.create(activity, R.string.snack_backup_error_saving, Style.ERROR).show();
@@ -498,7 +496,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
         }
         try {
             Uri outputUri = data.getData();
-            FileHelper.copyUriData(activity, mCachedExportUri, outputUri);
+            FileHelper.copyUriData(activity, mCachedBackupUri, outputUri);
             Notify.create(activity, R.string.snack_backup_saved, Style.OK).show();
         } catch (IOException e) {
             Notify.create(activity, R.string.snack_backup_error_saving, Style.ERROR).show();
@@ -509,8 +507,8 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     @Override
     public ExportKeyringParcel createOperationInput() {
         // TODO replace debug code with real thing
-        // return new ExportKeyringParcel(new Passphrase(mBackupCode), mMasterKeyIds, mExportSecret, mCachedExportUri);
-        return new ExportKeyringParcel(new Passphrase("abc"), mMasterKeyIds, mExportSecret, mCachedExportUri);
+        // return new ExportKeyringParcel(new Passphrase(mBackupCode), mMasterKeyIds, mExportSecret, mCachedBackupUri);
+        return new ExportKeyringParcel(new Passphrase("abc"), mMasterKeyIds, mExportSecret, mCachedBackupUri);
     }
 
     @Override
@@ -521,12 +519,12 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     @Override
     public void onCryptoOperationError(ExportResult result) {
         result.createNotify(getActivity()).show();
-        mCachedExportUri = null;
+        mCachedBackupUri = null;
     }
 
     @Override
     public void onCryptoOperationCancelled() {
-        mCachedExportUri = null;
+        mCachedBackupUri = null;
     }
 
     @NonNull
