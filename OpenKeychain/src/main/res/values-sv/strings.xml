@@ -838,17 +838,17 @@
   <string name="msg_import_error">Importoperation misslyckades!</string>
   <string name="msg_import_partial">Importoperation lyckades, med fel!</string>
   <string name="msg_import_success">Importoperation lyckades!</string>
-  <plurals name="msg_export">
+  <plurals name="msg_backup">
     <item quantity="one">Exporterar en nyckel</item>
     <item quantity="other">Exporterar %d nycklar</item>
   </plurals>
-  <string name="msg_export_all">Exporterar alla nycklar</string>
-  <string name="msg_export_public">Exporterar publik nyckel %s</string>
-  <string name="msg_export_secret">Exporterar privat nyckel %s</string>
+  <string name="msg_backup_all">Exporterar alla nycklar</string>
+  <string name="msg_backup_public">Exporterar publik nyckel %s</string>
+  <string name="msg_backup_secret">Exporterar privat nyckel %s</string>
   <string name="msg_export_error_fopen">Fel vid öppning av fil!</string>
   <string name="msg_export_error_no_uri">Ingen URI specifierad!</string>
-  <string name="msg_export_error_db">Databasfel!</string>
-  <string name="msg_export_success">Exportoperation lyckades</string>
+  <string name="msg_backup_error_db">Databasfel!</string>
+  <string name="msg_backup_success">Exportoperation lyckades</string>
   <string name="msg_del_error_empty">Inget att radera!</string>
   <string name="msg_del_error_multi_secret">Privata nycklar kan bara raderas var för sig!</string>
   <plurals name="msg_del">

@@ -409,11 +409,11 @@
   <string name="msg_crt_warn_not_found">Anahtar bulunamadı!</string>
   <string name="msg_import_keyserver">%s anahtar sunucusu kullanılıyor</string>
   <string name="msg_import_fingerprint_ok">Parmakizi kontrolü TAMAM</string>
-  <string name="msg_export_all">Tüm anahtarları dışa aktarma</string>
-  <string name="msg_export_error_uri_open">URI akışı açılırken hata!</string>
-  <string name="msg_export_error_db">Veritabanı hatası!</string>
-  <string name="msg_export_error_io">Giriş/çıkış hatası!</string>
-  <string name="msg_export_success">Dışa aktarma işlemi başarılı</string>
+  <string name="msg_backup_all">Tüm anahtarları dışa aktarma</string>
+  <string name="msg_backup_error_uri_open">URI akışı açılırken hata!</string>
+  <string name="msg_backup_error_db">Veritabanı hatası!</string>
+  <string name="msg_backup_error_io">Giriş/çıkış hatası!</string>
+  <string name="msg_backup_success">Dışa aktarma işlemi başarılı</string>
   <string name="msg_del_error_empty">Silinecek bir şey yok!</string>
   <string name="msg_acc_saved">Hesap kaydedildi</string>
   <string name="msg_download_success">Başarıyla indirildi!</string>

@@ -61,8 +61,9 @@ public final class Constants {
     public static final String FILE_EXTENSION_BACKUP_SECRET = ".sec.asc";
     public static final String FILE_EXTENSION_BACKUP_PUBLIC = ".pub.asc";
     public static final String FILE_ENCRYPTED_BACKUP_PREFIX = "backup_";
-    public static final String FILE_EXTENSION_ENCRYPTED_BACKUP_SECRET = ".sec.asc";
-    public static final String FILE_EXTENSION_ENCRYPTED_BACKUP_PUBLIC = ".pub.asc";
+    // actually it is ASCII Armor, so .asc would be more accurate, but Android displays a nice icon for .pgp files!
+    public static final String FILE_EXTENSION_ENCRYPTED_BACKUP_SECRET = ".sec.pgp";
+    public static final String FILE_EXTENSION_ENCRYPTED_BACKUP_PUBLIC = ".pub.pgp";
 
     // used by QR Codes (Guardian Project, Monkeysphere compatiblity)
     public static final String FINGERPRINT_SCHEME = "openpgp4fpr";

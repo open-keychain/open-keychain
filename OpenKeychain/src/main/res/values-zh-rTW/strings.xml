@@ -739,9 +739,9 @@
   <string name="msg_import_keyserver">使用金鑰伺服器%s</string>
   <string name="msg_import_fingerprint_ok">指紋檢查正確</string>
   <string name="msg_import_merge">正在合併取得的資料</string>
-  <string name="msg_export_error_db">資料庫錯誤！</string>
-  <string name="msg_export_error_io">輸入/輸出錯誤！</string>
-  <string name="msg_export_success">匯出處理成功</string>
+  <string name="msg_backup_error_db">資料庫錯誤！</string>
+  <string name="msg_backup_error_io">輸入/輸出錯誤！</string>
+  <string name="msg_backup_success">匯出處理成功</string>
   <string name="msg_del_error_empty">沒有東西可以刪除！</string>
   <string name="msg_del_error_multi_secret">私鑰只能分別刪除！</string>
   <string name="msg_acc_saved">帳戶已儲存</string>

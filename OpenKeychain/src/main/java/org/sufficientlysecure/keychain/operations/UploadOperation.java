@@ -122,7 +122,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
         OperationLog log = new OperationLog();
-        log.add(LogType.MSG_EXPORT_UPLOAD_PUBLIC, 0, KeyFormattingUtils.convertKeyIdToHex(
+        log.add(LogType.MSG_BACKUP_UPLOAD_PUBLIC, 0, KeyFormattingUtils.convertKeyIdToHex(
                 keyring.getPublicKey().getKeyId()
         ));
 
@@ -134,17 +134,17 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             String armoredKey = bos.toString("UTF-8");
             server.add(armoredKey, proxy);
 
-            log.add(LogType.MSG_EXPORT_UPLOAD_SUCCESS, 1);
+            log.add(LogType.MSG_BACKUP_UPLOAD_SUCCESS, 1);
             return new UploadResult(UploadResult.RESULT_OK, log);
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
 
-            log.add(LogType.MSG_EXPORT_ERROR_KEY, 1);
+            log.add(LogType.MSG_BACKUP_ERROR_KEY, 1);
             return new UploadResult(UploadResult.RESULT_ERROR, log);
         } catch (AddKeyException e) {
             Log.e(Constants.TAG, "AddKeyException", e);
 
-            log.add(LogType.MSG_EXPORT_ERROR_UPLOAD, 1);
+            log.add(LogType.MSG_BACKUP_ERROR_UPLOAD, 1);
             return new UploadResult(UploadResult.RESULT_ERROR, log);
         } finally {
             mProgressable.setProgress(R.string.progress_uploading, 1, 1);

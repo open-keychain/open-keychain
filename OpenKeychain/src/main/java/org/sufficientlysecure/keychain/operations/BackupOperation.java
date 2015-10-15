@@ -63,13 +63,13 @@ import org.sufficientlysecure.keychain.util.Log;
 
 
 /**
- * An operation class which implements high level export
+ * An operation class which implements high level backup
  * operations.
  * This class receives a source and/or destination of keys as input and performs
- * all steps for this export.
+ * all steps for this backup.
  *
  * @see org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter#getSelectedEntries()
- * For the export operation, the input consists of a set of key ids and
+ * For the backup operation, the input consists of a set of key ids and
  * either the name of a file or an output uri to write to.
  */
 public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
@@ -96,21 +96,21 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
     }
 
     @NonNull
-    public ExportResult execute(@NonNull BackupKeyringParcel exportInput, @Nullable CryptoInputParcel cryptoInput) {
+    public ExportResult execute(@NonNull BackupKeyringParcel backupInput, @Nullable CryptoInputParcel cryptoInput) {
 
         OperationLog log = new OperationLog();
-        if (exportInput.mMasterKeyIds != null) {
-            log.add(LogType.MSG_EXPORT, 0, exportInput.mMasterKeyIds.length);
+        if (backupInput.mMasterKeyIds != null) {
+            log.add(LogType.MSG_BACKUP, 0, backupInput.mMasterKeyIds.length);
         } else {
-            log.add(LogType.MSG_EXPORT_ALL, 0);
+            log.add(LogType.MSG_BACKUP_ALL, 0);
         }
 
         try {
 
-            boolean nonEncryptedOutput = exportInput.mSymmetricPassphrase == null;
+            boolean nonEncryptedOutput = backupInput.mSymmetricPassphrase == null;
 
-            Uri exportOutputUri = nonEncryptedOutput
-                    ? exportInput.mOutputUri
+            Uri backupOutputUri = nonEncryptedOutput
+                    ? backupInput.mOutputUri
                     : TemporaryFileProvider.createFile(mContext);
 
             int exportedDataSize;
@@ -118,21 +118,21 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             { // export key data, and possibly return if we don't encrypt
 
                 DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(
-                        mContext.getContentResolver().openOutputStream(exportOutputUri)));
+                        mContext.getContentResolver().openOutputStream(backupOutputUri)));
 
-                boolean exportSuccess = exportKeysToStream(
-                        log, exportInput.mMasterKeyIds, exportInput.mExportSecret, outStream);
+                boolean backupSuccess = exportKeysToStream(
+                        log, backupInput.mMasterKeyIds, backupInput.mExportSecret, outStream);
 
                 exportedDataSize = outStream.size();
 
-                if (!exportSuccess) {
+                if (!backupSuccess) {
                     // if there was an error, it will be in the log so we just have to return
                     return new ExportResult(ExportResult.RESULT_ERROR, log);
                 }
 
                 if (nonEncryptedOutput) {
                     // log.add(LogType.MSG_EXPORT_NO_ENCRYPT, 1);
-                    log.add(LogType.MSG_EXPORT_SUCCESS, 1);
+                    log.add(LogType.MSG_BACKUP_SUCCESS, 1);
                     return new ExportResult(ExportResult.RESULT_OK, log);
                 }
             }
@@ -140,23 +140,23 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             PgpSignEncryptOperation pseOp = new PgpSignEncryptOperation(mContext, mProviderHelper, mProgressable, mCancelled);
 
             PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel();
-            inputParcel.setSymmetricPassphrase(exportInput.mSymmetricPassphrase);
+            inputParcel.setSymmetricPassphrase(backupInput.mSymmetricPassphrase);
             inputParcel.setEnableAsciiArmorOutput(true);
             inputParcel.setAddBackupHeader(true);
 
-            InputStream inStream = mContext.getContentResolver().openInputStream(exportOutputUri);
+            InputStream inStream = mContext.getContentResolver().openInputStream(backupOutputUri);
 
             String filename;
-            if (exportInput.mMasterKeyIds != null && exportInput.mMasterKeyIds.length == 1) {
-                filename = Constants.FILE_BACKUP_PREFIX + KeyFormattingUtils.convertKeyIdToHex(exportInput.mMasterKeyIds[0]);
+            if (backupInput.mMasterKeyIds != null && backupInput.mMasterKeyIds.length == 1) {
+                filename = Constants.FILE_BACKUP_PREFIX + KeyFormattingUtils.convertKeyIdToHex(backupInput.mMasterKeyIds[0]);
             } else {
                 filename = Constants.FILE_BACKUP_PREFIX + new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
             }
-            filename += exportInput.mExportSecret ? Constants.FILE_EXTENSION_BACKUP_SECRET : Constants.FILE_EXTENSION_BACKUP_PUBLIC;
+            filename += backupInput.mExportSecret ? Constants.FILE_EXTENSION_BACKUP_SECRET : Constants.FILE_EXTENSION_BACKUP_PUBLIC;
 
             InputData inputData = new InputData(inStream, exportedDataSize, filename);
 
-            OutputStream outStream = mContext.getContentResolver().openOutputStream(exportInput.mOutputUri);
+            OutputStream outStream = mContext.getContentResolver().openOutputStream(backupInput.mOutputUri);
             outStream = new BufferedOutputStream(outStream);
 
             PgpSignEncryptResult encryptResult = pseOp.execute(inputParcel, new CryptoInputParcel(), inputData, outStream);
@@ -167,11 +167,11 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             }
 
             log.add(encryptResult, 1);
-            log.add(LogType.MSG_EXPORT_SUCCESS, 1);
+            log.add(LogType.MSG_BACKUP_SUCCESS, 1);
             return new ExportResult(ExportResult.RESULT_OK, log);
 
         } catch (FileNotFoundException e) {
-            log.add(LogType.MSG_EXPORT_ERROR_URI_OPEN, 1);
+            log.add(LogType.MSG_BACKUP_ERROR_URI_OPEN, 1);
             return new ExportResult(ExportResult.RESULT_ERROR, log);
 
         }
@@ -188,7 +188,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
         Cursor cursor = queryForKeys(masterKeyIds);
 
         if (cursor == null || !cursor.moveToFirst()) {
-            log.add(LogType.MSG_EXPORT_ERROR_DB, 1);
+            log.add(LogType.MSG_BACKUP_ERROR_DB, 1);
             return false; // new ExportResult(ExportResult.RESULT_ERROR, log);
         }
 
@@ -203,14 +203,14 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             while (!cursor.isAfterLast()) {
 
                 long keyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
+                log.add(LogType.MSG_BACKUP_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
 
                 if (writePublicKeyToStream(log, outStream, cursor)) {
                     okPublic += 1;
 
                     boolean hasSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) > 0;
                     if (exportSecret && hasSecret) {
-                        log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
+                        log.add(LogType.MSG_BACKUP_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
                         if (writeSecretKeyToStream(log, outStream, cursor)) {
                             okSecret += 1;
                         }
@@ -224,7 +224,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             updateProgress(R.string.progress_done, numKeys, numKeys);
 
         } catch (IOException e) {
-            log.add(LogType.MSG_EXPORT_ERROR_IO, 1);
+            log.add(LogType.MSG_BACKUP_ERROR_IO, 1);
             return false; // new ExportResult(ExportResult.RESULT_ERROR, log);
         } finally {
             // Make sure the stream is closed
@@ -252,7 +252,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             ring.encode(arOutStream);
 
         } catch (PgpGeneralException e) {
-            log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
+            log.add(LogType.MSG_BACKUP_ERROR_KEY, 2);
         } finally {
             if (arOutStream != null) {
                 arOutStream.close();
@@ -273,7 +273,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             ring.encode(arOutStream);
 
         } catch (PgpGeneralException e) {
-            log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
+            log.add(LogType.MSG_BACKUP_ERROR_KEY, 2);
         } finally {
             if (arOutStream != null) {
                 arOutStream.close();

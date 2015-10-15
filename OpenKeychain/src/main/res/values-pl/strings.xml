@@ -533,8 +533,8 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   </plurals>
   <string name="msg_import_error">Operacja importowania nie udała się!</string>
   <string name="msg_export_error_storage">Dysk nie jest gotowy do zapisu!</string>
-  <string name="msg_export_error_db">Błąd bazy danych!</string>
-  <string name="msg_export_success">Operacja eksportu zakończona pomyślnie</string>
+  <string name="msg_backup_error_db">Błąd bazy danych!</string>
+  <string name="msg_backup_success">Operacja eksportu zakończona pomyślnie</string>
   <string name="msg_del_error_empty">Nie ma nic do usunięcia!</string>
   <string name="msg_del_error_multi_secret">Klucze prywatne mogą być usuwane tylko pojedynczo!</string>
   <plurals name="msg_del">
