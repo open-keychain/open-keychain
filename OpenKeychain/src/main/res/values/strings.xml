@@ -794,7 +794,7 @@
     <string name="drawer_open">"Open navigation drawer"</string>
     <string name="drawer_close">"Close navigation drawer"</string>
     <string name="my_keys">"My Keys"</string>
-    <string name="nav_backup">"Backup"</string>
+    <string name="nav_backup">"Backup/Restore"</string>
 
     <!-- hints -->
     <string name="encrypt_content_edit_text_hint">"Type text"</string>
