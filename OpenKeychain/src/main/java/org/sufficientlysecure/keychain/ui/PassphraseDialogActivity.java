@@ -408,7 +408,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         }
                         backupCodeInput.deleteCharAt(backupCodeInput.length() - 1);
 
-                        Log.d(Constants.TAG, "backupCodeInput.toString()"+backupCodeInput.toString());
                         passphrase = new Passphrase(backupCodeInput.toString());
                     } else {
                         passphrase = new Passphrase(mPassphraseEditText);
