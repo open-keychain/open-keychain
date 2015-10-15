@@ -17,13 +17,13 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-
 import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -36,6 +36,8 @@ import android.view.ViewGroup;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.FileHelper;
 
 public class BackupRestoreFragment extends Fragment {
 
@@ -44,14 +46,16 @@ public class BackupRestoreFragment extends Fragment {
     // This index for remembering the number of master key.
     private int mIndex;
 
-    static final int REQUEST_REPEAT_PASSPHRASE = 1;
+    private static final int REQUEST_REPEAT_PASSPHRASE = 0x00007002;
+    private static final int REQUEST_CODE_INPUT = 0x00007003;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.drawer_backup_fragment, container, false);
+        View view = inflater.inflate(R.layout.backup_restore_fragment, container, false);
 
         View backupAll = view.findViewById(R.id.backup_all);
         View backupPublicKeys = view.findViewById(R.id.backup_public_keys);
+        final View restore = view.findViewById(R.id.restore);
 
         backupAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,6 +68,13 @@ public class BackupRestoreFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 exportToFile(false);
+            }
+        });
+
+        restore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restore();
             }
         });
 
@@ -81,12 +92,12 @@ public class BackupRestoreFragment extends Fragment {
             return;
         }
 
-        new AsyncTask<ContentResolver,Void,ArrayList<Long>>() {
+        new AsyncTask<ContentResolver, Void, ArrayList<Long>>() {
             @Override
             protected ArrayList<Long> doInBackground(ContentResolver... resolver) {
                 ArrayList<Long> askPassphraseIds = new ArrayList<>();
                 Cursor cursor = resolver[0].query(
-                        KeyRings.buildUnifiedKeyRingsUri(), new String[] {
+                        KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                                 KeyRings.MASTER_KEY_ID,
                                 KeyRings.HAS_SECRET,
                         }, KeyRings.HAS_SECRET + " != 0", null, null);
@@ -136,7 +147,6 @@ public class BackupRestoreFragment extends Fragment {
             }
 
         }.execute(activity.getContentResolver());
-
     }
 
     private void startPassphraseActivity() {
@@ -153,25 +163,53 @@ public class BackupRestoreFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_REPEAT_PASSPHRASE) {
-            if (resultCode != Activity.RESULT_OK) {
-                return;
-            }
-            if (mIndex < mIdsForRepeatAskPassphrase.size()) {
-                startPassphraseActivity();
-                return;
+        switch (requestCode) {
+            case REQUEST_REPEAT_PASSPHRASE: {
+                if (resultCode != Activity.RESULT_OK) {
+                    return;
+                }
+                if (mIndex < mIdsForRepeatAskPassphrase.size()) {
+                    startPassphraseActivity();
+                    return;
+                }
+
+                startBackup(true);
+
+                break;
             }
 
-            startBackup(true);
+            case REQUEST_CODE_INPUT: {
+                if (resultCode != Activity.RESULT_OK || data == null) {
+                    return;
+                }
+
+                Uri uri = data.getData();
+                if (uri == null) {
+                    Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR).show();
+                    return;
+                }
+
+                Intent intent = new Intent(getActivity(), DecryptActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(uri);
+                startActivity(intent);
+                break;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 
     private void startBackup(boolean exportSecret) {
-
         Intent intent = new Intent(getActivity(), BackupActivity.class);
         intent.putExtra(BackupActivity.EXTRA_SECRET, exportSecret);
         startActivity(intent);
+    }
 
+    private void restore() {
+        FileHelper.openDocument(this, null, "*/*", false, REQUEST_CODE_INPUT);
     }
 
 }

@@ -1434,6 +1434,7 @@
     <string name="backup_all">"All keys + your own keys"</string>
     <string name="backup_public_keys">"All keys"</string>
     <string name="backup_section">"Backup"</string>
+    <string name="restore_section">"Restore"</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">"Certifier"</string>

@@ -61,6 +61,28 @@
             android:text="@string/backup_public_keys"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/restore_section" />
+
+        <TextView
+            android:id="@+id/restore"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawablePadding="8dp"
+            android:drawableRight="@drawable/ic_folder_grey_24dp"
+            android:gravity="center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="@string/btn_decrypt_files"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dip"

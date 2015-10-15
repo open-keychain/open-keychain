@@ -25,7 +25,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -42,7 +41,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
-public class EncryptDecryptOverviewFragment extends Fragment {
+public class EncryptDecryptFragment extends Fragment {
 
     View mClipboardIcon;
 
@@ -56,7 +55,7 @@ public class EncryptDecryptOverviewFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.encrypt_decrypt_overview_fragment, container, false);
+        View view = inflater.inflate(R.layout.encrypt_decrypt_fragment, container, false);
 
         View mEncryptFile = view.findViewById(R.id.encrypt_files);
         View mEncryptText = view.findViewById(R.id.encrypt_text);
@@ -83,7 +82,7 @@ public class EncryptDecryptOverviewFragment extends Fragment {
         mDecryptFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FileHelper.openDocument(EncryptDecryptOverviewFragment.this, null, "*/*", false, REQUEST_CODE_INPUT);
+                FileHelper.openDocument(EncryptDecryptFragment.this, null, "*/*", false, REQUEST_CODE_INPUT);
             }
         });
 

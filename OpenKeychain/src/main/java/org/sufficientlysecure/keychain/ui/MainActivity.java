@@ -190,7 +190,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
     private void onEnDecryptSelected() {
         mToolbar.setTitle(R.string.nav_encrypt_decrypt);
         mDrawer.setSelectionByIdentifier(ID_ENCRYPT_DECRYPT, false);
-        Fragment frag = new EncryptDecryptOverviewFragment();
+        Fragment frag = new EncryptDecryptFragment();
         setFragment(frag, true);
     }
 
@@ -259,7 +259,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
         if (frag instanceof KeyListFragment) {
             mToolbar.setTitle(R.string.app_name);
             mDrawer.setSelection(mDrawer.getPositionFromIdentifier(ID_KEYS), false);
-        } else if (frag instanceof EncryptDecryptOverviewFragment) {
+        } else if (frag instanceof EncryptDecryptFragment) {
             mToolbar.setTitle(R.string.nav_encrypt_decrypt);
             mDrawer.setSelection(mDrawer.getPositionFromIdentifier(ID_ENCRYPT_DECRYPT), false);
         } else if (frag instanceof AppsListFragment) {
