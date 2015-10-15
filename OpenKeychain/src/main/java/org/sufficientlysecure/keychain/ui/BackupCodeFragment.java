@@ -452,15 +452,16 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
         }
 
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String filename = "backup_" + date
+                + (mExportSecret ? Constants.FILE_EXTENSION_PGP_MAIN :".pub" + Constants.FILE_EXTENSION_PGP_MAIN);
 
         // for kitkat and above, we have the document api
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            String filename = "openkeychain_backup_" + date + (mExportSecret ? ".gpg" : ".pub.gpg");
             FileHelper.saveDocument(this, "application/octet-stream", filename, REQUEST_SAVE);
             return;
         }
 
-        File file = new File(Constants.Path.APP_DIR, "backup_" + date + (mExportSecret ? ".gpg" : ".pub.gpg"));
+        File file = new File(Constants.Path.APP_DIR, filename);
 
         if (!overwrite && file.exists()) {
             Notify.create(activity, R.string.snack_backup_exists, Style.WARN, new ActionListener() {
