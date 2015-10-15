@@ -426,8 +426,12 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
             return;
         }
 
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String filename = "backup_" + date
+                + (mExportSecret ? Constants.FILE_EXTENSION_PGP_MAIN : ".pub" + Constants.FILE_EXTENSION_PGP_MAIN);
+
         if (mCachedBackupUri == null) {
-            mCachedBackupUri = TemporaryFileProvider.createFile(activity);
+            mCachedBackupUri = TemporaryFileProvider.createFile(activity, filename, Constants.ENCRYPTED_FILES_MIME);
             cryptoOperation();
             return;
         }
@@ -438,20 +442,16 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
             intent.putExtra(Intent.EXTRA_STREAM, mCachedBackupUri);
             startActivity(intent);
         } else {
-            saveFile(false);
+            saveFile(filename, false);
         }
 
     }
 
-    private void saveFile(boolean overwrite) {
+    private void saveFile(final String filename, boolean overwrite) {
         FragmentActivity activity = getActivity();
         if (activity == null) {
             return;
         }
-
-        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        String filename = "backup_" + date
-                + (mExportSecret ? Constants.FILE_EXTENSION_PGP_MAIN : ".pub" + Constants.FILE_EXTENSION_PGP_MAIN);
 
         // for kitkat and above, we have the document api
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -465,7 +465,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
             Notify.create(activity, R.string.snack_backup_exists, Style.WARN, new ActionListener() {
                 @Override
                 public void onAction() {
-                    saveFile(true);
+                    saveFile(filename, true);
                 }
             }, R.string.snack_btn_overwrite).show();
             return;
