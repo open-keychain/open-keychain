@@ -82,7 +82,6 @@ public final class Constants {
 
     public static final class Path {
         public static final File APP_DIR = new File(Environment.getExternalStorageDirectory(), "OpenKeychain");
-        public static final File APP_DIR_FILE = new File(APP_DIR, "export.asc");
     }
 
     public static final class Notification {

@@ -149,6 +149,10 @@ public class PgpSignEncryptOperation extends BaseOperation {
             if (input.getCharset() != null) {
                 armorOut.setHeader("Charset", input.getCharset());
             }
+            // add proprietary header to indicate that this is a key backup
+            if (input.isAddBackupHeader()) {
+                armorOut.setHeader("BackupVersion", "1");
+            }
             out = armorOut;
         } else {
             out = outputStream;

@@ -142,6 +142,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel();
             inputParcel.setSymmetricPassphrase(exportInput.mSymmetricPassphrase);
             inputParcel.setEnableAsciiArmorOutput(true);
+            inputParcel.setAddBackupHeader(true);
 
             InputStream inStream = mContext.getContentResolver().openInputStream(exportOutputUri);
 

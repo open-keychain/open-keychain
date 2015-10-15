@@ -31,6 +31,7 @@ import java.util.Iterator;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
@@ -201,6 +202,57 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
     }
 
+    private static class ArmorHeaders {
+        String charset = null;
+        Integer backupVersion = null;
+    }
+
+    private ArmorHeaders parseArmorHeaders(InputStream in, OperationLog log, int indent) {
+        ArmorHeaders armorHeaders = new ArmorHeaders();
+
+        // If the input stream is armored, and there is a charset specified, take a note for later
+        // https://tools.ietf.org/html/rfc4880#page56
+        if (in instanceof ArmoredInputStream) {
+            ArmoredInputStream aIn = (ArmoredInputStream) in;
+            if (aIn.getArmorHeaders() != null) {
+                for (String header : aIn.getArmorHeaders()) {
+                    String[] pieces = header.split(":", 2);
+                    if (pieces.length != 2
+                            || TextUtils.isEmpty(pieces[0])
+                            || TextUtils.isEmpty(pieces[1])) {
+                        continue;
+                    }
+
+                    switch (pieces[0].toLowerCase()) {
+                        case "charset": {
+                            armorHeaders.charset = pieces[1].trim();
+                            break;
+                        }
+                        case "backupversion": {
+                            try {
+                                armorHeaders.backupVersion = Integer.valueOf(pieces[1].trim());
+                            } catch (NumberFormatException e) {
+                                continue;
+                            }
+                            break;
+                        }
+                        default: {
+                            // continue;
+                        }
+                    }
+                }
+                if (armorHeaders.charset != null) {
+                    log.add(LogType.MSG_DC_CHARSET, indent, armorHeaders.charset);
+                }
+                if (armorHeaders.backupVersion != null) {
+                    log.add(LogType.MSG_DC_BACKUP_VERSION, indent, armorHeaders.backupVersion);
+                }
+            }
+        }
+
+        return armorHeaders;
+    }
+
     /** Decrypt and/or verify binary or ascii armored pgp data. */
     @NonNull
     private DecryptVerifyResult decryptVerify(
@@ -215,23 +267,12 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         int currentProgress = 0;
         updateProgress(R.string.progress_reading_data, currentProgress, 100);
 
-        // If the input stream is armored, and there is a charset specified, take a note for later
-        // https://tools.ietf.org/html/rfc4880#page56
-        String charset = null;
-        if (in instanceof ArmoredInputStream) {
-            ArmoredInputStream aIn = (ArmoredInputStream) in;
-            if (aIn.getArmorHeaders() != null) {
-                for (String header : aIn.getArmorHeaders()) {
-                    String[] pieces = header.split(":", 2);
-                    if (pieces.length == 2 && "charset".equalsIgnoreCase(pieces[0])) {
-                        charset = pieces[1].trim();
-                        break;
-                    }
-                }
-                if (charset != null) {
-                    log.add(LogType.MSG_DC_CHARSET, indent, charset);
-                }
-            }
+        // parse ASCII Armor headers
+        ArmorHeaders armorHeaders = parseArmorHeaders(in, log, indent);
+        String charset = armorHeaders.charset;
+        boolean useBackupCode = false;
+        if (armorHeaders.backupVersion != null && armorHeaders.backupVersion == 1) {
+            useBackupCode = true;
         }
 
         OpenPgpDecryptionResultBuilder decryptionResultBuilder = new OpenPgpDecryptionResultBuilder();
@@ -245,7 +286,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
             if (obj instanceof PGPEncryptedDataList) {
                 esResult = handleEncryptedPacket(
-                        input, cryptoInput, (PGPEncryptedDataList) obj, log, indent, currentProgress);
+                        input, cryptoInput, (PGPEncryptedDataList) obj, log, indent,
+                        currentProgress, useBackupCode);
 
                 // if there is an error, nothing left to do here
                 if (esResult.errorResult != null) {
@@ -477,7 +519,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
     }
 
     private EncryptStreamResult handleEncryptedPacket(PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
-            PGPEncryptedDataList enc, OperationLog log, int indent, int currentProgress) throws PGPException {
+            PGPEncryptedDataList enc, OperationLog log, int indent, int currentProgress, boolean useBackupCode) throws PGPException {
 
         EncryptStreamResult result = new EncryptStreamResult();
 
@@ -609,8 +651,11 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                     if (passphrase == null) {
                         log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
+                        RequiredInputParcel requiredInputParcel = useBackupCode ?
+                                RequiredInputParcel.createRequiredBackupCode() :
+                                RequiredInputParcel.createRequiredSymmetricPassphrase();
                         return result.with(new DecryptVerifyResult(log,
-                                RequiredInputParcel.createRequiredSymmetricPassphrase(),
+                                requiredInputParcel,
                                 cryptoInput));
                     }
 
@@ -653,8 +698,10 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 result.cleartextStream = encryptedDataSymmetric.getDataStream(decryptorFactory);
             } catch (PGPDataValidationException e) {
                 log.add(LogType.MSG_DC_ERROR_SYM_PASSPHRASE, indent + 1);
-                return result.with(new DecryptVerifyResult(log,
-                        RequiredInputParcel.createRequiredSymmetricPassphrase(), cryptoInput));
+                RequiredInputParcel requiredInputParcel = useBackupCode ?
+                        RequiredInputParcel.createRequiredBackupCode() :
+                        RequiredInputParcel.createRequiredSymmetricPassphrase();
+                return result.with(new DecryptVerifyResult(log, requiredInputParcel, cryptoInput));
             }
 
             result.encryptedData = encryptedDataSymmetric;
