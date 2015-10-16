@@ -305,7 +305,8 @@ public class NfcOperationActivity extends BaseNfcActivity {
     }
 
     @Override
-    public void onPinError() {
+    public void onNfcPinError(String error) {
+        onNfcError(error);
 
         // avoid a loop
         Preferences prefs = Preferences.getPreferences(this);

@@ -35,7 +35,6 @@ import android.nfc.TagLostException;
 import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.util.Arrays;
@@ -137,11 +136,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
     /**
      * Override to do something when PIN is wrong, e.g., clear passphrases (UI thread)
      */
-    protected void onPinError() {
-        // use Toast because activity is finished afterwards
-        Toast.makeText(this, R.string.error_pin_wrong, Toast.LENGTH_LONG).show();
-        setResult(RESULT_CANCELED);
-        finish();
+    protected void onNfcPinError(String error) {
+        onNfcError(error);
     }
 
     public void handleIntentInBackground(final Intent intent) {
@@ -246,11 +242,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
         // Wrong PIN, a status of 63CX indicates X attempts remaining.
         if ((status & (short) 0xFFF0) == 0x63C0) {
-            // hook to do something different when PIN is wrong
-            onPinError();
-
             int tries = status & 0x000F;
-            onNfcError(getResources().getQuantityString(R.plurals.error_pin, tries, tries));
+            // hook to do something different when PIN is wrong
+            onNfcPinError(getResources().getQuantityString(R.plurals.error_pin, tries, tries));
             return;
         }
 
@@ -284,7 +278,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 break;
             }
             case 0x6700: {
-                onNfcError(getString(R.string.error_nfc_wrong_length));
+                onNfcPinError(getString(R.string.error_nfc_wrong_length));
                 break;
             }
             case 0x6982: {
