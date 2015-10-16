@@ -113,7 +113,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
 
                 if (containsKeys(nfcFingerprints)) {
-                    Fragment frag = CreateYubiKeyImportFragment.newInstance(
+                    Fragment frag = CreateYubiKeyImportResetFragment.newInstance(
                             nfcFingerprints, nfcAid, nfcUserId);
                     loadFragment(frag, FragAction.START);
 
@@ -176,7 +176,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 finish();
 
             } catch (PgpKeyNotFoundException e) {
-                Fragment frag = CreateYubiKeyImportFragment.newInstance(
+                Fragment frag = CreateYubiKeyImportResetFragment.newInstance(
                         mScannedFingerprints, mNfcAid, mNfcUserId);
                 loadFragment(frag, FragAction.TO_RIGHT);
             }

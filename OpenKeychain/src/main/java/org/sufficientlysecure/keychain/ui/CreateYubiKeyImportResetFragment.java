@@ -28,8 +28,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.spongycastle.util.encoders.Hex;
@@ -45,7 +46,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class CreateYubiKeyImportFragment
+public class CreateYubiKeyImportResetFragment
         extends QueueingCryptoOperationFragment<ImportKeyringParcel, ImportKeyResult>
         implements NfcListenerFragment {
 
@@ -62,6 +63,10 @@ public class CreateYubiKeyImportFragment
     private ImportKeysListFragment mListFragment;
     private TextView vSerNo;
     private TextView vUserId;
+    private TextView mNextButton;
+    private RadioButton mRadioImport;
+    private RadioButton mRadioReset;
+    private View mResetWarning;
 
     // for CryptoOperationFragment key import
     private String mKeyserver;
@@ -69,7 +74,7 @@ public class CreateYubiKeyImportFragment
 
     public static Fragment newInstance(byte[] scannedFingerprints, byte[] nfcAid, String userId) {
 
-        CreateYubiKeyImportFragment frag = new CreateYubiKeyImportFragment();
+        CreateYubiKeyImportResetFragment frag = new CreateYubiKeyImportResetFragment();
 
         Bundle args = new Bundle();
         args.putByteArray(ARG_FINGERPRINTS, scannedFingerprints);
@@ -98,49 +103,78 @@ public class CreateYubiKeyImportFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.create_yubi_key_import_fragment, container, false);
+        View view = inflater.inflate(R.layout.create_yubi_key_import_reset_fragment, container, false);
 
         vSerNo = (TextView) view.findViewById(R.id.yubikey_serno);
         vUserId = (TextView) view.findViewById(R.id.yubikey_userid);
+        mNextButton = (TextView) view.findViewById(R.id.create_key_next_button);
+        mRadioImport = (RadioButton) view.findViewById(R.id.yubikey_decision_import);
+        mRadioReset = (RadioButton) view.findViewById(R.id.yubikey_decision_reset);
+        mResetWarning = view.findViewById(R.id.yubikey_import_reset_warning);
 
-        {
-            View mBackButton = view.findViewById(R.id.create_key_back_button);
-            mBackButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (getFragmentManager().getBackStackEntryCount() == 0) {
-                        getActivity().setResult(Activity.RESULT_CANCELED);
-                        getActivity().finish();
-                    } else {
-                        mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
-                    }
+        View mBackButton = view.findViewById(R.id.create_key_back_button);
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getFragmentManager().getBackStackEntryCount() == 0) {
+                    getActivity().setResult(Activity.RESULT_CANCELED);
+                    getActivity().finish();
+                } else {
+                    mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
                 }
-            });
+            }
+        });
 
-            View mNextButton = view.findViewById(R.id.create_key_next_button);
-            mNextButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mRadioReset.isChecked()) {
+                    resetCard();
+                } else {
                     importKey();
                 }
-            });
-        }
+            }
+        });
 
         mListFragment = ImportKeysListFragment.newInstance(null, null,
                 "0x" + mNfcFingerprint, true, null);
 
-        view.findViewById(R.id.button_search).setOnClickListener(new OnClickListener() {
+        mRadioImport.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                refreshSearch();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mNextButton.setText(R.string.btn_import);
+                    mNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_key_plus_grey600_24dp, 0);
+                    mNextButton.setVisibility(View.VISIBLE);
+                    mResetWarning.setVisibility(View.GONE);
+
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.yubikey_import_fragment, mListFragment, "yubikey_import")
+                            .commit();
+
+                    getFragmentManager().executePendingTransactions();
+                    refreshSearch();
+                }
+            }
+        });
+        mRadioReset.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mNextButton.setText(R.string.btn_reset);
+                    mNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_close_grey_24dp, 0);
+                    mNextButton.setVisibility(View.VISIBLE);
+                    mResetWarning.setVisibility(View.VISIBLE);
+
+                    getFragmentManager().beginTransaction()
+                            .remove(mListFragment)
+                            .commit();
+                }
             }
         });
 
         setData();
 
-        getFragmentManager().beginTransaction()
-                .replace(R.id.yubikey_import_fragment, mListFragment, "yubikey_import")
-                .commit();
 
         return view;
     }
@@ -195,6 +229,10 @@ public class CreateYubiKeyImportFragment
 
     }
 
+    public void resetCard() {
+
+    }
+
     @Override
     public void doNfcInBackground() throws IOException {
 
@@ -212,7 +250,6 @@ public class CreateYubiKeyImportFragment
 
         setData();
 
-        refreshSearch();
     }
 
     @Override
