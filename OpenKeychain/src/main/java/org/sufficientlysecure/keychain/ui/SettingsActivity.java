@@ -109,9 +109,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             initializePassphraseCacheTtl(
                     (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
-            initializeUseDefaultYubiKeyPin(
-                    (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
-
             initializeUseNumKeypadForYubiKeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN));
 
@@ -236,9 +233,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             initializePassphraseCacheTtl(
                     (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
-
-            initializeUseDefaultYubiKeyPin(
-                    (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
 
             initializeUseNumKeypadForYubiKeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN));
@@ -663,17 +657,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 R.plurals.n_keyservers, servers.length, servers.length);
         return serverSummary + "; " + context.getString(R.string.label_preferred) + ": " + sPreferences
                 .getPreferredKeyserver();
-    }
-
-    private static void initializeUseDefaultYubiKeyPin(final CheckBoxPreference mUseDefaultYubiKeyPin) {
-        mUseDefaultYubiKeyPin.setChecked(sPreferences.useDefaultYubiKeyPin());
-        mUseDefaultYubiKeyPin.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mUseDefaultYubiKeyPin.setChecked((Boolean) newValue);
-                sPreferences.setUseDefaultYubiKeyPin((Boolean) newValue);
-                return false;
-            }
-        });
     }
 
     private static void initializeUseNumKeypadForYubiKeyPin(final CheckBoxPreference mUseNumKeypadForYubiKeyPin) {

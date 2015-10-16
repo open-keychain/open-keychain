@@ -123,16 +123,6 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME, true);
     }
 
-    public boolean useDefaultYubiKeyPin() {
-        return mSharedPreferences.getBoolean(Pref.USE_DEFAULT_YUBIKEY_PIN, false);
-    }
-
-    public void setUseDefaultYubiKeyPin(boolean useDefaultYubikeyPin) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Pref.USE_DEFAULT_YUBIKEY_PIN, useDefaultYubikeyPin);
-        editor.commit();
-    }
-
     public boolean useNumKeypadForYubiKeyPin() {
         return mSharedPreferences.getBoolean(Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN, true);
     }

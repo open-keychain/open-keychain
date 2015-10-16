@@ -256,14 +256,6 @@ public class PassphraseCacheService extends Service {
         SecretKeyType keyType = keyRing.getSecretKeyType(subKeyId);
 
         switch (keyType) {
-            case DIVERT_TO_CARD:
-                if (Preferences.getPreferences(this).useDefaultYubiKeyPin()) {
-                    Log.d(Constants.TAG, "PassphraseCacheService: Using default YubiKey PIN: 123456");
-                    return new Passphrase("123456"); // default YubiKey PIN, see http://www.yubico.com/2012/12/yubikey-neo-openpgp/
-                } else {
-                    Log.d(Constants.TAG, "PassphraseCacheService: NOT using default YubiKey PIN");
-                    break;
-                }
             case PASSPHRASE_EMPTY:
                 return new Passphrase("");
             case UNAVAILABLE:

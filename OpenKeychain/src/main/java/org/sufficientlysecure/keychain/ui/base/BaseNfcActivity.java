@@ -337,13 +337,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     protected void obtainYubiKeyPin(RequiredInputParcel requiredInput) {
 
-        // shortcut if we only use the default YubiKey pin
-        Preferences prefs = Preferences.getPreferences(this);
-        if (prefs.useDefaultYubiKeyPin()) {
-            mPin = new Passphrase("123456");
-            return;
-        }
-
         try {
             Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
                     requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());

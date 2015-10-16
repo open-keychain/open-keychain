@@ -308,16 +308,6 @@ public class NfcOperationActivity extends BaseNfcActivity {
     public void onNfcPinError(String error) {
         onNfcError(error);
 
-        // avoid a loop
-        Preferences prefs = Preferences.getPreferences(this);
-        if (prefs.useDefaultYubiKeyPin()) {
-            // use Toast because activity is finished afterwards
-            Toast.makeText(this, R.string.error_pin_nodefault, Toast.LENGTH_LONG).show();
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
-        }
-
         // clear (invalid) passphrase
         PassphraseCacheService.clearCachedPassphrase(
                 this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
