@@ -110,10 +110,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
             public void onClick(View v) {
                 resumeTagHandling();
 
-                // obtain passphrase for this subkey
-                if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD) {
-                    obtainYubiKeyPin(mRequiredInput);
-                }
+                obtainPassphraseIfRequired();
                 vAnimator.setDisplayedChild(0);
             }
         });
@@ -132,8 +129,13 @@ public class NfcOperationActivity extends BaseNfcActivity {
         mRequiredInput = data.getParcelable(EXTRA_REQUIRED_INPUT);
         mServiceIntent = data.getParcelable(EXTRA_SERVICE_INTENT);
 
+        obtainPassphraseIfRequired();
+    }
+
+    private void obtainPassphraseIfRequired() {
         // obtain passphrase for this subkey
-        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD) {
+        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD
+                && mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_RESET_CARD) {
             obtainYubiKeyPin(mRequiredInput);
         }
     }
@@ -245,6 +247,11 @@ public class NfcOperationActivity extends BaseNfcActivity {
                 // change PINs afterwards
                 nfcModifyPIN(0x81, newPin);
                 nfcModifyPIN(0x83, newAdminPin);
+
+                break;
+            }
+            case NFC_RESET_CARD: {
+                nfcResetCard();
 
                 break;
             }

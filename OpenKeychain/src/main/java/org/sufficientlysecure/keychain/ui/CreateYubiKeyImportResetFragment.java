@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +40,8 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
@@ -49,6 +52,8 @@ import org.sufficientlysecure.keychain.util.Preferences;
 public class CreateYubiKeyImportResetFragment
         extends QueueingCryptoOperationFragment<ImportKeyringParcel, ImportKeyResult>
         implements NfcListenerFragment {
+
+    private static final int REQUEST_CODE_RESET = 0x00005001;
 
     private static final String ARG_FINGERPRINTS = "fingerprint";
     public static final String ARG_AID = "aid";
@@ -230,7 +235,22 @@ public class CreateYubiKeyImportResetFragment
     }
 
     public void resetCard() {
+        Intent intent = new Intent(getActivity(), NfcOperationActivity.class);
+        intent.putExtra(NfcOperationActivity.EXTRA_SERVICE_INTENT, (Parcelable[]) null);
+        RequiredInputParcel resetP = RequiredInputParcel.createNfcReset();
+        intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, resetP);
+        intent.putExtra(NfcOperationActivity.EXTRA_CRYPTO_INPUT, new CryptoInputParcel());
+        startActivityForResult(intent, REQUEST_CODE_RESET);
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_RESET && resultCode == Activity.RESULT_OK) {
+            mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
+            return;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
