@@ -92,7 +92,9 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
         // prevent annoying orientation changes while fumbling with the device
         OrientationUtils.lockOrientation(this);
-
+        // prevent close when touching outside of the dialog (happens easily when fumbling with the device)
+        setFinishOnTouchOutside(false);
+        // keep screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
@@ -113,6 +115,14 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     obtainYubiKeyPin(mRequiredInput);
                 }
                 vAnimator.setDisplayedChild(0);
+            }
+        });
+        Button vCancel = (Button) findViewById(R.id.nfc_activity_0_cancel);
+        vCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED);
+                finish();
             }
         });
 

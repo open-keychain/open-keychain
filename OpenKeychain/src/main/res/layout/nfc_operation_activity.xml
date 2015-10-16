@@ -14,7 +14,7 @@
         android:measureAllChildren="false"
         android:minHeight="?listPreferredItemHeightSmall"
         android:outAnimation="@anim/fade_out"
-        custom:initialView="3">
+        custom:initialView="0">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -41,6 +41,16 @@
                 android:adjustViewBounds="true"
                 android:background="@android:color/transparent"
                 android:src="@drawable/yubikey_phone" />
+
+            <Button
+                android:id="@+id/nfc_activity_0_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/nfc_activity_0_image"
+                android:layout_margin="8dp"
+                android:text="@string/progress_cancel" />
         </RelativeLayout>
 
         <RelativeLayout

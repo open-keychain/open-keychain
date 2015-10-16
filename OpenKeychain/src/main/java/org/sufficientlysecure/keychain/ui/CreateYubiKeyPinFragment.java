@@ -37,7 +37,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class CreateYubiKeyPinRepeatFragment extends Fragment {
+public class CreateYubiKeyPinFragment extends Fragment {
 
     // view
     CreateKeyActivity mCreateKeyActivity;
@@ -65,8 +65,8 @@ public class CreateYubiKeyPinRepeatFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static CreateYubiKeyPinRepeatFragment newInstance() {
-        CreateYubiKeyPinRepeatFragment frag = new CreateYubiKeyPinRepeatFragment();
+    public static CreateYubiKeyPinFragment newInstance() {
+        CreateYubiKeyPinFragment frag = new CreateYubiKeyPinFragment();
 
         Bundle args = new Bundle();
         frag.setArguments(args);
@@ -101,7 +101,7 @@ public class CreateYubiKeyPinRepeatFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.create_yubi_key_pin_repeat_fragment, container, false);
+        View view = inflater.inflate(R.layout.create_yubi_key_pin_fragment, container, false);
 
         mPin = (EditText) view.findViewById(R.id.create_yubi_key_pin);
         mPinRepeat = (EditText) view.findViewById(R.id.create_yubi_key_pin_repeat);
