@@ -759,13 +759,14 @@
     <string name="create_key_add_email_text">"Additional email addresses are also associated to this key and can be used for secure communication."</string>
     <string name="create_key_email_already_exists_text">"Email address has already been added"</string>
     <string name="create_key_email_invalid_email">"Email address format is invalid"</string>
-    <string name="create_key_yubi_key_pin_text">"Please remember the PIN, it is required to use your YubiKey later. Please write down the Admin PIN and store it in a safe place."</string>
+    <string name="create_key_yubi_key_pin_text">"Please choose a PIN with 6 numbers."</string>
+    <string name="create_key_yubi_key_admin_pin_text">"Please write down the Admin PIN and store it in a safe place (required when you used a wrong PIN 3 times)."</string>
     <string name="create_key_yubi_key_pin">"PIN"</string>
     <string name="create_key_yubi_key_admin_pin">"Admin PIN"</string>
-    <string name="create_key_yubi_key_pin_repeat_text">"Please enter the PIN and Admin PIN to proceed."</string>
     <string name="create_key_yubi_key_pin_repeat">"Repeat PIN"</string>
-    <string name="create_key_yubi_key_admin_pin_repeat">"Repeat Admin PIN"</string>
     <string name="create_key_yubi_key_pin_not_correct">"PIN is not correct!"</string>
+    <string name="create_key_yubi_key_pin_too_short">"PIN must be at least 6 numbers long!"</string>
+    <string name="create_key_yubi_key_pin_insecure">"Please choose a secure PIN, not 000000, 123456 or similar combinations."</string>
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>

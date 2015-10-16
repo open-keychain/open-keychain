@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -26,18 +27,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
+import org.sufficientlysecure.keychain.util.Passphrase;
+
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.HashSet;
 
 public class CreateYubiKeyPinRepeatFragment extends Fragment {
 
     // view
     CreateKeyActivity mCreateKeyActivity;
     EditText mPin;
-    EditText mAdminPin;
+    EditText mPinRepeat;
+    TextView mAdminPin;
     View mBackButton;
     View mNextButton;
+
+    private static HashSet<String> sPinBlacklist = new HashSet<>(Arrays.asList(
+            "000000",
+            "111111",
+            "222222",
+            "333333",
+            "444444",
+            "555555",
+            "666666",
+            "777777",
+            "888888",
+            "999999",
+            "123456",
+            "XXXXXX"
+    ));
 
     /**
      * Creates new instance of this fragment
@@ -55,8 +78,6 @@ public class CreateYubiKeyPinRepeatFragment extends Fragment {
      * Checks if text of given EditText is not empty. If it is empty an error is
      * set and the EditText gets the focus.
      *
-     * @param context
-     * @param editText
      * @return true if EditText is not empty
      */
     private static boolean isEditTextNotEmpty(Context context, EditText editText) {
@@ -72,27 +93,50 @@ public class CreateYubiKeyPinRepeatFragment extends Fragment {
         return output;
     }
 
-    private static boolean checkPin(Context context, EditText editText1, String pin) {
-        boolean output = editText1.getText().toString().equals(pin);
-
-        if (!output) {
-            editText1.setError(context.getString(R.string.create_key_yubi_key_pin_not_correct));
-            editText1.requestFocus();
-        } else {
-            editText1.setError(null);
-        }
-
-        return output;
+    private static boolean areEditTextsEqual(EditText editText1, EditText editText2) {
+        Passphrase p1 = new Passphrase(editText1);
+        Passphrase p2 = new Passphrase(editText2);
+        return (p1.equals(p2));
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_yubi_key_pin_repeat_fragment, container, false);
 
-        mPin = (EditText) view.findViewById(R.id.create_yubi_key_pin_repeat);
-        mAdminPin = (EditText) view.findViewById(R.id.create_yubi_key_admin_pin_repeat);
+        mPin = (EditText) view.findViewById(R.id.create_yubi_key_pin);
+        mPinRepeat = (EditText) view.findViewById(R.id.create_yubi_key_pin_repeat);
+        mAdminPin = (TextView) view.findViewById(R.id.create_yubi_key_admin_pin);
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mNextButton = view.findViewById(R.id.create_key_next_button);
+
+        if (mCreateKeyActivity.mYubiKeyPin == null) {
+            new AsyncTask<Void, Void, Passphrase>() {
+                @Override
+                protected Passphrase doInBackground(Void... unused) {
+                    SecureRandom secureRandom = new SecureRandom();
+                    // min = 8, we choose 8
+                    String adminPin = "" + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9);
+
+                    return new Passphrase(adminPin);
+                }
+
+                @Override
+                protected void onPostExecute(Passphrase adminPin) {
+                    mCreateKeyActivity.mYubiKeyAdminPin = adminPin;
+
+                    mAdminPin.setText(mCreateKeyActivity.mYubiKeyAdminPin.toStringUnsafe());
+                }
+            }.execute();
+        } else {
+            mAdminPin.setText(mCreateKeyActivity.mYubiKeyAdminPin.toStringUnsafe());
+        }
 
         mPin.requestFocus();
         mBackButton.setOnClickListener(new View.OnClickListener() {
@@ -123,10 +167,27 @@ public class CreateYubiKeyPinRepeatFragment extends Fragment {
     }
 
     private void nextClicked() {
-        if (isEditTextNotEmpty(getActivity(), mPin)
-                && checkPin(getActivity(), mPin, mCreateKeyActivity.mYubiKeyPin.toStringUnsafe())
-                && isEditTextNotEmpty(getActivity(), mAdminPin)
-                && checkPin(getActivity(), mAdminPin, mCreateKeyActivity.mYubiKeyAdminPin.toStringUnsafe())) {
+        if (isEditTextNotEmpty(getActivity(), mPin)) {
+
+            if (!areEditTextsEqual(mPin, mPinRepeat)) {
+                mPinRepeat.setError(getString(R.string.create_key_passphrases_not_equal));
+                mPinRepeat.requestFocus();
+                return;
+            }
+
+            if (mPin.getText().toString().length() < 6) {
+                mPin.setError(getString(R.string.create_key_yubi_key_pin_too_short));
+                mPin.requestFocus();
+                return;
+            }
+
+            if (sPinBlacklist.contains(mPin.getText().toString())) {
+                mPin.setError(getString(R.string.create_key_yubi_key_pin_insecure));
+                mPin.requestFocus();
+                return;
+            }
+
+            mCreateKeyActivity.mYubiKeyPin = new Passphrase(mPin.getText().toString());
 
             CreateKeyFinalFragment frag = CreateKeyFinalFragment.newInstance();
             hideKeyboard();

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -21,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="16dp"
-                android:text="@string/create_key_yubi_key_pin_repeat_text"
+                android:text="@string/create_key_yubi_key_pin_text"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -33,10 +34,19 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/create_yubi_key_pin_repeat"
+                android:id="@+id/create_yubi_key_pin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
+                android:ems="10"
+                android:hint="@string/create_key_yubi_key_pin"
+                android:inputType="numberPassword" />
+
+            <EditText
+                android:id="@+id/create_yubi_key_pin_repeat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:ems="10"
                 android:hint="@string/create_key_yubi_key_pin_repeat"
@@ -46,19 +56,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
+                android:layout_marginTop="48dp"
+                android:text="@string/create_key_yubi_key_admin_pin_text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/create_key_yubi_key_admin_pin"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <EditText
-                android:id="@+id/create_yubi_key_admin_pin_repeat"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/create_yubi_key_admin_pin"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="8dp"
-                android:ems="10"
-                android:hint="@string/create_key_yubi_key_admin_pin_repeat"
-                android:inputType="numberPassword" />
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="48dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                tools:text="12345678" />
 
         </LinearLayout>
     </ScrollView>
@@ -78,8 +96,8 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_gravity="center_vertical"
+            android:layout_weight="1"
             android:clickable="true"
             android:drawableLeft="@drawable/ic_chevron_left_grey_24dp"
             android:drawablePadding="8dp"
@@ -96,8 +114,8 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_gravity="center_vertical"
+            android:layout_weight="1"
             android:clickable="true"
             android:drawablePadding="8dp"
             android:drawableRight="@drawable/ic_chevron_right_grey_24dp"
