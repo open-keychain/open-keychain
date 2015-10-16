@@ -674,16 +674,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
             // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
             // See specification, page 51
             String accepted = "9000";
-
-            // Command APDU for VERIFY command (page 32)
-            String login =
-                    "00" // CLA
-                        + "20" // INS
-                        + "00" // P1
-                        + String.format("%02x", mode) // P2
-                        + String.format("%02x", pin.length) // Lc
-                        + Hex.toHexString(pin);
-            String response = nfcCommunicate(login); // login
+            String response = tryPin(mode, pin); // login
             if (!response.equals(accepted)) {
                 throw new CardException("Bad PIN!", parseCardStatus(response));
             }
@@ -696,6 +687,51 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 mPw3Validated = true;
             }
         }
+    }
+
+    public void nfcResetCard() throws IOException {
+        String accepted = "9000";
+
+        // try wrong PIN 4 times until counter goes to C0
+        byte[] pin = "XXXXXX".getBytes();
+        for (int i = 0; i <= 4; i++) {
+            String response = tryPin(0x81, pin);
+            if (response.equals(accepted)) { // Should NOT accept!
+                throw new CardException("Should never happen, XXXXXX has been accepted!", parseCardStatus(response));
+            }
+        }
+
+        // try wrong Admin PIN 4 times until counter goes to C0
+        byte[] adminPin = "XXXXXXXX".getBytes();
+        for (int i = 0; i <= 4; i++) {
+            String response = tryPin(0x83, adminPin);
+            if (response.equals(accepted)) { // Should NOT accept!
+                throw new CardException("Should never happen, XXXXXXXX has been accepted", parseCardStatus(response));
+            }
+        }
+
+        // reactivate card!
+        String reactivate1 = "00" + "e6" + "00" + "00";
+        String reactivate2 = "00" + "44" + "00" + "00";
+        String response1 = nfcCommunicate(reactivate1);
+        String response2 = nfcCommunicate(reactivate2);
+        if (!response1.equals(accepted) || !response2.equals(accepted)) {
+            throw new CardException("Reactivating failed!", parseCardStatus(response1));
+        }
+
+    }
+
+    private String tryPin(int mode, byte[] pin) throws IOException {
+        // Command APDU for VERIFY command (page 32)
+        String login =
+                "00" // CLA
+                        + "20" // INS
+                        + "00" // P1
+                        + String.format("%02x", mode) // P2
+                        + String.format("%02x", pin.length) // Lc
+                        + Hex.toHexString(pin);
+
+        return nfcCommunicate(login);
     }
 
     /** Modifies the user's PW1 or PW3. Before sending, the new PIN will be validated for
