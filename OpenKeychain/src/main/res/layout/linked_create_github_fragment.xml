@@ -156,7 +156,7 @@
                     android:drawableLeft="@drawable/ic_repeat_black_24dp"
                     android:drawableStart="@drawable/ic_repeat_black_24dp"
                     android:drawablePadding="12dp"
-                    android:text="@string/linked_button_retry"
+                    android:text="@string/linked_button_retry_step"
                     android:id="@+id/button_retry"
                     />
 

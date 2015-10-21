@@ -1630,7 +1630,8 @@
     <string name="linked_title_twitter">"Twitter"</string>
     <string name="card_linked_identity">"Linked Identity"</string>
     <string name="linked_button_verify">"Verify"</string>
-    <string name="linked_button_retry">"Retry last step"</string>
+    <string name="linked_button_retry">"Retry"</string>
+    <string name="linked_button_retry_step">"Retry last step"</string>
     <string name="linked_button_confirm">"Confirm"</string>
     <string name="linked_button_view">"View"</string>
     <string name="linked_text_verifying">"Verifying…"</string>
