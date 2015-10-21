@@ -160,6 +160,19 @@ android {
             // Reference them in .xml files.
             resValue "string", "account_type", "org.sufficientlysecure.keychain.account"
             resValue "string", "provider_content_authority", "org.sufficientlysecure.keychain.provider"
+
+            // Github API ID and secret are read from gradle.properties (not in git!)
+            // must use double escaping in gradle.properties! For example:
+            // githubClientId="\\"7a011b66275f244d3f21\\""
+            // githubClientSecret="\\"eaced8a6655719d8c6848396de97b3f5d7a89fec\\""
+            if (project.hasProperty('githubClientId') &&
+                project.hasProperty('githubClientSecret')) {
+
+                println "Found github oauth properties"
+
+                buildConfigField "String", "GITHUB_CLIENT_ID", githubClientId
+                buildConfigField "String", "GITHUB_CLIENT_SECRET", githubClientSecret
+            }
         }
 
         debug {
@@ -169,13 +182,13 @@ android {
             buildConfigField "String", "ACCOUNT_TYPE", "\"org.sufficientlysecure.keychain.debug.account\""
             buildConfigField "String", "PROVIDER_CONTENT_AUTHORITY", "\"org.sufficientlysecure.keychain.debug.provider\""
 
-            // Github api for debug build only
-            buildConfigField "String", "GITHUB_CLIENT_ID", "\"7a011b66275f244d3f21\""
-            buildConfigField "String", "GITHUB_CLIENT_SECRET", "\"eaced8a6655719d8c6848396de97b3f5d7a89fec\""
-
             // Reference them in .xml files.
             resValue "string", "account_type", "org.sufficientlysecure.keychain.debug.account"
             resValue "string", "provider_content_authority", "org.sufficientlysecure.keychain.debug.provider"
+
+            // Github API for debug build only
+            buildConfigField "String", "GITHUB_CLIENT_ID", "\"7a011b66275f244d3f21\""
+            buildConfigField "String", "GITHUB_CLIENT_SECRET", "\"eaced8a6655719d8c6848396de97b3f5d7a89fec\""
 
             // Enable code coverage (Jacoco)
             testCoverageEnabled true
