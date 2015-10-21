@@ -1664,11 +1664,13 @@
     <string name="snack_backup_saved_dir">"Saved to OpenKeychain directory"</string>
     <string name="btn_backup_back">Go back to check</string>
     <string name="snack_text_too_long">"Text is too long to show in full!"</string>
+    <string name="snack_shared_text_too_long">"Shared text was cut because it was too long!"</string>
 
     <string name="share_log_dialog_title">"Share log?"</string>
     <string name="share_log_dialog_message">"While logs can be super helpful for developers to find bugs in OpenKeychain, they can contain potential sensitive information such as data about the updated keys. Please make sure you are okay with sharing this information."</string>
     <string name="share_log_dialog_share_button">"Share"</string>
     <string name="share_log_dialog_cancel_button">"Cancel"</string>
-
+    <string name="toast_wrong_mimetype">"Wrong data type, expected text!"</string>
+    <string name="toast_no_text">"No text in shared data!"</string>
 
 </resources>

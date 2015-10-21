@@ -65,7 +65,7 @@ public class EncryptTextActivity extends EncryptActivity {
 
             // When sending to OpenKeychain Encrypt via share menu
             if ("text/plain".equals(type)) {
-                Toast.makeText(this, "Wrong data type, expected text!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.toast_wrong_mimetype, Toast.LENGTH_LONG).show();
                 finish();
                 return;
             }
@@ -82,12 +82,16 @@ public class EncryptTextActivity extends EncryptActivity {
                     return;
                 }
             } else {
-                Toast.makeText(this, "No text in shared data!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.toast_no_text, Toast.LENGTH_LONG).show();
                 finish();
                 return;
             }
 
             if (sharedText != null) {
+                if (sharedText.length() > Constants.TEXT_LENGTH_LIMIT) {
+                    sharedText = sharedText.substring(0, Constants.TEXT_LENGTH_LIMIT);
+                    Notify.create(this, R.string.snack_shared_text_too_long, Style.WARN).show();
+                }
                 // handle like normal text encryption, override action and extras to later
                 // executeServiceMethod ACTION_ENCRYPT_TEXT in main actions
                 extras.putString(EXTRA_TEXT, sharedText);
