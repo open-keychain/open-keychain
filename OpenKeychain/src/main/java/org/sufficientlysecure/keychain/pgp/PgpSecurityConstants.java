@@ -79,8 +79,8 @@ public class PgpSecurityConstants {
      */
     private static HashSet<Integer> sHashAlgorithmsWhitelist = new HashSet<>(Arrays.asList(
             // MD5: broken
-            // SHA1: broken
-            // RIPEMD160: same security properties as SHA1
+            HashAlgorithmTags.SHA1, // TODO: disable when SHA256 is widely deployed
+            HashAlgorithmTags.RIPEMD160, // same security properties as SHA1, TODO: disable when SHA256 is widely deployed
             // DOUBLE_SHA: not used widely
             // MD2: not used widely
             // TIGER_192: not used widely
