@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.operations;
 import android.content.Context;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -81,7 +82,7 @@ public abstract class BaseOperation <T extends Parcelable> implements Passphrase
     @NonNull
     public abstract OperationResult execute(T input, CryptoInputParcel cryptoInput);
 
-    public void updateProgress(int message, int current, int total) {
+    public void updateProgress(@StringRes int message, int current, int total) {
         if (mProgressable != null) {
             mProgressable.setProgress(message, current, total);
         }

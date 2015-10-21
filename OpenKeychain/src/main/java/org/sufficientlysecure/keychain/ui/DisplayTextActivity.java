@@ -28,9 +28,12 @@ import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
 import org.openintents.openpgp.OpenPgpMetadata;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
 public class DisplayTextActivity extends BaseActivity {
@@ -73,6 +76,11 @@ public class DisplayTextActivity extends BaseActivity {
         }
 
         if (plaintext != null) {
+            if (plaintext.length() > Constants.TEXT_LENGTH_LIMIT) {
+                plaintext = plaintext.substring(0, Constants.TEXT_LENGTH_LIMIT);
+                Notify.create(this, R.string.snack_text_too_long, Style.WARN).show();
+            }
+
             loadFragment(plaintext, result);
         } else {
             Toast.makeText(this, R.string.error_invalid_data, Toast.LENGTH_LONG).show();

@@ -435,6 +435,7 @@
     <string name="progress_encrypting">"encrypting data…"</string>
     <string name="progress_decrypting">"decrypting data…"</string>
     <string name="progress_preparing_signature">"preparing signature…"</string>
+    <string name="progress_processing_signature">processing signature…</string>
     <string name="progress_generating_signature">"generating signature…"</string>
     <string name="progress_verifying_signature">"verifying signature…"</string>
     <string name="progress_signing">"signing…"</string>
@@ -1629,7 +1630,8 @@
     <string name="linked_title_twitter">"Twitter"</string>
     <string name="card_linked_identity">"Linked Identity"</string>
     <string name="linked_button_verify">"Verify"</string>
-    <string name="linked_button_retry">"Retry last step"</string>
+    <string name="linked_button_retry">"Retry"</string>
+    <string name="linked_button_retry_step">"Retry last step"</string>
     <string name="linked_button_confirm">"Confirm"</string>
     <string name="linked_button_view">"View"</string>
     <string name="linked_text_verifying">"Verifying…"</string>
@@ -1661,10 +1663,14 @@
     <string name="snack_backup_exists">"Backup already exists!"</string>
     <string name="snack_backup_saved_dir">"Saved to OpenKeychain directory"</string>
     <string name="btn_backup_back">Go back to check</string>
+    <string name="snack_text_too_long">"Text is too long to show in full!"</string>
+    <string name="snack_shared_text_too_long">"Shared text was cut because it was too long!"</string>
 
     <string name="share_log_dialog_title">"Share log?"</string>
     <string name="share_log_dialog_message">"While logs can be super helpful for developers to find bugs in OpenKeychain, they can contain potential sensitive information such as data about the updated keys. Please make sure you are okay with sharing this information."</string>
     <string name="share_log_dialog_share_button">"Share"</string>
     <string name="share_log_dialog_cancel_button">"Cancel"</string>
+    <string name="toast_wrong_mimetype">"Wrong data type, expected text!"</string>
+    <string name="toast_no_text">"No text in shared data!"</string>
 
 </resources>

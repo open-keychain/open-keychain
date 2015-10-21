@@ -322,6 +322,29 @@ public class DecryptListFragment
         Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
 
+        Activity activity = getActivity();
+
+        boolean isSingleInput = mInputDataResults.isEmpty() && mPendingInputUris.isEmpty();
+        if (isSingleInput) {
+
+            // there is always at least one mMetadata object, so we know this is >= 1 already
+            boolean isSingleMetadata = result.mMetadata.size() == 1;
+            OpenPgpMetadata metadata = result.mMetadata.get(0);
+            boolean isText = "text/plain".equals(metadata.getMimeType());
+            boolean isOverSized = metadata.getOriginalSize() > Constants.TEXT_LENGTH_LIMIT;
+
+            if (isSingleMetadata && isText && !isOverSized) {
+                Intent displayTextIntent = new Intent(activity, DisplayTextActivity.class)
+                        .setDataAndType(result.mOutputUris.get(0), "text/plain")
+                        .putExtra(DisplayTextActivity.EXTRA_RESULT, result.mDecryptVerifyResult)
+                        .putExtra(DisplayTextActivity.EXTRA_METADATA, metadata);
+                activity.startActivity(displayTextIntent);
+                activity.finish();
+                return;
+            }
+
+        }
+
         mInputDataResults.put(uri, result);
         processResult(uri);
 
