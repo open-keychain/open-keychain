@@ -79,6 +79,9 @@ public final class Constants {
 
     public static final int TEMPFILE_TTL = 24 * 60 * 60 * 1000; // 1 day
 
+    // the maximal length of plaintext to read in encrypt/decrypt text activities
+    public static final int TEXT_LENGTH_LIMIT = 1024 * 50;
+
     public static final String SAFESLINGER_SERVER = "safeslinger-openpgp.appspot.com";
 
     public static final class Path {
