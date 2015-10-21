@@ -6,20 +6,20 @@
 
 Baimena: GPLv3+
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (OHARRA: Alfabetikoki antolatuta)
 
 ## Garatzaile Nagusiak
   * Dominik Schürmann (Mantentzaileak)
   * Vincent Breitmoser
 
-## Top Contributors
+## Laguntzaile Nagusiak
   * Adithya Abraham Philip
   * Ash Hughes
   * 'mar-v-in'
   * 'Thialfihar' (APG garatzailea)
   * Tim Bray
 
-## Occasional Contributors
+## Tartekako Laguntzaileak
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov
@@ -51,7 +51,7 @@ Baimena: GPLv3+
   * Sreeram Boyapati
   * 'steelman'
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (OHARRA: Alfabetikoki antolatuta)
 
 ## Liburutegiak
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache Baimena v2)
@@ -61,7 +61,7 @@ Baimena: GPLv3+
   * [Markdown4J](https://github.com/jdcasey/markdown4j) (Apache Baimena v2)
   * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache Baimena v2)
   * [MiniDNS](https://github.com/rtreffer/minidns) (Apache Baimena v2)
-  * [OkHttp](http://square.github.io/okhttp/) (Apache License v2)
+  * [OkHttp](http://square.github.io/okhttp/) (Apache Baimena v2)
   * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Diseinua) (Apache Baimena 2 bertsioa)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT Baimena)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT Baimena)

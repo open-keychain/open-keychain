@@ -1,4 +1,4 @@
-[//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 [http://www.openkeychain.org](http://www.openkeychain.org)
 
@@ -6,7 +6,7 @@
 
 Lizenz: GPLv3+
 
-[//]: # (Beachte: alphabethisch Sortiert)
+[//]: # (Beachte: alphabethische Sortierung)
 
 ## Hauptentwickler
   * Dominik Schürmann (Leitender Entwickler)
@@ -51,7 +51,7 @@ Lizenz: GPLv3+
   * Sreeram Boyapati
   * 'steelman'
 
-[//]: # (Beachte: alphabethisch Sortiert)
+[//]: # (Beachte: alphabethische Sortierung)
 
 ## Bibliotheken
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache-Lizenz v2)

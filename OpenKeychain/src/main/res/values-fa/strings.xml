@@ -31,15 +31,12 @@
   <string name="title_exchange_keys">مبادلهٔ کلیدها</string>
   <string name="title_advanced_key_info">اطلاعات بیشتر</string>
   <string name="title_delete_secret_key">آیا کلید \'%s\' خود را پاک می‌کنید؟</string>
-  <string name="title_export_log">خروج لاگ</string>
   <string name="title_manage_my_keys">مدیریت کلیدهام</string>
   <!--section-->
   <string name="section_user_ids">هویت‌ها</string>
   <string name="section_yubikey">کلید Yubi</string>
   <string name="section_should_you_trust">آیا به این کلید اعتماد دارید؟</string>
   <string name="section_keys">زیرکلیدها</string>
-  <string name="section_cloud_search">جستجوی اینترنت</string>
-  <string name="section_proxy_settings">تنظیمات پراکسی</string>
   <string name="section_gui">رابط</string>
   <string name="section_certify">تأیید</string>
   <string name="section_share_key">کلید</string>
@@ -65,11 +62,8 @@
   <string name="btn_back">قبلی</string>
   <string name="btn_no">نه</string>
   <string name="btn_match">اثر انگشت‌ها مطابقت دارد</string>
-  <string name="btn_share_encrypted_signed">رمزگذاری و به اشتراک گذاری متن</string>
-  <string name="btn_copy_encrypted_signed">رمزگذاری و کپی متن</string>
   <string name="btn_create_key">ساخت کلید</string>
   <string name="btn_add_files">اضافه کردن فایل(ها)</string>
-  <string name="btn_share_decrypted_text">اشتراک گذاری متن رمزگشایی شده</string>
   <string name="btn_copy_decrypted_text">کپی متن رمزگشایی شده</string>
   <string name="btn_decrypt_clipboard">خواندن از متن کپی‌شده</string>
   <string name="btn_decrypt_files">انتخاب فایل ورودی</string>
@@ -83,7 +77,6 @@
   <!--menu-->
   <string name="menu_preferences">تنظیمات</string>
   <string name="menu_help">کمک</string>
-  <string name="menu_export_key">پشتیبان‌گیری به فایل</string>
   <string name="menu_delete_key">حذف کلید</string>
   <string name="menu_manage_keys">مدیریت کلیدهای من</string>
   <string name="menu_search">جستجو</string>
@@ -94,8 +87,6 @@
   <string name="menu_export_all_keys">خروج همهٔ کلیدها</string>
   <string name="menu_update_all_keys">آپدیت همهٔ کلیدها</string>
   <string name="menu_advanced">اطلاعات بیشتر</string>
-  <string name="menu_certify_fingerprint">تأیید با مقایسهٔ اثر انگشت</string>
-  <string name="menu_export_log">خروج لاگ</string>
   <string name="menu_keyserver_add">اضافه‌کردن</string>
   <!--label-->
   <string name="label_message">متن</string>
@@ -112,7 +103,6 @@
   <string name="label_file_ascii_armor">فعال‌کردن ASCII Armor</string>
   <string name="label_write_version_header">به دیگران اطلاع دهید که شما از OpenKeyChain استفاده می‌کنید</string>
   <string name="label_write_version_header_summary">عبارت \'OpenKeychain v2.7\' را در امضاها، متن رمزگذاری‌شده و کلیدها می‌نویسید</string>
-  <string name="label_use_default_yubikey_pin">از رمزِ PIN پیش‌فرضِ کلید Yubi استفاده کن</string>
   <string name="label_use_num_keypad_for_yubikey_pin">از صفحه‌کلیدِ شماره‌ای برای وارد کردن رمز کلیدِ Yubi استفاده کن</string>
   <string name="label_asymmetric_from">امضاء با:</string>
   <string name="label_to">رمزگذاری به:</string>
@@ -136,7 +126,6 @@
   <string name="label_name">نام</string>
   <string name="label_comment">توضیحات</string>
   <string name="label_email">ایمیل</string>
-  <string name="label_send_key">همگام‌سازی با اینترنت</string>
   <string name="label_fingerprint">اثر انگشت</string>
   <string name="expiry_date_dialog_title">تعیین تاریخ انقضأ</string>
   <string name="label_keyservers_title">سرورِ کلیدها</string>
@@ -146,8 +135,6 @@
   <string name="label_enable_compression">فشرده‌کردن</string>
   <string name="label_encrypt_filenames">رمزگذاری اسمِ فایل‌ها</string>
   <string name="label_hidden_recipients">مخفی‌کردن گیرنده‌ها</string>
-  <string name="label_verify_keyserver_connection">بررسی سرورِ کلیدها</string>
-  <string name="label_enter_keyserver_url">آدرس URL سرورِ کلید را وارد کنید</string>
   <string name="label_keyserver_dialog_delete">حذف سرورهای کلید</string>
   <string name="label_theme">قالب</string>
   <string name="pref_keyserver">سرورهای کلید OpenPGP</string>
@@ -170,7 +157,6 @@
   <string name="no_filemanager_installed">برنامهٔ مدیریتِ فایل سازگاری نصب نیست.</string>
   <string name="passphrases_do_not_match">رمز عبور‌ها مطابقت ندارند.</string>
   <string name="passphrase_must_not_be_empty">لطفاً یک رمزعبور وارد کنید.</string>
-  <string name="passphrase_for_symmetric_encryption">رمزگذاری متقارن(فقط با یک رمزعبور)</string>
   <string name="passphrase_for">وارد کردن رمز عبور برای \'%s\'</string>
   <string name="pin_for">وارد کردن رمزِ پین برای \'%s\'</string>
   <string name="keys_exported">%d کلید با موفقیت خارج شد.</string>
@@ -178,7 +164,6 @@
   <string name="key_copied_to_clipboard">کلید در حافظه کپی شده است!</string>
   <string name="fingerprint_copied_to_clipboard">اثر انگشت در حافظه کپی شده است!</string>
   <string name="select_key_to_certify">لطفاً یک کلید برای تأیید کردن انتخاب کنید!</string>
-  <string name="key_too_big_for_sharing">کلید خیلی بزرگ است و نمی‌توان آن را از این طریق به اشتراک گذاشت!</string>
   <string name="text_copied_to_clipboard">متن در حافظه کپی شده است!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -260,13 +245,6 @@
   <string name="user_id_info_invalid_title">نامعتبر</string>
   <string name="user_id_info_invalid_text">هویت مشکل دارد!</string>
   <!--Key trust-->
-  <string name="key_trust_already_verified">شما قبلاً این کلید را تأیید کرده‌اید!</string>
-  <string name="key_trust_it_is_yours">این یکی از کلیدهای‌تان است!</string>
-  <string name="key_trust_maybe">این کلید نه لغو شده و نه منقضی شده است.\nشما آن را تأیید نکرده‌اید، ولی می‌توانید اعتماد به آن کلید را انتخاب کنید.</string>
-  <string name="key_trust_revoked">این کلید توسط صاحب‌اش لغو شده است. نباید به آن اعتماد کنید.</string>
-  <string name="key_trust_expired">این کلید منقضی شده است. نباید به آن اعتماد کنید.</string>
-  <string name="key_trust_old_keys">اگر از این برای رمزگشاییِ یک پیغام قدیمی مربوط به قبل از منقضی شدن‌اش استفاده می‌کنید، مشکلی نیست.</string>
-  <string name="key_trust_no_cloud_evidence">هیچ دلیلی برای اعتماد به این کلید بر روی اینترنت نیست.</string>
   <string name="key_trust_start_cloud_search">آغاز جستجو</string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">روی Twitter پست می‌کند به عنوان %s</string>
@@ -319,8 +297,9 @@
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
-  <!--Messages for Export Log operation-->
+  <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <!--Keyserver sync-->
   <!--First Time-->
@@ -330,4 +309,5 @@
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <!--Other Linked Identity strings-->
 </resources>

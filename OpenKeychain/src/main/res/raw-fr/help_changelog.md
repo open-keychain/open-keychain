@@ -11,17 +11,17 @@
 
   * Téléchargement anonyme de clefs avec Tor
   * Prise en charge des serveurs mandataires
-  * Meilleur gestion des erreurs de la ClefYubi
+  * Meilleur gestion des erreurs Yubikey
 
 ## 3.3
 
   * Nouvel écran de déchiffrement
   * Déchiffrement simultané de plusieurs fichiers
-  * Meilleure gestion des erreurs ClefYubi
+  * Meilleure gestion des erreurs Yubikey
 
 ## 3.2
 
-  * Première version avec prise en charge complète de la ClefYubi, proposée dans l'interface utilisateur : modifier les clefs, relier la clef Yubi au clefs...
+  * Première version avec prise en charge complète de la Yubikey, proposée dans l'interface utilisateur : modifier les clefs, relier la Yubikey aux clefs...
   * Conception matérielle
   * Intégration de la lecture de code QR (nouvelles permissions exigées)
   * Amélioration de l'assistant de création de clef
@@ -56,7 +56,7 @@
   * Écran de déchiffrement redessiné
   * Nouveaux agencement et couleurs d'icônes
   * Importation des clefs secrètes corrigée de Symantec Encryption Desktop
-  * Prise en charge expérimentale de la ClefYubi : les ID de sous-clefs sont maintenant vérifiés correctement
+  * Prise en charge expérimentale de la Yubikey : les ID de sous-clefs sont maintenant vérifiés correctement
 
 
 ## 3.0.1
@@ -75,13 +75,13 @@
   * Corrigé - Certificats de révocation des ID utilisateurs
   * Nouvelle recherche nuagique (dans les serveurs traditionnels et dans keybase.io)
   * Prise en charge du dépouillement des clefs dans OpenKeychain
-  * Prise en charge expérimentale de la ClefYubi : prise en charge de la génération de signature et le déchiffrement
+  * Prise en charge expérimentale de la Yubikey : prise en charge de la génération de signature et le déchiffrement
 
 
 ## 2.9.2
 
   * Correctif - Clefs brisées dans 2.9.1
-  * Prise en charge expérimentale de la ClefYubi : le déchiffrement fonctionne maintenant avec l'API
+  * Prise en charge expérimentale de la Yubikey : le déchiffrement fonctionne maintenant avec l'API
 
 
 ## 2.9.1
@@ -90,7 +90,7 @@
   * Correctif - Gestion des drapeaux de clefs (prend maintenant en charge les clefs Mailvelope 0.7)
   * Gestion des phrases de passe améliorée
   * Partage de clefs par SafeSlinger
-  * Prise en charge expérimentale de la ClefYubi : préférence pour permettre d'autres NIP, seule la signature par l'API OpenPGP fonctionne actuellement, mais pas dans OpenKeychain
+  * Prise en charge expérimentale de la Yubikey : préférence pour permettre d'autres NIP, seule la signature par l'API OpenPGP fonctionne actuellement, mais pas dans OpenKeychain
   * Correctif - Utilisation de clefs dépouillées
   * SHA256 par défaut pour la compatibilité
   * L'API des intentions a changé, voir https://github.com/open-keychain/open-keychain/wiki/Intent-API
@@ -101,7 +101,7 @@
 
   * Correction des plantages présents dans v2.8
   * Prise en charge expérimentale CCE
-  * Prise en charge expérimentale de la ClefYubi : signature seulement avec les clefs importées
+  * Prise en charge expérimentale de la Yubikey : signature seulement avec les clefs importées
 
 
 ## 2.8

@@ -6,20 +6,20 @@
 
 Licenza: GPLv3+
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (NOTA: Ordine alfabetico)
 
 ## Sviluppatori principali
   * Dominik Schürmann (Manutentore)
   * Vincent Breitmoser
 
-## Top Contributors
+## Collaboratori principali
   * Adithya Abraham Philip
   * Ash Hughes
   * 'mar-v-in'
   * 'Thialfihar' (Sviluppatore APG)
   * Tim Bray
 
-## Occasional Contributors
+## Collaboratori occasionali
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov
@@ -51,7 +51,7 @@ Licenza: GPLv3+
   * Sreeram Boyapati
   * 'steelman'
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (NOTA: Ordine alfabetico)
 
 ## Librerie
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)

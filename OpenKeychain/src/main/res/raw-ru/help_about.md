@@ -12,14 +12,14 @@
   * Dominik Schürmann (Ведущий разработчик)
   * Vincent Breitmoser
 
-## Top Contributors
+## Лучшие разработчики
   * Adithya Abraham Philip
   * Ash Hughes
   * 'mar-v-in'
   * 'Thialfihar' (разработчик APG)
   * Tim Bray
 
-## Occasional Contributors
+## Сторонние разработчики
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov

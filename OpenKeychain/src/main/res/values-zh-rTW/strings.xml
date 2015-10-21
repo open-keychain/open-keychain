@@ -31,7 +31,6 @@
   <string name="title_exchange_keys">交換金鑰</string>
   <string name="title_advanced_key_info">延伸資訊</string>
   <string name="title_delete_secret_key">刪除您的金鑰 \'%s\'？</string>
-  <string name="title_export_log">匯出記錄</string>
   <string name="title_manage_my_keys">管理我的金鑰</string>
   <!--section-->
   <string name="section_user_ids">身份</string>
@@ -39,9 +38,6 @@
   <string name="section_linked_system_contact">已關聯帳戶</string>
   <string name="section_should_you_trust">您信任這把金鑰嗎？</string>
   <string name="section_keys">子金鑰</string>
-  <string name="section_cloud_search">雲端查詢</string>
-  <string name="section_passphrase_cache">金鑰密碼快取</string>
-  <string name="section_proxy_settings">代理伺服器設定</string>
   <string name="section_certify">確認</string>
   <string name="section_actions">操作</string>
   <string name="section_share_key">金鑰</string>
@@ -67,12 +63,9 @@
   <string name="btn_back">返回</string>
   <string name="btn_no">不</string>
   <string name="btn_match">指紋相符</string>
-  <string name="btn_share_encrypted_signed">加密並分享文字</string>
-  <string name="btn_copy_encrypted_signed">加密並複製文字</string>
   <string name="btn_view_cert_key">檢視簽署的金鑰</string>
   <string name="btn_create_key">建立金鑰</string>
   <string name="btn_add_files">加入檔案</string>
-  <string name="btn_share_decrypted_text">分享已解密的訊息</string>
   <string name="btn_copy_decrypted_text">複製已解密的訊息</string>
   <string name="btn_decrypt_clipboard">從剪貼簿中讀取</string>
   <string name="btn_decrypt_files">選擇要解密的檔案</string>
@@ -86,7 +79,6 @@
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">說明</string>
-  <string name="menu_export_key">匯出到檔案</string>
   <string name="menu_delete_key">刪除金鑰</string>
   <string name="menu_manage_keys">管理我的金鑰</string>
   <string name="menu_search">搜尋</string>
@@ -97,8 +89,6 @@
   <string name="menu_export_all_keys">匯出所有金鑰</string>
   <string name="menu_update_all_keys">更新所有金鑰</string>
   <string name="menu_advanced">附加訊息</string>
-  <string name="menu_certify_fingerprint">藉由指紋比對來認證</string>
-  <string name="menu_export_log">匯出記錄</string>
   <string name="menu_keyserver_add">新增</string>
   <!--label-->
   <string name="label_message">文字</string>
@@ -114,9 +104,7 @@
   <string name="label_file_ascii_armor">以ASCII輸出</string>
   <string name="label_write_version_header">讓別人知道我在使用OpenKeychain</string>
   <string name="label_write_version_header_summary">在簽名、密文與匯出的金鑰裡寫入\'OpenKeychain v2.7\'</string>
-  <string name="label_use_default_yubikey_pin">使用預設的 Yubikey PIN</string>
   <string name="label_use_num_keypad_for_yubikey_pin">輸入 YubiKey PIN 時使用數字鍵盤</string>
-  <string name="label_label_use_default_yubikey_pin_summary">使用預設的 PIN (123456) 來使用 NFC 存取 Yubikeys</string>
   <string name="label_asymmetric_from">簽名：</string>
   <string name="label_to">加密給:</string>
   <string name="label_delete_after_encryption">加密後刪除檔案</string>
@@ -139,7 +127,6 @@
   <string name="label_name">名字</string>
   <string name="label_comment">註記</string>
   <string name="label_email">電子郵件</string>
-  <string name="label_send_key">與雲端同步</string>
   <string name="label_fingerprint">指紋</string>
   <string name="expiry_date_dialog_title">設定有效期限</string>
   <string name="label_keyservers_title">金鑰伺服器</string>
@@ -149,8 +136,6 @@
   <string name="label_enable_compression">啓用壓縮</string>
   <string name="label_encrypt_filenames">加密檔名</string>
   <string name="label_hidden_recipients">隱藏收件人</string>
-  <string name="label_verify_keyserver_connection">驗證金鑰伺服器</string>
-  <string name="label_enter_keyserver_url">輸入金鑰伺服器網址</string>
   <string name="label_keyserver_dialog_delete">刪除金鑰伺服器</string>
   <string name="label_theme">主題</string>
   <string name="pref_keyserver">OpenPGP金鑰伺服器</string>
@@ -185,8 +170,6 @@
   <string name="orbot_start_dialog_start">啟動Orbot</string>
   <string name="orbot_start_dialog_cancel">取消</string>
   <string name="orbot_start_dialog_ignore_tor">不使用Tor</string>
-  <string name="user_id_no_name">&lt;無名&gt;</string>
-  <string name="none">&lt;無&gt;</string>
   <plurals name="n_keys">
     <item quantity="other">%d 金鑰</item>
   </plurals>
@@ -228,7 +211,6 @@
   <string name="no_filemanager_installed">找不到相容的檔案管理員。</string>
   <string name="passphrases_do_not_match">密碼不相符。</string>
   <string name="passphrase_must_not_be_empty">請輸入密碼。</string>
-  <string name="passphrase_for_symmetric_encryption">對稱加密。</string>
   <string name="passphrase_for">輸入 %s 的密碼</string>
   <string name="pin_for">輸入 \'%s\' 的 PIN</string>
   <string name="yubikey_pin_for">輸入 PIN 來存取 \'%s\' 的 YubiKey</string>
@@ -247,7 +229,6 @@
   <string name="specify_backup_dest_secret_single">將匯出公鑰及私鑰，請選擇輸出檔案位置。\n注意：已經存在的檔案將被覆蓋。</string>
   <string name="specify_backup_dest_secret">將匯出所有金鑰，包含您自己的公鑰及私鑰，請選擇輸出檔案位置。\n注意：已經存在的檔案將被覆蓋。</string>
   <string name="key_deletion_confirmation_multi">您真的想要刪除所有已選金鑰嗎？</string>
-  <string name="secret_key_deletion_confirmation">刪除之後您將無法閱讀以這把金鑰加密的訊息，而且所有用這把金鑰做的認證都會失效！</string>
   <string name="public_key_deletetion_confirmation">刪除金鑰 \'%s\' ？</string>
   <string name="also_export_secret_keys">一併匯出私鑰</string>
   <string name="reinstall_openkeychain">您遇到了一個已知的 Android 錯誤。如果您想要鏈接聯絡人和金鑰，請重新安裝 OpenKeychain。</string>
@@ -256,7 +237,6 @@
   <string name="no_keys_exported">沒有金鑰被匯出。</string>
   <string name="key_creation_el_gamal_info">注意：只有子金鑰支援 ElGamal。</string>
   <string name="key_not_found">無法找到金鑰 %08X。</string>
-  <string name="specify_file_to_export_log_to">請指定欲匯出的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
   <plurals name="bad_keys_encountered">
     <item quantity="other">%d 忽略不良的密鑰。或許您在輸出時使用\n --export-secret-subkeys 選項\n 請確認您使用\n --export-secret-keys\n 作爲選項。\"</item>
   </plurals>
@@ -265,7 +245,6 @@
   <string name="key_copied_to_clipboard">金鑰已複製到剪貼簿!</string>
   <string name="fingerprint_copied_to_clipboard">指紋已複製到剪貼簿!</string>
   <string name="select_key_to_certify">請選擇一把金鑰來做認證 !</string>
-  <string name="key_too_big_for_sharing">金鑰太大無法使用此方式分享!</string>
   <string name="text_copied_to_clipboard">文字已複製到剪貼簿!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -351,8 +330,8 @@
   <string name="progress_encrypting">正在加密資料…</string>
   <string name="progress_decrypting">正在解密資料…</string>
   <string name="progress_preparing_signature">正在準備簽名…</string>
-  <string name="progress_generating_signature">正在產生簽名…</string>
   <string name="progress_processing_signature">正在處理簽名…</string>
+  <string name="progress_generating_signature">正在產生簽名…</string>
   <string name="progress_verifying_signature">正在驗證簽名…</string>
   <string name="progress_signing">簽名中…</string>
   <string name="progress_certifying">正在認證…</string>
@@ -362,15 +341,10 @@
   <string name="progress_verifying_integrity">正在驗證完整性…</string>
   <string name="progress_deleting_securely">正在安全地刪除 \'%s\'...</string>
   <string name="progress_deleting">正在刪除金鑰…</string>
-  <string name="progress_verifying_keyserver_connection">正在驗證金鑰伺服器...</string>
   <string name="progress_starting_orbot">正在啟動Orbot...</string>
   <!--action strings-->
   <string name="hint_cloud_search_hint">使用姓名，電子郵件尋找...</string>
   <!--key bit length selections-->
-  <string name="key_size_512">512</string>
-  <string name="key_size_768">768</string>
-  <string name="key_size_1024">1024</string>
-  <string name="key_size_1536">1536</string>
   <string name="key_size_2048">2048</string>
   <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
@@ -400,7 +374,6 @@
   <string name="help_about_version">版本：</string>
   <!--Import-->
   <string name="import_tab_keyserver">金鑰伺服器</string>
-  <string name="import_tab_cloud">雲端查詢</string>
   <string name="import_tab_direct">檔案/剪貼簿</string>
   <string name="import_tab_qr_code">二維條碼/NFC</string>
   <string name="import_import">匯入選擇的金鑰</string>
@@ -415,12 +388,6 @@
   <string name="with_warnings">，包含警告</string>
   <string name="with_cancelled">，直到被取消</string>
   <!--Import result toast-->
-  <plurals name="import_keys_added_and_updated_1">
-    <item quantity="other">成功匯入%1$d金鑰</item>
-  </plurals>
-  <plurals name="import_keys_added_and_updated_2">
-    <item quantity="other">並更新%1$d金鑰%2$s。</item>
-  </plurals>
   <plurals name="import_keys_added">
     <item quantity="other">成功匯入%1$d金鑰%2$s。</item>
   </plurals>
@@ -456,9 +423,6 @@
   <string name="revoke_nothing">沒有任何金鑰被撤銷。</string>
   <string name="revoke_cancelled">撤銷動作被取消。</string>
   <!--Certify result toast-->
-  <plurals name="certify_keys_ok">
-    <item quantity="other">成功認證 %1$d 金鑰%2$s。</item>
-  </plurals>
   <plurals name="certify_keys_with_errors">
     <item quantity="other">認證 %d 金鑰失敗 !</item>
   </plurals>
@@ -531,20 +495,9 @@
   <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">已撤銷</string>
   <string name="user_id_info_revoked_text">這個身分識別被金鑰持有人撤銷，已不再有效。</string>
-  <string name="user_id_info_certified_title">已認證</string>
-  <string name="user_id_info_certified_text">這個身分識別已經過你的認證。</string>
-  <string name="user_id_info_uncertified_title">未認證</string>
-  <string name="user_id_info_uncertified_text">這個身分識別尚未經過認證，你不能確認這個身分識別是否屬於真的某個人。</string>
   <string name="user_id_info_invalid_title">無效</string>
   <string name="user_id_info_invalid_text">這個身份有些錯誤！</string>
   <!--Key trust-->
-  <string name="key_trust_already_verified">您已經確認這把金鑰！</string>
-  <string name="key_trust_it_is_yours">這把是您的金鑰！</string>
-  <string name="key_trust_maybe">這把金鑰未被撤銷且尚未過期。\n金鑰尚未進行確認，但你可以選擇信任它。</string>
-  <string name="key_trust_revoked">這把金鑰已被持有者撤銷。您不應該信任它。</string>
-  <string name="key_trust_expired">這把金鑰已經過期。您不應該信任它。</string>
-  <string name="key_trust_old_keys">用來解密在金鑰失效前加密的訊息還勉強可以接受。</string>
-  <string name="key_trust_no_cloud_evidence">雲端上沒有證據能證明這把金鑰的可信度。</string>
   <string name="key_trust_start_cloud_search">開始搜尋</string>
   <string name="key_trust_results_prefix">Keybase.io提供“證據”證明這把金鑰的持有人：</string>
   <string name="key_trust_header_text">注意：Keybase.io證據是個OpenKeychain實驗性功能。我們推薦你另外以QR條碼或是NFC交換金鑰進行確認。</string>
@@ -591,7 +544,6 @@
   <string name="edit_key_error_bad_nfc_size">智慧卡不支援該金鑰長度！</string>
   <string name="edit_key_error_bad_nfc_stripped">無法移動金鑰至智慧卡(已移動或被卸除)！</string>
   <!--Create key-->
-  <string name="create_key_upload">與雲端同步</string>
   <string name="create_key_empty">必填欄位</string>
   <string name="create_key_passphrases_not_equal">密碼不相符</string>
   <string name="create_key_final_text">您輸入了以下資訊：</string>
@@ -607,12 +559,9 @@
   <string name="create_key_add_email_text">附加的電子郵件同樣與您的金鑰有所關聯，可以提供您安全的通訊。</string>
   <string name="create_key_email_already_exists_text">電子郵件地址已經存在</string>
   <string name="create_key_email_invalid_email">電子郵件地址無效</string>
-  <string name="create_key_yubi_key_pin_text">請記住您的PIN碼，等會兒您的YubiKey需要它。請紀錄下管理者PIN碼並且將它保存在安全的地方。</string>
   <string name="create_key_yubi_key_pin">PIN碼</string>
   <string name="create_key_yubi_key_admin_pin">管理者PIN碼</string>
-  <string name="create_key_yubi_key_pin_repeat_text">請輸入PIN碼及管理者PIN碼以繼續執行。</string>
   <string name="create_key_yubi_key_pin_repeat">重複PIN碼</string>
-  <string name="create_key_yubi_key_admin_pin_repeat">重複管理者PIN碼</string>
   <string name="create_key_yubi_key_pin_not_correct">PIN碼不正確！</string>
   <!--View key-->
   <string name="view_key_revoked">已撤銷：不該再使用此金鑰！</string>
@@ -625,10 +574,8 @@
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">新增金鑰伺服器</string>
   <string name="edit_keyserver_dialog_title">編輯金鑰伺服器</string>
-  <string name="add_keyserver_connection_verified">已驗證金鑰伺服器！</string>
   <string name="add_keyserver_without_verification">已新增金鑰伺服器但並未進行驗證。</string>
   <string name="add_keyserver_invalid_url">URL無效！</string>
-  <string name="add_keyserver_connection_failed">連線到金鑰伺服器失敗。請確認金鑰伺服器網址及網路連線。</string>
   <string name="keyserver_preference_deleted">已刪除 %s</string>
   <string name="keyserver_preference_cannot_delete_last">無法刪除金鑰伺服器。請至少保留一個金鑰伺服器！</string>
   <!--Navigation Drawer-->
@@ -638,7 +585,6 @@
   <string name="drawer_open">開啟導航列</string>
   <string name="drawer_close">關閉導航列</string>
   <string name="my_keys">我的金鑰</string>
-  <string name="nav_backup">備份</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">輸入文字</string>
   <!--certs-->
@@ -681,7 +627,6 @@
   <string name="msg_ip_master_flags_xxxa">主要標記：驗證</string>
   <string name="msg_ip_master_flags_xxxx">主要標記：無</string>
   <string name="msg_ip_merge_public">將匯入的資料合併至公鑰鑰匙圈</string>
-  <string name="msg_ip_merge_secret">將匯入的資料合併至密鑰鑰匙圈</string>
   <string name="msg_ip_subkey">正在處理子金鑰%s</string>
   <string name="msg_ip_subkey_expired">子金鑰已於%s過期</string>
   <string name="msg_ip_subkey_expires">子金鑰將於%s過期</string>
@@ -708,7 +653,6 @@
   <!--Import Secret log entries-->
   <string name="msg_is_db_exception">資料庫錯誤！</string>
   <string name="msg_is_merge_public">將匯入的資料合併至公鑰鑰匙圈</string>
-  <string name="msg_is_merge_secret">將匯入的資料合併至密鑰鑰匙圈</string>
   <string name="msg_is_pubring_generate">從密鑰鑰匙圈產生公鑰鑰匙圈</string>
   <string name="msg_is_success_identical">鑰匙圈沒有新資料，不必進行操作</string>
   <string name="msg_is_success">成功匯入密鑰鑰匙圈</string>
@@ -737,19 +681,16 @@
   <string name="msg_import_fetch_keyserver">從金鑰伺服器取回：%s</string>
   <string name="msg_import_fetch_keyserver_ok">成功取得金鑰</string>
   <string name="msg_import_keyserver">使用金鑰伺服器%s</string>
-  <string name="msg_import_fingerprint_ok">指紋檢查正確</string>
   <string name="msg_import_merge">正在合併取得的資料</string>
-  <string name="msg_backup_error_db">資料庫錯誤！</string>
-  <string name="msg_backup_error_io">輸入/輸出錯誤！</string>
-  <string name="msg_backup_success">匯出處理成功</string>
   <string name="msg_del_error_empty">沒有東西可以刪除！</string>
   <string name="msg_del_error_multi_secret">私鑰只能分別刪除！</string>
+  <!--Linked Identity verification-->
   <string name="msg_acc_saved">帳戶已儲存</string>
   <string name="msg_download_success">下載成功！</string>
   <string name="msg_download_no_valid_keys">在檔案/剪貼簿中找不到有效的金鑰！</string>
   <string name="msg_download_query_failed">查詢金鑰的時候發生錯誤。</string>
   <!--Messages for Keybase Verification operation-->
-  <!--Messages for Export Log operation-->
+  <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <!--Keyserver sync-->
   <!--First Time-->
@@ -758,7 +699,6 @@
   <string name="first_time_yubikey">使用YubiKey NEO</string>
   <string name="first_time_skip">跳過設置</string>
   <!--unsorted-->
-  <string name="unknown_uid">&lt;未知&gt;</string>
   <string name="empty_certs">這把金鑰未經過認證</string>
   <string name="certs_text">只有有效的自簽署認證以及經由你的金鑰簽署的有效認證會被顯示在這。</string>
   <string name="label_revocation">撤銷原因</string>
@@ -784,4 +724,5 @@
   <string name="nfc_write_succesful">成功寫入 NFC 標籤</string>
   <string name="unlocked">解鎖</string>
   <string name="nfc_settings">設定</string>
+  <!--Other Linked Identity strings-->
 </resources>

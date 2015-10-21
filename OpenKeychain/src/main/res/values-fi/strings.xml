@@ -2,94 +2,143 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_decrypt">Pura Salaus</string>
+  <string name="title_encrypt_text">Salaa</string>
+  <string name="title_encrypt_files">Salaa</string>
+  <string name="title_decrypt">Pura salaus</string>
   <string name="title_add_subkey">Lisää aliavain</string>
   <string name="title_edit_key">Muokkaa avainta</string>
   <string name="title_preferences">Asetukset</string>
   <string name="title_api_registered_apps">Sovellukset</string>
+  <string name="title_key_server_preference">OpenPGP-avainpalvelimet</string>
+  <string name="title_change_passphrase">Vaihda salasana</string>
   <string name="title_share_fingerprint_with">Jaa sormenjälki...</string>
   <string name="title_share_key">Jaa avain...</string>
   <string name="title_share_file">Jaa tiedosto...</string>
-  <string name="title_encrypt_to_file">Salaa Tiedostoon</string>
-  <string name="title_decrypt_to_file">Pura Tiedostoon</string>
-  <string name="title_import_keys">Tuo Avaimia</string>
-  <string name="title_key_not_found">Avainta Ei Löydy</string>
-  <string name="title_send_key">Lähetä Avainpalvelimelle</string>
-  <string name="title_key_details">Avaimen Tiedot</string>
+  <string name="title_share_message">Jaa teksti...</string>
+  <string name="title_encrypt_to_file">Salaa tiedostoon</string>
+  <string name="title_decrypt_to_file">Pura salaus tiedostoon</string>
+  <string name="title_import_keys">Tuo avaimia</string>
+  <string name="title_export_key">Varmuuskopioi avain</string>
+  <string name="title_export_keys">Varmuuskopioi avaimet</string>
+  <string name="title_key_not_found">Avainta ei löydy</string>
+  <string name="title_send_key">Lähetä avainpalvelimelle</string>
+  <string name="title_certify_key">Vahvista avain</string>
+  <string name="title_key_details">Avaimen tiedot</string>
   <string name="title_help">Apua</string>
   <string name="title_log_display">Loki</string>
-  <string name="title_exchange_keys">Vaihda Avaimia</string>
+  <string name="title_exchange_keys">Vaihda avaimia</string>
+  <string name="title_manage_my_keys">Hallitse avaimiani</string>
   <!--section-->
   <string name="section_user_ids">Identiteetit</string>
+  <string name="section_yubikey">YubiKey</string>
   <string name="section_keys">Aliavaimet</string>
-  <string name="section_cloud_search">Pilvihaku</string>
-  <string name="section_actions">Toiminteet</string>
+  <string name="section_gui">Käyttöliittymä</string>
+  <string name="section_experimental_features">Kokeelliset ominaisuudet</string>
+  <string name="section_certify">Vahvista</string>
+  <string name="section_actions">Toiminnot</string>
   <string name="section_share_key">Avain</string>
   <string name="section_key_server">Avainpalvelin</string>
   <string name="section_fingerprint">Sormenjälki</string>
+  <string name="section_encrypt">Salaa</string>
+  <string name="section_decrypt">Pura salaus / todenna</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Pura, todenna ja tallenna tiedosto</string>
   <string name="btn_encrypt_share_file">Salaa ja jaa tiedosto</string>
+  <string name="btn_encrypt_save_file">Salaa ja tallenna tiedosto</string>
+  <string name="btn_save_file">Tallenna tiedost</string>
+  <string name="btn_save">Tallenna</string>
+  <string name="btn_view_log">Katso loki</string>
   <string name="btn_do_not_save">Peruuta</string>
   <string name="btn_delete">Poista</string>
   <string name="btn_no_date">Ei umpeutumisaikaa</string>
   <string name="btn_okay">OK</string>
-  <string name="btn_export_to_server">Lataa Avainpalvelimelle</string>
+  <string name="btn_export_to_server">Lataa avainpalvelimelle</string>
   <string name="btn_next">Seuraava</string>
   <string name="btn_back">Takaisin</string>
+  <string name="btn_no">Ei</string>
+  <string name="btn_match">Sormenjäljet täsmäävät</string>
   <string name="btn_view_cert_key">Näytä varmennusavain</string>
   <string name="btn_create_key">Luo avain</string>
   <string name="btn_add_files">Lisää tiedosto(ja)</string>
+  <string name="btn_unlock">Avaa lukitus</string>
+  <string name="btn_add_keyserver">Lisä</string>
+  <string name="btn_save_default">Tallenna oletukseksi</string>
+  <string name="btn_saved">Tallennettu!</string>
   <!--menu-->
   <string name="menu_preferences">Asetukset</string>
   <string name="menu_help">Apua</string>
   <string name="menu_delete_key">Poista avain</string>
+  <string name="menu_manage_keys">Hallitse avaimiani</string>
   <string name="menu_search">Etsi</string>
-  <string name="menu_beam_preferences">Beam asetukset</string>
+  <string name="menu_nfc_preferences">NFC-asetukset</string>
+  <string name="menu_beam_preferences">Beam-asetukset</string>
   <string name="menu_encrypt_to">Salaa...</string>
   <string name="menu_select_all">Valitse kaikki</string>
   <string name="menu_export_all_keys">Vie kaikki avaimet</string>
+  <string name="menu_update_all_keys">Päivitä kaikki avaimet</string>
+  <string name="menu_keyserver_add">Lisää</string>
   <!--label-->
+  <string name="label_message">Teksti</string>
   <string name="label_file">Tiedosto</string>
   <string name="label_files">Tiedosto(t)</string>
   <string name="label_file_colon">Tiedosto:</string>
+  <string name="label_no_passphrase">Ei salasanaa</string>
+  <string name="label_passphrase">Salasan</string>
   <string name="label_unlock">Avataan...</string>
+  <string name="label_passphrase_again">Toista salasana</string>
+  <string name="label_show_passphrase">Näytä salasana</string>
   <string name="label_algorithm">Algoritmi</string>
-  <string name="label_ascii_armor">Tiedosto ASCII Armor</string>
+  <string name="label_ascii_armor">Tiedoston ASCII Armor</string>
   <string name="label_file_ascii_armor">Käytä ASCII Armoria</string>
   <string name="label_write_version_header">Anna muiden tietää että käytät OpenKeychainia</string>
   <string name="label_write_version_header_summary">Kirjoittaa \'OpenKeychain v2.7\' OpenPGP-allekirjoituksiin, kryptattuun tekstiin sekä vietyihin avaimiin</string>
-  <string name="label_use_default_yubikey_pin">Käytä vakiota YubiKey PIN:iä</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Käytä numeerista näppäimistöä YuniKey PIN:iin</string>
-  <string name="label_label_use_default_yubikey_pin_summary">Käyttää vakio-PIN:iä (123456) käyttääkseen YubiKeyssejä NFC kautta</string>
   <string name="label_to">Salaa:</string>
   <string name="label_delete_after_decryption">Poista salauksen purkamisen jälkeen</string>
   <string name="label_encryption_algorithm">Salausalgoritmi</string>
   <string name="label_hash_algorithm">Tiivistealgoritmi</string>
   <string name="label_file_compression">Tiedoston pakkaus</string>
   <string name="label_key_id">Avaimen ID</string>
+  <string name="label_key_created">Avain luotu %s</string>
   <string name="label_creation">Luontiaika</string>
   <string name="label_expiry">Umpeutumisaika</string>
   <string name="label_usage">Käyttö</string>
-  <string name="label_key_size">Avaimen Koko</string>
-  <string name="label_ecc_curve">Elliptinen Käyrä</string>
+  <string name="label_key_size">Avaimen koko</string>
+  <string name="label_ecc_curve">Elliptinen käyrä</string>
   <string name="label_main_user_id">Pääidentiteetti</string>
   <string name="label_name">Nimi</string>
   <string name="label_comment">Kommentti</string>
   <string name="label_email">Email</string>
-  <string name="label_send_key">Synkronoi pilveen</string>
   <string name="label_fingerprint">Sormenjälki</string>
   <string name="expiry_date_dialog_title">Aseta umpeutumispäivämäärä</string>
+  <string name="label_keyservers_title">Avainpalvelimet</string>
+  <string name="label_selected_keyserver_title">Valittu avainpalvelin</string>
   <string name="label_preferred">ensisijainen</string>
+  <string name="label_enable_compression">Ota pakkaus käyttöön</string>
+  <string name="label_encrypt_filenames">Salaa tiedostojen nimet</string>
+  <string name="label_keyserver_dialog_delete">Poista avainpalvelin</string>
+  <string name="label_theme">Teema</string>
+  <string name="pref_keyserver">OpenPGP-avainpalvelimet</string>
+  <string name="pref_keybase">keybase.io</string>
+  <string name="pref_keybase_summary">Etsi avaimia osoitteesta keybase.io</string>
+  <string name="label_sync_settings_keyserver_title">Päivitä avaimet automaattisesti</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="keyserver_sync_settings_title">Päivitä avaimet automaattisesti</string>
+  <string name="label_experimental_settings_desc_title">Varoitus</string>
   <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Ota Tor käyttöö</string>
+  <string name="pref_proxy_tor_summary">Orbot tulee olla asennettu</string>
   <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_install">Asenna</string>
+  <string name="orbot_install_dialog_cancel">Peruuta</string>
   <!--StartOrbotDialogFragment strings-->
-  <string name="user_id_no_name">&lt;ei nimeä&gt;</string>
-  <string name="none">&lt;ei mitään&gt;</string>
+  <string name="orbot_start_dialog_cancel">Peruuta</string>
   <plurals name="n_keys">
     <item quantity="one">1 avain</item>
     <item quantity="other">%d avainta</item>
@@ -98,7 +147,7 @@
     <item quantity="one">%d avainpalvelin</item>
     <item quantity="other">%d avainpalvelinta</item>
   </plurals>
-  <string name="secret_key">Salainen Avain:</string>
+  <string name="secret_key">Salainen avain:</string>
   <!--choice-->
   <string name="choice_none">Ei mitään</string>
   <string name="choice_15secs">15 sek.</string>
@@ -112,7 +161,8 @@
   <string name="choice_2hours">2 tuntia</string>
   <string name="choice_4hours">4 tuntia</string>
   <string name="choice_8hours">8 tuntia</string>
-  <string name="choice_forever">aina</string>
+  <string name="choice_forever">ikuisesti</string>
+  <string name="choice_select_cert">Valitse avain</string>
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
@@ -121,22 +171,43 @@
   <string name="filemanager_title_open">Avaa...</string>
   <string name="error">Virhe</string>
   <string name="error_message">Virhe: %s</string>
+  <string name="theme_dark">Tumma</string>
+  <string name="theme_light">Vaalea</string>
   <!--key flags-->
   <string name="flag_certify">Varmenna</string>
   <string name="flag_sign">Allekirjoita</string>
   <string name="flag_encrypt">Salaa</string>
   <string name="flag_authenticate">Autentikoi</string>
   <!--sentences-->
+  <string name="wrong_passphrase">Väärä salasana</string>
   <string name="no_filemanager_installed">Yhteensopivaa tiedostonhallintaa ei ole asennettu.</string>
-  <string name="passphrase_for_symmetric_encryption">Symmetrinen salaus.</string>
+  <string name="passphrases_do_not_match">Salasanat eivät täsmää.</string>
+  <string name="passphrase_must_not_be_empty">Syötäthän salasanan.</string>
   <string name="pin_for">Syötä PIN \'%s\':lle</string>
+  <string name="no_file_selected">Tiedostoa ei ole valittu.</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_wrong_passphrase">väärä salasana</string>
   <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_encrypted">Salattu</string>
+  <string name="decrypt_result_not_encrypted">Ei salattu</string>
+  <string name="decrypt_result_insecure">Turvaton salaus</string>
+  <string name="decrypt_result_action_show">Näytä</string>
+  <string name="decrypt_invalid_button">Ymmärrän riskit, näytä se!</string>
   <!--Add keys-->
+  <string name="add_keys_my_key">Minun avain:</string>
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_done">Tehty.</string>
+  <string name="progress_cancel">Peruuta</string>
+  <string name="progress_cancelling">peruutetaan...</string>
+  <string name="progress_saving">tallennetaan...</string>
+  <string name="progress_importing">tuodaan...</string>
+  <string name="progress_updating">Päivitetään avaimia...</string>
+  <string name="progress_exporting">viedään...</string>
+  <string name="progress_uploading">lähetetään...</string>
+  <string name="progress_building_key">rakennetaan avainta...</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -183,17 +254,53 @@
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
-  <!--Messages for Export Log operation-->
+  <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
+  <string name="label_cert_type">Tyyppi</string>
+  <string name="key_no_passphrase">ei salasanaa</string>
+  <string name="key_unavailable">ei saatavilla</string>
+  <string name="unknown_algorithm">tunnistamaton</string>
+  <string name="contact_show_key">Näytä avain (%s)</string>
+  <string name="key_colon">Avain:</string>
   <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="progress_processing">Käsitellään...</string>
+  <string name="linked_create_twitter_1_3">Syötäthän Twitter-näyttönimesi jatkaaksesi.</string>
+  <string name="linked_create_twitter_handle">Twitter-välikappale</string>
+  <string name="linked_create_twitter_2_1">Klikkaa kumpaa tahansa nappia twiitataksesi viestin!</string>
+  <string name="linked_create_verify">Todenna</string>
+  <string name="linked_text_clipboard">Teksti on kopioitu leikepöydälle</string>
+  <!--Other Linked Identity strings-->
+  <string name="linked_verifying">Todennetaan...</string>
+  <string name="linked_verify_success">Todennettu!</string>
+  <string name="linked_verify_error">Virhe todennuksessa!</string>
+  <string name="linked_verify_pending">Ei vielä todennettu</string>
+  <string name="linked_need_verify">Resurssi täytyy todentaa ennenkuin voit jatkaa!</string>
+  <string name="menu_linked_add_identity">Linkitä tunnukseen</string>
+  <string name="section_linked_identities">Linkitetyt identiteetit</string>
+  <string name="linked_title_https">Verkkosivu (HTTPS)</string>
+  <string name="linked_title_dns">Domain-nimi (DNS)</string>
+  <string name="linked_title_github">GitHub</string>
+  <string name="linked_title_twitter">Twitter</string>
+  <string name="card_linked_identity">Linkitetty identiteetti</string>
+  <string name="linked_button_verify">Todenna</string>
+  <string name="linked_button_retry">Yritä uudelleen</string>
+  <string name="linked_button_confirm">Vahvista</string>
+  <string name="linked_button_view">Näkymä</string>
+  <string name="linked_text_verifying">Todennetaan...</string>
+  <string name="linked_text_error">Virhe</string>
+  <string name="linked_text_confirming">Vahvistetaan...</string>
+  <string name="linked_ids_more_unknown">Vielä %d tunnistamatonta identiteettityyppiä</string>
+  <string name="title_linked_id_create">Luo linkitetty identiteetti</string>
 </resources>
