@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
-import android.provider.OpenableColumns;
+import android.provider.MediaStore;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.DatabaseUtil;
@@ -39,6 +39,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * TemporaryStorageProvider stores decrypted files inside the app's cache directory previously to
@@ -74,7 +76,10 @@ public class TemporaryFileProvider extends ContentProvider {
         String COLUMN_TYPE = "mimetype";
     }
 
-    private static File cacheDir;
+    private static final String TEMP_FILES_DIR = "temp";
+    private static File tempFilesDir;
+
+    private static Pattern UUID_PATTERN = Pattern.compile("[a-fA-F0-9-]+");
 
     public static Uri createFile(Context context, String targetName, String mimeType) {
         ContentValues contentValues = new ContentValues();
@@ -153,14 +158,19 @@ public class TemporaryFileProvider extends ContentProvider {
     }
 
     private File getFile(String id) {
-        return new File(cacheDir, "temp/" + id);
+        Matcher m = UUID_PATTERN.matcher(id);
+        if (!m.matches()) {
+            throw new SecurityException("Can only open temporary files with UUIDs!");
+        }
+
+        return new File(tempFilesDir, id);
     }
 
     @Override
     public boolean onCreate() {
         db = new TemporaryStorageDatabase(getContext());
-        cacheDir = getContext().getCacheDir();
-        return new File(cacheDir, "temp").mkdirs();
+        tempFilesDir = new File(getContext().getCacheDir(), TEMP_FILES_DIR);
+        return tempFilesDir.mkdirs();
     }
 
     @Override
@@ -169,14 +179,9 @@ public class TemporaryFileProvider extends ContentProvider {
             throw new SecurityException("Listing temporary files is not allowed, only querying single files.");
         }
 
-        Log.d(Constants.TAG, "being asked for file " + uri);
-
         File file;
         try {
             file = getFile(uri);
-            if (file.exists()) {
-                Log.e(Constants.TAG, "already exists");
-            }
         } catch (FileNotFoundException e) {
             Log.e(Constants.TAG, "file not found!");
             return null;
@@ -189,9 +194,9 @@ public class TemporaryFileProvider extends ContentProvider {
         if (fileName != null) {
             if (fileName.moveToNext()) {
                 MatrixCursor cursor = new MatrixCursor(new String[]{
-                        OpenableColumns.DISPLAY_NAME,
-                        OpenableColumns.SIZE,
-                        "_data"
+                        MediaStore.MediaColumns.DISPLAY_NAME,
+                        MediaStore.MediaColumns.SIZE,
+                        MediaStore.MediaColumns.DATA,
                 });
                 cursor.newRow()
                         .add(fileName.getString(0))
@@ -208,7 +213,8 @@ public class TemporaryFileProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
         Cursor cursor = db.getReadableDatabase().query(TABLE_FILES,
-                new String[]{TemporaryFileColumns.COLUMN_TYPE}, TemporaryFileColumns.COLUMN_UUID + "=?",
+                new String[]{TemporaryFileColumns.COLUMN_TYPE},
+                TemporaryFileColumns.COLUMN_UUID + "=?",
                 new String[]{uri.getLastPathSegment()}, null, null, null);
         if (cursor != null) {
             try {
@@ -289,7 +295,6 @@ public class TemporaryFileProvider extends ContentProvider {
 
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-        Log.d(Constants.TAG, "openFile");
         return openFileHelper(uri, mode);
     }
 
