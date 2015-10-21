@@ -269,7 +269,7 @@ public class DecryptListFragment
         }
 
         // requires >=kitkat
-        FileHelper.saveDocument(this, metadata.getMimeType(), filename, REQUEST_CODE_OUTPUT);
+        FileHelper.saveDocument(this, filename, metadata.getMimeType(), REQUEST_CODE_OUTPUT);
     }
 
     private void saveFile(Uri saveUri) {

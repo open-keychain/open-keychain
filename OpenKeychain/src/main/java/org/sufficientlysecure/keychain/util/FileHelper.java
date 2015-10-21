@@ -88,7 +88,7 @@ public class FileHelper {
 
     /** Opens the storage browser on Android 4.4 or later for saving a file. */
     @TargetApi(VERSION_CODES.KITKAT)
-    public static void saveDocument(Fragment fragment, String mimeType, String suggestedName, int requestCode) {
+    public static void saveDocument(Fragment fragment, String suggestedName, String mimeType, int requestCode) {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(mimeType);

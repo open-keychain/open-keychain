@@ -451,7 +451,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
         // for kitkat and above, we have the document api
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            FileHelper.saveDocument(this, Constants.MIME_TYPE_ENCRYPTED_ALTERNATE, filename, REQUEST_SAVE);
+            FileHelper.saveDocument(this, filename, Constants.MIME_TYPE_ENCRYPTED_ALTERNATE, REQUEST_SAVE);
             return;
         }
 
