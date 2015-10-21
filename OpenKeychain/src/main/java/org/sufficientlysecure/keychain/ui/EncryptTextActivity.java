@@ -18,14 +18,22 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.io.IOException;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
+import android.widget.Toast;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class EncryptTextActivity extends EncryptActivity {
@@ -57,14 +65,34 @@ public class EncryptTextActivity extends EncryptActivity {
 
             // When sending to OpenKeychain Encrypt via share menu
             if ("text/plain".equals(type)) {
-                String sharedText = extras.getString(Intent.EXTRA_TEXT);
-                if (sharedText != null) {
-                    // handle like normal text encryption, override action and extras to later
-                    // executeServiceMethod ACTION_ENCRYPT_TEXT in main actions
-                    extras.putString(EXTRA_TEXT, sharedText);
-                }
-
+                Toast.makeText(this, "Wrong data type, expected text!", Toast.LENGTH_LONG).show();
+                finish();
+                return;
             }
+
+            String sharedText;
+            if (extras.containsKey(Intent.EXTRA_TEXT)) {
+                sharedText = extras.getString(Intent.EXTRA_TEXT);
+            } else  if (extras.containsKey(Intent.EXTRA_STREAM)) {
+                try {
+                    sharedText = FileHelper.readTextFromUri(this, extras.<Uri>getParcelable(Intent.EXTRA_STREAM), null);
+                } catch (IOException e) {
+                    Toast.makeText(this, R.string.error_preparing_data, Toast.LENGTH_LONG).show();
+                    finish();
+                    return;
+                }
+            } else {
+                Toast.makeText(this, "No text in shared data!", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+
+            if (sharedText != null) {
+                // handle like normal text encryption, override action and extras to later
+                // executeServiceMethod ACTION_ENCRYPT_TEXT in main actions
+                extras.putString(EXTRA_TEXT, sharedText);
+            }
+
         }
 
         String textData = extras.getString(EXTRA_TEXT);
