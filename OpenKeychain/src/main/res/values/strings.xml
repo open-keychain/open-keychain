@@ -435,6 +435,7 @@
     <string name="progress_encrypting">"encrypting data…"</string>
     <string name="progress_decrypting">"decrypting data…"</string>
     <string name="progress_preparing_signature">"preparing signature…"</string>
+    <string name="progress_processing_signature">processing signature…</string>
     <string name="progress_generating_signature">"generating signature…"</string>
     <string name="progress_verifying_signature">"verifying signature…"</string>
     <string name="progress_signing">"signing…"</string>
