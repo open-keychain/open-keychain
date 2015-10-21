@@ -34,24 +34,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
 
-    private final OkUrlFactory factory;
-
-    private static OkUrlFactory generateUrlFactory() {
+    private OkUrlFactory generateUrlFactory() {
         OkHttpClient client = new OkHttpClient();
         return new OkUrlFactory(client);
     }
 
-    public OkHttpKeybaseClient() {
-        factory = generateUrlFactory();
-    }
-
     @Override
-    public URLConnection openConnection(URL url) throws IOException {
-        return openConnection(url, null);
-    }
-
-    @Override
-    public URLConnection openConnection(URL url, Proxy proxy) throws IOException {
+    public URLConnection openConnection(URL url, Proxy proxy, boolean isKeybase) throws IOException {
+        OkUrlFactory factory = generateUrlFactory();
         if (proxy != null) {
             factory.client().setProxy(proxy);
             factory.client().setConnectTimeout(30000, TimeUnit.MILLISECONDS);
@@ -63,17 +53,24 @@ public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
 
         factory.client().setFollowSslRedirects(false);
 
-        // forced the usage of keybase.io pinned certificate
-        try {
-            if (!TlsHelper.usePinnedCertificateIfAvailable(factory.client(), url)) {
-                throw new IOException("no pinned certificate found for URL!");
+        // forced the usage of api.keybase.io pinned certificate
+        if (isKeybase) {
+            try {
+                if (!TlsHelper.usePinnedCertificateIfAvailable(factory.client(), url)) {
+                    throw new IOException("no pinned certificate found for URL!");
+                }
+            } catch (TlsHelper.TlsHelperException e) {
+                Log.e(Constants.TAG, "TlsHelper failed", e);
+                throw new IOException("TlsHelper failed");
             }
-        } catch (TlsHelper.TlsHelperException e) {
-            Log.e(Constants.TAG, "TlsHelper failed", e);
-            throw new IOException("TlsHelper failed");
         }
 
         return factory.open(url);
+    }
+
+    @Override
+    public String getKeybaseBaseUrl() {
+        return "https://api.keybase.io/";
     }
 
 }
