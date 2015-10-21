@@ -245,7 +245,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     log.add(LogType.MSG_DC_CHARSET, indent, armorHeaders.charset);
                 }
                 if (armorHeaders.backupVersion != null) {
-                    log.add(LogType.MSG_DC_BACKUP_VERSION, indent, armorHeaders.backupVersion);
+                    log.add(LogType.MSG_DC_BACKUP_VERSION, indent, Integer.toString(armorHeaders.backupVersion));
                 }
             }
         }
