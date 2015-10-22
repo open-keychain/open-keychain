@@ -4,10 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="16dp"
-    android:paddingLeft="24dp"
-    android:paddingRight="24dp"
-    android:paddingTop="16dp">
+    android:paddingBottom="14dp"
+    android:paddingTop="14dp">
 
     <LinearLayout
         android:id="@+id/input"
@@ -19,6 +17,7 @@
             android:id="@+id/passphrase_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
             android:text="@string/passphrase_for_backup"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
@@ -42,7 +41,7 @@
                 android:maxLength="6"
                 android:singleLine="true"
                 android:textColorHint="@android:color/transparent"
-                android:textSize="16dp"
+                android:textSize="14dp"
                 android:textStyle="bold"
                 android:typeface="monospace"
                 tools:ignore="HardcodedText,SpUsage" />
@@ -52,7 +51,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="-"
-                android:textSize="16dp"
+                android:textSize="14dp"
                 android:textStyle="bold"
                 android:typeface="monospace"
                 tools:ignore="HardcodedText,SpUsage" />
@@ -67,7 +66,7 @@
                 android:maxLength="6"
                 android:singleLine="true"
                 android:textColorHint="@android:color/transparent"
-                android:textSize="16dp"
+                android:textSize="14dp"
                 android:textStyle="bold"
                 android:typeface="monospace"
                 tools:ignore="HardcodedText,SpUsage" />
@@ -77,7 +76,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="-"
-                android:textSize="16dp"
+                android:textSize="14dp"
                 android:textStyle="bold"
                 android:typeface="monospace"
                 tools:ignore="HardcodedText,SpUsage" />
@@ -92,7 +91,7 @@
                 android:maxLength="6"
                 android:singleLine="true"
                 android:textColorHint="@android:color/transparent"
-                android:textSize="16dp"
+                android:textSize="14dp"
                 android:textStyle="bold"
                 android:typeface="monospace"
                 tools:ignore="HardcodedText,SpUsage" />
@@ -102,7 +101,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="-"
-                android:textSize="16dp"
+                android:textSize="14dp"
                 android:textStyle="bold"
                 android:typeface="monospace"
                 tools:ignore="HardcodedText,SpUsage" />
@@ -117,7 +116,7 @@
                 android:maxLength="6"
                 android:singleLine="true"
                 android:textColorHint="@android:color/transparent"
-                android:textSize="16dp"
+                android:textSize="14dp"
                 android:textStyle="bold"
                 android:typeface="monospace"
                 tools:ignore="HardcodedText,SpUsage" />
