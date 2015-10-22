@@ -1,5 +1,17 @@
 [//] : # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 3.6
+
+  * Encrypted backups
+  * Security fixes based on external security audit
+  * YubiKey NEO key creation wizard
+  * Basic internal MIME support
+  * Automatic key synchronization
+  * Experimental feature: link keys to Github, Twitter accounts
+  * Experimental feature: key confirmation via phrases
+  * Experimental feature: dark theme
+  * API: Version 9
+
 ## 3.5
 
   * révocation de la clef lors de la suppression de la clef
