@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListCloudLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
@@ -438,13 +439,12 @@ public class ImportKeysListFragment extends ListFragment implements
         } else if (dataUri != null) {
             try {
                 InputStream inputStream = getActivity().getContentResolver().openInputStream(dataUri);
-                int length = inputStream.available();
+                long length = FileHelper.getFileSize(getActivity(), dataUri, -1);
 
                 inputData = new InputData(inputStream, length);
             } catch (FileNotFoundException e) {
                 Log.e(Constants.TAG, "FileNotFoundException!", e);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "IOException!", e);
+                return null;
             }
         }
 
