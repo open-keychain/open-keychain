@@ -400,6 +400,10 @@ public class DecryptListFragment
                     if (ClipDescription.compareMimeTypes(type, "text/plain")) {
                         // noinspection deprecation, this should be called from Context, but not available in minSdk
                         icon = getResources().getDrawable(R.drawable.ic_chat_black_24dp);
+                    } else if (ClipDescription.compareMimeTypes(type, "application/octet-stream")) {
+                        // icons for this are just confusing
+                        // noinspection deprecation, this should be called from Context, but not available in minSdk
+                        icon = getResources().getDrawable(R.drawable.ic_doc_generic_am);
                     } else if (ClipDescription.compareMimeTypes(type, Constants.MIME_TYPE_KEYS)) {
                         // noinspection deprecation, this should be called from Context, but not available in minSdk
                         icon = getResources().getDrawable(R.drawable.ic_key_plus_grey600_24dp);
