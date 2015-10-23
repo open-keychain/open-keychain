@@ -28,6 +28,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ViewAnimator;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpSignatureResult;
@@ -440,14 +441,15 @@ public class KeyFormattingUtils {
         View getSignatureLayout();
         TextView getSignatureUserName();
         TextView getSignatureUserEmail();
-        TextView getSignatureAction();
+        ViewAnimator getSignatureAction();
 
         boolean hasEncrypt();
 
     }
 
     @SuppressWarnings("deprecation") // context.getDrawable is api lvl 21, need to use deprecated
-    public static void setStatus(Resources resources, StatusHolder holder, DecryptVerifyResult result) {
+    public static void setStatus(Resources resources, StatusHolder holder, DecryptVerifyResult result,
+            boolean processingkeyLookup) {
 
         if (holder.hasEncrypt()) {
             OpenPgpDecryptionResult decryptionResult = result.getDecryptionResult();
@@ -488,7 +490,7 @@ public class KeyFormattingUtils {
         OpenPgpSignatureResult signatureResult = result.getSignatureResult();
 
         int sigText, sigIcon, sigColor;
-        int sigActionText, sigActionIcon;
+        int sigActionDisplayedChild;
 
         switch (signatureResult.getResult()) {
 
@@ -500,8 +502,7 @@ public class KeyFormattingUtils {
                 sigColor = R.color.key_flag_gray;
 
                 // won't be used, but makes compiler happy
-                sigActionText = 0;
-                sigActionIcon = 0;
+                sigActionDisplayedChild = -1;
                 break;
             }
 
@@ -510,8 +511,7 @@ public class KeyFormattingUtils {
                 sigIcon = R.drawable.status_signature_verified_cutout_24dp;
                 sigColor = R.color.key_flag_green;
 
-                sigActionText = R.string.decrypt_result_action_show;
-                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
+                sigActionDisplayedChild = 0;
                 break;
             }
 
@@ -520,8 +520,7 @@ public class KeyFormattingUtils {
                 sigIcon = R.drawable.status_signature_unverified_cutout_24dp;
                 sigColor = R.color.key_flag_orange;
 
-                sigActionText = R.string.decrypt_result_action_show;
-                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
+                sigActionDisplayedChild = 0;
                 break;
             }
 
@@ -530,8 +529,7 @@ public class KeyFormattingUtils {
                 sigIcon = R.drawable.status_signature_revoked_cutout_24dp;
                 sigColor = R.color.key_flag_red;
 
-                sigActionText = R.string.decrypt_result_action_show;
-                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
+                sigActionDisplayedChild = 0;
                 break;
             }
 
@@ -540,8 +538,7 @@ public class KeyFormattingUtils {
                 sigIcon = R.drawable.status_signature_expired_cutout_24dp;
                 sigColor = R.color.key_flag_red;
 
-                sigActionText = R.string.decrypt_result_action_show;
-                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
+                sigActionDisplayedChild = 0;
                 break;
             }
 
@@ -550,8 +547,7 @@ public class KeyFormattingUtils {
                 sigIcon = R.drawable.status_signature_unknown_cutout_24dp;
                 sigColor = R.color.key_flag_red;
 
-                sigActionText = R.string.decrypt_result_action_Lookup;
-                sigActionIcon = R.drawable.ic_file_download_grey_24dp;
+                sigActionDisplayedChild = 1;
                 break;
             }
 
@@ -560,8 +556,7 @@ public class KeyFormattingUtils {
                 sigIcon = R.drawable.status_signature_invalid_cutout_24dp;
                 sigColor = R.color.key_flag_red;
 
-                sigActionText = R.string.decrypt_result_action_show;
-                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
+                sigActionDisplayedChild = 0;
                 break;
             }
 
@@ -572,11 +567,15 @@ public class KeyFormattingUtils {
                 sigColor = R.color.key_flag_red;
 
                 // won't be used, but makes compiler happy
-                sigActionText = 0;
-                sigActionIcon = 0;
+                sigActionDisplayedChild = -1;
                 break;
             }
 
+        }
+
+        // possibly switch out "Lookup" button for progress bar
+        if (sigActionDisplayedChild == 1 && processingkeyLookup) {
+            sigActionDisplayedChild = 2;
         }
 
         int sigColorRes = resources.getColor(sigColor);
@@ -591,9 +590,7 @@ public class KeyFormattingUtils {
 
             holder.getSignatureLayout().setVisibility(View.VISIBLE);
 
-            holder.getSignatureAction().setText(sigActionText);
-            holder.getSignatureAction().setCompoundDrawablesWithIntrinsicBounds(
-                    0, 0, sigActionIcon, 0);
+            holder.getSignatureAction().setDisplayedChild(sigActionDisplayedChild);
 
             String userId = result.getSignatureResult().getPrimaryUserId();
             KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);

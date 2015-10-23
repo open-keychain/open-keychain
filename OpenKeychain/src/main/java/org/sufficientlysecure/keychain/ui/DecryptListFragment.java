@@ -67,10 +67,14 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 // this import NEEDS to be above the ViewModel AND SubViewHolder one, or it won't compile! (as of 16.09.15)
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
@@ -84,6 +88,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableHashMap;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 
 public class DecryptListFragment
@@ -626,6 +631,68 @@ public class DecryptListFragment
         return false;
     }
 
+    private void lookupUnknownKey(final Uri inputUri, long unknownKeyId) {
+
+        final ArrayList<ParcelableKeyRing> keyList;
+        final String keyserver;
+
+        // search config
+        {
+            Preferences prefs = Preferences.getPreferences(getActivity());
+            Preferences.CloudSearchPrefs cloudPrefs =
+                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
+            keyserver = cloudPrefs.keyserver;
+        }
+
+        {
+            ParcelableKeyRing keyEntry = new ParcelableKeyRing(null,
+                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId), null);
+            ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
+            selectedEntries.add(keyEntry);
+
+            keyList = selectedEntries;
+        }
+
+        CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> callback
+                = new CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult>() {
+
+            @Override
+            public ImportKeyringParcel createOperationInput() {
+                return new ImportKeyringParcel(keyList, keyserver);
+            }
+
+            @Override
+            public void onCryptoOperationSuccess(ImportKeyResult result) {
+                // TODO trigger new signature check
+                result.createNotify(getActivity()).show();
+                mAdapter.setProcessingKeyLookup(inputUri, false);
+            }
+
+            @Override
+            public void onCryptoOperationCancelled() {
+                mAdapter.setProcessingKeyLookup(inputUri, false);
+            }
+
+            @Override
+            public void onCryptoOperationError(ImportKeyResult result) {
+                result.createNotify(getActivity()).show();
+                mAdapter.setProcessingKeyLookup(inputUri, false);
+            }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
+        };
+
+        mAdapter.setProcessingKeyLookup(inputUri, true);
+
+        CryptoOperationHelper importOpHelper = new CryptoOperationHelper<>(2, this, callback, null);
+        importOpHelper.cryptoOperation();
+
+    }
+
+
     private void deleteFile(Activity activity, Uri uri) {
 
         // we can only ever delete a file once, if we got this far either it's gone or it will never work
@@ -671,6 +738,7 @@ public class DecryptListFragment
             int mProgress, mMax;
             String mProgressMsg;
             OnClickListener mCancelled;
+            boolean mProcessingKeyLookup;
 
             ViewModel(Uri uri) {
                 mInputUri = uri;
@@ -697,6 +765,10 @@ public class DecryptListFragment
                 }
                 mProgress = progress;
                 mMax = max;
+            }
+
+            void setProcessingKeyLookup(boolean processingKeyLookup) {
+                mProcessingKeyLookup = processingKeyLookup;
             }
 
             // Depends on inputUri only
@@ -765,17 +837,13 @@ public class DecryptListFragment
         }
 
         private void bindItemCancelled(ViewHolder holder, ViewModel model) {
-            if (holder.vAnimator.getDisplayedChild() != 3) {
-                holder.vAnimator.setDisplayedChild(3);
-            }
+            holder.vAnimator.setDisplayedChild(3);
 
             holder.vCancelledRetry.setOnClickListener(model.mCancelled);
         }
 
         private void bindItemProgress(ViewHolder holder, ViewModel model) {
-            if (holder.vAnimator.getDisplayedChild() != 0) {
-                holder.vAnimator.setDisplayedChild(0);
-            }
+            holder.vAnimator.setDisplayedChild(0);
 
             holder.vProgress.setProgress(model.mProgress);
             holder.vProgress.setMax(model.mMax);
@@ -785,11 +853,10 @@ public class DecryptListFragment
         }
 
         private void bindItemSuccess(ViewHolder holder, final ViewModel model) {
-            if (holder.vAnimator.getDisplayedChild() != 1) {
-                holder.vAnimator.setDisplayedChild(1);
-            }
+            holder.vAnimator.setDisplayedChild(1);
 
-            KeyFormattingUtils.setStatus(getResources(), holder, model.mResult.mDecryptVerifyResult);
+            KeyFormattingUtils.setStatus(getResources(), holder,
+                    model.mResult.mDecryptVerifyResult, model.mProcessingKeyLookup);
 
             int numFiles = model.mResult.getOutputUris().size();
             holder.resizeFileList(numFiles, LayoutInflater.from(getActivity()));
@@ -867,6 +934,13 @@ public class DecryptListFragment
                             activity.startActivity(intent);
                         }
                     });
+                } else {
+                    holder.vSignatureLayout.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            lookupUnknownKey(model.mInputUri, keyId);
+                        }
+                    });
                 }
             }
 
@@ -895,9 +969,7 @@ public class DecryptListFragment
         }
 
         private void bindItemFailure(ViewHolder holder, final ViewModel model) {
-            if (holder.vAnimator.getDisplayedChild() != 2) {
-                holder.vAnimator.setDisplayedChild(2);
-            }
+            holder.vAnimator.setDisplayedChild(2);
 
             holder.vErrorMsg.setText(model.mResult.getLog().getLast().mType.getMsgId());
 
@@ -953,6 +1025,13 @@ public class DecryptListFragment
             notifyItemChanged(pos);
         }
 
+        public void setProcessingKeyLookup(Uri uri, boolean processingKeyLookup) {
+            ViewModel newModel = new ViewModel(uri);
+            int pos = mDataset.indexOf(newModel);
+            mDataset.get(pos).setProcessingKeyLookup(processingKeyLookup);
+            notifyItemChanged(pos);
+        }
+
         public void addResult(Uri uri, InputDataResult result) {
 
             ViewModel model = new ViewModel(uri);
@@ -984,7 +1063,7 @@ public class DecryptListFragment
         public View vSignatureLayout;
         public TextView vSignatureName;
         public TextView vSignatureMail;
-        public TextView vSignatureAction;
+        public ViewAnimator vSignatureAction;
         public View vContextMenu;
 
         public TextView vErrorMsg;
@@ -1027,7 +1106,7 @@ public class DecryptListFragment
             vSignatureLayout = itemView.findViewById(R.id.result_signature_layout);
             vSignatureName = (TextView) itemView.findViewById(R.id.result_signature_name);
             vSignatureMail= (TextView) itemView.findViewById(R.id.result_signature_email);
-            vSignatureAction = (TextView) itemView.findViewById(R.id.result_signature_action);
+            vSignatureAction = (ViewAnimator) itemView.findViewById(R.id.result_signature_action);
 
             vFileList = (LinearLayout) itemView.findViewById(R.id.file_list);
             for (int i = 0; i < vFileList.getChildCount(); i++) {
@@ -1091,7 +1170,7 @@ public class DecryptListFragment
         }
 
         @Override
-        public TextView getSignatureAction() {
+        public ViewAnimator getSignatureAction() {
             return vSignatureAction;
         }
 
