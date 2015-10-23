@@ -459,8 +459,9 @@ public class DecryptListFragment
 
         // un-cancel this one
         mCancelledInputUris.remove(uri);
+        mInputDataResults.remove(uri);
         mPendingInputUris.add(uri);
-        mAdapter.setCancelled(uri, null);
+        mAdapter.resetItemData(uri);
 
         cryptoOperation();
 
@@ -663,9 +664,7 @@ public class DecryptListFragment
 
             @Override
             public void onCryptoOperationSuccess(ImportKeyResult result) {
-                // TODO trigger new signature check
-                result.createNotify(getActivity()).show();
-                mAdapter.setProcessingKeyLookup(inputUri, false);
+                retryUri(inputUri);
             }
 
             @Override
@@ -747,7 +746,7 @@ public class DecryptListFragment
                 mCancelled = null;
             }
 
-            void addResult(InputDataResult result) {
+            void setResult(InputDataResult result) {
                 mResult = result;
             }
 
@@ -1033,13 +1032,20 @@ public class DecryptListFragment
         }
 
         public void addResult(Uri uri, InputDataResult result) {
-
             ViewModel model = new ViewModel(uri);
             int pos = mDataset.indexOf(model);
             model = mDataset.get(pos);
+            model.setResult(result);
+            notifyItemChanged(pos);
+        }
 
-            model.addResult(result);
-
+        public void resetItemData(Uri uri) {
+            ViewModel model = new ViewModel(uri);
+            int pos = mDataset.indexOf(model);
+            model = mDataset.get(pos);
+            model.setResult(null);
+            model.setCancelled(null);
+            model.setProcessingKeyLookup(false);
             notifyItemChanged(pos);
         }
 
