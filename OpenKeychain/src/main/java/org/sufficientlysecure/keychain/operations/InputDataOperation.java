@@ -25,10 +25,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import android.content.ClipDescription;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.codec.DecodeMonitor;
@@ -292,12 +294,24 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
                 log.add(LogType.MSG_DATA_MIME_PART, 2);
 
-                log.add(LogType.MSG_DATA_MIME_TYPE, 3, bd.getMimeType());
+                String mimeType = bd.getMimeType();
+
                 if (mFilename != null) {
                     log.add(LogType.MSG_DATA_MIME_FILENAME, 3, mFilename);
+                    boolean isGenericMimeType = ClipDescription.compareMimeTypes(mimeType, "application/octet-stream")
+                            || ClipDescription.compareMimeTypes(mimeType, "application/x-download");
+                    if (isGenericMimeType) {
+                        String extension = MimeTypeMap.getFileExtensionFromUrl(mFilename);
+                        String extMimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                        if (extMimeType != null) {
+                            mimeType = extMimeType;
+                            log.add(LogType.MSG_DATA_MIME_FROM_EXTENSION, 3);
+                        }
+                    }
                 }
+                log.add(LogType.MSG_DATA_MIME_TYPE, 3, mimeType);
 
-                Uri uri = TemporaryFileProvider.createFile(mContext, mFilename, bd.getMimeType());
+                Uri uri = TemporaryFileProvider.createFile(mContext, mFilename, mimeType);
                 OutputStream out = mContext.getContentResolver().openOutputStream(uri, "w");
 
                 if (out == null) {
@@ -318,7 +332,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     charset = "utf-8";
                 }
 
-                OpenPgpMetadata metadata = new OpenPgpMetadata(mFilename, bd.getMimeType(), 0L, totalLength, charset);
+                OpenPgpMetadata metadata = new OpenPgpMetadata(mFilename, mimeType, 0L, totalLength, charset);
 
                 out.close();
                 outputUris.add(uri);
