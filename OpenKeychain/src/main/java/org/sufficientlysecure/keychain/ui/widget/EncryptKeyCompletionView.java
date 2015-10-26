@@ -29,6 +29,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -134,18 +135,19 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
                 + KeyRings.IS_EXPIRED + " = 0 AND "
                 + Tables.KEYS + "." + KeyRings.IS_REVOKED + " = 0";
 
-        if (args != null && args.containsKey(ARG_QUERY)) {
-            String query = args.getString(ARG_QUERY);
-            mAdapter.setSearchQuery(query);
-
-            where += " AND " + KeyRings.USER_ID + " LIKE ?";
-
-            return new CursorLoader(getContext(), baseUri, projection, where,
-                    new String[]{"%" + query + "%"}, null);
+        if (args == null || !args.containsKey(ARG_QUERY)) {
+            // mAdapter.setSearchQuery(null);
+            // return new CursorLoader(getContext(), baseUri, projection, where, null, null);
+            return null;
         }
 
-        mAdapter.setSearchQuery(null);
-        return new CursorLoader(getContext(), baseUri, projection, where, null, null);
+        String query = args.getString(ARG_QUERY);
+        mAdapter.setSearchQuery(query);
+
+        where += " AND " + KeyRings.USER_ID + " LIKE ?";
+
+        return new CursorLoader(getContext(), baseUri, projection, where,
+                new String[]{"%" + query + "%"}, null);
 
     }
 
@@ -167,6 +169,8 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
         super.showDropDown();
     }
 
+
+
     @Override
     public void onFocusChanged(boolean hasFocus, int direction, Rect previous) {
         super.onFocusChanged(hasFocus, direction, previous);
@@ -182,8 +186,13 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
         if (start < mPrefix.length()) {
             start = mPrefix.length();
         }
+        String query = text.subSequence(start, end).toString();
+        if (TextUtils.isEmpty(query) || query.length() < 2) {
+            mLoaderManager.destroyLoader(0);
+            return;
+        }
         Bundle args = new Bundle();
-        args.putString(ARG_QUERY, text.subSequence(start, end).toString());
+        args.putString(ARG_QUERY, query);
         mLoaderManager.restartLoader(0, args, this);
     }
 
