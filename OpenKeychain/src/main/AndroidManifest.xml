@@ -76,7 +76,7 @@
         android:theme="@style/Theme.Keychain.Light">
         <activity
             android:name=".ui.MainActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/app_name"
             android:launchMode="singleTop">
             <intent-filter>
@@ -122,7 +122,7 @@
             android:label="@string/share_qr_code_dialog_title" />
         <activity
             android:name=".ui.ViewKeyActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_key_details"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
@@ -136,7 +136,7 @@
         </activity>
         <activity
             android:name=".ui.ViewCertActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_view_cert"
             android:parentActivityName=".ui.ViewKeyActivity">
             <meta-data
@@ -155,7 +155,7 @@
         </activity>
         <activity
             android:name=".ui.EncryptFilesActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_encrypt_files"
             android:parentActivityName=".ui.MainActivity"
             android:windowSoftInputMode="stateHidden">
@@ -187,7 +187,7 @@
         </activity>
         <activity
             android:name=".ui.EncryptTextActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_encrypt_text"
             android:parentActivityName=".ui.MainActivity"
             android:windowSoftInputMode="stateHidden">
@@ -213,7 +213,7 @@
         </activity>
         <activity
             android:name=".ui.DisplayTextActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
             android:parentActivityName=".ui.MainActivity"
             android:windowSoftInputMode="stateHidden">
@@ -223,7 +223,7 @@
         </activity>
         <activity
             android:name=".ui.DecryptActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
             android:parentActivityName=".ui.MainActivity"
             android:windowSoftInputMode="stateHidden">
@@ -418,7 +418,7 @@
         </activity>
         <activity
             android:name=".ui.ViewKeyAdvActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_advanced_key_info" />
         <activity
             android:name=".ui.SettingsActivity"
@@ -448,7 +448,7 @@
         </activity>
         <activity
             android:name=".ui.CertifyKeyActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_certify_key">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -456,7 +456,7 @@
         </activity>
         <activity
             android:name=".ui.CertifyFingerprintActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_certify_key">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -687,7 +687,7 @@
         </activity>
         <activity
             android:name=".ui.LogDisplayActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_log_display" />
         <activity
             android:name=".ui.ConsolidateDialogActivity"
