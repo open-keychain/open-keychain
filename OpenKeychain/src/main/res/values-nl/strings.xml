@@ -158,20 +158,16 @@
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
-  <string name="orbot_ignore_tor">Gebruik Tor niet</string>
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_title">Orbot installeren om Tor te gebruiken?</string>
   <string name="orbot_install_dialog_install">Installeren</string>
   <string name="orbot_install_dialog_content">Orbot moet geïnstalleerd en ingesteld zijn om verkeer erdoor te proxyen. Wil je het installeren?</string>
   <string name="orbot_install_dialog_cancel">Annuleren?</string>
-  <string name="orbot_install_dialog_ignore_tor">Gebruik Tor niet</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Orbot starten?</string>
-  <string name="orbot_start_dialog_content">Orbot wordt niet uitgevoerd. Wil je het opstarten en verbinden met Tor?</string>
   <string name="orbot_start_btn">Orbot starten</string>
   <string name="orbot_start_dialog_start">Orbot starten</string>
   <string name="orbot_start_dialog_cancel">Annuleren</string>
-  <string name="orbot_start_dialog_ignore_tor">Gebruik Tor niet</string>
   <plurals name="n_keys">
     <item quantity="one">1 sleutel</item>
     <item quantity="other">%d sleutels</item>
@@ -513,7 +509,6 @@
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">Zoeken starten</string>
   <string name="key_trust_results_prefix">Keybase.io geeft “bewijzen” die stellen dat de eigenaar van deze sleutel:</string>
-  <string name="key_trust_header_text">Let op: Keybase.io-bewijzen zijn een experimentele functie van OpenKeychain. We moedigen je aan QR-codes te scannen of sleutels uit te wisselen via NFC bovenop het bevestigen ervan.</string>
   <!--keybase proof stuff-->
   <string name="keybase_proof_failure">Helaas kan dit bewijs niet geverifieerd worden.</string>
   <string name="keybase_unknown_proof_failure">Niet-herkend probleem met de bewijschecker</string>

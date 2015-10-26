@@ -445,7 +445,6 @@
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">Začni iskanje</string>
   <string name="key_trust_results_prefix">Keybase.io ponuja \"dokazilo\", da je lastnik tega kluča:</string>
-  <string name="key_trust_header_text">Pozor: Dokazila Keybase.io v aplikaciji OpenKeychain so eksperimantalne narave. Za večjo zanesljivost priporočamo, da dodatno skenirate kode QR ali izmenjate ključe preko NFC.</string>
   <!--keybase proof stuff-->
   <string name="keybase_proof_failure">Dokazila se žal ne da preveriti.</string>
   <string name="keybase_unknown_proof_failure">Neznan problem pri pregledovalniku dokazil</string>

@@ -189,20 +189,16 @@
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
-  <string name="orbot_ignore_tor">No usar Tor</string>
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_title">¿Instalar Orbot para usar Tor?</string>
   <string name="orbot_install_dialog_install">Instalar</string>
   <string name="orbot_install_dialog_content">Tiene que tener Orbot instalado y activado para proxyficar el tráfico a través de él. ¿Desea instalarlo?</string>
   <string name="orbot_install_dialog_cancel">Cancelar</string>
-  <string name="orbot_install_dialog_ignore_tor">No usar Tor</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">¿Iniciar Orbot?</string>
-  <string name="orbot_start_dialog_content">Orbot no parece estar corriendo. ¿Desea iniciarlo y conectar a Tor?</string>
   <string name="orbot_start_btn">Iniciar Orbot</string>
   <string name="orbot_start_dialog_start">Iniciar Orbot</string>
   <string name="orbot_start_dialog_cancel">Cancelar</string>
-  <string name="orbot_start_dialog_ignore_tor">No usar Tor</string>
   <string name="user_id_no_name"><![CDATA[<no name>]]></string>
   <string name="none"><![CDATA[<none>]]></string>
   <plurals name="n_keys">
@@ -593,7 +589,6 @@
   <string name="key_trust_no_cloud_evidence">No hay comprobante desde Internet de la confiabilidad de esta clave.</string>
   <string name="key_trust_start_cloud_search">Iniciar búsqueda</string>
   <string name="key_trust_results_prefix">Keybase.io ofrece \"comprobantes\" que sostienen que el propietario de esta clave:</string>
-  <string name="key_trust_header_text">Nota: Los comprobantes de Keybase.io son una característica experimental de OpenKeychain. Le animamos a que escanee los códigos QR o intercambie claves vía NFC además de confirmarlas.</string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">Publica en Twitter como %s</string>
   <string name="keybase_narrative_github">Es conocido en GitHub como %s</string>

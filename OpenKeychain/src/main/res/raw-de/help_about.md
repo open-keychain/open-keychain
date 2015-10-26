@@ -1,8 +1,8 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
-[http://www.openkeychain.org](http://www.openkeychain.org)
+[https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](http://www.openkeychain.org) ist eine OpenPGP-Implementierung für Android.
+[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 
 Lizenz: GPLv3+
 
@@ -61,11 +61,11 @@ Lizenz: GPLv3+
   * [Markdown4J](https://github.com/jdcasey/markdown4j) (Apache-Lizenz v2)
   * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache-Lizenz v2)
   * [MiniDNS](https://github.com/rtreffer/minidns) (Apache-Lizenz v2)
-  * [OkHttp](http://square.github.io/okhttp/) (Apache-Lizenz v2)
+  * [OkHttp](https://square.github.io/okhttp/) (Apache License v2)
   * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache-Lizenz v2)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT-Lizenz)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT-Lizenz)
-  * [SpongyCastle](http://rtyley.github.com/spongycastle/) (MIT X11-Lizenz)
+  * [SpongyCastle](https://rtyley.github.io/spongycastle/) (MIT X11 License)
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache-Lizenz v2)
   * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Apache-Lizenz v2)
   * [ZXing](https://github.com/zxing/zxing) (Apache-Lizenz v2)

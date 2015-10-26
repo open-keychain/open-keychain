@@ -1,8 +1,8 @@
 [//]: # (注意: 请把每个句子放在其本行中, Transifex把每一行放在它自己的位置！)
 
-[http://www.openkeychain.org](http://www.openkeychain.org)
+[https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](http://www.openkeychain.org) 是安卓上的一个 OpenPGP 协议实现。
+[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 
 许可协议：GPLv3+
 
@@ -61,11 +61,11 @@
   * [Markdown4J](https://github.com/jdcasey/markdown4j) (Apache 许可证 v2)
   * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache 许可证 v2)
   * [MiniDNS](https://github.com/rtreffer/minidns) (Apache 许可证 v2)
-  * [OkHttp](http://square.github.io/okhttp/) (Apache License v2)
+  * [OkHttp](https://square.github.io/okhttp/) (Apache License v2)
   * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design)</a> (Apache 许可证 v2)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT 许可证)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT 许可证)
-  * [SpongyCastle](http://rtyley.github.com/spongycastle/) (MIT X11 许可证)
+  * [SpongyCastle](https://rtyley.github.io/spongycastle/) (MIT X11 License)
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache 许可证 v2)
   * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Apache 许可证 v2)
   * [ZXing](https://github.com/zxing/zxing) (Apache 许可证 v2)
