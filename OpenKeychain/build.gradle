@@ -8,11 +8,11 @@ dependencies {
     // NOTE: libraries are pinned to a specific build, see below
 
     // from local Android SDK
-    compile 'com.android.support:support-v4:22.2.1'
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:design:22.2.1'
-    compile 'com.android.support:recyclerview-v7:22.2.1'
-    compile 'com.android.support:cardview-v7:22.2.1'
+    compile 'com.android.support:support-v4:23.1.0'
+    compile 'com.android.support:appcompat-v7:23.1.0'
+    compile 'com.android.support:design:23.1.0'
+    compile 'com.android.support:recyclerview-v7:23.1.0'
+    compile 'com.android.support:cardview-v7:23.1.0'
 
     // Unit tests in the local JVM with Robolectric
     // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
@@ -36,7 +36,7 @@ dependencies {
     // Temporary workaround for bug: https://code.google.com/p/android-test-kit/issues/detail?id=136
     // from https://github.com/googlesamples/android-testing/blob/master/build.gradle#L21
     configurations.all {
-        resolutionStrategy.force 'com.android.support:support-annotations:22.2.0'
+        resolutionStrategy.force 'com.android.support:support-annotations:23.1.0'
     }
 
     // JCenter etc.
@@ -79,11 +79,11 @@ dependencies {
 // Comment out the libs referenced as git submodules!
 dependencyVerification {
     verify = [
-            'com.android.support:support-v4:c62f0d025dafa86f423f48df9185b0d89496adbc5f6a9be5a7c394d84cf91423',
-            'com.android.support:appcompat-v7:4b5ccba8c4557ef04f99aa0a80f8aa7d50f05f926a709010a54afd5c878d3618',
-            'com.android.support:design:58be3ca6a73789615f7ece0937d2f683b98b594bb90aa10565fa760fb10b07ee',
-            'com.android.support:recyclerview-v7:b0f530a5b14334d56ce0de85527ffe93ac419bc928e2884287ce1dddfedfb505',
-            'com.android.support:cardview-v7:2c2354761a4e20ba451ae903ab808f15c9acc8343b1e74001869c2d0a672c1fc',
+            'com.android.support:support-v4:a0309e9c188afd25ad5dd38e484ad13610bc5f2ebfeafa40d2a07eea414896d5',
+            'com.android.support:appcompat-v7:b5783b390d1440769c9b8a7b42290523a4ff058ef2d3fb90c983973934ca115b',
+            'com.android.support:design:ff53a30489cf77c5ed83805e59709f712b8dae1727524422c0d4fafd9b6bafe5',
+            'com.android.support:recyclerview-v7:464ec6e5004400a4fe0310f35343da9e5a2912386a3606db3585f7cf987c444a',
+            'com.android.support:cardview-v7:7b44941673bb60566421781be0ed16b536ecf4b630b380fe9b8f48b376df33b7',
             'com.eftimoff:android-patternview:2e7a2bbfb4fed229d4b5598aa4e69e45066fbea72c971d69461db7d916cb7ebc',
             'com.journeyapps:zxing-android-embedded:561c5d94391342bb77689b8d32a320d085a11853f72afda1128d595b815ef563',
             'com.google.zxing:core:7fe5a8ff437635a540e56317649937b768b454795ce999ed5f244f83373dee7b',
@@ -108,26 +108,28 @@ dependencyVerification {
             'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
 //            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:73d1bbf8f0288480d757d09b7cd655162ec65c05bdb0e214a8563cc05e48de8c',
 //            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:1928b3a927dd9fb9c3f3a27fb032b559556aa35f96302ce9594d3200be3b02bc',
-//            'OpenKeychain.extern.spongycastle:core:8fd58fd725f8a76de8875f0416e0a824e2fd11675e28ae4f6e2f4a5114c0fec1',
-//            'OpenKeychain.extern.spongycastle:pg:2b0bf8def92e41a13d177a394b0ab1784a6049a416eeb3d5e41359436051a2bd',
-//            'OpenKeychain.extern.spongycastle:pkix:98effd8c01547c266d5483d428263778f4629e5ed14b82cb8acd439db3b82caa',
+//            'com.madgag.spongycastle:core:8fd58fd725f8a76de8875f0416e0a824e2fd11675e28ae4f6e2f4a5114c0fec1',
+//            'com.madgag.spongycastle:pg:2b0bf8def92e41a13d177a394b0ab1784a6049a416eeb3d5e41359436051a2bd',
+//            'com.madgag.spongycastle:pkix:98effd8c01547c266d5483d428263778f4629e5ed14b82cb8acd439db3b82caa',
 //            'OpenKeychain.extern:minidns:c4a75e5ee4a32e28326e033337fb3eedd7e1cb22683e3bd9bd617e582673ffb1',
-//            'OpenKeychain.extern.spongycastle:prov:610e1ade360f147335e36939a4db5fff61fc1da93af2b81ed095fd29890f3019',
-            'com.android.support:support-annotations:beac5cae60bdb597df9af9c916f785c2f71f8c8ae4be9a32d4298dea85496a42',
+//            'com.madgag.spongycastle:prov:610e1ade360f147335e36939a4db5fff61fc1da93af2b81ed095fd29890f3019',
+            'com.android.support:support-annotations:d50996a4cbca17178989fef38635f2cc570c5d3a77870aaa57f4f7e4fc6de9dc',
 //            'OpenKeychain.extern.KeybaseLib:Lib:e74bbf33600021993e493050768ca07b743a8308407daad7913aed44d86b0cea',
 //            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:a38a6c1077a59491489304780b4e7afce52b4f5d594d7998e448e5c9e5363fb6',
             'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
     ]
 }
 
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
+    // TODO: remove org.apache dependencies in LinkedTokenResource etc.
+    useLibrary 'org.apache.http.legacy'
+
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 36100
         versionName "3.6.1"
         applicationId "org.sufficientlysecure.keychain"
