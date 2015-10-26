@@ -40,6 +40,7 @@ import android.os.AsyncTask;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -97,7 +98,6 @@ public class DecryptListFragment
     public static final String ARG_CAN_DELETE = "can_delete";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
-    public static final String ARG_CURRENT_URI = "current_uri";
 
     private ArrayList<Uri> mInputUris;
     private HashMap<Uri, InputDataResult> mInputDataResults;
@@ -113,7 +113,7 @@ public class DecryptListFragment
     /**
      * Creates new instance of this fragment
      */
-    public static DecryptListFragment newInstance(ArrayList<Uri> uris, boolean canDelete) {
+    public static DecryptListFragment newInstance(@NonNull ArrayList<Uri> uris, boolean canDelete) {
         DecryptListFragment frag = new DecryptListFragment();
 
         Bundle args = new Bundle();
@@ -170,8 +170,11 @@ public class DecryptListFragment
         outState.putParcelable(ARG_RESULTS, new ParcelableHashMap<>(results));
         outState.putParcelable(ARG_OUTPUT_URIS, new ParcelableHashMap<>(mInputDataResults));
         outState.putParcelableArrayList(ARG_CANCELLED_URIS, mCancelledInputUris);
-        outState.putParcelable(ARG_CURRENT_URI, mCurrentInputUri);
         outState.putBoolean(ARG_CAN_DELETE, mCanDelete);
+
+        // this does not save mCurrentInputUri - if anything is being
+        // processed at fragment recreation time, the operation in
+        // progress will be lost!
 
     }
 
@@ -184,20 +187,19 @@ public class DecryptListFragment
         ArrayList<Uri> inputUris = getArguments().getParcelableArrayList(ARG_INPUT_URIS);
         ArrayList<Uri> cancelledUris = args.getParcelableArrayList(ARG_CANCELLED_URIS);
         ParcelableHashMap<Uri,InputDataResult> results = args.getParcelable(ARG_RESULTS);
-        Uri currentInputUri = args.getParcelable(ARG_CURRENT_URI);
 
         mCanDelete = args.getBoolean(ARG_CAN_DELETE, false);
 
-        displayInputUris(inputUris, currentInputUri, cancelledUris,
+        displayInputUris(inputUris, cancelledUris,
                 results != null ? results.getMap() : null
         );
     }
 
-    private void displayInputUris(ArrayList<Uri> inputUris, Uri currentInputUri,
-            ArrayList<Uri> cancelledUris, HashMap<Uri,InputDataResult> results) {
+    private void displayInputUris(ArrayList<Uri> inputUris, ArrayList<Uri> cancelledUris,
+            HashMap<Uri,InputDataResult> results) {
 
         mInputUris = inputUris;
-        mCurrentInputUri = currentInputUri;
+        mCurrentInputUri = null;
         mInputDataResults = results != null ? results : new HashMap<Uri,InputDataResult>(inputUris.size());
         mCancelledInputUris = cancelledUris != null ? cancelledUris : new ArrayList<Uri>();
 
@@ -205,10 +207,6 @@ public class DecryptListFragment
 
         for (final Uri uri : inputUris) {
             mAdapter.add(uri);
-
-            if (uri.equals(mCurrentInputUri)) {
-                continue;
-            }
 
             if (mCancelledInputUris.contains(uri)) {
                 mAdapter.setCancelled(uri, new OnClickListener() {
@@ -227,9 +225,8 @@ public class DecryptListFragment
             }
         }
 
-        if (mCurrentInputUri == null) {
-            cryptoOperation();
-        }
+        // check if there are any pending input uris
+        cryptoOperation();
     }
 
     @Override
