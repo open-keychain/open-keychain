@@ -272,9 +272,12 @@ public class FileHelper {
         return true;
     }
 
-    /**
-     * A replacement for ContentResolver.openInputStream() that does not allow the usage of
-     * "file" Uris that point to private files owned by the application only.
+    /** A replacement for ContentResolver.openInputStream() that does not allow
+     * the usage of "file" Uris that point to private files owned by the
+     * application only, *on Lollipop devices*.
+     *
+     * The check will be performed on devices >= Lollipop only, which have the
+     * necessary API to stat filedescriptors.
      *
      * @see FileHelperLollipop
      */
