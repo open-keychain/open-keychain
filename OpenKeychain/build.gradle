@@ -47,7 +47,7 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
     compile 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
-    compile 'com.splitwise:tokenautocomplete:1.3.3@aar'
+    compile 'com.splitwise:tokenautocomplete:2.0.2@aar'
     compile 'se.emilsjolander:stickylistheaders:2.6.0'
     compile 'org.sufficientlysecure:html-textview:1.2'
     compile 'com.mikepenz:materialdrawer:3.0.9@aar'
@@ -91,7 +91,7 @@ dependencyVerification {
             'com.getbase:floatingactionbutton:3edefa511aac4d90794c7b0496aca59cff2eee1e32679247b4f85acbeee05240',
             'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
             'org.ocpsoft.prettytime:prettytime:a6bc2641b3ab7873df604b77b6680c75b86d98e78afefb367940972f925591b5',
-            'com.splitwise:tokenautocomplete:20bee71cc59b3828eb000b684d46ddf738efd56b8fee453a509cd16fda42c8cb',
+            'com.splitwise:tokenautocomplete:2fc238424130b42155b5f2e39799a90bbbd13b148850afbe534ab08bb913c7f7',
             'se.emilsjolander:stickylistheaders:8c05981ec5725be33f7cee5e68c13f3db49cd5c75f1aaeb04024920b1ef96ad4',
             'org.sufficientlysecure:html-textview:1d3bed31ef837437154de8d2362a0e6b0e59b6c3535d87ee48c2fab12c84f9bb',
             'com.mikepenz:iconics:c1a02203d8e0d638959463c00af3ab9096e0a7c1ad5928762eb10ef5ce8a63cd',
@@ -108,17 +108,18 @@ dependencyVerification {
             'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
 //            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:73d1bbf8f0288480d757d09b7cd655162ec65c05bdb0e214a8563cc05e48de8c',
 //            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:1928b3a927dd9fb9c3f3a27fb032b559556aa35f96302ce9594d3200be3b02bc',
-//            'com.madgag.spongycastle:core:8fd58fd725f8a76de8875f0416e0a824e2fd11675e28ae4f6e2f4a5114c0fec1',
-//            'com.madgag.spongycastle:pg:2b0bf8def92e41a13d177a394b0ab1784a6049a416eeb3d5e41359436051a2bd',
-//            'com.madgag.spongycastle:pkix:98effd8c01547c266d5483d428263778f4629e5ed14b82cb8acd439db3b82caa',
+//            'OpenKeychain.extern.spongycastle:core:8fd58fd725f8a76de8875f0416e0a824e2fd11675e28ae4f6e2f4a5114c0fec1',
+//            'OpenKeychain.extern.spongycastle:pg:2b0bf8def92e41a13d177a394b0ab1784a6049a416eeb3d5e41359436051a2bd',
+//            'OpenKeychain.extern.spongycastle:pkix:98effd8c01547c266d5483d428263778f4629e5ed14b82cb8acd439db3b82caa',
 //            'OpenKeychain.extern:minidns:c4a75e5ee4a32e28326e033337fb3eedd7e1cb22683e3bd9bd617e582673ffb1',
-//            'com.madgag.spongycastle:prov:610e1ade360f147335e36939a4db5fff61fc1da93af2b81ed095fd29890f3019',
+//            'OpenKeychain.extern.spongycastle:prov:610e1ade360f147335e36939a4db5fff61fc1da93af2b81ed095fd29890f3019',
             'com.android.support:support-annotations:beac5cae60bdb597df9af9c916f785c2f71f8c8ae4be9a32d4298dea85496a42',
 //            'OpenKeychain.extern.KeybaseLib:Lib:e74bbf33600021993e493050768ca07b743a8308407daad7913aed44d86b0cea',
 //            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:a38a6c1077a59491489304780b4e7afce52b4f5d594d7998e448e5c9e5363fb6',
             'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
     ]
 }
+
 
 
 
