@@ -87,12 +87,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
             processScannedContent(dataUri);
         } else if (ACTION_SCAN_WITH_RESULT.equals(action)
                 || ACTION_SCAN_IMPORT.equals(action) || ACTION_QR_CODE_API.equals(action)) {
-            IntentIntegrator integrator = new IntentIntegrator(this);
-            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
-                    .setPrompt(getString(R.string.import_qr_code_text))
-                    .setResultDisplayDuration(0);
-            integrator.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            integrator.initiateScan();
+            new IntentIntegrator(this).setCaptureActivity(QrCodeCaptureActivity.class).initiateScan();
         } else if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             // Check to see if the Activity started due to an Android Beam
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
