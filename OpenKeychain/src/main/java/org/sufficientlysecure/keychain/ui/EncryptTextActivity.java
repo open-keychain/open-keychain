@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
+import org.apache.james.mime4j.util.MimeUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
@@ -64,7 +65,7 @@ public class EncryptTextActivity extends EncryptActivity {
             Log.logDebugBundle(extras, "extras");
 
             // When sending to OpenKeychain Encrypt via share menu
-            if ("text/plain".equals(type)) {
+            if ( ! MimeUtil.isSameMimeType("text/plain", type)) {
                 Toast.makeText(this, R.string.toast_wrong_mimetype, Toast.LENGTH_LONG).show();
                 finish();
                 return;
