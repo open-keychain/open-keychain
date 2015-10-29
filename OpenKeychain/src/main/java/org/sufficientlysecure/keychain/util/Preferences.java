@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -325,6 +326,7 @@ public class Preferences {
             else this.parcelableProxy = new ParcelableProxy(hostName, port, type);
         }
 
+        @NonNull
         public Proxy getProxy() {
             return parcelableProxy.getProxy();
         }

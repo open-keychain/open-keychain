@@ -17,12 +17,13 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 /**
  * used to simply transport java.net.Proxy objects created using InetSockets between services/activities
@@ -48,10 +49,10 @@ public class ParcelableProxy implements Parcelable {
         return new ParcelableProxy(null, -1, null);
     }
 
-    @Nullable
+    @NonNull
     public Proxy getProxy() {
         if (mProxyHost == null) {
-            return null;
+            return Proxy.NO_PROXY;
         }
         /*
         * InetSocketAddress.createUnresolved so we can use this method even in the main thread

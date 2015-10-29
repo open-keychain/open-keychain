@@ -46,6 +46,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.support.annotation.NonNull;
+
 import de.measite.minidns.Client;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
@@ -226,7 +228,7 @@ public class HkpKeyserver extends Keyserver {
         return client;
     }
 
-    private String query(String request, Proxy proxy) throws QueryFailedException, HttpError {
+    private String query(String request, @NonNull Proxy proxy) throws QueryFailedException, HttpError {
         try {
             URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
             Log.d(Constants.TAG, "hkp keyserver query: " + url + " Proxy: " + proxy);
@@ -243,7 +245,7 @@ public class HkpKeyserver extends Keyserver {
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
             throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!" +
-                    (proxy == null ? "" : " Using proxy " + proxy));
+                    (proxy == Proxy.NO_PROXY ? "" : " Using proxy " + proxy));
         }
     }
 
@@ -373,7 +375,7 @@ public class HkpKeyserver extends Keyserver {
     }
 
     @Override
-    public String get(String keyIdHex, Proxy proxy) throws QueryFailedException {
+    public String get(String keyIdHex, @NonNull Proxy proxy) throws QueryFailedException {
         String request = "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
         Log.d(Constants.TAG, "hkp keyserver get: " + request + " using Proxy: " + proxy);
         String data;

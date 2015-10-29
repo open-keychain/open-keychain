@@ -1306,7 +1306,7 @@
     <string name="msg_backup_success">"Backup operation successful"</string>
 
     <string name="msg_upload">"Uploading public key"</string>
-    <string name="msg_upload_proxy_direct">"Using proxy: none"</string>
+    <string name="msg_upload_proxy_direct">"Using proxy: None"</string>
     <string name="msg_upload_proxy_tor">"Using proxy: TOR"</string>
     <string name="msg_upload_proxy">"Using proxy: %s"</string>
     <string name="msg_upload_server">"Server: %s"</string>

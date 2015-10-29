@@ -24,6 +24,9 @@ import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import android.support.annotation.NonNull;
+
+
 /**
  * Search two or more types of server for online keys.
  */
@@ -31,8 +34,8 @@ public class CloudSearch {
 
     private final static long SECONDS = 1000;
 
-    public static ArrayList<ImportKeysListEntry> search(final String query, Preferences.CloudSearchPrefs cloudPrefs,
-                                                        final Proxy proxy)
+    public static ArrayList<ImportKeysListEntry> search(
+            @NonNull final String query, Preferences.CloudSearchPrefs cloudPrefs, @NonNull final Proxy proxy)
             throws Keyserver.CloudSearchFailureException {
         final ArrayList<Keyserver> servers = new ArrayList<>();
 
@@ -68,7 +71,7 @@ public class CloudSearch {
         // wait for either all the searches to come back, or 10 seconds. If using proxy, wait 30 seconds.
         synchronized (results) {
             try {
-                if (proxy != null) {
+                if (proxy == Proxy.NO_PROXY) {
                     results.wait(30 * SECONDS);
                 } else {
                     results.wait(10 * SECONDS);

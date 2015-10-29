@@ -133,7 +133,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     @NonNull
     private ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
                                                 String keyServerUri, Progressable progressable,
-                                                Proxy proxy) {
+                                                @NonNull Proxy proxy) {
         if (progressable != null) {
             progressable.setProgress(R.string.progress_importing, 0, 100);
         }
@@ -197,8 +197,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                             if (entry.mExpectedFingerprint != null) {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" +
                                         entry.mExpectedFingerprint.substring(24));
-                                data = keyServer.get("0x" + entry.mExpectedFingerprint, proxy)
-                                        .getBytes();
+                                data = keyServer.get("0x" + entry.mExpectedFingerprint, proxy).getBytes();
                             } else {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
                                 data = keyServer.get(entry.mKeyIdHex, proxy).getBytes();
@@ -400,8 +399,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     return new ImportKeyResult(null,
                             RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
                 }
-                proxy = Preferences.getPreferences(mContext).getProxyPrefs().parcelableProxy
-                        .getProxy();
+                proxy = Preferences.getPreferences(mContext).getProxyPrefs().getProxy();
             } else {
                 proxy = cryptoInput.getParcelableProxy().getProxy();
             }
@@ -444,8 +442,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         ArrayList<ParcelableKeyRing> list = new ArrayList<>();
                         list.add(pkRing);
 
-                        return serialKeyRingImport(list.iterator(), 1, keyServer,
-                                ignoreProgressable, proxy);
+                        return serialKeyRingImport(list.iterator(), 1, keyServer, ignoreProgressable, proxy);
                     }
                 };
 

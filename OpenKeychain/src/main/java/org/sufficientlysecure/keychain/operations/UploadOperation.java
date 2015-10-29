@@ -95,10 +95,10 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
             if (proxyIsTor) {
                 log.add(LogType.MSG_UPLOAD_PROXY_TOR, 1);
-            } else if (proxy != null && proxy != Proxy.NO_PROXY) {
-                log.add(LogType.MSG_UPLOAD_PROXY, 1, proxy.toString());
-            } else {
+            } else if (proxy == Proxy.NO_PROXY) {
                 log.add(LogType.MSG_UPLOAD_PROXY_DIRECT, 1);
+            } else {
+                log.add(LogType.MSG_UPLOAD_PROXY, 1, proxy.toString());
             }
 
         }
