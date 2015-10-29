@@ -446,7 +446,6 @@ public class HkpKeyserver extends Keyserver {
      * Tries to find a server responsible for a given domain
      *
      * @return A responsible Keyserver or null if not found.
-     * TODO: Add proxy functionality
      */
     public static HkpKeyserver resolve(String domain, Proxy proxy) {
         try {

@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -262,12 +262,6 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     continue;
                 }
 
-                // Another check if we have been cancelled
-                if (checkCancelled()) {
-                    cancelled = true;
-                    break;
-                }
-
                 SaveKeyringResult result;
                 // synchronizing prevents https://github.com/open-keychain/open-keychain/issues/1221
                 // and https://github.com/open-keychain/open-keychain/issues/1480
@@ -366,13 +360,15 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             }
         }
 
-        // Final log entry, it's easier to do this individually
-        if ((newKeys > 0 || updatedKeys > 0) && badKeys > 0) {
-            log.add(LogType.MSG_IMPORT_PARTIAL, 1);
-        } else if (newKeys > 0 || updatedKeys > 0) {
-            log.add(LogType.MSG_IMPORT_SUCCESS, 1);
-        } else {
-            log.add(LogType.MSG_IMPORT_ERROR, 1);
+        if (!cancelled) {
+            // Final log entry, it's easier to do this individually
+            if ((newKeys > 0 || updatedKeys > 0) && badKeys > 0) {
+                log.add(LogType.MSG_IMPORT_PARTIAL, 1);
+            } else if (newKeys > 0 || updatedKeys > 0) {
+                log.add(LogType.MSG_IMPORT_SUCCESS, 1);
+            } else {
+                log.add(LogType.MSG_IMPORT_ERROR, 1);
+            }
         }
 
         return new ImportKeyResult(resultType, log, newKeys, updatedKeys, badKeys, secret,
@@ -423,7 +419,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         final ProgressScaler ignoreProgressable = new ProgressScaler();
 
         ExecutorService importExecutor = new ThreadPoolExecutor(0, MAX_THREADS, 30L, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>());
+                new LinkedBlockingQueue<Runnable>());
 
         ExecutorCompletionService<ImportKeyResult> importCompletionService =
                 new ExecutorCompletionService<>(importExecutor);
@@ -437,6 +433,10 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
                 @Override
                 public ImportKeyResult call() {
+
+                    if (checkCancelled()) {
+                        return null;
+                    }
 
                     ArrayList<ParcelableKeyRing> list = new ArrayList<>();
                     list.add(pkRing);
@@ -481,6 +481,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         private int mUpdatedKeys = 0;
         private int mSecret = 0;
         private int mResultType = 0;
+        private boolean mHasCancelledResult;
 
         /**
          * Accumulates keyring imports and updates the progressable whenever a new key is imported.
@@ -501,11 +502,22 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         public void accumulateKeyImport(ImportKeyResult result) {
             mImportedKeys++;
 
+            if (result == null) {
+                return;
+            }
+
             if (mProgressable != null) {
                 mProgressable.setProgress(mImportedKeys, mTotalKeys);
             }
 
-            mImportLog.addAll(result.getLog().toList());//accumulates log
+            boolean notCancelledOrFirstCancelled = !result.cancelled() || !mHasCancelledResult;
+            if (notCancelledOrFirstCancelled) {
+                mImportLog.addAll(result.getLog().toList()); //accumulates log
+                if (result.cancelled()) {
+                    mHasCancelledResult = true;
+                }
+            }
+
             mBadKeys += result.mBadKeys;
             mNewKeys += result.mNewKeys;
             mUpdatedKeys += result.mUpdatedKeys;
