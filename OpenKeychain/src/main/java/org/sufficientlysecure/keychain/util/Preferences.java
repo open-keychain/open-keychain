@@ -23,6 +23,8 @@ import android.content.SharedPreferences;
 
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
@@ -322,6 +324,11 @@ public class Preferences {
             if (!torEnabled && !normalPorxyEnabled) this.parcelableProxy = new ParcelableProxy(null, -1, null);
             else this.parcelableProxy = new ParcelableProxy(hostName, port, type);
         }
+
+        public Proxy getProxy() {
+            return parcelableProxy.getProxy();
+        }
+
     }
 
     // cloud prefs

@@ -1299,15 +1299,22 @@
     </plurals>
     <string name="msg_backup_all">"Backup with all keys"</string>
     <string name="msg_backup_public">"Creating backup of public key %s"</string>
-    <string name="msg_backup_upload_public">"Uploading public key %s"</string>
     <string name="msg_backup_secret">"Creating backup of secret key %s"</string>
     <string name="msg_backup_error_uri_open">"Error opening URI stream!"</string>
     <string name="msg_backup_error_db">"Database error!"</string>
     <string name="msg_backup_error_io">"Input/output error!"</string>
-    <string name="msg_backup_error_key">"Error preprocessing key data!"</string>
-    <string name="msg_backup_error_upload">"Error uploading key to server! Please check your Internet connection"</string>
     <string name="msg_backup_success">"Backup operation successful"</string>
-    <string name="msg_backup_upload_success">"Upload to keyserver successful"</string>
+
+    <string name="msg_upload">"Uploading public key"</string>
+    <string name="msg_upload_proxy_direct">"Using proxy: none"</string>
+    <string name="msg_upload_proxy_tor">"Using proxy: TOR"</string>
+    <string name="msg_upload_proxy">"Using proxy: %s"</string>
+    <string name="msg_upload_server">"Server: %s"</string>
+    <string name="msg_upload_key">"Key id: %s"</string>
+    <string name="msg_upload_error_key">"Error preprocessing key data!"</string>
+    <string name="msg_upload_error_not_found">"Key not found!"</string>
+    <string name="msg_upload_error_upload">"Error uploading key to server! Please check your Internet connection"</string>
+    <string name="msg_upload_success">"Upload to keyserver successful"</string>
 
     <string name="msg_del_error_empty">"Nothing to delete!"</string>
     <string name="msg_del_error_multi_secret">"Secret keys can only be deleted individually!"</string>

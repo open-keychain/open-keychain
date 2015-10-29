@@ -434,7 +434,7 @@ public class HkpKeyserver extends Keyserver {
 
     @Override
     public String toString() {
-        return mHost + ":" + mPort;
+        return getUrlPrefix() + mHost + ":" + mPort;
     }
 
     /**

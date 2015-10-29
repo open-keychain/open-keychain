@@ -1179,15 +1179,15 @@
   </plurals>
   <string name="msg_backup_all">すべての鍵とバックアップ</string>
   <string name="msg_backup_public">公開鍵 %s のバックアップを作成中</string>
-  <string name="msg_backup_upload_public">公開鍵 %s をアップロード中</string>
+  <string name="msg_upload">公開鍵 %s をアップロード中</string>
   <string name="msg_backup_secret">秘密鍵 %s のバックアップを作成中</string>
   <string name="msg_backup_error_uri_open">URIオープン時にエラー!</string>
   <string name="msg_backup_error_db">データベースエラー!</string>
   <string name="msg_backup_error_io">入出力エラー!</string>
-  <string name="msg_backup_error_key">鍵データの事前処理のエラー!</string>
-  <string name="msg_backup_error_upload">サーバに鍵をアップロード中にエラー! インターネット接続を確認してください</string>
+  <string name="msg_upload_error_key">鍵データの事前処理のエラー!</string>
+  <string name="msg_upload_error_upload">サーバに鍵をアップロード中にエラー! インターネット接続を確認してください</string>
   <string name="msg_backup_success">バックアップ操作に成功</string>
-  <string name="msg_backup_upload_success">鍵サーバへアップロードに成功</string>
+  <string name="msg_upload_success">鍵サーバへアップロードに成功</string>
   <string name="msg_del_error_empty">削除するものがありません!</string>
   <string name="msg_del_error_multi_secret">秘密鍵は個別にしか削除できません!</string>
   <plurals name="msg_del">

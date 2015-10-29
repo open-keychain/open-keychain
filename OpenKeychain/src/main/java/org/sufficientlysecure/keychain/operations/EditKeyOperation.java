@@ -148,7 +148,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                     new UploadKeyringParcel(saveParcel.getUploadKeyserver(), keyringBytes);
 
             UploadResult uploadResult =
-                    new UploadOperation(mContext, mProviderHelper, mProgressable)
+                    new UploadOperation(mContext, mProviderHelper, mProgressable, mCancelled)
                             .execute(exportKeyringParcel, cryptoInput);
 
             if (uploadResult.isPending()) {

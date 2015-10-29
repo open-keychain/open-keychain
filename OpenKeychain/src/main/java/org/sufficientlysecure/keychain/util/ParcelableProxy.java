@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.util;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -47,6 +48,7 @@ public class ParcelableProxy implements Parcelable {
         return new ParcelableProxy(null, -1, null);
     }
 
+    @Nullable
     public Proxy getProxy() {
         if (mProxyHost == null) {
             return null;

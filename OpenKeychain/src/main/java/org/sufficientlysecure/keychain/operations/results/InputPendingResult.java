@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
+import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -32,13 +33,13 @@ public class InputPendingResult extends OperationResult {
     // in case operation needs to add to/changes the cryptoInputParcel sent to it
     public final CryptoInputParcel mCryptoInputParcel;
 
-    public InputPendingResult(int result, OperationLog log) {
+    public InputPendingResult(int result, @NonNull OperationLog log) {
         super(result, log);
         mRequiredInput = null;
         mCryptoInputParcel = null;
     }
 
-    public InputPendingResult(OperationLog log, InputPendingResult result) {
+    public InputPendingResult(@NonNull OperationLog log, @NonNull InputPendingResult result) {
         super(RESULT_PENDING, log);
         if (!result.isPending()) {
             throw new AssertionError("sub result must be pending!");
@@ -47,7 +48,7 @@ public class InputPendingResult extends OperationResult {
         mCryptoInputParcel = result.mCryptoInputParcel;
     }
 
-    public InputPendingResult(OperationLog log, RequiredInputParcel requiredInput,
+    public InputPendingResult(@NonNull OperationLog log, RequiredInputParcel requiredInput,
                               CryptoInputParcel cryptoInputParcel) {
         super(RESULT_PENDING, log);
         mRequiredInput = requiredInput;

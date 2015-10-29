@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
@@ -47,25 +48,16 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.Preferences.ProxyPrefs;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 
 /**
- * An operation class which implements high level export operations.
- * This class receives a source and/or destination of keys as input and performs
- * all steps for this export.
- *
- * @see org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter#getSelectedEntries()
- * For the export operation, the input consists of a set of key ids and
- * either the name of a file or an output uri to write to.
+ * An operation class which implements the upload of a single key to a key server.
  */
 public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
-
-    public UploadOperation(Context context, ProviderHelper providerHelper, Progressable
-            progressable) {
-        super(context, providerHelper, progressable);
-    }
 
     public UploadOperation(Context context, ProviderHelper providerHelper,
             Progressable progressable, AtomicBoolean cancelled) {
@@ -74,57 +66,99 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
     @NonNull
     public UploadResult execute(UploadKeyringParcel uploadInput, CryptoInputParcel cryptoInput) {
+        OperationLog log = new OperationLog();
+
+        log.add(LogType.MSG_UPLOAD, 0);
+        updateProgress(R.string.progress_uploading, 0, 1);
+
         Proxy proxy;
-        if (cryptoInput.getParcelableProxy() == null) {
-            // explicit proxy not set
-            if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
-                return new UploadResult(null, RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
+        {
+            boolean proxyIsTor = false;
+
+            // Proxy priorities:
+            // 1. explicit proxy
+            // 2. orbot proxy state
+            // 3. proxy from preferences
+            ParcelableProxy parcelableProxy = cryptoInput.getParcelableProxy();
+            if (parcelableProxy != null) {
+                proxy = parcelableProxy.getProxy();
+            } else {
+                if ( ! OrbotHelper.isOrbotInRequiredState(mContext)) {
+                    return new UploadResult(log, RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
+                }
+                ProxyPrefs proxyPrefs = Preferences.getPreferences(mContext).getProxyPrefs();
+                if (proxyPrefs.torEnabled) {
+                    proxyIsTor = true;
+                }
+                proxy = proxyPrefs.getProxy();
             }
-            proxy = Preferences.getPreferences(mContext).getProxyPrefs().parcelableProxy.getProxy();
-        } else {
-            proxy = cryptoInput.getParcelableProxy().getProxy();
+
+            if (proxyIsTor) {
+                log.add(LogType.MSG_UPLOAD_PROXY_TOR, 1);
+            } else if (proxy != null && proxy != Proxy.NO_PROXY) {
+                log.add(LogType.MSG_UPLOAD_PROXY, 1, proxy.toString());
+            } else {
+                log.add(LogType.MSG_UPLOAD_PROXY_DIRECT, 1);
+            }
+
         }
 
-        HkpKeyserver hkpKeyserver = new HkpKeyserver(uploadInput.mKeyserver);
-        try {
-            CanonicalizedPublicKeyRing keyring;
-            if (uploadInput.mMasterKeyId != null) {
-                keyring = mProviderHelper.getCanonicalizedPublicKeyRing(
-                        uploadInput.mMasterKeyId);
-            } else if (uploadInput.mUncachedKeyringBytes != null) {
-                CanonicalizedKeyRing canonicalizedRing =
-                        UncachedKeyRing.decodeFromData(uploadInput.mUncachedKeyringBytes)
-                                .canonicalize(new OperationLog(), 0, true);
-                if ( ! CanonicalizedPublicKeyRing.class.isInstance(canonicalizedRing)) {
-                    throw new AssertionError("keyring bytes must contain public key ring!");
-                }
-                keyring = (CanonicalizedPublicKeyRing) canonicalizedRing;
-            } else {
-                throw new AssertionError("key id or bytes must be non-null!");
-            }
-            return uploadKeyRingToServer(hkpKeyserver, keyring, proxy);
-        } catch (ProviderHelper.NotFoundException e) {
-            Log.e(Constants.TAG, "error uploading key", e);
-            return new UploadResult(UploadResult.RESULT_ERROR, new OperationLog());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new UploadResult(UploadResult.RESULT_ERROR, new OperationLog());
-        } catch (PgpGeneralException e) {
-            e.printStackTrace();
-            return new UploadResult(UploadResult.RESULT_ERROR, new OperationLog());
+        HkpKeyserver hkpKeyserver;
+        {
+            hkpKeyserver = new HkpKeyserver(uploadInput.mKeyserver);
+            log.add(LogType.MSG_UPLOAD_SERVER, 1, hkpKeyserver.toString());
         }
+
+        CanonicalizedPublicKeyRing keyring = getPublicKeyringFromInput(log, uploadInput);
+        if (keyring == null) {
+            return new UploadResult(UploadResult.RESULT_ERROR, log);
+        }
+
+        return uploadKeyRingToServer(log, hkpKeyserver, keyring, proxy);
     }
 
-    UploadResult uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring, Proxy proxy) {
+    @Nullable
+    private CanonicalizedPublicKeyRing getPublicKeyringFromInput(OperationLog log, UploadKeyringParcel uploadInput) {
 
-        mProgressable.setProgress(R.string.progress_uploading, 0, 1);
+        boolean hasMasterKeyId = uploadInput.mMasterKeyId != null;
+        boolean hasKeyringBytes = uploadInput.mUncachedKeyringBytes != null;
+        if (hasMasterKeyId == hasKeyringBytes) {
+            throw new IllegalArgumentException("either keyid xor bytes must be non-null for this method call!");
+        }
+
+        try {
+
+            if (hasMasterKeyId) {
+                log.add(LogType.MSG_UPLOAD_KEY, 0, KeyFormattingUtils.convertKeyIdToHex(uploadInput.mMasterKeyId));
+                return mProviderHelper.getCanonicalizedPublicKeyRing(uploadInput.mMasterKeyId);
+            }
+
+            CanonicalizedKeyRing canonicalizedRing =
+                    UncachedKeyRing.decodeFromData(uploadInput.mUncachedKeyringBytes)
+                            .canonicalize(new OperationLog(), 0, true);
+            if ( ! CanonicalizedPublicKeyRing.class.isInstance(canonicalizedRing)) {
+                throw new IllegalArgumentException("keyring bytes must contain public key ring!");
+            }
+            log.add(LogType.MSG_UPLOAD_KEY, 0, KeyFormattingUtils.convertKeyIdToHex(canonicalizedRing.getMasterKeyId()));
+            return (CanonicalizedPublicKeyRing) canonicalizedRing;
+
+        } catch (ProviderHelper.NotFoundException e) {
+            log.add(LogType.MSG_UPLOAD_ERROR_NOT_FOUND, 1);
+            return null;
+        } catch (IOException | PgpGeneralException e) {
+            log.add(LogType.MSG_UPLOAD_ERROR_IO, 1);
+            Log.e(Constants.TAG, "error uploading key", e);
+            return null;
+        }
+
+    }
+
+    @NonNull
+    private UploadResult uploadKeyRingToServer(
+            OperationLog log, HkpKeyserver server, CanonicalizedPublicKeyRing keyring, Proxy proxy) {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
-        OperationLog log = new OperationLog();
-        log.add(LogType.MSG_BACKUP_UPLOAD_PUBLIC, 0, KeyFormattingUtils.convertKeyIdToHex(
-                keyring.getPublicKey().getKeyId()
-        ));
 
         try {
             aos = new ArmoredOutputStream(bos);
@@ -134,20 +168,21 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             String armoredKey = bos.toString("UTF-8");
             server.add(armoredKey, proxy);
 
-            log.add(LogType.MSG_BACKUP_UPLOAD_SUCCESS, 1);
+            updateProgress(R.string.progress_uploading, 1, 1);
+
+            log.add(LogType.MSG_UPLOAD_SUCCESS, 1);
             return new UploadResult(UploadResult.RESULT_OK, log);
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
 
-            log.add(LogType.MSG_BACKUP_ERROR_KEY, 1);
+            log.add(LogType.MSG_UPLOAD_ERROR_IO, 1);
             return new UploadResult(UploadResult.RESULT_ERROR, log);
         } catch (AddKeyException e) {
             Log.e(Constants.TAG, "AddKeyException", e);
 
-            log.add(LogType.MSG_BACKUP_ERROR_UPLOAD, 1);
+            log.add(LogType.MSG_UPLOAD_ERROR_UPLOAD, 1);
             return new UploadResult(UploadResult.RESULT_ERROR, log);
         } finally {
-            mProgressable.setProgress(R.string.progress_uploading, 1, 1);
             try {
                 if (aos != null) {
                     aos.close();
