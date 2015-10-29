@@ -35,7 +35,7 @@ public class CloudSearch {
     private final static long SECONDS = 1000;
 
     public static ArrayList<ImportKeysListEntry> search(
-            @NonNull final String query, Preferences.CloudSearchPrefs cloudPrefs, @NonNull final Proxy proxy)
+            @NonNull final String query, Preferences.CloudSearchPrefs cloudPrefs, @NonNull Proxy proxy)
             throws Keyserver.CloudSearchFailureException {
         final ArrayList<Keyserver> servers = new ArrayList<>();
 
@@ -43,10 +43,10 @@ public class CloudSearch {
         final Vector<Keyserver.CloudSearchFailureException> problems = new Vector<>();
 
         if (cloudPrefs.searchKeyserver) {
-            servers.add(new HkpKeyserver(cloudPrefs.keyserver));
+            servers.add(new HkpKeyserver(cloudPrefs.keyserver, proxy));
         }
         if (cloudPrefs.searchKeybase) {
-            servers.add(new KeybaseKeyserver());
+            servers.add(new KeybaseKeyserver(proxy));
         }
         final ImportKeysList results = new ImportKeysList(servers.size());
 
@@ -56,7 +56,7 @@ public class CloudSearch {
                 @Override
                 public void run() {
                     try {
-                        results.addAll(keyserver.search(query, proxy));
+                        results.addAll(keyserver.search(query));
                     } catch (Keyserver.CloudSearchFailureException e) {
                         problems.add(e);
                     }

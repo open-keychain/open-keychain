@@ -188,7 +188,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         // Make sure we have the keyserver instance cached
                         if (keyServer == null) {
                             log.add(LogType.MSG_IMPORT_KEYSERVER, 1, keyServerUri);
-                            keyServer = new HkpKeyserver(keyServerUri);
+                            keyServer = new HkpKeyserver(keyServerUri, proxy);
                         }
 
                         try {
@@ -197,10 +197,10 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                             if (entry.mExpectedFingerprint != null) {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" +
                                         entry.mExpectedFingerprint.substring(24));
-                                data = keyServer.get("0x" + entry.mExpectedFingerprint, proxy).getBytes();
+                                data = keyServer.get("0x" + entry.mExpectedFingerprint).getBytes();
                             } else {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
-                                data = keyServer.get(entry.mKeyIdHex, proxy).getBytes();
+                                data = keyServer.get(entry.mKeyIdHex).getBytes();
                             }
                             key = UncachedKeyRing.decodeFromData(data);
                             if (key != null) {
@@ -218,12 +218,12 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     if (entry.mKeybaseName != null) {
                         // Make sure we have this cached
                         if (keybaseServer == null) {
-                            keybaseServer = new KeybaseKeyserver();
+                            keybaseServer = new KeybaseKeyserver(proxy);
                         }
 
                         try {
                             log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.mKeybaseName);
-                            byte[] data = keybaseServer.get(entry.mKeybaseName, proxy).getBytes();
+                            byte[] data = keybaseServer.get(entry.mKeybaseName).getBytes();
                             UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
 
                             // If there already is a key, merge the two

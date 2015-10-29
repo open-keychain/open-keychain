@@ -105,7 +105,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
         HkpKeyserver hkpKeyserver;
         {
-            hkpKeyserver = new HkpKeyserver(uploadInput.mKeyserver);
+            hkpKeyserver = new HkpKeyserver(uploadInput.mKeyserver, proxy);
             log.add(LogType.MSG_UPLOAD_SERVER, 1, hkpKeyserver.toString());
         }
 
@@ -114,7 +114,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             return new UploadResult(UploadResult.RESULT_ERROR, log);
         }
 
-        return uploadKeyRingToServer(log, hkpKeyserver, keyring, proxy);
+        return uploadKeyRingToServer(log, hkpKeyserver, keyring);
     }
 
     @Nullable
@@ -155,7 +155,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
     @NonNull
     private UploadResult uploadKeyRingToServer(
-            OperationLog log, HkpKeyserver server, CanonicalizedPublicKeyRing keyring, Proxy proxy) {
+            OperationLog log, HkpKeyserver server, CanonicalizedPublicKeyRing keyring) {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
@@ -166,7 +166,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             aos.close();
 
             String armoredKey = bos.toString("UTF-8");
-            server.add(armoredKey, proxy);
+            server.add(armoredKey);
 
             updateProgress(R.string.progress_uploading, 1, 1);
 
