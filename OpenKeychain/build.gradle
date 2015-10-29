@@ -107,7 +107,7 @@ dependencyVerification {
             'com.squareup.okhttp:okhttp-urlconnection:79ec6f4e79e683105e87fe83278a531c693e538d30e3b9237000ce7c94fcb2cf',
             'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
             'org.apache.james:apache-mime4j-dom:7e6b06ee164a1c21b7e477249ea0b74a18fddce44764e5764085f58dd8c34633',
-            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:10d03912fdae6358c78f6cacd13445988755f3391a996a64ef08c8b3c7d78ae1',
+//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:10d03912fdae6358c78f6cacd13445988755f3391a996a64ef08c8b3c7d78ae1',
             'com.cocosw:bottomsheet:871f5f4d6c10936569caf3528271efd77594a67aa5511765c96d7096c9b05f96',
 //            'OpenKeychain.extern.spongycastle:core:d898b5b81ce9d456c65a3a2fe0b0be9b74e366aabe4ee1d13499a865cd20ee19',
 //            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:c25d0c05cc129e2975161f8454350a8868dbe1ffca8583e900935cb0b38db842',
