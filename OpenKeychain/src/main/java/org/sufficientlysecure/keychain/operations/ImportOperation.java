@@ -82,6 +82,8 @@ import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
  */
 public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
+    public static final int MAX_THREADS = 10;
+
     public ImportOperation(Context context, ProviderHelper providerHelper, Progressable
             progressable) {
         super(context, providerHelper, progressable);
@@ -412,61 +414,57 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     }
 
     @NonNull
-    private ImportKeyResult multiThreadedKeyImport(Iterator<ParcelableKeyRing> keyListIterator,
+    private ImportKeyResult multiThreadedKeyImport(@NonNull Iterator<ParcelableKeyRing> keyListIterator,
                                                    int totKeys, final String keyServer,
                                                    final Proxy proxy) {
         Log.d(Constants.TAG, "Multi-threaded key import starting");
-        if (keyListIterator != null) {
-            KeyImportAccumulator accumulator = new KeyImportAccumulator(totKeys, mProgressable);
+        KeyImportAccumulator accumulator = new KeyImportAccumulator(totKeys, mProgressable);
 
-            final ProgressScaler ignoreProgressable = new ProgressScaler();
+        final ProgressScaler ignoreProgressable = new ProgressScaler();
 
-            final int maxThreads = 200;
-            ExecutorService importExecutor = new ThreadPoolExecutor(0, maxThreads,
-                    30L, TimeUnit.SECONDS,
-                    new SynchronousQueue<Runnable>());
+        ExecutorService importExecutor = new ThreadPoolExecutor(0, MAX_THREADS, 30L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>());
 
-            ExecutorCompletionService<ImportKeyResult> importCompletionService =
-                    new ExecutorCompletionService<>(importExecutor);
+        ExecutorCompletionService<ImportKeyResult> importCompletionService =
+                new ExecutorCompletionService<>(importExecutor);
 
-            while (keyListIterator.hasNext()) { // submit all key rings to be imported
+        while (keyListIterator.hasNext()) { // submit all key rings to be imported
 
-                final ParcelableKeyRing pkRing = keyListIterator.next();
+            final ParcelableKeyRing pkRing = keyListIterator.next();
 
-                Callable<ImportKeyResult> importOperationCallable = new Callable<ImportKeyResult>
-                        () {
+            Callable<ImportKeyResult> importOperationCallable = new Callable<ImportKeyResult>
+                    () {
 
-                    @Override
-                    public ImportKeyResult call() {
+                @Override
+                public ImportKeyResult call() {
 
-                        ArrayList<ParcelableKeyRing> list = new ArrayList<>();
-                        list.add(pkRing);
+                    ArrayList<ParcelableKeyRing> list = new ArrayList<>();
+                    list.add(pkRing);
 
-                        return serialKeyRingImport(list.iterator(), 1, keyServer, ignoreProgressable, proxy);
-                    }
-                };
+                    return serialKeyRingImport(list.iterator(), 1, keyServer, ignoreProgressable, proxy);
+                }
+            };
 
-                importCompletionService.submit(importOperationCallable);
-            }
+            importCompletionService.submit(importOperationCallable);
+        }
 
-            while (!accumulator.isImportFinished()) { // accumulate the results of each import
-                try {
-                    accumulator.accumulateKeyImport(importCompletionService.take().get());
-                } catch (InterruptedException | ExecutionException e) {
-                    Log.e(Constants.TAG, "A key could not be imported during multi-threaded " +
-                            "import", e);
-                    // do nothing?
-                    if (e instanceof ExecutionException) {
-                        // Since serialKeyRingImport does not throw any exceptions, this is what
-                        // would have happened if
-                        // we were importing the key on this thread
-                        throw new RuntimeException();
-                    }
+        while (!accumulator.isImportFinished()) { // accumulate the results of each import
+            try {
+                accumulator.accumulateKeyImport(importCompletionService.take().get());
+            } catch (InterruptedException | ExecutionException e) {
+                Log.e(Constants.TAG, "A key could not be imported during multi-threaded " +
+                        "import", e);
+                // do nothing?
+                if (e instanceof ExecutionException) {
+                    // Since serialKeyRingImport does not throw any exceptions, this is what
+                    // would have happened if
+                    // we were importing the key on this thread
+                    throw new RuntimeException();
                 }
             }
-            return accumulator.getConsolidatedResult();
         }
-        return new ImportKeyResult(ImportKeyResult.RESULT_FAIL_NOTHING, new OperationLog());
+        return accumulator.getConsolidatedResult();
+
     }
 
     /**
@@ -500,7 +498,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             }
         }
 
-        public synchronized void accumulateKeyImport(ImportKeyResult result) {
+        public void accumulateKeyImport(ImportKeyResult result) {
             mImportedKeys++;
 
             if (mProgressable != null) {
