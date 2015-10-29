@@ -26,7 +26,6 @@ import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
-import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
@@ -73,7 +72,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
      * @return the result of the operation
      */
     @NonNull
-    public InputPendingResult execute(SaveKeyringParcel saveParcel, CryptoInputParcel cryptoInput) {
+    public EditKeyResult execute(SaveKeyringParcel saveParcel, CryptoInputParcel cryptoInput) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_ED, 0);
@@ -100,7 +99,8 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
 
                     modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
                     if (modifyResult.isPending()) {
-                        return modifyResult;
+                        log.add(modifyResult, 1);
+                        return new EditKeyResult(log, modifyResult);
                     }
 
                 } catch (NotFoundException e) {
@@ -151,16 +151,13 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                     new UploadOperation(mContext, mProviderHelper, mProgressable, mCancelled)
                             .execute(exportKeyringParcel, cryptoInput);
 
+            log.add(uploadResult, 2);
+
             if (uploadResult.isPending()) {
-                return uploadResult;
+                return new EditKeyResult(log, uploadResult);
             } else if (!uploadResult.success() && saveParcel.isUploadAtomic()) {
                 // if atomic, update fail implies edit operation should also fail and not save
-                log.add(uploadResult, 2);
-                return new EditKeyResult(log, RequiredInputParcel.createRetryUploadOperation(),
-                        cryptoInput);
-            } else {
-                // upload succeeded or not atomic so we continue
-                log.add(uploadResult, 2);
+                return new EditKeyResult(log, RequiredInputParcel.createRetryUploadOperation(), cryptoInput);
             }
         }
 
