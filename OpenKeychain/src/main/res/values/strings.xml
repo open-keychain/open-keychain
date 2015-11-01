@@ -1679,5 +1679,6 @@
     <string name="share_log_dialog_cancel_button">"Cancel"</string>
     <string name="toast_wrong_mimetype">"Wrong data type, expected text!"</string>
     <string name="toast_no_text">"No text in shared data!"</string>
+    <string name="btn_search_for_query">"Search for\n'%s'"</string>
 
 </resources>
