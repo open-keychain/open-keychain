@@ -1705,5 +1705,7 @@
     <string name="toast_no_text">"No text in shared data!"</string>
     <string name="btn_search_for_query">"Search for\n'%s'"</string>
     <string name="menu_uids_save">Save</string>
+    <string name="menu_uids_save">"Save"</string>
+    <string name="title_edit_identities">"Edit Identities"</string>
 
 </resources>

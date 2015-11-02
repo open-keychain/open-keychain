@@ -223,7 +223,8 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
         getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, EditKeyFragment.this);
         getLoaderManager().initLoader(LOADER_ID_SUBKEYS, null, EditKeyFragment.this);
 
-        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, mSaveKeyringParcel);
+        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
+        mUserIdsAdapter.setEditMode(mSaveKeyringParcel);
         mUserIdsList.setAdapter(mUserIdsAdapter);
 
         // TODO: SaveParcel from savedInstance?!

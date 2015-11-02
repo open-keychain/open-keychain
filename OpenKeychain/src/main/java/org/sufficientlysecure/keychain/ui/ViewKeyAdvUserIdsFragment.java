@@ -21,6 +21,9 @@ package org.sufficientlysecure.keychain.ui;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -42,6 +45,7 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -59,6 +63,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
     private Uri mDataUri;
     private boolean mHasSecret;
+    private SaveKeyringParcel mEditModeSaveKeyringParcel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
@@ -70,14 +75,71 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showUserIdInfo(position);
+                showOrEditUserIdInfo(position);
             }
         });
 
         return root;
     }
 
+    private void showOrEditUserIdInfo(final int position) {
+        if (mEditModeSaveKeyringParcel != null) {
+            editUserId(position);
+        } else {
+            showUserIdInfo(position);
+        }
+    }
+
+    private void editUserId(final int position) {
+        final String userId = mUserIdsAdapter.getUserId(position);
+        final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
+        final boolean isRevokedPending = mUserIdsAdapter.getIsRevokedPending(position);
+
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                switch (message.what) {
+                    case EditUserIdDialogFragment.MESSAGE_CHANGE_PRIMARY_USER_ID:
+                        // toggle
+                        if (mEditModeSaveKeyringParcel.mChangePrimaryUserId != null
+                                && mEditModeSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
+                            mEditModeSaveKeyringParcel.mChangePrimaryUserId = null;
+                        } else {
+                            mEditModeSaveKeyringParcel.mChangePrimaryUserId = userId;
+                        }
+                        break;
+                    case EditUserIdDialogFragment.MESSAGE_REVOKE:
+                        // toggle
+                        if (mEditModeSaveKeyringParcel.mRevokeUserIds.contains(userId)) {
+                            mEditModeSaveKeyringParcel.mRevokeUserIds.remove(userId);
+                        } else {
+                            mEditModeSaveKeyringParcel.mRevokeUserIds.add(userId);
+                            // not possible to revoke and change to primary user id
+                            if (mEditModeSaveKeyringParcel.mChangePrimaryUserId != null
+                                    && mEditModeSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
+                                mEditModeSaveKeyringParcel.mChangePrimaryUserId = null;
+                            }
+                        }
+                        break;
+                }
+                getLoaderManager().getLoader(LOADER_ID_USER_IDS).forceLoad();
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        final Messenger messenger = new Messenger(returnHandler);
+
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                EditUserIdDialogFragment dialogFragment =
+                        EditUserIdDialogFragment.newInstance(messenger, isRevoked, isRevokedPending);
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "editUserIdDialog");
+            }
+        });
+    }
+
     private void showUserIdInfo(final int position) {
+
         final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
         final int isVerified = mUserIdsAdapter.getIsVerified(position);
 
@@ -175,10 +237,11 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         activity.startActionMode(new Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mUserIdsAdapter.setEditMode(new SaveKeyringParcel(0L, new byte[0]));
+                mEditModeSaveKeyringParcel = new SaveKeyringParcel(0L, new byte[0]);
+                mUserIdsAdapter.setEditMode(mEditModeSaveKeyringParcel);
                 getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
 
-                mode.setTitle("Edit User Ids");
+                mode.setTitle(R.string.title_edit_identities);
                 mode.getMenuInflater().inflate(R.menu.action_edit_uids, menu);
 
                 return true;
@@ -197,6 +260,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
+                mEditModeSaveKeyringParcel = null;
                 mUserIdsAdapter.setEditMode(null);
                 getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
             }

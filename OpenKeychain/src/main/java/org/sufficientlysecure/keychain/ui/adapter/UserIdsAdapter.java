@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v4.content.CursorLoader;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,10 +52,6 @@ public class UserIdsAdapter extends UserAttributesAdapter {
 
         mSaveKeyringParcel = saveKeyringParcel;
         mShowStatusImages = showStatusImages;
-    }
-
-    public UserIdsAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
-        this(context, c, flags, true, saveKeyringParcel);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags) {
@@ -171,7 +168,17 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         return isRevokedPending;
     }
 
-    public void setEditMode(SaveKeyringParcel saveKeyringParcel) {
+    /** Set this adapter into edit mode. This mode displays additional info for
+     * each item from a supplied SaveKeyringParcel reference.
+     *
+     * Note that it is up to the caller to reload the underlying cursor after
+     * updating the SaveKeyringParcel!
+     *
+     * @see SaveKeyringParcel
+     *
+     * @param saveKeyringParcel The parcel to get info from, or null to leave edit mode.
+     */
+    public void setEditMode(@Nullable SaveKeyringParcel saveKeyringParcel) {
         mSaveKeyringParcel = saveKeyringParcel;
     }
 
