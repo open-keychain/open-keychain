@@ -30,6 +30,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -46,8 +47,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ViewAnimator;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -97,6 +100,8 @@ public class KeyListFragment extends LoaderFragment
     // saves the mode object for multiselect, needed for reset at some point
     private ActionMode mActionMode = null;
 
+    private Button vSearchButton;
+    private ViewAnimator vSearchContainer;
     private String mQuery;
 
     private FloatingActionsMenu mFab;
@@ -161,7 +166,9 @@ public class KeyListFragment extends LoaderFragment
         super.onActivityCreated(savedInstanceState);
 
         // show app name instead of "keys" from nav drawer
-        getActivity().setTitle(R.string.app_name);
+        final FragmentActivity activity = getActivity();
+
+        activity.setTitle(R.string.app_name);
 
         mStickyList.setOnItemClickListener(this);
         mStickyList.setAreHeadersSticky(true);
@@ -170,7 +177,7 @@ public class KeyListFragment extends LoaderFragment
 
         // Adds an empty footer view so that the Floating Action Button won't block content
         // in last few rows.
-        View footer = new View(getActivity());
+        View footer = new View(activity);
 
         int spacing = (int) android.util.TypedValue.applyDimension(
                 android.util.TypedValue.COMPLEX_UNIT_DIP, 72, getResources().getDisplayMetrics()
@@ -194,7 +201,7 @@ public class KeyListFragment extends LoaderFragment
 
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                android.view.MenuInflater inflater = getActivity().getMenuInflater();
+                android.view.MenuInflater inflater = activity.getMenuInflater();
                 inflater.inflate(R.menu.key_list_multi, menu);
                 mActionMode = mode;
                 return true;
@@ -234,7 +241,7 @@ public class KeyListFragment extends LoaderFragment
 
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
-                                                  boolean checked) {
+                    boolean checked) {
                 if (checked) {
                     mAdapter.setNewSelection(position, true);
                 } else {
@@ -254,13 +261,38 @@ public class KeyListFragment extends LoaderFragment
         // Start out with a progress indicator.
         setContentShown(false);
 
+        // this view is made visible if no data is available
+        mStickyList.setEmptyView(activity.findViewById(R.id.key_list_empty));
+
+        // click on search button (in empty view) starts query for search string
+        vSearchContainer = (ViewAnimator) activity.findViewById(R.id.search_container);
+        vSearchButton = (Button) activity.findViewById(R.id.search_button);
+        vSearchButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startSearchForQuery();
+            }
+        });
+
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new KeyListAdapter(getActivity(), null, 0);
+        mAdapter = new KeyListAdapter(activity, null, 0);
         mStickyList.setAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    private void startSearchForQuery() {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        Intent searchIntent = new Intent(activity, ImportKeysActivity.class);
+        searchIntent.putExtra(ImportKeysActivity.EXTRA_QUERY, mQuery);
+        searchIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
+        startActivity(searchIntent);
     }
 
     static final String ORDER =
@@ -317,9 +349,6 @@ public class KeyListFragment extends LoaderFragment
         mAdapter.swapCursor(data);
 
         mStickyList.setAdapter(mAdapter);
-
-        // this view is made visible if no data is available
-        mStickyList.setEmptyView(getActivity().findViewById(R.id.key_list_empty));
 
         // end action mode, if any
         if (mActionMode != null) {
@@ -482,17 +511,25 @@ public class KeyListFragment extends LoaderFragment
     @Override
     public boolean onQueryTextChange(String s) {
         Log.d(Constants.TAG, "onQueryTextChange s:" + s);
-        // Called when the action bar search text has changed.  Update
-        // the search filter, and restart the loader to do a new query
-        // with this filter.
+        // Called when the action bar search text has changed.  Update the
+        // search filter, and restart the loader to do a new query with this
+        // filter.
         // If the nav drawer is opened, onQueryTextChange("") is executed.
         // This hack prevents restarting the loader.
-        // TODO: better way to fix this?
-        String tmp = (mQuery == null) ? "" : mQuery;
-        if (!s.equals(tmp)) {
+        if (!s.equals(mQuery)) {
             mQuery = s;
             getLoaderManager().restartLoader(0, null, this);
         }
+
+        if (s.length() > 2) {
+            vSearchButton.setText(getString(R.string.btn_search_for_query, mQuery));
+            vSearchContainer.setDisplayedChild(1);
+            vSearchContainer.setVisibility(View.VISIBLE);
+        } else {
+            vSearchContainer.setDisplayedChild(0);
+            vSearchContainer.setVisibility(View.GONE);
+        }
+
         return true;
     }
 
