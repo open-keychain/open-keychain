@@ -27,6 +27,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
+import android.view.ActionMode;
 import android.view.View;
 import android.widget.Toast;
 
@@ -238,5 +240,24 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public void onActionModeStarted(final ActionMode mode) {
+        super.onActionModeStarted(mode);
+        // Leave whatever action mode we are in when we change the page
+        mSlidingTabLayout.setOnPageChangeListener(new SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                mode.finish();
+            }
+        });
+    }
+
+    @Override
+    public void onActionModeFinished(ActionMode mode) {
+        super.onActionModeFinished(mode);
+        mSlidingTabLayout.setOnPageChangeListener(null);
     }
 }
