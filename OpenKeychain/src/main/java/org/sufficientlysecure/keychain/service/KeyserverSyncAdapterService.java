@@ -59,11 +59,12 @@ public class KeyserverSyncAdapterService extends Service {
     // time since last update after which a key should be updated again, in s
     public static final long KEY_UPDATE_LIMIT =
             Constants.DEBUG_KEYSERVER_SYNC ? 1 : TimeUnit.DAYS.toSeconds(7);
-    // time by which a sync is postponed in case of a
+    // time by which a sync is postponed in case screen is on
     public static final long SYNC_POSTPONE_TIME =
             Constants.DEBUG_KEYSERVER_SYNC ? 30 * 1000 : TimeUnit.MINUTES.toMillis(5);
     // Time taken by Orbot before a new circuit is created
-    public static final int ORBOT_CIRCUIT_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(10);
+    public static final int ORBOT_CIRCUIT_TIMEOUT_SECONDS =
+            Constants.DEBUG_KEYSERVER_SYNC ? 2 : (int) TimeUnit.MINUTES.toSeconds(10);
 
 
     private static final String ACTION_IGNORE_TOR = "ignore_tor";
@@ -77,10 +78,14 @@ public class KeyserverSyncAdapterService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, int flags, final int startId) {
+        if (intent == null || intent.getAction() == null) {
+            // introduced due to https://github.com/open-keychain/open-keychain/issues/1573
+            return START_NOT_STICKY; // we can't act on this Intent and don't want it redelivered
+        }
         switch (intent.getAction()) {
             case ACTION_CANCEL: {
                 mCancelled.set(true);
-                break;
+                return START_NOT_STICKY;
             }
             // the reason for the separation betweyeen SYNC_NOW and UPDATE_ALL is so that starting
             // the sync directly from the notification is possible while the screen is on with
@@ -92,44 +97,47 @@ public class KeyserverSyncAdapterService extends Service {
                         Constants.PROVIDER_AUTHORITY,
                         new Bundle()
                 );
-                break;
+                return START_NOT_STICKY;
             }
             case ACTION_UPDATE_ALL: {
                 // does not check for screen on/off
-                asyncKeyUpdate(this, new CryptoInputParcel());
-                break;
+                asyncKeyUpdate(this, new CryptoInputParcel(), startId);
+                // we depend on handleUpdateResult to call stopSelf when it is no longer necessary
+                // for the intent to be redelivered
+                return START_REDELIVER_INTENT;
             }
             case ACTION_IGNORE_TOR: {
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 manager.cancel(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT);
-                asyncKeyUpdate(this, new CryptoInputParcel(ParcelableProxy.getForNoProxy()));
-                break;
+                asyncKeyUpdate(this, new CryptoInputParcel(ParcelableProxy.getForNoProxy()),
+                        startId);
+                // we depend on handleUpdateResult to call stopSelf when it is no longer necessary
+                // for the intent to be redelivered
+                return START_REDELIVER_INTENT;
             }
             case ACTION_START_ORBOT: {
-                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                NotificationManager manager = (NotificationManager)
+                        getSystemService(NOTIFICATION_SERVICE);
                 manager.cancel(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT);
+
                 Intent startOrbot = new Intent(this, OrbotRequiredDialogActivity.class);
                 startOrbot.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startOrbot.putExtra(OrbotRequiredDialogActivity.EXTRA_START_ORBOT, true);
+
                 Messenger messenger = new Messenger(
                         new Handler() {
                             @Override
                             public void handleMessage(Message msg) {
                                 switch (msg.what) {
                                     case OrbotRequiredDialogActivity.MESSAGE_ORBOT_STARTED: {
-                                        asyncKeyUpdate(KeyserverSyncAdapterService.this,
-                                                new CryptoInputParcel());
+                                        startServiceWithUpdateAll();
                                         break;
                                     }
-                                    case OrbotRequiredDialogActivity.MESSAGE_ORBOT_IGNORE: {
-                                        asyncKeyUpdate(KeyserverSyncAdapterService.this,
-                                                new CryptoInputParcel(
-                                                        ParcelableProxy.getForNoProxy()));
-                                        break;
-                                    }
+                                    case OrbotRequiredDialogActivity.MESSAGE_ORBOT_IGNORE:
                                     case OrbotRequiredDialogActivity.MESSAGE_DIALOG_CANCEL: {
-                                        // just stop service
-                                        stopSelf();
+                                        // not possible since we proceed to Orbot's Activity
+                                        // directly, by starting OrbotRequiredDialogActivity with
+                                        // EXTRA_START_ORBOT set to true
                                         break;
                                     }
                                 }
@@ -138,13 +146,17 @@ public class KeyserverSyncAdapterService extends Service {
                 );
                 startOrbot.putExtra(OrbotRequiredDialogActivity.EXTRA_MESSENGER, messenger);
                 startActivity(startOrbot);
-                break;
+                // since we return START_NOT_STICKY, we also postpone the sync as a backup in case
+                // the service is killed before OrbotRequiredDialogActivity can get back to us
+                postponeSync();
+                // if use START_REDELIVER_INTENT, we might annoy the user by repeatedly starting the
+                // Orbot Activity when our service is killed and restarted
+                return START_NOT_STICKY;
             }
             case ACTION_DISMISS_NOTIFICATION: {
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 manager.cancel(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT);
-                stopSelf(startId);
-                break;
+                return START_NOT_STICKY;
             }
         }
         return START_NOT_STICKY;
@@ -167,10 +179,7 @@ public class KeyserverSyncAdapterService extends Service {
                     boolean isScreenOn = pm.isScreenOn();
 
             if (!isScreenOn) {
-                Intent serviceIntent = new Intent(KeyserverSyncAdapterService.this,
-                        KeyserverSyncAdapterService.class);
-                serviceIntent.setAction(ACTION_UPDATE_ALL);
-                startService(serviceIntent);
+                startServiceWithUpdateAll();
             } else {
                 postponeSync();
             }
@@ -188,16 +197,24 @@ public class KeyserverSyncAdapterService extends Service {
         return new KeyserverSyncAdapter().getSyncAdapterBinder();
     }
 
-    private void handleUpdateResult(ImportKeyResult result) {
+    /**
+     * Since we're returning START_REDELIVER_INTENT in onStartCommand, we need to remember to call
+     * stopSelf(int) to prevent the Intent from being redelivered if our work is already done
+     *
+     * @param result  result of keyserver sync
+     * @param startId startId provided to the onStartCommand call which resulted in this sync
+     */
+    private void handleUpdateResult(ImportKeyResult result, final int startId) {
         if (result.isPending()) {
+            Log.d(Constants.TAG, "Orbot required for sync but not running, attempting to start");
             // result is pending due to Orbot not being started
             // try to start it silently, if disabled show notifications
             new OrbotHelper.SilentStartManager() {
                 @Override
                 protected void onOrbotStarted() {
                     // retry the update
-                    asyncKeyUpdate(KeyserverSyncAdapterService.this,
-                            new CryptoInputParcel());
+                    startServiceWithUpdateAll();
+                    stopSelf(startId); // startServiceWithUpdateAll will deliver a new Intent
                 }
 
                 @Override
@@ -207,16 +224,24 @@ public class KeyserverSyncAdapterService extends Service {
                             (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                     manager.notify(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT,
                             getOrbotNoification(KeyserverSyncAdapterService.this));
+                    // further action on user interaction with notification, intent should not be
+                    // redelivered, therefore:
+                    stopSelf(startId);
                 }
             }.startOrbotAndListen(this, false);
+            // if we're killed before we get a response from Orbot, we need the intent to be
+            // redelivered, so no stopSelf(int) here
         } else if (isUpdateCancelled()) {
             Log.d(Constants.TAG, "Keyserver sync cancelled, postponing by" + SYNC_POSTPONE_TIME
                     + "ms");
             postponeSync();
+            // postponeSync creates a new intent, so we don't need this to be redelivered
+            stopSelf(startId);
         } else {
             Log.d(Constants.TAG, "Keyserver sync completed: Updated: " + result.mUpdatedKeys
                     + " Failed: " + result.mBadKeys);
-            stopSelf();
+            // key sync completed successfully, we can stop
+            stopSelf(startId);
         }
     }
 
@@ -234,12 +259,12 @@ public class KeyserverSyncAdapterService extends Service {
     }
 
     private void asyncKeyUpdate(final Context context,
-                                final CryptoInputParcel cryptoInputParcel) {
+                                final CryptoInputParcel cryptoInputParcel, final int startId) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 ImportKeyResult result = updateKeysFromKeyserver(context, cryptoInputParcel);
-                handleUpdateResult(result);
+                handleUpdateResult(result, startId);
             }
         }).start();
     }
@@ -278,7 +303,6 @@ public class KeyserverSyncAdapterService extends Service {
         );
     }
 
-
     /**
      * will perform a staggered update of user's keys using delays to ensure new Tor circuits, as
      * performed by parcimonie. Relevant issue and method at:
@@ -290,17 +314,31 @@ public class KeyserverSyncAdapterService extends Service {
                                             CryptoInputParcel cryptoInputParcel) {
         Log.d(Constants.TAG, "Starting staggered update");
         // final int WEEK_IN_SECONDS = (int) TimeUnit.DAYS.toSeconds(7);
+        // we are limiting our randomness to ORBOT_CIRCUIT_TIMEOUT_SECONDS for now
         final int WEEK_IN_SECONDS = 0;
+
         ImportOperation.KeyImportAccumulator accumulator
                 = new ImportOperation.KeyImportAccumulator(keyList.size(), null);
+
+        // so that the first key can be updated without waiting. This is so that there isn't a
+        // large gap between a "Start Orbot" notification and the next key update
+        boolean first = true;
+
         for (ParcelableKeyRing keyRing : keyList) {
             int waitTime;
             int staggeredTime = new Random().nextInt(1 + 2 * (WEEK_IN_SECONDS / keyList.size()));
-            if (staggeredTime >= ORBOT_CIRCUIT_TIMEOUT) {
+            if (staggeredTime >= ORBOT_CIRCUIT_TIMEOUT_SECONDS) {
                 waitTime = staggeredTime;
             } else {
-                waitTime = ORBOT_CIRCUIT_TIMEOUT + new Random().nextInt(ORBOT_CIRCUIT_TIMEOUT);
+                waitTime = ORBOT_CIRCUIT_TIMEOUT_SECONDS
+                        + new Random().nextInt(1 + ORBOT_CIRCUIT_TIMEOUT_SECONDS);
             }
+
+            if (first) {
+                waitTime = 0;
+                first = false;
+            }
+
             Log.d(Constants.TAG, "Updating key with fingerprint " + keyRing.mExpectedFingerprint +
                     " with a wait time of " + waitTime + "s");
             try {
@@ -362,13 +400,15 @@ public class KeyserverSyncAdapterService extends Service {
         );
 
         ArrayList<Long> ignoreMasterKeyIds = new ArrayList<>();
-        while (updatedKeysCursor.moveToNext()) {
+        while (updatedKeysCursor != null && updatedKeysCursor.moveToNext()) {
             long masterKeyId = updatedKeysCursor.getLong(INDEX_UPDATED_KEYS_MASTER_KEY_ID);
             Log.d(Constants.TAG, "Keyserver sync: Ignoring {" + masterKeyId + "} last updated at {"
                     + updatedKeysCursor.getLong(INDEX_LAST_UPDATED) + "}s");
             ignoreMasterKeyIds.add(masterKeyId);
         }
-        updatedKeysCursor.close();
+        if (updatedKeysCursor != null) {
+            updatedKeysCursor.close();
+        }
 
         // 2. Make a list of public keys which should be updated
         final int INDEX_MASTER_KEY_ID = 0;
@@ -413,7 +453,7 @@ public class KeyserverSyncAdapterService extends Service {
 
     /**
      * will cancel an update already in progress. We send an Intent to cancel it instead of simply
-     * modifying a static variable sync the service is running in a process that is different from
+     * modifying a static variable since the service is running in a process that is different from
      * the default application process where the UI code runs.
      *
      * @param context used to send an Intent to the service requesting cancellation.
@@ -489,6 +529,12 @@ public class KeyserverSyncAdapterService extends Service {
             Log.e(Constants.TAG, "SecurityException when adding the account", e);
             Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void startServiceWithUpdateAll() {
+        Intent serviceIntent = new Intent(this, KeyserverSyncAdapterService.class);
+        serviceIntent.setAction(ACTION_UPDATE_ALL);
+        this.startService(serviceIntent);
     }
 
     // from de.azapps.mirakel.helper.Helpers from https://github.com/MirakelX/mirakel-android

@@ -540,7 +540,9 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
             // adding required information to mResultType
             // special case,no keys requested for import
-            if (mBadKeys == 0 && mNewKeys == 0 && mUpdatedKeys == 0) {
+            if (mBadKeys == 0 && mNewKeys == 0 && mUpdatedKeys == 0
+                    && (mResultType & ImportKeyResult.RESULT_CANCELLED)
+                    != ImportKeyResult.RESULT_CANCELLED) {
                 mResultType = ImportKeyResult.RESULT_FAIL_NOTHING;
             } else {
                 if (mNewKeys > 0) {
