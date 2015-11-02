@@ -466,7 +466,7 @@
             android:name=".ui.ImportKeysProxyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.Keychain.Transparent"
             android:windowSoftInputMode="stateHidden">
 
             <!-- VIEW with fingerprint scheme:
@@ -692,19 +692,19 @@
             android:label="@string/title_log_display" />
         <activity
             android:name=".ui.ConsolidateDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.Keychain.Transparent" />
         <activity
             android:name=".ui.PassphraseDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.Keychain.Transparent" />
         <activity
             android:name=".ui.RetryUploadDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.Keychain.Transparent" />
         <activity
             android:name=".ui.DeleteKeyDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.Keychain.Transparent" />
         <activity
             android:name=".ui.OrbotRequiredDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.Keychain.Transparent" />
         <!--
         NOTE: singleTop is set to get NFC foreground dispatch to work.
               Then, all NFC intents will be broadcasted to onNewIntent() of this activity!

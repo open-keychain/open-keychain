@@ -85,11 +85,9 @@
         <item name="alertDialogTheme">@style/Theme.Keychain.Dark.Dialog.Alert</item>
     </style>
 
-    <style name="Theme.Keychain.Light" parent="Base.Theme.Keychain.Light">
-    </style>
+    <style name="Theme.Keychain.Light" parent="Base.Theme.Keychain.Light"></style>
 
-    <style name="Theme.Keychain.Dark" parent="Base.Theme.Keychain.Dark">
-    </style>
+    <style name="Theme.Keychain.Dark" parent="Base.Theme.Keychain.Dark"></style>
 
     <!-- http://android-developers.blogspot.de/2014/10/appcompat-v21-material-design-for-pre.html -->
     <style name="Widget.Keychain.SearchView" parent="Widget.AppCompat.SearchView">
@@ -134,4 +132,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+    <style name="Theme.Keychain.Transparent" parent="@android:style/Theme.NoDisplay" />
 </resources>
