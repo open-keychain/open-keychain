@@ -29,6 +29,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.view.ActionMode;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
@@ -260,4 +261,5 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         super.onActionModeFinished(mode);
         mSlidingTabLayout.setOnPageChangeListener(null);
     }
+
 }

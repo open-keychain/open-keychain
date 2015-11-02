@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -64,6 +65,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
     private ListView mUserIds;
     private ListView mUserIdsAddedList;
     private View mUserIdsAddedLayout;
+    private ViewAnimator mUserIdAddFabLayout;
 
     private UserIdsAdapter mUserIdsAdapter;
     private UserIdsAddedAdapter mUserIdsAddedAdapter;
@@ -88,7 +90,19 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
             }
         });
 
-        view.findViewById(R.id.view_key_action_add_user_id).setOnClickListener(new View.OnClickListener() {
+        View footer = new View(getActivity());
+        int spacing = (int) android.util.TypedValue.applyDimension(
+                android.util.TypedValue.COMPLEX_UNIT_DIP, 72, getResources().getDisplayMetrics()
+        );
+        android.widget.AbsListView.LayoutParams params = new android.widget.AbsListView.LayoutParams(
+                android.widget.AbsListView.LayoutParams.MATCH_PARENT,
+                spacing
+        );
+        footer.setLayoutParams(params);
+        mUserIdsAddedList.addFooterView(footer, null, false);
+
+        mUserIdAddFabLayout = (ViewAnimator) view.findViewById(R.id.view_key_user_id_fab_layout);
+        view.findViewById(R.id.view_key_user_id_fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addUserId();
@@ -271,7 +285,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         vEditUserIds.setVisible(mHasSecret);
     }
 
-    public void enterEditMode() {
+    private void enterEditMode() {
         FragmentActivity activity = getActivity();
         activity.startActionMode(new Callback() {
             @Override
@@ -283,6 +297,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                         new UserIdsAddedAdapter(getActivity(), mEditModeSaveKeyringParcel.mAddUserIds, false);
                 mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
                 mUserIdsAddedLayout.setVisibility(View.VISIBLE);
+                mUserIdAddFabLayout.setDisplayedChild(1);
 
                 mUserIdsAdapter.setEditMode(mEditModeSaveKeyringParcel);
                 getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
@@ -309,6 +324,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                 mEditModeSaveKeyringParcel = null;
                 mUserIdsAdapter.setEditMode(null);
                 mUserIdsAddedLayout.setVisibility(View.GONE);
+                mUserIdAddFabLayout.setDisplayedChild(0);
                 getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
             }
         });

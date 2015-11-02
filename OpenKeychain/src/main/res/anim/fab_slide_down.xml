@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<translate  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromYDelta="0" android:toYDelta="300"
+    android:interpolator="@android:anim/anticipate_interpolator"
+    android:duration="250"
+/>
