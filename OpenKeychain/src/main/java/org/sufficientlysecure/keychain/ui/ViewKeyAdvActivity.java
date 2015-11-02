@@ -78,9 +78,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.sliding_tab_layout);
 
-        Intent intent = getIntent();
-        int switchToTab = intent.getIntExtra(EXTRA_SELECTED_TAB, TAB_SHARE);
-
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
             Log.e(Constants.TAG, "Data missing. Should be uri of key!");
@@ -101,10 +98,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         // or start new ones.
         getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
 
-        initTabs(mDataUri);
-
-        // switch to tab selected by extra
-        mViewPager.setCurrentItem(switchToTab);
     }
 
     @Override
@@ -112,17 +105,18 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         setContentView(R.layout.view_key_adv_activity);
     }
 
-    private void initTabs(Uri dataUri) {
+    private void initTabs(Uri dataUri, boolean hasSecret) {
         PagerTabStripAdapter adapter = new PagerTabStripAdapter(this);
         mViewPager.setAdapter(adapter);
 
         Bundle shareBundle = new Bundle();
-        shareBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
+        shareBundle.putParcelable(ViewKeyAdvShareFragment.ARG_DATA_URI, dataUri);
         adapter.addTab(ViewKeyAdvShareFragment.class,
                 shareBundle, getString(R.string.key_view_tab_share));
 
         Bundle userIdsBundle = new Bundle();
         userIdsBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
+        userIdsBundle.putBoolean(ViewKeyAdvUserIdsFragment.ARG_HAS_SECRET, hasSecret);
         adapter.addTab(ViewKeyAdvUserIdsFragment.class,
                 userIdsBundle, getString(R.string.section_user_ids));
 
@@ -138,6 +132,12 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
+
+        // switch to tab selected by extra
+        Intent intent = getIntent();
+        int switchToTab = intent.getIntExtra(EXTRA_SELECTED_TAB, TAB_SHARE);
+        mViewPager.setCurrentItem(switchToTab);
+
     }
 
     // These are the rows that we will retrieve.
@@ -215,6 +215,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
                     mToolbar.setBackgroundColor(color);
                     mStatusBar.setBackgroundColor(ViewKeyActivity.getStatusBarBackgroundColor(color));
                     mSlidingTabLayout.setBackgroundColor(color);
+
+                    initTabs(mDataUri, isSecret);
 
                     break;
                 }

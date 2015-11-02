@@ -43,15 +43,16 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
+    public static final String ARG_HAS_SECRET = "has_secret";
 
     private ListView mUserIds;
 
-    private static final int LOADER_ID_UNIFIED = 0;
-    private static final int LOADER_ID_USER_IDS = 1;
+    private static final int LOADER_ID_USER_IDS = 0;
 
     private UserIdsAdapter mUserIdsAdapter;
 
     private Uri mDataUri;
+    private boolean mHasSecret;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
