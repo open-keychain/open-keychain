@@ -21,10 +21,16 @@ package org.sufficientlysecure.keychain.ui;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.view.ActionMode;
+import android.view.ActionMode.Callback;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -33,8 +39,8 @@ import android.widget.ListView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -95,54 +101,44 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
             getActivity().finish();
             return;
         }
+        boolean hasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
 
-        loadData(dataUri);
+        loadData(dataUri, hasSecret);
     }
 
-    private void loadData(Uri dataUri) {
+    private void loadData(Uri dataUri, boolean hasSecret) {
         mDataUri = dataUri;
+        mHasSecret = hasSecret;
 
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+        Log.i(Constants.TAG, "mDataUri: " + mDataUri);
 
         mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
         mUserIds.setAdapter(mUserIdsAdapter);
 
+        setHasOptionsMenu(hasSecret);
+
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
-        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
         getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
     }
-
-    static final String[] UNIFIED_PROJECTION = new String[]{
-            KeyRings._ID, KeyRings.MASTER_KEY_ID,
-            KeyRings.HAS_ANY_SECRET, KeyRings.IS_REVOKED, KeyRings.IS_EXPIRED, KeyRings.HAS_ENCRYPT
-    };
-    static final int INDEX_UNIFIED_MASTER_KEY_ID = 1;
-    static final int INDEX_UNIFIED_HAS_ANY_SECRET = 2;
-    static final int INDEX_UNIFIED_IS_REVOKED = 3;
-    static final int INDEX_UNIFIED_IS_EXPIRED = 4;
-    static final int INDEX_UNIFIED_HAS_ENCRYPT = 5;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         setContentShown(false);
 
-        switch (id) {
-            case LOADER_ID_UNIFIED: {
-                Uri baseUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri, UNIFIED_PROJECTION, null, null, null);
-            }
-            case LOADER_ID_USER_IDS: {
-                Uri baseUri = UserPackets.buildUserIdsUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri,
-                        UserIdsAdapter.USER_PACKETS_PROJECTION, null, null, null);
-            }
-
-            default:
-                return null;
+        if (id != LOADER_ID_USER_IDS) {
+            return null;
         }
+
+        Uri baseUri = UserPackets.buildUserIdsUri(mDataUri);
+        return new CursorLoader(getActivity(), baseUri,
+                UserIdsAdapter.USER_PACKETS_PROJECTION, null, null, null);
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (loader.getId() != LOADER_ID_USER_IDS) {
+            return;
+        }
+
         /* TODO better error handling? May cause problems when a key is deleted,
          * because the notification triggers faster than the activity closes.
          */
@@ -150,23 +146,8 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         if (data.getCount() == 0) {
             return;
         }
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        switch (loader.getId()) {
-            case LOADER_ID_UNIFIED: {
-                if (data.moveToFirst()) {
 
-
-                    break;
-                }
-            }
-
-            case LOADER_ID_USER_IDS: {
-                mUserIdsAdapter.swapCursor(data);
-                break;
-            }
-
-        }
+        mUserIdsAdapter.swapCursor(data);
         setContentShown(true);
     }
 
@@ -175,11 +156,61 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
      * We need to make sure we are no longer using it.
      */
     public void onLoaderReset(Loader<Cursor> loader) {
-        switch (loader.getId()) {
-            case LOADER_ID_USER_IDS:
-                mUserIdsAdapter.swapCursor(null);
-                break;
+        if (loader.getId() != LOADER_ID_USER_IDS) {
+            return;
         }
+        mUserIdsAdapter.swapCursor(null);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.edit_user_id, menu);
+        MenuItem vEditUserIds  = menu.findItem(R.id.menu_edit_user_ids);
+        vEditUserIds.setVisible(mHasSecret);
+    }
+
+    public void enterEditMode() {
+        FragmentActivity activity = getActivity();
+        activity.startActionMode(new Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mUserIdsAdapter.setEditMode(new SaveKeyringParcel(0L, new byte[0]));
+                getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
+
+                mode.setTitle("Edit User Ids");
+                mode.getMenuInflater().inflate(R.menu.action_edit_uids, menu);
+
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                mode.finish();
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                mUserIdsAdapter.setEditMode(null);
+                getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_edit_user_ids:
+                enterEditMode();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

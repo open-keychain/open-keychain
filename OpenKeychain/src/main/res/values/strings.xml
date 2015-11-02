@@ -1704,5 +1704,6 @@
     <string name="toast_wrong_mimetype">"Wrong data type, text was expected!"</string>
     <string name="toast_no_text">"No text in shared data!"</string>
     <string name="btn_search_for_query">"Search for\n'%s'"</string>
+    <string name="menu_uids_save">Save</string>
 
 </resources>

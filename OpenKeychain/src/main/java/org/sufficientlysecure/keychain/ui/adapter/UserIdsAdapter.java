@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -66,7 +67,7 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         TextView vAddress = (TextView) view.findViewById(R.id.user_id_item_address);
         TextView vComment = (TextView) view.findViewById(R.id.user_id_item_comment);
         ImageView vVerified = (ImageView) view.findViewById(R.id.user_id_item_certified);
-        View vVerifiedLayout = view.findViewById(R.id.user_id_item_certified_layout);
+        ViewAnimator vVerifiedLayout = (ViewAnimator) view.findViewById(R.id.user_id_icon_animator);
         ImageView vEditImage = (ImageView) view.findViewById(R.id.user_id_item_edit_image);
         ImageView vDeleteButton = (ImageView) view.findViewById(R.id.user_id_item_delete_button);
         vDeleteButton.setVisibility(View.GONE); // not used
@@ -114,16 +115,9 @@ public class UserIdsAdapter extends UserAttributesAdapter {
                 }
             }
 
-            vEditImage.setVisibility(View.VISIBLE);
-            vVerifiedLayout.setVisibility(View.GONE);
+            vVerifiedLayout.setDisplayedChild(2);
         } else {
-            vEditImage.setVisibility(View.GONE);
-
-            if (mShowStatusImages) {
-                vVerifiedLayout.setVisibility(View.VISIBLE);
-            } else {
-                vVerifiedLayout.setVisibility(View.GONE);
-            }
+            vVerifiedLayout.setDisplayedChild(mShowStatusImages ? 1 : 0);
         }
 
         if (isRevoked) {
@@ -175,6 +169,10 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         }
 
         return isRevokedPending;
+    }
+
+    public void setEditMode(SaveKeyringParcel saveKeyringParcel) {
+        mSaveKeyringParcel = saveKeyringParcel;
     }
 
     @Override

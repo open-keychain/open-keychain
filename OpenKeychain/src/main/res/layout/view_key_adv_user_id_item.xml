@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
     android:singleLine="true">
@@ -40,16 +41,19 @@
 
     </LinearLayout>
 
-
-    <LinearLayout
-        android:id="@+id/user_id_item_certified_layout"
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        android:id="@+id/user_id_icon_animator"
         android:layout_width="22dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-
         android:layout_gravity="center_vertical"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        custom:initialView="1">
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/user_id_item_certified"
@@ -58,15 +62,14 @@
             android:src="@drawable/status_signature_unverified_cutout_24dp"
             android:layout_gravity="center_horizontal" />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/user_id_item_edit_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_mode_edit_grey_24dp"
+            android:layout_gravity="center_vertical" />
 
-    <ImageView
-        android:id="@+id/user_id_item_edit_image"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:src="@drawable/ic_mode_edit_grey_24dp"
-        android:padding="8dp"
-        android:layout_gravity="center_vertical" />
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
     <ImageButton
         android:id="@+id/user_id_item_delete_button"
