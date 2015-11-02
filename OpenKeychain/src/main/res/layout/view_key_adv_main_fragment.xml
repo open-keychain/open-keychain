@@ -1,6 +1,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- focusable and related properties to workaround http://stackoverflow.com/q/16182331-->
     <LinearLayout
@@ -27,6 +28,46 @@
             android:layout_height="0dp"
             android:layout_marginBottom="4dp"
             android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/view_key_user_ids_add_layout"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider" />
+
+            <org.sufficientlysecure.keychain.ui.widget.FixedListView
+                android:id="@+id/view_key_user_ids_added"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/view_key_action_add_user_id"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/edit_key_action_add_identity"
+                android:minHeight="?android:attr/listPreferredItemHeight"
+                android:drawableRight="@drawable/ic_person_add_grey_24dp"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                style="?android:attr/borderlessButtonStyle" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

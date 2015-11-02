@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -45,7 +46,10 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -55,11 +59,14 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
     public static final String ARG_DATA_URI = "uri";
     public static final String ARG_HAS_SECRET = "has_secret";
 
-    private ListView mUserIds;
-
     private static final int LOADER_ID_USER_IDS = 0;
 
+    private ListView mUserIds;
+    private ListView mUserIdsAddedList;
+    private View mUserIdsAddedLayout;
+
     private UserIdsAdapter mUserIdsAdapter;
+    private UserIdsAddedAdapter mUserIdsAddedAdapter;
 
     private Uri mDataUri;
     private boolean mHasSecret;
@@ -71,11 +78,20 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         View view = inflater.inflate(R.layout.view_key_adv_main_fragment, getContainer());
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
+        mUserIdsAddedList = (ListView) view.findViewById(R.id.view_key_user_ids_added);
+        mUserIdsAddedLayout = view.findViewById(R.id.view_key_user_ids_add_layout);
 
         mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 showOrEditUserIdInfo(position);
+            }
+        });
+
+        view.findViewById(R.id.view_key_action_add_user_id).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addUserId();
             }
         });
 
@@ -151,6 +167,29 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                 dialogFragment.show(getActivity().getSupportFragmentManager(), "userIdInfoDialog");
             }
         });
+    }
+
+    private void addUserId() {
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
+                    Bundle data = message.getData();
+
+                    // add new user id
+                    mUserIdsAddedAdapter.add(data
+                            .getString(AddUserIdDialogFragment.MESSAGE_DATA_USER_ID));
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        // pre-fill out primary name
+        AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger, "");
+
+        addUserIdDialog.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
     }
 
     @Override
@@ -237,7 +276,14 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         activity.startActionMode(new Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+
                 mEditModeSaveKeyringParcel = new SaveKeyringParcel(0L, new byte[0]);
+
+                mUserIdsAddedAdapter =
+                        new UserIdsAddedAdapter(getActivity(), mEditModeSaveKeyringParcel.mAddUserIds, false);
+                mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
+                mUserIdsAddedLayout.setVisibility(View.VISIBLE);
+
                 mUserIdsAdapter.setEditMode(mEditModeSaveKeyringParcel);
                 getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
 
@@ -262,6 +308,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
             public void onDestroyActionMode(ActionMode mode) {
                 mEditModeSaveKeyringParcel = null;
                 mUserIdsAdapter.setEditMode(null);
+                mUserIdsAddedLayout.setVisibility(View.GONE);
                 getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
             }
         });
