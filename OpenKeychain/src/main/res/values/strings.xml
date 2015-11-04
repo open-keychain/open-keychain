@@ -1366,7 +1366,9 @@
 
     <string name="msg_bench">"Benchmarking some operations…"</string>
     <string name="msg_bench_enc_time">"Encryption time: %ss"</string>
+    <string name="msg_bench_enc_time_avg">"Average encryption time: %ss"</string>
     <string name="msg_bench_dec_time">"Decryption time: %ss"</string>
+    <string name="msg_bench_dec_time_avg">"Average decryption time: %ss"</string>
     <string name="msg_bench_success">"Benchmarking complete!"</string>
 
     <string name="msg_data">"Processing input data"</string>
