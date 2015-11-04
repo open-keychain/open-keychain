@@ -1366,9 +1366,11 @@
 
     <string name="msg_bench">"Benchmarking some operations…"</string>
     <string name="msg_bench_enc_time">"Encryption time: %ss"</string>
-    <string name="msg_bench_enc_time_avg">"Average encryption time: %ss"</string>
+    <string name="msg_bench_enc_time_avg">"Average time to encrypt 5M: %ss"</string>
     <string name="msg_bench_dec_time">"Decryption time: %ss"</string>
-    <string name="msg_bench_dec_time_avg">"Average decryption time: %ss"</string>
+    <string name="msg_bench_dec_time_avg">"Average time to decrypt 5M: %ss"</string>
+    <string name="msg_bench_s2k_100ms_its">"S2K Iteration Count for 100ms: %s"</string>
+    <string name="msg_bench_s2k_for_it">"Time for %1$s SHA1 S2K iterations: %2$sms"</string>
     <string name="msg_bench_success">"Benchmarking complete!"</string>
 
     <string name="msg_data">"Processing input data"</string>

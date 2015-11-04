@@ -880,6 +880,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_BENCH_ENC_TIME_AVG (LogLevel.INFO, R.string.msg_bench_enc_time_avg),
         MSG_BENCH_DEC_TIME (LogLevel.DEBUG, R.string.msg_bench_dec_time),
         MSG_BENCH_DEC_TIME_AVG (LogLevel.INFO, R.string.msg_bench_enc_time_avg),
+        MSG_BENCH_S2K_FOR_IT (LogLevel.DEBUG, R.string.msg_bench_s2k_for_it),
+        MSG_BENCH_S2K_100MS_ITS (LogLevel.INFO, R.string.msg_bench_s2k_100ms_its),
         MSG_BENCH_SUCCESS (LogLevel.OK, R.string.msg_bench_success),
 
         ;

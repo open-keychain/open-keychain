@@ -25,6 +25,15 @@ import java.util.Random;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.bcpg.S2K;
+import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
+import org.spongycastle.openpgp.operator.PGPDigestCalculatorProvider;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -37,6 +46,7 @@ import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
@@ -81,8 +91,7 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
             totalTime += encryptResult.getResults().get(0).mOperationTime;
         } while (++i < numRepeats);
 
-        log.add(LogType.MSG_BENCH_ENC_TIME_AVG, 1, String.format("%.2f", totalTime / numRepeats /1000.0));
-
+        long encryptionTime = totalTime / numRepeats;
         totalTime = 0;
 
         // decrypt
@@ -100,7 +109,43 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
             totalTime += decryptResult.mOperationTime;
         } while (++i < numRepeats);
 
-        log.add(LogType.MSG_BENCH_DEC_TIME_AVG, 1, String.format("%.2f", totalTime / numRepeats / 1000.0));
+        long decryptionTime = totalTime / numRepeats;
+        totalTime = 0;
+
+        int iterationsFor100ms;
+        try {
+            PGPDigestCalculatorProvider digestCalcProvider = new JcaPGPDigestCalculatorProviderBuilder()
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build();
+            PBEDataDecryptorFactory decryptorFactory = new JcePBEDataDecryptorFactoryBuilder(
+                    digestCalcProvider).setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                    "".toCharArray());
+
+            byte[] iv = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+            int iterations = 0;
+            while (iterations < 255 && totalTime < 100) {
+                iterations += 1;
+
+                S2K s2k = new S2K(HashAlgorithmTags.SHA1, iv, iterations);
+                totalTime = System.currentTimeMillis();
+                decryptorFactory.makeKeyFromPassPhrase(SymmetricKeyAlgorithmTags.AES_128, s2k);
+                totalTime = System.currentTimeMillis() -totalTime;
+
+                if ((iterations % 10) == 0) {
+                    log.add(LogType.MSG_BENCH_S2K_FOR_IT, 1, Integer.toString(iterations), Long.toString(totalTime));
+                }
+
+            }
+            iterationsFor100ms = iterations;
+
+        } catch (PGPException e) {
+            Log.e(Constants.TAG, "internal error during benchmark", e);
+            log.add(LogType.MSG_INTERNAL_ERROR, 0);
+            return new BenchmarkResult(BenchmarkResult.RESULT_ERROR, log);
+        }
+
+        log.add(LogType.MSG_BENCH_S2K_100MS_ITS, 1, Integer.toString(iterationsFor100ms));
+        log.add(LogType.MSG_BENCH_ENC_TIME_AVG, 1, String.format("%.2f", encryptionTime/1000.0));
+        log.add(LogType.MSG_BENCH_DEC_TIME_AVG, 1, String.format("%.2f", decryptionTime/1000.0));
 
         log.add(LogType.MSG_BENCH_SUCCESS, 0);
         return new BenchmarkResult(BenchmarkResult.RESULT_OK, log);
