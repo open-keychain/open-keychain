@@ -39,7 +39,7 @@ public class DecryptVerifyResult extends InputPendingResult {
 
     byte[] mOutputBytes;
 
-    public long mTotalTime;
+    public long mOperationTime;
 
     public DecryptVerifyResult(int result, OperationLog log) {
         super(result, log);

@@ -124,8 +124,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             result.setOutputBytes(outputData);
         }
 
-        result.mTotalTime = System.currentTimeMillis() - startTime;
-        Log.d(Constants.TAG, "total time taken: " + String.format("%.2f", result.mTotalTime / 1000.0) + "s");
+        result.mOperationTime = System.currentTimeMillis() - startTime;
+        Log.d(Constants.TAG, "total time taken: " + String.format("%.2f", result.mOperationTime / 1000.0) + "s");
         return result;
 
     }
@@ -429,7 +429,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         InputStream dataIn = literalData.getInputStream();
 
-        long startDecryptTime = System.currentTimeMillis();
+        long opTime, startTime = System.currentTimeMillis();
 
         long alreadyWritten = 0;
         long wholeSize = 0; // TODO inputData.getSize() - inputData.getStreamPosition();
@@ -462,8 +462,19 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             }
         }
 
-        Log.d(Constants.TAG, "decrypt time taken: " + String.format("%.2f",
-                (System.currentTimeMillis()-startDecryptTime) / 1000.0) + "s");
+        if (signatureChecker.isInitialized()) {
+
+            Object o = plainFact.nextObject();
+            boolean signatureCheckOk = signatureChecker.verifySignatureOnePass(o, log, indent + 1);
+
+            if (!signatureCheckOk) {
+                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+            }
+
+        }
+
+        opTime = System.currentTimeMillis()-startTime;
+        Log.d(Constants.TAG, "decrypt time taken: " + String.format("%.2f", opTime / 1000.0) + "s");
 
         // special treatment to detect pgp mime types
         if (matchesPrefix(firstBytes, "-----BEGIN PGP PUBLIC KEY BLOCK-----")
@@ -478,17 +489,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         metadata = new OpenPgpMetadata(
                 originalFilename, mimeType, literalData.getModificationTime().getTime(), alreadyWritten, charset);
-
-        if (signatureChecker.isInitialized()) {
-
-            Object o = plainFact.nextObject();
-            boolean signatureCheckOk = signatureChecker.verifySignatureOnePass(o, log, indent + 1);
-
-            if (!signatureCheckOk) {
-                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-            }
-
-        }
 
         indent -= 1;
 
@@ -522,6 +522,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         result.setSignatureResult(signatureChecker.getSignatureResult());
         result.setDecryptionResult(decryptionResultBuilder.build());
         result.setDecryptionMetadata(metadata);
+        result.mOperationTime = opTime;
 
         return result;
 

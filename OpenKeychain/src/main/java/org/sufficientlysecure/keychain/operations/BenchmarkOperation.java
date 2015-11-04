@@ -27,6 +27,7 @@ import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
@@ -54,9 +55,10 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
     public BenchmarkResult execute(BenchmarkInputParcel consolidateInputParcel,
                                      CryptoInputParcel cryptoInputParcel) {
         OperationLog log = new OperationLog();
+        log.add(LogType.MSG_BENCH, 0);
 
         // random data
-        byte[] buf = new byte[1024];
+        byte[] buf = new byte[1024*1024*5];
         new Random().nextBytes(buf);
 
         Passphrase passphrase = new Passphrase("a");
@@ -66,24 +68,30 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
         {
             SignEncryptOperation op =
                     new SignEncryptOperation(mContext, mProviderHelper,
-                            new ProgressScaler(mProgressable, 0, 10, 100), mCancelled);
+                            new ProgressScaler(mProgressable, 0, 50, 100), mCancelled);
             SignEncryptParcel input = new SignEncryptParcel();
             input.setSymmetricPassphrase(passphrase);
             input.setBytes(buf);
             encryptResult = op.execute(input, new CryptoInputParcel());
         }
+        log.add(encryptResult, 1);
+        log.add(LogType.MSG_BENCH_ENC_TIME, 1,
+                String.format("%.2f", encryptResult.getResults().get(0).mOperationTime / 1000.0));
 
         // decrypt
         DecryptVerifyResult decryptResult;
         {
             PgpDecryptVerifyOperation op =
                     new PgpDecryptVerifyOperation(mContext, mProviderHelper,
-                            new ProgressScaler(mProgressable, 0, 10, 100));
+                            new ProgressScaler(mProgressable, 50, 100, 100));
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(encryptResult.getResultBytes());
             input.setAllowSymmetricDecryption(true);
             decryptResult = op.execute(input, new CryptoInputParcel(passphrase));
         }
+        log.add(decryptResult, 1);
+        log.add(LogType.MSG_BENCH_DEC_TIME, 1, String.format("%.2f", decryptResult.mOperationTime / 1000.0));
 
+        log.add(LogType.MSG_BENCH_SUCCESS, 0);
         return new BenchmarkResult(BenchmarkResult.RESULT_OK, log);
     }
 

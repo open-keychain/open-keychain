@@ -1363,6 +1363,11 @@
     <string name="msg_lv_fetch_error_format">"Format error!"</string>
     <string name="msg_lv_fetch_error_nothing">"Resource not found!"</string>
 
+    <string name="msg_bench">"Benchmarking some operations…"</string>
+    <string name="msg_bench_enc_time">"Encryption time: %ss"</string>
+    <string name="msg_bench_dec_time">"Decryption time: %ss"</string>
+    <string name="msg_bench_success">"Benchmarking complete!"</string>
+
     <string name="msg_data">"Processing input data"</string>
     <string name="msg_data_openpgp">"Attempting to process OpenPGP data"</string>
     <string name="msg_data_detached">"Encountered detached signature"</string>
