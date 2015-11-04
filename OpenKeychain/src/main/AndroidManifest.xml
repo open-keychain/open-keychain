@@ -53,18 +53,31 @@
         android:name="${applicationId}.WRITE_TEMPORARY_STORAGE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.NFC" />
+    <!-- CAMERA permission requested by ZXing library -->
+
+    <!-- contact group -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.WRITE_PROFILE" />
+
+    <!-- storage group -->
+    <!--
+        No need on >= Android 4.4 for WRITE_EXTERNAL_STORAGE, because we use Storage Access Framework,
+        but better not use maxSdkVersion as it causes problems: https://code.google.com/p/android/issues/detail?id=63895
+    -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- READ_EXTERNAL_STORAGE is now dangerous on Android >= 6 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- other group (for free) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
     <application
@@ -97,12 +110,12 @@
                 android:value=".ui.MainActivity" />
             <!-- Connect with YubiKeys. This Activity will automatically show/import/create YubiKeys -->
             <intent-filter android:label="@string/app_name">
-                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
                 <data
-                    android:scheme="https"
                     android:host="my.yubico.com"
-                    android:pathPrefix="/neo"/>
+                    android:pathPrefix="/neo"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
         <activity
@@ -114,9 +127,7 @@
             android:name=".ui.linked.LinkedIdWizard"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_linked_create"
-            android:parentActivityName=".ui.ViewKeyActivity"
-            >
-        </activity>
+            android:parentActivityName=".ui.ViewKeyActivity"></activity>
         <activity
             android:name=".ui.QrCodeViewActivity"
             android:label="@string/share_qr_code_dialog_title" />
@@ -209,6 +220,12 @@
 
                 <data android:mimeType="text/*" />
                 <data android:mimeType="message/*" />
+            </intent-filter>
+            <!-- Android 6 Floating Action Mode -->
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
         <activity
@@ -466,7 +483,7 @@
             android:name=".ui.ImportKeysProxyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.Keychain.Transparent"
             android:windowSoftInputMode="stateHidden">
 
             <!-- VIEW with fingerprint scheme:
@@ -499,8 +516,7 @@
                 <data android:mimeType="application/pgp-keys" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.QrCodeCaptureActivity"/>
+        <activity android:name=".ui.QrCodeCaptureActivity" />
         <activity
             android:name=".ui.ImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -692,19 +708,19 @@
             android:label="@string/title_log_display" />
         <activity
             android:name=".ui.ConsolidateDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.Keychain.Transparent" />
         <activity
             android:name=".ui.PassphraseDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.Keychain.Transparent" />
         <activity
             android:name=".ui.RetryUploadDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.Keychain.Transparent" />
         <activity
             android:name=".ui.DeleteKeyDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.Keychain.Transparent" />
         <activity
             android:name=".ui.OrbotRequiredDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.Keychain.Transparent" />
         <!--
         NOTE: singleTop is set to get NFC foreground dispatch to work.
               Then, all NFC intents will be broadcasted to onNewIntent() of this activity!
@@ -714,10 +730,10 @@
          -->
         <activity
             android:name=".ui.NfcOperationActivity"
-            android:theme="@style/Theme.Keychain.Light.Dialog"
             android:allowTaskReparenting="true"
             android:launchMode="singleTop"
-            android:taskAffinity=":Nfc" />
+            android:taskAffinity=":Nfc"
+            android:theme="@style/Theme.Keychain.Light.Dialog" />
 
         <activity
             android:name=".ui.HelpActivity"
@@ -742,7 +758,7 @@
             android:name=".provider.KeychainProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
-            android:label="@string/keyserver_sync_settings_title"/>
+            android:label="@string/keyserver_sync_settings_title" />
 
         <!-- Internal classes of the remote APIs (not exported) -->
         <activity

@@ -88,6 +88,7 @@
     <string name="btn_match_phrases">"Phrases match"</string>
     <string name="btn_share_encrypted_signed">"Encrypt/sign and share text"</string>
     <string name="btn_copy_encrypted_signed">"Encrypt/sign and copy text"</string>
+    <string name="btn_paste_encrypted_signed">"Encrypt/sign and paste text"</string>
     <string name="btn_view_cert_key">"View certification key"</string>
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>

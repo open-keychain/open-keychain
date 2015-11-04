@@ -38,6 +38,7 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -869,7 +870,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
                         mActionNfc.setVisibility(View.INVISIBLE);
-                        mFab.setVisibility(View.GONE);
+                        hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsExpired) {
                         if (mIsSecret) {
@@ -885,7 +886,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
                         mActionNfc.setVisibility(View.INVISIBLE);
-                        mFab.setVisibility(View.GONE);
+                        hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsSecret) {
                         mStatusText.setText(R.string.view_key_my_key);
@@ -927,7 +928,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         } else {
                             mActionNfc.setVisibility(View.GONE);
                         }
-                        mFab.setVisibility(View.VISIBLE);
+                        showFab();
                         // noinspection deprecation (no getDrawable with theme at current minApi level 15!)
                         mFab.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
                     } else {
@@ -944,7 +945,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             color = getResources().getColor(R.color.key_flag_green);
                             photoTask.execute(mMasterKeyId);
 
-                            mFab.setVisibility(View.GONE);
+                            hideFab();
                         } else {
                             mStatusText.setText(R.string.view_key_unverified);
                             mStatusImage.setVisibility(View.VISIBLE);
@@ -952,7 +953,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                                     State.UNVERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.key_flag_orange);
 
-                            mFab.setVisibility(View.VISIBLE);
+                            showFab();
                         }
                     }
 
@@ -980,6 +981,28 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 }
             }
         }
+    }
+
+    /**
+     * Helper to show Fab, from http://stackoverflow.com/a/31047038
+     */
+    private void showFab() {
+        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) mFab.getLayoutParams();
+        p.setBehavior(new FloatingActionButton.Behavior());
+        p.setAnchorId(R.id.app_bar_layout);
+        mFab.setLayoutParams(p);
+        mFab.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Helper to hide Fab, from http://stackoverflow.com/a/31047038
+     */
+    private void hideFab() {
+        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) mFab.getLayoutParams();
+        p.setBehavior(null); //should disable default animations
+        p.setAnchorId(View.NO_ID); //should let you set visibility
+        mFab.setLayoutParams(p);
+        mFab.setVisibility(View.GONE);
     }
 
     @Override
