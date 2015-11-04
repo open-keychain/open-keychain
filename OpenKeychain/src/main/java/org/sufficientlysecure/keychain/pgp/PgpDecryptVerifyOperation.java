@@ -87,6 +87,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         InputData inputData;
         OutputStream outputStream;
 
+        long startTime = System.currentTimeMillis();
+
         if (input.getInputBytes() != null) {
             byte[] inputBytes = input.getInputBytes();
             inputData = new InputData(new ByteArrayInputStream(inputBytes), inputBytes.length);
@@ -122,6 +124,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             result.setOutputBytes(outputData);
         }
 
+        result.mTotalTime = System.currentTimeMillis() - startTime;
+        Log.d(Constants.TAG, "total time taken: " + String.format("%.2f", result.mTotalTime / 1000.0) + "s");
         return result;
 
     }
@@ -425,10 +429,12 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         InputStream dataIn = literalData.getInputStream();
 
+        long startDecryptTime = System.currentTimeMillis();
+
         long alreadyWritten = 0;
         long wholeSize = 0; // TODO inputData.getSize() - inputData.getStreamPosition();
         int length;
-        byte[] buffer = new byte[1 << 16];
+        byte[] buffer = new byte[8192];
         byte[] firstBytes = new byte[48];
         while ((length = dataIn.read(buffer)) > 0) {
             // Log.d(Constants.TAG, "read bytes: " + length);
@@ -455,6 +461,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 progressScaler.setProgress((int) progress, 100);
             }
         }
+
+        Log.d(Constants.TAG, "decrypt time taken: " + String.format("%.2f",
+                (System.currentTimeMillis()-startDecryptTime) / 1000.0) + "s");
 
         // special treatment to detect pgp mime types
         if (matchesPrefix(firstBytes, "-----BEGIN PGP PUBLIC KEY BLOCK-----")

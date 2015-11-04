@@ -57,6 +57,7 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -64,6 +65,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
@@ -415,6 +417,7 @@ public class KeyListFragment extends LoaderFragment
 
         if (Constants.DEBUG) {
             menu.findItem(R.id.menu_key_list_debug_cons).setVisible(true);
+            menu.findItem(R.id.menu_key_list_debug_bench).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_read).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_write).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_first_time).setVisible(true);
@@ -496,6 +499,10 @@ public class KeyListFragment extends LoaderFragment
 
             case R.id.menu_key_list_debug_cons:
                 consolidate();
+                return true;
+
+            case R.id.menu_key_list_debug_bench:
+                benchmark();
                 return true;
 
             default:
@@ -636,6 +643,43 @@ public class KeyListFragment extends LoaderFragment
                 new CryptoOperationHelper<>(2, this, callback, R.string.progress_importing);
 
         mConsolidateOpHelper.cryptoOperation();
+    }
+
+    private void benchmark() {
+
+        CryptoOperationHelper.Callback<BenchmarkInputParcel, BenchmarkResult> callback
+                = new CryptoOperationHelper.Callback<BenchmarkInputParcel, BenchmarkResult>() {
+
+            @Override
+            public BenchmarkInputParcel createOperationInput() {
+                return new BenchmarkInputParcel(); // we want to perform a full consolidate
+            }
+
+            @Override
+            public void onCryptoOperationSuccess(BenchmarkResult result) {
+                result.createNotify(getActivity()).show();
+            }
+
+            @Override
+            public void onCryptoOperationCancelled() {
+
+            }
+
+            @Override
+            public void onCryptoOperationError(BenchmarkResult result) {
+                result.createNotify(getActivity()).show();
+            }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
+        };
+
+        CryptoOperationHelper opHelper =
+                new CryptoOperationHelper<>(2, this, callback, R.string.progress_importing);
+
+        opHelper.cryptoOperation();
     }
 
     @Override

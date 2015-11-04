@@ -396,6 +396,7 @@
     <string name="progress_cancelling">"cancelling…"</string>
     <string name="progress_saving">"saving…"</string>
     <string name="progress_importing">"importing…"</string>
+    <string name="progress_benchmarking">"benchmarking…"</string>
     <string name="progress_revoking_uploading">"Revoking and uploading key…"</string>
     <string name="progress_updating">"Updating keys…"</string>
     <string name="progress_exporting">"exporting…"</string>

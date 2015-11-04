@@ -29,6 +29,7 @@ import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
+import org.sufficientlysecure.keychain.operations.BenchmarkOperation;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.ConsolidateOperation;
 import org.sufficientlysecure.keychain.operations.DeleteOperation;
@@ -135,6 +136,8 @@ public class KeychainService extends Service implements Progressable {
                     op = new KeybaseVerificationOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else if (inputParcel instanceof InputDataParcel) {
                     op = new InputDataOperation(outerThis, new ProviderHelper(outerThis), outerThis);
+                } else if (inputParcel instanceof BenchmarkInputParcel) {
+                    op = new BenchmarkOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else {
                     throw new AssertionError("Unrecognized input parcel in KeychainService!");
                 }
