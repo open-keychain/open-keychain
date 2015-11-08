@@ -321,6 +321,8 @@ public class PgpSignEncryptOperation extends BaseOperation {
         ArmoredOutputStream detachedArmorOut = null;
         BCPGOutputStream detachedBcpgOut = null;
 
+        long opTime, startTime = System.currentTimeMillis();
+
         try {
 
             if (enableEncryption) {
@@ -516,6 +518,10 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 }
             }
 
+            opTime = System.currentTimeMillis() -startTime;
+            Log.d(Constants.TAG, "sign/encrypt time taken: " + String.format("%.2f",
+                    opTime / 1000.0) + "s");
+
             // closing outputs
             // NOTE: closing needs to be done in the correct order!
             if (encryptionOut != null) {
@@ -559,6 +565,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
         log.add(LogType.MSG_PSE_OK, indent);
         PgpSignEncryptResult result = new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_OK, log);
+        result.mOperationTime = opTime;
         if (detachedByteOut != null) {
             try {
                 detachedByteOut.flush();

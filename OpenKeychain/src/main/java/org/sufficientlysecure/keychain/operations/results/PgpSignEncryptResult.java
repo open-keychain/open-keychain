@@ -26,6 +26,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 public class PgpSignEncryptResult extends InputPendingResult {
 
     byte[] mDetachedSignature;
+    public long mOperationTime;
 
     public void setDetachedSignature(byte[] detachedSignature) {
         mDetachedSignature = detachedSignature;

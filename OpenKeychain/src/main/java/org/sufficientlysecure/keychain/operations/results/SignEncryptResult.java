@@ -56,6 +56,10 @@ public class SignEncryptResult extends InputPendingResult {
         return mResultBytes;
     }
 
+    public ArrayList<PgpSignEncryptResult> getResults() {
+        return mResults;
+    }
+
     public int describeContents() {
         return 0;
     }

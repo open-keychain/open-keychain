@@ -397,6 +397,7 @@
     <string name="progress_cancelling">"cancelling…"</string>
     <string name="progress_saving">"saving…"</string>
     <string name="progress_importing">"importing…"</string>
+    <string name="progress_benchmarking">"benchmarking…"</string>
     <string name="progress_revoking_uploading">"Revoking and uploading key…"</string>
     <string name="progress_updating">"Updating keys…"</string>
     <string name="progress_exporting">"exporting…"</string>
@@ -1362,6 +1363,15 @@
     <string name="msg_lv_fetch_error_io">"IO Error!"</string>
     <string name="msg_lv_fetch_error_format">"Format error!"</string>
     <string name="msg_lv_fetch_error_nothing">"Resource not found!"</string>
+
+    <string name="msg_bench">"Benchmarking some operations…"</string>
+    <string name="msg_bench_enc_time">"Encryption time: %ss"</string>
+    <string name="msg_bench_enc_time_avg">"Average time to encrypt 5M: %ss"</string>
+    <string name="msg_bench_dec_time">"Decryption time: %ss"</string>
+    <string name="msg_bench_dec_time_avg">"Average time to decrypt 5M: %ss"</string>
+    <string name="msg_bench_s2k_100ms_its">"S2K Iteration Count for 100ms: %s"</string>
+    <string name="msg_bench_s2k_for_it">"Time for %1$s SHA1 S2K iterations: %2$sms"</string>
+    <string name="msg_bench_success">"Benchmarking complete!"</string>
 
     <string name="msg_data">"Processing input data"</string>
     <string name="msg_data_openpgp">"Attempting to process OpenPGP data"</string>
