@@ -25,7 +25,6 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.openintents.openpgp.IOpenPgpService;
@@ -34,13 +33,15 @@ import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
+import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
-import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -684,16 +685,47 @@ public class OpenPgpService extends RemoteService {
 
     }
 
-    private Intent getKeyImpl(Intent data) {
+    private Intent getKeyImpl(Intent data, ParcelFileDescriptor output) {
         try {
             long masterKeyId = data.getLongExtra(OpenPgpApi.EXTRA_KEY_ID, 0);
 
+            // output is optional, for getting the key
+            OutputStream outputStream =
+                    (output != null) ? new ParcelFileDescriptor.AutoCloseOutputStream(output) : null;
+
             try {
                 // try to find key, throws NotFoundException if not in db!
-                mProviderHelper.getCanonicalizedPublicKeyRing(masterKeyId);
+                CanonicalizedPublicKeyRing keyRing =
+                        mProviderHelper.getCanonicalizedPublicKeyRing(masterKeyId);
 
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+
+                // return public key if requested by defining a output stream
+                if (outputStream != null) {
+                    boolean requestAsciiArmor =
+                            data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, false);
+
+                    ArmoredOutputStream arOutStream = null;
+                    try {
+                        if (requestAsciiArmor) {
+                            arOutStream = new ArmoredOutputStream(outputStream);
+                            keyRing.encode(arOutStream);
+                        } else {
+                            keyRing.encode(outputStream);
+                        }
+                    } finally {
+                        try {
+                            if (arOutStream != null) {
+                                arOutStream.close();
+                            }
+                            outputStream.close();
+                        } catch (IOException e) {
+                            Log.e(Constants.TAG, "IOException when closing OutputStream", e);
+                        }
+                    }
+                }
+
                 // also return PendingIntent that opens the key view activity
                 result.putExtra(OpenPgpApi.RESULT_INTENT, getShowKeyPendingIntent(masterKeyId));
 
@@ -890,7 +922,7 @@ public class OpenPgpService extends RemoteService {
                     return getKeyIdsImpl(data);
                 }
                 case OpenPgpApi.ACTION_GET_KEY: {
-                    return getKeyImpl(data);
+                    return getKeyImpl(data, output);
                 }
                 default: {
                     return null;
