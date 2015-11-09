@@ -54,14 +54,8 @@ import java.util.List;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
-    public static final String ACTION_PREFS_CLOUD = "org.sufficientlysecure.keychain.ui.PREFS_CLOUD";
-    public static final String ACTION_PREFS_ADV = "org.sufficientlysecure.keychain.ui.PREFS_ADV";
-    public static final String ACTION_PREFS_PROXY = "org.sufficientlysecure.keychain.ui.PREFS_PROXY";
-    public static final String ACTION_PREFS_GUI = "org.sufficientlysecure.keychain.ui.PREFS_GUI";
-
     public static final int REQUEST_CODE_KEYSERVER_PREF = 0x00007005;
 
-    private PreferenceScreen mKeyServerPreference = null;
     private static Preferences sPreferences;
     private ThemeChanger mThemeChanger;
 
@@ -74,49 +68,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         super.onCreate(savedInstanceState);
 
         setupToolbar();
-
-        String action = getIntent().getAction();
-
-        if (ACTION_PREFS_CLOUD.equals(action)) {
-            addPreferencesFromResource(R.xml.cloud_search_prefs);
-
-            mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
-            mKeyServerPreference.setSummary(keyserverSummary(this));
-            mKeyServerPreference
-                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                        public boolean onPreferenceClick(Preference preference) {
-                            Intent intent = new Intent(SettingsActivity.this,
-                                    SettingsKeyServerActivity.class);
-                            intent.putExtra(SettingsKeyServerActivity.EXTRA_KEY_SERVERS,
-                                    sPreferences.getKeyServers());
-                            startActivityForResult(intent, REQUEST_CODE_KEYSERVER_PREF);
-                            return false;
-                        }
-                    });
-            initializeSearchKeyserver(
-                    (SwitchPreference) findPreference(Constants.Pref.SEARCH_KEYSERVER)
-            );
-            initializeSearchKeybase(
-                    (SwitchPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
-            );
-
-        } else if (ACTION_PREFS_ADV.equals(action)) {
-            addPreferencesFromResource(R.xml.passphrase_preferences);
-
-            initializePassphraseCacheSubs(
-                    (CheckBoxPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_SUBS));
-
-            initializePassphraseCacheTtl(
-                    (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
-
-            initializeUseNumKeypadForYubiKeyPin(
-                    (CheckBoxPreference) findPreference(Constants.Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN));
-
-        } else if (ACTION_PREFS_GUI.equals(action)) {
-            addPreferencesFromResource(R.xml.gui_preferences);
-
-            initializeTheme((ListPreference) findPreference(Constants.Pref.THEME));
-        }
     }
 
     @Override
@@ -448,23 +399,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * This fragment shows gui preferences.
-     */
-    public static class GuiPrefsFragment extends PreferenceFragment {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.gui_preferences);
-
-            initializeTheme((ListPreference) findPreference(Constants.Pref.THEME));
-        }
-    }
-
-    /**
      * This fragment shows the keyserver/contacts sync preferences
      */
     public static class SyncPrefsFragment extends PreferenceFragment {
@@ -576,7 +510,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         return PassphrasePrefsFragment.class.getName().equals(fragmentName)
                 || CloudSearchPrefsFragment.class.getName().equals(fragmentName)
                 || ProxyPrefsFragment.class.getName().equals(fragmentName)
-                || GuiPrefsFragment.class.getName().equals(fragmentName)
                 || SyncPrefsFragment.class.getName().equals(fragmentName)
                 || ExperimentalPrefsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
