@@ -701,24 +701,17 @@ public class OpenPgpService extends RemoteService {
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
 
-                // return public key if requested by defining a output stream
-                if (outputStream != null) {
-                    boolean requestAsciiArmor =
-                            data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, false);
+                boolean requestedKeyData = outputStream != null;
+                if (requestedKeyData) {
+                    boolean requestAsciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, false);
 
-                    ArmoredOutputStream arOutStream = null;
                     try {
                         if (requestAsciiArmor) {
-                            arOutStream = new ArmoredOutputStream(outputStream);
-                            keyRing.encode(arOutStream);
-                        } else {
-                            keyRing.encode(outputStream);
+                            outputStream = new ArmoredOutputStream(outputStream);
                         }
+                        keyRing.encode(outputStream);
                     } finally {
                         try {
-                            if (arOutStream != null) {
-                                arOutStream.close();
-                            }
                             outputStream.close();
                         } catch (IOException e) {
                             Log.e(Constants.TAG, "IOException when closing OutputStream", e);
