@@ -44,6 +44,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -191,7 +192,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
     public static class PassphraseDialogFragment extends DialogFragment implements TextView.OnEditorActionListener {
         private EditText mPassphraseEditText;
         private TextView mPassphraseText;
-        private View mInput, mProgress;
         private EditText[] mBackupCodeEditText;
 
         private CanonicalizedSecretKeyRing mSecretRing = null;
@@ -199,6 +199,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
         private long mSubKeyId;
 
         private Intent mServiceIntent;
+        private ViewAnimator mLayout;
 
         @NonNull
         @Override
@@ -234,13 +235,11 @@ public class PassphraseDialogActivity extends FragmentActivity {
             }
 
             LayoutInflater inflater = LayoutInflater.from(theme);
-            View view = inflater.inflate(R.layout.passphrase_dialog, null);
-            alert.setView(view);
+            mLayout = (ViewAnimator) inflater.inflate(R.layout.passphrase_dialog, null);
+            alert.setView(mLayout);
 
-            mPassphraseText = (TextView) view.findViewById(R.id.passphrase_text);
-            mPassphraseEditText = (EditText) view.findViewById(R.id.passphrase_passphrase);
-            mInput = view.findViewById(R.id.input);
-            mProgress = view.findViewById(R.id.progress);
+            mPassphraseText = (TextView) mLayout.findViewById(R.id.passphrase_text);
+            mPassphraseEditText = (EditText) mLayout.findViewById(R.id.passphrase_passphrase);
 
             alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
@@ -428,8 +427,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         return;
                     }
 
-                    mInput.setVisibility(View.INVISIBLE);
-                    mProgress.setVisibility(View.VISIBLE);
+                    mLayout.setDisplayedChild(1);
                     positive.setEnabled(false);
 
                     new AsyncTask<Void, Void, Boolean>() {
@@ -469,8 +467,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                             if (!result) {
                                 mPassphraseEditText.setText("");
                                 mPassphraseEditText.setError(getString(R.string.wrong_passphrase));
-                                mInput.setVisibility(View.VISIBLE);
-                                mProgress.setVisibility(View.INVISIBLE);
+                                mLayout.setDisplayedChild(0);
                                 positive.setEnabled(true);
                                 return;
                             }

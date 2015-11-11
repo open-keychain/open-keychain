@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
     android:paddingLeft="24dp"
     android:paddingRight="24dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    custom:initialView="0">
 
     <LinearLayout
-        android:id="@+id/input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -34,7 +36,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/progress"
         android:layout_centerInParent="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,4 +58,4 @@
 
     </LinearLayout>
 
-</RelativeLayout>
+</org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
