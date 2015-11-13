@@ -591,6 +591,18 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 // get subkey which has been used for this encryption packet
                 secretEncryptionKey = secretKeyRing.getSecretKey(subKeyId);
 
+                if (!secretEncryptionKey.canEncrypt()) {
+                    secretEncryptionKey = null;
+                    log.add(LogType.MSG_DC_ASKIP_BAD_FLAGS, indent + 1);
+                    continue;
+                }
+
+                if (!secretEncryptionKey.getSecretKeyType().isUsable()) {
+                    secretEncryptionKey = null;
+                    log.add(LogType.MSG_DC_ASKIP_UNAVAILABLE, indent + 1);
+                    continue;
+                }
+
                 /* secret key exists in database and is allowed! */
                 asymmetricPacketFound = true;
 

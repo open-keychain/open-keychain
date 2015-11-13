@@ -117,7 +117,7 @@ public class PgpHelper {
         }
     }
 
-    public static String getPgpContent(@NonNull CharSequence input) {
+    public static String getPgpMessageContent(@NonNull CharSequence input) {
         Log.dEscaped(Constants.TAG, "input: " + input);
 
         Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(input);
@@ -139,6 +139,20 @@ public class PgpHelper {
                 return null;
             }
         }
+    }
+
+    public static String getPgpKeyContent(@NonNull CharSequence input) {
+        Log.dEscaped(Constants.TAG, "input: " + input);
+
+        Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(input);
+        if (matcher.matches()) {
+            String text = matcher.group(1);
+            text = fixPgpMessage(text);
+
+            Log.dEscaped(Constants.TAG, "input fixed: " + text);
+            return text;
+        }
+        return null;
     }
 
 }

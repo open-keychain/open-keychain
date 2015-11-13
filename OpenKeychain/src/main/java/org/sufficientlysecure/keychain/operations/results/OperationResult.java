@@ -635,6 +635,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_EK_ERROR_NOT_FOUND (LogLevel.ERROR, R.string.msg_ek_error_not_found),
 
         // decryptverify
+        MSG_DC_ASKIP_BAD_FLAGS (LogLevel.DEBUG, R.string.msg_dc_askip_bad_flags),
+        MSG_DC_ASKIP_UNAVAILABLE (LogLevel.DEBUG, R.string.msg_dc_askip_unavailable),
         MSG_DC_ASKIP_NO_KEY (LogLevel.DEBUG, R.string.msg_dc_askip_no_key),
         MSG_DC_ASKIP_NOT_ALLOWED (LogLevel.DEBUG, R.string.msg_dc_askip_not_allowed),
         MSG_DC_ASYM (LogLevel.DEBUG, R.string.msg_dc_asym),
