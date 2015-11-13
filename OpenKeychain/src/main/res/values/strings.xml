@@ -1150,6 +1150,8 @@
     <string name="msg_ek_error_not_found">"Key not found!"</string>
 
     <!-- Messages for DecryptVerify operation -->
+    <string name="msg_dc_askip_bad_flags">"Key is not an encryption key, skipping…"</string>
+    <string name="msg_dc_askip_unavailable">"Key not available, skipping…"</string>
     <string name="msg_dc_askip_no_key">"Data not encrypted with known key, skipping…"</string>
     <string name="msg_dc_askip_not_allowed">"Data not encrypted with allowed key, skipping…"</string>
     <string name="msg_dc_asym">"Found block of asymmetrically encrypted data for key %s"</string>
