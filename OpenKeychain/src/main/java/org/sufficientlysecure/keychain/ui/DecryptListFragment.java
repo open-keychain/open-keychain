@@ -22,14 +22,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LabeledIntent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -37,10 +40,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -98,6 +103,7 @@ public class DecryptListFragment
     public static final String ARG_CAN_DELETE = "can_delete";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 12;
 
     private ArrayList<Uri> mInputUris;
     private HashMap<Uri, InputDataResult> mInputDataResults;
@@ -218,15 +224,93 @@ public class DecryptListFragment
                 continue;
             }
 
-            if (results != null && results.containsKey(uri)) {
-                processResult(uri);
-            } else {
-                mPendingInputUris.add(uri);
+            if (readPermissionGranted(uri)) {
+                if (results != null && results.containsKey(uri)) {
+                    processResult(uri);
+                } else {
+                    mPendingInputUris.add(uri);
+                }
             }
         }
 
         // check if there are any pending input uris
         cryptoOperation();
+    }
+
+    /**
+     * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris
+     *
+     * see
+     * https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
+     */
+    private boolean readPermissionGranted(Uri uri) {
+        if (Build.VERSION.SDK_INT < VERSION_CODES.M) {
+            return true;
+        }
+        if (! "file".equals(uri.getScheme())) {
+            return true;
+        }
+
+        // Build check due to https://commonsware.com/blog/2015/11/09/you-cannot-hold-nonexistent-permissions.html
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN ||
+                ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            requestPermissions(
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+
+            if (! mCancelledInputUris.contains(uri)) {
+                mCancelledInputUris.add(uri);
+            }
+            return false;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission granted -> retry all cancelled uris!
+                    for (Iterator<Uri> iterator = mCancelledInputUris.iterator(); iterator.hasNext(); ) {
+                        Uri uri = iterator.next();
+
+                        if ("file".equals(uri.getScheme())) {
+                            iterator.remove();
+                            mPendingInputUris.add(uri);
+                            mAdapter.setCancelled(uri, null);
+                        }
+                    }
+
+                    // check if there are any pending input uris
+                    cryptoOperation();
+                } else {
+
+                    // permission denied -> cancel all file uris
+                    for (final Uri uri : mInputUris) {
+                        if ("file".equals(uri.getScheme())) {
+                            if (! mCancelledInputUris.contains(uri)) {
+                                mCancelledInputUris.add(uri);
+                            }
+                            mAdapter.setCancelled(uri, new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    retryUri(uri);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            default: {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
+        }
     }
 
     @Override
@@ -450,12 +534,14 @@ public class DecryptListFragment
         }
 
         // un-cancel this one
-        mCancelledInputUris.remove(uri);
-        mPendingInputUris.add(uri);
-        mAdapter.setCancelled(uri, null);
+        if (readPermissionGranted(uri)) {
+            mCancelledInputUris.remove(uri);
+            mPendingInputUris.add(uri);
+            mAdapter.setCancelled(uri, null);
+        }
 
+        // check if there are any pending input uris
         cryptoOperation();
-
     }
 
     public void displayBottomSheet(final InputDataResult result, final int index) {
