@@ -63,6 +63,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
+import org.sufficientlysecure.keychain.ui.widget.CacheTTLSpinner;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -200,6 +201,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         private Intent mServiceIntent;
         private ViewAnimator mLayout;
+        private CacheTTLSpinner mTimeToLiveSpinner;
 
         @NonNull
         @Override
@@ -240,6 +242,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             mPassphraseText = (TextView) mLayout.findViewById(R.id.passphrase_text);
             mPassphraseEditText = (EditText) mLayout.findViewById(R.id.passphrase_passphrase);
+
+            mTimeToLiveSpinner = (CacheTTLSpinner) mLayout.findViewById(R.id.ttl_spinner);
 
             alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
@@ -415,12 +419,14 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     CryptoInputParcel cryptoInputParcel =
                             ((PassphraseDialogActivity) getActivity()).mCryptoInputParcel;
 
+                    final long timeToLiveSeconds = mTimeToLiveSpinner.getSelectedTimeToLive();
+
                     // Early breakout if we are dealing with a symmetric key
                     if (mSecretRing == null) {
                         if (cryptoInputParcel.mCachePassphrase) {
                             PassphraseCacheService.addCachedPassphrase(getActivity(),
                                     Constants.key.symmetric, Constants.key.symmetric, passphrase,
-                                    getString(R.string.passp_cache_notif_pwd));
+                                    getString(R.string.passp_cache_notif_pwd), timeToLiveSeconds);
                         }
 
                         finishCaching(passphrase);
@@ -484,7 +490,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 try {
                                     PassphraseCacheService.addCachedPassphrase(getActivity(),
                                             mSecretRing.getMasterKeyId(), mSubKeyId, passphrase,
-                                            mSecretRing.getPrimaryUserIdWithFallback());
+                                            mSecretRing.getPrimaryUserIdWithFallback(), timeToLiveSeconds);
                                 } catch (PgpKeyNotFoundException e) {
                                     Log.e(Constants.TAG, "adding of a passphrase failed", e);
                                 }

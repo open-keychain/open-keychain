@@ -120,13 +120,14 @@ public class PassphraseCacheService extends Service {
      */
     public static void addCachedPassphrase(Context context, long masterKeyId, long subKeyId,
                                            Passphrase passphrase,
-                                           String primaryUserId) {
+                                           String primaryUserId,
+                                           long timeToLiveSeconds) {
         Log.d(Constants.TAG, "PassphraseCacheService.addCachedPassphrase() for " + masterKeyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_ADD);
 
-        intent.putExtra(EXTRA_TTL, Preferences.getPreferences(context).getPassphraseCacheTtl());
+        intent.putExtra(EXTRA_TTL, timeToLiveSeconds);
         intent.putExtra(EXTRA_PASSPHRASE, passphrase);
         intent.putExtra(EXTRA_KEY_ID, masterKeyId);
         intent.putExtra(EXTRA_SUBKEY_ID, subKeyId);
@@ -237,7 +238,8 @@ public class PassphraseCacheService extends Service {
                 return null;
             }
             addCachedPassphrase(this, Constants.key.symmetric, Constants.key.symmetric,
-                    cachedPassphrase.getPassphrase(), getString(R.string.passp_cache_notif_pwd));
+                    cachedPassphrase.getPassphrase(), getString(R.string.passp_cache_notif_pwd),
+                    Preferences.getPreferences(getBaseContext()).getPassphraseCacheTtl());
             return cachedPassphrase.getPassphrase();
         }
 
@@ -285,9 +287,6 @@ public class PassphraseCacheService extends Service {
 
         }
 
-        // set it again to reset the cache life cycle
-        Log.d(Constants.TAG, "PassphraseCacheService: Cache passphrase again when getting it!");
-        addCachedPassphrase(this, masterKeyId, subKeyId, cachedPassphrase.getPassphrase(), cachedPassphrase.getPrimaryUserID());
         return cachedPassphrase.getPassphrase();
     }
 

@@ -4,6 +4,7 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
     android:paddingLeft="24dp"
@@ -32,6 +33,27 @@
             android:hint="@string/label_passphrase"
             android:ems="10"
             android:layout_gravity="center_horizontal" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:layout_margin="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remember for "
+                android:textAppearance="@android:style/TextAppearance.Medium" />
+
+            <org.sufficientlysecure.keychain.ui.widget.CacheTTLSpinner
+                android:id="@+id/ttl_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            </org.sufficientlysecure.keychain.ui.widget.CacheTTLSpinner>
+
+        </LinearLayout>
 
     </LinearLayout>
 
