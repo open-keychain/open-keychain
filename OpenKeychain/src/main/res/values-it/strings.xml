@@ -441,7 +441,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="key_list_empty_text1">Nessuna chiave trovata!</string>
   <string name="key_list_filter_show_all">Mostra tutte le chiavi</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Modifica chiave</string>
+  <string name="key_view_action_edit_ids">Modifica chiave</string>
   <string name="key_view_action_encrypt">Codifica Testo</string>
   <string name="key_view_action_encrypt_files">documenti</string>
   <string name="key_view_action_update">Aggiorna dal server delle chiavi</string>

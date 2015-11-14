@@ -581,7 +581,7 @@
   <string name="key_list_fab_search">Búsqueda de clave</string>
   <string name="key_list_fab_import">Importar desde fichero</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Editar clave</string>
+  <string name="key_view_action_edit_ids">Editar clave</string>
   <string name="key_view_action_encrypt">Cifrar texto</string>
   <string name="key_view_action_encrypt_files">ficheros</string>
   <string name="key_view_action_certify">Confirmar clave</string>

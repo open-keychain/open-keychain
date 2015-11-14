@@ -63,7 +63,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:id="@+id/view_key_user_id_fab_layout"
+        android:id="@+id/view_key_subkey_fab_layout"
         android:inAnimation="@anim/fab_slide_in"
         android:outAnimation="@anim/fab_slide_down">
 
@@ -72,7 +72,7 @@
             android:layout_height="wrap_content" />
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/view_key_user_id_fab"
+            android:id="@+id/view_key_subkey_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="24dp"

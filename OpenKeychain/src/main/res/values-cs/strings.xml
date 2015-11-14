@@ -385,7 +385,7 @@
   <string name="key_list_empty_text1">Žádný klíč nenalezen!</string>
   <string name="key_list_filter_show_all">Zobrazit všechny klíče</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Editovat klíč</string>
+  <string name="key_view_action_edit_ids">Editovat klíč</string>
   <string name="key_view_action_encrypt">Zašifrovat text</string>
   <string name="key_view_action_encrypt_files">soubory</string>
   <string name="key_view_action_certify">Potvrdit klíč</string>

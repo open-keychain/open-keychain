@@ -476,7 +476,7 @@
   <string name="key_list_fab_search">Nyckelsökning</string>
   <string name="key_list_fab_import">Importera från fil</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Redigera nyckel</string>
+  <string name="key_view_action_edit_ids">Redigera nyckel</string>
   <string name="key_view_action_encrypt">Kryptera text</string>
   <string name="key_view_action_encrypt_files">filer</string>
   <string name="key_view_action_certify">Bekräfta nyckel</string>

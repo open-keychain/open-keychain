@@ -666,7 +666,8 @@
     <string name="key_list_fab_import">"Import from File"</string>
 
     <!-- Key view -->
-    <string name="key_view_action_edit">"Edit key"</string>
+    <string name="key_view_action_edit_ids">"Edit Identities"</string>
+    <string name="key_view_action_edit_subkeys">"Edit Subkeys"</string>
     <string name="key_view_action_encrypt">"Encrypt text"</string>
     <string name="key_view_action_encrypt_files">"files"</string>
     <string name="key_view_action_certify">"Confirm key"</string>
@@ -1707,5 +1708,7 @@
     <string name="menu_uids_save">Save</string>
     <string name="menu_uids_save">"Save"</string>
     <string name="title_edit_identities">"Edit Identities"</string>
+    <string name="title_edit_subkeys">"Edit Subkeys"</string>
+    <string name="btn_search_for_query">"Search for\n'%s'"</string>
 
 </resources>

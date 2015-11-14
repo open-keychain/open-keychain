@@ -489,7 +489,7 @@
   <string name="key_list_empty_text1">Geen sleutels gevonden!</string>
   <string name="key_list_filter_show_all">Alle sleutels weergeven</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Sleutel bewerken</string>
+  <string name="key_view_action_edit_ids">Sleutel bewerken</string>
   <string name="key_view_action_encrypt">Versleutel tekst</string>
   <string name="key_view_action_encrypt_files">bestanden</string>
   <string name="key_view_action_certify">Sleutel bevestigen</string>

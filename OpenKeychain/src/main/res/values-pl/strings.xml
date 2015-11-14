@@ -373,7 +373,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="key_list_empty_text1">Nie znaleziono kluczy!</string>
   <string name="key_list_filter_show_all">Pokaż wszystkie klucze</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Edytuj klucz</string>
+  <string name="key_view_action_edit_ids">Edytuj klucz</string>
   <string name="key_view_action_encrypt">Szyfruj tekst</string>
   <string name="key_view_action_encrypt_files">pliki</string>
   <string name="key_view_action_update">Aktualizuj z serwera kluczy</string>

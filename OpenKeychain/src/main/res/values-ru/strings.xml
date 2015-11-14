@@ -487,7 +487,7 @@
   <string name="key_list_filter_show_all">Показать все ключи</string>
   <string name="key_list_fab_search">Поиск ключа</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Изменить ключ</string>
+  <string name="key_view_action_edit_ids">Изменить ключ</string>
   <string name="key_view_action_encrypt">Зашифровать текст</string>
   <string name="key_view_action_encrypt_files">файлы</string>
   <string name="key_view_action_certify">Подтвердить ключ</string>

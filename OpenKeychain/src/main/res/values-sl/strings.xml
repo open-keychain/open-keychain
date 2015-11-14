@@ -426,7 +426,7 @@
   <string name="key_list_empty_text1">Najden ni bil noben ključ!</string>
   <string name="key_list_filter_show_all">Prikaži vse ključe</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Uredi ključ</string>
+  <string name="key_view_action_edit_ids">Uredi ključ</string>
   <string name="key_view_action_encrypt">Šifriraj besedilo</string>
   <string name="key_view_action_encrypt_files">datoteke</string>
   <string name="key_view_action_certify">Potrdi ključ</string>

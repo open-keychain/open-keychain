@@ -101,8 +101,8 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         footer.setLayoutParams(params);
         mUserIdsAddedList.addFooterView(footer, null, false);
 
-        mUserIdAddFabLayout = (ViewAnimator) view.findViewById(R.id.view_key_user_id_fab_layout);
-        view.findViewById(R.id.view_key_user_id_fab).setOnClickListener(new View.OnClickListener() {
+        mUserIdAddFabLayout = (ViewAnimator) view.findViewById(R.id.view_key_subkey_fab_layout);
+        view.findViewById(R.id.view_key_subkey_fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addUserId();

@@ -7,7 +7,7 @@
         android:icon="@drawable/ic_mode_edit_white_24dp"
         android:visible="false"
         app:showAsAction="always"
-        android:title="@string/key_view_action_edit" />
+        android:title="@string/key_view_action_edit_ids" />
 
     <item
         android:id="@+id/menu_key_view_refresh"

@@ -231,7 +231,8 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
         mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds, false);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
 
-        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0, mSaveKeyringParcel);
+        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
+        mSubkeysAdapter.setEditMode(mSaveKeyringParcel);
         mSubkeysList.setAdapter(mSubkeysAdapter);
 
         mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys, false);
