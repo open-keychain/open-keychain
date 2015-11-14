@@ -91,6 +91,22 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableHashMap;
 
 
+/** Displays a list of decrypted inputs.
+ *
+ * This class has a complex control flow to manage its input URIs. Each URI
+ * which is in mInputUris is also in exactly one of mPendingInputUris,
+ * mCancelledInputUris, mCurrentInputUri, or a key in mInputDataResults.
+ *
+ * Processing of URIs happens using a looping approach:
+ * - There is always exactly one method running which works on mCurrentInputUri
+ * - Processing starts in cryptoOperation(), which pops a new mCurrentInputUri
+ *   from the list of mPendingInputUris.
+ * - Once a mCurrentInputUri is finished processing, it should be set to null and
+ *   control handed back to cryptoOperation()
+ * - Control flow can move through asynchronous calls, and resume in callbacks
+ *   like onActivityResult() or onPermissionRequestResult().
+ *
+ */
 public class DecryptListFragment
         extends QueueingCryptoOperationFragment<InputDataParcel,InputDataResult>
         implements OnMenuItemClickListener {
@@ -200,7 +216,9 @@ public class DecryptListFragment
         );
     }
 
-    private void displayInputUris(ArrayList<Uri> inputUris, ArrayList<Uri> cancelledUris,
+    private void displayInputUris(
+            ArrayList<Uri> inputUris,
+            ArrayList<Uri> cancelledUris,
             HashMap<Uri,InputDataResult> results) {
 
         mInputUris = inputUris;
@@ -213,16 +231,19 @@ public class DecryptListFragment
         for (final Uri uri : inputUris) {
             mAdapter.add(uri);
 
-            if (mCancelledInputUris.contains(uri)) {
+            boolean uriIsCancelled = mCancelledInputUris.contains(uri);
+            if (uriIsCancelled) {
                 mAdapter.setCancelled(uri, true);
                 continue;
             }
 
-            if (results != null && results.containsKey(uri)) {
+            boolean uriHasResult = results != null && results.containsKey(uri);
+            if (uriHasResult) {
                 processResult(uri);
-            } else {
-                mPendingInputUris.add(uri);
+                continue;
             }
+
+            mPendingInputUris.add(uri);
         }
 
         // check if there are any pending input uris
@@ -791,8 +812,10 @@ public class DecryptListFragment
                     return false;
                 }
                 ViewModel viewModel = (ViewModel) o;
-                return !(mInputUri != null ? !mInputUri.equals(viewModel.mInputUri)
-                        : viewModel.mInputUri != null);
+                if (mInputUri == null) {
+                    return viewModel.mInputUri == null;
+                }
+                return mInputUri.equals(viewModel.mInputUri);
             }
 
             // Depends on inputUri only
