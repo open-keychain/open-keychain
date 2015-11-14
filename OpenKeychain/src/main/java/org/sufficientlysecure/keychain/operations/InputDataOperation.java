@@ -165,6 +165,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
         parser.setContentDecoding(true);
         parser.setRecurse();
         parser.setContentHandler(new AbstractContentHandler() {
+            private boolean mFoundHeaderWithFields = false;
             private Uri uncheckedSignedDataUri;
             String mFilename;
 
@@ -221,11 +222,19 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             }
 
             @Override
+            public void endHeader() throws MimeException {
+                if ( ! mFoundHeaderWithFields) {
+                    parser.stop();
+                }
+            }
+
+            @Override
             public void field(Field field) throws MimeException {
                 field = DefaultFieldParser.getParser().parse(field, DecodeMonitor.SILENT);
                 if (field instanceof ContentDispositionField) {
                     mFilename = ((ContentDispositionField) field).getFilename();
                 }
+                mFoundHeaderWithFields = true;
             }
 
             private void bodySignature(BodyDescriptor bd, InputStream is) throws MimeException, IOException {
