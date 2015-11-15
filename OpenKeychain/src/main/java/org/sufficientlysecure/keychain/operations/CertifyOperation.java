@@ -208,7 +208,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
         // these variables are used inside the following loop, but they need to be created only once
         UploadOperation uploadOperation = null;
         if (parcel.keyServerUri != null) {
-            uploadOperation = new UploadOperation(mContext, mProviderHelper, mProgressable);
+            uploadOperation = new UploadOperation(mContext, mProviderHelper, mProgressable, mCancelled);
         }
 
         // Write all certified keys into the database

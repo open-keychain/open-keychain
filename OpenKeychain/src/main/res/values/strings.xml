@@ -88,6 +88,7 @@
     <string name="btn_match_phrases">"Phrases match"</string>
     <string name="btn_share_encrypted_signed">"Encrypt/sign and share text"</string>
     <string name="btn_copy_encrypted_signed">"Encrypt/sign and copy text"</string>
+    <string name="btn_paste_encrypted_signed">"Encrypt/sign and paste text"</string>
     <string name="btn_view_cert_key">"View certification key"</string>
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
@@ -396,6 +397,7 @@
     <string name="progress_cancelling">"cancelling…"</string>
     <string name="progress_saving">"saving…"</string>
     <string name="progress_importing">"importing…"</string>
+    <string name="progress_benchmarking">"benchmarking…"</string>
     <string name="progress_revoking_uploading">"Revoking and uploading key…"</string>
     <string name="progress_updating">"Updating keys…"</string>
     <string name="progress_exporting">"exporting…"</string>
@@ -1148,6 +1150,8 @@
     <string name="msg_ek_error_not_found">"Key not found!"</string>
 
     <!-- Messages for DecryptVerify operation -->
+    <string name="msg_dc_askip_bad_flags">"Key is not an encryption key, skipping…"</string>
+    <string name="msg_dc_askip_unavailable">"Key not available, skipping…"</string>
     <string name="msg_dc_askip_no_key">"Data not encrypted with known key, skipping…"</string>
     <string name="msg_dc_askip_not_allowed">"Data not encrypted with allowed key, skipping…"</string>
     <string name="msg_dc_asym">"Found block of asymmetrically encrypted data for key %s"</string>
@@ -1299,15 +1303,22 @@
     </plurals>
     <string name="msg_backup_all">"Backup with all keys"</string>
     <string name="msg_backup_public">"Creating backup of public key %s"</string>
-    <string name="msg_backup_upload_public">"Uploading public key %s"</string>
     <string name="msg_backup_secret">"Creating backup of secret key %s"</string>
     <string name="msg_backup_error_uri_open">"Error opening URI stream!"</string>
     <string name="msg_backup_error_db">"Database error!"</string>
     <string name="msg_backup_error_io">"Input/output error!"</string>
-    <string name="msg_backup_error_key">"Error preprocessing key data!"</string>
-    <string name="msg_backup_error_upload">"Error uploading key to server! Please check your Internet connection"</string>
     <string name="msg_backup_success">"Backup operation successful"</string>
-    <string name="msg_backup_upload_success">"Upload to keyserver successful"</string>
+
+    <string name="msg_upload">"Uploading public key"</string>
+    <string name="msg_upload_proxy_direct">"Using proxy: None"</string>
+    <string name="msg_upload_proxy_tor">"Using proxy: TOR"</string>
+    <string name="msg_upload_proxy">"Using proxy: %s"</string>
+    <string name="msg_upload_server">"Server: %s"</string>
+    <string name="msg_upload_key">"Key id: %s"</string>
+    <string name="msg_upload_error_key">"Error preprocessing key data!"</string>
+    <string name="msg_upload_error_not_found">"Key not found!"</string>
+    <string name="msg_upload_error_upload">"Error uploading key to server! Please check your Internet connection"</string>
+    <string name="msg_upload_success">"Upload to keyserver successful"</string>
 
     <string name="msg_del_error_empty">"Nothing to delete!"</string>
     <string name="msg_del_error_multi_secret">"Secret keys can only be deleted individually!"</string>
@@ -1355,6 +1366,15 @@
     <string name="msg_lv_fetch_error_format">"Format error!"</string>
     <string name="msg_lv_fetch_error_nothing">"Resource not found!"</string>
 
+    <string name="msg_bench">"Benchmarking some operations…"</string>
+    <string name="msg_bench_enc_time">"Encryption time: %ss"</string>
+    <string name="msg_bench_enc_time_avg">"Average time to encrypt 5M: %ss"</string>
+    <string name="msg_bench_dec_time">"Decryption time: %ss"</string>
+    <string name="msg_bench_dec_time_avg">"Average time to decrypt 5M: %ss"</string>
+    <string name="msg_bench_s2k_100ms_its">"S2K Iteration Count for 100ms: %s"</string>
+    <string name="msg_bench_s2k_for_it">"Time for %1$s SHA1 S2K iterations: %2$sms"</string>
+    <string name="msg_bench_success">"Benchmarking complete!"</string>
+
     <string name="msg_data">"Processing input data"</string>
     <string name="msg_data_openpgp">"Attempting to process OpenPGP data"</string>
     <string name="msg_data_detached">"Encountered detached signature"</string>
@@ -1365,7 +1385,6 @@
     <string name="msg_data_detached_trailing">"Skipping trailing data after signed part!"</string>
     <string name="msg_data_detached_unsupported">"Unsupported type of detached signature!"</string>
     <string name="msg_data_error_io">"Error reading input data!"</string>
-    <string name="msg_data_error_openpgp">"Error processing OpenPGP data!"</string>
     <string name="msg_data_mime_bad">"Could not parse as MIME data"</string>
     <string name="msg_data_mime_filename">"Filename: '%s'"</string>
     <string name="msg_data_mime_from_extension">"Guessing MIME type from extension"</string>
@@ -1672,5 +1691,6 @@
     <string name="share_log_dialog_cancel_button">"Cancel"</string>
     <string name="toast_wrong_mimetype">"Wrong data type, expected text!"</string>
     <string name="toast_no_text">"No text in shared data!"</string>
+    <string name="btn_search_for_query">"Search for\n'%s'"</string>
 
 </resources>

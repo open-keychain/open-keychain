@@ -43,6 +43,6 @@ project(':extern:spongycastle') {
 // SDK Version and Build Tools used by all subprojects
 // See http://tools.android.com/tech-docs/new-build-system/tips#TOC-Controlling-Android-properties-of-all-your-modules-from-the-main-project.
 ext {
-    compileSdkVersion = 22
-    buildToolsVersion = '22.0.1'
+    compileSdkVersion = 23
+    buildToolsVersion = '23.0.1'
 }

@@ -404,7 +404,6 @@
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">Vyhledat</string>
   <string name="key_trust_results_prefix">Keybase.io nabízí “důkazy” které tvrdí, že vlastníkem tohoto klíče je: </string>
-  <string name="key_trust_header_text">Poznámka: Keybase.io důkazy jsou experimentální fíčura OpenKeychainu. Doporučujeme vám navíc potvrdit je pomocí naskenování QR kódu nebo si vyměnit klíče pomocí NFC.</string>
   <!--keybase proof stuff-->
   <string name="keybase_a_post">Příspěvek</string>
   <string name="keybase_twitter_proof">tweet</string>

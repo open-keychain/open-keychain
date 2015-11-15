@@ -252,7 +252,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             ring.encode(arOutStream);
 
         } catch (PgpGeneralException e) {
-            log.add(LogType.MSG_BACKUP_ERROR_KEY, 2);
+            log.add(LogType.MSG_UPLOAD_ERROR_IO, 2);
         } finally {
             if (arOutStream != null) {
                 arOutStream.close();
@@ -273,7 +273,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             ring.encode(arOutStream);
 
         } catch (PgpGeneralException e) {
-            log.add(LogType.MSG_BACKUP_ERROR_KEY, 2);
+            log.add(LogType.MSG_UPLOAD_ERROR_IO, 2);
         } finally {
             if (arOutStream != null) {
                 arOutStream.close();

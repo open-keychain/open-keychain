@@ -186,20 +186,16 @@
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
-  <string name="orbot_ignore_tor">Ez erabili Tor</string>
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_title">Ezarri Orbot edo erabili Tor?</string>
   <string name="orbot_install_dialog_install">Ezarri</string>
   <string name="orbot_install_dialog_content">Orbot ezarrita eta proxy trafiko igaropena gaituta eduki behar duzu. Nahi duzu ezartzea?</string>
   <string name="orbot_install_dialog_cancel">Ezeztatu</string>
-  <string name="orbot_install_dialog_ignore_tor">Ez erabili Tor</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Abiarazi Orbot?</string>
-  <string name="orbot_start_dialog_content">Ez dirudi Orbot ekinean dagoenik. Nahi duzu abiaraztea eta Tor-era elkartzea?</string>
   <string name="orbot_start_btn">Abiarazi Orbot</string>
   <string name="orbot_start_dialog_start">Abiarazi Orbot</string>
   <string name="orbot_start_dialog_cancel">Ezeztatu</string>
-  <string name="orbot_start_dialog_ignore_tor">Ez erabili Tor</string>
   <string name="user_id_no_name"><![CDATA[<izengabe>]]></string>
   <string name="none"><![CDATA[<ezer ez>]]></string>
   <plurals name="n_keys">
@@ -587,7 +583,6 @@
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">Hasi bilaketa</string>
   <string name="key_trust_results_prefix">Keybase.io \"probak\" eskaintzen ditu giltza honen jabea baieztatzeko:</string>
-  <string name="key_trust_header_text">Oharra: Keybase.io egiaztapenak OpenKeychain-en ezaugarri esperimental bat da. QR kodeak eskaneatzea edo giltzak NFC bidez aldatzea gomendatzen dizugu hauek baieztatu ahal izateko.</string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">Argitaratu Twitter-en  honela %s</string>
   <string name="keybase_narrative_github">GitHub-en %s bezala ezagutzen da</string>

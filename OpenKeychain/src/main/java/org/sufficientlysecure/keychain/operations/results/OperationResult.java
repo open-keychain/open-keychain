@@ -635,6 +635,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_EK_ERROR_NOT_FOUND (LogLevel.ERROR, R.string.msg_ek_error_not_found),
 
         // decryptverify
+        MSG_DC_ASKIP_BAD_FLAGS (LogLevel.DEBUG, R.string.msg_dc_askip_bad_flags),
+        MSG_DC_ASKIP_UNAVAILABLE (LogLevel.DEBUG, R.string.msg_dc_askip_unavailable),
         MSG_DC_ASKIP_NO_KEY (LogLevel.DEBUG, R.string.msg_dc_askip_no_key),
         MSG_DC_ASKIP_NOT_ALLOWED (LogLevel.DEBUG, R.string.msg_dc_askip_not_allowed),
         MSG_DC_ASYM (LogLevel.DEBUG, R.string.msg_dc_asym),
@@ -766,17 +768,24 @@ public abstract class OperationResult implements Parcelable {
         MSG_IMPORT_SUCCESS (LogLevel.OK, R.string.msg_import_success),
 
         MSG_BACKUP(LogLevel.START, R.plurals.msg_backup),
-        MSG_BACKUP_UPLOAD_PUBLIC(LogLevel.START, R.string.msg_backup_upload_public),
         MSG_BACKUP_PUBLIC(LogLevel.DEBUG, R.string.msg_backup_public),
         MSG_BACKUP_SECRET(LogLevel.DEBUG, R.string.msg_backup_secret),
         MSG_BACKUP_ALL(LogLevel.START, R.string.msg_backup_all),
         MSG_BACKUP_ERROR_URI_OPEN(LogLevel.ERROR, R.string.msg_backup_error_uri_open),
         MSG_BACKUP_ERROR_DB(LogLevel.ERROR, R.string.msg_backup_error_db),
         MSG_BACKUP_ERROR_IO(LogLevel.ERROR, R.string.msg_backup_error_io),
-        MSG_BACKUP_ERROR_KEY(LogLevel.ERROR, R.string.msg_backup_error_key),
-        MSG_BACKUP_ERROR_UPLOAD(LogLevel.ERROR, R.string.msg_backup_error_upload),
         MSG_BACKUP_SUCCESS(LogLevel.OK, R.string.msg_backup_success),
-        MSG_BACKUP_UPLOAD_SUCCESS(LogLevel.OK, R.string.msg_backup_upload_success),
+
+        MSG_UPLOAD(LogLevel.START, R.string.msg_upload),
+        MSG_UPLOAD_KEY(LogLevel.INFO, R.string.msg_upload_key),
+        MSG_UPLOAD_PROXY_DIRECT(LogLevel.DEBUG, R.string.msg_upload_proxy_direct),
+        MSG_UPLOAD_PROXY_TOR(LogLevel.DEBUG, R.string.msg_upload_proxy_tor),
+        MSG_UPLOAD_PROXY(LogLevel.DEBUG, R.string.msg_upload_proxy),
+        MSG_UPLOAD_SERVER(LogLevel.DEBUG, R.string.msg_upload_server),
+        MSG_UPLOAD_SUCCESS(LogLevel.OK, R.string.msg_upload_success),
+        MSG_UPLOAD_ERROR_NOT_FOUND(LogLevel.ERROR, R.string.msg_upload_error_not_found),
+        MSG_UPLOAD_ERROR_IO(LogLevel.ERROR, R.string.msg_upload_error_key),
+        MSG_UPLOAD_ERROR_UPLOAD(LogLevel.ERROR, R.string.msg_upload_error_upload),
 
         MSG_CRT_UPLOAD_SUCCESS (LogLevel.OK, R.string.msg_crt_upload_success),
 
@@ -827,7 +836,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_DATA (LogLevel.START, R.string.msg_data),
         MSG_DATA_OPENPGP (LogLevel.DEBUG, R.string.msg_data_openpgp),
         MSG_DATA_ERROR_IO (LogLevel.ERROR, R.string.msg_data_error_io),
-        MSG_DATA_ERROR_OPENPGP (LogLevel.ERROR, R.string.msg_data_error_openpgp),
         MSG_DATA_DETACHED (LogLevel.INFO, R.string.msg_data_detached),
         MSG_DATA_DETACHED_CLEAR (LogLevel.WARN, R.string.msg_data_detached_clear),
         MSG_DATA_DETACHED_SIG (LogLevel.DEBUG, R.string.msg_data_detached_sig),
@@ -867,6 +875,16 @@ public abstract class OperationResult implements Parcelable {
         MSG_LV_FETCH_ERROR_IO (LogLevel.ERROR, R.string.msg_lv_fetch_error_io),
         MSG_LV_FETCH_ERROR_FORMAT(LogLevel.ERROR, R.string.msg_lv_fetch_error_format),
         MSG_LV_FETCH_ERROR_NOTHING (LogLevel.ERROR, R.string.msg_lv_fetch_error_nothing),
+
+        MSG_BENCH (LogLevel.START, R.string.msg_bench),
+        MSG_BENCH_ENC_TIME (LogLevel.DEBUG, R.string.msg_bench_enc_time),
+        MSG_BENCH_ENC_TIME_AVG (LogLevel.INFO, R.string.msg_bench_enc_time_avg),
+        MSG_BENCH_DEC_TIME (LogLevel.DEBUG, R.string.msg_bench_dec_time),
+        MSG_BENCH_DEC_TIME_AVG (LogLevel.INFO, R.string.msg_bench_enc_time_avg),
+        MSG_BENCH_S2K_FOR_IT (LogLevel.DEBUG, R.string.msg_bench_s2k_for_it),
+        MSG_BENCH_S2K_100MS_ITS (LogLevel.INFO, R.string.msg_bench_s2k_100ms_its),
+        MSG_BENCH_SUCCESS (LogLevel.OK, R.string.msg_bench_success),
+
         ;
 
         public final int mMsgId;

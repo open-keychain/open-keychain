@@ -1,8 +1,8 @@
 [//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
 
-[http://www.openkeychain.org](http://www.openkeychain.org)
+[https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](http://www.openkeychain.org) Android-rako OpenPGP egokitzapen bat da.
+[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 
 Baimena: GPLv3+
 
@@ -61,11 +61,11 @@ Baimena: GPLv3+
   * [Markdown4J](https://github.com/jdcasey/markdown4j) (Apache Baimena v2)
   * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache Baimena v2)
   * [MiniDNS](https://github.com/rtreffer/minidns) (Apache Baimena v2)
-  * [OkHttp](http://square.github.io/okhttp/) (Apache Baimena v2)
+  * [OkHttp](https://square.github.io/okhttp/) (Apache License v2)
   * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Diseinua) (Apache Baimena 2 bertsioa)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT Baimena)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT Baimena)
-  * [SpongyCastle](http://rtyley.github.com/spongycastle/) (MIT X11 Baimena)
+  * [SpongyCastle](https://rtyley.github.io/spongycastle/) (MIT X11 License)
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache Baimena v2)
   * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Apache Baimena v2)
   * [ZXing](https://github.com/zxing/zxing) (Apache Baimena v2)

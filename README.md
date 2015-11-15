@@ -1,7 +1,7 @@
 # OpenKeychain (for Android)
 
 OpenKeychain is an OpenPGP implementation for Android.  
-For a more detailed description and installation instructions go to http://www.openkeychain.org .
+For a more detailed description and installation instructions go to https://www.openkeychain.org .
 
 ### Branches
 * The development of OpenKeychain happens in the "master" branch.

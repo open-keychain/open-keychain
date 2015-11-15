@@ -24,6 +24,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.support.v4.content.CursorLoader;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -228,9 +229,11 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
         }
 
         public void seekAttention() {
-            ObjectAnimator anim = SubtleAttentionSeeker.tintText(vComment, 1000);
-            anim.setStartDelay(200);
-            anim.start();
+            if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+                ObjectAnimator anim = SubtleAttentionSeeker.tintText(vComment, 1000);
+                anim.setStartDelay(200);
+                anim.start();
+            }
         }
 
     }

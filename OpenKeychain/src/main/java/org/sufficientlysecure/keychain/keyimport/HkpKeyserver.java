@@ -46,6 +46,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.support.annotation.NonNull;
+
 import de.measite.minidns.Client;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
@@ -74,6 +76,7 @@ public class HkpKeyserver extends Keyserver {
 
     private String mHost;
     private short mPort;
+    private Proxy mProxy;
     private boolean mSecure;
 
     /**
@@ -150,17 +153,17 @@ public class HkpKeyserver extends Keyserver {
      *                    connect using {@link #PORT_DEFAULT}. However, port may be specified after colon
      *                    ("<code>hostname:port</code>", eg. "<code>p80.pool.sks-keyservers.net:80</code>").
      */
-    public HkpKeyserver(String hostAndPort) {
+    public HkpKeyserver(String hostAndPort, Proxy proxy) {
         String host = hostAndPort;
         short port = PORT_DEFAULT;
         boolean secure = false;
         String[] parts = hostAndPort.split(":");
         if (parts.length > 1) {
             if (!parts[0].contains(".")) { // This is not a domain or ip, so it must be a protocol name
-                if (parts[0].equalsIgnoreCase("hkps") || parts[0].equalsIgnoreCase("https")) {
+                if ("hkps".equalsIgnoreCase(parts[0]) || "https".equalsIgnoreCase(parts[0])) {
                     secure = true;
                     port = PORT_DEFAULT_HKPS;
-                } else if (!parts[0].equalsIgnoreCase("hkp") && !parts[0].equalsIgnoreCase("http")) {
+                } else if (!"hkp".equalsIgnoreCase(parts[0]) && !"http".equalsIgnoreCase(parts[0])) {
                     throw new IllegalArgumentException("Protocol " + parts[0] + " is unknown");
                 }
                 host = parts[1];
@@ -177,16 +180,18 @@ public class HkpKeyserver extends Keyserver {
         }
         mHost = host;
         mPort = port;
+        mProxy = proxy;
         mSecure = secure;
     }
 
-    public HkpKeyserver(String host, short port) {
-        this(host, port, false);
+    public HkpKeyserver(String host, short port, Proxy proxy) {
+        this(host, port, proxy, false);
     }
 
-    public HkpKeyserver(String host, short port, boolean secure) {
+    public HkpKeyserver(String host, short port, Proxy proxy, boolean secure) {
         mHost = host;
         mPort = port;
+        mProxy = proxy;
         mSecure = secure;
     }
 
@@ -226,7 +231,7 @@ public class HkpKeyserver extends Keyserver {
         return client;
     }
 
-    private String query(String request, Proxy proxy) throws QueryFailedException, HttpError {
+    private String query(String request, @NonNull Proxy proxy) throws QueryFailedException, HttpError {
         try {
             URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
             Log.d(Constants.TAG, "hkp keyserver query: " + url + " Proxy: " + proxy);
@@ -243,7 +248,7 @@ public class HkpKeyserver extends Keyserver {
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
             throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!" +
-                    (proxy == null ? "" : " Using proxy " + proxy));
+                    (proxy == Proxy.NO_PROXY ? "" : " Using proxy " + proxy));
         }
     }
 
@@ -251,7 +256,7 @@ public class HkpKeyserver extends Keyserver {
      * Results are sorted by creation date of key!
      */
     @Override
-    public ArrayList<ImportKeysListEntry> search(String query, Proxy proxy) throws QueryFailedException,
+    public ArrayList<ImportKeysListEntry> search(String query) throws QueryFailedException,
             QueryNeedsRepairException {
         ArrayList<ImportKeysListEntry> results = new ArrayList<>();
 
@@ -269,7 +274,7 @@ public class HkpKeyserver extends Keyserver {
 
         String data;
         try {
-            data = query(request, proxy);
+            data = query(request, mProxy);
         } catch (HttpError e) {
             if (e.getData() != null) {
                 Log.d(Constants.TAG, "returned error data: " + e.getData().toLowerCase(Locale.ENGLISH));
@@ -373,12 +378,12 @@ public class HkpKeyserver extends Keyserver {
     }
 
     @Override
-    public String get(String keyIdHex, Proxy proxy) throws QueryFailedException {
+    public String get(String keyIdHex) throws QueryFailedException {
         String request = "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
-        Log.d(Constants.TAG, "hkp keyserver get: " + request + " using Proxy: " + proxy);
+        Log.d(Constants.TAG, "hkp keyserver get: " + request + " using Proxy: " + mProxy);
         String data;
         try {
-            data = query(request, proxy);
+            data = query(request, mProxy);
         } catch (HttpError httpError) {
             Log.d(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
             throw new QueryFailedException("not found");
@@ -394,7 +399,7 @@ public class HkpKeyserver extends Keyserver {
     }
 
     @Override
-    public void add(String armoredKey, Proxy proxy) throws AddKeyException {
+    public void add(String armoredKey) throws AddKeyException {
         try {
             String path = "/pks/add";
             String params;
@@ -405,7 +410,7 @@ public class HkpKeyserver extends Keyserver {
             }
             URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + path);
 
-            Log.d(Constants.TAG, "hkp keyserver add: " + url.toString());
+            Log.d(Constants.TAG, "hkp keyserver add: " + url);
             Log.d(Constants.TAG, "params: " + params);
 
             RequestBody body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), params);
@@ -417,7 +422,7 @@ public class HkpKeyserver extends Keyserver {
                     .post(body)
                     .build();
 
-            Response response = getClient(url, proxy).newCall(request).execute();
+            Response response = getClient(url, mProxy).newCall(request).execute();
 
             Log.d(Constants.TAG, "response code: " + response.code());
             Log.d(Constants.TAG, "answer: " + response.body().string());
@@ -434,16 +439,15 @@ public class HkpKeyserver extends Keyserver {
 
     @Override
     public String toString() {
-        return mHost + ":" + mPort;
+        return getUrlPrefix() + mHost + ":" + mPort;
     }
 
     /**
      * Tries to find a server responsible for a given domain
      *
      * @return A responsible Keyserver or null if not found.
-     * TODO: Add proxy functionality
      */
-    public static HkpKeyserver resolve(String domain) {
+    public static HkpKeyserver resolve(String domain, Proxy proxy) {
         try {
             Record[] records = new Client().query(new Question("_hkp._tcp." + domain, Record.TYPE.SRV)).getAnswers();
             if (records.length > 0) {
@@ -458,7 +462,7 @@ public class HkpKeyserver extends Keyserver {
                 Record record = records[0]; // This is our best choice
                 if (record.getPayload().getType() == Record.TYPE.SRV) {
                     return new HkpKeyserver(((SRV) record.getPayload()).getName(),
-                            (short) ((SRV) record.getPayload()).getPort());
+                            (short) ((SRV) record.getPayload()).getPort(), proxy);
                 }
             }
         } catch (Exception ignored) {

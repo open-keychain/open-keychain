@@ -158,13 +158,11 @@
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
-  <string name="orbot_ignore_tor">Non usare Tor</string>
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_title">Installa Orbot per usare Tor?</string>
   <string name="orbot_install_dialog_install">Installa</string>
   <string name="orbot_install_dialog_content">Orbot deve essere installato e attivato per fare attraversare il traffico dei dati tramite proxy. Vuoi installare Orbot?</string>
   <string name="orbot_install_dialog_cancel">Annulla</string>
-  <string name="orbot_install_dialog_ignore_tor">Non usare Tor</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Attivare Orbot?</string>
   <string name="orbot_start_btn">Attivare Orbot</string>

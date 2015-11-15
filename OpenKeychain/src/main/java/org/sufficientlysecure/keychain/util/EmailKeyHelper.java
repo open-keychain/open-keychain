@@ -74,9 +74,9 @@ public class EmailKeyHelper {
         // Try _hkp._tcp SRV record first
         String[] mailparts = mail.split("@");
         if (mailparts.length == 2) {
-            HkpKeyserver hkp = HkpKeyserver.resolve(mailparts[1]);
+            HkpKeyserver hkp = HkpKeyserver.resolve(mailparts[1], proxy);
             if (hkp != null) {
-                keys.addAll(getEmailKeys(mail, hkp, proxy));
+                keys.addAll(getEmailKeys(mail, hkp));
             }
         }
 
@@ -84,18 +84,17 @@ public class EmailKeyHelper {
             // Most users don't have the SRV record, so ask a default server as well
             String server = Preferences.getPreferences(context).getPreferredKeyserver();
             if (server != null) {
-                HkpKeyserver hkp = new HkpKeyserver(server);
-                keys.addAll(getEmailKeys(mail, hkp, proxy));
+                HkpKeyserver hkp = new HkpKeyserver(server, proxy);
+                keys.addAll(getEmailKeys(mail, hkp));
             }
         }
         return keys;
     }
 
-    public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer,
-                                                         Proxy proxy) {
+    public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer) {
         Set<ImportKeysListEntry> keys = new HashSet<>();
         try {
-            for (ImportKeysListEntry key : keyServer.search(mail, proxy)) {
+            for (ImportKeysListEntry key : keyServer.search(mail)) {
                 if (key.isRevoked() || key.isExpired()) continue;
                 for (String userId : key.getUserIds()) {
                     if (userId.toLowerCase().contains(mail.toLowerCase(Locale.ENGLISH))) {

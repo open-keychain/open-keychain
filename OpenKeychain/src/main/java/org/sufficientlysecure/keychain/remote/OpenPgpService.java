@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -34,13 +35,15 @@ import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
+import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
-import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -238,10 +241,8 @@ public class OpenPgpService extends RemoteService {
                 PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    private Intent signImpl(Intent data, ParcelFileDescriptor input,
-                            ParcelFileDescriptor output, boolean cleartextSign) {
-        InputStream is = null;
-        OutputStream os = null;
+    private Intent signImpl(Intent data, InputStream inputStream,
+                            OutputStream outputStream, boolean cleartextSign) {
         try {
             boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
@@ -277,14 +278,13 @@ public class OpenPgpService extends RemoteService {
             }
 
             // Get Input- and OutputStream from ParcelFileDescriptor
-            is = new ParcelFileDescriptor.AutoCloseInputStream(input);
-            if (cleartextSign) {
+            if (!cleartextSign) {
                 // output stream only needed for cleartext signatures,
                 // detached signatures are returned as extra
-                os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+                outputStream = null;
             }
-            long inputLength = is.available();
-            InputData inputData = new InputData(is, inputLength);
+            long inputLength = inputStream.available();
+            InputData inputData = new InputData(inputStream, inputLength);
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
@@ -298,7 +298,7 @@ public class OpenPgpService extends RemoteService {
 
             // execute PGP operation!
             PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
-            PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputParcel, inputData, os);
+            PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
 
@@ -330,28 +330,11 @@ public class OpenPgpService extends RemoteService {
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "IOException when closing InputStream", e);
-                }
-            }
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "IOException when closing OutputStream", e);
-                }
-            }
         }
     }
 
-    private Intent encryptAndSignImpl(Intent data, ParcelFileDescriptor input,
-                                      ParcelFileDescriptor output, boolean sign) {
-        InputStream is = null;
-        OutputStream os = null;
+    private Intent encryptAndSignImpl(Intent data, InputStream inputStream,
+                                      OutputStream outputStream, boolean sign) {
         try {
             boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
             String originalFilename = data.getStringExtra(OpenPgpApi.EXTRA_ORIGINAL_FILENAME);
@@ -383,13 +366,9 @@ public class OpenPgpService extends RemoteService {
                 }
             }
 
-            // build InputData and write into OutputStream
-            // Get Input- and OutputStream from ParcelFileDescriptor
-            is = new ParcelFileDescriptor.AutoCloseInputStream(input);
-            os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
-
-            long inputLength = is.available();
-            InputData inputData = new InputData(is, inputLength, originalFilename);
+            // TODO this is not correct!
+            long inputLength = inputStream.available();
+            InputData inputData = new InputData(inputStream, inputLength, originalFilename);
 
             PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel();
             pseInput.setEnableAsciiArmorOutput(asciiArmor)
@@ -455,7 +434,7 @@ public class OpenPgpService extends RemoteService {
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
 
             // execute PGP operation!
-            PgpSignEncryptResult pgpResult = op.execute(pseInput, inputParcel, inputData, os);
+            PgpSignEncryptResult pgpResult = op.execute(pseInput, inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
@@ -482,37 +461,15 @@ public class OpenPgpService extends RemoteService {
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "IOException when closing InputStream", e);
-                }
-            }
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "IOException when closing OutputStream", e);
-                }
-            }
         }
     }
 
-    private Intent decryptAndVerifyImpl(Intent data, ParcelFileDescriptor inputDescriptor,
-                                        ParcelFileDescriptor output, boolean decryptMetadataOnly) {
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
+    private Intent decryptAndVerifyImpl(Intent data, InputStream inputStream,
+                                        OutputStream outputStream, boolean decryptMetadataOnly) {
         try {
-            // Get Input- and OutputStream from ParcelFileDescriptor
-            inputStream = new ParcelFileDescriptor.AutoCloseInputStream(inputDescriptor);
-
             // output is optional, e.g., for verifying detached signatures
-            if (decryptMetadataOnly || output == null) {
+            if (decryptMetadataOnly) {
                 outputStream = null;
-            } else {
-                outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(output);
             }
 
             String currentPkg = getCurrentCallingPackage();
@@ -538,6 +495,7 @@ public class OpenPgpService extends RemoteService {
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mProviderHelper, null);
 
+            // TODO this is not correct!
             long inputLength = inputStream.available();
             InputData inputData = new InputData(inputStream, inputLength);
 
@@ -604,6 +562,7 @@ public class OpenPgpService extends RemoteService {
                         // case RESULT_NOT_ENCRYPTED, but a signature, fallback to deprecated signatureOnly variable
                         if (decryptionResult.getResult() == OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED
                                 && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
+                            // noinspection deprecation, TODO
                             signatureResult.setSignatureOnly(true);
                         }
 
@@ -665,35 +624,40 @@ public class OpenPgpService extends RemoteService {
             result.putExtra(OpenPgpApi.RESULT_ERROR, new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "IOException when closing InputStream", e);
-                }
-            }
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "IOException when closing OutputStream", e);
-                }
-            }
         }
 
     }
 
-    private Intent getKeyImpl(Intent data) {
+    private Intent getKeyImpl(Intent data, OutputStream outputStream) {
         try {
             long masterKeyId = data.getLongExtra(OpenPgpApi.EXTRA_KEY_ID, 0);
 
             try {
                 // try to find key, throws NotFoundException if not in db!
-                mProviderHelper.getCanonicalizedPublicKeyRing(masterKeyId);
+                CanonicalizedPublicKeyRing keyRing =
+                        mProviderHelper.getCanonicalizedPublicKeyRing(masterKeyId);
 
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+
+                boolean requestedKeyData = outputStream != null;
+                if (requestedKeyData) {
+                    boolean requestAsciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, false);
+
+                    try {
+                        if (requestAsciiArmor) {
+                            outputStream = new ArmoredOutputStream(outputStream);
+                        }
+                        keyRing.encode(outputStream);
+                    } finally {
+                        try {
+                            outputStream.close();
+                        } catch (IOException e) {
+                            Log.e(Constants.TAG, "IOException when closing OutputStream", e);
+                        }
+                    }
+                }
+
                 // also return PendingIntent that opens the key view activity
                 result.putExtra(OpenPgpApi.RESULT_INTENT, getShowKeyPendingIntent(masterKeyId));
 
@@ -821,7 +785,7 @@ public class OpenPgpService extends RemoteService {
             OpenPgpError error = new OpenPgpError
                     (OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!\n"
                             + "used API version: " + data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) + "\n"
-                            + "supported API versions: " + supportedVersions.toString());
+                            + "supported API versions: " + supportedVersions);
             result.putExtra(OpenPgpApi.RESULT_ERROR, error);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
@@ -850,68 +814,88 @@ public class OpenPgpService extends RemoteService {
         return mBinder;
     }
 
+    @Nullable
+    protected Intent executeInternal(
+            @NonNull Intent data,
+            @Nullable ParcelFileDescriptor input,
+            @Nullable ParcelFileDescriptor output) {
 
-    protected Intent executeInternal(Intent data, ParcelFileDescriptor input, ParcelFileDescriptor output) {
+        OutputStream outputStream =
+                (output != null) ? new ParcelFileDescriptor.AutoCloseOutputStream(output) : null;
+        InputStream inputStream =
+                (input != null) ? new ParcelFileDescriptor.AutoCloseInputStream(input) : null;
+
         try {
-            Intent errorResult = checkRequirements(data);
-            if (errorResult != null) {
-                return errorResult;
-            }
-
-            String action = data.getAction();
-            switch (action) {
-                case OpenPgpApi.ACTION_CLEARTEXT_SIGN: {
-                    return signImpl(data, input, output, true);
-                }
-                case OpenPgpApi.ACTION_SIGN: {
-                    // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
-                    Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
-                    return signImpl(data, input, output, true);
-                }
-                case OpenPgpApi.ACTION_DETACHED_SIGN: {
-                    return signImpl(data, input, output, false);
-                }
-                case OpenPgpApi.ACTION_ENCRYPT: {
-                    return encryptAndSignImpl(data, input, output, false);
-                }
-                case OpenPgpApi.ACTION_SIGN_AND_ENCRYPT: {
-                    return encryptAndSignImpl(data, input, output, true);
-                }
-                case OpenPgpApi.ACTION_DECRYPT_VERIFY: {
-                    return decryptAndVerifyImpl(data, input, output, false);
-                }
-                case OpenPgpApi.ACTION_DECRYPT_METADATA: {
-                    return decryptAndVerifyImpl(data, input, output, true);
-                }
-                case OpenPgpApi.ACTION_GET_SIGN_KEY_ID: {
-                    return getSignKeyIdImpl(data);
-                }
-                case OpenPgpApi.ACTION_GET_KEY_IDS: {
-                    return getKeyIdsImpl(data);
-                }
-                case OpenPgpApi.ACTION_GET_KEY: {
-                    return getKeyImpl(data);
-                }
-                default: {
-                    return null;
-                }
-            }
+            return executeInternalWithStreams(data, inputStream, outputStream);
         } finally {
             // always close input and output file descriptors even in error cases
-            if (input != null) {
+            if (inputStream != null) {
                 try {
-                    input.close();
+                    inputStream.close();
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IOException when closing input ParcelFileDescriptor", e);
                 }
             }
-            if (output != null) {
+            if (outputStream != null) {
                 try {
-                    output.close();
+                    outputStream.close();
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IOException when closing output ParcelFileDescriptor", e);
                 }
             }
         }
     }
+
+    @Nullable
+    protected Intent executeInternalWithStreams(
+            @NonNull Intent data,
+            @Nullable InputStream inputStream,
+            @Nullable OutputStream outputStream) {
+
+        Intent errorResult = checkRequirements(data);
+        if (errorResult != null) {
+            return errorResult;
+        }
+
+        String action = data.getAction();
+        switch (action) {
+            case OpenPgpApi.ACTION_CLEARTEXT_SIGN: {
+                return signImpl(data, inputStream, outputStream, true);
+            }
+            case OpenPgpApi.ACTION_SIGN: {
+                // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
+                Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
+                return signImpl(data, inputStream, outputStream, true);
+            }
+            case OpenPgpApi.ACTION_DETACHED_SIGN: {
+                return signImpl(data, inputStream, outputStream, false);
+            }
+            case OpenPgpApi.ACTION_ENCRYPT: {
+                return encryptAndSignImpl(data, inputStream, outputStream, false);
+            }
+            case OpenPgpApi.ACTION_SIGN_AND_ENCRYPT: {
+                return encryptAndSignImpl(data, inputStream, outputStream, true);
+            }
+            case OpenPgpApi.ACTION_DECRYPT_VERIFY: {
+                return decryptAndVerifyImpl(data, inputStream, outputStream, false);
+            }
+            case OpenPgpApi.ACTION_DECRYPT_METADATA: {
+                return decryptAndVerifyImpl(data, inputStream, outputStream, true);
+            }
+            case OpenPgpApi.ACTION_GET_SIGN_KEY_ID: {
+                return getSignKeyIdImpl(data);
+            }
+            case OpenPgpApi.ACTION_GET_KEY_IDS: {
+                return getKeyIdsImpl(data);
+            }
+            case OpenPgpApi.ACTION_GET_KEY: {
+                return getKeyImpl(data, outputStream);
+            }
+            default: {
+                return null;
+            }
+        }
+
+    }
+
 }

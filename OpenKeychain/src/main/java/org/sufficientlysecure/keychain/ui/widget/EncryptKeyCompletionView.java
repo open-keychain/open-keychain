@@ -23,11 +23,13 @@ import android.database.Cursor;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,14 +48,14 @@ import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
 import org.sufficientlysecure.keychain.util.Log;
 
 
-public class EncryptKeyCompletionView extends TokenCompleteTextView
+public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
         implements LoaderCallbacks<Cursor> {
 
     public static final String ARG_QUERY = "query";
 
     private KeyAdapter mAdapter;
     private LoaderManager mLoaderManager;
-    private String mPrefix;
+    private CharSequence mPrefix;
 
     public EncryptKeyCompletionView(Context context) {
         super(context);
@@ -79,30 +81,27 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
     }
 
     @Override
-    public void setPrefix(String p) {
+    public void setPrefix(CharSequence p) {
         // this one is private in the superclass, but we need it here
         mPrefix = p;
         super.setPrefix(p);
     }
 
     @Override
-    protected View getViewForObject(Object object) {
-        if (object instanceof KeyItem) {
-            LayoutInflater l = LayoutInflater.from(getContext());
-            View view = l.inflate(R.layout.recipient_box_entry, null);
-            ((TextView) view.findViewById(android.R.id.text1)).setText(((KeyItem) object).getReadableName());
-            return view;
-        }
-        return null;
+    protected View getViewForObject(KeyItem keyItem) {
+        LayoutInflater l = LayoutInflater.from(getContext());
+        View view = l.inflate(R.layout.recipient_box_entry, null);
+        ((TextView) view.findViewById(android.R.id.text1)).setText(keyItem.getReadableName());
+        return view;
     }
 
     @Override
-    protected Object defaultObject(String completionText) {
+    protected KeyItem defaultObject(String completionText) {
         // TODO: We could try to automagically download the key if it's unknown but a key id
         /*if (completionText.startsWith("0x")) {
 
         }*/
-        return "";
+        return null;
     }
 
     @Override
@@ -128,7 +127,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
         // These are the rows that we will retrieve.
         Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
 
-        String[] projection = KeyAdapter.getProjectionWith(new String[] {
+        String[] projection = KeyAdapter.getProjectionWith(new String[]{
                 KeychainContract.KeyRings.HAS_ENCRYPT,
         });
 
@@ -136,18 +135,19 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
                 + KeyRings.IS_EXPIRED + " = 0 AND "
                 + Tables.KEYS + "." + KeyRings.IS_REVOKED + " = 0";
 
-        if (args != null && args.containsKey(ARG_QUERY)) {
-            String query = args.getString(ARG_QUERY);
-            mAdapter.setSearchQuery(query);
-
-            where += " AND " + KeyRings.USER_ID + " LIKE ?";
-
-            return new CursorLoader(getContext(), baseUri, projection, where,
-                    new String[]{"%" + query + "%"}, null);
+        if (args == null || !args.containsKey(ARG_QUERY)) {
+            // mAdapter.setSearchQuery(null);
+            // return new CursorLoader(getContext(), baseUri, projection, where, null, null);
+            return null;
         }
 
-        mAdapter.setSearchQuery(null);
-        return new CursorLoader(getContext(), baseUri, projection, where, null, null);
+        String query = args.getString(ARG_QUERY);
+        mAdapter.setSearchQuery(query);
+
+        where += " AND " + KeyRings.USER_ID + " LIKE ?";
+
+        return new CursorLoader(getContext(), baseUri, projection, where,
+                new String[]{"%" + query + "%"}, null);
 
     }
 
@@ -169,6 +169,8 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
         super.showDropDown();
     }
 
+
+
     @Override
     public void onFocusChanged(boolean hasFocus, int direction, Rect previous) {
         super.onFocusChanged(hasFocus, direction, previous);
@@ -179,13 +181,18 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
     }
 
     @Override
-    protected void performFiltering(CharSequence text, int start, int end, int keyCode) {
+    protected void performFiltering(@NonNull CharSequence text, int start, int end, int keyCode) {
         super.performFiltering(text, start, end, keyCode);
         if (start < mPrefix.length()) {
             start = mPrefix.length();
         }
+        String query = text.subSequence(start, end).toString();
+        if (TextUtils.isEmpty(query) || query.length() < 2) {
+            mLoaderManager.destroyLoader(0);
+            return;
+        }
         Bundle args = new Bundle();
-        args.putString(ARG_QUERY, text.subSequence(start, end).toString());
+        args.putString(ARG_QUERY, query);
         mLoaderManager.restartLoader(0, args, this);
     }
 

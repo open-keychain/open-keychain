@@ -1,5 +1,7 @@
 package org.sufficientlysecure.keychain.linked;
 
+import android.content.Context;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -8,7 +10,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.json.JSONException;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
 import org.sufficientlysecure.keychain.linked.resources.GithubResource;
 import org.sufficientlysecure.keychain.linked.resources.TwitterResource;
@@ -31,8 +32,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import android.content.Context;
 
 
 public abstract class LinkedTokenResource extends LinkedResource {

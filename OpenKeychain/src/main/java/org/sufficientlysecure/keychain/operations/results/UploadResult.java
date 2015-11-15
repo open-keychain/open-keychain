@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
+import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -38,7 +39,7 @@ public class UploadResult extends InputPendingResult {
     }
 
 
-    public UploadResult(OperationLog log, RequiredInputParcel requiredInputParcel,
+    public UploadResult(@NonNull OperationLog log, RequiredInputParcel requiredInputParcel,
             CryptoInputParcel cryptoInputParcel) {
         super(log, requiredInputParcel, cryptoInputParcel);
         // we won't use these values

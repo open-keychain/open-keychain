@@ -156,20 +156,16 @@
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
-  <string name="orbot_ignore_tor">不使用Tor</string>
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_title">是否安裝Orbot以使用Tor?</string>
   <string name="orbot_install_dialog_install">安裝</string>
   <string name="orbot_install_dialog_content">您必須安裝Orbot並透過它進行網路代理。您是否要安裝Orbot？</string>
   <string name="orbot_install_dialog_cancel">取消</string>
-  <string name="orbot_install_dialog_ignore_tor">不使用Tor</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">啟動Orbot?</string>
-  <string name="orbot_start_dialog_content">Orbot尚未執行，您希望啟動它並連結到Tor嗎？</string>
   <string name="orbot_start_btn">啟動Orbot</string>
   <string name="orbot_start_dialog_start">啟動Orbot</string>
   <string name="orbot_start_dialog_cancel">取消</string>
-  <string name="orbot_start_dialog_ignore_tor">不使用Tor</string>
   <plurals name="n_keys">
     <item quantity="other">%d 金鑰</item>
   </plurals>
@@ -500,7 +496,6 @@
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">開始搜尋</string>
   <string name="key_trust_results_prefix">Keybase.io提供“證據”證明這把金鑰的持有人：</string>
-  <string name="key_trust_header_text">注意：Keybase.io證據是個OpenKeychain實驗性功能。我們推薦你另外以QR條碼或是NFC交換金鑰進行確認。</string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">用下列身分在Twitter參與討論：%s</string>
   <string name="keybase_proof_failure">很不幸地我們沒法驗證這些證據。</string>

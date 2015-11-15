@@ -173,20 +173,16 @@
   <string name="pref_proxy_type_choice_http">ХТТП</string>
   <string name="pref_proxy_type_choice_socks">СОЦКС</string>
   <!--OrbotHelper strings-->
-  <string name="orbot_ignore_tor">Не користи Тор</string>
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_title">Инсталирати Орбот да бих користио Тор?</string>
   <string name="orbot_install_dialog_install">Инсталирај</string>
   <string name="orbot_install_dialog_content">Морате имати Орбот инсталиран и активиран да бисте преусмерили саобраћај кроз њега. Желите ли да га инсталирате?</string>
   <string name="orbot_install_dialog_cancel">Одустани</string>
-  <string name="orbot_install_dialog_ignore_tor">Не користи Тор</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Да покренем Орбот?</string>
-  <string name="orbot_start_dialog_content">Чини се да Орбот није покренут. Желите ли да га покренете и повежете са Тором?</string>
   <string name="orbot_start_btn">Покрени Орбот</string>
   <string name="orbot_start_dialog_start">Покрени Орбот</string>
   <string name="orbot_start_dialog_cancel">Одустани</string>
-  <string name="orbot_start_dialog_ignore_tor">Не користи Тор</string>
   <string name="user_id_no_name"><![CDATA[<нема имена>]]></string>
   <string name="none"><![CDATA[<ништа>]]></string>
   <plurals name="n_keys">
@@ -570,7 +566,6 @@
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">Почни претрагу</string>
   <string name="key_trust_results_prefix">Keybase.io нуди „доказе“ који потврђују да власник овог кључа: </string>
-  <string name="key_trust_header_text">Напомена: Докази са Keybase.io су експериментална функција Отвореног кључарника. Препорука је да очитавате бар-кôдове или размењујете кључеве преко НФЦ-а како бисте их потврдили.</string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">Објављује на Твитеру као %s</string>
   <string name="keybase_narrative_github">Познат је на Гитхабу као %s</string>

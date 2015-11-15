@@ -24,6 +24,9 @@ import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import android.support.annotation.NonNull;
+
+
 /**
  * Search two or more types of server for online keys.
  */
@@ -31,8 +34,8 @@ public class CloudSearch {
 
     private final static long SECONDS = 1000;
 
-    public static ArrayList<ImportKeysListEntry> search(final String query, Preferences.CloudSearchPrefs cloudPrefs,
-                                                        final Proxy proxy)
+    public static ArrayList<ImportKeysListEntry> search(
+            @NonNull final String query, Preferences.CloudSearchPrefs cloudPrefs, @NonNull Proxy proxy)
             throws Keyserver.CloudSearchFailureException {
         final ArrayList<Keyserver> servers = new ArrayList<>();
 
@@ -40,10 +43,10 @@ public class CloudSearch {
         final Vector<Keyserver.CloudSearchFailureException> problems = new Vector<>();
 
         if (cloudPrefs.searchKeyserver) {
-            servers.add(new HkpKeyserver(cloudPrefs.keyserver));
+            servers.add(new HkpKeyserver(cloudPrefs.keyserver, proxy));
         }
         if (cloudPrefs.searchKeybase) {
-            servers.add(new KeybaseKeyserver());
+            servers.add(new KeybaseKeyserver(proxy));
         }
         final ImportKeysList results = new ImportKeysList(servers.size());
 
@@ -53,7 +56,7 @@ public class CloudSearch {
                 @Override
                 public void run() {
                     try {
-                        results.addAll(keyserver.search(query, proxy));
+                        results.addAll(keyserver.search(query));
                     } catch (Keyserver.CloudSearchFailureException e) {
                         problems.add(e);
                     }
@@ -68,7 +71,7 @@ public class CloudSearch {
         // wait for either all the searches to come back, or 10 seconds. If using proxy, wait 30 seconds.
         synchronized (results) {
             try {
-                if (proxy != null) {
+                if (proxy == Proxy.NO_PROXY) {
                     results.wait(30 * SECONDS);
                 } else {
                     results.wait(10 * SECONDS);

@@ -33,10 +33,15 @@ import java.util.List;
 
 public class KeybaseKeyserver extends Keyserver {
     public static final String ORIGIN = "keybase:keybase.io";
-    private String mQuery;
+
+    Proxy mProxy;
+
+    public KeybaseKeyserver(Proxy proxy) {
+        mProxy = proxy;
+    }
 
     @Override
-    public ArrayList<ImportKeysListEntry> search(String query, Proxy proxy) throws QueryFailedException,
+    public ArrayList<ImportKeysListEntry> search(String query) throws QueryFailedException,
             QueryNeedsRepairException {
         ArrayList<ImportKeysListEntry> results = new ArrayList<>();
 
@@ -47,14 +52,13 @@ public class KeybaseKeyserver extends Keyserver {
         if (query.isEmpty()) {
             throw new QueryTooShortException();
         }
-        mQuery = query;
 
         try {
             KeybaseQuery keybaseQuery = new KeybaseQuery(new OkHttpKeybaseClient());
-            keybaseQuery.setProxy(proxy);
+            keybaseQuery.setProxy(mProxy);
             Iterable<Match> matches = keybaseQuery.search(query);
             for (Match match : matches) {
-                results.add(makeEntry(match));
+                results.add(makeEntry(match, query));
             }
         } catch (KeybaseException e) {
             Log.e(Constants.TAG, "keybase result parsing error", e);
@@ -64,9 +68,9 @@ public class KeybaseKeyserver extends Keyserver {
         return results;
     }
 
-    private ImportKeysListEntry makeEntry(Match match) throws KeybaseException {
+    private ImportKeysListEntry makeEntry(Match match, String query) throws KeybaseException {
         final ImportKeysListEntry entry = new ImportKeysListEntry();
-        entry.setQuery(mQuery);
+        entry.setQuery(query);
         entry.addOrigin(ORIGIN);
 
         entry.setRevoked(false); // keybase doesn’t say anything about revoked keys
@@ -102,10 +106,10 @@ public class KeybaseKeyserver extends Keyserver {
     }
 
     @Override
-    public String get(String id, Proxy proxy) throws QueryFailedException {
+    public String get(String id) throws QueryFailedException {
         try {
             KeybaseQuery keybaseQuery = new KeybaseQuery(new OkHttpKeybaseClient());
-            keybaseQuery.setProxy(proxy);
+            keybaseQuery.setProxy(mProxy);
             return User.keyForUsername(keybaseQuery, id);
         } catch (KeybaseException e) {
             throw new QueryFailedException(e.getMessage());
@@ -113,7 +117,7 @@ public class KeybaseKeyserver extends Keyserver {
     }
 
     @Override
-    public void add(String armoredKey, Proxy proxy) throws AddKeyException {
+    public void add(String armoredKey) throws AddKeyException {
         throw new AddKeyException();
     }
 }

@@ -84,6 +84,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     public static final int REQUEST_CODE_RETRY_UPLOAD = 4;
 
     private Integer mProgressMessageResource;
+    private boolean mCancellable = false;
 
     private FragmentActivity mActivity;
     private Fragment mFragment;
@@ -116,6 +117,10 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
     public void setProgressMessageResource(int id) {
         mProgressMessageResource = id;
+    }
+
+    public void setProgressCancellable(boolean cancellable) {
+        mCancellable = cancellable;
     }
 
     private void initiateInputActivity(RequiredInputParcel requiredInput,
@@ -311,7 +316,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         if (mProgressMessageResource != null) {
             saveHandler.showProgressDialog(
                     activity.getString(mProgressMessageResource),
-                    ProgressDialog.STYLE_HORIZONTAL, false);
+                    ProgressDialog.STYLE_HORIZONTAL, mCancellable);
         }
 
         activity.startService(intent);

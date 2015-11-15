@@ -1,13 +1,8 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v7.internal.widget.AdapterViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,6 +12,10 @@ import android.widget.CheckBox;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class KeySelectableAdapter extends KeyAdapter implements OnItemClickListener {

@@ -19,12 +19,13 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
+import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.RevokeResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -79,9 +80,8 @@ public class RevokeOperation extends BaseOperation<RevokeKeyringParcel> {
 
             saveKeyringParcel.mRevokeSubKeys.add(masterKeyId);
 
-            InputPendingResult revokeAndUploadResult = new EditKeyOperation(mContext,
-                    mProviderHelper, mProgressable, mCancelled)
-                    .execute(saveKeyringParcel, cryptoInputParcel);
+            EditKeyResult revokeAndUploadResult = new EditKeyOperation(mContext,
+                    mProviderHelper, mProgressable, mCancelled).execute(saveKeyringParcel, cryptoInputParcel);
 
             if (revokeAndUploadResult.isPending()) {
                 return revokeAndUploadResult;

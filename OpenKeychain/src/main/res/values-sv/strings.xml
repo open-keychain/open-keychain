@@ -500,7 +500,6 @@
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">Påbörja sökning</string>
   <string name="key_trust_results_prefix">Keybase.io erbjuder \"bevis\" som hävdar att ägaren av den här nyckeln:</string>
-  <string name="key_trust_header_text">Observera: Keybase.io bevis är en experimentell funktion i OpenKeychain. Vi uppmanar dig att skanna QR-koder eller utbyta nycklar via NFC utöver att bekräfta dem.</string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_github">Är känd på GitHub som %s</string>
   <string name="keybase_proof_failure">Tyvärr kan detta bevis inte verifieras.</string>

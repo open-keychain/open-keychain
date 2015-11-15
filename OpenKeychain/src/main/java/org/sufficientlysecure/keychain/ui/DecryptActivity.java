@@ -200,7 +200,7 @@ public class DecryptActivity extends BaseActivity {
         }
 
         // clean up ascii armored message, fixing newlines and stuff
-        String cleanedText = PgpHelper.getPgpContent(text);
+        String cleanedText = PgpHelper.getPgpMessageContent(text);
         if (cleanedText == null) {
             return null;
         }

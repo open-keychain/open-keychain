@@ -18,7 +18,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:textColor="?attr/colorTabText"
-        app:pstsTextColorSelected="?attr/colorTabTextSelected"
+        app:pstsTabTextColor="?attr/colorTabTextSelected"
         app:pstsIndicatorColor="?attr/colorTabIndicator" />
 
 </RelativeLayout>

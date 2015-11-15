@@ -23,6 +23,7 @@ import android.os.Parcelable;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
+import java.net.Proxy;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;

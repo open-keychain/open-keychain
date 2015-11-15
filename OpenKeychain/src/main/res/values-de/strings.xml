@@ -189,20 +189,16 @@
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
-  <string name="orbot_ignore_tor">Tor wird nicht verwendet</string>
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_title">Orbot installieren, um Tor zu nutzen?</string>
   <string name="orbot_install_dialog_install">Installieren</string>
   <string name="orbot_install_dialog_content">Du musst Orbot installiert und aktiviert haben, um Netzwerverkehr hindurchleiten zu können. Möchtest du es installieren?</string>
   <string name="orbot_install_dialog_cancel">Abbrechen</string>
-  <string name="orbot_install_dialog_ignore_tor">Tor nicht verwendet</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Orbot starten?</string>
-  <string name="orbot_start_dialog_content">Orbot scheint nicht zu laufen. Möchtest du es starten und mit Tor verbinden?</string>
   <string name="orbot_start_btn">Orbot starten</string>
   <string name="orbot_start_dialog_start">Orbot starten</string>
   <string name="orbot_start_dialog_cancel">Abbrechen</string>
-  <string name="orbot_start_dialog_ignore_tor">Tor nicht verwendet</string>
   <string name="user_id_no_name"><![CDATA[<kein Name>]]></string>
   <string name="none"><![CDATA[<keine>]]></string>
   <plurals name="n_keys">
@@ -593,7 +589,6 @@
   <string name="key_trust_no_cloud_evidence">Es gibt keinen Nachweis aus dem Internet zur Vertrauenswürdigkeit dieses Schlüssels.</string>
   <string name="key_trust_start_cloud_search">Suche beginnen</string>
   <string name="key_trust_results_prefix">Keybase.io bietet \"Nachweise\" die bestätigen, dass der Schlüsselinhaber:</string>
-  <string name="key_trust_header_text">Hinweis: Keybase.io-Nachweise sind ein experimentelles Feature von OpenKeychain. Wir rufen dazu auf, zusätzlich zur Bestätigung, QR-Codes zu nutzen oder Schlüssel via NFC auszutauschen.</string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">Auf Twitter schreibt, als %s</string>
   <string name="keybase_narrative_github">Auf GitHub bekannt ist, als %s</string>

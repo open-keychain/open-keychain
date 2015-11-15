@@ -9,6 +9,7 @@
   <string name="title_decrypt">Расшифровать</string>
   <string name="title_add_subkey">Добавить подключ</string>
   <string name="title_edit_key">Изменить ключ</string>
+  <string name="title_linked_create">Создать связанный идентификатор</string>
   <string name="title_preferences">Настройки</string>
   <string name="title_api_registered_apps">Приложения</string>
   <string name="title_key_server_preference">Серверы OpenPGP</string>
@@ -24,6 +25,7 @@
   <string name="title_export_keys">Резервные ключи</string>
   <string name="title_key_not_found">Ключ не найден</string>
   <string name="title_send_key">Загрузить на сервер ключей</string>
+  <string name="title_backup">Резервировать ключ</string>
   <string name="title_certify_key">Сертифицировать ключ</string>
   <string name="title_key_details">Сведения о ключе</string>
   <string name="title_help">Помощь</string>
@@ -36,12 +38,15 @@
   <string name="section_user_ids">Идентификаторы</string>
   <string name="section_yubikey">YubiKey</string>
   <string name="section_linked_system_contact">Связанные контакты</string>
+  <string name="section_keybase_proofs">Доказательства Keybase.io</string>
   <string name="section_should_you_trust">Должны ли Вы доверять этому ключу?</string>
   <string name="section_proof_details">Подтвердить верификацию</string>
   <string name="section_keys">Доп. ключи</string>
   <string name="section_cloud_search">Поиск ключа</string>
+  <string name="section_cloud_search_summary">Сервер ключей, keybase.io</string>
   <string name="section_passphrase_cache">Пароли и PIN-коды</string>
   <string name="section_proxy_settings">Сетевая анонимность</string>
+  <string name="section_proxy_settings_summary">Tor, настройки прокси</string>
   <string name="section_gui">Интерфейс</string>
   <string name="section_sync_settings">Синхронизация</string>
   <string name="section_sync_settings_summary">Автоматическое обновление ключей, </string>
@@ -51,6 +56,7 @@
   <string name="section_share_key">Ключ</string>
   <string name="section_key_server">Сервер ключей</string>
   <string name="section_fingerprint">Отпечаток ключа</string>
+  <string name="section_phrases">Фразы</string>
   <string name="section_encrypt">Зашифровать</string>
   <string name="section_decrypt">Расшифровка / Подтверждение</string>
   <string name="section_current_expiry">Текущий срок годности</string>
@@ -71,11 +77,14 @@
   <string name="btn_back">Назад</string>
   <string name="btn_no">Нет</string>
   <string name="btn_match">Отпечатки совпадают</string>
+  <string name="btn_match_phrases">Совпадающие фразы</string>
   <string name="btn_share_encrypted_signed">Зашифровать/подписать и поделиться текстом</string>
   <string name="btn_copy_encrypted_signed">Зашифровать/подписать и скопировать текст</string>
   <string name="btn_view_cert_key">Просмотр ключа</string>
   <string name="btn_create_key">Создать ключ</string>
   <string name="btn_add_files">Добавить файл(ы)</string>
+  <string name="btn_share_decrypted_text">Опубликовать</string>
+  <string name="btn_open_with">Открыть с помощью...</string>
   <string name="btn_copy_decrypted_text">Копировать расшифрованный текст</string>
   <string name="btn_decrypt_clipboard">Прочитать из буфера</string>
   <string name="btn_decrypt_files">Выберите входной файл</string>
@@ -86,9 +95,11 @@
   <string name="btn_add_keyserver">Добавить</string>
   <string name="btn_save_default">Сохранить по умолчанию</string>
   <string name="btn_saved">Сохранено!</string>
+  <string name="btn_not_matching">Нет совпадений</string>
   <!--menu-->
   <string name="menu_preferences">Настройки</string>
   <string name="menu_help">Помощь</string>
+  <string name="menu_export_key">Резервировать ключ</string>
   <string name="menu_delete_key">Удалить ключ</string>
   <string name="menu_manage_keys">Управление ключами</string>
   <string name="menu_search">Поиск</string>
@@ -100,6 +111,8 @@
   <string name="menu_update_all_keys">Обновить все ключи</string>
   <string name="menu_advanced">Дополнительные сведения</string>
   <string name="menu_certify_fingerprint">Подтвердить через отпечаток</string>
+  <string name="menu_certify_fingerprint_phrases">Подтвердить фразами</string>
+  <string name="menu_share_log">Опубликовать отчёт</string>
   <string name="menu_keyserver_add">Добавить</string>
   <!--label-->
   <string name="label_message">Текст</string>
@@ -125,6 +138,7 @@
   <string name="label_hash_algorithm">ХЭШ-алгоритм</string>
   <string name="label_symmetric">Зашифровать с паролем</string>
   <string name="label_passphrase_cache_ttl">Запомнить время</string>
+  <string name="label_passphrase_cache_subs">Запомнить пароли для подключей</string>
   <string name="label_message_compression">Сжатие текста</string>
   <string name="label_file_compression">Сжатие файла</string>
   <string name="label_keyservers">Выберите серверы OpenPGP</string>
@@ -139,6 +153,7 @@
   <string name="label_name">Имя</string>
   <string name="label_comment">Комментарий</string>
   <string name="label_email">Email</string>
+  <string name="label_send_key">Синхронизация с Интернет</string>
   <string name="label_fingerprint">Отпечаток</string>
   <string name="expiry_date_dialog_title">Срок годности</string>
   <string name="label_keyservers_title">Серверы ключей</string>
@@ -148,14 +163,30 @@
   <string name="label_enable_compression">Использовать сжатие</string>
   <string name="label_encrypt_filenames">Шифровать имена файлов</string>
   <string name="label_hidden_recipients">Скрыть получателей</string>
+  <string name="label_verify_keyserver_connection">Тест соединения</string>
+  <string name="label_only_trusted_keyserver">Только доверенные сервера ключей</string>
   <string name="label_keyserver_dialog_delete">Удалить сервер ключей</string>
   <string name="label_theme">Тема</string>
   <string name="pref_keyserver">Серверы OpenPGP</string>
   <string name="pref_keyserver_summary">Искать ключи на выбранных серверах OpenPGP  (протокол HKP)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Искать ключи на Keybase.io</string>
+  <string name="label_sync_settings_keyserver_title">Автоматически обновлять ключи</string>
+  <string name="label_sync_settings_keyserver_summary_on">Ключи старше недели обновляются с предпочтительного сервера ключей</string>
+  <string name="label_sync_settings_keyserver_summary_off">Ключи не обновляются автоматически</string>
+  <string name="label_sync_settings_contacts_title">Связать ключи с контактами</string>
+  <string name="label_sync_settings_contacts_summary_on">Связывать ключи с контактами основываясь на именах и адресах электронной почты. Это происходит полностью в автономном режиме на вашем устройстве.</string>
+  <string name="label_sync_settings_contacts_summary_off">Новые ключи не будут связаны с контактами</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="keyserver_sync_settings_title">Автоматически обновлять ключи</string>
   <string name="label_experimental_settings_desc_title">Предупреждение</string>
+  <string name="label_experimental_settings_desc_summary">Эти новые возможности ещё не закончены и/или пока только изучаются. Проще говоря, не стоит полагаться на их безопасность. Пожалуйста, не сообщайте о связанных с ними проблемах!</string>
+  <string name="label_experimental_settings_word_confirm_title">Фраза подтверждения</string>
+  <string name="label_experimental_settings_word_confirm_summary">Подтвердить ключи с помощью фраз, вместо шестнадцатеричных отпечатков </string>
+  <string name="label_experimental_settings_linked_identities_title">Связанные идентификаторы</string>
+  <string name="label_experimental_settings_linked_identities_summary">Привязать ключи к Twitter, GitHub, веб-сайту или DNS (по аналогии с keybase.io но децентрализованно)</string>
+  <string name="label_experimental_settings_keybase_title">Keybase.io подтверждение</string>
+  <string name="label_experimental_settings_keybase_summary">Опрашивать keybase.io для подтверждения ключей и показывать это каждый раз при отображении ключей</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Использовать Tor</string>
   <string name="pref_proxy_tor_summary">Требуется установка Orbot</string>
@@ -209,6 +240,7 @@
   <string name="choice_4hours">4 часа</string>
   <string name="choice_8hours">8 часов</string>
   <string name="choice_forever">всегда</string>
+  <string name="choice_select_cert">Выбрать ключ</string>
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
@@ -229,6 +261,7 @@
   <string name="no_filemanager_installed">Нет совместимого менеджера файлов.</string>
   <string name="passphrases_do_not_match">Пароли не совпадают.</string>
   <string name="passphrase_must_not_be_empty">Пожалуйста, введите пароль.</string>
+  <string name="passphrase_for_symmetric_encryption">Введите пароль</string>
   <string name="passphrase_for">Введите пароль для \'%s\'</string>
   <string name="pin_for">Введите PIN для
 \'%s\'</string>
@@ -513,6 +546,7 @@
   <string name="edit_key_error_add_identity">Добавьте хотя бы один идентификатор!</string>
   <string name="edit_key_error_add_subkey">Добавьте хотя бы один доп. ключ!</string>
   <!--Create key-->
+  <string name="create_key_upload">Синхронизация с Интернет</string>
   <string name="create_key_empty">Это обязательне поле</string>
   <string name="create_key_passphrases_not_equal">Пароли не совпадают</string>
   <string name="create_key_final_text">Вы указали следующие данные:</string>
@@ -914,9 +948,11 @@
   <string name="error_nfc">Ошибка NFC: %s</string>
   <!--Other Linked Identity strings-->
   <string name="linked_select_2">Пожалуйста, выберите тип:</string>
+  <string name="section_linked_identities">Связанные идентификаторы</string>
   <string name="btn_finish">Завершить</string>
   <string name="linked_title_twitter">Твиттер</string>
   <string name="linked_button_retry">Повторить</string>
   <string name="linked_button_confirm">Подтвердить</string>
   <string name="linked_text_error">Ошибка</string>
+  <string name="share_log_dialog_share_button">Опубликовать</string>
 </resources>

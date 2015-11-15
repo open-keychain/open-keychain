@@ -17,6 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,21 +45,11 @@ import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListCloudLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
-import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
-
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class ImportKeysListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
@@ -180,8 +175,8 @@ public class ImportKeysListFragment extends ListFragment implements
     }
 
     static public class BytesLoaderState extends LoaderState {
-        byte[] mKeyBytes;
-        Uri mDataUri;
+        public byte[] mKeyBytes;
+        public Uri mDataUri;
 
         BytesLoaderState(byte[] keyBytes, Uri dataUri) {
             mKeyBytes = keyBytes;
@@ -305,9 +300,7 @@ public class ImportKeysListFragment extends ListFragment implements
     onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_BYTES: {
-                BytesLoaderState ls = (BytesLoaderState) mLoaderState;
-                InputData inputData = getInputData(ls.mKeyBytes, ls.mDataUri);
-                return new ImportKeysListLoader(mActivity, inputData);
+                return new ImportKeysListLoader(mActivity, (BytesLoaderState) mLoaderState);
             }
             case LOADER_ID_CLOUD: {
                 CloudLoaderState ls = (CloudLoaderState) mLoaderState;
@@ -430,25 +423,6 @@ public class ImportKeysListFragment extends ListFragment implements
             default:
                 break;
         }
-    }
-
-    private InputData getInputData(byte[] importBytes, Uri dataUri) {
-        InputData inputData = null;
-        if (importBytes != null) {
-            inputData = new InputData(new ByteArrayInputStream(importBytes), importBytes.length);
-        } else if (dataUri != null) {
-            try {
-                InputStream inputStream = getActivity().getContentResolver().openInputStream(dataUri);
-                long length = FileHelper.getFileSize(getActivity(), dataUri, -1);
-
-                inputData = new InputData(inputStream, length);
-            } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "FileNotFoundException!", e);
-                return null;
-            }
-        }
-
-        return inputData;
     }
 
 }

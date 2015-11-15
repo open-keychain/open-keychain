@@ -1,8 +1,8 @@
 [//]: #
 
-[http://www.openkeychain.org](http://www.openkeychain.org)
+[https://www.openkeychain.org](https://www.openkeychain.org)
 
-[Отворени кључарник (OpenKeychain)](http://www.openkeychain.org) је ОпенПГП имплементација за Андроид.
+[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 
 Лиценца: ГПЛв3+
 
@@ -61,11 +61,11 @@
   * [Markdown4J](https://github.com/jdcasey/markdown4j) (Апачи лиценца в2)
   * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Апачи лиценца в2)
   * [MiniDNS](https://github.com/rtreffer/minidns) (Апачи лиценца в2)
-  * [OkHttp](http://square.github.io/okhttp/) (Apache License v2)
+  * [OkHttp](https://square.github.io/okhttp/) (Apache License v2)
   * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Материјал дизајн) (Апачи лиценца в2)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (МИТ лиценца)
   * [Snackbar](https://github.com/nispok/snackbar) (МИТ лиценца)
-  * [SpongyCastle](http://rtyley.github.com/spongycastle/) (МИТ Икс11 лиценца)
+  * [SpongyCastle](https://rtyley.github.io/spongycastle/) (MIT X11 License)
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Апачи лиценца в2)
   * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Апачи лиценца в2)
   * [ZXing](https://github.com/zxing/zxing) (Апачи лиценца в2)

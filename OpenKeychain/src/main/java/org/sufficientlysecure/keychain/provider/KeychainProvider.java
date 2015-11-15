@@ -303,14 +303,14 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.FINGERPRINT, Tables.KEYS + "." + Keys.FINGERPRINT);
                 projectionMap.put(KeyRings.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID);
                 projectionMap.put(KeyRings.HAS_DUPLICATE_USER_ID,
-                        "(SELECT COUNT (*) FROM " + Tables.USER_PACKETS + " AS dups"
+                        "(EXISTS (SELECT * FROM " + Tables.USER_PACKETS + " AS dups"
                                 + " WHERE dups." + UserPackets.MASTER_KEY_ID
                                     + " != " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " AND dups." + UserPackets.RANK + " = 0"
                                 + " AND dups." + UserPackets.USER_ID
                                     + " = "+ Tables.USER_PACKETS + "." + UserPackets.USER_ID
-                                + ") AS " + KeyRings.HAS_DUPLICATE_USER_ID);
-                projectionMap.put(KeyRings.VERIFIED, KeyRings.VERIFIED);
+                                + ")) AS " + KeyRings.HAS_DUPLICATE_USER_ID);
+                projectionMap.put(KeyRings.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
                 projectionMap.put(KeyRings.PUBKEY_DATA,
                         Tables.KEY_RINGS_PUBLIC + "." + KeyRingData.KEY_RING_DATA
                                 + " AS " + KeyRings.PUBKEY_DATA);
@@ -319,10 +319,8 @@ public class KeychainProvider extends ContentProvider {
                                 + " AS " + KeyRings.PRIVKEY_DATA);
                 projectionMap.put(KeyRings.HAS_SECRET, Tables.KEYS + "." + KeyRings.HAS_SECRET);
                 projectionMap.put(KeyRings.HAS_ANY_SECRET,
-                    "(EXISTS (SELECT * FROM " + Tables.KEY_RINGS_SECRET
-                        + " WHERE " + Tables.KEY_RINGS_SECRET + "." + KeyRingData.MASTER_KEY_ID
-                            + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                        + ")) AS " + KeyRings.HAS_ANY_SECRET);
+                        "(" + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NOT NULL)" +
+                                " AS " + KeyRings.HAS_ANY_SECRET);
                 projectionMap.put(KeyRings.HAS_ENCRYPT,
                         "kE." + Keys.KEY_ID + " AS " + KeyRings.HAS_ENCRYPT);
                 projectionMap.put(KeyRings.HAS_SIGN,
@@ -363,7 +361,7 @@ public class KeychainProvider extends ContentProvider {
                                 + " = "
                                     + Tables.KEY_RINGS_PUBLIC + "." + KeyRingData.MASTER_KEY_ID
                                 + ")" : "")
-                        + (plist.contains(KeyRings.PRIVKEY_DATA) ?
+                        + (plist.contains(KeyRings.PRIVKEY_DATA) || plist.contains(KeyRings.HAS_ANY_SECRET) ?
                             " LEFT JOIN " + Tables.KEY_RINGS_SECRET + " ON ("
                                     + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
@@ -712,18 +710,43 @@ public class KeychainProvider extends ContentProvider {
         }
 
         SQLiteDatabase db = getDb().getReadableDatabase();
+
         Cursor cursor = qb.query(db, projection, selection, selectionArgs, groupBy, having, orderBy);
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
         }
 
+        Log.d(Constants.TAG,
+                "Query: " + qb.buildQuery(projection, selection, null, null, orderBy, null));
+
         if (Constants.DEBUG && Constants.DEBUG_LOG_DB_QUERIES) {
-            Log.d(Constants.TAG,
-                    "Query: "
-                            + qb.buildQuery(projection, selection, selectionArgs, null, null,
-                            orderBy, null));
             Log.d(Constants.TAG, "Cursor: " + DatabaseUtils.dumpCursorToString(cursor));
+        }
+
+        if (Constants.DEBUG && Constants.DEBUG_EXPLAIN_QUERIES) {
+            String rawQuery = qb.buildQuery(projection, selection, groupBy, having, orderBy, null);
+            Cursor explainCursor = db.rawQuery("EXPLAIN QUERY PLAN " + rawQuery, selectionArgs);
+
+            // this is a debugging feature, we can be a little careless
+            explainCursor.moveToFirst();
+
+            StringBuilder line = new StringBuilder();
+            for (int i = 0; i < explainCursor.getColumnCount(); i++) {
+                line.append(explainCursor.getColumnName(i)).append(", ");
+            }
+            Log.d(Constants.TAG, line.toString());
+
+            while (!explainCursor.isAfterLast()) {
+                line = new StringBuilder();
+                for (int i = 0; i < explainCursor.getColumnCount(); i++) {
+                    line.append(explainCursor.getString(i)).append(", ");
+                }
+                Log.d(Constants.TAG, line.toString());
+                explainCursor.moveToNext();
+            }
+
+            explainCursor.close();
         }
 
         return cursor;
