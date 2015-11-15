@@ -74,14 +74,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS keyrings_public ("
                 + KeyRingsColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY,"
                 + KeyRingsColumns.KEY_RING_DATA + " BLOB"
-                    + "PRIMARY KEY(" + KeyRingsColumns.MASTER_KEY_ID + "),"
             + ")";
 
     private static final String CREATE_KEYRINGS_SECRET =
             "CREATE TABLE IF NOT EXISTS keyrings_secret ("
                     + KeyRingsColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY,"
-                    + KeyRingsColumns.KEY_RING_DATA + " BLOB,"
-                    + "PRIMARY KEY(" + KeyRingsColumns.MASTER_KEY_ID + "),"
+                    + KeyRingsColumns.KEY_RING_DATA + " BLOB, "
                     + "FOREIGN KEY(" + KeyRingsColumns.MASTER_KEY_ID + ") "
                         + "REFERENCES keyrings_public(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
             + ")";
