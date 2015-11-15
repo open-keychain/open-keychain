@@ -712,6 +712,7 @@ public class KeychainProvider extends ContentProvider {
         }
 
         SQLiteDatabase db = getDb().getReadableDatabase();
+
         Cursor cursor = qb.query(db, projection, selection, selectionArgs, groupBy, having, orderBy);
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes

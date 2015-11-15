@@ -110,10 +110,9 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             if (decryptResult.isPending()) {
                 return new InputDataResult(log, decryptResult);
             }
-            log.addByMerge(decryptResult, 2);
+            log.addByMerge(decryptResult, 1);
 
-            if (!decryptResult.success()) {
-                log.add(LogType.MSG_DATA_ERROR_OPENPGP, 1);
+            if ( ! decryptResult.success()) {
                 return new InputDataResult(InputDataResult.RESULT_ERROR, log);
             }
 
