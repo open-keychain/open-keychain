@@ -6,7 +6,15 @@ import java.io.InputStream;
 
 import org.spongycastle.openpgp.PGPMarker;
 
-
+/** This class wraps the regular PGPObjectFactory, changing its behavior to
+ * ignore all PGPMarker packets it encounters while reading. These packets
+ * carry no semantics of their own, and should be ignored according to
+ * RFC 4880.
+ * 
+ * @see https://tools.ietf.org/html/rfc4880#section-5.8
+ * @see org.spongycastle.openpgp.PGPMarker
+ * 
+ */
 public class JcaSkipMarkerPGPObjectFactory extends JcaPGPObjectFactory {
 
     public JcaSkipMarkerPGPObjectFactory(InputStream in) {
