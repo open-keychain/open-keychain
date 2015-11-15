@@ -73,7 +73,7 @@ public class CacheTTLSpinner extends AppCompatSpinner {
     public long getSelectedTimeToLive() {
         int selectedItemPosition = getSelectedItemPosition();
         Object item = getAdapter().getItem(selectedItemPosition);
-        return ((Cursor) item).getLong(0);
+        return ((Cursor) item).getLong(1);
     }
 
 }
