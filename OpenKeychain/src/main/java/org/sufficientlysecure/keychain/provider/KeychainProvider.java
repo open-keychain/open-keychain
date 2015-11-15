@@ -719,12 +719,36 @@ public class KeychainProvider extends ContentProvider {
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
         }
 
+        Log.d(Constants.TAG,
+                "Query: " + qb.buildQuery(projection, selection, null, null, orderBy, null));
+
         if (Constants.DEBUG && Constants.DEBUG_LOG_DB_QUERIES) {
-            Log.d(Constants.TAG,
-                    "Query: "
-                            + qb.buildQuery(projection, selection, selectionArgs, null, null,
-                            orderBy, null));
             Log.d(Constants.TAG, "Cursor: " + DatabaseUtils.dumpCursorToString(cursor));
+        }
+
+        if (Constants.DEBUG && Constants.DEBUG_EXPLAIN_QUERIES) {
+            String rawQuery = qb.buildQuery(projection, selection, groupBy, having, orderBy, null);
+            Cursor explainCursor = db.rawQuery("EXPLAIN QUERY PLAN " + rawQuery, selectionArgs);
+
+            // this is a debugging feature, we can be a little careless
+            explainCursor.moveToFirst();
+
+            StringBuilder line = new StringBuilder();
+            for (int i = 0; i < explainCursor.getColumnCount(); i++) {
+                line.append(explainCursor.getColumnName(i)).append(", ");
+            }
+            Log.d(Constants.TAG, line.toString());
+
+            while (!explainCursor.isAfterLast()) {
+                line = new StringBuilder();
+                for (int i = 0; i < explainCursor.getColumnCount(); i++) {
+                    line.append(explainCursor.getString(i)).append(", ");
+                }
+                Log.d(Constants.TAG, line.toString());
+                explainCursor.moveToNext();
+            }
+
+            explainCursor.close();
         }
 
         return cursor;
