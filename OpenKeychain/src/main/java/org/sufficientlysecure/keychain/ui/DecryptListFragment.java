@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import android.Manifest;
@@ -676,11 +677,13 @@ public class DecryptListFragment
         if (permissionWasGranted) {
 
             // permission granted -> retry all cancelled file uris
-            for (Uri uri : mCancelledInputUris) {
+            Iterator<Uri> it = mCancelledInputUris.iterator();
+            while (it.hasNext()) {
+                Uri uri = it.next();
                 if ( ! "file".equals(uri.getScheme())) {
                     continue;
                 }
-                mCancelledInputUris.remove(uri);
+                it.remove();
                 mPendingInputUris.add(uri);
                 mAdapter.setCancelled(uri, false);
             }
@@ -688,12 +691,17 @@ public class DecryptListFragment
         } else {
 
             // permission denied -> cancel current, and all pending file uris
+            mCancelledInputUris.add(mCurrentInputUri);
+            mAdapter.setCancelled(mCurrentInputUri, true);
+
             mCurrentInputUri = null;
-            for (final Uri uri : mPendingInputUris) {
+            Iterator<Uri> it = mPendingInputUris.iterator();
+            while (it.hasNext()) {
+                Uri uri = it.next();
                 if ( ! "file".equals(uri.getScheme())) {
                     continue;
                 }
-                mPendingInputUris.remove(uri);
+                it.remove();
                 mCancelledInputUris.add(uri);
                 mAdapter.setCancelled(uri, true);
             }
