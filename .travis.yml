@@ -35,4 +35,4 @@ android:
 
 script:
     # - ./gradlew connectedAndroidTest
-    - ./gradlew testDebug jacocoTestReport coveralls
+    - ./gradlew --stacktrace testDebug jacocoTestReport coveralls
