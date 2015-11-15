@@ -556,7 +556,7 @@ public class PgpEncryptDecryptTest {
     }
 
     @Test
-    public void testAsymmetricMultiSubkeyEncrypt() throws Exception {
+    public void testMultiSubkeyEncryptSkipStripOrBadFlag() throws Exception {
 
         String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
 
@@ -610,7 +610,8 @@ public class PgpEncryptDecryptTest {
 
         { // strip first encrypted subkey, decryption should skip it
 
-            SaveKeyringParcel parcel = new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
+            SaveKeyringParcel parcel =
+                    new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
             parcel.mChangeSubKeys.add(new SubkeyChange(encKeyId1, true, false));
             UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
@@ -631,8 +632,9 @@ public class PgpEncryptDecryptTest {
 
         { // change flags of second encrypted subkey, decryption should skip it
 
-            SaveKeyringParcel parcel = new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
-            parcel.mChangeSubKeys.add(new SubkeyChange(encKeyId1, PGPKeyFlags.CAN_CERTIFY, null));
+            SaveKeyringParcel parcel =
+                    new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
+            parcel.mChangeSubKeys.add(new SubkeyChange(encKeyId1, KeyFlags.CERTIFY_OTHER, null));
             UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
                     new CryptoInputParcel(new Date(), mKeyPhrase1));
@@ -649,6 +651,13 @@ public class PgpEncryptDecryptTest {
             Assert.assertTrue("decryption must have skipped first key",
                     result.getLog().containsType(LogType.MSG_DC_ASKIP_BAD_FLAGS));
         }
+
+    }
+
+    @Test
+    public void testMultiSubkeyEncryptSkipRevoked() throws Exception {
+
+        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
 
         { // revoke first encryption subkey of keyring in database
             SaveKeyringParcel parcel = new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
@@ -679,7 +688,7 @@ public class PgpEncryptDecryptTest {
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
-            ciphertext = out.toByteArray();
+            byte[] ciphertext = out.toByteArray();
 
             Iterator<RawPacket> packets = KeyringTestingHelper.parseKeyring(ciphertext);
 
