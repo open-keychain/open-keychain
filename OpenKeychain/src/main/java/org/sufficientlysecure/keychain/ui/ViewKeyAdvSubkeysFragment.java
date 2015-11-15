@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,7 +29,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.ActionMode;
-import android.view.ActionMode.Callback;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -123,6 +123,8 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
             }
         });
 
+        setHasOptionsMenu(true);
+
         return root;
     }
 
@@ -137,8 +139,6 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
             return;
         }
         mHasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
-
-        setHasOptionsMenu(true);
 
         loadData(dataUri);
     }
@@ -184,9 +184,23 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         mSubkeysAdapter.swapCursor(null);
     }
 
-    private void enterEditMode() {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_action_mode_edit:
+                enterEditMode();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void enterEditMode() {
         FragmentActivity activity = getActivity();
-        activity.startActionMode(new Callback() {
+        if (activity == null) {
+            return;
+        }
+        activity.startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
@@ -227,25 +241,6 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                 getLoaderManager().restartLoader(0, null, ViewKeyAdvSubkeysFragment.this);
             }
         });
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.edit_subkeys, menu);
-        final MenuItem vEditSubkeys  = menu.findItem(R.id.menu_edit_subkeys);
-        vEditSubkeys.setVisible(mHasSecret);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_edit_subkeys:
-                enterEditMode();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     private void addSubkey() {

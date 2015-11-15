@@ -30,10 +30,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.ActionMode;
-import android.view.ActionMode.Callback;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,6 +106,8 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                 addUserId();
             }
         });
+
+        setHasOptionsMenu(true);
 
         return root;
     }
@@ -218,8 +218,6 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         }
         boolean hasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
 
-        setHasOptionsMenu(true);
-
         loadData(dataUri, hasSecret);
     }
 
@@ -278,16 +276,22 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.edit_user_id, menu);
-        MenuItem vEditUserIds  = menu.findItem(R.id.menu_edit_user_ids);
-        vEditUserIds.setVisible(mHasSecret);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_action_mode_edit:
+                enterEditMode();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
-    private void enterEditMode() {
+    public void enterEditMode() {
         FragmentActivity activity = getActivity();
-        activity.startActionMode(new Callback() {
+        if (activity == null) {
+            return;
+        }
+        activity.startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
@@ -330,14 +334,4 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_edit_user_ids:
-                enterEditMode();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 }

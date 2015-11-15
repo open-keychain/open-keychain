@@ -18,19 +18,26 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v4.app.LoaderManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.ActionMode;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -47,7 +54,7 @@ import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class ViewKeyAdvActivity extends BaseActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderCallbacks<Cursor>, OnPageChangeListener {
 
     ProviderHelper mProviderHelper;
 
@@ -64,6 +71,11 @@ public class ViewKeyAdvActivity extends BaseActivity implements
     private PagerSlidingTabStrip mSlidingTabLayout;
 
     private static final int LOADER_ID_UNIFIED = 0;
+    private ActionMode mActionMode;
+    private boolean mHasSecret;
+    private PagerTabStripAdapter mTabAdapter;
+    private boolean mActionIconShown;
+    private boolean[] mTabsWithActionMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,33 +121,44 @@ public class ViewKeyAdvActivity extends BaseActivity implements
     }
 
     private void initTabs(Uri dataUri, boolean hasSecret) {
-        PagerTabStripAdapter adapter = new PagerTabStripAdapter(this);
-        mViewPager.setAdapter(adapter);
+
+        mHasSecret = hasSecret;
+
+        mTabAdapter = new PagerTabStripAdapter(this);
+        mViewPager.setAdapter(mTabAdapter);
+
+        // keep track which of these are action mode enabled!
+        mTabsWithActionMode = new boolean[4];
 
         Bundle shareBundle = new Bundle();
         shareBundle.putParcelable(ViewKeyAdvShareFragment.ARG_DATA_URI, dataUri);
-        adapter.addTab(ViewKeyAdvShareFragment.class,
+        mTabAdapter.addTab(ViewKeyAdvShareFragment.class,
                 shareBundle, getString(R.string.key_view_tab_share));
+        mTabsWithActionMode[0] = false;
 
         Bundle userIdsBundle = new Bundle();
         userIdsBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
         userIdsBundle.putBoolean(ViewKeyAdvUserIdsFragment.ARG_HAS_SECRET, hasSecret);
-        adapter.addTab(ViewKeyAdvUserIdsFragment.class,
+        mTabAdapter.addTab(ViewKeyAdvUserIdsFragment.class,
                 userIdsBundle, getString(R.string.section_user_ids));
+        mTabsWithActionMode[1] = true;
 
         Bundle keysBundle = new Bundle();
         keysBundle.putParcelable(ViewKeyAdvSubkeysFragment.ARG_DATA_URI, dataUri);
         keysBundle.putBoolean(ViewKeyAdvSubkeysFragment.ARG_HAS_SECRET, hasSecret);
-        adapter.addTab(ViewKeyAdvSubkeysFragment.class,
+        mTabAdapter.addTab(ViewKeyAdvSubkeysFragment.class,
                 keysBundle, getString(R.string.key_view_tab_keys));
+        mTabsWithActionMode[2] = true;
 
         Bundle certsBundle = new Bundle();
         certsBundle.putParcelable(ViewKeyAdvCertsFragment.ARG_DATA_URI, dataUri);
-        adapter.addTab(ViewKeyAdvCertsFragment.class,
+        mTabAdapter.addTab(ViewKeyAdvCertsFragment.class,
                 certsBundle, getString(R.string.key_view_tab_certs));
+        mTabsWithActionMode[3] = false;
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
+        mSlidingTabLayout.setOnPageChangeListener(this);
 
         // switch to tab selected by extra
         Intent intent = getIntent();
@@ -245,22 +268,83 @@ public class ViewKeyAdvActivity extends BaseActivity implements
     }
 
     @Override
-    public void onActionModeStarted(final ActionMode mode) {
-        super.onActionModeStarted(mode);
-        // Leave whatever action mode we are in when we change the page
-        mSlidingTabLayout.setOnPageChangeListener(new SimpleOnPageChangeListener() {
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        if (!mHasSecret) {
+            return false;
+        }
+
+        // always add the item, switch its visibility depending on fragment
+        getMenuInflater().inflate(R.menu.action_mode_edit, menu);
+        final MenuItem vActionModeItem  = menu.findItem(R.id.menu_action_mode_edit);
+
+        boolean isCurrentActionFragment = mTabsWithActionMode[mViewPager.getCurrentItem()];
+
+        // if the state is as it should be, never mind
+        if (isCurrentActionFragment == mActionIconShown) {
+            return isCurrentActionFragment;
+        }
+
+        // show or hide accordingly
+        mActionIconShown = isCurrentActionFragment;
+        vActionModeItem.setEnabled(isCurrentActionFragment);
+        animateMenuItem(vActionModeItem, isCurrentActionFragment);
+
+        return true;
+    }
+
+    private void animateMenuItem(final MenuItem vEditSubkeys, final boolean animateShow) {
+
+        View actionView = LayoutInflater.from(this).inflate(R.layout.edit_icon, null);
+        vEditSubkeys.setActionView(actionView);
+        actionView.setTranslationX(animateShow ? 150 : 0);
+
+        ViewPropertyAnimator animator = actionView.animate();
+        animator.translationX(animateShow ? 0 : 150);
+        animator.setDuration(300);
+        animator.setInterpolator(new OvershootInterpolator(1.5f));
+        animator.setListener(new AnimatorListenerAdapter() {
             @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                mode.finish();
+            public void onAnimationEnd(Animator animation) {
+                if (!animateShow) {
+                    vEditSubkeys.setVisible(false);
+                }
+                vEditSubkeys.setActionView(null);
             }
         });
+        animator.start();
+
+    }
+
+    @Override
+    public void onActionModeStarted(final ActionMode mode) {
+        super.onActionModeStarted(mode);
+        mActionMode = mode;
     }
 
     @Override
     public void onActionModeFinished(ActionMode mode) {
         super.onActionModeFinished(mode);
-        mSlidingTabLayout.setOnPageChangeListener(null);
+        mActionMode = null;
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        if (mActionMode != null) {
+            mActionMode.finish();
+            mActionMode = null;
+        }
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 
 }
