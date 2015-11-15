@@ -298,7 +298,7 @@ public class KeyListFragment extends LoaderFragment
     }
 
     static final String ORDER =
-            KeyRings.HAS_ANY_SECRET + " DESC, UPPER(" + KeyRings.USER_ID + ") ASC";
+            KeyRings.HAS_ANY_SECRET + " DESC, " + KeyRings.USER_ID + " COLLATE NOCASE ASC";
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
