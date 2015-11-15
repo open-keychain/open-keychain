@@ -320,6 +320,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Downgrade is ok for the debug version, makes it easier to work with branches
+        if (Constants.DEBUG) {
+            return;
+        }
         // NOTE: downgrading the database is explicitly not allowed to prevent
         // someone from exploiting old bugs to export the database
         throw new RuntimeException("Downgrading the database is not allowed!");
