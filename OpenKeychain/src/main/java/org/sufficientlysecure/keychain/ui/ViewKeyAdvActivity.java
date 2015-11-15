@@ -125,6 +125,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
         Bundle keysBundle = new Bundle();
         keysBundle.putParcelable(ViewKeyAdvSubkeysFragment.ARG_DATA_URI, dataUri);
+        keysBundle.putBoolean(ViewKeyAdvSubkeysFragment.ARG_HAS_SECRET, hasSecret);
         adapter.addTab(ViewKeyAdvSubkeysFragment.class,
                 keysBundle, getString(R.string.key_view_tab_keys));
 

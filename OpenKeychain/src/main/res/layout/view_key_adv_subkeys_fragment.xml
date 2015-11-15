@@ -28,7 +28,7 @@ xmlns:tools="http://schemas.android.com/tools">
             android:layout_weight="1" />
 
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
-            android:id="@+id/keys"
+            android:id="@+id/view_key_subkeys"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="4dp"

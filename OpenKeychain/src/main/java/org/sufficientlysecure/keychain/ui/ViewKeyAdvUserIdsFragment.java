@@ -218,6 +218,8 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         }
         boolean hasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
 
+        setHasOptionsMenu(true);
+
         loadData(dataUri, hasSecret);
     }
 
@@ -229,8 +231,6 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
         mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
         mUserIds.setAdapter(mUserIdsAdapter);
-
-        setHasOptionsMenu(hasSecret);
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.

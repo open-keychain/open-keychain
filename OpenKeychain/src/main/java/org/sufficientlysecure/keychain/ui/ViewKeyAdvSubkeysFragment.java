@@ -47,7 +47,6 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
@@ -58,6 +57,8 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "data_uri";
+    public static final String ARG_HAS_SECRET = "has_secret";
+
     public static final int LOADER_ID_SUBKEYS = 0;
 
     private ListView mSubkeysList;
@@ -76,11 +77,12 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
     /**
      * Creates new instance of this fragment
      */
-    public static ViewKeyAdvSubkeysFragment newInstance(Uri dataUri) {
+    public static ViewKeyAdvSubkeysFragment newInstance(Uri dataUri, boolean hasSecret) {
         ViewKeyAdvSubkeysFragment frag = new ViewKeyAdvSubkeysFragment();
 
         Bundle args = new Bundle();
         args.putParcelable(ARG_DATA_URI, dataUri);
+        args.putBoolean(ARG_HAS_SECRET, hasSecret);
 
         frag.setArguments(args);
         return frag;
@@ -91,11 +93,9 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_adv_subkeys_fragment, getContainer());
 
-        mSubkeysList = (ListView) view.findViewById(R.id.keys);
-
-        mSubkeysList = (ListView) view.findViewById(R.id.view_key_user_ids);
-        mSubkeysAddedList = (ListView) view.findViewById(R.id.view_key_user_ids_added);
-        mSubkeysAddedLayout = view.findViewById(R.id.view_key_user_ids_add_layout);
+        mSubkeysList = (ListView) view.findViewById(R.id.view_key_subkeys);
+        mSubkeysAddedList = (ListView) view.findViewById(R.id.view_key_subkeys_added);
+        mSubkeysAddedLayout = view.findViewById(R.id.view_key_subkeys_add_layout);
 
         mSubkeysList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -136,6 +136,9 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
             getActivity().finish();
             return;
         }
+        mHasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
+
+        setHasOptionsMenu(true);
 
         loadData(dataUri);
     }
@@ -224,6 +227,14 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                 getLoaderManager().restartLoader(0, null, ViewKeyAdvSubkeysFragment.this);
             }
         });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.edit_subkeys, menu);
+        final MenuItem vEditSubkeys  = menu.findItem(R.id.menu_edit_subkeys);
+        vEditSubkeys.setVisible(mHasSecret);
     }
 
     @Override
