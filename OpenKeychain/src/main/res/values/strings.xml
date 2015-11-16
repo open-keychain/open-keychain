@@ -106,6 +106,12 @@
     <string name="btn_saved">"Saved!"</string>
     <string name="btn_not_matching">"Doesn't match"</string>
 
+    <!-- Content Description -->
+    <string name="cd_encrypt_files">"Encrypt Files"</string>
+    <string name="cd_exchange_keys">"Exchange Keys"</string>
+    <string name="cd_encrypt_text">"Encrypt Text"</string>
+    <string name="cd_share_nfc">"Share Via NFC"</string>
+
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
     <string name="menu_help">"Help"</string>
