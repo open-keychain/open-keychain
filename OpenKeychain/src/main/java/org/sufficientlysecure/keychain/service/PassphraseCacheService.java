@@ -238,8 +238,7 @@ public class PassphraseCacheService extends Service {
                 return null;
             }
             addCachedPassphrase(this, Constants.key.symmetric, Constants.key.symmetric,
-                    cachedPassphrase.getPassphrase(), getString(R.string.passp_cache_notif_pwd),
-                    Preferences.getPreferences(getBaseContext()).getPassphraseCacheTtl());
+                    cachedPassphrase.getPassphrase(), getString(R.string.passp_cache_notif_pwd), 180);
             return cachedPassphrase.getPassphrase();
         }
 

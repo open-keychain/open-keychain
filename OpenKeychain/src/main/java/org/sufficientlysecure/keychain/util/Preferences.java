@@ -18,9 +18,22 @@
 
 package org.sufficientlysecure.keychain.util;
 
+
+import java.io.Serializable;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -28,13 +41,8 @@ import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ListIterator;
-import java.util.Vector;
 
 /**
  * Singleton Implementation of a Preference Helper
@@ -90,19 +98,18 @@ public class Preferences {
         editor.commit();
     }
 
-    public long getPassphraseCacheTtl() {
-        int ttl = mSharedPreferences.getInt(Constants.Pref.PASSPHRASE_CACHE_TTL, 180);
-        // fix the value if it was set to "never" in previous versions, which currently is not
-        // supported
-        if (ttl == 0) {
-            ttl = 180;
+    public CacheTTLPrefs getPassphraseCacheTtl() {
+        Set<String> pref = mSharedPreferences.getStringSet(Constants.Pref.PASSPHRASE_CACHE_TTLS, null);
+        if (pref == null) {
+            return CacheTTLPrefs.getDefault();
         }
-        return (long) ttl;
+        int def = mSharedPreferences.getInt(Pref.PASSPHRASE_CACHE_DEFAULT, 0);
+        return new CacheTTLPrefs(pref, def);
     }
 
     public void setPassphraseCacheTtl(int value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.Pref.PASSPHRASE_CACHE_TTL, value);
+        editor.putInt(Constants.Pref.PASSPHRASE_CACHE_TTLS, value);
         editor.commit();
     }
 
@@ -304,6 +311,44 @@ public class Preferences {
         @NonNull
         public Proxy getProxy() {
             return parcelableProxy.getProxy();
+        }
+
+    }
+
+    public static class CacheTTLPrefs implements Serializable {
+        public static final Map<Integer,Integer> CACHE_TTL_NAMES;
+        public static final ArrayList<Integer> CACHE_TTLS;
+        static {
+            HashMap<Integer,Integer> cacheTtlNames = new HashMap<>();
+            cacheTtlNames.put(60 * 5, R.string.cache_ttl_five_minutes);
+            cacheTtlNames.put(60 * 60, R.string.cache_ttl_one_hour);
+            cacheTtlNames.put(60 * 60 * 3, R.string.cache_ttl_three_hours);
+            cacheTtlNames.put(60 * 60 * 24, R.string.cache_ttl_one_day);
+            cacheTtlNames.put(60 * 60 * 24 * 3, R.string.cache_ttl_three_days);
+            CACHE_TTL_NAMES = Collections.unmodifiableMap(cacheTtlNames);
+
+            CACHE_TTLS = new ArrayList<>(CacheTTLPrefs.CACHE_TTL_NAMES.keySet());
+            Collections.sort(CACHE_TTLS);
+        }
+
+
+        public HashSet<Integer> ttlTimes;
+        public int defaultTtl;
+
+        public CacheTTLPrefs(Collection<String> ttlStrings, int defaultTtl) {
+            this.defaultTtl = defaultTtl;
+            ttlTimes = new HashSet<>();
+            for (String ttlString : ttlStrings) {
+                ttlTimes.add(Integer.parseInt(ttlString));
+            }
+        }
+
+        public static CacheTTLPrefs getDefault() {
+            ArrayList<String> ttlStrings = new ArrayList<>();
+            ttlStrings.add(Integer.toString(60 * 5));
+            ttlStrings.add(Integer.toString(60 * 60));
+            ttlStrings.add(Integer.toString(60 * 60 * 24));
+            return new CacheTTLPrefs(ttlStrings, 60 * 5);
         }
 
     }

@@ -58,11 +58,11 @@ public class CacheTTLSpinner extends AppCompatSpinner {
 
     private void initView() {
         MatrixCursor  cursor = new MatrixCursor(new String[] { "_id", "TTL", "description" }, 5);
-        cursor.addRow(new Object[] { 0, 60*5, "Five Minutes" });
-        cursor.addRow(new Object[] { 1, 60*60, "One Hour" });
-        cursor.addRow(new Object[] { 2, 60*60*3, "Three Hours" });
-        cursor.addRow(new Object[] { 3, 60*60*24, "One Day" });
-        cursor.addRow(new Object[] { 4, 60*60*24*3, "Three Days" });
+        cursor.addRow(new Object[] { 0, 60*5, getContext().getString(R.string.cache_ttl_five_minutes) });
+        cursor.addRow(new Object[] { 1, 60*60, getContext().getString(R.string.cache_ttl_one_hour) });
+        cursor.addRow(new Object[] { 2, 60*60*3, getContext().getString(R.string.cache_ttl_three_hours) });
+        cursor.addRow(new Object[] { 3, 60*60*24, getContext().getString(R.string.cache_ttl_one_day) });
+        cursor.addRow(new Object[] { 4, 60*60*24*3, getContext().getString(R.string.cache_ttl_three_days) });
 
         setAdapter(new SimpleCursorAdapter(getContext(), R.layout.simple_item, cursor,
                 new String[] { "description" },
