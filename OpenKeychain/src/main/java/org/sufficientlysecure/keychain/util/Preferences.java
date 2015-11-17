@@ -98,21 +98,6 @@ public class Preferences {
         editor.commit();
     }
 
-    public CacheTTLPrefs getPassphraseCacheTtl() {
-        Set<String> pref = mSharedPreferences.getStringSet(Constants.Pref.PASSPHRASE_CACHE_TTLS, null);
-        if (pref == null) {
-            return CacheTTLPrefs.getDefault();
-        }
-        int def = mSharedPreferences.getInt(Pref.PASSPHRASE_CACHE_DEFAULT, 0);
-        return new CacheTTLPrefs(pref, def);
-    }
-
-    public void setPassphraseCacheTtl(int value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.Pref.PASSPHRASE_CACHE_TTLS, value);
-        editor.commit();
-    }
-
     public boolean getPassphraseCacheSubs() {
         return mSharedPreferences.getBoolean(Pref.PASSPHRASE_CACHE_SUBS, false);
     }
@@ -315,6 +300,22 @@ public class Preferences {
 
     }
 
+    public CacheTTLPrefs getPassphraseCacheTtl() {
+        Set<String> pref = mSharedPreferences.getStringSet(Constants.Pref.PASSPHRASE_CACHE_TTLS, null);
+        if (pref == null) {
+            return CacheTTLPrefs.getDefault();
+        }
+        int def = mSharedPreferences.getInt(Pref.PASSPHRASE_CACHE_DEFAULT, 300);
+        return new CacheTTLPrefs(pref, def);
+    }
+
+    public void setPassphraseCacheTtl(CacheTTLPrefs prefs) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putStringSet(Constants.Pref.PASSPHRASE_CACHE_TTLS, prefs.getStringSet());
+        editor.putInt(Pref.PASSPHRASE_CACHE_DEFAULT, prefs.defaultTtl);
+        editor.commit();
+    }
+
     public static class CacheTTLPrefs implements Serializable {
         public static final Map<Integer,Integer> CACHE_TTL_NAMES;
         public static final ArrayList<Integer> CACHE_TTLS;
@@ -331,7 +332,6 @@ public class Preferences {
             Collections.sort(CACHE_TTLS);
         }
 
-
         public HashSet<Integer> ttlTimes;
         public int defaultTtl;
 
@@ -341,6 +341,14 @@ public class Preferences {
             for (String ttlString : ttlStrings) {
                 ttlTimes.add(Integer.parseInt(ttlString));
             }
+        }
+
+        public HashSet<String> getStringSet() {
+            HashSet<String> ttlTimeStrings = new HashSet<>();
+            for (Integer ttlTime : ttlTimes) {
+                ttlTimeStrings.add(Integer.toString(ttlTime));
+            }
+            return ttlTimeStrings;
         }
 
         public static CacheTTLPrefs getDefault() {

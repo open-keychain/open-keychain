@@ -19,10 +19,10 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Preferences.CacheTTLPrefs;
 
 
@@ -80,8 +81,13 @@ public class SettingsCacheTTLFragment extends Fragment {
 
     }
 
-    private void saveKeyserverList() {
-        // Preferences.getPreferences(getActivity()).setKeyServers(servers);
+    private void savePreference() {
+        FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        CacheTTLPrefs prefs = mAdapter.getPrefs();
+        Preferences.getPreferences(activity).setPassphraseCacheTtl(prefs);
     }
 
     public class CacheTTLListAdapter extends RecyclerView.Adapter<CacheTTLListAdapter.ViewHolder> {
@@ -98,6 +104,20 @@ public class SettingsCacheTTLFragment extends Fragment {
                 }
             }
 
+        }
+
+        public CacheTTLPrefs getPrefs() {
+            ArrayList<String> ttls = new ArrayList<>();
+            int defaultTtl = 0;
+            for (int i = 0; i < mPositionIsChecked.size(); i++) {
+                if (mPositionIsChecked.get(i)) {
+                    ttls.add(Integer.toString(CacheTTLPrefs.CACHE_TTLS.get(i)));
+                    if (i == mDefaultPosition) {
+                        defaultTtl = CacheTTLPrefs.CACHE_TTLS.get(i);
+                    }
+                }
+            }
+            return new CacheTTLPrefs(ttls, defaultTtl);
         }
 
         @Override
@@ -144,21 +164,28 @@ public class SettingsCacheTTLFragment extends Fragment {
                 boolean isDefault = position == mDefaultPosition;
 
                 mTitle.setText(CacheTTLPrefs.CACHE_TTL_NAMES.get(ttl));
-                mChecked.setChecked(isChecked);
+                // avoid some ui flicker by skipping unnecessary updates
+                if (mChecked.isChecked() != isChecked) {
+                    mChecked.setChecked(isChecked);
+                }
+                if (mIsDefault.isChecked() != isDefault) {
+                    mIsDefault.setChecked(isDefault);
+                }
                 mIsDefault.setEnabled(isChecked);
-                mIsDefault.setChecked(isDefault);
 
                 mChecked.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         setTtlChecked(position);
+                        savePreference();
                     }
                 });
 
                 mIsDefault.setOnClickListener(!isChecked ? null : new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        setDefault(position);
+                        setTtlDefault(position);
+                        savePreference();
                     }
                 });
 
@@ -191,7 +218,7 @@ public class SettingsCacheTTLFragment extends Fragment {
                 int i = mDefaultPosition;
                 while (--i >= 0) {
                     if (mPositionIsChecked.get(i)) {
-                        setDefault(i);
+                        setTtlDefault(i);
                         return;
                     }
                 }
@@ -200,7 +227,7 @@ public class SettingsCacheTTLFragment extends Fragment {
                 i = mDefaultPosition;
                 while (++i < mPositionIsChecked.size()) {
                     if (mPositionIsChecked.get(i)) {
-                        setDefault(i);
+                        setTtlDefault(i);
                         return;
                     }
                 }
@@ -210,7 +237,7 @@ public class SettingsCacheTTLFragment extends Fragment {
 
             }
 
-            private void setDefault(int position) {
+            private void setTtlDefault(int position) {
                 int previousDefaultPosition = mDefaultPosition;
                 mDefaultPosition = position;
                 notifyItemChanged(previousDefaultPosition);
