@@ -93,7 +93,7 @@ public class PassphraseCacheService extends Service {
     public static final String EXTRA_MESSENGER = "messenger";
     public static final String EXTRA_USER_ID = "user_id";
 
-    private static final long DEFAULT_TTL = 15;
+    private static final int DEFAULT_TTL = 15;
 
     private static final int MSG_PASSPHRASE_CACHE_GET_OKAY = 1;
     private static final int MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND = 2;
@@ -121,7 +121,7 @@ public class PassphraseCacheService extends Service {
     public static void addCachedPassphrase(Context context, long masterKeyId, long subKeyId,
                                            Passphrase passphrase,
                                            String primaryUserId,
-                                           long timeToLiveSeconds) {
+                                           int timeToLiveSeconds) {
         Log.d(Constants.TAG, "PassphraseCacheService.addCachedPassphrase() for " + masterKeyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
@@ -237,8 +237,6 @@ public class PassphraseCacheService extends Service {
             if (cachedPassphrase == null) {
                 return null;
             }
-            addCachedPassphrase(this, Constants.key.symmetric, Constants.key.symmetric,
-                    cachedPassphrase.getPassphrase(), getString(R.string.passp_cache_notif_pwd), 180);
             return cachedPassphrase.getPassphrase();
         }
 
@@ -345,7 +343,7 @@ public class PassphraseCacheService extends Service {
         String action = intent.getAction();
         switch (action) {
             case ACTION_PASSPHRASE_CACHE_ADD: {
-                long ttl = intent.getLongExtra(EXTRA_TTL, DEFAULT_TTL);
+                long ttl = intent.getIntExtra(EXTRA_TTL, DEFAULT_TTL);
                 long masterKeyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
                 long subKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, -1);
 

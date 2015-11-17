@@ -419,7 +419,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     CryptoInputParcel cryptoInputParcel =
                             ((PassphraseDialogActivity) getActivity()).mCryptoInputParcel;
 
-                    final long timeToLiveSeconds = mTimeToLiveSpinner.getSelectedTimeToLive();
+                    final int timeToLiveSeconds = mTimeToLiveSpinner.getSelectedTimeToLive();
 
                     // Early breakout if we are dealing with a symmetric key
                     if (mSecretRing == null) {
