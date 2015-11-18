@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
@@ -47,6 +48,7 @@ import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 /**
  * Singleton Implementation of a Preference Helper
  */
+@SuppressLint("CommitPrefEdits")
 public class Preferences {
     private static Preferences sPreferences;
     private SharedPreferences mSharedPreferences;
@@ -135,7 +137,7 @@ public class Preferences {
     public String[] getKeyServers() {
         String rawData = mSharedPreferences.getString(Constants.Pref.KEY_SERVERS,
                 Constants.Defaults.KEY_SERVERS);
-        if (rawData.equals("")) {
+        if ("".equals(rawData)) {
             return new String[0];
         }
         Vector<String> servers = new Vector<>();
@@ -457,15 +459,19 @@ public class Preferences {
                         if (server == null) {
                             continue;
                         }
-                        if (server.equals("pool.sks-keyservers.net")) {
-                            // use HKPS!
-                            it.set("hkps://hkps.pool.sks-keyservers.net");
-                        } else if (server.equals("pgp.mit.edu")) {
-                            // use HKPS!
-                            it.set("hkps://pgp.mit.edu");
-                        } else if (server.equals("subkeys.pgp.net")) {
-                            // remove, because often down and no HKPS!
-                            it.remove();
+                        switch (server) {
+                            case "pool.sks-keyservers.net":
+                                // use HKPS!
+                                it.set("hkps://hkps.pool.sks-keyservers.net");
+                                break;
+                            case "pgp.mit.edu":
+                                // use HKPS!
+                                it.set("hkps://pgp.mit.edu");
+                                break;
+                            case "subkeys.pgp.net":
+                                // remove, because often down and no HKPS!
+                                it.remove();
+                                break;
                         }
 
                     }
