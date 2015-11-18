@@ -27,8 +27,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -349,14 +347,14 @@ public class PassphraseCacheService extends Service {
             case ACTION_PASSPHRASE_CACHE_ADD: {
                 long masterKeyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
                 long subKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, -1);
-                long timeoutTime = intent.getIntExtra(EXTRA_TTL, DEFAULT_TTL);
+                long timeoutTtl = intent.getIntExtra(EXTRA_TTL, DEFAULT_TTL);
 
                 Passphrase passphrase = intent.getParcelableExtra(EXTRA_PASSPHRASE);
                 String primaryUserID = intent.getStringExtra(EXTRA_USER_ID);
 
                 Log.d(Constants.TAG,
                         "PassphraseCacheService: Received ACTION_PASSPHRASE_CACHE_ADD intent in onStartCommand() with masterkeyId: "
-                                + masterKeyId + ", subKeyId: " + subKeyId + ", ttl: " + timeoutTime + ", usrId: " + primaryUserID
+                                + masterKeyId + ", subKeyId: " + subKeyId + ", ttl: " + timeoutTtl + ", usrId: " + primaryUserID
                 );
 
                 // if we don't cache by specific subkey id, or the requested subkey is the master key,
@@ -365,14 +363,15 @@ public class PassphraseCacheService extends Service {
                         Preferences.getPreferences(mContext).getPassphraseCacheSubs() ? subKeyId : masterKeyId;
 
                 CachedPassphrase cachedPassphrase;
-                if (timeoutTime == 0) {
+                if (timeoutTtl == 0L) {
                     cachedPassphrase = CachedPassphrase.getPassphraseLock(passphrase, primaryUserID);
                 } else {
-                    cachedPassphrase = CachedPassphrase.getPassphraseTtlTimeout(passphrase, primaryUserID, timeoutTime);
+                    cachedPassphrase = CachedPassphrase.getPassphraseTtlTimeout(passphrase, primaryUserID, timeoutTtl);
 
+                    long triggerTime = new Date().getTime() + (timeoutTtl * 1000);
                     // register new alarm with keyId for this passphrase
                     AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-                    am.set(AlarmManager.RTC_WAKEUP, timeoutTime, buildIntent(this, referenceKeyId));
+                    am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, referenceKeyId));
                 }
 
                 mPassphraseCache.put(referenceKeyId, cachedPassphrase);
