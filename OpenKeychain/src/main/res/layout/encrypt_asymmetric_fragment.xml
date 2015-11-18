@@ -91,6 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/md_black_1000"
                 android:text="@string/label_asymmetric_from"
                 android:paddingRight="8dp"/>
 
