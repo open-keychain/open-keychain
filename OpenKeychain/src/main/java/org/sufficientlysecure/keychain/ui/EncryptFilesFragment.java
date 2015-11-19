@@ -31,6 +31,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -55,6 +56,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -267,7 +269,7 @@ public class EncryptFilesFragment
      * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
      */
     private boolean checkAndRequestReadPermission(final Uri uri) {
-        if ( ! "file".equals(uri.getScheme())) {
+        if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
             return true;
         }
 
@@ -305,8 +307,9 @@ public class EncryptFilesFragment
             // permission granted -> restart processing uris
             processPendingInputUris();
         } else {
-            // permission denied ->
-
+            Toast.makeText(getActivity(), R.string.error_denied_storage_permission, Toast.LENGTH_LONG).show();
+            getActivity().setResult(Activity.RESULT_CANCELED);
+            getActivity().finish();
         }
     }
 

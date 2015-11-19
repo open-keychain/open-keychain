@@ -161,7 +161,7 @@ public class FileHelper {
     }
 
     public static long getFileSize(Context context, Uri uri, long def) {
-        if ("file".equals(uri.getScheme())) {
+        if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
             long size = new File(uri.getPath()).length();
             if (size == 0) {
                 size = def;
@@ -293,7 +293,7 @@ public class FileHelper {
         }
         out.close();
 
-        if ("file".equals(uri.getScheme())) {
+        if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
             return new File(uri.getPath()).delete() ? 1 : 0;
         } else {
             return resolver.delete(uri, null, null);

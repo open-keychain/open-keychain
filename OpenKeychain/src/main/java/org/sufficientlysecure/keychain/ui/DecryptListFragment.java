@@ -29,6 +29,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipDescription;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LabeledIntent;
@@ -635,7 +636,7 @@ public class DecryptListFragment
      * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
      */
     private boolean checkAndRequestReadPermission(Activity activity, final Uri uri) {
-        if ( ! "file".equals(uri.getScheme())) {
+        if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
             return true;
         }
 
@@ -676,7 +677,7 @@ public class DecryptListFragment
             Iterator<Uri> it = mCancelledInputUris.iterator();
             while (it.hasNext()) {
                 Uri uri = it.next();
-                if ( ! "file".equals(uri.getScheme())) {
+                if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
                     continue;
                 }
                 it.remove();
@@ -694,7 +695,7 @@ public class DecryptListFragment
             Iterator<Uri> it = mPendingInputUris.iterator();
             while (it.hasNext()) {
                 Uri uri = it.next();
-                if ( ! "file".equals(uri.getScheme())) {
+                if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
                     continue;
                 }
                 it.remove();

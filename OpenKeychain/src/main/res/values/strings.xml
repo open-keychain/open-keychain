@@ -375,6 +375,7 @@
     <string name="error_nothing_import_selected">"No keys selected for import!"</string>
     <string name="error_contacts_key_id_missing">"Retrieving the key ID from contacts failed!"</string>
     <string name="error_generic_report_bug">"A generic error occurred, please create a new bug report for OpenKeychain."</string>
+    <string name="error_denied_storage_permission">"Can not read files from storage because access has been denied!"</string>
 
     <!-- results shown after decryption/verification -->
     <string name="decrypt_result_no_signature">"Not Signed"</string>
