@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -923,10 +924,11 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mActionEncryptText.setVisibility(View.VISIBLE);
 
                         // invokeBeam is available from API 21
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                                && NfcAdapter.getDefaultAdapter(this) != null) {
                             mActionNfc.setVisibility(View.VISIBLE);
                         } else {
-                            mActionNfc.setVisibility(View.GONE);
+                            mActionNfc.setVisibility(View.INVISIBLE);
                         }
                         showFab();
                         // noinspection deprecation (no getDrawable with theme at current minApi level 15!)
@@ -935,7 +937,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
                         mQrCodeLayout.setVisibility(View.GONE);
-                        mActionNfc.setVisibility(View.GONE);
+                        mActionNfc.setVisibility(View.INVISIBLE);
 
                         if (mIsVerified) {
                             mStatusText.setText(R.string.view_key_verified);
