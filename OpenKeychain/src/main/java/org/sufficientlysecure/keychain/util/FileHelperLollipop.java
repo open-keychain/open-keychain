@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.util;
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,7 +26,6 @@ import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.ParcelFileDescriptor;
 import android.system.ErrnoException;
@@ -36,10 +34,8 @@ import android.system.StructStat;
 
 import org.sufficientlysecure.keychain.Constants;
 
-import static android.system.OsConstants.S_IROTH;
-
-
-/** FileHelper methods which use Lollipop-exclusive API.
+/**
+ * FileHelper methods which use Lollipop-exclusive API.
  * Some of the methods and static fields used here cause VerifyErrors because
  * they do not exist in pre-lollipop API, so they must be kept in a
  * lollipop-only class. All methods here should only be called by FileHelper,
@@ -47,12 +43,6 @@ import static android.system.OsConstants.S_IROTH;
  */
 @TargetApi(VERSION_CODES.LOLLIPOP)
 class FileHelperLollipop {
-    /**
-     * Tests whether a file is readable by others
-     */
-    private static boolean S_IROTH(int mode) {
-        return (mode & S_IROTH) == S_IROTH;
-    }
 
     /**
      * A replacement for ContentResolver.openInputStream() that does not allow the usage of
@@ -76,8 +66,8 @@ class FileHelperLollipop {
 
             try {
                 final StructStat st = Os.fstat(pfd.getFileDescriptor());
-                if (!S_IROTH(st.st_mode)) {
-                    Log.e(Constants.TAG, "File is not readable by others, aborting!");
+                if (st.st_uid == android.os.Process.myUid()) {
+                    Log.e(Constants.TAG, "File is owned by the application itself, aborting!");
                     throw new FileNotFoundException("Unable to create stream");
                 }
             } catch (ErrnoException e) {
