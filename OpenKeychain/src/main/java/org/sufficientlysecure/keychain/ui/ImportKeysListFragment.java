@@ -22,18 +22,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.util.LongSparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -59,6 +66,8 @@ public class ImportKeysListFragment extends ListFragment implements
     public static final String ARG_SERVER_QUERY = "query";
     public static final String ARG_NON_INTERACTIVE = "non_interactive";
     public static final String ARG_KEYSERVER_URL = "keyserver_url";
+
+    private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
     private Activity mActivity;
     private ImportKeysAdapter mAdapter;
@@ -217,6 +226,18 @@ public class ImportKeysListFragment extends ListFragment implements
         String keyserver = args.getString(ARG_KEYSERVER_URL);
         mNonInteractive = args.getBoolean(ARG_NON_INTERACTIVE, false);
 
+        getListView().setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (!mAdapter.isEmpty()) {
+                    mActivity.onTouchEvent(event);
+                }
+                return false;
+            }
+        });
+
+        getListView().setFastScrollEnabled(true);
+
         if (dataUri != null || bytes != null) {
             mLoaderState = new BytesLoaderState(bytes, dataUri);
         } else if (query != null) {
@@ -230,19 +251,64 @@ public class ImportKeysListFragment extends ListFragment implements
             mLoaderState = new CloudLoaderState(query, cloudSearchPrefs);
         }
 
-        getListView().setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (!mAdapter.isEmpty()) {
-                    mActivity.onTouchEvent(event);
-                }
-                return false;
-            }
-        });
-
-        getListView().setFastScrollEnabled(true);
+        if (dataUri != null && ! checkAndRequestReadPermission(dataUri)) {
+            return;
+        }
 
         restartLoaders();
+    }
+
+    /**
+     * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.
+     *
+     * This method returns true on Android < 6, or if permission is already granted. It
+     * requests the permission and returns false otherwise.
+     *
+     * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
+     */
+    private boolean checkAndRequestReadPermission(final Uri uri) {
+        if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+            return true;
+        }
+
+        // Additional check due to https://commonsware.com/blog/2015/11/09/you-cannot-hold-nonexistent-permissions.html
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+
+        requestPermissions(
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+
+        if (requestCode != REQUEST_PERMISSION_READ_EXTERNAL_STORAGE) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            return;
+        }
+
+        boolean permissionWasGranted = grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+        if (permissionWasGranted) {
+            // permission granted -> load key
+            restartLoaders();
+        } else {
+            Toast.makeText(getActivity(), R.string.error_denied_storage_permission, Toast.LENGTH_LONG).show();
+            getActivity().setResult(Activity.RESULT_CANCELED);
+            getActivity().finish();
+        }
     }
 
     @Override
