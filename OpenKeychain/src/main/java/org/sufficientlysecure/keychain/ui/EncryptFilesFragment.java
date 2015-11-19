@@ -22,22 +22,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -82,12 +87,14 @@ public class EncryptFilesFragment
 
     public static final int REQUEST_CODE_INPUT = 0x00007003;
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
+    private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
     private boolean mUseArmor;
     private boolean mUseCompression;
     private boolean mDeleteAfterEncrypt;
     private boolean mEncryptFilenames;
     private boolean mHiddenRecipients = false;
+    private ArrayList<Uri> mPendingInputUris;
 
     private AfterEncryptAction mAfterEncryptAction;
     private enum AfterEncryptAction {
@@ -141,14 +148,17 @@ public class EncryptFilesFragment
                 addInputUri();
             }
         });
+        mSelectedFiles.setAdapter(mFilesAdapter);
 
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
 
+        mPendingInputUris = new ArrayList<>();
+
         ArrayList<Uri> inputUris = args.getParcelableArrayList(ARG_URIS);
         if (inputUris != null) {
-            mFilesAdapter.addAll(inputUris);
+            mPendingInputUris.addAll(inputUris);
+            processPendingInputUris();
         }
-        mSelectedFiles.setAdapter(mFilesAdapter);
 
         return view;
     }
@@ -201,20 +211,103 @@ public class EncryptFilesFragment
                 "*/*", true, REQUEST_CODE_INPUT);
     }
 
-    private void addInputUri(Uri inputUri) {
-        if (inputUri == null) {
+    public void addInputUri(Intent data) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            mPendingInputUris.add(data.getData());
+        } else {
+            if (data.getClipData() != null && data.getClipData().getItemCount() > 0) {
+                for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                    Uri uri = data.getClipData().getItemAt(i).getUri();
+                    if (uri != null) {
+                        mPendingInputUris.add(uri);
+                    }
+                }
+            } else {
+                // fallback, try old method to get single uri
+                mPendingInputUris.add(data.getData());
+            }
+        }
+
+        // process pending uris
+        processPendingInputUris();
+    }
+
+    private void processPendingInputUris() {
+        Iterator<Uri> it = mPendingInputUris.iterator();
+        while (it.hasNext()) {
+            Uri inputUri = it.next();
+
+            if ( ! checkAndRequestReadPermission(inputUri)) {
+                // break out, don't process other uris and don't remove this one from queue
+                break;
+            }
+
+            try {
+                mFilesAdapter.add(inputUri);
+            } catch (IOException e) {
+                Notify.create(getActivity(),
+                        getActivity().getString(R.string.error_file_added_already, FileHelper.getFilename(getActivity(), inputUri)),
+                        Notify.Style.ERROR).show(this);
+                return;
+            }
+
+            // remove from pending input uris
+            it.remove();
+        }
+
+        mSelectedFiles.requestFocus();
+    }
+
+    /**
+     * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.
+     *
+     * This method returns true on Android < 6, or if permission is already granted. It
+     * requests the permission and returns false otherwise.
+     *
+     * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
+     */
+    private boolean checkAndRequestReadPermission(final Uri uri) {
+        if ( ! "file".equals(uri.getScheme())) {
+            return true;
+        }
+
+        // Additional check due to https://commonsware.com/blog/2015/11/09/you-cannot-hold-nonexistent-permissions.html
+        if (Build.VERSION.SDK_INT < VERSION_CODES.M) {
+            return true;
+        }
+
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+
+        requestPermissions(
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+
+        if (requestCode != REQUEST_PERMISSION_READ_EXTERNAL_STORAGE) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
             return;
         }
 
-        try {
-            mFilesAdapter.add(inputUri);
-        } catch (IOException e) {
-            Notify.create(getActivity(),
-                    getActivity().getString(R.string.error_file_added_already, FileHelper.getFilename(getActivity(), inputUri)),
-                    Notify.Style.ERROR).show(this);
-            return;
+        boolean permissionWasGranted = grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+        if (permissionWasGranted) {
+            // permission granted -> restart processing uris
+            processPendingInputUris();
+        } else {
+            // permission denied ->
+
         }
-        mSelectedFiles.requestFocus();
     }
 
     @TargetApi(VERSION_CODES.KITKAT)
@@ -227,24 +320,6 @@ public class EncryptFilesFragment
                 (mEncryptFilenames ? "1" : FileHelper.getFilename(getActivity(), model.inputUri))
                         + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
         FileHelper.saveDocument(this, targetName, REQUEST_CODE_OUTPUT);
-    }
-
-    public void addFile(Intent data) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            addInputUri(data.getData());
-        } else {
-            if (data.getClipData() != null && data.getClipData().getItemCount() > 0) {
-                for (int i = 0; i < data.getClipData().getItemCount(); i++) {
-                    Uri uri = data.getClipData().getItemAt(i).getUri();
-                    if (uri != null) {
-                        addInputUri(uri);
-                    }
-                }
-            } else {
-                // fallback, try old method to get single uri
-                addInputUri(data.getData());
-            }
-        }
     }
 
     @Override
@@ -639,7 +714,7 @@ public class EncryptFilesFragment
         switch (requestCode) {
             case REQUEST_CODE_INPUT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    addFile(data);
+                    addInputUri(data);
                 }
                 return;
             }
