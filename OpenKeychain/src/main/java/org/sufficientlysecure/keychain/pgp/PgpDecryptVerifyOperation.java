@@ -48,7 +48,7 @@ import org.spongycastle.openpgp.PGPPBEEncryptedData;
 import org.spongycastle.openpgp.PGPPublicKeyEncryptedData;
 import org.spongycastle.openpgp.PGPSignatureList;
 import org.spongycastle.openpgp.PGPUtil;
-import org.spongycastle.openpgp.jcajce.JcaPGPObjectFactory;
+import org.spongycastle.openpgp.jcajce.JcaSkipMarkerPGPObjectFactory;
 import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.PGPDigestCalculatorProvider;
 import org.spongycastle.openpgp.operator.jcajce.CachingDataDecryptorFactory;
@@ -281,11 +281,11 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         OpenPgpDecryptionResultBuilder decryptionResultBuilder = new OpenPgpDecryptionResultBuilder();
 
-        JcaPGPObjectFactory plainFact;
+        JcaSkipMarkerPGPObjectFactory plainFact;
         Object dataChunk;
         EncryptStreamResult esResult = null;
         { // resolve encrypted (symmetric and asymmetric) packets
-            JcaPGPObjectFactory pgpF = new JcaPGPObjectFactory(in);
+            JcaSkipMarkerPGPObjectFactory pgpF = new JcaSkipMarkerPGPObjectFactory(in);
             Object obj = pgpF.nextObject();
 
             if (obj instanceof PGPEncryptedDataList) {
@@ -312,7 +312,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     decryptionResultBuilder.setInsecure(true);
                 }
 
-                plainFact = new JcaPGPObjectFactory(esResult.cleartextStream);
+                plainFact = new JcaSkipMarkerPGPObjectFactory(esResult.cleartextStream);
                 dataChunk = plainFact.nextObject();
 
             } else {
@@ -337,7 +337,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
             PGPCompressedData compressedData = (PGPCompressedData) dataChunk;
 
-            JcaPGPObjectFactory fact = new JcaPGPObjectFactory(compressedData.getDataStream());
+            JcaSkipMarkerPGPObjectFactory fact = new JcaSkipMarkerPGPObjectFactory(compressedData.getDataStream());
             dataChunk = fact.nextObject();
             plainFact = fact;
         }
@@ -839,7 +839,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         }
 
         updateProgress(R.string.progress_processing_signature, 60, 100);
-        JcaPGPObjectFactory pgpFact = new JcaPGPObjectFactory(aIn);
+        JcaSkipMarkerPGPObjectFactory pgpFact = new JcaSkipMarkerPGPObjectFactory(aIn);
 
         PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper);
 
@@ -891,12 +891,12 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         InputStream detachedSigIn = new ByteArrayInputStream(input.getDetachedSignature());
         detachedSigIn = PGPUtil.getDecoderStream(detachedSigIn);
 
-        JcaPGPObjectFactory pgpFact = new JcaPGPObjectFactory(detachedSigIn);
+        JcaSkipMarkerPGPObjectFactory pgpFact = new JcaSkipMarkerPGPObjectFactory(detachedSigIn);
 
         Object o = pgpFact.nextObject();
         if (o instanceof PGPCompressedData) {
             PGPCompressedData c1 = (PGPCompressedData) o;
-            pgpFact = new JcaPGPObjectFactory(c1.getDataStream());
+            pgpFact = new JcaSkipMarkerPGPObjectFactory(c1.getDataStream());
             o = pgpFact.nextObject();
         }
 

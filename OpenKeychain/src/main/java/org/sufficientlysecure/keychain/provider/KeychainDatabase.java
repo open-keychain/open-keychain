@@ -54,7 +54,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 13;
+    private static final int DATABASE_VERSION = 14;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -79,7 +79,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String CREATE_KEYRINGS_SECRET =
             "CREATE TABLE IF NOT EXISTS keyrings_secret ("
                     + KeyRingsColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY,"
-                    + KeyRingsColumns.KEY_RING_DATA + " BLOB,"
+                    + KeyRingsColumns.KEY_RING_DATA + " BLOB, "
                     + "FOREIGN KEY(" + KeyRingsColumns.MASTER_KEY_ID + ") "
                         + "REFERENCES keyrings_public(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
             + ")";
@@ -220,6 +220,13 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ACCOUNTS);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
+
+        db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
+        db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
+                + UserPacketsColumns.USER_ID + ", " + UserPacketsColumns.MASTER_KEY_ID + ");");
+        db.execSQL("CREATE INDEX verified_certs ON certs ("
+                + CertsColumns.VERIFIED + ", " + CertsColumns.MASTER_KEY_ID + ");");
+
     }
 
     @Override
@@ -291,13 +298,14 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 db.execSQL("DELETE FROM api_accounts WHERE key_id BETWEEN 0 AND 3");
             case 12:
                 db.execSQL(CREATE_UPDATE_KEYS);
-                if (oldVersion == 10) {
-                    // no consolidate if we are updating from 10, we're just here for
-                    // the api_accounts fix and the new update keys table
-                    return;
-                }
             case 13:
                 // do nothing here, just consolidate
+            case 14:
+                db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
+                db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
+                        + UserPacketsColumns.USER_ID + ", " + UserPacketsColumns.MASTER_KEY_ID + ");");
+                db.execSQL("CREATE INDEX verified_certs ON certs ("
+                        + CertsColumns.VERIFIED + ", " + CertsColumns.MASTER_KEY_ID + ");");
 
         }
 
@@ -310,6 +318,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Downgrade is ok for the debug version, makes it easier to work with branches
+        if (Constants.DEBUG) {
+            return;
+        }
         // NOTE: downgrading the database is explicitly not allowed to prevent
         // someone from exploiting old bugs to export the database
         throw new RuntimeException("Downgrading the database is not allowed!");

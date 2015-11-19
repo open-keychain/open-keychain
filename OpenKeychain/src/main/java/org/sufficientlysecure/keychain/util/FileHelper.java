@@ -25,7 +25,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 import java.text.DecimalFormat;
 
 import android.annotation.TargetApi;
@@ -33,7 +35,6 @@ import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -41,19 +42,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.OpenableColumns;
 import android.support.v4.app.Fragment;
-import android.system.ErrnoException;
-import android.system.Os;
-import android.system.StructStat;
 import android.widget.Toast;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-
-import static android.system.OsConstants.S_IROTH;
 
 /** This class offers a number of helper functions for saving documents.
  *
@@ -167,6 +161,14 @@ public class FileHelper {
     }
 
     public static long getFileSize(Context context, Uri uri, long def) {
+        if ("file".equals(uri.getScheme())) {
+            long size = new File(uri.getPath()).length();
+            if (size == 0) {
+                size = def;
+            }
+            return size;
+        }
+
         long size = def;
         try {
             Cursor cursor = context.getContentResolver().query(uri, new String[]{OpenableColumns.SIZE}, null, null, null);
@@ -259,6 +261,44 @@ public class FileHelper {
                 // ignore, it's just stream closin'
             }
         }
+    }
+
+    /**
+     * Deletes data at a URI securely by overwriting it with random data
+     * before deleting it. This method is fail-fast - if we can't securely
+     * delete the file, we don't delete it at all.
+     */
+    public static int deleteFileSecurely(Context context, Uri uri)
+            throws IOException {
+
+        ContentResolver resolver = context.getContentResolver();
+        long lengthLeft = FileHelper.getFileSize(context, uri);
+
+        if (lengthLeft == -1) {
+            throw new IOException("Error opening file!");
+        }
+
+        SecureRandom random = new SecureRandom();
+        byte[] randomData = new byte[1024];
+
+        OutputStream out = resolver.openOutputStream(uri, "w");
+        if (out == null) {
+            throw new IOException("Error opening file!");
+        }
+        out = new BufferedOutputStream(out);
+        while (lengthLeft > 0) {
+            random.nextBytes(randomData);
+            out.write(randomData, 0, lengthLeft > randomData.length ? randomData.length : (int) lengthLeft);
+            lengthLeft -= randomData.length;
+        }
+        out.close();
+
+        if ("file".equals(uri.getScheme())) {
+            return new File(uri.getPath()).delete() ? 1 : 0;
+        } else {
+            return resolver.delete(uri, null, null);
+        }
+
     }
 
     /** Checks if external storage is mounted if file is located on external storage. */

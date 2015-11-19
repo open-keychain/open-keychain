@@ -18,23 +18,15 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Preferences;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.security.SecureRandom;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PgpHelper {
 
@@ -49,35 +41,6 @@ public class PgpHelper {
     public static final Pattern PGP_PUBLIC_KEY = Pattern.compile(
             ".*?(-----BEGIN PGP PUBLIC KEY BLOCK-----.*?-----END PGP PUBLIC KEY BLOCK-----).*",
             Pattern.DOTALL);
-
-    /**
-     * Deletes file securely by overwriting it with random data before deleting it.
-     * <p/>
-     * TODO: Does this really help on flash storage?
-     *
-     * @throws IOException
-     */
-    public static void deleteFileSecurely(Context context, Progressable progressable, File file)
-            throws IOException {
-        long length = file.length();
-        SecureRandom random = new SecureRandom();
-        RandomAccessFile raf = new RandomAccessFile(file, "rws");
-        raf.seek(0);
-        raf.getFilePointer();
-        byte[] data = new byte[1 << 16];
-        int pos = 0;
-        String msg = context.getString(R.string.progress_deleting_securely, file.getName());
-        while (pos < length) {
-            if (progressable != null) {
-                progressable.setProgress(msg, (int) (100 * pos / length), 100);
-            }
-            random.nextBytes(data);
-            raf.write(data);
-            pos += data.length;
-        }
-        raf.close();
-        file.delete();
-    }
 
     /**
      * Fixing broken PGP MESSAGE Strings coming from GMail/AOSP Mail

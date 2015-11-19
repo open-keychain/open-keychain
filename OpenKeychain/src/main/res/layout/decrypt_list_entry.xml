@@ -26,7 +26,6 @@
         android:measureAllChildren="false"
         custom:initialView="1"
         android:minHeight="?listPreferredItemHeightSmall"
-        android:animateLayoutChanges="true"
         >
 
         <LinearLayout
@@ -113,6 +112,7 @@
                     android:id="@+id/result_signature_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:padding="4dp"
                     android:src="@drawable/status_signature_unverified_cutout_24dp"
                     />
@@ -136,6 +136,7 @@
                 android:clickable="true"
                 android:background="?android:selectableItemBackground"
                 android:orientation="horizontal"
+                android:minHeight="40dp"
                 >
 
                 <LinearLayout
@@ -144,7 +145,7 @@
                     android:layout_weight="1"
                     android:paddingRight="4dp"
                     android:paddingLeft="4dp"
-                    android:gravity="center_vertical"
+                    android:layout_gravity="center_vertical"
                     android:orientation="vertical">
 
                     <TextView
@@ -162,6 +163,8 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:text=""
+                        android:singleLine="true"
+                        android:ellipsize="end"
                         tools:text="alice@example.com" />
 
                 </LinearLayout>
@@ -174,19 +177,45 @@
                     android:layout_marginTop="8dp"
                     android:background="?android:attr/listDivider" />
 
-                <TextView
-                    android:id="@+id/result_signature_action"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
+                <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:drawableRight="@drawable/ic_vpn_key_grey_24dp"
-                    android:drawablePadding="8dp"
-                    android:gravity="center_vertical"
-                    android:text=""
-                    tools:text="Show"
-                    />
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:id="@+id/result_signature_action"
+                    android:measureAllChildren="true"
+                    android:inAnimation="@anim/fade_in"
+                    android:outAnimation="@anim/fade_out"
+                    custom:initialView="0"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:drawableRight="@drawable/ic_vpn_key_grey_24dp"
+                        android:drawablePadding="8dp"
+                        android:text="@string/decrypt_result_action_show"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:drawableRight="@drawable/ic_file_download_grey_24dp"
+                        android:drawablePadding="8dp"
+                        android:text="@string/decrypt_result_action_Lookup"
+                        />
+
+                    <ProgressBar
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:padding="4dp"
+                        android:layout_gravity="center" />
+
+                </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
             </LinearLayout>
 
