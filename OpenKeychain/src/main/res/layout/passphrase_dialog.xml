@@ -38,7 +38,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center_vertical"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:id="@+id/remember_layout">
 
             <!-- paddingBottom for spinner alignment -->
             <TextView

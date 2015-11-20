@@ -36,6 +36,7 @@ import android.view.ViewGroup;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
@@ -157,7 +158,10 @@ public class BackupRestoreFragment extends Fragment {
 
         Intent intent = new Intent(activity, PassphraseDialogActivity.class);
         long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
+        RequiredInputParcel requiredInput =
+                RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, masterKeyId);
+        requiredInput.mSkipCaching = true;
+        intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
         startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
     }
 
