@@ -6,7 +6,7 @@
     <include
         android:id="@+id/toolbar_include"
         layout="@layout/toolbar_result_decrypt" />
-    
+
     <!--
         fitsSystemWindows and layout_marginTop from
         https://medium.com/@ngdelamo/using-drawerlayout-the-material-way-i-716bba2b5705
@@ -19,12 +19,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include layout="@layout/notify_area" />
-
         <FrameLayout
             android:id="@+id/decrypt_text_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
     </LinearLayout>
+
 </RelativeLayout>

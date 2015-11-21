@@ -115,6 +115,10 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         mCallback = callback;
     }
 
+    public void cancelAllOperations() {
+        mCallback = null;
+    }
+
     public void setProgressMessageResource(int id) {
         mProgressMessageResource = id;
     }
@@ -190,6 +194,11 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             // this wasn't meant for us to handle
             return false;
         }
+
+        if (mCallback == null) {
+            throw new IllegalStateException("cannot call handleActivityResult on an orphaned CryptoOperationHelper!");
+        }
+
         Log.d(Constants.TAG, "handling activity result in OperationHelper");
         // filter out mHelperId from requestCode
         requestCode ^= mHelperId;
@@ -243,6 +252,11 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     protected void dismissProgress() {
+        if (mCallback == null) {
+            Log.d(Constants.TAG, "Orphaned CryptoOperationHelper, disregarding operation");
+            return;
+        }
+
         FragmentManager fragmentManager =
                 mUseFragment ? mFragment.getFragmentManager() :
                         mActivity.getSupportFragmentManager();
@@ -265,6 +279,9 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     public void cryptoOperation(final CryptoInputParcel cryptoInput) {
+        if (mCallback == null) {
+            throw new IllegalStateException("cannot call cryptoOperation on an orphaned CryptoOperationHelper!");
+        }
 
         FragmentActivity activity = mUseFragment ? mFragment.getActivity() : mActivity;
 
@@ -302,6 +319,9 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
             @Override
             protected void onSetProgress(String msg, int progress, int max) {
+                if (mCallback == null) {
+                    return;
+                }
                 // allow handling of progress in fragment, or delegate upwards
                 if (!mCallback.onCryptoSetProgress(msg, progress, max)) {
                     super.onSetProgress(msg, progress, max);
@@ -328,6 +348,11 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
     public void onHandleResult(OperationResult result) {
         Log.d(Constants.TAG, "Handling result in OperationHelper success: " + result.success());
+
+        if (mCallback == null) {
+            Log.d(Constants.TAG, "Orphaned CryptoOperationHelper, disregarding operation");
+            return;
+        }
 
         if (result instanceof InputPendingResult) {
             InputPendingResult pendingResult = (InputPendingResult) result;
