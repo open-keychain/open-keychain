@@ -91,7 +91,7 @@ public class KeychainApplication extends Application {
 
         // Add OpenKeychain account to Android to link contacts with keys and keyserver sync
         KeyserverSyncAdapterService.enableKeyserverSync(this);
-        ContactSyncAdapterService.initContactsSync(this);
+        ContactSyncAdapterService.enableContactsSync(this);
 
         // Update keyserver list as needed
         Preferences.getPreferences(this).upgradePreferences(this);

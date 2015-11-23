@@ -152,7 +152,7 @@ public class ContactSyncAdapterService extends Service {
                 extras);
     }
 
-    public static void initContactsSync(Context context) {
+    public static void enableContactsSync(Context context) {
         try {
             AccountManager manager = AccountManager.get(context);
             Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
@@ -165,11 +165,7 @@ public class ContactSyncAdapterService extends Service {
             }
 
             ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
-
-            // Enable by default for Android < 6, on Android >= 6 runtime permissions are required
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
-            }
+            ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
         } catch (SecurityException e) {
             Log.e(Constants.TAG, "SecurityException when adding the account", e);
             Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
