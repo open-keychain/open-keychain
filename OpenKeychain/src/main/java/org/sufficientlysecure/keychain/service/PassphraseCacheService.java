@@ -28,13 +28,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.os.Binder;
-import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -50,6 +44,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.util.NotificationUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -475,36 +470,13 @@ public class PassphraseCacheService extends Service {
         }
     }
 
-    // from de.azapps.mirakel.helper.Helpers from https://github.com/MirakelX/mirakel-android
-    private static Bitmap getBitmap(int resId, Context context) {
-        int mLargeIconWidth = (int) context.getResources().getDimension(
-                                  android.R.dimen.notification_large_icon_width);
-        int mLargeIconHeight = (int) context.getResources().getDimension(
-                                   android.R.dimen.notification_large_icon_height);
-        Drawable d;
-        if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
-            // noinspection deprecation (can't help it at this api level)
-            d = context.getResources().getDrawable(resId);
-        } else {
-            d = context.getDrawable(resId);
-        }
-        if (d == null) {
-            return null;
-        }
-        Bitmap b = Bitmap.createBitmap(mLargeIconWidth, mLargeIconHeight, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
-        d.setBounds(0, 0, mLargeIconWidth, mLargeIconHeight);
-        d.draw(c);
-        return b;
-    }
-
     private Notification getNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
-                .setLargeIcon(getBitmap(R.mipmap.ic_launcher, getBaseContext()))
+                .setLargeIcon(NotificationUtils.getBitmap(R.mipmap.ic_launcher, getBaseContext()))
                 .setContentTitle(getResources().getQuantityString(R.plurals.passp_cache_notif_n_keys,
                         mPassphraseCache.size(), mPassphraseCache.size()))
-                .setContentText(getString(R.string.passp_cache_notif_click_to_clear));
+                .setContentText(getString(R.string.passp_cache_notif_touch_to_clear));
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 

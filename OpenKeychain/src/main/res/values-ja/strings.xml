@@ -1272,7 +1272,7 @@
   <string name="msg_mime_parsing_error">MIME解析に失敗</string>
   <string name="msg_mime_parsing_success">MIME解析に成功!</string>
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_click_to_clear">タッチしてパスワードをクリア。</string>
+  <string name="passp_cache_notif_touch_to_clear">タッチしてパスワードをクリア。</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="other">%d のパスワードを忘れない</item>
   </plurals>

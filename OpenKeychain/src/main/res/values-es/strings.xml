@@ -1214,7 +1214,7 @@
   <string name="msg_keybase_error_msg_payload_mismatch">El post del comprobante descifrado no coincide con el valor esperado</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_click_to_clear">Pulsar para limpiar contraseñas.</string>
+  <string name="passp_cache_notif_touch_to_clear">Pulsar para limpiar contraseñas.</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%d contraseña recordada</item>
     <item quantity="other">%d contraseñas recordadas</item>

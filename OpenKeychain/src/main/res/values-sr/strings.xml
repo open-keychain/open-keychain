@@ -1185,7 +1185,7 @@
   <string name="msg_keybase_error_msg_payload_mismatch">Дешифрована објава доказа се не поклапа са очекиваном вредношћу</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_click_to_clear">Тапните да очистите лозинке.</string>
+  <string name="passp_cache_notif_touch_to_clear">Тапните да очистите лозинке.</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%d лозинка запамћена</item>
     <item quantity="few">%d лозинке запамћене</item>

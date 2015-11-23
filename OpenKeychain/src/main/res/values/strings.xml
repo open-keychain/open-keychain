@@ -107,10 +107,10 @@
     <string name="btn_not_matching">"Doesn't match"</string>
 
     <!-- Content Description -->
-    <string name="cd_encrypt_files">"Encrypt Files"</string>
-    <string name="cd_exchange_keys">"Exchange Keys"</string>
-    <string name="cd_encrypt_text">"Encrypt Text"</string>
-    <string name="cd_share_nfc">"Share Via NFC"</string>
+    <string name="cd_encrypt_files">"Encrypt files"</string>
+    <string name="cd_exchange_keys">"Exchange keys"</string>
+    <string name="cd_encrypt_text">"Encrypt text"</string>
+    <string name="cd_share_nfc">"Share via NFC"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
@@ -126,9 +126,9 @@
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_update_all_keys">"Update all keys"</string>
     <string name="menu_advanced">"Extended information"</string>
-    <string name="menu_certify_fingerprint">"Confirm via fingerprint"</string>
-    <string name="menu_certify_fingerprint_phrases">"Confirm via phrases"</string>
-    <string name="menu_share_log">"Share Log"</string>
+    <string name="menu_certify_fingerprint">"Confirm with fingerprint"</string>
+    <string name="menu_certify_fingerprint_phrases">"Confirm with phrases"</string>
+    <string name="menu_share_log">"Share log"</string>
 
     <string name="menu_keyserver_add">"Add"</string>
 
@@ -206,7 +206,7 @@
     <string name="label_experimental_settings_desc_title">"Warning"</string>
     <string name="label_experimental_settings_desc_summary">"These features are not yet finished or results of user experience/security research. Thus, don't rely on their security and please don't report issues you encounter!"</string>
 
-    <string name="label_experimental_settings_word_confirm_title">"Phrase Confirmation"</string>
+    <string name="label_experimental_settings_word_confirm_title">"Confirmation with phrases"</string>
     <string name="label_experimental_settings_word_confirm_summary">"Confirm keys with phrases instead of hexadecimal fingerprints"</string>
     <string name="label_experimental_settings_linked_identities_title">"Linked Identities"</string>
     <string name="label_experimental_settings_linked_identities_summary">"Link keys to Twitter, GitHub, websites or DNS (similar to keybase.io but decentralized)"</string>
@@ -307,7 +307,7 @@
     <string name="nfc_text">"Hold YubiKey against the NFC marker at the back of your device."</string>
     <string name="nfc_wait">"Keep the YubiKey at the back!"</string>
     <string name="nfc_finished">"Take away the YubiKey now."</string>
-    <string name="nfc_try_again_text">"Take away the YubiKey now and press TRY AGAIN."</string>
+    <string name="nfc_try_again_text">"Take away the YubiKey now and touch TRY AGAIN."</string>
     <string name="file_delete_confirmation_title">"Delete original files?"</string>
     <string name="file_delete_confirmation">"The following files will be deleted:%s"</string>
     <string name="file_delete_successful">"%1$d out of %2$d files have been deleted.%3$s"</string>
@@ -1321,7 +1321,7 @@
     <string name="msg_upload_proxy_tor">"Using proxy: TOR"</string>
     <string name="msg_upload_proxy">"Using proxy: %s"</string>
     <string name="msg_upload_server">"Server: %s"</string>
-    <string name="msg_upload_key">"Key id: %s"</string>
+    <string name="msg_upload_key">"Key ID: %s"</string>
     <string name="msg_upload_error_key">"Error preprocessing key data!"</string>
     <string name="msg_upload_error_not_found">"Key not found!"</string>
     <string name="msg_upload_error_upload">"Error uploading key to server! Please check your Internet connection"</string>
@@ -1378,7 +1378,7 @@
     <string name="msg_bench_enc_time_avg">"Average time to encrypt 5M: %ss"</string>
     <string name="msg_bench_dec_time">"Decryption time: %ss"</string>
     <string name="msg_bench_dec_time_avg">"Average time to decrypt 5M: %ss"</string>
-    <string name="msg_bench_s2k_100ms_its">"S2K Iteration Count for 100ms: %s"</string>
+    <string name="msg_bench_s2k_100ms_its">"S2K iteration count for 100ms: %s"</string>
     <string name="msg_bench_s2k_for_it">"Time for %1$s SHA1 S2K iterations: %2$sms"</string>
     <string name="msg_bench_success">"Benchmarking complete!"</string>
 
@@ -1397,7 +1397,7 @@
     <string name="msg_data_mime_from_extension">"Guessing MIME type from extension"</string>
     <string name="msg_data_mime_length">"Content-Length: %s"</string>
     <string name="msg_data_mime">"Parsing MIME data structure"</string>
-    <string name="msg_data_mime_ok">"Finished parsing</string>
+    <string name="msg_data_mime_ok">"Finished parsing"</string>
     <string name="msg_data_mime_none">"No MIME structure found"</string>
     <string name="msg_data_mime_part">"Processing MIME part"</string>
     <string name="msg_data_mime_type">"Content-Type: %s"</string>
@@ -1434,7 +1434,7 @@
     <string name="msg_mime_parsing_success">"MIME parsing successfully!"</string>
 
     <!-- PassphraseCache -->
-    <string name="passp_cache_notif_click_to_clear">"Touch to clear passwords."</string>
+    <string name="passp_cache_notif_touch_to_clear">"Touch to clear passwords."</string>
     <plurals name="passp_cache_notif_n_keys">
         <item quantity="one">"%d password remembered"</item>
         <item quantity="other">"%d passwords remembered"</item>
@@ -1505,7 +1505,7 @@
     <string name="account_no_manual_account_creation">"You can not create OpenKeychain accounts manually."</string>
     <string name="account_privacy_title">"Privacy"</string>
     <string name="account_privacy_text">"OpenKeychain does not synchronize your contacts with the Internet. It only links contacts to keys based on names and email addresses. It does this offline on your device."</string>
-    <string name="sync_notification_permission_required_title">"Linking keys needs contacts access!"</string>
+    <string name="sync_notification_permission_required_title">"Access to contacts required"</string>
     <string name="sync_notification_permission_required_text">"Touch to configure linking to contacts"</string>
 
     <!-- Passphrase wizard -->
@@ -1583,10 +1583,10 @@
     <string name="error_empty_log">"(error, empty log)"</string>
     <string name="error_reading_text">"Could not read input to decrypt!"</string>
     <string name="error_reading_aosp">"Failed reading data, this is a bug in the Android E-Mail client! (Issue #290)"</string>
-    <string name="error_reading_k9">"Received incomplete data, try pressing 'Download complete message' in K-9 Mail!"</string>
-    <string name="filename_unknown">Unknown filename (click to open)</string>
-    <string name="filename_unknown_text">Text (click to show)</string>
-    <string name="filename_keys">"Key Backup (click to import)"</string>
+    <string name="error_reading_k9">"Received incomplete data, try touching 'Download complete message' in K-9 Mail!"</string>
+    <string name="filename_unknown">Unknown filename (touch to open)</string>
+    <string name="filename_unknown_text">Text (touch to show)</string>
+    <string name="filename_keys">"Key Backup (touch to import)"</string>
     <string name="intent_show">Show Signed/Encrypted Content</string>
     <string name="intent_share">Share Signed/Encrypted Content</string>
     <string name="view_internal">"View in OpenKeychain"</string>
@@ -1612,16 +1612,16 @@
     <string name="linked_create_https_2_1">"A proof file for this URI has been created:"</string>
     <string name="linked_create_https_2_2">"For the next step, you should save and upload this file."</string>
     <string name="linked_create_https_2_3">"Make sure the file is reachable at the correct URI, then verify your setup."</string>
-    <string name="linked_create_https_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
+    <string name="linked_create_https_2_4">"After successful verification, touch Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
     <string name="linked_create_twitter_1_1">"By creating a Linked Identity of this type, you can link your key to a Twitter account you control."</string>
     <string name="linked_create_twitter_1_2">"To do this, you publish a specific Tweet on your timeline, then create a Linked Identity which links to this Tweet."</string>
     <string name="linked_create_twitter_1_3">"Please enter your Twitter screen name to proceed."</string>
     <string name="linked_create_twitter_handle">Twitter Handle</string>
-    <string name="linked_create_twitter_2_1">"Click either button to tweet the message!"</string>
+    <string name="linked_create_twitter_2_1">"Touch either button to tweet the message!"</string>
     <string name="linked_create_twitter_2_2">"You can edit the Tweet before posting it, so long as the text inside the brackets is unmodified."</string>
-    <string name="linked_create_twitter_2_3">"Once your Tweet is published as &lt;b&gt;@%s&lt;/b&gt;, click the Verify button to scan your timeline for it."</string>
-    <string name="linked_create_twitter_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
+    <string name="linked_create_twitter_2_3">"Once your Tweet is published as &lt;b&gt;@%s&lt;/b&gt;, touch the Verify button to scan your timeline for it."</string>
+    <string name="linked_create_twitter_2_4">"After successful verification, touch Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
     <string name="linked_create_verify">"Verify"</string>
     <string name="linked_text_clipboard">Text has been copied to clipboard</string>
@@ -1640,7 +1640,7 @@
     </plurals>
 
     <!-- Other Linked Identity strings -->
-    <string name="linked_select_1">"A 'linked identity' connects your pgp key to a resource on the web."</string>
+    <string name="linked_select_1">"A 'linked identity' connects your PGP key to a resource on the web."</string>
     <string name="linked_select_2">"Please select a type:"</string>
     <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nToken for proof:\n%1$s"</string>
     <string name="linked_id_github_text">"This Gist confirms the Linked Identity in my OpenPGP key, and links it to this GitHub account.\n\nToken for proof:\n%1$s"</string>
@@ -1667,11 +1667,11 @@
     <string name="linked_text_confirming">"Confirming…"</string>
     <string name="linked_ids_more_unknown">"%d more unknown identity types"</string>
     <string name="title_linked_id_create">"Create Linked Identity"</string>
-    <string name="linked_github_text">"This operation links your key to your GitHub account.\nJust press the button to continue."</string>
+    <string name="linked_github_text">"This operation links your key to your GitHub account.\nJust touch the button to continue."</string>
     <string name="linked_progress_auth_github">"Authorize with GitHub…"</string>
     <string name="linked_progress_post_gist">"Post Gist…"</string>
     <string name="linked_progress_update_key">"Update Key…"</string>
-    <string name="linked_button_start">"Link to Github Account"</string>
+    <string name="linked_button_start">"Link to GitHub account"</string>
     <string name="linked_error_auth_failed">"Authorization failed!"</string>
     <string name="linked_error_timeout">"Connection timeout!"</string>
     <string name="linked_error_network">"Network error!"</string>
@@ -1698,7 +1698,7 @@
     <string name="share_log_dialog_message">"While logs can be super helpful for developers to find bugs in OpenKeychain, they can contain potential sensitive information such as data about the updated keys. Please make sure you are okay with sharing this information."</string>
     <string name="share_log_dialog_share_button">"Share"</string>
     <string name="share_log_dialog_cancel_button">"Cancel"</string>
-    <string name="toast_wrong_mimetype">"Wrong data type, expected text!"</string>
+    <string name="toast_wrong_mimetype">"Wrong data type, text was expected!"</string>
     <string name="toast_no_text">"No text in shared data!"</string>
     <string name="btn_search_for_query">"Search for\n'%s'"</string>
 

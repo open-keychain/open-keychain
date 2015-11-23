@@ -40,6 +40,7 @@ import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.SettingsActivity;
+import org.sufficientlysecure.keychain.ui.util.NotificationUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -86,6 +87,7 @@ public class ContactSyncAdapterService extends Service {
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(ContactSyncAdapterService.this)
                             .setSmallIcon(R.drawable.ic_stat_notify_24dp)
+                            .setLargeIcon(NotificationUtils.getBitmap(R.mipmap.ic_launcher, getBaseContext()))
                             .setContentTitle(getString(R.string.sync_notification_permission_required_title))
                             .setContentText(getString(R.string.sync_notification_permission_required_text))
                             .setContentIntent(resultPendingIntent);

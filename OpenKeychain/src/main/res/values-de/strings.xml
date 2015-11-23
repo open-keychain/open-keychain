@@ -1215,7 +1215,7 @@
   <string name="msg_keybase_error_msg_payload_mismatch">Entschlüsselter Nachweis entspricht nicht dem erwarteten Wert</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_click_to_clear">Berühren, um Passwörter zu vergessen</string>
+  <string name="passp_cache_notif_touch_to_clear">Berühren, um Passwörter zu vergessen</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%d Passwort gemerkt</item>
     <item quantity="other">%d Passwörter gemerkt</item>
