@@ -1450,13 +1450,13 @@
     <string name="keyserver_sync_orbot_notif_ignore">"Direct"</string>
 
     <!-- First Time -->
+    <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
     <string name="first_time_create_key">"Create my key"</string>
     <string name="first_time_import_key">"Import key from file"</string>
     <string name="first_time_yubikey">"Use YubiKey NEO"</string>
     <string name="first_time_skip">"Skip Setup"</string>
     <string name="first_time_blank_yubikey">"Would you like to use this blank YubiKey NEO with OpenKeychain?\n\nPlease take away the YubiKey now, you will be prompted when it is needed again!"</string>
     <string name="first_time_blank_yubikey_yes">"Use this YubiKey"</string>
-    <string name="first_time_start">"Welcome to OpenKeychain, please select your synchronization preferences.\n\nLinking keys to contacts allows you to view keys directly from Android contacts. This happens completly offline based on names and email addresses."</string>
 
     <string name="backup_text">"Backups that include your own keys must never be shared with other people!"</string>
     <string name="backup_all">"All keys + your own keys"</string>
