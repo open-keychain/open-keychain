@@ -512,7 +512,7 @@ public class KeyserverSyncAdapterService extends Service {
             Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
             if (accounts.length == 0) {
                 if (!manager.addAccountExplicitly(account, null, null)) {
-                    Log.e(Constants.TAG, "Adding account failed!");
+                    Log.d(Constants.TAG, "account already exists, the account is null, or another error occured");
                 }
             }
             // for keyserver sync

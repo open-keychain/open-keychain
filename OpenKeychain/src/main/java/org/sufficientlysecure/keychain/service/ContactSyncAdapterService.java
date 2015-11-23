@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.service;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -25,13 +26,16 @@ import android.app.Service;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceActivity;
 import android.provider.ContactsContract;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -132,6 +136,11 @@ public class ContactSyncAdapterService extends Service {
 //            }
     }
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new ContactSyncAdapter().getSyncAdapterBinder();
+    }
+
     public static void requestContactsSync() {
         Bundle extras = new Bundle();
         // no need to wait, do it immediately
@@ -143,8 +152,27 @@ public class ContactSyncAdapterService extends Service {
                 extras);
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return new ContactSyncAdapter().getSyncAdapterBinder();
+    public static void initContactsSync(Context context) {
+        try {
+            AccountManager manager = AccountManager.get(context);
+            Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
+
+            Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
+            if (accounts.length == 0) {
+                if (!manager.addAccountExplicitly(account, null, null)) {
+                    Log.d(Constants.TAG, "account already exists, the account is null, or another error occured");
+                }
+            }
+
+            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
+
+            // Enable by default for Android < 6, on Android >= 6 runtime permissions are required
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+            }
+        } catch (SecurityException e) {
+            Log.e(Constants.TAG, "SecurityException when adding the account", e);
+            Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
+        }
     }
 }
