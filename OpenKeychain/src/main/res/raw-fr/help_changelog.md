@@ -1,5 +1,9 @@
 [//] : # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 3.7
+  * Improved Android 6 support (permissions, integration into text selection)
+  * API: Version 10
+
 ## 3.6
 
   * Encrypted backups

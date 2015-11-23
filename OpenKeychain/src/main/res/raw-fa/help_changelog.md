@@ -1,5 +1,9 @@
 [//]: # (تذکر: هر جمله در همان خط!)
 
+## 3.7
+  * Improved Android 6 support (permissions, integration into text selection)
+  * API: Version 10
+
 ## 3.6
 
   * Encrypted backups

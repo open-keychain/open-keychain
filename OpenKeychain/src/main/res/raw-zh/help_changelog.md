@@ -1,5 +1,9 @@
 [//]: # (备注: 请把每个句子保持在它自己的一行里，Transifex会把每一行放到他应该的位置！)
 
+## 3.7
+  * Improved Android 6 support (permissions, integration into text selection)
+  * API: Version 10
+
 ## 3.6
 
   * 加密的备份
