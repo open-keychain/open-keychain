@@ -516,21 +516,21 @@ public class ContactHelper {
 
                 deletedKeys.remove(masterKeyId);
 
-                // get raw contact to this master key id
-                long rawContactId = findRawContactId(resolver, masterKeyId);
-                Log.d(Constants.TAG, "rawContactId: " + rawContactId);
-
                 ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
                 // Do not store expired or revoked or unverified keys in contact db - and
                 // remove them if they already exist. Secret keys do not reach this point
                 if (isExpired || isRevoked || !isVerified) {
-                    Log.d(Constants.TAG, "Expired or revoked or unverified: Deleting rawContactId "
-                            + rawContactId);
-                    if (rawContactId != -1) {
-                        deleteRawContactById(resolver, rawContactId);
+                    Log.d(Constants.TAG, "Expired or revoked or unverified: Deleting masterKeyId "
+                            + masterKeyId);
+                    if (masterKeyId != -1) {
+                        deleteRawContactByMasterKeyId(resolver, masterKeyId);
                     }
                 } else if (userIdSplit.name != null) {
+
+                    // get raw contact to this master key id
+                    long rawContactId = findRawContactId(resolver, masterKeyId);
+                    Log.d(Constants.TAG, "rawContactId: " + rawContactId);
 
                     // Create a new rawcontact with corresponding key if it does not exist yet
                     if (rawContactId == -1) {
@@ -707,28 +707,6 @@ public class ContactHelper {
                 });
 
         return delete;
-    }
-
-    /**
-     * Deletes raw contacts from ContactsContract.RawContacts based on rawContactId. Does not
-     * delete contacts from the "me" contact defined in ContactsContract.Profile
-     *
-     * @param resolver
-     * @param rawContactId
-     * @return number of rows deleted
-     */
-    private static int deleteRawContactById(ContentResolver resolver, long rawContactId) {
-        // CALLER_IS_SYNCADAPTER allows us to actually wipe the RawContact from the device, otherwise
-        // would be just flagged for deletion
-        Uri deleteUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon().
-                appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
-
-        return resolver.delete(deleteUri,
-                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " +
-                        ContactsContract.RawContacts._ID + "=?",
-                new String[]{
-                        Constants.ACCOUNT_TYPE, Long.toString(rawContactId)
-                });
     }
 
     /**
