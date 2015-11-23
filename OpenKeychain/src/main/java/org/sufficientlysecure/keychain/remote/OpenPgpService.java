@@ -779,7 +779,7 @@ public class OpenPgpService extends RemoteService {
 
         // version code is required and needs to correspond to version code of service!
         // History of versions in openpgp-api's CHANGELOG.md
-        List<Integer> supportedVersions = Arrays.asList(3, 4, 5, 6, 7, 8, 9);
+        List<Integer> supportedVersions = Arrays.asList(3, 4, 5, 6, 7, 8, 9, 10);
         if (!supportedVersions.contains(data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1))) {
             Intent result = new Intent();
             OpenPgpError error = new OpenPgpError
