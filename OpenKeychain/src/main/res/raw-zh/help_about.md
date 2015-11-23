@@ -6,20 +6,20 @@
 
 许可协议：GPLv3+
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (备注: 字母顺序)
 
 ## 主要开发者
   * Dominik Schürmann (维护者)
   * Vincent Breitmoser
 
-## Top Contributors
+## 主要贡献者
   * Adithya Abraham Philip
   * Ash Hughes
   * 'mar-v-in'
   * 'Thialfihar' (APG 开发者)
   * Tim Bray
 
-## Occasional Contributors
+##临时贡献者
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov
@@ -51,7 +51,7 @@
   * Sreeram Boyapati
   * 'steelman'
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (备注: 字母顺序)
 
 ## 库
    [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache 许可证 v2)

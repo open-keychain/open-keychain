@@ -40,6 +40,7 @@
   <string name="btn_view_cert_key">Переглянути ключ сертифікації</string>
   <string name="btn_create_key">Створити ключ</string>
   <string name="btn_add_files">Додати файл(и)</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Параметри</string>
   <string name="menu_help">Довідка</string>

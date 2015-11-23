@@ -76,6 +76,7 @@
   <string name="btn_add_keyserver">Toevoegen</string>
   <string name="btn_save_default">Opslaan als standaard</string>
   <string name="btn_saved">Opgeslagen!</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Instellingen</string>
   <string name="menu_help">Help</string>
@@ -215,7 +216,6 @@
   <string name="nfc_text">Hou de YubiKey tegen de NFC-aanduiding aan de achterkant van je toestel.</string>
   <string name="nfc_wait">Hou de YubiKey tegen de achterkant!</string>
   <string name="nfc_finished">Neem de YubiKey nu weg.</string>
-  <string name="nfc_try_again_text">Neem de YubiKey nu weg en druk op Opnieuw proberen.</string>
   <string name="file_delete_confirmation_title">Oorspronkelijke bestanden verwijderen?</string>
   <string name="file_delete_confirmation">De volgende bestanden zullen worden verwijderd:%s</string>
   <string name="file_delete_successful">%1$d van %2$d bestanden zijn verwijderd.%3$s</string>
@@ -1093,7 +1093,6 @@
   <string name="msg_keybase_error_msg_payload_mismatch">Ontsleuteld bewijs komt niet overeen met verwachte waarde</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_touch_to_clear">Tik om wachtwoorden te wissen.</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%d wachtwoord onthouden</item>
     <item quantity="other">%d wachtwoorden onthouden</item>

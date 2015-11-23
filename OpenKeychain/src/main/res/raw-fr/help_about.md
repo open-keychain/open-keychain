@@ -2,7 +2,7 @@
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](https://www.openkeychain.org) est une implémentation d'OpenPGP pour Android.
 
 Licence : GPLv3+
 
@@ -61,11 +61,11 @@ Licence : GPLv3+
   * [Markdown4J](https://github.com/jdcasey/markdown4j) (Licence Apache v2)
   * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Licence Apache v2)
   * [MiniDNS](https://github.com/rtreffer/minidns) (Licence Apache v2)
-  * [OkHttp](https://square.github.io/okhttp/) (Apache License v2)
+  * [OkHttp](https://square.github.io/okhttp/) (Licence Apache v2)
   * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Conception matérielle)</a> (Licence Apache v2)
   * [Bibliothèque d'échange SafeSlinger](https://github.com/SafeSlingerProject/exchange-android) (Licence MIT)
   * [Snackbar](https://github.com/nispok/snackbar) (Licence MIT)
-  * [SpongyCastle](https://rtyley.github.io/spongycastle/) (MIT X11 License)
+  * [SpongyCastle](https://rtyley.github.io/spongycastle/) (Licence MIT X11)
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Licence Apache v2)
   * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Licence Apache v2)
   * [ZXing](https://github.com/zxing/zxing) (Licence Apache v2)

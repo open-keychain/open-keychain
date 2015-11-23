@@ -15,6 +15,7 @@
   <!--InstallDialogFragment strings-->
   <!--StartOrbotDialogFragment strings-->
   <!--choice-->
+  <string name="choice_none">Tidak ada</string>
   <!--key flags-->
   <!--sentences-->
   <!--errors
@@ -42,6 +43,7 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_no_key">Tidak ada kunci yang dipilih</string>
   <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->

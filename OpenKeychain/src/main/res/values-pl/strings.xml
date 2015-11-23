@@ -51,6 +51,7 @@
   <string name="btn_add_files">Dodaj plik(i)</string>
   <string name="btn_encrypt_files">Zaszyfruj pliki</string>
   <string name="btn_encrypt_text">Zaszyfruj tekst</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Ustawienia</string>
   <string name="menu_help">Pomoc</string>

@@ -84,6 +84,7 @@
   <string name="btn_add_keyserver">Aggiungi</string>
   <string name="btn_save_default">Salva come predefinito</string>
   <string name="btn_saved">Salvato!</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Impostazioni</string>
   <string name="menu_help">Aiuto</string>

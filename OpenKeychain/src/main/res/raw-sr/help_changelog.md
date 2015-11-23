@@ -2,15 +2,15 @@
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
-  * API: Version 9
+  * Шифроване резерве
+  * Безбедносне поправке произишле из спољашње безбедносне провере
+  *  Чаробњак прављења Јубикључ НЕО кључа
+  * Основна унутрашња подршка за МИМЕ
+  * Аутоматска синхронизација кључева
+  * Експериментална функција: повезивање кључева са Гитхаб и Твитер налозима
+  * Експериментална функција: потврђивање кључа помоћу фраза
+  * Експериментална функција: тамна тема
+  * АПИ: издање 9
 
 ## 3.5
 

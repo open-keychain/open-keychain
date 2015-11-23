@@ -60,6 +60,7 @@
   <string name="btn_encrypt_files">Šifriraj datoteke</string>
   <string name="btn_encrypt_text">Šifriraj besedilo</string>
   <string name="btn_add_email">Dodaj elektronske naslove</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Nastavitve</string>
   <string name="menu_help">Pomoč</string>

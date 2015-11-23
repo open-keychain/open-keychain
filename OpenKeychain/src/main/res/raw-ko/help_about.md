@@ -2,24 +2,24 @@
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) は Android における OpenPGP 実装です。
+[OpenKeychain](https://www.openkeychain.org) 은 안드로이드의 OpenPGP 구현체 입니다.
 
-ライセンス: GPLv3以降
+라이센스: GPLv3+
 
 [//]: # (NOTE: Alphabetic ordering)
 
-## メイン開発者
-  * Dominik Schürmann (メンテナ)
+## 메인 개발자
+  * Dominik Schürmann (프로젝트 관리자)
   * Vincent Breitmoser
 
-## 最優秀貢献者たち
+## 상위 기여자
   * Adithya Abraham Philip
   * Ash Hughes
   * 'mar-v-in'
-  * 'Thialfihar' (APG 開発者)
+  * 'Thialfihar' (APG 개발자)
   * Tim Bray
 
-## 時折貢献してくれる方たち
+## 기여자
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov
@@ -53,7 +53,7 @@
 
 [//]: # (NOTE: Alphabetic ordering)
 
-## ライブラリ
+## Libraries
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache License v2)
   * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Apache License v2)

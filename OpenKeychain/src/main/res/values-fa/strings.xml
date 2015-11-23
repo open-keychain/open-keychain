@@ -74,6 +74,7 @@
   <string name="btn_add_keyserver">اضافه‌کردن</string>
   <string name="btn_save_default">ذخیره به عنوان پیش‌فرض</string>
   <string name="btn_saved">ذخیره شد!</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">تنظیمات</string>
   <string name="menu_help">کمک</string>

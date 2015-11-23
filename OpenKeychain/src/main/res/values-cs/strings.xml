@@ -69,6 +69,7 @@
   <string name="btn_add_keyserver">Přidat</string>
   <string name="btn_save_default">Uložit jako výchozí</string>
   <string name="btn_saved">Uloženo!</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Nastavení</string>
   <string name="menu_help">Nápověda</string>

@@ -284,7 +284,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Listes de clefs filtrables
   * Présélection plus intelligente des clefs de chiffrement
   * Nouvelle gestion des intentions pour VIEW et SEND, permet le chiffrement/déchiffrement des fichiers du gestionnaires de fichiers
-  * Correctifs et fonctions additionnelles (présélection des clefs) pour Courriel K-9-Mail, nouvelle version bêta proposée
+  * Correctifs et fonctions additionnelles (présélection des clefs) pour Courriel K-9 Mail, nouvelle version bêta proposée
 
 
 ## 1.0.1
@@ -294,7 +294,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.0
 
-  * Intégration à K-9 Mail, APG prenant en charge la version bêta de Courriel K-9 Mail
+  * Intégration à Courriel K-9 Mail, APG prenant en charge la version bêta de Courriel K-9 Mail
   * Prise en charge de plus de gestionnaires de fichiers (incluant ASTRO)
   * Traduction slovène
   * Nouvelle base de données, bien plus rapide, utilisation de la mémoire moindre

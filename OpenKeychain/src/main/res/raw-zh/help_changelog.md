@@ -1,302 +1,302 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (备注: 请把每个句子保持在它自己的一行里，Transifex会把每一行放到他应该的位置！)
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
-  * API: Version 9
+  * 加密的备份
+  * 安全性修复基于外部安全性审查
+  * YubiKey NEO key 创建向导
+  * 支持基本的内部MIME
+  * 自动同步密钥
+  * 试验性功能: 关联密钥到Github, Twitter账户
+  * 试验性功能: 通过短语确认密钥
+  * 实验性功能：深色主题
+  * API: 第9版
 
 ## 3.5
 
-  * Key revocation on key deletion
-  * Improved checks for insecure cryptography
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  * 密钥删除同时撤销
+  * 不安全的加密方法被改进
+  * 修复: 第一次向导成功后OpenKeychain不关闭
+  * API: 第8版
 
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
-  * Better YubiKey error handling
+  * 通过Tor下载匿名密钥
+  * 支持代理
+  * 更好的YubiKey错误处理
 
 ## 3.3
 
-  * New decryption screen
-  * Decryption of multiple files at once
-  * Better handling of YubiKey errors
+  * 新的解密屏幕
+  * 一次解密多个文件
+  * 更好的YubiKey错误处理机制
 
 ## 3.2
 
-  * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
-  * Material design
-  * Integration of QR Code Scanning (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
-  * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
-  * Method to update all keys at once
+  * 第一个版本完整的支持YubiKey。有用的用户界面：编辑密钥，绑定YubiKey到密钥等。
+  * 元素设计
+  * 集成二维码扫描（需要新权限）
+  * 改进创建向导
+  * 修复同步后丢失联系人
+  * 需要安卓4
+  * 重新设计密钥界面
+  * 简化加密学的倾向，安全密码更好的选择
+  * 分离签名，任意选择签名密钥
+  * 修复：密钥有效却被显示为作废或者到期的问题
+  * 不受理过期或者作废的子密钥签名
+  * 在高级界面中显示支持Keybase.io
+  * 一次更新所有密钥的功能
 
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * 修复导出密钥到文件（已实现）
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * 修复导出密钥到文件（已经写了部分）
+  * 修复在安卓2.3上崩溃
 
 
 ## 3.1
 
-  * Fix crash on Android 5
-  * New certify screen
-  * Secure Exchange directly from key list (SafeSlinger library)
-  * New QR Code program flow
-  * Redesigned decrypt screen
-  * New icon usage and colors
-  * Fix import of secret keys from Symantec Encryption Desktop
-  * Experimental YubiKey support: Subkey IDs are now checked correctly
+  * 修复在安卓5上崩溃
+  * 新验证界面
+  * 直接从密钥列表安全的交换（SafeSlinger库）
+  * 新的二维码程序流
+  * 重新设计解密界面
+  * 使用新图标和配色
+  * 修复从Symantec Encryption Desktop导入密钥
+  * 试验性的YubiKey支持：子密钥ID可以正确的检查。
 
 
 ## 3.0.1
 
-  * Better handling of large key imports
-  * Improved subkey selection
+  * 更好的处理大密钥的导入
+  * 改进子密钥选中
 
 
 ## 3.0
 
-  * Propose installable compatible apps in apps list
-  * New design for decryption screens
-  * Many fixes for key import, also fixes stripped keys
-  * Honor and display key authenticate flags
-  * User interface to generate custom keys
-  * Fixing user id revocation certificates
-  * New cloud search (searches over traditional keyservers and keybase.io)
-  * Support for stripping keys inside OpenKeychain
-  * Experimental YubiKey support: Support for signature generation and decryption
+  * 在应用列表中推荐可安装兼容的app
+  * 解密界面启用新设计
+  * 修复密钥导入的众多问题，其中有剥离密的钥问题
+  * 头衔和显示密钥验证的旗帜标记
+  * 产生自定义密钥的用户界面
+  * 修复使用者ID废除证书
+  * 新的云搜索（通过传统的密钥服务器和keybase.io搜索）
+  * OpenKeychain支持剥离密钥
+  * 试验性的YubiKey支持：支持生成签名和解密
 
 
 ## 2.9.2
 
-  * Fix keys broken in 2.9.1
-  * Experimental YubiKey support: Decryption now working via API
+  * 修复2.9.1的密钥破损
+  * 实验性的YubiKey支持：解密现在通过API工作
 
 
 ## 2.9.1
 
-  * Split encrypt screen into two
-  * Fix key flags handling (now supporting Mailvelope 0.7 keys)
-  * Improved passphrase handling
-  * Key sharing via SafeSlinger
-  * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
-  * Fix usage of stripped keys
-  * SHA256 as default for compatibility
-  * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
-  * OpenPGP API now handles revoked/expired keys and returns all user ids
+  * 分割加密界面分为两个
+  * 修正处理密钥标志（现已支持Mailvelope 0.7密钥）
+  * 改进的密码处理
+  * 通过SafeSlinger密钥共享
+  * 实验性的YubiKey支持：优先允许其他PIN，目前只能通过OpenPGP的API签署工作，而不是OpenKeychain内部的
+  * 修正剥离密钥的用法
+  *  默认兼容SHA256
+  * Intent API发生了变化，请看https://github.com/open-keychain/open-keychain/wiki/Intent-API
+  *  OpenPGP的API现在处理撤销/到期密钥和返回所有用户ID
 
 
 ## 2.9
 
-  * Fixing crashes introduced in v2.8
-  * Experimental ECC support
-  * Experimental YubiKey support: Only signing with imported keys
+  * 正在修复v2.8里的崩溃问题
+  * 实验性的ECC支持
+  * 实验性的YubiKey支持：只签订导入的密钥
 
 
 ## 2.8
 
-  * So many bugs have been fixed in this release that we focus on the main new features
-  * Key edit: awesome new design, key revocation
-  * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
-  * New first time screen
-  * New key creation screen: autocompletion of name and email based on your personal Android accounts
-  * File encryption: awesome new design, support for encrypting multiple files
-  * New icons to show status of key (by Brennan Novak)
-  * Important bug fix: Importing of large key collections from a file is now possible
-  * Notification showing cached passphrases
-  * Keys are connected to Android's contacts
+  * 在此版本中很多的错误已得到修复，我们重点关注的主要新特性
+  * 密钥编辑：超棒的新设计，密钥撤销
+  * 密钥导入：超棒的新设计，通过hkps协议连接安全密钥服务器，密钥服务器解析通过DNS SRV记录
+  * 新的首次使用界面
+  * 新的密钥创建界面：根据您的Andr​​oid个人账户自动完成姓名和电子邮件
+  文件加密：超棒的新设计，支持加密多个文件
+  * 密钥状态显示新的图标（by Brennan Novak）
+  * 重要的bug修复：现在可以从文件导入大型密钥集合
+  * 通知中显示缓存口令
+  * 密钥关联到Android的联系人
 
-This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
+这个版本离不开Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar的辛勤工作
 
 ## 2.7
 
-  * Purple! (Dominik, Vincent)
-  * New key view design (Dominik, Vincent)
-  * New flat Android buttons (Dominik, Vincent)
-  * API fixes (Dominik)
-  * Keybase.io import (Tim Bray)
+  * 紫色！（Dominik, Vincent）
+  * 新密钥视图设计（Dominik, Vincent）
+  * 新扁平的Android按钮（Dominik, Vincent）
+  *  API修正（Dominik）
+  *  Keybase.io导入（Tim Bray）
 
 
 ## 2.6.1
 
-  * Some fixes for regression bugs
+  * 一些修复回归bug
 
 
 ## 2.6
 
-  * Key certifications (thanks to Vincent Breitmoser)
-  * Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
-  * New design for signature verification
-  * Custom key length (thanks to Greg Witczak)
-  * Fix share-functionality from other apps
+  * 密钥认证（感谢Vincent Breitmoser）
+  * 支持GnuPG的部分密钥（感谢Vincent Breitmoser)
+  * 新设计的签名验证
+  * 自定义密钥长度（感谢格Greg Witczak）
+  * 修正与其他应用程序共享功能
 
 
 ## 2.5
 
-  * Fix decryption of symmetric OpenPGP messages/files
-  * Refactored key edit screen (thanks to Ash Hughes)
-  * New modern design for encrypt/decrypt screens
-  * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
+  * 修正了对称的OpenPGP消息/文件解密
+  * 重构密钥编辑界面（感谢Ash Hughes）
+  * 加密/解密界面新的现代设计
+  *  OpenPGP的API版本3（多个API账户，内部修复，密钥查找）
 
 
 ## 2.4
-Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
-Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
-Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
+感谢所有谷歌编程之夏2014的参与者他们制作了这个问题少而功能多的版本！
+除了几个小补丁，大量的补丁由下面的人做（排名不分先后）：
+Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser。
 
-  * New unified key list
-  * Colorized key fingerprint
-  * Support for keyserver ports
-  * Deactivate possibility to generate weak keys
+  * 新的统一的密钥列表
+  * 彩色密钥指纹
+  * 支持密钥服务器端口
+  * 停用可能产生弱密钥
   * Much more internal work on the API
-  * Certify user ids
-  * Keyserver query based on machine-readable output
-  * Lock navigation drawer on tablets
-  * Suggestions for emails on creation of keys
-  * Search in public key lists
-  * And much more improvements and fixes…
+  * 证明用户ID
+  * 基于机器可读的输出密钥服务器查询
+  * 在平板上的锁屏导航抽屉
+  * 建议电子邮件在创建密钥时
+  * 在公共密钥列表搜索
+  * 还有更多的改进和修正...
 
 
 ## 2.3.1
 
-  * Hotfix for crash when upgrading from old versions
+  * 修补升级后崩溃的问题
 
 
 ## 2.3
 
-  * Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
-  * Fix setting expiry dates on keys (thanks to Ash Hughes)
-  * More internal fixes when editing keys (thanks to Ash Hughes)
-  * Querying keyservers directly from the import screen
-  * Fix layout and dialog style on Android 2.2-3.0
-  * Fix crash on keys with empty user ids
-  * Fix crash and empty lists when coming back from signing screen
-  * Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source
-  * Fix upload of key from signing screen
+  * 当导出私钥时删除不需要的导出公钥（感谢Ash Hughes）
+  * 修复密钥到期日期设置（感谢Ash Hughes）
+  当编辑密钥时更多的内部修复（感谢Ash Hughes）
+  * 直接从导入屏幕界面中查询密钥服务器
+  * 修正布局和对话风格在Android 2.2-3.0
+  * 修复密钥中存在空使用者ID的崩溃情况
+  * 修复从签署中界面返回中时的崩溃和空表情况
+  * Bouncy Castle（密码库）从1.47升级到1.50，并从源中建立
+  * 修正从签署中界面上传密钥
 
 
 ## 2.2
 
-  * New design with navigation drawer
-  * New public key list design
-  * New public key view
-  * Bug fixes for importing of keys
-  * Key cross-certification (thanks to Ash Hughes)
-  * Handle UTF-8 passwords properly (thanks to Ash Hughes)
-  * First version with new languages (thanks to the contributors on Transifex)
-  * Sharing of keys via QR Codes fixed and improved
-  * Package signature verification for API
+  * 抽屉式导航的全新设计
+  * 新的公钥表设计
+  * 新的公共密钥视图
+  *  导入密钥中的Bug修复
+  * 密钥交叉认证（感谢Ash Hughes）
+  * 正确处理UTF-8密码（感谢Ash Hughes）
+  * 第一版本，新的语言（感谢在Transifex贡献者）
+  * 修复和改进了QR码键分享
+  * 为API包签名验证
 
 
 ## 2.1.1
 
-  * API Updates, preparation for K-9 Mail integration
+  *  API更新，K-9邮件集成准备
 
 
 ## 2.1
 
-  * Lots of bug fixes
-  * New API for developers
-  * PRNG bug fix by Google
+  * 很多bug修复
+  * 为开发者提供新的API
+  *  PRNG漏洞被谷歌修复
 
 
 ## 2.0
 
-  * Complete redesign
-  * Share public keys via QR codes, NFC beam
-  * Sign keys
-  * Upload keys to server
-  * Fixes import issues
-  * New AIDL API
+  * 完全重新设计
+  * 通过QR码，NFC beam分享公共密钥，
+  * 签署密钥
+  * 上传密钥到服务器
+  * 修正了导入问题
+  * 新的AIDL API
 
 
 ## 1.0.8
 
-  * Basic keyserver support
-  * App2sd
-  * More choices for passphrase cache: 1, 2, 4, 8, hours
-  * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Bugfixes
-  * Optimizations
+  * 基本密钥服务器支持
+  *  APP2SD
+  * 密码缓存时间提供更多的选择：1，2，4，8，小时
+  * 翻译：挪威（感谢，Sander Danielsen），中国（感谢，Zhang Fredrick）
+  *  Bug修复
+  * 优化
 
 
 ## 1.0.7
 
-  * Fixed problem with signature verification of texts with trailing newline
-  * More options for passphrase cache time to live (20, 40, 60 mins)
+  * 修复包含换行符的文本的签名验证问题
+  * 密码缓存时间提供更多的选择（20，40，60分钟）
 
 
 ## 1.0.6
 
-  * Account adding crash on Froyo fixed
-  * Secure file deletion
-  * Option to delete key file after import
-  * Stream encryption/decryption (gallery, etc.)
-  * New options (language, force v3 signatures)
-  * Interface changes
-  * Bugfixes
+  * 修复Froyo中账户添加中的崩溃现象
+  * 安全文件删除
+  * 可选择导入密钥文件后删除
+  * 流加密/解密（画廊等）
+  * 新的选项（语言，强制V3签名）
+  * 界面的变化
+  *  Bug修复
 
 
 ## 1.0.5
 
-  * German and Italian translation
-  * Much smaller package, due to reduced BC sources
-  * New preferences GUI
-  * Layout adjustment for localization
-  * Signature bugfix
+  * 德语和意大利语翻译
+  * 由于缩减了BC源，包大大减小了
+  * 新偏好的GUI
+  * 局部布局调整
+  * 签名漏洞修复
 
 
 ## 1.0.4
 
-  * Fixed another crash caused by some SDK bug with query builder
+  * 修正另一个因某些SDK中查询生成器的bug引起的崩溃
 
 
 ## 1.0.3
 
-  * Fixed crashes during encryption/signing and possibly key export
+  * 修复在加密/签名中和导出时可能的崩溃现象
 
 
 ## 1.0.2
 
-  * Filterable key lists
-  * Smarter pre-selection of encryption keys
-  * New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
-  * Fixes and additional features (key preselection) for K-9 Mail, new beta build available
+  * 可筛选密钥列表
+  * 更智能的预选加密密钥
+  * 查看和发送使用新的目的处理，允许文件在文件管理器之外加密/解密
+  * 为K-9邮件修补问题和附加功能（预选密钥），可获得新的beta版
 
 
 ## 1.0.1
 
-  * GMail account listing was broken in 1.0.0, fixed again
+  * Gmail帐户列表在1.0.0中被破坏，再次修复
 
 
 ## 1.0.0
 
-  * K-9 Mail integration, APG supporting beta build of K-9 Mail
-  * Support of more file managers (including ASTRO)
-  * Slovenian translation
-  * New database, much faster, less memory usage
-  * Defined Intents and content provider for other apps
-  * Bugfixes
+  *  K-9邮件整合，APG支持beta版K-9邮件
+  * 支持更多的文件管理器（包括ASTRO）
+  * 斯洛文尼亚语翻译
+  * 新的数据库，速度更快，使用更少的内存
+  * 为其他应用程序定义的用途和内容提供商
+  *  Bug修复

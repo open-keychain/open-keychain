@@ -2,15 +2,15 @@
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
-  * API: Version 9
+  * Babeskopia enkriptatuak
+  * Segurtasun zuzenketak kanpoko segurtasun auditorian ohinarrituz
+  * YubiKey NEO giltza sortzeko laguntzailea
+  * Ohinarrizko barneko MIME sostengua
+  * Berezgaitasunezko giltza aldiberetzea
+  * Ezaugarri esperimentala: loturatu giltzak Github, Twitter kontuetara
+  * Ezaugarri esperimentala: giltza baieztapena esaldien bidez
+  * Ezaugarri esperimentala: azalgai iluna
+  * API: 9 bertsioa
 
 ## 3.5
 

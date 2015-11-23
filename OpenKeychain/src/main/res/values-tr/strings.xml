@@ -40,6 +40,7 @@
   <string name="btn_view_cert_key">Tasdikleme anahtarını görüntüle</string>
   <string name="btn_create_key">Anahtar oluştur</string>
   <string name="btn_add_files">Dosya(lar) ekle</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Ayarlar</string>
   <string name="menu_help">Yardım</string>

@@ -96,6 +96,7 @@
   <string name="btn_save_default">Сохранить по умолчанию</string>
   <string name="btn_saved">Сохранено!</string>
   <string name="btn_not_matching">Нет совпадений</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Настройки</string>
   <string name="menu_help">Помощь</string>
@@ -110,9 +111,6 @@
   <string name="menu_export_all_keys">Экспорт всех ключей</string>
   <string name="menu_update_all_keys">Обновить все ключи</string>
   <string name="menu_advanced">Дополнительные сведения</string>
-  <string name="menu_certify_fingerprint">Подтвердить через отпечаток</string>
-  <string name="menu_certify_fingerprint_phrases">Подтвердить фразами</string>
-  <string name="menu_share_log">Опубликовать отчёт</string>
   <string name="menu_keyserver_add">Добавить</string>
   <!--label-->
   <string name="label_message">Текст</string>
@@ -171,17 +169,12 @@
   <string name="pref_keyserver_summary">Искать ключи на выбранных серверах OpenPGP  (протокол HKP)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Искать ключи на Keybase.io</string>
-  <string name="label_sync_settings_keyserver_title">Автоматически обновлять ключи</string>
-  <string name="label_sync_settings_keyserver_summary_on">Ключи старше недели обновляются с предпочтительного сервера ключей</string>
-  <string name="label_sync_settings_keyserver_summary_off">Ключи не обновляются автоматически</string>
   <string name="label_sync_settings_contacts_title">Связать ключи с контактами</string>
   <string name="label_sync_settings_contacts_summary_on">Связывать ключи с контактами основываясь на именах и адресах электронной почты. Это происходит полностью в автономном режиме на вашем устройстве.</string>
   <string name="label_sync_settings_contacts_summary_off">Новые ключи не будут связаны с контактами</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Автоматически обновлять ключи</string>
   <string name="label_experimental_settings_desc_title">Предупреждение</string>
   <string name="label_experimental_settings_desc_summary">Эти новые возможности ещё не закончены и/или пока только изучаются. Проще говоря, не стоит полагаться на их безопасность. Пожалуйста, не сообщайте о связанных с ними проблемах!</string>
-  <string name="label_experimental_settings_word_confirm_title">Фраза подтверждения</string>
   <string name="label_experimental_settings_word_confirm_summary">Подтвердить ключи с помощью фраз, вместо шестнадцатеричных отпечатков </string>
   <string name="label_experimental_settings_linked_identities_title">Связанные идентификаторы</string>
   <string name="label_experimental_settings_linked_identities_summary">Привязать ключи к Twitter, GitHub, веб-сайту или DNS (по аналогии с keybase.io но децентрализованно)</string>

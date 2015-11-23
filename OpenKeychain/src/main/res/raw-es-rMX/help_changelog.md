@@ -1,9 +1,9 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (Observe: ¡Por favor ingrese cada enunciado en su propia línea, Transifex coloca cada línea en su propio campo de traducción!)
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
+  * Respaldos cifrados
+  * Soluciones de seguridad basadas en auditoría de seguridad externa
   * YubiKey NEO key creation wizard
   * Basic internal MIME support
   * Automatic key synchronization
@@ -38,7 +38,7 @@
   * Integration of QR Code Scanning (New permissions required)
   * Improved key creation wizard
   * Fix missing contacts after sync
-  * Requires Android 4
+  * Requiere Android 4
   * Redesigned key screen
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...

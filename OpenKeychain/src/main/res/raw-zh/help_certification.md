@@ -14,15 +14,15 @@
 <img src="status_signature_expired_cutout_24dp"/>  
 已过期: 这个密钥不再有效. 只有它的拥有者能扩展它的正确性.  
 <img src="status_signature_revoked_cutout_24dp"/>  
-Revoked: This key is no longer valid. It has been revoked by its owner.
+已作废：这个密钥不再有效。它已经被所有者作废.
 
-## Advanced Information
-A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.
-This certification is a ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) described in the standard by:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+##进一步说明
+在OpenKeychain中“确认密钥”是根据OpenPGP标准创建一个认证所实现。
+这个认证是一个 ["一般认证(0x10)"]http://tools.ietf.org/html/rfc4880#section-5.2.1) 标准中的描述是：
+认证的发行者不对妥善检查密钥所有者与密钥所示使用者身份是否相符的情况做出任何表态。
 
-Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
-Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+习惯上，认证（更高级的认证，例如“主动认证”(0x13)）是有组织的存储在OpenPGP的信任网络中。
+我们的确认密钥模型采用一套相对简单的概念，为了避开上述提到的信任网络中普遍的可用性问题。
+我们假设密钥只被验证到足以随时使用的程度。
+我们也不进行像GnuPG那样的信任签名或导入主观信任数据库。
+此外，当某密钥含有至少一个被信任密钥所认证过的使用者身份时，它将在密钥列表中被标记为“已确认”。

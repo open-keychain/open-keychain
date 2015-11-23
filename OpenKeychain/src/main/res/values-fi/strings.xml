@@ -66,6 +66,7 @@
   <string name="btn_add_keyserver">Lisä</string>
   <string name="btn_save_default">Tallenna oletukseksi</string>
   <string name="btn_saved">Tallennettu!</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Asetukset</string>
   <string name="menu_help">Apua</string>
@@ -123,9 +124,7 @@
   <string name="pref_keyserver">OpenPGP-avainpalvelimet</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Etsi avaimia osoitteesta keybase.io</string>
-  <string name="label_sync_settings_keyserver_title">Päivitä avaimet automaattisesti</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Päivitä avaimet automaattisesti</string>
   <string name="label_experimental_settings_desc_title">Varoitus</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Ota Tor käyttöö</string>
@@ -278,7 +277,6 @@
   <string name="progress_processing">Käsitellään...</string>
   <string name="linked_create_twitter_1_3">Syötäthän Twitter-näyttönimesi jatkaaksesi.</string>
   <string name="linked_create_twitter_handle">Twitter-välikappale</string>
-  <string name="linked_create_twitter_2_1">Klikkaa kumpaa tahansa nappia twiitataksesi viestin!</string>
   <string name="linked_create_verify">Todenna</string>
   <string name="linked_text_clipboard">Teksti on kopioitu leikepöydälle</string>
   <!--Other Linked Identity strings-->

@@ -21,10 +21,11 @@
   <string name="title_encrypt_to_file">In eine Datei verschlüsseln</string>
   <string name="title_decrypt_to_file">In eine Datei entschlüsseln</string>
   <string name="title_import_keys">Schlüssel importieren</string>
-  <string name="title_export_key">Backup erstellen</string>
-  <string name="title_export_keys">Backup erstellen</string>
+  <string name="title_export_key">Schlüssel sichern</string>
+  <string name="title_export_keys">Schlüssel sichern</string>
   <string name="title_key_not_found">Schlüssel nicht gefunden</string>
   <string name="title_send_key">Auf Schlüsselserver hochladen</string>
+  <string name="title_backup">Schlüssel sichern</string>
   <string name="title_certify_key">Schlüssel bestätigen</string>
   <string name="title_key_details">Schlüsseldetails</string>
   <string name="title_help">Hilfe</string>
@@ -56,6 +57,7 @@
   <string name="section_share_key">Schlüssel</string>
   <string name="section_key_server">Schlüsselserver</string>
   <string name="section_fingerprint">Fingerabdruck</string>
+  <string name="section_phrases">Phrasen</string>
   <string name="section_encrypt">Verschlüsseln</string>
   <string name="section_decrypt">Entschlüsseln / Verifizieren</string>
   <string name="section_current_expiry">Aktuelles Ablaufdatum</string>
@@ -81,6 +83,8 @@
   <string name="btn_view_cert_key">Beglaubigungsschlüssel anzeigen</string>
   <string name="btn_create_key">Schlüssel erzeugen</string>
   <string name="btn_add_files">Datei(en) hinzufügen</string>
+  <string name="btn_share_decrypted_text">Teilen</string>
+  <string name="btn_open_with">Öffnen mit…</string>
   <string name="btn_copy_decrypted_text">Entschlüsselten Text kopieren</string>
   <string name="btn_decrypt_clipboard">Aus Zwischenablage lesen</string>
   <string name="btn_decrypt_files">Datei auswählen</string>
@@ -91,9 +95,12 @@
   <string name="btn_add_keyserver">Hinzufügen</string>
   <string name="btn_save_default">Als Standard speichern</string>
   <string name="btn_saved">Gespeichert!</string>
+  <string name="btn_not_matching">Stimmt nicht überein</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Einstellungen</string>
   <string name="menu_help">Hilfe</string>
+  <string name="menu_export_key">Schlüssel sichern</string>
   <string name="menu_delete_key">Schlüssel löschen</string>
   <string name="menu_manage_keys">Meine Schlüssel verwalten</string>
   <string name="menu_search">Suchen</string>
@@ -104,7 +111,6 @@
   <string name="menu_export_all_keys">Alle Schlüssel exportieren</string>
   <string name="menu_update_all_keys">Alle Schlüssel aktualisieren</string>
   <string name="menu_advanced">Erweiterte Informationen</string>
-  <string name="menu_certify_fingerprint">Durch Vergleich der Fingerabdrücke bestätigen</string>
   <string name="menu_keyserver_add">Hinzufügen</string>
   <!--label-->
   <string name="label_message">Text</string>
@@ -113,6 +119,7 @@
   <string name="label_file_colon">Datei:</string>
   <string name="label_no_passphrase">Kein Passwort</string>
   <string name="label_passphrase">Passwort</string>
+  <string name="label_pin">PIN</string>
   <string name="label_unlock">Wird entsperrt...</string>
   <string name="label_passphrase_again">Passwort wiederholen</string>
   <string name="label_show_passphrase">Passwort anzeigen</string>
@@ -136,7 +143,7 @@
   <string name="label_keyservers">OpenPGP-Schlüsselserver auswählen</string>
   <string name="label_key_id">Schlüssel-ID</string>
   <string name="label_key_created">Schlüssel erzeugt %s</string>
-  <string name="label_creation">Erstellungsdatum</string>
+  <string name="label_creation">Erzeugungsdatum</string>
   <string name="label_expiry">Ablaufdatum</string>
   <string name="label_usage">Verwendungszweck</string>
   <string name="label_key_size">Schlüssellänge</string>
@@ -155,20 +162,18 @@
   <string name="label_enable_compression">Komprimierung aktivieren</string>
   <string name="label_encrypt_filenames">Dateinamen verschlüsseln</string>
   <string name="label_hidden_recipients">Empfänger verbergen</string>
+  <string name="label_verify_keyserver_connection">Verbindung testen</string>
+  <string name="label_enter_keyserver_url">URL</string>
   <string name="label_keyserver_dialog_delete">Schlüsselserver löschen</string>
   <string name="label_theme">Design</string>
   <string name="pref_keyserver">OpenPGP-Schlüsselserver</string>
   <string name="pref_keyserver_summary">Schlüssel auf ausgewählten OpenPGP-Schlüsselservern suchen (HKP-Protokoll)</string>
   <string name="pref_keybase">Keybase.io</string>
   <string name="pref_keybase_summary">Schlüssel auf Keybase.io suchen</string>
-  <string name="label_sync_settings_keyserver_title">Schlüssel automatisch aktualisieren</string>
-  <string name="label_sync_settings_keyserver_summary_on">Schlüssel, die älter als eine Woche sind, werden vom ausgewählten Schlüsselserver aktualisiert</string>
-  <string name="label_sync_settings_keyserver_summary_off">Schlüssel werden nicht automatisch aktualisiert</string>
   <string name="label_sync_settings_contacts_title">Schlüssel mit Kontakten verknüpfen</string>
   <string name="label_sync_settings_contacts_summary_on">Schlüssel basierend auf Namen und E-Mail-Adressen mit Kontakten verknüpfen. Das alles findet komplett offline auf deinem Gerät statt.</string>
   <string name="label_sync_settings_contacts_summary_off">Neue Schlüssel werden nicht mit Kontakten verknüpft</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Schlüssel automatisch aktualisieren</string>
   <string name="label_experimental_settings_desc_title">Warnung</string>
   <string name="label_experimental_settings_desc_summary">Diese Funktionen sind noch nicht final oder das Ergebnis von Benutzererfahrungs-/Sicherheitsuntersuchungen. Verlasse dich daher nicht auf deren Sicherheit und melde uns bitte keine Probleme die dir begegnen!</string>
   <string name="label_experimental_settings_linked_identities_title">Verknüpfte-Identitäten</string>
@@ -189,16 +194,19 @@
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">Tor nicht verwenden</string>
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_title">Orbot installieren, um Tor zu nutzen?</string>
   <string name="orbot_install_dialog_install">Installieren</string>
   <string name="orbot_install_dialog_content">Du musst Orbot installiert und aktiviert haben, um Netzwerverkehr hindurchleiten zu können. Möchtest du es installieren?</string>
   <string name="orbot_install_dialog_cancel">Abbrechen</string>
+  <string name="orbot_install_dialog_ignore_tor">Tor nicht verwenden</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Orbot starten?</string>
   <string name="orbot_start_btn">Orbot starten</string>
   <string name="orbot_start_dialog_start">Orbot starten</string>
   <string name="orbot_start_dialog_cancel">Abbrechen</string>
+  <string name="orbot_start_dialog_ignore_tor">Tor nicht verwenden</string>
   <string name="user_id_no_name"><![CDATA[<kein Name>]]></string>
   <string name="none"><![CDATA[<keine>]]></string>
   <plurals name="n_keys">
@@ -245,13 +253,13 @@
   <string name="no_filemanager_installed">Kein passender Dateimanager installiert.</string>
   <string name="passphrases_do_not_match">Die Passwörter stimmten nicht überein.</string>
   <string name="passphrase_must_not_be_empty">Bitte ein Passwort eingeben.</string>
+  <string name="passphrase_for_backup">Backupcode eingeben</string>
   <string name="passphrase_for">Passwort für \'%s\' eingeben</string>
   <string name="pin_for">PIN für \'%s\' eingeben</string>
   <string name="yubikey_pin_for">PIN des YubiKeys für \'%s\' eingeben</string>
   <string name="nfc_text">Halte den YubiKey gegen die Rückseite deines Geräts in die Nähe der NFC-Markierung.</string>
   <string name="nfc_wait">Halte den YubiKey an die Rückseite!</string>
   <string name="nfc_finished">Entferne jetzt den YubiKey.</string>
-  <string name="nfc_try_again_text">Nimm den YubiKey jetzt weg und drücke ERNEUT VERSUCHEN.</string>
   <string name="file_delete_confirmation_title">Originaldateien löschen?</string>
   <string name="file_delete_confirmation">Die folgenden Dateien werden gelöscht: %s</string>
   <string name="file_delete_successful">%1$d von %2$d Dateien wurden gelöscht.%3$s</string>
@@ -260,12 +268,12 @@
   <string name="encrypt_sign_clipboard_successful">Erfolgreich in die Zwischenablage signiert und/oder verschlüsselt.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
   <string name="error_no_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder Signieren auswählen.</string>
-  <string name="specify_file_to_encrypt_to">Bitte angeben in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
-  <string name="specify_file_to_decrypt_to">Bitte angeben in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
-  <string name="specify_backup_dest">Ein Backup ohne deine Schlüssel wird erstellt, bitte wähle eine Zieldatei.\nWARNUNG: Die Datei wird überschrieben, falls sie schon existiert!</string>
-  <string name="specify_backup_dest_single">Dieser Schlüssel wir geteilt, bitte wähle eine Zieldatei.\nWARNUNG: Die Datei wird überschrieben, falls sie schon existiert!</string>
-  <string name="specify_backup_dest_secret_single">Ein vollständiges Backup deiner Schlüssel wird erstellt, bitte wähle eine Zieldatei.\nWARNUNG: Die Datei wird überschrieben, falls sie schon existiert!</string>
-  <string name="specify_backup_dest_secret">Ein vollständiges Backup aller Schlüssel, inklusive deiner eigenen, wird erstellt, bitte wähle eine Zieldatei.\nWARNUNG: Die Datei wird überschrieben, falls sie schon existiert!</string>
+  <string name="specify_file_to_encrypt_to">Bitte gib an, in welche Datei verschlüsselt werden soll.\nWARNUNG: Die Datei wird überschrieben, falls sie schon existiert.</string>
+  <string name="specify_file_to_decrypt_to">Bitte gib an, in welche Datei entschlüsselt werden soll.\nWARNUNG: Die Datei wird überschrieben, falls sie schon existiert.</string>
+  <string name="specify_backup_dest">Ein Backup ohne deine Schlüssel wird erstellt, bitte gib eine Zieldatei an.\nWARNUNG: Die Datei wird überschrieben, falls sie schon existiert!</string>
+  <string name="specify_backup_dest_single">Dieser Schlüssel wir geteilt, bitte gib eine Zieldatei an.\nWARNUNG: Die Datei wird überschrieben, falls sie schon existiert!</string>
+  <string name="specify_backup_dest_secret_single">Ein vollständiges Backup deiner Schlüssel wird erstellt, bitte gib eine Zieldatei an.\nWARNUNG: Die Datei wird überschrieben, falls sie schon existiert!</string>
+  <string name="specify_backup_dest_secret">Ein vollständiges Backup aller Schlüssel, inklusive deiner eigenen, wird erstellt, bitte gib eine Zieldatei an.\nWARNUNG: Die Datei wird überschrieben, falls sie schon existiert!</string>
   <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten Schlüssel löschen?</string>
   <string name="public_key_deletetion_confirmation">Schlüssel \'%s\' löschen?</string>
   <string name="also_export_secret_keys">Exportiere auch private Schlüssel</string>
@@ -598,7 +606,7 @@
   <string name="keybase_narrative_coinbase">Auf Coinbase bekannt ist, als %s</string>
   <string name="keybase_narrative_hackernews">Auf Hacker News veröffentlicht, als %s</string>
   <string name="keybase_narrative_unknown">Unbekannter Nachweistyp %s</string>
-  <string name="keybase_proof_failure">Leider kann dieser Nachweis nicht überprüft werden.</string>
+  <string name="keybase_proof_failure">Leider kann dieser Nachweis nicht veifiziert werden.</string>
   <string name="keybase_unknown_proof_failure">Unbekanntes Problem mit dem Nachweisprüfer</string>
   <string name="keybase_problem_fetching_evidence">Problem mit dem Nachweis</string>
   <string name="keybase_key_mismatch">Fingerabdruck des Schlüssels stimmt nicht mit dem Fingerabdruck im Nachweis überein</string>
@@ -650,7 +658,7 @@
   <string name="create_key_empty">Dieses Feld wird benötigt</string>
   <string name="create_key_passphrases_not_equal">Passwörter stimmen nicht überein</string>
   <string name="create_key_final_text">Du hast folgende Identität eingegeben:</string>
-  <string name="create_key_final_robot_text">Einen Schlüssel zu erzeugen braucht eine Weile, trink in der Zeit einen Kaffee...</string>
+  <string name="create_key_final_robot_text">Die Schlüsselerzeugung dauert eine Weile, trink in der Zwischenzeit einen Kaffee...</string>
   <string name="create_key_rsa">(3 Unterschlüssel, RSA, 4096 Bit)</string>
   <string name="create_key_custom">(Benutzerdefinierte Schlüsselkonfiguration)</string>
   <string name="create_key_name_text">Verknüpfe einen Namen mit diesem Schlüssel. Es kann ein voller Name wie z.B. \"John Doe\", oder ein Spitzname wie z.B. \"Johnny\", sein.</string>
@@ -677,6 +685,7 @@
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Schlüsselserver hinzufügen</string>
   <string name="edit_keyserver_dialog_title">Schlüsselserver bearbeiten</string>
+  <string name="add_keyserver_connection_verified">Verbindung verifiziert!</string>
   <string name="add_keyserver_without_verification">Schlüsselserver ohne Verifikation hinzugefügt.</string>
   <string name="add_keyserver_invalid_url">Ungültige URL!</string>
   <string name="add_keyserver_connection_failed">Verbindung zum Schlüsselserver fehlgeschlagen. Bitte überprüfe die URL und deine Internetverbindung.</string>
@@ -689,6 +698,7 @@
   <string name="drawer_open">Menü öffnen</string>
   <string name="drawer_close">Menü schließen</string>
   <string name="my_keys">Meine Schlüssel</string>
+  <string name="nav_backup">Backup/Wiederherstellung</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Text eingeben</string>
   <!--certs-->
@@ -905,7 +915,7 @@
   <string name="msg_cr_error_no_master">Keine Hauptschlüsseloptionen spezifiziert!</string>
   <string name="msg_cr_error_no_user_id">Schlüsselbünde müssen mindestens eine User-ID enthalten!</string>
   <string name="msg_cr_error_no_certify">Hauptschlüssel benötigt das Attribut beglaubigen!</string>
-  <string name="msg_cr_error_null_expiry">Ablaufdatum kann bei Schlüsselerstellung nicht \'gleiche wie vorher\' sein. Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
+  <string name="msg_cr_error_null_expiry">Ablaufdatum kann bei Schlüsselerzeugung nicht \"identisch wie vorher\" sein. Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_cr_error_no_curve">Keine Schlüssellänge spezifiziert! Dies ist ein Progammierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_cr_error_no_keysize">Keine Elliptische Kurve spezifiziert! Dies ist ein Progammierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_cr_error_internal_pgp">Interner OpenPGP Fehler!</string>
@@ -928,7 +938,7 @@
   <string name="msg_mf_error_noexist_revoke">Falsche User-ID für Widerruf spezifiziert!</string>
   <string name="msg_mf_error_restricted">Versuch einen eingeschränkten Vorgang ohne Passwort auszuführen! Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_mf_error_revoked_primary">Widerrufene User-IDs können nicht primäre IDs sein!</string>
-  <string name="msg_mf_error_null_expiry">Ablaufdatum kann bei Unterschlüsselerstellung nicht \"identisch wie vorher\" sein. Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
+  <string name="msg_mf_error_null_expiry">Ablaufdatum kann bei Unterschlüsselerzeugung nicht \"identisch wie vorher\" sein. Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_mf_error_noop">Nichts zu tun!</string>
   <string name="msg_mf_error_passphrase_master">Schwerer Fehler beim Entschlüsseln des Hauptschlüssels! Dies ist wahrscheinlich ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_mf_error_pgp">Interner OpenPGP Fehler!</string>
@@ -1026,8 +1036,9 @@
   <string name="msg_dc_askip_not_allowed">Daten mit nicht zugelassenem Schlüssel verschlüsselt, überspringe...</string>
   <string name="msg_dc_asym">Block asymmetrisch verschlüsselter Daten für Schlüssel %s gefunden</string>
   <string name="msg_dc_charset">Ein Zeichensatz-Header wurde gefunden: \'%s\'</string>
+  <string name="msg_dc_backup_version">Backupversionsheader gefunden: \'%s\'</string>
   <string name="msg_dc_clear_data">Verarbeite Klartextdaten</string>
-  <string name="msg_dc_clear_decompress">Entpacke komprimierte Daten</string>
+  <string name="msg_dc_clear_decompress">Komprimierte Daten werden entpackt</string>
   <string name="msg_dc_clear_meta_file">Dateiname: %s</string>
   <string name="msg_dc_clear_meta_mime">MIME-Typ: %s</string>
   <string name="msg_dc_clear_meta_size">Dateigröße: %s</string>
@@ -1088,7 +1099,7 @@
   <string name="msg_se_success">Signier-/Verschlüsselungsvorgang erfolgreich</string>
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_pse_asymmetric">Bereite öffentliche Schlüssel für Verschlüsselung vor</string>
-  <string name="msg_pse_compressing">Bereite Kompression vor</string>
+  <string name="msg_pse_compressing">Kompression wird vorbereitet</string>
   <string name="msg_pse_encrypting">Daten werden verschlüsselt</string>
   <string name="msg_pse_error_bad_passphrase">Falsches Passwort!</string>
   <string name="msg_pse_error_io">Während eines Vorgangs ist ein Ein-/Ausgabefehler aufgetreten!</string>
@@ -1106,8 +1117,8 @@
   <string name="msg_pse_pending_nfc">NFC-Token wird benötigt, Benutzereingabe wird angefordert…</string>
   <string name="msg_pse_pending_passphrase">Passwort erforderlich, Benutzereingabe wird angefordert…</string>
   <string name="msg_pse_signing">Signiere Daten (ohne Verschlüsselung)</string>
-  <string name="msg_pse_signing_cleartext">Erstelle Klartextsignatur</string>
-  <string name="msg_pse_signing_detached">Abgetrennte Signatur wird erstellt</string>
+  <string name="msg_pse_signing_cleartext">Klartextsignatur wird erzeugt</string>
+  <string name="msg_pse_signing_detached">Abgetrennte Signatur wird erzeugt</string>
   <string name="msg_pse_sigcrypting">Verschlüssele Daten mit Signatur</string>
   <string name="msg_pse">Starte Signier- und/oder Verschlüsselungsvorgang</string>
   <string name="msg_pse_symmetric">Bereite symmetrische Verschlüsselung vor</string>
@@ -1152,6 +1163,14 @@
   <string name="msg_import_error_io">Importvorgang ist aufgrund eines Ein-/Ausgabefehlers fehlgeschlagen!</string>
   <string name="msg_import_partial">Importvorgang erfolgreich, mit Fehlern!</string>
   <string name="msg_import_success">Importvorgang erfolgreich!</string>
+  <plurals name="msg_backup">
+    <item quantity="one">Backup mit einem Schlüssel</item>
+    <item quantity="other">Backup mit %d Schlüsseln</item>
+  </plurals>
+  <string name="msg_backup_all">Backup mit allen Schlüsseln</string>
+  <string name="msg_backup_public">Backup von öffentlichem Schlüssel %s wird erzeugt</string>
+  <string name="msg_backup_secret">Backup von privatem Schlüssel %s wird erzeugt</string>
+  <string name="msg_backup_success">Backupvorgang erfolgreich</string>
   <string name="msg_del_error_empty">Nichts zu löschen!</string>
   <string name="msg_del_error_multi_secret">Private Schlüssel können nur einzeln gelöscht werden!</string>
   <plurals name="msg_del">
@@ -1215,7 +1234,6 @@
   <string name="msg_keybase_error_msg_payload_mismatch">Entschlüsselter Nachweis entspricht nicht dem erwarteten Wert</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_touch_to_clear">Berühren, um Passwörter zu vergessen</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%d Passwort gemerkt</item>
     <item quantity="other">%d Passwörter gemerkt</item>
@@ -1240,6 +1258,7 @@
   <string name="backup_all">Alle Schlüssel + deine eigenen Schlüssel</string>
   <string name="backup_public_keys">Alle Schlüssel</string>
   <string name="backup_section">Backup</string>
+  <string name="restore_section">wiederherstellen</string>
   <!--unsorted-->
   <string name="section_certifier_id">Beglaubiger</string>
   <string name="section_cert">Beglaubigungsdetails</string>
@@ -1332,19 +1351,17 @@
   <string name="error_nfc_header">YubiKey meldete ungültige %s Byte.</string>
   <string name="error_nfc_tag_lost">YubiKey wurde zu früh abgenommen. Halte den YubiKey an die Rückseite, bis der Vorgang beendet ist.</string>
   <string name="error_nfc_try_again">Erneut versuchen</string>
-  <string name="error_temp_file">Erstellen der temporären Datei fehlgeschlagen.</string>
+  <string name="error_temp_file">Erzeugen der temporären Datei fehlgeschlagen.</string>
   <string name="btn_delete_original">Originaldatei löschen</string>
   <string name="snack_encrypt_filenames_on">Dateinamen <b>sind</b> verschlüsselt.</string>
   <string name="snack_encrypt_filenames_off">Dateinamen <b>sind nicht</b> verschlüsselt.</string>
   <string name="snack_armor_on">Ausgabe als Text kodiert.</string>
   <string name="snack_armor_off">Ausgabe als Binärdatei kodiert.</string>
-  <string name="snack_compression_on">Komprimierung <b>aktiviert</b>.</string>
-  <string name="snack_compression_off">Komprimierung <b>deaktiviert</b>.</string>
+  <string name="snack_compression_on">Komprimierung ist <b>aktiviert</b>.</string>
+  <string name="snack_compression_off">Komprimierung ist <b>deaktiviert</b>.</string>
   <string name="error_loading_keys">Fehler beim Laden der Schlüssel!</string>
   <string name="error_empty_log">(Fehler, Protokoll leer)</string>
   <string name="error_reading_text">Konnte Eingabe zur Entschlüsselung nicht lesen!</string>
-  <string name="filename_unknown">Unbekannter Dateiname (zum Öffnen klicken)</string>
-  <string name="filename_unknown_text">Text (zum Anzeigen klicken)</string>
   <string name="intent_show">Signierten/verschlüsselten Inhalt anzeigen</string>
   <string name="view_internal">In OpenKeychain anzeigen</string>
   <string name="error_preparing_data">Fehler beim Vorbereiten der Daten!</string>
@@ -1361,28 +1378,24 @@
   <string name="error_scan_match">Fingerabdrücke stimmten nicht überein!</string>
   <string name="error_expiry_past">Ablaufdatum liegt in der Vergangenheit!</string>
   <string name="linked_create_https_1_1">Durch das Erzeugen einer Verknüpften-Identität dieses Typs kannst du deinen Schlüssel mit einer Webseite verknüpfen, die du kontrollierst.</string>
-  <string name="linked_create_https_1_2">Um das zu tun musst du eine Textdatei auf dieser Webseite veröffentlichen und dann eine Verknüpfte-Identität erzeugen, die auf diese Datei verlinkt.</string>
-  <string name="linked_create_https_1_3">Bitte gib eine URL ein bei der du eine Textdatei als Nachweis hinterlegen kannst. Beachte das dein Server HTTPS unterstützen muss und ein gültiges TLS Zertifikat benötigt!</string>
+  <string name="linked_create_https_1_2">Um das zu tun veröffentlichst du eine Textdatei auf dieser Webseite, anschließend erzeugst du eine Verknüpfte-Identität, die auf diese diese Datei verweist.</string>
+  <string name="linked_create_https_1_3">Bitte gib eine URL ein, unter der du eine Textdatei als Nachweis hinterlegen kannst. Beachte das dein Server HTTPS unterstützen muss und ein gültiges TLS-Zertifikat benötigt!</string>
   <string name="linked_create_https_1_4">Beispiel: https://example.com/pgpkey.txt</string>
   <string name="linked_create_https_created">Die Nachweisdatei wurde erzeugt. Im nächsten Schritt solltest du sie speichern und zum URI hochladen, den du angegeben hast:</string>
   <string name="linked_create_https_2_1">Eine Nachweisdatei für diesen URI wurde erzeugt:</string>
   <string name="linked_create_https_2_2">Im nächsten Schritt solltest du Speichern und diese Datei hochladen.</string>
   <string name="linked_create_https_2_3">Stelle sicher dass die Datei unter der korrekten URI erreichbar ist, prüfe danach deine Einstellungen.</string>
-  <string name="linked_create_https_2_4">Drücke nach erfolgreicher Verifikation auf Abschließen, um die Verknüpfte-Identität deinem Schlüsselbund hinzuzufügen und den Vorgang zu beenden.</string>
-  <string name="linked_create_twitter_1_1">Durch das Erzeugen einer verknüpften Identität dieses Typs kannst du deinen Schlüssel mit einem Twitter-Konto verknüpfen, das du kontrollierst.</string>
-  <string name="linked_create_twitter_1_2">Um das zu tun erstellst du einen bestimmten Tweet in deiner Chronik, anschließend erzeugst du eine Verknüpfte-Identität, die auf diesen Tweet verweist.</string>
+  <string name="linked_create_twitter_1_1">Durch das Erzeugen einer Verknüpften-Identität dieses Typs kannst du deinen Schlüssel mit einem Twitter-Benutzerkonto verknüpfen, das du kontrollierst.</string>
+  <string name="linked_create_twitter_1_2">Um das zu tun veröffentlichst du einen bestimmten Tweet in deiner Chronik, anschließend erzeugst du eine Verknüpfte-Identität, die auf diesen Tweet verweist.</string>
   <string name="linked_create_twitter_1_3">Zum Fortfahren gib bitte deinen Twitter-Namen an.</string>
   <string name="linked_create_twitter_handle">Twitter-Handle</string>
-  <string name="linked_create_twitter_2_1">Drücke einen der Knöpfe um den Tweet abzusenden!</string>
-  <string name="linked_create_twitter_2_2">Du kannst den Tweet vor dem Absenden ändern solange der Text in den Klammern nicht geändert wird.</string>
-  <string name="linked_create_twitter_2_3">Sobald dein Tweet als &lt;b&gt;@%s&lt;/b&gt; veröffentlich wurde klicke die Verifizieren Schaltfläche um deine Chronik danach zu durchsuchen.</string>
-  <string name="linked_create_twitter_2_4">Drücke nach erfolgreicher Verifikation auf Abschließen, um die Verknüpfte-Identität deinem Schlüsselbund hinzuzufügen und den Vorgang zu beenden.</string>
+  <string name="linked_create_twitter_2_2">Du kannst den Tweet vor dem Absenden beliebig ändern, solange der Text in den Klammern unverändert bleibt.</string>
   <string name="linked_create_verify">Verifizieren</string>
   <string name="linked_text_clipboard">Text wurde in die Zwischenablage kopiert</string>
-  <string name="linked_verified_https">Die Verknüpfung zwischen dieser Webseite und dem Schlüssel wurde sicher verifiziert. <b>Wenn du glaubst das die Webseite authentisch ist</b>, bestätige die Verifizierung mit deinem Schlüssel.</string>
-  <string name="linked_verified_github">Die Verknüpfung zwischen diesem GitHub-Konto und dem Schlüssel wurde sicher verifiziert. <b>Wenn du glaubst das dieses Konto authentisch ist</b>, bestätige die Verifizierung mit deinem Schlüssel.</string>
-  <string name="linked_verified_dns">Die Verknüpfung zwischen dieser Domain und dem Schlüssel wurde sicher verifiziert. <b>Wenn du glaubst das die Domain authentisch ist</b>, bestätige die Verifizierung mit deinem Schlüssel.</string>
-  <string name="linked_verified_twitter">Die Verknüpfung zwischen diesem Twitter-Konto und dem Schlüssel wurde sicher verifiziert. <b>Wenn du glaubst das dieses Konto authentisch ist</b>, bestätige die Verifizierung mit deinem Schlüssel.</string>
+  <string name="linked_verified_https">Die Verknüpfung zwischen dieser Webseite und dem Schlüssel wurde sicher verifiziert. <b>Wenn du glaubst dass die Webseite echt ist</b>, bestätige die Verifikation mit deinem Schlüssel.</string>
+  <string name="linked_verified_github">Die Verknüpfung zwischen diesem GitHub-Benutzerkonto und dem Schlüssel wurde sicher verifiziert. <b>Wenn du glaubst dass dieses Benutzerkonto echt ist</b>, bestätige die Verifikation mit deinem Schlüssel.</string>
+  <string name="linked_verified_dns">Die Verknüpfung zwischen diese Domänennamen und dem Schlüssel wurde sicher verifiziert. <b>Wenn du glaubst dass die Domäne echt ist</b>, bestätige die Verifikation mit deinem Schlüssel.</string>
+  <string name="linked_verified_twitter">Die Verknüpfung zwischen diesem Twitter-Benutzerkonto und dem Schlüssel wurde sicher verifiziert. <b>Wenn du glaubst dass dieses Benutzerkonto echt ist</b>, bestätige die Verifikation mit deinem Schlüssel.</string>
   <string name="linked_verified_secret_https">Es ist alles in Ordnung.</string>
   <string name="linked_verified_secret_github">Es ist alles in Ordnung.</string>
   <string name="linked_verified_secret_dns">Es ist alles in Ordnung.</string>
@@ -1393,9 +1406,11 @@
   </plurals>
   <!--Other Linked Identity strings-->
   <string name="linked_select_2">Bitte wähle einen Typ aus:</string>
+  <string name="linked_id_generic_text">Diese Datei erhebt Anspruch auf den Besitz des OpenPGP-Schlüssels mit der langen ID %2$s.\n\nToken des Nachweises:\n%1$s</string>
+  <string name="linked_id_github_text">Dieses Gist bestätigt die Verknüpfte-Identität innerhalb meines OpenPGP-Schlüssels und verknüpft es mit diesem GitHub-Benutzerkonto.\nToken des Nachweises:\n%1$s</string>
   <string name="linked_verifying">Wird verifiziert…</string>
   <string name="linked_verify_success">Verifiziert!</string>
-  <string name="linked_verify_error">Verifizierungsfehler!</string>
+  <string name="linked_verify_error">Verifikationsfehler!</string>
   <string name="linked_verify_pending">Noch nicht verifiziert</string>
   <string name="linked_need_verify">Die Ressource muss verifiziert werden bevor du fortfahren kannst!</string>
   <string name="menu_linked_add_identity">Mit Benutzerkonto verknüpfen</string>
@@ -1415,4 +1430,15 @@
   <string name="linked_text_confirming">Wird bestätigt...</string>
   <string name="linked_ids_more_unknown">%d weitere unbekannte Identitätstypen</string>
   <string name="title_linked_id_create">Verknüpfte-Identität erzeugen</string>
+  <string name="linked_progress_post_gist">Gist wird veröffentlicht...</string>
+  <string name="backup_code_explanation">Das Backup wird durch einen Backupcode gesichert. Schreibe diesen auf, bevor du fortfährst!</string>
+  <string name="backup_code_enter">Bitte gib den Backupcode ein:</string>
+  <string name="backup_code_wrong">Der eingegebene Backupcode ist falsch!\nHast du ihn korrekt eingegeben?</string>
+  <string name="btn_backup_share">Backup teilen</string>
+  <string name="btn_backup_save">Backup speichern</string>
+  <string name="snack_backup_error_saving">Fehler beim Speichern des Backups!</string>
+  <string name="snack_backup_saved">Backup gespeichert</string>
+  <string name="snack_backup_exists">Backup existiert bereits!</string>
+  <string name="share_log_dialog_share_button">Teilen</string>
+  <string name="share_log_dialog_cancel_button">Abbrechen</string>
 </resources>

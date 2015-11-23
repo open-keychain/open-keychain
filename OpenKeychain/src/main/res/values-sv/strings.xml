@@ -84,6 +84,7 @@
   <string name="btn_add_keyserver">Lägg till</string>
   <string name="btn_save_default">Spara som standard</string>
   <string name="btn_saved">Sparad!</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Inställningar</string>
   <string name="menu_help">Hjälp</string>
@@ -148,10 +149,7 @@
   <string name="pref_keyserver_summary">Sök nycklar på valda OpenPGP nyckelservrar (HKP-protokollet)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Sök nycklar på keybase.io</string>
-  <string name="label_sync_settings_keyserver_title">Uppdatera nycklar automatiskt</string>
-  <string name="label_sync_settings_keyserver_summary_off">Nycklar uppdateras inte automatiskt</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Uppdatera nycklar automatiskt</string>
   <string name="label_experimental_settings_desc_title">Varning</string>
   <string name="label_experimental_settings_linked_identities_title">Länkade identiteter</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io-bevis</string>

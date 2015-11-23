@@ -81,6 +81,7 @@
   <string name="btn_match_phrases">語句の一致</string>
   <string name="btn_share_encrypted_signed">暗号化/署名とテキストをシェア</string>
   <string name="btn_copy_encrypted_signed">暗号化/署名とテキストをコピー</string>
+  <string name="btn_paste_encrypted_signed">暗号化/署名してテキストを貼り付け</string>
   <string name="btn_view_cert_key">検証した鍵を見る</string>
   <string name="btn_create_key">鍵の生成</string>
   <string name="btn_add_files">ファイルの追加</string>
@@ -97,6 +98,7 @@
   <string name="btn_save_default">デフォルトとして保存</string>
   <string name="btn_saved">保存しました!</string>
   <string name="btn_not_matching">一致せず</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">ヘルプ</string>
@@ -111,9 +113,6 @@
   <string name="menu_export_all_keys">すべての鍵のエクスポート</string>
   <string name="menu_update_all_keys">全部のキーをアップデートする</string>
   <string name="menu_advanced">拡張情報</string>
-  <string name="menu_certify_fingerprint">指紋による確認</string>
-  <string name="menu_certify_fingerprint_phrases">語句による検証</string>
-  <string name="menu_share_log">共有ログ</string>
   <string name="menu_keyserver_add">追加</string>
   <!--label-->
   <string name="label_message">テキスト</string>
@@ -174,17 +173,12 @@
   <string name="pref_keyserver_summary">選択したOpenPGP鍵サーバで鍵を探す (HKPプロトコル)</string>
   <string name="pref_keybase">Keybase.io</string>
   <string name="pref_keybase_summary">Keybase.ioで鍵を探す</string>
-  <string name="label_sync_settings_keyserver_title">鍵の自動アップデート</string>
-  <string name="label_sync_settings_keyserver_summary_on">1週間以上古い鍵なら鍵サーバへアップデートを問合せる</string>
-  <string name="label_sync_settings_keyserver_summary_off">鍵を自動でアップデートしない</string>
   <string name="label_sync_settings_contacts_title">連絡先へ鍵をリンク</string>
   <string name="label_sync_settings_contacts_summary_on">オフランで完結して、名前とメールアドレスに基づいて、鍵を連絡先にリンク</string>
   <string name="label_sync_settings_contacts_summary_off">新しい鍵は連絡先と関連付けしない</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">鍵の自動アップデート</string>
   <string name="label_experimental_settings_desc_title">注意</string>
   <string name="label_experimental_settings_desc_summary">これらの機能はまだ完成していないか、ユーザーエクスペリエンス/セキュリティ研究の結果ではありません。そのため、このセキュリティに依存したり、遭遇した問題を報告しないでください!</string>
-  <string name="label_experimental_settings_word_confirm_title">語句検証</string>
   <string name="label_experimental_settings_word_confirm_summary">16進指紋の変りに語句で鍵を検証</string>
   <string name="label_experimental_settings_linked_identities_title">リンクしたユーザID</string>
   <string name="label_experimental_settings_linked_identities_summary">Twitter、GitHub、Webサイト、またはDNSに鍵をリンク (keybase.ioに似ていますが、分散型)</string>
@@ -270,7 +264,6 @@
   <string name="nfc_text">YubiKeyをあなたのデバイスの背中にあるNFCの印に対向させて固定してください。</string>
   <string name="nfc_wait">YubiKeyを背後に維持してください!</string>
   <string name="nfc_finished">YubiKeyを取り外してください。</string>
-  <string name="nfc_try_again_text">Yubikeyを離し、再実行を推してください。</string>
   <string name="file_delete_confirmation_title">オリジナルのファイルを削除しますか?</string>
   <string name="file_delete_confirmation">以下のファイルを削除します:%s</string>
   <string name="file_delete_successful">%1$d 中の %2$d のファイルの削除が完了しました。%3$s</string>
@@ -334,6 +327,7 @@
   <string name="error_nothing_import_selected">インポートの鍵が選択されていません!</string>
   <string name="error_contacts_key_id_missing">連絡帳から鍵IDの回収が失敗しました!</string>
   <string name="error_generic_report_bug">一般エラーが発生しました、この新しいバグの情報をOpenKeychainプロジェクトに送ってください</string>
+  <string name="error_denied_storage_permission">アクセスが拒否されたため、ストレージからファイルを読み込みできません!</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">未署名</string>
   <string name="decrypt_result_invalid_signature">無効な署名です!</string>
@@ -359,6 +353,7 @@
   <string name="progress_cancelling">キャンセル中...</string>
   <string name="progress_saving">保存...</string>
   <string name="progress_importing">インポート...</string>
+  <string name="progress_benchmarking">ベンチマーク…</string>
   <string name="progress_revoking_uploading">鍵の破棄とアップロード...</string>
   <string name="progress_updating">キーをアップデート中。。。</string>
   <string name="progress_exporting">エクスポート...</string>
@@ -1039,6 +1034,8 @@
   <string name="msg_ek_error_dummy">ストリップした主鍵では鍵輪を編集できません!</string>
   <string name="msg_ek_error_not_found">鍵が見当りません!</string>
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_askip_bad_flags">暗号化した鍵ではありません、スキップします…</string>
+  <string name="msg_dc_askip_unavailable">鍵が利用できません、スキップします…</string>
   <string name="msg_dc_askip_no_key">既知の鍵で暗号化されていないデータです、スキップします...</string>
   <string name="msg_dc_askip_not_allowed">受け入れた鍵で暗号化されていないデータです、スキップします...</string>
   <string name="msg_dc_asym">鍵 %s で非対称の暗号化されたデータのブロックを検出</string>
@@ -1179,15 +1176,20 @@
   </plurals>
   <string name="msg_backup_all">すべての鍵とバックアップ</string>
   <string name="msg_backup_public">公開鍵 %s のバックアップを作成中</string>
-  <string name="msg_upload">公開鍵 %s をアップロード中</string>
   <string name="msg_backup_secret">秘密鍵 %s のバックアップを作成中</string>
   <string name="msg_backup_error_uri_open">URIオープン時にエラー!</string>
   <string name="msg_backup_error_db">データベースエラー!</string>
   <string name="msg_backup_error_io">入出力エラー!</string>
-  <string name="msg_upload_error_key">鍵データの事前処理のエラー!</string>
-  <string name="msg_upload_error_upload">サーバに鍵をアップロード中にエラー! インターネット接続を確認してください</string>
   <string name="msg_backup_success">バックアップ操作に成功</string>
-  <string name="msg_upload_success">鍵サーバへアップロードに成功</string>
+  <string name="msg_upload">公開鍵をアップロード中</string>
+  <string name="msg_upload_proxy_direct">使用中のプロキシ: なし</string>
+  <string name="msg_upload_proxy_tor">使用中のプロキシ: TOR</string>
+  <string name="msg_upload_proxy">使用中のプロキシ: %s</string>
+  <string name="msg_upload_server">サーバー: %s</string>
+  <string name="msg_upload_error_key">鍵データの事前処理でエラー!</string>
+  <string name="msg_upload_error_not_found">鍵が見つかりません!</string>
+  <string name="msg_upload_error_upload">サーバに鍵をアップロード中にエラー! インターネット接続を確認してください</string>
+  <string name="msg_upload_success">鍵サーバへのアップロードに成功しました</string>
   <string name="msg_del_error_empty">削除するものがありません!</string>
   <string name="msg_del_error_multi_secret">秘密鍵は個別にしか削除できません!</string>
   <plurals name="msg_del">
@@ -1226,6 +1228,13 @@
   <string name="msg_lv_fetch_error_io">IOエラー!</string>
   <string name="msg_lv_fetch_error_format">フォーマットエラー!</string>
   <string name="msg_lv_fetch_error_nothing">リソースが見つかりません!</string>
+  <string name="msg_bench">いくつかの操作をベンチマーク中…</string>
+  <string name="msg_bench_enc_time">暗号化時間: %ss</string>
+  <string name="msg_bench_enc_time_avg">5M を暗号化する平均時間: %ss</string>
+  <string name="msg_bench_dec_time">復号化時間: %ss</string>
+  <string name="msg_bench_dec_time_avg">5M を復号化する平均時間: %ss</string>
+  <string name="msg_bench_s2k_for_it">%1$s SHA1 S2K 繰り返しの時間: %2$sms</string>
+  <string name="msg_bench_success">ベンチマークを完了しました!</string>
   <string name="msg_data">入力データの処理中</string>
   <string name="msg_data_openpgp">OpenPGPデータの処理を試みています</string>
   <string name="msg_data_detached">分離署名に遭遇しました</string>
@@ -1236,13 +1245,11 @@
   <string name="msg_data_detached_trailing">署名された部分の後、末尾のデータをスキップしています!</string>
   <string name="msg_data_detached_unsupported">サポートしない種別の分離署名!</string>
   <string name="msg_data_error_io">入力データの読み込み時にエラー!</string>
-  <string name="msg_data_error_openpgp">OpenPGPデータの処理中にエラー!</string>
   <string name="msg_data_mime_bad">MIMEデータとして解析できません</string>
   <string name="msg_data_mime_filename">ファイル名: \'%s\'</string>
   <string name="msg_data_mime_from_extension">拡張子からMIME種別を推測しています</string>
   <string name="msg_data_mime_length">コンテンツ長: %s</string>
   <string name="msg_data_mime">MIMEデータ構造の解析中</string>
-  <string name="msg_data_mime_ok">\"解析完了</string>
   <string name="msg_data_mime_none">MIME構造が見つかりません</string>
   <string name="msg_data_mime_part">MIME部分の処理中</string>
   <string name="msg_data_mime_type">コンテンツ種別: %s</string>
@@ -1272,7 +1279,6 @@
   <string name="msg_mime_parsing_error">MIME解析に失敗</string>
   <string name="msg_mime_parsing_success">MIME解析に成功!</string>
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_touch_to_clear">タッチしてパスワードをクリア。</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="other">%d のパスワードを忘れない</item>
   </plurals>
@@ -1410,10 +1416,6 @@
   <string name="error_empty_log">(エラー、空のログ)</string>
   <string name="error_reading_text">復号化のための入力が読めない!</string>
   <string name="error_reading_aosp">データの読み込みに失敗しました。これはAndroidメールクライアントのバグです! (Issue #290)</string>
-  <string name="error_reading_k9">不完全なデータを受信しました。 K-9 メールで、\'完全なメッセージをダウンロード\' を押してみてください!</string>
-  <string name="filename_unknown">不明なファイル名 (クリックして開きます)</string>
-  <string name="filename_unknown_text">テキスト(クリックして表示)</string>
-  <string name="filename_keys">鍵のバックアップ (クリックしてインポート)</string>
   <string name="intent_show">署名/暗号化した内容を表示</string>
   <string name="intent_share">署名/暗号化した内容を共有</string>
   <string name="view_internal">OpenKeychainで閲覧</string>
@@ -1438,15 +1440,11 @@
   <string name="linked_create_https_2_1">このURIの検証ファイルが作成されました:</string>
   <string name="linked_create_https_2_2">次のステップでは、このファイルを保存して、アップロードしてください。</string>
   <string name="linked_create_https_2_3">ファイルが正しいURIで到達可能であることを確認してください。その後、セットアップを確認します。</string>
-  <string name="linked_create_https_2_4">検証に成功した後、終了ボタンを押して、鍵輪にリンクされたIDを追加し、処理を終了してください。</string>
   <string name="linked_create_twitter_1_1">この種別のリンクしたユーザIDを作成することにより、あなたの鍵を制御するTwitterアカウントにリンクすることができます。</string>
   <string name="linked_create_twitter_1_2">これを行うには、あなたのタイムラインで特定のツイートを公開し、その後、このツイートへのリンクされたIDを作成します。</string>
   <string name="linked_create_twitter_1_3">続行するにはTwitterのスクリーンネームを入力してください。</string>
   <string name="linked_create_twitter_handle">Twitter ハンドル</string>
-  <string name="linked_create_twitter_2_1">ボタンをクリックして、メッセージをツイートしてください!</string>
   <string name="linked_create_twitter_2_2">括弧内のテキストが変更されていない限り、投稿する前にツイートを編集することができます。</string>
-  <string name="linked_create_twitter_2_3">&lt;b&gt;@%s&lt;/b&gt; としてあなたのツイートが公開されたら、検証ボタンをクリックして、あなたのタイムラインをスキャンしてください。</string>
-  <string name="linked_create_twitter_2_4">検証に成功した後、終了ボタンを押して、鍵輪にリンクされたIDを追加し、処理を終了してください。</string>
   <string name="linked_create_verify">検証</string>
   <string name="linked_text_clipboard">テキストをクリップボードにコピーしました</string>
   <string name="linked_verified_https">このウェブサイトと鍵の間のリンクは確実に検証しました。<b>あなたがウェブサイトが本物であると思われる場合</b>、あなたの鍵でこの検証を確認します。</string>
@@ -1461,7 +1459,6 @@
     <item quantity="other">%d 以上の不明なユーザID種別があります</item>
   </plurals>
   <!--Other Linked Identity strings-->
-  <string name="linked_select_1">\'リンクしたユーザID\' は、あなたのPGP鍵をWeb上のリソースに接続します。</string>
   <string name="linked_select_2">種別を選択してください: </string>
   <string name="linked_id_generic_text">このファイルは、長いID %2$s のOpenPGP鍵の所有権を請求しています。\n\n検証のトークン:\n%1$s</string>
   <string name="linked_id_github_text">このGistは私のOpenPGP鍵でリンクされたIDを確認し、このGitHubアカウントにリンクします。\n\n検証のトークン:\n%1$s</string>
@@ -1488,11 +1485,9 @@
   <string name="linked_text_confirming">確認中…</string>
   <string name="linked_ids_more_unknown">%d 以上の不明なユーザID種別</string>
   <string name="title_linked_id_create">リンクしたユーザIDを作成</string>
-  <string name="linked_github_text">この操作は、鍵をあなたのGitHubアカウントにリンクします。\nボタンを押すと続行します。</string>
   <string name="linked_progress_auth_github">GitHubで認証…</string>
   <string name="linked_progress_post_gist">Gistを投稿…</string>
   <string name="linked_progress_update_key">鍵のアップデート…</string>
-  <string name="linked_button_start">Githubアカウントへリンク</string>
   <string name="linked_error_auth_failed">認証に失敗!</string>
   <string name="linked_error_timeout">接続タイムアウト!</string>
   <string name="linked_error_network">ネットワークエラー!</string>
@@ -1518,6 +1513,6 @@
   <string name="share_log_dialog_message">開発者がOpenKeychainのバグを見つけるためにログは非常に参考になりますが、更新された鍵に関するデータなど、潜在的な機密情報が含まれることがあります。この情報を共有しても大丈夫であることを確認してください。</string>
   <string name="share_log_dialog_share_button">共有</string>
   <string name="share_log_dialog_cancel_button">キャンセル</string>
-  <string name="toast_wrong_mimetype">データ種別が正しくありません。テキストを期待しました!</string>
   <string name="toast_no_text">共有データにテキストはありません!</string>
+  <string name="btn_search_for_query">検索\n\'%s\'</string>
 </resources>

@@ -76,6 +76,7 @@
   <string name="btn_add_keyserver">加入新伺服器</string>
   <string name="btn_save_default">設為預設值</string>
   <string name="btn_saved">已儲存</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">說明</string>
