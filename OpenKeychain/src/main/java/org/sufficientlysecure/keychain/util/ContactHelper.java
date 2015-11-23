@@ -180,7 +180,7 @@ public class ContactHelper {
                 ContactsContract.Contacts.Data.IS_PRIMARY + " DESC"
         );
         if (profileCursor == null) {
-            return null;
+            return new HashSet<>();
         }
 
         Set<String> emails = new HashSet<>();
@@ -210,7 +210,7 @@ public class ContactHelper {
                 },
                 null, null, null);
         if (profileCursor == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         Set<String> names = new HashSet<>();
