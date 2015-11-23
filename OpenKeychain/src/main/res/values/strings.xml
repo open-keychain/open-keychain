@@ -194,14 +194,14 @@
     <string name="pref_keybase">"keybase.io"</string>
     <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
 
-    <string name="label_sync_settings_keyserver_title">"Automatically update keys"</string>
-    <string name="label_sync_settings_keyserver_summary_on">"Keys older than a week are updated from the preferred keyserver"</string>
-    <string name="label_sync_settings_keyserver_summary_off">"Keys not automatically updated"</string>
+    <string name="label_sync_settings_keyserver_title">"Automatic key updates"</string>
+    <string name="label_sync_settings_keyserver_summary_on">"Every three days, keys are updated from the preferred keyserver"</string>
+    <string name="label_sync_settings_keyserver_summary_off">"Keys are not automatically updated"</string>
     <string name="label_sync_settings_contacts_title">"Link keys to contacts"</string>
     <string name="label_sync_settings_contacts_summary_on">"Link keys to contacts based on names and email addresses. This happens completely offline on your device."</string>
     <string name="label_sync_settings_contacts_summary_off">"New keys will not be linked to contacts"</string>
     <!-- label shown in Android settings under the OpenKeychain account -->
-    <string name="keyserver_sync_settings_title">"Automatically update keys"</string>
+    <string name="keyserver_sync_settings_title">"Automatic key updates"</string>
 
     <string name="label_experimental_settings_desc_title">"Warning"</string>
     <string name="label_experimental_settings_desc_summary">"These features are not yet finished or results of user experience/security research. Thus, don't rely on their security and please don't report issues you encounter!"</string>

@@ -18,12 +18,16 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -34,6 +38,8 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -55,6 +61,7 @@ import java.util.List;
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
     public static final int REQUEST_CODE_KEYSERVER_PREF = 0x00007005;
+    private static final int REQUEST_PERMISSION_READ_CONTACTS = 13;
 
     private static Preferences sPreferences;
     private ThemeChanger mThemeChanger;
@@ -250,8 +257,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                 if (mUseTor.isChecked()) {
                     disableNormalProxyPrefs();
-                }
-                else if (mUseNormalProxy.isChecked()) {
+                } else if (mUseNormalProxy.isChecked()) {
                     disableUseTorPrefs();
                 } else {
                     disableNormalProxySettings();
@@ -435,26 +441,79 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         private void initializeSyncCheckBox(final SwitchPreference syncCheckBox,
                                             final Account account,
                                             final String authority) {
-            boolean syncEnabled = ContentResolver.getSyncAutomatically(account, authority);
+            boolean syncEnabled = ContentResolver.getSyncAutomatically(account, authority)
+                    && checkContactsPermission(authority);
             syncCheckBox.setChecked(syncEnabled);
             setSummary(syncCheckBox, authority, syncEnabled);
 
             syncCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @TargetApi(Build.VERSION_CODES.M)
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     boolean syncEnabled = (Boolean) newValue;
                     if (syncEnabled) {
-                        ContentResolver.setSyncAutomatically(account, authority, true);
+                        if (checkContactsPermission(authority)) {
+                            ContentResolver.setSyncAutomatically(account, authority, true);
+                            setSummary(syncCheckBox, authority, true);
+                            return true;
+                        } else {
+                            requestPermissions(
+                                    new String[]{Manifest.permission.READ_CONTACTS},
+                                    REQUEST_PERMISSION_READ_CONTACTS);
+                            // don't update preference
+                            return false;
+                        }
                     } else {
                         // disable syncs
                         ContentResolver.setSyncAutomatically(account, authority, false);
                         // cancel any ongoing/pending syncs
                         ContentResolver.cancelSync(account, authority);
+                        setSummary(syncCheckBox, authority, false);
+                        return true;
                     }
-                    setSummary(syncCheckBox, authority, syncEnabled);
-                    return true;
                 }
             });
+        }
+
+        private boolean checkContactsPermission(String authority) {
+            if (!ContactsContract.AUTHORITY.equals(authority)) {
+                return true;
+            }
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                return true;
+            }
+
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)
+                    == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode,
+                                               @NonNull String[] permissions,
+                                               @NonNull int[] grantResults) {
+
+            if (requestCode != REQUEST_PERMISSION_READ_CONTACTS) {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                return;
+            }
+
+            boolean permissionWasGranted = grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+            if (permissionWasGranted) {
+                // permission granted -> enable contact linking
+                AccountManager manager = AccountManager.get(getActivity());
+                final Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
+                SwitchPreference pref = (SwitchPreference) findPreference(Constants.Pref.SYNC_KEYSERVER);
+                ContentResolver.setSyncAutomatically(account, Constants.PROVIDER_AUTHORITY, true);
+                setSummary(pref, Constants.PROVIDER_AUTHORITY, true);
+                pref.setChecked(true);
+            }
         }
 
         private void setSummary(SwitchPreference syncCheckBox, String authority,
