@@ -18,14 +18,12 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -51,8 +49,6 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 /**
  * An operation which implements a high level user id certification operation.
@@ -256,7 +252,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
         }
 
         // since only verified keys are synced to contacts, we need to initiate a sync now
-        ContactSyncAdapterService.requestSync();
+        ContactSyncAdapterService.requestContactsSync();
 
         log.add(LogType.MSG_CRT_SUCCESS, 0);
         if (uploadError != 0) {

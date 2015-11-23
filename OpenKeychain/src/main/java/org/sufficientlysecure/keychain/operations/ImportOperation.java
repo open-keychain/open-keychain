@@ -124,7 +124,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     /**
      * Since the introduction of multithreaded import, we expect calling functions to handle the
-     * contact-to-key sync i.e ContactSyncAdapterService.requestSync()
+     * contact-to-key sync i.e ContactSyncAdapterService.requestContactsSync()
      *
      * @param entries      keys to import
      * @param num          number of keys to import
@@ -325,7 +325,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         // Special: make sure new data is synced into contacts
         // disabling sync right now since it reduces speed while multi-threading
         // so, we expect calling functions to take care of it. KeychainService handles this
-        // ContactSyncAdapterService.requestSync();
+        // ContactSyncAdapterService.requestContactsSync();
 
         // convert to long array
         long[] importedMasterKeyIdsArray = new long[importedMasterKeyIds.size()];
@@ -405,7 +405,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             result = multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer, proxy);
         }
 
-        ContactSyncAdapterService.requestSync();
+        ContactSyncAdapterService.requestContactsSync();
         return result;
     }
 

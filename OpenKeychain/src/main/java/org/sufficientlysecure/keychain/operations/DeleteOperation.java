@@ -102,7 +102,7 @@ public class DeleteOperation extends BaseOperation<DeleteKeyringParcel> {
         int result = DeleteResult.RESULT_OK;
         if (success > 0) {
             // make sure new data is synced into contacts
-            ContactSyncAdapterService.requestSync();
+            ContactSyncAdapterService.requestContactsSync();
 
             log.add(LogType.MSG_DEL_OK, 0, success);
         }

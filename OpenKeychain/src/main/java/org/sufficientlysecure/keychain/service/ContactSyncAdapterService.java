@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@
 package org.sufficientlysecure.keychain.service;
 
 import android.accounts.Account;
+import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
@@ -26,13 +29,19 @@ import android.content.Intent;
 import android.content.SyncResult;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceActivity;
 import android.provider.ContactsContract;
+import android.support.v4.app.NotificationCompat;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.SettingsActivity;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class ContactSyncAdapterService extends Service {
+
+    private static final int NOTIFICATION_ID_SYNC_SETTINGS = 13;
 
     private class ContactSyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -46,7 +55,44 @@ public class ContactSyncAdapterService extends Service {
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
                                   final SyncResult syncResult) {
             Log.d(Constants.TAG, "Performing a contact sync!");
-            // TODO: Import is currently disabled for 2.8, until we implement proper origin management
+
+            ContactHelper.writeKeysToContacts(ContactSyncAdapterService.this);
+
+            importKeys();
+        }
+
+        @Override
+        public void onSecurityException(Account account, Bundle extras, String authority, SyncResult syncResult) {
+            super.onSecurityException(account, extras, authority, syncResult);
+
+            // deactivate sync
+            ContentResolver.setSyncAutomatically(account, authority, false);
+
+            // show notification linking to sync settings
+            Intent resultIntent = new Intent(ContactSyncAdapterService.this, SettingsActivity.class);
+            resultIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+                    SettingsActivity.SyncPrefsFragment.class.getName());
+            PendingIntent resultPendingIntent =
+                    PendingIntent.getActivity(
+                            ContactSyncAdapterService.this,
+                            0,
+                            resultIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                    );
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(ContactSyncAdapterService.this)
+                            .setSmallIcon(R.drawable.ic_stat_notify_24dp)
+                            .setContentTitle(getString(R.string.sync_notification_permission_required_title))
+                            .setContentText(getString(R.string.sync_notification_permission_required_text))
+                            .setContentIntent(resultPendingIntent);
+            NotificationManager mNotifyMgr =
+                    (NotificationManager) ContactSyncAdapterService.this.getSystemService(Activity.NOTIFICATION_SERVICE);
+            mNotifyMgr.notify(NOTIFICATION_ID_SYNC_SETTINGS, mBuilder.build());
+        }
+    }
+
+    private static void importKeys() {
+        // TODO: Import is currently disabled, until we implement proper origin management
 //            importDone.set(false);
 //            KeychainApplication.setupAccountAsNeeded(ContactSyncAdapterService.this);
 //            EmailKeyHelper.importContacts(getContext(), new Messenger(new Handler(Looper.getMainLooper(),
@@ -84,14 +130,13 @@ public class ContactSyncAdapterService extends Service {
 //                    return;
 //                }
 //            }
-            ContactHelper.writeKeysToContacts(ContactSyncAdapterService.this);
-        }
     }
 
-    public static void requestSync() {
+    public static void requestContactsSync() {
         Bundle extras = new Bundle();
-        // no need to wait for internet connection!
+        // no need to wait, do it immediately
         extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         ContentResolver.requestSync(
                 new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE),
                 ContactsContract.AUTHORITY,

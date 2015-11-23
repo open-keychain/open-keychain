@@ -17,17 +17,21 @@
 
 package org.sufficientlysecure.keychain.util;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
 import android.util.Patterns;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -51,6 +55,11 @@ public class ContactHelper {
     private static final Map<Long, Bitmap> photoCache = new HashMap<>();
 
     public static List<String> getPossibleUserEmails(Context context) {
+        if (!isContactsPermissionGranted(context)) {
+            Log.w(Constants.TAG, "getting emails not possible READ_CONTACTS permission denied!");
+            return new ArrayList<>();
+        }
+
         Set<String> accountMails = getAccountEmails(context);
         accountMails.addAll(getMainProfileContactEmails(context));
 
@@ -69,6 +78,11 @@ public class ContactHelper {
     }
 
     public static List<String> getPossibleUserNames(Context context) {
+        if (!isContactsPermissionGranted(context)) {
+            Log.w(Constants.TAG, "getting names not possible READ_CONTACTS permission denied!");
+            return new ArrayList<>();
+        }
+
         Set<String> accountMails = getAccountEmails(context);
         Set<String> names = getContactNamesFromEmails(context, accountMails);
         names.addAll(getMainProfileContactName(context));
@@ -242,7 +256,7 @@ public class ContactHelper {
      * @param highRes         true for large image if present, false for thumbnail
      * @return bitmap of loaded photo
      */
-    public static Bitmap loadMainProfilePhoto(ContentResolver contentResolver, boolean highRes) {
+    public static Bitmap loadMainProfilePhoto(Context context, ContentResolver contentResolver, boolean highRes) {
         try {
             long mainProfileContactId = getMainProfileContactId(contentResolver);
 
@@ -300,6 +314,7 @@ public class ContactHelper {
     }
 
     public static Uri dataUriFromContactUri(Context context, Uri contactUri) {
+
         Cursor contactMasterKey = context.getContentResolver().query(contactUri,
                 new String[]{ContactsContract.Data.DATA2}, null, null, null);
         if (contactMasterKey != null) {
@@ -373,32 +388,43 @@ public class ContactHelper {
         return contactName;
     }
 
-    public static Bitmap getCachedPhotoByMasterKeyId(ContentResolver contentResolver, long masterKeyId) {
+    public static Bitmap getCachedPhotoByMasterKeyId(Context context, ContentResolver contentResolver,
+                                                     long masterKeyId) {
         if (masterKeyId == -1) {
             return null;
         }
         if (!photoCache.containsKey(masterKeyId)) {
-            photoCache.put(masterKeyId, loadPhotoByMasterKeyId(contentResolver, masterKeyId, false));
+            photoCache.put(masterKeyId, loadPhotoByMasterKeyId(context, contentResolver, masterKeyId, false));
         }
         return photoCache.get(masterKeyId);
     }
 
-    public static Bitmap loadPhotoByMasterKeyId(ContentResolver contentResolver, long masterKeyId,
-                                                boolean highRes) {
+    public static Bitmap loadPhotoByMasterKeyId(Context context, ContentResolver contentResolver,
+                                                long masterKeyId, boolean highRes) {
+        if (!isContactsPermissionGranted(context)) {
+            Log.w(Constants.TAG, "loading photo not possible READ_CONTACTS permission denied!");
+            return null;
+        }
+
         if (masterKeyId == -1) {
             return null;
         }
         try {
             long contactId = findContactId(contentResolver, masterKeyId);
-            return loadPhotoByContactId(contentResolver, contactId, highRes);
+            return loadPhotoByContactId(context, contentResolver, contactId, highRes);
 
         } catch (Throwable ignored) {
             return null;
         }
     }
 
-    public static Bitmap loadPhotoByContactId(ContentResolver contentResolver, long contactId,
-                                              boolean highRes) {
+    public static Bitmap loadPhotoByContactId(Context context, ContentResolver contentResolver,
+                                              long contactId, boolean highRes) {
+        if (!isContactsPermissionGranted(context)) {
+            Log.w(Constants.TAG, "loading photo not possible READ_CONTACTS permission denied!");
+            return null;
+        }
+
         if (contactId == -1) {
             return null;
         }
@@ -450,6 +476,19 @@ public class ContactHelper {
         writeKeysToMainProfileContact(context, resolver);
 
         writeKeysToNormalContacts(context, resolver);
+    }
+
+    private static boolean isContactsPermissionGranted(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
+                == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+
+        return false;
     }
 
     private static void writeKeysToNormalContacts(Context context, ContentResolver resolver) {

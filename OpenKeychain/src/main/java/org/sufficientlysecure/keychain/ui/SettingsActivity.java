@@ -133,7 +133,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
 
             // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.cloud_search_prefs);
+            addPreferencesFromResource(R.xml.cloud_search_preferences);
 
             mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
             mKeyServerPreference.setSummary(keyserverSummary(getActivity()));
@@ -238,11 +238,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 if (mFragment != null) {
                     Preferences.setPreferenceManagerFileAndMode(mFragment.getPreferenceManager());
                     // Load the preferences from an XML resource
-                    mFragment.addPreferencesFromResource(R.xml.proxy_prefs);
+                    mFragment.addPreferencesFromResource(R.xml.proxy_preferences);
                 } else {
                     Preferences.setPreferenceManagerFileAndMode(mActivity.getPreferenceManager());
                     // Load the preferences from an XML resource
-                    mActivity.addPreferencesFromResource(R.xml.proxy_prefs);
+                    mActivity.addPreferencesFromResource(R.xml.proxy_preferences);
                 }
 
                 mUseTor = (SwitchPreference) automaticallyFindPreference(Constants.Pref.USE_TOR_PROXY);
@@ -509,9 +509,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 // permission granted -> enable contact linking
                 AccountManager manager = AccountManager.get(getActivity());
                 final Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
-                SwitchPreference pref = (SwitchPreference) findPreference(Constants.Pref.SYNC_KEYSERVER);
-                ContentResolver.setSyncAutomatically(account, Constants.PROVIDER_AUTHORITY, true);
-                setSummary(pref, Constants.PROVIDER_AUTHORITY, true);
+                SwitchPreference pref = (SwitchPreference) findPreference(Constants.Pref.SYNC_CONTACTS);
+                ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+                setSummary(pref, ContactsContract.AUTHORITY, true);
                 pref.setChecked(true);
             }
         }

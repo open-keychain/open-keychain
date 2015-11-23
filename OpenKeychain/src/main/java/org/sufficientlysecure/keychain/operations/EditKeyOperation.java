@@ -195,7 +195,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         updateProgress(R.string.progress_done, 100, 100);
 
         // make sure new data is synced into contacts
-        ContactSyncAdapterService.requestSync();
+        ContactSyncAdapterService.requestContactsSync();
 
         log.add(LogType.MSG_ED_SUCCESS, 0);
         return new EditKeyResult(EditKeyResult.RESULT_OK, log, ring.getMasterKeyId());

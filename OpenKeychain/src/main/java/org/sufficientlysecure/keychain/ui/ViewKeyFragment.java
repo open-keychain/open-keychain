@@ -22,10 +22,12 @@ package org.sufficientlysecure.keychain.ui;
 import java.io.IOException;
 import java.util.List;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -35,6 +37,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
@@ -241,9 +244,9 @@ public class ViewKeyFragment extends LoaderFragment implements
 
             Bitmap picture;
             if (mIsSecret) {
-                picture = ContactHelper.loadMainProfilePhoto(resolver, false);
+                picture = ContactHelper.loadMainProfilePhoto(getActivity(), resolver, false);
             } else {
-                picture = ContactHelper.loadPhotoByContactId(resolver, contactId, false);
+                picture = ContactHelper.loadPhotoByContactId(getActivity(), resolver, contactId, false);
             }
             if (picture != null) mSystemContactPicture.setImageBitmap(picture);
 
@@ -419,13 +422,7 @@ public class ViewKeyFragment extends LoaderFragment implements
                         getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
                     }
 
-
-                    Bundle linkedContactData = new Bundle();
-                    linkedContactData.putLong(LOADER_EXTRA_LINKED_CONTACT_MASTER_KEY_ID, masterKeyId);
-                    linkedContactData.putBoolean(LOADER_EXTRA_LINKED_CONTACT_IS_SECRET, mIsSecret);
-
-                    // initialises loader for contact query so we can listen to any updates
-                    getLoaderManager().initLoader(LOADER_ID_LINKED_CONTACT, linkedContactData, this);
+                    initLinkedContactLoader(masterKeyId, mIsSecret);
 
                     break;
                 }
@@ -463,6 +460,22 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
 
         }
+    }
+
+    private void initLinkedContactLoader(long masterKeyId, boolean isSecret) {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)
+                == PackageManager.PERMISSION_DENIED) {
+            Log.w(Constants.TAG, "loading linked system contact not possible READ_CONTACTS permission denied!");
+            hideLinkedSystemContact();
+            return;
+        }
+
+        Bundle linkedContactData = new Bundle();
+        linkedContactData.putLong(LOADER_EXTRA_LINKED_CONTACT_MASTER_KEY_ID, masterKeyId);
+        linkedContactData.putBoolean(LOADER_EXTRA_LINKED_CONTACT_IS_SECRET, isSecret);
+
+        // initialises loader for contact query so we can listen to any updates
+        getLoaderManager().initLoader(LOADER_ID_LINKED_CONTACT, linkedContactData, this);
     }
 
     /**
