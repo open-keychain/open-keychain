@@ -115,6 +115,7 @@ ext {
 
 #### Add new library
 * You can add the library as a Maven dependency or as a git submodule (if patches are required) in the "extern" folder.
+* You can get all transitive dependencies with ``./gradlew -q dependencies OpenKeychain:dependencies``
 * If added as a Maven dependency, pin the library using [Gradle Witness](https://github.com/WhisperSystems/gradle-witness) (Do ``./gradlew -q calculateChecksums`` for Trust on First Use)
 * If added as a git submodule, change the ``compileSdkVersion`` and ``buildToolsVersion`` in build.gradle to use the variables from the root project:
 ```
