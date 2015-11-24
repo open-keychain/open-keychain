@@ -77,9 +77,15 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
         for (String origin : incoming.getOrigins()) {
             existing.addOrigin(origin);
 
-            // to work properly, Keybase-sourced entries need to pass along the extra
-            if (KeybaseKeyserver.ORIGIN.equals(origin)) {
-                existing.setExtraData(incoming.getExtraData());
+            // to work properly, Keybase-sourced/Facebook-sourced entries need to pass along the
+            // identifying name/id
+            if (incoming.getKeybaseName() != null) {
+                existing.setKeybaseName(incoming.getKeybaseName());
+                // one of the origins is not a HKP keyserver
+                incomingFromHkpServer = false;
+            }
+            if (incoming.getFbUsername() != null) {
+                existing.setFbUsername(incoming.getFbUsername());
                 // one of the origins is not a HKP keyserver
                 incomingFromHkpServer = false;
             }

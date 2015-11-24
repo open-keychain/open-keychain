@@ -193,6 +193,8 @@
     <string name="pref_keyserver_summary">"Search keys on selected OpenPGP keyservers (HKP protocol)"</string>
     <string name="pref_keybase">"keybase.io"</string>
     <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
+    <string name="pref_facebook">"Facebook"</string>
+    <string name="pref_facebook_summary">"Search keys on Facebook by username"</string>
 
     <string name="label_sync_settings_keyserver_title">"Automatic key updates"</string>
     <string name="label_sync_settings_keyserver_summary_on">"Every three days, keys are updated from the preferred keyserver"</string>
@@ -1294,6 +1296,7 @@
     <string name="msg_import_fetch_error_keyserver">"Could not retrieve key from keyservers: %s"</string>
     <string name="msg_import_fetch_error_keyserver_secret">"Cannot import secret key from keyserver!"</string>
     <string name="msg_import_fetch_keybase">"Retrieving from keybase.io: %s"</string>
+    <string name="msg_import_fetch_facebook">"Retrieving from Facebook: %s"</string>
     <string name="msg_import_fetch_keyserver">"Retrieving from keyserver: %s"</string>
     <string name="msg_import_fetch_keyserver_ok">"Key retrieval successful"</string>
     <string name="msg_import_keyserver">"Using keyserver %s"</string>

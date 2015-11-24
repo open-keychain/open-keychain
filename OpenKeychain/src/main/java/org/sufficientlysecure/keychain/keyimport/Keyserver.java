@@ -21,7 +21,6 @@ package org.sufficientlysecure.keychain.keyimport;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Proxy;
 import java.util.List;
 
 public abstract class Keyserver {

@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
+import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
@@ -41,6 +42,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,6 +52,8 @@ public class ImportKeysActivity extends BaseNfcActivity
 
     public static final String ACTION_IMPORT_KEY = OpenKeychainIntents.IMPORT_KEY;
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER;
+    public static final String ACTION_IMPORT_KEY_FROM_FACEBOOK
+            = Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_FACEBOOK";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT =
             Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN_RESULT";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE = Constants.INTENT_PREFIX
@@ -101,16 +105,23 @@ public class ImportKeysActivity extends BaseNfcActivity
         if (getIntent().hasExtra(EXTRA_PENDING_INTENT_DATA)) {
             mPendingIntentData = getIntent().getParcelableExtra(EXTRA_PENDING_INTENT_DATA);
         }
-
-        // if we aren't being restored, initialize fragments
-        if (savedInstanceState == null) {
-            handleActions(getIntent());
-        }
     }
 
     @Override
     protected void initLayout() {
         setContentView(R.layout.import_keys_activity);
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        handleActions(getIntent());
     }
 
     protected void handleActions(Intent intent) {
@@ -124,7 +135,9 @@ public class ImportKeysActivity extends BaseNfcActivity
         }
 
         if (Intent.ACTION_VIEW.equals(action)) {
-            if ("http".equals(scheme) || "https".equals(scheme)) {
+            if (FacebookKeyserver.isFacebookHost(dataUri)) {
+                action = ACTION_IMPORT_KEY_FROM_FACEBOOK;
+            } else if ("http".equals(scheme) || "https".equals(scheme)) {
                 action = ACTION_SEARCH_KEYSERVER_FROM_URL;
             } else {
                 // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
@@ -205,26 +218,31 @@ public class ImportKeysActivity extends BaseNfcActivity
                 }
                 break;
             }
+            case ACTION_IMPORT_KEY_FROM_FACEBOOK: {
+                String fbUsername = FacebookKeyserver.getUsernameFromUri(dataUri);
+
+                Preferences.CloudSearchPrefs cloudSearchPrefs =
+                        new Preferences.CloudSearchPrefs(false, true, true, null);
+                // we allow our users to edit the query if they wish
+                startTopCloudFragment(fbUsername, false, cloudSearchPrefs);
+                // search immediately
+                startListFragment(null, null, fbUsername, cloudSearchPrefs);
+                break;
+            }
             case ACTION_SEARCH_KEYSERVER_FROM_URL: {
                 // need to process URL to get search query and keyserver authority
                 String query = dataUri.getQueryParameter("search");
-                String keyserver = dataUri.getAuthority();
                 // if query not specified, we still allow users to search the keyserver in the link
                 if (query == null) {
                     Notify.create(this, R.string.import_url_warn_no_search_parameter, Notify.LENGTH_INDEFINITE,
                             Notify.Style.WARN).show();
-                    // we just set the keyserver
-                    startTopCloudFragment(null, false, keyserver);
-                    // we don't set the keyserver for ImportKeysListFragment since
-                    // it'll be set in the cloudSearchPrefs of ImportKeysCloudFragment
-                    // which is used when the user clicks on the search button
-                    startListFragment(null, null, null, null);
-                } else {
-                    // we allow our users to edit the query if they wish
-                    startTopCloudFragment(query, false, keyserver);
-                    // search immediately
-                    startListFragment(null, null, query, keyserver);
                 }
+                Preferences.CloudSearchPrefs cloudSearchPrefs = new Preferences.CloudSearchPrefs(
+                        true, true, true, dataUri.getAuthority());
+                // we allow our users to edit the query if they wish
+                startTopCloudFragment(query, false, cloudSearchPrefs);
+                // search immediately (if query is not null)
+                startListFragment(null, null, query, cloudSearchPrefs);
                 break;
             }
             case ACTION_IMPORT_KEY_FROM_FILE:
@@ -254,18 +272,21 @@ public class ImportKeysActivity extends BaseNfcActivity
     }
 
     /**
-     * if the fragment is started with non-null bytes/dataUri/serverQuery, it will immediately
-     * load content
+     * Shows the list of keys to be imported.
+     * If the fragment is started with non-null bytes/dataUri/serverQuery, it will immediately
+     * load content.
      *
-     * @param bytes              bytes containing list of keyrings to import
-     * @param dataUri            uri to file to import keyrings from
-     * @param serverQuery        query to search for on the keyserver
-     * @param keyserver          keyserver authority to search on. If null will use keyserver from
-     *                           user preferences
+     * @param bytes            bytes containing list of keyrings to import
+     * @param dataUri          uri to file to import keyrings from
+     * @param serverQuery      query to search for on the keyserver
+     * @param cloudSearchPrefs search specifications to use. If null will retrieve from user's
+     *                         preferences.
      */
-    private void startListFragment(byte[] bytes, Uri dataUri, String serverQuery, String keyserver) {
+    private void startListFragment(byte[] bytes, Uri dataUri, String serverQuery,
+                                   Preferences.CloudSearchPrefs cloudSearchPrefs) {
         Fragment listFragment =
-                ImportKeysListFragment.newInstance(bytes, dataUri, serverQuery, false, keyserver);
+                ImportKeysListFragment.newInstance(bytes, dataUri, serverQuery, false,
+                        cloudSearchPrefs);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.import_keys_list_container, listFragment, TAG_FRAG_LIST)
                 .commit();
@@ -283,14 +304,16 @@ public class ImportKeysActivity extends BaseNfcActivity
      * loads the CloudFragment, which consists of the search bar, search button and settings icon
      * visually.
      *
-     * @param query              search query
-     * @param disableQueryEdit   if true, user will not be able to edit the search query
-     * @param keyserver          keyserver authority to use for search, if null will use keyserver
-     *                           specified in user preferences
+     * @param query            search query
+     * @param disableQueryEdit if true, user will not be able to edit the search query
+     * @param cloudSearchPrefs keyserver authority to use for search, if null will use keyserver
+     *                         specified in user preferences
      */
-    private void startTopCloudFragment(String query, boolean disableQueryEdit, String keyserver) {
+    private void startTopCloudFragment(String query, boolean disableQueryEdit,
+                                       Preferences.CloudSearchPrefs cloudSearchPrefs) {
         findViewById(R.id.import_keys_top_layout).setVisibility(View.VISIBLE);
-        Fragment importCloudFragment = ImportKeysCloudFragment.newInstance(query, disableQueryEdit, keyserver);
+        Fragment importCloudFragment = ImportKeysCloudFragment.newInstance(query, disableQueryEdit,
+                cloudSearchPrefs);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.import_keys_top_container, importCloudFragment, TAG_FRAG_TOP)
                 .commit();
@@ -363,9 +386,8 @@ public class ImportKeysActivity extends BaseNfcActivity
                 // change the format into ParcelableKeyRing
                 ArrayList<ImportKeysListEntry> entries = keyListFragment.getSelectedEntries();
                 for (ImportKeysListEntry entry : entries) {
-                    keys.add(new ParcelableKeyRing(
-                                    entry.getFingerprintHex(), entry.getKeyIdHex(), entry.getExtraData())
-                    );
+                    keys.add(new ParcelableKeyRing(entry.getFingerprintHex(),
+                            entry.getKeyIdHex(), entry.getKeybaseName(), entry.getFbUsername()));
                 }
             }
 

@@ -218,15 +218,10 @@ public class CreateYubiKeyImportResetFragment
     public void importKey() {
 
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
-        keyList.add(new ParcelableKeyRing(mNfcFingerprint, null, null));
+        keyList.add(new ParcelableKeyRing(mNfcFingerprint, null));
         mKeyList = keyList;
 
-        {
-            Preferences prefs = Preferences.getPreferences(getActivity());
-            Preferences.CloudSearchPrefs cloudPrefs =
-                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            mKeyserver = cloudPrefs.keyserver;
-        }
+        mKeyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
 
         super.setProgressMessageResource(R.string.progress_importing);
 

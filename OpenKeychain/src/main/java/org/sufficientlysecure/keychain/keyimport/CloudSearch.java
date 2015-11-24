@@ -48,6 +48,9 @@ public class CloudSearch {
         if (cloudPrefs.searchKeybase) {
             servers.add(new KeybaseKeyserver(proxy));
         }
+        if (cloudPrefs.searchFacebook) {
+            servers.add(new FacebookKeyserver(proxy));
+        }
         final ImportKeysList results = new ImportKeysList(servers.size());
 
         ArrayList<Thread> searchThreads = new ArrayList<>();

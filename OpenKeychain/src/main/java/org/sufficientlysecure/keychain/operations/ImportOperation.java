@@ -38,6 +38,7 @@ import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
@@ -156,6 +157,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         double progSteps = 100.0 / num;
 
         KeybaseKeyserver keybaseServer = null;
+        FacebookKeyserver facebookServer = null;
         HkpKeyserver keyServer = null;
 
         // iterate over all entries
@@ -228,6 +230,12 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                             byte[] data = keybaseServer.get(entry.mKeybaseName).getBytes();
                             UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
 
+                            if (keybaseKey != null) {
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
+                            } else {
+                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
+                            }
+
                             // If there already is a key, merge the two
                             if (key != null && keybaseKey != null) {
                                 log.add(LogType.MSG_IMPORT_MERGE, 3);
@@ -240,6 +248,44 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                                 }
                             } else if (keybaseKey != null) {
                                 key = keybaseKey;
+                            }
+                        } catch (Keyserver.QueryFailedException e) {
+                            // download failed, too bad. just proceed
+                            Log.e(Constants.TAG, "query failed", e);
+                            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
+                        }
+                    }
+
+                    // if the key is from Facebook, fetch from there
+                    if (entry.mFbUsername != null) {
+                        // Make sure we have this cached
+                        if (facebookServer == null) {
+                            facebookServer = new FacebookKeyserver(proxy);
+                        }
+
+                        try {
+                            log.add(LogType.MSG_IMPORT_FETCH_FACEBOOK, 2, entry.mFbUsername);
+                            byte[] data = facebookServer.get(entry.mFbUsername).getBytes();
+                            UncachedKeyRing facebookKey = UncachedKeyRing.decodeFromData(data);
+
+                            if (facebookKey != null) {
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
+                            } else {
+                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
+                            }
+
+                            // If there already is a key, merge the two
+                            if (key != null && facebookKey != null) {
+                                log.add(LogType.MSG_IMPORT_MERGE, 3);
+                                facebookKey = key.merge(facebookKey, log, 4);
+                                // If the merge didn't fail, use the new merged key
+                                if (facebookKey != null) {
+                                    key = facebookKey;
+                                } else {
+                                    log.add(LogType.MSG_IMPORT_MERGE_ERROR, 4);
+                                }
+                            } else if (facebookKey != null) {
+                                key = facebookKey;
                             }
                         } catch (Keyserver.QueryFailedException e) {
                             // download failed, too bad. just proceed

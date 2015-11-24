@@ -65,7 +65,7 @@ public class ImportKeysListFragment extends ListFragment implements
     private static final String ARG_BYTES = "bytes";
     public static final String ARG_SERVER_QUERY = "query";
     public static final String ARG_NON_INTERACTIVE = "non_interactive";
-    public static final String ARG_KEYSERVER_URL = "keyserver_url";
+    public static final String ARG_CLOUD_SEARCH_PREFS = "cloud_search_prefs";
 
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
@@ -140,32 +140,35 @@ public class ImportKeysListFragment extends ListFragment implements
      * by dataUri, or searches a keyserver for serverQuery, if parameter is not null, in that order
      * Will immediately load data if non-null bytes/dataUri/serverQuery
      *
-     * @param bytes       byte data containing list of keyrings to be imported
-     * @param dataUri     file from which keyrings are to be imported
-     * @param serverQuery query to search for on keyserver
-     * @param keyserver   if not null, will perform search on specified keyserver. Else, uses
-     *                    keyserver specified in user preferences
+     * @param bytes            byte data containing list of keyrings to be imported
+     * @param dataUri          file from which keyrings are to be imported
+     * @param serverQuery      query to search for on keyserver
+     * @param cloudSearchPrefs search parameters to use. If null will retrieve from user's
+     *                         preferences.
      * @return fragment with arguments set based on passed parameters
      */
     public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri, String serverQuery,
-                                                     String keyserver) {
-        return newInstance(bytes, dataUri, serverQuery, false, keyserver);
+                                                     Preferences.CloudSearchPrefs cloudSearchPrefs) {
+        return newInstance(bytes, dataUri, serverQuery, false, cloudSearchPrefs);
     }
 
     /**
      * Visually consists of a list of keyrings with checkboxes to specify which are to be imported
      * Will immediately load data if non-null bytes/dataUri/serverQuery is supplied
      *
-     * @param bytes          byte data containing list of keyrings to be imported
-     * @param dataUri        file from which keyrings are to be imported
-     * @param serverQuery    query to search for on keyserver
-     * @param nonInteractive if true, users will not be able to check/uncheck items in the list
-     * @param keyserver      if set, will perform search on specified keyserver. If null, falls back
-     *                       to keyserver specified in user preferences
+     * @param bytes            byte data containing list of keyrings to be imported
+     * @param dataUri          file from which keyrings are to be imported
+     * @param serverQuery      query to search for on keyserver
+     * @param nonInteractive   if true, users will not be able to check/uncheck items in the list
+     * @param cloudSearchPrefs search parameters to use. If null will retrieve from user's
+     *                         preferences.
      * @return fragment with arguments set based on passed parameters
      */
-    public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri, String serverQuery,
-                                                     boolean nonInteractive, String keyserver) {
+    public static ImportKeysListFragment newInstance(byte[] bytes,
+                                                     Uri dataUri,
+                                                     String serverQuery,
+                                                     boolean nonInteractive,
+                                                     Preferences.CloudSearchPrefs cloudSearchPrefs) {
         ImportKeysListFragment frag = new ImportKeysListFragment();
 
         Bundle args = new Bundle();
@@ -173,7 +176,7 @@ public class ImportKeysListFragment extends ListFragment implements
         args.putParcelable(ARG_DATA_URI, dataUri);
         args.putString(ARG_SERVER_QUERY, serverQuery);
         args.putBoolean(ARG_NON_INTERACTIVE, nonInteractive);
-        args.putString(ARG_KEYSERVER_URL, keyserver);
+        args.putParcelable(ARG_CLOUD_SEARCH_PREFS, cloudSearchPrefs);
 
         frag.setArguments(args);
 
@@ -223,7 +226,6 @@ public class ImportKeysListFragment extends ListFragment implements
         Uri dataUri = args.getParcelable(ARG_DATA_URI);
         byte[] bytes = args.getByteArray(ARG_BYTES);
         String query = args.getString(ARG_SERVER_QUERY);
-        String keyserver = args.getString(ARG_KEYSERVER_URL);
         mNonInteractive = args.getBoolean(ARG_NON_INTERACTIVE, false);
 
         getListView().setOnTouchListener(new OnTouchListener() {
@@ -241,11 +243,10 @@ public class ImportKeysListFragment extends ListFragment implements
         if (dataUri != null || bytes != null) {
             mLoaderState = new BytesLoaderState(bytes, dataUri);
         } else if (query != null) {
-            Preferences.CloudSearchPrefs cloudSearchPrefs;
-            if (keyserver == null) {
+            Preferences.CloudSearchPrefs cloudSearchPrefs
+                    = args.getParcelable(ARG_CLOUD_SEARCH_PREFS);
+            if (cloudSearchPrefs == null) {
                 cloudSearchPrefs = Preferences.getPreferences(getActivity()).getCloudSearchPrefs();
-            } else {
-                cloudSearchPrefs = new Preferences.CloudSearchPrefs(true, true, keyserver);
             }
 
             mLoaderState = new CloudLoaderState(query, cloudSearchPrefs);
