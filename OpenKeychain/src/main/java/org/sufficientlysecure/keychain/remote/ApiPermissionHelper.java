@@ -17,9 +17,14 @@
 
 package org.sufficientlysecure.keychain.remote;
 
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -38,15 +43,21 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Abstract service class for remote APIs that handle app registration and user input.
  */
-public abstract class RemoteService extends Service {
+public class ApiPermissionHelper {
+
+    private final Context mContext;
+    private final ProviderHelper mProviderHelper;
+    private PackageManager mPackageManager;
+
+    public ApiPermissionHelper(Context context) {
+        mContext = context;
+        mPackageManager = context.getPackageManager();
+        mProviderHelper = new ProviderHelper(context);
+    }
 
     public static class WrongPackageCertificateException extends Exception {
         private static final long serialVersionUID = -8294642703122196028L;
@@ -54,13 +65,6 @@ public abstract class RemoteService extends Service {
         public WrongPackageCertificateException(String message) {
             super(message);
         }
-    }
-
-    Context mContext;
-    ProviderHelper mProviderHelper;
-
-    public Context getContext() {
-        return mContext;
     }
 
     /**
@@ -90,13 +94,13 @@ public abstract class RemoteService extends Service {
                 }
                 Log.e(Constants.TAG, "Not allowed to use service! return PendingIntent for registration!");
 
-                Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
+                Intent intent = new Intent(mContext, RemoteServiceActivity.class);
                 intent.setAction(RemoteServiceActivity.ACTION_REGISTER);
                 intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_NAME, packageName);
                 intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_SIGNATURE, packageCertificate);
                 intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
-                PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+                PendingIntent pi = PendingIntent.getActivity(mContext, 0,
                         intent,
                         PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
@@ -110,13 +114,13 @@ public abstract class RemoteService extends Service {
         } catch (WrongPackageCertificateException e) {
             Log.e(Constants.TAG, "wrong signature!", e);
 
-            Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
+            Intent intent = new Intent(mContext, RemoteServiceActivity.class);
             intent.setAction(RemoteServiceActivity.ACTION_ERROR_MESSAGE);
             intent.putExtra(RemoteServiceActivity.EXTRA_ERROR_MESSAGE,
-                    getString(R.string.api_error_wrong_signature));
+                    mContext.getString(R.string.api_error_wrong_signature));
             intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
-            PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+            PendingIntent pi = PendingIntent.getActivity(mContext, 0,
                     intent,
                     PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -131,7 +135,7 @@ public abstract class RemoteService extends Service {
 
     private byte[] getPackageCertificate(String packageName) throws NameNotFoundException {
         @SuppressLint("PackageManagerGetSignatures") // we do check the byte array of *all* signatures
-        PackageInfo pkgInfo = getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
+        PackageInfo pkgInfo = mContext.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
         // NOTE: Silly Android API naming: Signatures are actually certificates
         Signature[] certificates = pkgInfo.signatures;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -156,7 +160,7 @@ public abstract class RemoteService extends Service {
      * @return package name
      */
     protected String getCurrentCallingPackage() {
-        String[] callingPackages = getPackageManager().getPackagesForUid(Binder.getCallingUid());
+        String[] callingPackages = mPackageManager.getPackagesForUid(Binder.getCallingUid());
 
         // NOTE: No support for sharedUserIds
         // callingPackages contains more than one entry when sharedUserId has been used
@@ -189,13 +193,13 @@ public abstract class RemoteService extends Service {
         String packageName = getCurrentCallingPackage();
         Log.d(Constants.TAG, "getCreateAccountIntent accountName: " + accountName);
 
-        Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
+        Intent intent = new Intent(mContext, RemoteServiceActivity.class);
         intent.setAction(RemoteServiceActivity.ACTION_CREATE_ACCOUNT);
         intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RemoteServiceActivity.EXTRA_ACC_NAME, accountName);
         intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
-        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+        PendingIntent pi = PendingIntent.getActivity(mContext, 0,
                 intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -221,7 +225,7 @@ public abstract class RemoteService extends Service {
     private boolean isUidAllowed(int uid)
             throws WrongPackageCertificateException {
 
-        String[] callingPackages = getPackageManager().getPackagesForUid(uid);
+        String[] callingPackages = mPackageManager.getPackagesForUid(uid);
 
         // is calling package allowed to use this service?
         for (String currentPkg : callingPackages) {
@@ -271,13 +275,6 @@ public abstract class RemoteService extends Service {
 
         Log.d(Constants.TAG, "Package is NOT allowed! packageName: " + packageName);
         return false;
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mContext = this;
-        mProviderHelper = new ProviderHelper(this);
     }
 
 }

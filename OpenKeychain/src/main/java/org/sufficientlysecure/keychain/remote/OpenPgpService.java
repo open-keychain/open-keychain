@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.remote;
 
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -74,7 +75,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-public class OpenPgpService extends RemoteService {
+public class OpenPgpService extends Service {
 
     static final String[] EMAIL_SEARCH_PROJECTION = new String[]{
             KeyRings._ID,
@@ -86,6 +87,16 @@ public class OpenPgpService extends RemoteService {
     // do not pre-select revoked or expired keys
     static final String EMAIL_SEARCH_WHERE = Tables.KEYS + "." + KeychainContract.KeyRings.IS_REVOKED
             + " = 0 AND " + KeychainContract.KeyRings.IS_EXPIRED + " = 0";
+
+    private ApiPermissionHelper mApiPermissionHelper;
+    private ProviderHelper mProviderHelper;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mApiPermissionHelper = new ApiPermissionHelper(this);
+        mProviderHelper = new ProviderHelper(this);
+    }
 
     /**
      * Search database for key ids based on emails.
@@ -225,7 +236,7 @@ public class OpenPgpService extends RemoteService {
         // to retrieve the missing key
         Intent intent = new Intent(getBaseContext(), SelectAllowedKeysActivity.class);
         intent.putExtra(SelectAllowedKeysActivity.EXTRA_SERVICE_INTENT, data);
-        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(getCurrentCallingPackage()));
+        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(mApiPermissionHelper.getCurrentCallingPackage()));
 
         return PendingIntent.getActivity(getBaseContext(), 0,
                 intent,
@@ -297,7 +308,7 @@ public class OpenPgpService extends RemoteService {
             }
 
             // execute PGP operation!
-            PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
+            PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, new ProviderHelper(this), null);
             PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
@@ -414,9 +425,9 @@ public class OpenPgpService extends RemoteService {
                 if (TextUtils.isEmpty(accName)) {
                     accName = "default";
                 }
-                final AccountSettings accSettings = getAccSettings(accName);
+                final AccountSettings accSettings = mApiPermissionHelper.getAccSettings(accName);
                 if (accSettings == null || (accSettings.getKeyId() == Constants.key.none)) {
-                    return getCreateAccountIntent(data, accName);
+                    return mApiPermissionHelper.getCreateAccountIntent(data, accName);
                 }
                 pseInput.setAdditionalEncryptId(accSettings.getKeyId());
             }
@@ -431,7 +442,7 @@ public class OpenPgpService extends RemoteService {
                         new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
             }
 
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, mProviderHelper, null);
 
             // execute PGP operation!
             PgpSignEncryptResult pgpResult = op.execute(pseInput, inputParcel, inputData, outputStream);
@@ -472,7 +483,7 @@ public class OpenPgpService extends RemoteService {
                 outputStream = null;
             }
 
-            String currentPkg = getCurrentCallingPackage();
+            String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
             HashSet<Long> allowedKeyIds = mProviderHelper.getAllowedKeyIdsForApp(
                     KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
 
@@ -695,7 +706,7 @@ public class OpenPgpService extends RemoteService {
             String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
 
             Intent intent = new Intent(getBaseContext(), SelectSignKeyIdActivity.class);
-            String currentPkg = getCurrentCallingPackage();
+            String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
             intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(currentPkg));
             intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
             intent.putExtra(SelectSignKeyIdActivity.EXTRA_DATA, data);
@@ -740,9 +751,9 @@ public class OpenPgpService extends RemoteService {
             }
             Log.d(Constants.TAG, "accName: " + accName);
             // fallback to old API
-            final AccountSettings accSettings = getAccSettings(accName);
+            final AccountSettings accSettings = mApiPermissionHelper.getAccSettings(accName);
             if (accSettings == null || (accSettings.getKeyId() == Constants.key.none)) {
-                return getCreateAccountIntent(data, accName);
+                return mApiPermissionHelper.getCreateAccountIntent(data, accName);
             }
 
             // NOTE: just wrapping the key id
@@ -792,7 +803,7 @@ public class OpenPgpService extends RemoteService {
         }
 
         // check if caller is allowed to access OpenKeychain
-        Intent result = isAllowed(data);
+        Intent result = mApiPermissionHelper.isAllowed(data);
         if (result != null) {
             return result;
         }
