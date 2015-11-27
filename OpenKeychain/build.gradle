@@ -64,6 +64,10 @@ dependencies {
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
     compile 'com.cocosw:bottomsheet:1.2.0@aar'
 
+    // Nordpol
+    compile 'com.fidesmo:nordpol-android:0.1.10@aar'
+    compile 'com.fidesmo:nordpol-core:0.1.10'
+
     // libs as submodules
     compile project(':extern:openpgp-api-lib:openpgp-api')
     compile project(':extern:openkeychain-api-lib:openkeychain-intents')

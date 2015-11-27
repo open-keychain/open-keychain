@@ -36,6 +36,11 @@ import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import nordpol.android.TagDispatcher;
+import nordpol.android.AndroidCard;
+import nordpol.android.OnDiscoveredTagListener;
+import nordpol.IsoCard;
+
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.util.Arrays;
 import org.spongycastle.util.encoders.Hex;
@@ -61,8 +66,7 @@ import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
-
+public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implements OnDiscoveredTagListener {
     public static final int REQUEST_CODE_PIN = 1;
 
     public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";
@@ -73,8 +77,8 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
     protected boolean mPw1ValidatedForSignature;
     protected boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
     protected boolean mPw3Validated;
-    private NfcAdapter mNfcAdapter;
-    private IsoDep mIsoDep;
+    protected TagDispatcher mTagDispatcher;
+    private IsoCard mIsoCard;
     private boolean mTagHandlingEnabled;
 
     private static final int TIMEOUT = 100000;
@@ -139,8 +143,10 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
         onNfcError(error);
     }
 
-    public void handleIntentInBackground(final Intent intent) {
+    public void tagDiscovered(final Tag tag) {
         // Actual NFC operations are executed in doInBackground to not block the UI thread
+        if(!mTagHandlingEnabled)
+            return;
         new AsyncTask<Void, Void, IOException>() {
             @Override
             protected void onPreExecute() {
@@ -151,7 +157,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
             @Override
             protected IOException doInBackground(Void... params) {
                 try {
-                    handleTagDiscoveredIntent(intent);
+                    handleTagDiscovered(tag);
                 } catch (IOException e) {
                     return e;
                 }
@@ -185,6 +191,8 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mTagDispatcher = TagDispatcher.get(this, this, false);
+
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
             // Restore value of members from saved state
@@ -214,10 +222,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
      */
     @Override
     public void onNewIntent(final Intent intent) {
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())
-                && mTagHandlingEnabled) {
-            handleIntentInBackground(intent);
-        }
+        mTagDispatcher.interceptIntent(intent);
     }
 
     private void handleNfcError(IOException e) {
@@ -320,7 +325,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
         super.onPause();
         Log.d(Constants.TAG, "BaseNfcActivity.onPause");
 
-        disableNfcForegroundDispatch();
+        mTagDispatcher.disableExclusiveNfc();
     }
 
     /**
@@ -330,8 +335,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         Log.d(Constants.TAG, "BaseNfcActivity.onResume");
-
-        enableNfcForegroundDispatch();
+        mTagDispatcher.enableExclusiveNfc();
     }
 
     protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput) {
@@ -388,17 +392,15 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
      * on ISO SmartCard Systems specification.
      *
      */
-    protected void handleTagDiscoveredIntent(Intent intent) throws IOException {
-
-        Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+    protected void handleTagDiscovered(Tag tag) throws IOException {
 
         // Connect to the detected tag, setting a couple of settings
-        mIsoDep = IsoDep.get(detectedTag);
-        if (mIsoDep == null) {
+        mIsoCard = AndroidCard.get(tag);
+        if (mIsoCard == null) {
             throw new IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
         }
-        mIsoDep.setTimeout(TIMEOUT); // timeout is set to 100 seconds to avoid cancellation during calculation
-        mIsoDep.connect();
+        mIsoCard.setTimeout(TIMEOUT); // timeout is set to 100 seconds to avoid cancellation during calculation
+        mIsoCard.connect();
 
         // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
         // See specification, page 51
@@ -429,7 +431,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
     }
 
     public boolean isNfcConnected() {
-        return mIsoDep.isConnected();
+        return mIsoCard.isConnected();
     }
 
     /** Return the key id from application specific data stored on tag, or null
@@ -457,7 +459,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
      */
     public byte[] nfcGetFingerprints() throws IOException {
         String data = "00CA006E00";
-        byte[] buf = mIsoDep.transceive(Hex.decode(data));
+        byte[] buf = mIsoCard.transceive(Hex.decode(data));
 
         Iso7816TLV tlv = Iso7816TLV.readSingle(buf, true);
         Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlv.prettyPrint());
@@ -476,7 +478,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
      */
     public byte[] nfcGetPwStatusBytes() throws IOException {
         String data = "00CA00C400";
-        return mIsoDep.transceive(Hex.decode(data));
+        return mIsoCard.transceive(Hex.decode(data));
     }
 
     /** Return the fingerprint from application specific data stored on tag, or
@@ -502,7 +504,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
 
     public byte[] nfcGetAid() throws IOException {
         String info = "00CA004F00";
-        return mIsoDep.transceive(Hex.decode(info));
+        return mIsoCard.transceive(Hex.decode(info));
     }
 
     public String nfcGetUserId() throws IOException {
@@ -928,41 +930,6 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Receive new NFC Intents to this activity only by enabling foreground dispatch.
-     * This can only be done in onResume!
-     */
-    public void enableNfcForegroundDispatch() {
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (mNfcAdapter == null) {
-            return;
-        }
-        Intent nfcI = new Intent(this, getClass())
-                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent nfcPendingIntent = PendingIntent.getActivity(this, 0, nfcI, PendingIntent.FLAG_CANCEL_CURRENT);
-        IntentFilter[] writeTagFilters = new IntentFilter[]{
-                new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)
-        };
-
-        try {
-            mNfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, writeTagFilters, null);
-        } catch (IllegalStateException e) {
-            Log.i(Constants.TAG, "NfcForegroundDispatch Exception: Activity is not currently in the foreground?", e);
-        }
-        Log.d(Constants.TAG, "NfcForegroundDispatch has been enabled!");
-    }
-
-    /**
-     * Disable foreground dispatch in onPause!
-     */
-    public void disableNfcForegroundDispatch() {
-        if (mNfcAdapter == null) {
-            return;
-        }
-        mNfcAdapter.disableForegroundDispatch(this);
-        Log.d(Constants.TAG, "NfcForegroundDispatch has been disabled!");
-    }
-
     public String nfcGetHolderName(String name) {
         try {
             String slength;
@@ -988,7 +955,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
     }
 
     public String nfcCommunicate(String apdu) throws IOException {
-        return getHex(mIsoDep.transceive(Hex.decode(apdu)));
+        return getHex(mIsoCard.transceive(Hex.decode(apdu)));
     }
 
     public static String getHex(byte[] raw) {

@@ -23,6 +23,9 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        maven {
+            url 'http://releases.marmeladburk.fidesmo.com'
+        }
     }
 }
 
