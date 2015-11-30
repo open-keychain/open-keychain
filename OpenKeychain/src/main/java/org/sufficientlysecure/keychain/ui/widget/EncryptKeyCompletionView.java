@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
+
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Rect;
@@ -37,7 +38,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.tokenautocomplete.TokenCompleteTextView;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -55,7 +55,6 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
 
     private KeyAdapter mAdapter;
     private LoaderManager mLoaderManager;
-    private CharSequence mPrefix;
 
     public EncryptKeyCompletionView(Context context) {
         super(context);
@@ -73,18 +72,10 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
     }
 
     private void initView() {
-        setPrefix(getContext().getString(R.string.label_to) + " ");
-
         allowDuplicates(false);
+
         mAdapter = new KeyAdapter(getContext(), null, 0);
         setAdapter(mAdapter);
-    }
-
-    @Override
-    public void setPrefix(CharSequence p) {
-        // this one is private in the superclass, but we need it here
-        mPrefix = p;
-        super.setPrefix(p);
     }
 
     @Override
@@ -173,13 +164,10 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
 
     @Override
     protected void performFiltering(@NonNull CharSequence text, int start, int end, int keyCode) {
-        super.performFiltering(text, start, end, keyCode);
-        if (start < mPrefix.length()) {
-            start = mPrefix.length();
-        }
+//        super.performFiltering(text, start, end, keyCode);
         String query = text.subSequence(start, end).toString();
         if (TextUtils.isEmpty(query) || query.length() < 2) {
-            mLoaderManager.destroyLoader(0);
+            mAdapter.swapCursor(null);
             return;
         }
         Bundle args = new Bundle();
