@@ -110,7 +110,6 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
 
         if (getContext() instanceof FragmentActivity) {
             mLoaderManager = ((FragmentActivity) getContext()).getSupportLoaderManager();
-            mLoaderManager.initLoader(0, null, this);
         } else {
             Log.e(Constants.TAG, "EncryptKeyCompletionView must be attached to a FragmentActivity, this is " + getContext().getClass());
         }
@@ -134,12 +133,6 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
         String where = KeyRings.HAS_ENCRYPT + " NOT NULL AND "
                 + KeyRings.IS_EXPIRED + " = 0 AND "
                 + Tables.KEYS + "." + KeyRings.IS_REVOKED + " = 0";
-
-        if (args == null || !args.containsKey(ARG_QUERY)) {
-            // mAdapter.setSearchQuery(null);
-            // return new CursorLoader(getContext(), baseUri, projection, where, null, null);
-            return null;
-        }
 
         String query = args.getString(ARG_QUERY);
         mAdapter.setSearchQuery(query);
@@ -168,8 +161,6 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
         }
         super.showDropDown();
     }
-
-
 
     @Override
     public void onFocusChanged(boolean hasFocus, int direction, Rect previous) {

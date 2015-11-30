@@ -91,16 +91,16 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         });
 
         final ViewAnimator vEncryptionIcon = (ViewAnimator) view.findViewById(R.id.result_encryption_icon);
-        mEncryptKeyView.setTokenListener(new TokenListener() {
+        mEncryptKeyView.setTokenListener(new TokenListener<KeyItem>() {
             @Override
-            public void onTokenAdded(Object o) {
+            public void onTokenAdded(KeyItem o) {
                 if (vEncryptionIcon.getDisplayedChild() != 1) {
                     vEncryptionIcon.setDisplayedChild(1);
                 }
             }
 
             @Override
-            public void onTokenRemoved(Object o) {
+            public void onTokenRemoved(KeyItem o) {
                 int child = mEncryptKeyView.getObjects().isEmpty() ? 0 : 1;
                 if (vEncryptionIcon.getDisplayedChild() != child) {
                     vEncryptionIcon.setDisplayedChild(child);
