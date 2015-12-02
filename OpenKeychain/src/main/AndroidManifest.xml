@@ -806,7 +806,12 @@
             android:exported="false"
             android:label="@string/keyserver_sync_settings_title" />
 
-        <!-- Internal classes of the remote APIs (not exported!) -->
+        <provider
+            android:name=".remote.KeychainExternalProvider"
+            android:authorities="${applicationId}.provider.exported"
+            android:exported="true" />
+
+        <!-- Internal classes of the remote APIs (not exported) -->
         <activity
             android:name=".remote.ui.RemoteCreateAccountActivity"
             android:exported="false"
