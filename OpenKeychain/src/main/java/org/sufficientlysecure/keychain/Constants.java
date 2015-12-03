@@ -151,9 +151,9 @@ public final class Constants {
     }
 
     public static final class key {
-        public static final int none = 0;
-        public static final int symmetric = -1;
-        public static final int backup_code = -2;
+        public static final long none = 0;
+        public static final long symmetric = -1;
+        public static final long backup_code = -2;
     }
 
 }

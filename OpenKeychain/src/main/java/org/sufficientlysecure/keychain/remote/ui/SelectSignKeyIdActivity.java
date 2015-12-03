@@ -68,8 +68,7 @@ public class SelectSignKeyIdActivity extends BaseActivity {
         noneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 0 is "none"
-                mData.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, 0);
+                mData.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, Constants.key.none);
 
                 setResult(Activity.RESULT_OK, mData);
                 finish();
