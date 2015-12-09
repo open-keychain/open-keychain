@@ -1028,7 +1028,12 @@ public abstract class OperationResult implements Parcelable {
             for (LogEntryParcel entry : this) {
                 log.append(entry.getPrintableLogEntry(resources, indent)).append("\n");
             }
-            return log.toString().substring(0, log.length() - 1); // get rid of extra new line
+            if (log.length() >= 1) {
+                return log.toString().substring(0, log.length() - 1); // get rid of extra new line
+            } else {
+                return log.toString();
+            }
+
         }
 
     }
