@@ -32,24 +32,39 @@ public class ParcelableKeyRing implements Parcelable {
     public final String mExpectedFingerprint;
     public final String mKeyIdHex;
     public final String mKeybaseName;
+    public final String mFbUsername;
 
     public ParcelableKeyRing(byte[] bytes) {
-        mBytes = bytes;
-        mExpectedFingerprint = null;
-        mKeyIdHex = null;
-        mKeybaseName = null;
+        this(null, bytes, false);
     }
-    public ParcelableKeyRing(String expectedFingerprint, byte[] bytes) {
+
+    /**
+     * @param disAmbiguator useless parameter intended to distinguish this overloaded constructor
+     *                      for when null is passed as first two arguments
+     */
+    public ParcelableKeyRing(String expectedFingerprint, byte[] bytes, boolean disAmbiguator) {
         mBytes = bytes;
         mExpectedFingerprint = expectedFingerprint;
         mKeyIdHex = null;
         mKeybaseName = null;
+        mFbUsername = null;
     }
-    public ParcelableKeyRing(String expectedFingerprint, String keyIdHex, String keybaseName) {
+
+    public ParcelableKeyRing(String expectedFingerprint, String keyIdHex) {
+        mBytes = null;
+        mExpectedFingerprint = expectedFingerprint;
+        mKeyIdHex = keyIdHex;
+        mKeybaseName = null;
+        mFbUsername = null;
+    }
+
+    public ParcelableKeyRing(String expectedFingerprint, String keyIdHex, String keybaseName,
+                             String fbUsername) {
         mBytes = null;
         mExpectedFingerprint = expectedFingerprint;
         mKeyIdHex = keyIdHex;
         mKeybaseName = keybaseName;
+        mFbUsername = fbUsername;
     }
 
     private ParcelableKeyRing(Parcel source) {
@@ -58,6 +73,7 @@ public class ParcelableKeyRing implements Parcelable {
         mExpectedFingerprint = source.readString();
         mKeyIdHex = source.readString();
         mKeybaseName = source.readString();
+        mFbUsername = source.readString();
     }
 
     public void writeToParcel(Parcel dest, int flags) {
@@ -65,6 +81,7 @@ public class ParcelableKeyRing implements Parcelable {
         dest.writeString(mExpectedFingerprint);
         dest.writeString(mKeyIdHex);
         dest.writeString(mKeybaseName);
+        dest.writeString(mFbUsername);
     }
 
     public static final Creator<ParcelableKeyRing> CREATOR = new Creator<ParcelableKeyRing>() {

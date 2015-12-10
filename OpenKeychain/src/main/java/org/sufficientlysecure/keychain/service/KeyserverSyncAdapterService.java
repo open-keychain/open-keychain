@@ -440,7 +440,7 @@ public class KeyserverSyncAdapterService extends Service {
             String hexKeyId = KeyFormattingUtils
                     .convertKeyIdToHex(keyId);
             // we aren't updating from keybase as of now
-            keyList.add(new ParcelableKeyRing(fingerprint, hexKeyId, null));
+            keyList.add(new ParcelableKeyRing(fingerprint, hexKeyId));
         }
         keyCursor.close();
 

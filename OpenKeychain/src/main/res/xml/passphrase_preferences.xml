@@ -7,11 +7,11 @@
         android:title="@string/label_passphrase_cache_ttl" />
     <CheckBoxPreference
         android:key="passphraseCacheSubs"
-        android:persistent="false"
+        android:persistent="true"
         android:title="@string/label_passphrase_cache_subs" />
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="useNumKeypadForYubikeyPin"
-        android:persistent="false"
+        android:persistent="true"
         android:title="@string/label_use_num_keypad_for_yubikey_pin" />
 </PreferenceScreen>

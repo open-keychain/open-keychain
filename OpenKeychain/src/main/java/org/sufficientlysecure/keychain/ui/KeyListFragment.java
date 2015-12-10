@@ -588,7 +588,7 @@ public class KeyListFragment extends LoaderFragment
             while (cursor.moveToNext()) {
                 byte[] blob = cursor.getBlob(0);//fingerprint column is 0
                 String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
-                ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+                ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null);
                 keyList.add(keyEntry);
             }
             mKeyList = keyList;
@@ -597,12 +597,7 @@ public class KeyListFragment extends LoaderFragment
         }
 
         // search config
-        {
-            Preferences prefs = Preferences.getPreferences(getActivity());
-            Preferences.CloudSearchPrefs cloudPrefs =
-                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            mKeyserver = cloudPrefs.keyserver;
-        }
+        mKeyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
 
         mImportOpHelper = new CryptoOperationHelper<>(1, this, this, R.string.progress_updating);
         mImportOpHelper.setProgressCancellable(true);

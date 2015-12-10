@@ -138,16 +138,11 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         final String keyserver;
 
         // search config
-        {
-            Preferences prefs = Preferences.getPreferences(getActivity());
-            Preferences.CloudSearchPrefs cloudPrefs =
-                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            keyserver = cloudPrefs.keyserver;
-        }
+        keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
 
         {
             ParcelableKeyRing keyEntry = new ParcelableKeyRing(null,
-                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId), null);
+                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId));
             ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
             selectedEntries.add(keyEntry);
 

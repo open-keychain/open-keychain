@@ -1038,18 +1038,12 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
 
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null);
         ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
         entries.add(keyEntry);
         mKeyList = entries;
 
-        // search config
-        {
-            Preferences prefs = Preferences.getPreferences(this);
-            Preferences.CloudSearchPrefs cloudPrefs =
-                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            mKeyserver = cloudPrefs.keyserver;
-        }
+        mKeyserver = Preferences.getPreferences(this).getPreferredKeyserver();
 
         mOperationHelper.cryptoOperation();
     }

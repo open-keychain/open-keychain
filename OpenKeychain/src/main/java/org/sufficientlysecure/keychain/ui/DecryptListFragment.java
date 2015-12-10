@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -746,16 +745,11 @@ public class DecryptListFragment
         final String keyserver;
 
         // search config
-        {
-            Preferences prefs = Preferences.getPreferences(getActivity());
-            Preferences.CloudSearchPrefs cloudPrefs =
-                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            keyserver = cloudPrefs.keyserver;
-        }
+        keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
 
         {
             ParcelableKeyRing keyEntry = new ParcelableKeyRing(null,
-                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId), null);
+                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId));
             ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
             selectedEntries.add(keyEntry);
 

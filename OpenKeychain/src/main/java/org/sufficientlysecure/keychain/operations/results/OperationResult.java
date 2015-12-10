@@ -233,6 +233,18 @@ public abstract class OperationResult implements Parcelable {
             dest.writeParcelable(mSubResult, 0);
         }
 
+        public static final Parcelable.Creator<SubLogEntryParcel> CREATOR = new Parcelable.Creator<SubLogEntryParcel>() {
+            @Override
+            public SubLogEntryParcel createFromParcel(Parcel in) {
+                return new SubLogEntryParcel(in);
+            }
+
+            @Override
+            public SubLogEntryParcel[] newArray(int size) {
+                return new SubLogEntryParcel[size];
+            }
+        };
+
         @Override
         StringBuilder getPrintableLogEntry(Resources resources, int indent) {
 
@@ -757,6 +769,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_IMPORT_FETCH_ERROR_KEYSERVER(LogLevel.ERROR, R.string.msg_import_fetch_error_keyserver),
         MSG_IMPORT_FETCH_ERROR_KEYSERVER_SECRET (LogLevel.ERROR, R.string.msg_import_fetch_error_keyserver_secret),
         MSG_IMPORT_FETCH_KEYBASE (LogLevel.INFO, R.string.msg_import_fetch_keybase),
+        MSG_IMPORT_FETCH_FACEBOOK (LogLevel.INFO, R.string.msg_import_fetch_facebook),
         MSG_IMPORT_FETCH_KEYSERVER (LogLevel.INFO, R.string.msg_import_fetch_keyserver),
         MSG_IMPORT_FETCH_KEYSERVER_OK (LogLevel.DEBUG, R.string.msg_import_fetch_keyserver_ok),
         MSG_IMPORT_KEYSERVER (LogLevel.DEBUG, R.string.msg_import_keyserver),

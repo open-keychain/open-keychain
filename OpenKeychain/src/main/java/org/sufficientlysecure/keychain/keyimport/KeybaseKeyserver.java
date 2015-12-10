@@ -81,8 +81,9 @@ public class KeybaseKeyserver extends Keyserver {
         entry.setFingerprintHex(fingerprint);
 
         entry.setKeyIdHex("0x" + match.getKeyID());
-        // store extra info, so we can query for the keybase id directly
-        entry.setExtraData(username);
+        // so we can query for the keybase id directly, and to identify the location from which the
+        // key is to be retrieved
+        entry.setKeybaseName(username);
 
         final int bitStrength = match.getBitStrength();
         entry.setBitStrength(bitStrength);
