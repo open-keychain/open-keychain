@@ -327,6 +327,7 @@ public class OpenPgpService extends Service {
                 Intent result = new Intent();
                 if (pgpResult.getDetachedSignature() != null && !cleartextSign) {
                     result.putExtra(OpenPgpApi.RESULT_DETACHED_SIGNATURE, pgpResult.getDetachedSignature());
+                    result.putExtra(OpenPgpApi.RESULT_SIGNATURE_MICALG, pgpResult.getMicAlgDigestName());
                 }
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
