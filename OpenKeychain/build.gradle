@@ -65,8 +65,8 @@ dependencies {
     compile 'com.cocosw:bottomsheet:1.2.0@aar'
 
     // Nordpol
-    compile 'com.fidesmo:nordpol-android:0.1.10@aar'
-    compile 'com.fidesmo:nordpol-core:0.1.10'
+    compile 'com.fidesmo:nordpol-android:0.1.15@aar'
+    compile 'com.fidesmo:nordpol-core:0.1.15'
 
     // libs as submodules
     compile project(':extern:openpgp-api-lib:openpgp-api')
@@ -121,6 +121,8 @@ dependencyVerification {
 //            'OpenKeychain.extern:minidns:51e34ebab23ebd6bdd4cc681024040e5cfd2d713a51a4b209e4fbeaa73e5fe57',
             'com.android.support:support-annotations:f347a35b9748a4103b39a6714a77e2100f488d623fd6268e259c177b200e9d82',
             'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
+            'com.fidesmo:nordpol-core:fe09e65379f2c7300b669ef7df2bfbde47729dac19edacc26b5ddb44b94ff67d',
+            'com.fidesmo:nordpol-android:012f93c2c78bd5e3b35af3e8a6676c4fac56755abee252dcfdbb8b35df19e3dd'
     ]
 }
 
