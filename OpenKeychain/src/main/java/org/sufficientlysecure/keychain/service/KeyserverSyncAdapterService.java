@@ -26,7 +26,6 @@ import android.os.Messenger;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -55,7 +54,7 @@ public class KeyserverSyncAdapterService extends Service {
     // how often a sync should be initiated, in s
     public static final long SYNC_INTERVAL =
             Constants.DEBUG_KEYSERVER_SYNC
-                    ? TimeUnit.MINUTES.toSeconds(2) : TimeUnit.DAYS.toSeconds(3);
+                    ? TimeUnit.MINUTES.toSeconds(1) : TimeUnit.DAYS.toSeconds(3);
     // time since last update after which a key should be updated again, in s
     public static final long KEY_UPDATE_LIMIT =
             Constants.DEBUG_KEYSERVER_SYNC ? 1 : TimeUnit.DAYS.toSeconds(7);
@@ -82,6 +81,12 @@ public class KeyserverSyncAdapterService extends Service {
             // introduced due to https://github.com/open-keychain/open-keychain/issues/1573
             return START_NOT_STICKY; // we can't act on this Intent and don't want it redelivered
         }
+
+        if (!isSyncEnabled()) {
+            // if we have initiated a sync, but the user disabled it in preferences since
+            return START_NOT_STICKY;
+        }
+
         switch (intent.getAction()) {
             case ACTION_CANCEL: {
                 mCancelled.set(true);
@@ -505,30 +510,24 @@ public class KeyserverSyncAdapterService extends Service {
     }
 
     public static void enableKeyserverSync(Context context) {
-        try {
-            AccountManager manager = AccountManager.get(context);
-            Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
+        AccountManager manager = AccountManager.get(context);
+        Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
 
-            Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
-            if (accounts.length == 0) {
-                if (!manager.addAccountExplicitly(account, null, null)) {
-                    Log.d(Constants.TAG, "account already exists, the account is null, or another error occured");
-                }
-            }
-            // for keyserver sync
-            ContentResolver.setIsSyncable(account, Constants.PROVIDER_AUTHORITY, 1);
-            ContentResolver.setSyncAutomatically(account, Constants.PROVIDER_AUTHORITY,
-                    true);
-            ContentResolver.addPeriodicSync(
-                    account,
-                    Constants.PROVIDER_AUTHORITY,
-                    new Bundle(),
-                    SYNC_INTERVAL
-            );
-        } catch (SecurityException e) {
-            Log.e(Constants.TAG, "SecurityException when adding the account", e);
-            Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
-        }
+        ContentResolver.setIsSyncable(account, Constants.PROVIDER_AUTHORITY, 1);
+        ContentResolver.setSyncAutomatically(account, Constants.PROVIDER_AUTHORITY, true);
+        ContentResolver.addPeriodicSync(
+                account,
+                Constants.PROVIDER_AUTHORITY,
+                new Bundle(),
+                SYNC_INTERVAL
+        );
+    }
+
+    private boolean isSyncEnabled() {
+        AccountManager manager = AccountManager.get(this);
+        Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
+
+        return ContentResolver.getSyncAutomatically(account, Constants.PROVIDER_AUTHORITY);
     }
 
     private void startServiceWithUpdateAll() {

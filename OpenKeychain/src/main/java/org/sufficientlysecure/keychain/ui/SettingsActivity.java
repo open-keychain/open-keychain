@@ -476,6 +476,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         private boolean checkContactsPermission(String authority) {
             if (!ContactsContract.AUTHORITY.equals(authority)) {
+                // provides convenience of not using separate checks for keyserver and contact sync
+                // in initializeSyncCheckBox
                 return true;
             }
 
