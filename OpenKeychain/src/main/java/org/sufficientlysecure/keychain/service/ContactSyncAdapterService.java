@@ -155,22 +155,10 @@ public class ContactSyncAdapterService extends Service {
     }
 
     public static void enableContactsSync(Context context) {
-        try {
-            AccountManager manager = AccountManager.get(context);
-            Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
+        AccountManager manager = AccountManager.get(context);
+        Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
 
-            Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
-            if (accounts.length == 0) {
-                if (!manager.addAccountExplicitly(account, null, null)) {
-                    Log.d(Constants.TAG, "account already exists, the account is null, or another error occured");
-                }
-            }
-
-            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
-            ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
-        } catch (SecurityException e) {
-            Log.e(Constants.TAG, "SecurityException when adding the account", e);
-            Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
-        }
+        ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
+        ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
     }
 }
