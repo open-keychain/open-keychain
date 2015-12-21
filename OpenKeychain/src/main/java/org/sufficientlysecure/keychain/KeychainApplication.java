@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +27,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
+import android.widget.Toast;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
@@ -90,8 +93,13 @@ public class KeychainApplication extends Application {
                 FormattingUtils.getColorFromAttr(getApplicationContext(), R.attr.colorPrimary));
 
         // Add OpenKeychain account to Android to link contacts with keys and keyserver sync
-        KeyserverSyncAdapterService.enableKeyserverSync(this);
-        ContactSyncAdapterService.enableContactsSync(this);
+        createAccountIfNecessary();
+
+        // if first time, enable keyserver and contact sync
+        if (Preferences.getPreferences(this).isFirstTime()) {
+            KeyserverSyncAdapterService.enableKeyserverSync(this);
+            ContactSyncAdapterService.enableContactsSync(this);
+        }
 
         // Update keyserver list as needed
         Preferences.getPreferences(this).upgradePreferences(this);
@@ -105,6 +113,23 @@ public class KeychainApplication extends Application {
         if (!checkConsolidateRecovery()) {
             // force DB upgrade, https://github.com/open-keychain/open-keychain/issues/1334
             new KeychainDatabase(this).getReadableDatabase().close();
+        }
+    }
+
+    private void createAccountIfNecessary() {
+        try {
+            AccountManager manager = AccountManager.get(this);
+            Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
+
+            Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
+            if (accounts.length == 0) {
+                if (!manager.addAccountExplicitly(account, null, null)) {
+                    Log.d(Constants.TAG, "account already exists, the account is null, or another error occured");
+                }
+            }
+        } catch (SecurityException e) {
+            Log.e(Constants.TAG, "SecurityException when adding the account", e);
+            Toast.makeText(this, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
         }
     }
 
