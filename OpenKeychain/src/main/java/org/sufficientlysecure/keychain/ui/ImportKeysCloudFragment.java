@@ -86,8 +86,9 @@ public class ImportKeysCloudFragment extends Fragment {
 
         mQueryEditText = (AutoCompleteTextView) view.findViewById(R.id.cloud_import_server_query);
 
-        List<String> namesAndEmails = ContactHelper.getContactNames(getActivity());
-        namesAndEmails.addAll(ContactHelper.getContactMails(getActivity()));
+        ContactHelper contactHelper = new ContactHelper(getActivity());
+        List<String> namesAndEmails = contactHelper.getContactNames();
+        namesAndEmails.addAll(contactHelper.getContactMails());
         mQueryEditText.setThreshold(3);
         mQueryEditText.setAdapter(
                 new ArrayAdapter<>

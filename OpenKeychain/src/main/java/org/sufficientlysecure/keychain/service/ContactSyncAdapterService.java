@@ -61,7 +61,7 @@ public class ContactSyncAdapterService extends Service {
                                   final SyncResult syncResult) {
             Log.d(Constants.TAG, "Performing a contact sync!");
 
-            ContactHelper.writeKeysToContacts(ContactSyncAdapterService.this);
+            new ContactHelper(ContactSyncAdapterService.this).writeKeysToContacts();
 
             importKeys();
         }

@@ -44,7 +44,7 @@ public class EmailKeyHelper {
         private String mKeyserver;
 
         public ImportContactKeysCallback(Context context, String keyserver, Proxy proxy) {
-            this(context, ContactHelper.getContactMails(context), keyserver, proxy);
+            this(context, new ContactHelper(context).getContactMails(), keyserver, proxy);
         }
 
         public ImportContactKeysCallback(Context context, List<String> mails, String keyserver,

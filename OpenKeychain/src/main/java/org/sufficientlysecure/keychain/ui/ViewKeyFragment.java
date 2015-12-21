@@ -224,17 +224,17 @@ public class ViewKeyFragment extends LoaderFragment implements
         if(contactId == -1) return;
 
         final Context context = mSystemContactName.getContext();
-        final ContentResolver resolver = context.getContentResolver();
+        ContactHelper contactHelper = new ContactHelper(context);
 
         String contactName = null;
 
         if (mIsSecret) {//all secret keys are linked to "me" profile in contacts
-            List<String> mainProfileNames = ContactHelper.getMainProfileContactName(context);
+            List<String> mainProfileNames = contactHelper.getMainProfileContactName();
             if (mainProfileNames != null && mainProfileNames.size() > 0) {
                 contactName = mainProfileNames.get(0);
             }
         } else {
-            contactName = ContactHelper.getContactName(resolver, contactId);
+            contactName = contactHelper.getContactName(contactId);
         }
 
         if (contactName != null) {//contact name exists for given master key
@@ -244,9 +244,9 @@ public class ViewKeyFragment extends LoaderFragment implements
 
             Bitmap picture;
             if (mIsSecret) {
-                picture = ContactHelper.loadMainProfilePhoto(getActivity(), resolver, false);
+                picture = contactHelper.loadMainProfilePhoto(false);
             } else {
-                picture = ContactHelper.loadPhotoByContactId(getActivity(), resolver, contactId, false);
+                picture = contactHelper.loadPhotoByContactId(contactId, false);
             }
             if (picture != null) mSystemContactPicture.setImageBitmap(picture);
 

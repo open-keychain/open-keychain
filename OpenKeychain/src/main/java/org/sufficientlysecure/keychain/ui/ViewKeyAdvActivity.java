@@ -88,7 +88,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             return;
         }
         if (mDataUri.getHost().equals(ContactsContract.AUTHORITY)) {
-            mDataUri = ContactHelper.dataUriFromContactUri(this, mDataUri);
+            mDataUri = new ContactHelper(this).dataUriFromContactUri(mDataUri);
             if (mDataUri == null) {
                 Log.e(Constants.TAG, "Contact Data missing. Should be uri of key!");
                 Toast.makeText(this, R.string.error_contacts_key_id_missing, Toast.LENGTH_LONG).show();

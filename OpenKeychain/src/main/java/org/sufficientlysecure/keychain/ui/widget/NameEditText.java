@@ -50,7 +50,7 @@ public class NameEditText extends AppCompatAutoCompleteTextView {
         setThreshold(1); // Start working from first character
         setAdapter(new ArrayAdapter<>(
                 getContext(), android.R.layout.simple_spinner_dropdown_item,
-                ContactHelper.getPossibleUserNames(getContext())));
+                new ContactHelper(getContext()).getPossibleUserNames()));
     }
 
     /**
