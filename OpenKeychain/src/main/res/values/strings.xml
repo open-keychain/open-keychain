@@ -347,7 +347,7 @@
     <string name="fingerprint_copied_to_clipboard">"Fingerprint has been copied to the clipboard!"</string>
     <string name="select_key_to_certify">"Please select a key to be used for confirmation!"</string>
     <string name="text_copied_to_clipboard">"Text has been copied to the clipboard!"</string>
-    <string name="how_to_import">"How to import this?"</string>
+    <string name="how_to_import">"How to import this on my desktop PC?"</string>
     <!--
          errors
          no punctuation, all lowercase,
