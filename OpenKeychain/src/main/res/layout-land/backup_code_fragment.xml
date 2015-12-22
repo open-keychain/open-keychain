@@ -339,5 +339,23 @@
 
     </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+
+        android:id="@+id/faq_animator"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.v4.widget.Space
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/tv_faq"
+            android:text="@string/how_to_import"
+            android:gravity="center"
+            style="?android:buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
 </LinearLayout>
