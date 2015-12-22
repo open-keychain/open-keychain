@@ -26,7 +26,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.v4.content.CursorLoader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +43,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 import org.sufficientlysecure.keychain.util.FilterCursorWrapper;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.util.WeakHashMap;
