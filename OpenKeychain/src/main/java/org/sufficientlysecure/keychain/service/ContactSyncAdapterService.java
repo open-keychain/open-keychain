@@ -19,8 +19,6 @@ package org.sufficientlysecure.keychain.service;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.AbstractThreadedSyncAdapter;
@@ -29,18 +27,16 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceActivity;
 import android.provider.ContactsContract;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
+import android.support.v4.app.NotificationManagerCompat;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.SettingsActivity;
-import org.sufficientlysecure.keychain.ui.util.NotificationUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -86,14 +82,14 @@ public class ContactSyncAdapterService extends Service {
                     );
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(ContactSyncAdapterService.this)
+                            .setAutoCancel(true)
                             .setSmallIcon(R.drawable.ic_stat_notify_24dp)
-                            .setLargeIcon(NotificationUtils.getBitmap(R.mipmap.ic_launcher, getBaseContext()))
+                            .setColor(getResources().getColor(R.color.primary))
                             .setContentTitle(getString(R.string.sync_notification_permission_required_title))
                             .setContentText(getString(R.string.sync_notification_permission_required_text))
                             .setContentIntent(resultPendingIntent);
-            NotificationManager mNotifyMgr =
-                    (NotificationManager) ContactSyncAdapterService.this.getSystemService(Activity.NOTIFICATION_SERVICE);
-            mNotifyMgr.notify(NOTIFICATION_ID_SYNC_SETTINGS, mBuilder.build());
+            NotificationManagerCompat.from(ContactSyncAdapterService.this)
+                    .notify(NOTIFICATION_ID_SYNC_SETTINGS, mBuilder.build());
         }
     }
 

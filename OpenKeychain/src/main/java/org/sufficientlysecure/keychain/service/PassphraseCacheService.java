@@ -18,8 +18,6 @@
 package org.sufficientlysecure.keychain.service;
 
 
-import java.util.Date;
-
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -44,10 +42,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.util.NotificationUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.util.Date;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main
@@ -473,7 +472,7 @@ public class PassphraseCacheService extends Service {
     private Notification getNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
-                .setLargeIcon(NotificationUtils.getBitmap(R.mipmap.ic_launcher, getBaseContext()))
+                .setColor(getResources().getColor(R.color.primary))
                 .setContentTitle(getResources().getQuantityString(R.plurals.passp_cache_notif_n_keys,
                         mPassphraseCache.size(), mPassphraseCache.size()))
                 .setContentText(getString(R.string.passp_cache_notif_touch_to_clear));
@@ -504,7 +503,7 @@ public class PassphraseCacheService extends Service {
 
         // Add clear PI action below text
         builder.addAction(
-                R.drawable.abc_ic_clear_mtrl_alpha,
+                R.drawable.ic_close_white_24dp,
                 getString(R.string.passp_cache_notif_clear),
                 clearCachePi
         );
