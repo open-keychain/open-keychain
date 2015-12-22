@@ -1,5 +1,21 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 3.7
+  * Improved Android 6 support (permissions, integration into text selection)
+  * API: Version 10
+
+## 3.6
+
+  * 暗号化したバックアップ
+  * 外部セキュリティ監査によるセキュリティ修正
+  * YubiKey NEO 鍵生成ウィザード
+  * 基本的な内部 MIME のサポート
+  * 自動鍵同期
+  * 試験的機能: Github, Twitter アカウントと鍵のリンク
+  * 試験的機能: 語句による鍵検証
+  * 試験的機能: ダークテーマ
+  * API: Version 9
+
 ## 3.5
 
   * 鍵削除時の鍵の破棄

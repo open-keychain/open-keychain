@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Application;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -28,12 +27,12 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
-import android.provider.ContactsContract;
 import android.widget.Toast;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
+import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -91,20 +90,46 @@ public class KeychainApplication extends Application {
         }
 
         brandGlowEffect(getApplicationContext(),
-            FormattingUtils.getColorFromAttr(getApplicationContext(), R.attr.colorPrimary));
+                FormattingUtils.getColorFromAttr(getApplicationContext(), R.attr.colorPrimary));
 
-        setupAccountAsNeeded(this);
+        // Add OpenKeychain account to Android to link contacts with keys and keyserver sync
+        createAccountIfNecessary();
+
+        // if first time, enable keyserver and contact sync
+        if (Preferences.getPreferences(this).isFirstTime()) {
+            KeyserverSyncAdapterService.enableKeyserverSync(this);
+            ContactSyncAdapterService.enableContactsSync(this);
+        }
 
         // Update keyserver list as needed
         Preferences.getPreferences(this).upgradePreferences(this);
 
-        TlsHelper.addStaticCA("pool.sks-keyservers.net", getAssets(), "sks-keyservers.netCA.cer");
+        TlsHelper.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
+        TlsHelper.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
+        TlsHelper.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
 
-        TemporaryStorageProvider.cleanUp(this);
+        TemporaryFileProvider.cleanUp(this);
 
         if (!checkConsolidateRecovery()) {
             // force DB upgrade, https://github.com/open-keychain/open-keychain/issues/1334
             new KeychainDatabase(this).getReadableDatabase().close();
+        }
+    }
+
+    private void createAccountIfNecessary() {
+        try {
+            AccountManager manager = AccountManager.get(this);
+            Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
+
+            Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
+            if (accounts.length == 0) {
+                if (!manager.addAccountExplicitly(account, null, null)) {
+                    Log.d(Constants.TAG, "account already exists, the account is null, or another error occured");
+                }
+            }
+        } catch (SecurityException e) {
+            Log.e(Constants.TAG, "SecurityException when adding the account", e);
+            Toast.makeText(this, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -131,31 +156,6 @@ public class KeychainApplication extends Application {
             return true;
         } else {
             return false;
-        }
-    }
-
-    /**
-     * Add OpenKeychain account to Android to link contacts with keys and keyserver sync
-     */
-    public static void setupAccountAsNeeded(Context context) {
-        try {
-            AccountManager manager = AccountManager.get(context);
-            Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
-
-            if (accounts.length == 0) {
-                Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
-                if (manager.addAccountExplicitly(account, null, null)) {
-                    // for contact sync
-                    ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
-                    ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
-                    KeyserverSyncAdapterService.enableKeyserverSync(context);
-                } else {
-                    Log.e(Constants.TAG, "Adding account failed!");
-                }
-            }
-        } catch (SecurityException e) {
-            Log.e(Constants.TAG, "SecurityException when adding the account", e);
-            Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
         }
     }
 

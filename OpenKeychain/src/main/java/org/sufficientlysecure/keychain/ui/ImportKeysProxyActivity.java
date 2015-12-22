@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
@@ -87,12 +86,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
             processScannedContent(dataUri);
         } else if (ACTION_SCAN_WITH_RESULT.equals(action)
                 || ACTION_SCAN_IMPORT.equals(action) || ACTION_QR_CODE_API.equals(action)) {
-            IntentIntegrator integrator = new IntentIntegrator(this);
-            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
-                    .setPrompt(getString(R.string.import_qr_code_text))
-                    .setResultDisplayDuration(0);
-            integrator.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            integrator.initiateScan();
+            new IntentIntegrator(this).setCaptureActivity(QrCodeCaptureActivity.class).initiateScan();
         } else if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             // Check to see if the Activity started due to an Android Beam
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -135,7 +129,6 @@ public class ImportKeysProxyActivity extends FragmentActivity
             String scannedContent = scanResult.getContents();
             processScannedContent(scannedContent);
 
-            return;
         }
     }
 
@@ -204,7 +197,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     }
 
     public void importKeys(String fingerprint) {
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 
@@ -214,12 +207,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     private void startImportService(ArrayList<ParcelableKeyRing> keyRings) {
 
         // search config
-        {
-            Preferences prefs = Preferences.getPreferences(this);
-            Preferences.CloudSearchPrefs cloudPrefs =
-                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            mKeyserver = cloudPrefs.keyserver;
-        }
+        mKeyserver = Preferences.getPreferences(this).getPreferredKeyserver();
 
         mKeyList = keyRings;
 

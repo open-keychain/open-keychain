@@ -36,7 +36,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.ShareHelper;
 
 public class DisplayTextFragment extends DecryptFragment {
 
@@ -58,22 +57,6 @@ public class DisplayTextFragment extends DecryptFragment {
         frag.setArguments(args);
 
         return frag;
-    }
-
-    /**
-     * Create Intent Chooser but exclude decrypt activites
-     */
-    private Intent sendWithChooserExcludingDecrypt(String text) {
-        Intent prototype = createSendIntent(text);
-        String title = getString(R.string.title_share_message);
-
-        // we don't want to decrypt the decrypted, no inception ;)
-        String[] blacklist = new String[]{
-                Constants.PACKAGE_NAME + ".ui.DecryptActivity",
-                "org.thialfihar.android.apg.ui.DecryptActivity"
-        };
-
-        return new ShareHelper(getActivity()).createChooserExcluding(prototype, title, blacklist);
     }
 
     private Intent createSendIntent(String text) {
@@ -146,7 +129,8 @@ public class DisplayTextFragment extends DecryptFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.decrypt_share: {
-                startActivity(sendWithChooserExcludingDecrypt(mText.getText().toString()));
+                startActivity(Intent.createChooser(createSendIntent(mText.getText().toString()),
+                        getString(R.string.title_share_message)));
                 break;
             }
             case R.id.decrypt_copy: {

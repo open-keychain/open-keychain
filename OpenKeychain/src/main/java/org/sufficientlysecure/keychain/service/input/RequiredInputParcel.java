@@ -14,8 +14,8 @@ import java.util.Date;
 public class RequiredInputParcel implements Parcelable {
 
     public enum RequiredInputType {
-        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT, NFC_MOVE_KEY_TO_CARD, ENABLE_ORBOT,
-        UPLOAD_FAIL_RETRY
+        PASSPHRASE, PASSPHRASE_SYMMETRIC, BACKUP_CODE, NFC_SIGN, NFC_DECRYPT,
+        NFC_MOVE_KEY_TO_CARD, NFC_RESET_CARD, ENABLE_ORBOT, UPLOAD_FAIL_RETRY,
     }
 
     public Date mSignatureTime;
@@ -100,6 +100,11 @@ public class RequiredInputParcel implements Parcelable {
                 new byte[][] { encryptedSessionKey }, null, null, masterKeyId, subKeyId);
     }
 
+    public static RequiredInputParcel createNfcReset() {
+        return new RequiredInputParcel(RequiredInputType.NFC_RESET_CARD,
+                null, null, null, null, null);
+    }
+
     public static RequiredInputParcel createRequiredSignPassphrase(
             long masterKeyId, long subKeyId, Date signatureTime) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
@@ -114,6 +119,11 @@ public class RequiredInputParcel implements Parcelable {
 
     public static RequiredInputParcel createRequiredSymmetricPassphrase() {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SYMMETRIC,
+                null, null, null, null, null);
+    }
+
+    public static RequiredInputParcel createRequiredBackupCode() {
+        return new RequiredInputParcel(RequiredInputType.BACKUP_CODE,
                 null, null, null, null, null);
     }
 

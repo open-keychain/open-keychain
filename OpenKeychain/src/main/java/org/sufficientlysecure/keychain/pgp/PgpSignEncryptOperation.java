@@ -35,6 +35,7 @@ import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
+import org.spongycastle.openpgp.operator.jcajce.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
@@ -53,6 +54,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -147,6 +149,10 @@ public class PgpSignEncryptOperation extends BaseOperation {
             // if we have a charset, put it in the header
             if (input.getCharset() != null) {
                 armorOut.setHeader("Charset", input.getCharset());
+            }
+            // add proprietary header to indicate that this is a key backup
+            if (input.isAddBackupHeader()) {
+                armorOut.setHeader("BackupVersion", "1");
             }
             out = armorOut;
         } else {
@@ -316,6 +322,8 @@ public class PgpSignEncryptOperation extends BaseOperation {
         ArmoredOutputStream detachedArmorOut = null;
         BCPGOutputStream detachedBcpgOut = null;
 
+        long opTime, startTime = System.currentTimeMillis();
+
         try {
 
             if (enableEncryption) {
@@ -361,7 +369,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 long alreadyWritten = 0;
                 int length;
                 byte[] buffer = new byte[1 << 16];
-                InputStream in = inputData.getInputStream();
+                InputStream in = new BufferedInputStream(inputData.getInputStream());
                 while ((length = in.read(buffer)) > 0) {
                     pOut.write(buffer, 0, length);
 
@@ -389,7 +397,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 // write -----BEGIN PGP SIGNED MESSAGE-----
                 armorOut.beginClearText(input.getSignatureHashAlgorithm());
 
-                InputStream in = inputData.getInputStream();
+                InputStream in = new BufferedInputStream(inputData.getInputStream());
                 final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
                 // update signature buffer with first line
@@ -421,7 +429,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 updateProgress(R.string.progress_signing, 8, 100);
                 log.add(LogType.MSG_PSE_SIGNING_DETACHED, indent);
 
-                InputStream in = inputData.getInputStream();
+                InputStream in = new BufferedInputStream(inputData.getInputStream());
 
                 // handle output stream separately for detached signatures
                 detachedByteOut = new ByteArrayOutputStream();
@@ -458,7 +466,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 updateProgress(R.string.progress_signing, 8, 100);
                 log.add(LogType.MSG_PSE_SIGNING, indent);
 
-                InputStream in = inputData.getInputStream();
+                InputStream in = new BufferedInputStream(inputData.getInputStream());
 
                 if (enableCompression) {
                     compressGen = new PGPCompressedDataGenerator(input.getCompressionAlgorithm());
@@ -491,9 +499,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
                 literalGen.close();
             } else {
-                pOut = null;
-                // TODO: Is this log right?
-                log.add(LogType.MSG_PSE_CLEARSIGN_ONLY, indent);
+                throw new AssertionError("cannot clearsign in non-ascii armored text, this is a bug!");
             }
 
             if (enableSignature) {
@@ -512,6 +518,10 @@ public class PgpSignEncryptOperation extends BaseOperation {
                             e.hashToSign, e.hashAlgo, cryptoInput.getSignatureTime()), cryptoInput);
                 }
             }
+
+            opTime = System.currentTimeMillis() -startTime;
+            Log.d(Constants.TAG, "sign/encrypt time taken: " + String.format("%.2f",
+                    opTime / 1000.0) + "s");
 
             // closing outputs
             // NOTE: closing needs to be done in the correct order!
@@ -556,6 +566,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
         log.add(LogType.MSG_PSE_OK, indent);
         PgpSignEncryptResult result = new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_OK, log);
+        result.mOperationTime = opTime;
         if (detachedByteOut != null) {
             try {
                 detachedByteOut.flush();
@@ -564,6 +575,13 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 // silently catch
             }
             result.setDetachedSignature(detachedByteOut.toByteArray());
+            try {
+                String digestName = PGPUtil.getDigestName(input.getSignatureHashAlgorithm());
+                // construct micalg parameter according to https://tools.ietf.org/html/rfc3156#section-5
+                result.setMicAlgDigestName("pgp-" + digestName.toLowerCase());
+            } catch (PGPException e) {
+                Log.e(Constants.TAG, "error setting micalg parameter!", e);
+            }
         }
         return result;
     }

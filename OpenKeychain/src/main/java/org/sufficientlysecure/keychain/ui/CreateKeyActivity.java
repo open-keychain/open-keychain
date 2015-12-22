@@ -30,7 +30,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -114,19 +113,15 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
 
                 if (containsKeys(nfcFingerprints)) {
-                    Fragment frag = CreateYubiKeyImportFragment.newInstance(
+                    Fragment frag = CreateYubiKeyImportResetFragment.newInstance(
                             nfcFingerprints, nfcAid, nfcUserId);
                     loadFragment(frag, FragAction.START);
 
                     setTitle(R.string.title_import_keys);
                 } else {
-//                    Fragment frag = CreateYubiKeyBlankFragment.newInstance();
-//                    loadFragment(frag, FragAction.START);
-//                    setTitle(R.string.title_manage_my_keys);
-                    Notify.create(this,
-                            "YubiKey key creation is currently not supported. Please follow our FAQ.",
-                            Notify.Style.ERROR
-                    ).show();
+                    Fragment frag = CreateYubiKeyBlankFragment.newInstance();
+                    loadFragment(frag, FragAction.START);
+                    setTitle(R.string.title_manage_my_keys);
                 }
 
                 // done
@@ -160,7 +155,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
     }
 
     @Override
-    protected void onNfcPostExecute() throws IOException {
+    protected void onNfcPostExecute() {
         if (mCurrentFragment instanceof NfcListenerFragment) {
             ((NfcListenerFragment) mCurrentFragment).onNfcPostExecute();
             return;
@@ -181,30 +176,28 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 finish();
 
             } catch (PgpKeyNotFoundException e) {
-                Fragment frag = CreateYubiKeyImportFragment.newInstance(
+                Fragment frag = CreateYubiKeyImportResetFragment.newInstance(
                         mScannedFingerprints, mNfcAid, mNfcUserId);
                 loadFragment(frag, FragAction.TO_RIGHT);
             }
         } else {
-//            Fragment frag = CreateYubiKeyBlankFragment.newInstance();
-//            loadFragment(frag, FragAction.TO_RIGHT);
-            Notify.create(this,
-                    "YubiKey key creation is currently not supported. Please follow our FAQ.",
-                    Notify.Style.ERROR
-            ).show();
+            Fragment frag = CreateYubiKeyBlankFragment.newInstance();
+            loadFragment(frag, FragAction.TO_RIGHT);
         }
     }
 
     private boolean containsKeys(byte[] scannedFingerprints) {
+        if (scannedFingerprints == null) {
+            return false;
+        }
+
         // If all fingerprint bytes are 0, the card contains no keys.
-        boolean cardContainsKeys = false;
         for (byte b : scannedFingerprints) {
             if (b != 0) {
-                cardContainsKeys = true;
-                break;
+                return true;
             }
         }
-        return cardContainsKeys;
+        return false;
     }
 
     @Override
@@ -264,7 +257,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
 
     interface NfcListenerFragment {
         void doNfcInBackground() throws IOException;
-        void onNfcPostExecute() throws IOException;
+        void onNfcPostExecute();
     }
 
     @Override

@@ -30,20 +30,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/section_keybase_proofs" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/colorButtonRow"
-                android:gravity="center_horizontal"
-                android:padding="8dp"
-                android:text="@string/key_trust_header_text"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dip"
-                android:background="?android:attr/listDivider" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

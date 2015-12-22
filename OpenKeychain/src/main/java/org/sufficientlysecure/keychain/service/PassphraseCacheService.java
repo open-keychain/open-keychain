@@ -18,8 +18,6 @@
 package org.sufficientlysecure.keychain.service;
 
 
-import java.util.Date;
-
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -28,13 +26,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.os.Binder;
-import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -53,6 +45,8 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.util.Date;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main
@@ -256,14 +250,6 @@ public class PassphraseCacheService extends Service {
         SecretKeyType keyType = keyRing.getSecretKeyType(subKeyId);
 
         switch (keyType) {
-            case DIVERT_TO_CARD:
-                if (Preferences.getPreferences(this).useDefaultYubiKeyPin()) {
-                    Log.d(Constants.TAG, "PassphraseCacheService: Using default YubiKey PIN: 123456");
-                    return new Passphrase("123456"); // default YubiKey PIN, see http://www.yubico.com/2012/12/yubikey-neo-openpgp/
-                } else {
-                    Log.d(Constants.TAG, "PassphraseCacheService: NOT using default YubiKey PIN");
-                    break;
-                }
             case PASSPHRASE_EMPTY:
                 return new Passphrase("");
             case UNAVAILABLE:
@@ -483,36 +469,13 @@ public class PassphraseCacheService extends Service {
         }
     }
 
-    // from de.azapps.mirakel.helper.Helpers from https://github.com/MirakelX/mirakel-android
-    private static Bitmap getBitmap(int resId, Context context) {
-        int mLargeIconWidth = (int) context.getResources().getDimension(
-                                  android.R.dimen.notification_large_icon_width);
-        int mLargeIconHeight = (int) context.getResources().getDimension(
-                                   android.R.dimen.notification_large_icon_height);
-        Drawable d;
-        if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
-            // noinspection deprecation (can't help it at this api level)
-            d = context.getResources().getDrawable(resId);
-        } else {
-            d = context.getDrawable(resId);
-        }
-        if (d == null) {
-            return null;
-        }
-        Bitmap b = Bitmap.createBitmap(mLargeIconWidth, mLargeIconHeight, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
-        d.setBounds(0, 0, mLargeIconWidth, mLargeIconHeight);
-        d.draw(c);
-        return b;
-    }
-
     private Notification getNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
-                .setLargeIcon(getBitmap(R.mipmap.ic_launcher, getBaseContext()))
+                .setColor(getResources().getColor(R.color.primary))
                 .setContentTitle(getResources().getQuantityString(R.plurals.passp_cache_notif_n_keys,
                         mPassphraseCache.size(), mPassphraseCache.size()))
-                .setContentText(getString(R.string.passp_cache_notif_click_to_clear));
+                .setContentText(getString(R.string.passp_cache_notif_touch_to_clear));
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
@@ -540,7 +503,7 @@ public class PassphraseCacheService extends Service {
 
         // Add clear PI action below text
         builder.addAction(
-                R.drawable.abc_ic_clear_mtrl_alpha,
+                R.drawable.ic_close_white_24dp,
                 getString(R.string.passp_cache_notif_clear),
                 clearCachePi
         );

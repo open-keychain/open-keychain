@@ -52,18 +52,18 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 
@@ -84,7 +84,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private Uri mDataUri;
 
     private byte[] mFingerprint;
-    private long mMasterKeyId;
+    private String mUserId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
@@ -107,7 +107,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View vFingerprintShareButton = view.findViewById(R.id.view_key_action_fingerprint_share);
         View vFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         View vKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
-        View vKeySafeButton = view.findViewById(R.id.view_key_action_key_export);
         View vKeyNfcButton = view.findViewById(R.id.view_key_action_key_nfc);
         View vKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         ImageButton vKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
@@ -118,31 +117,25 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         vFingerprintShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(true, false);
+                shareFingerprint(false);
             }
         });
         vFingerprintClipboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(true, true);
+                shareFingerprint(true);
             }
         });
         vKeyShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(false, false);
-            }
-        });
-        vKeySafeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                exportToFile();
+                shareKey(false);
             }
         });
         vKeyClipboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(false, true);
+                shareKey(true);
             }
         });
 
@@ -174,11 +167,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         return root;
     }
 
-    private void exportToFile() {
-        new ExportHelper(getActivity()).showExportKeysDialog(
-                mMasterKeyId, Constants.Path.APP_DIR_FILE, false);
-    }
-
     private void startSafeSlinger(Uri dataUri) {
         long keyId = 0;
         try {
@@ -193,7 +181,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         startActivityForResult(safeSlingerIntent, 0);
     }
 
-    private void share(boolean fingerprintOnly, boolean toClipboard) {
+    private void shareKey(boolean toClipboard) {
         Activity activity = getActivity();
         if (activity == null || mFingerprint == null) {
             return;
@@ -201,18 +189,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         ProviderHelper providerHelper = new ProviderHelper(activity);
 
         try {
-            String content;
-            if (fingerprintOnly) {
-                String fingerprint = KeyFormattingUtils.convertFingerprintToHex(mFingerprint);
-                if (!toClipboard) {
-                    content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
-                } else {
-                    content = fingerprint;
-                }
-            } else {
-                content = providerHelper.getKeyRingAsArmoredString(
-                        KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri));
-            }
+            String content = providerHelper.getKeyRingAsArmoredString(
+                    KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri));
 
             if (toClipboard) {
                 ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -224,29 +202,26 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 ClipData clip = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, content);
                 clipMan.setPrimaryClip(clip);
 
-                Notify.create(activity, fingerprintOnly ? R.string.fingerprint_copied_to_clipboard
-                        : R.string.key_copied_to_clipboard, Notify.Style.OK).show();
-                return;
-            }
-
-            // Android will fail with android.os.TransactionTooLargeException if key is too big
-            // see http://www.lonestarprod.com/?p=34
-            if (content.length() >= 86389) {
-                Notify.create(activity, R.string.key_too_big_for_sharing, Notify.Style.ERROR).show();
+                Notify.create(activity, R.string.key_copied_to_clipboard, Notify.Style.OK).show();
                 return;
             }
 
             // let user choose application
             Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, content);
             sendIntent.setType("text/plain");
 
-            // Bluetooth Share will convert text/plain sent via EXTRA_TEXT to HTML
-            // Add replacement extra to send a text/plain file instead.
+            // NOTE: Don't use Intent.EXTRA_TEXT to send the key
+            // better send it via a Uri!
+            // example: Bluetooth Share will convert text/plain sent via Intent.EXTRA_TEXT to HTML
             try {
-                TemporaryStorageProvider shareFileProv = new TemporaryStorageProvider();
-                Uri contentUri = TemporaryStorageProvider.createFile(activity,
-                        KeyFormattingUtils.convertFingerprintToHex(mFingerprint) + Constants.FILE_EXTENSION_ASC);
+                TemporaryFileProvider shareFileProv = new TemporaryFileProvider();
+
+                String filename = KeyFormattingUtils.convertFingerprintToHex(mFingerprint);
+                KeyRing.UserId mainUserId = KeyRing.splitUserId(mUserId);
+                if (mainUserId.name != null) {
+                    filename = mainUserId.name;
+                }
+                Uri contentUri = TemporaryFileProvider.createFile(activity, filename + Constants.FILE_EXTENSION_ASC);
 
                 BufferedWriter contentWriter = new BufferedWriter(new OutputStreamWriter(
                         new ParcelFileDescriptor.AutoCloseOutputStream(
@@ -256,18 +231,15 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
                 sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
             } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "error creating temporary Bluetooth key share file!", e);
+                Log.e(Constants.TAG, "Error creating temporary key share file!", e);
                 // no need for a snackbar because one sharing option doesn't work
                 // Notify.create(getActivity(), R.string.error_temp_file, Notify.Style.ERROR).show();
             }
 
-
-            String title = getString(fingerprintOnly
-                    ? R.string.title_share_fingerprint_with : R.string.title_share_key);
+            String title = getString(R.string.title_share_key);
             Intent shareChooser = Intent.createChooser(sendIntent, title);
 
             startActivity(shareChooser);
-
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
@@ -275,6 +247,45 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             Log.e(Constants.TAG, "key not found!", e);
             Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
         }
+    }
+
+    private void shareFingerprint(boolean toClipboard) {
+        Activity activity = getActivity();
+        if (activity == null || mFingerprint == null) {
+            return;
+        }
+
+        String content;
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(mFingerprint);
+        if (!toClipboard) {
+            content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+        } else {
+            content = fingerprint;
+        }
+
+        if (toClipboard) {
+            ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipMan == null) {
+                Notify.create(activity, R.string.error_clipboard_copy, Style.ERROR);
+                return;
+            }
+
+            ClipData clip = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, content);
+            clipMan.setPrimaryClip(clip);
+
+            Notify.create(activity, R.string.fingerprint_copied_to_clipboard, Notify.Style.OK).show();
+            return;
+        }
+
+        // let user choose application
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, content);
+        sendIntent.setType("text/plain");
+
+        String title = getString(R.string.title_share_fingerprint_with);
+        Intent shareChooser = Intent.createChooser(sendIntent, title);
+
+        startActivity(shareChooser);
     }
 
     private void showQrCodeDialog() {
@@ -318,11 +329,12 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         mNfcHelper.initNfc(mDataUri);
     }
 
-    static final String[] UNIFIED_PROJECTION = new String[] {
-            KeyRings._ID, KeyRings.FINGERPRINT
+    static final String[] UNIFIED_PROJECTION = new String[]{
+            KeyRings._ID, KeyRings.FINGERPRINT, KeyRings.USER_ID
     };
 
     static final int INDEX_UNIFIED_FINGERPRINT = 1;
+    static final int INDEX_UNIFIED_USER_ID = 2;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         setContentShown(false);
@@ -351,6 +363,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                     byte[] fingerprintBlob = data.getBlob(INDEX_UNIFIED_FINGERPRINT);
                     setFingerprint(fingerprintBlob);
 
+                    mUserId = data.getString(INDEX_UNIFIED_USER_ID);
+
                     break;
                 }
             }
@@ -367,10 +381,11 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         mFingerprint = null;
     }
 
-    /** Load QR Code asynchronously and with a fade in animation */
+    /**
+     * Load QR Code asynchronously and with a fade in animation
+     */
     private void setFingerprint(byte[] fingerprintBlob) {
         mFingerprint = fingerprintBlob;
-        mMasterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(fingerprintBlob);
 
         final String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
         mFingerprintView.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));

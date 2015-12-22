@@ -28,6 +28,7 @@ public final class Constants {
 
     public static final boolean DEBUG = BuildConfig.DEBUG;
     public static final boolean DEBUG_LOG_DB_QUERIES = false;
+    public static final boolean DEBUG_EXPLAIN_QUERIES = false;
     public static final boolean DEBUG_SYNC_REMOVE_CONTACTS = false;
     public static final boolean DEBUG_KEYSERVER_SYNC = false;
 
@@ -40,21 +41,30 @@ public final class Constants {
     public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
 
     public static final String PROVIDER_AUTHORITY = BuildConfig.PROVIDER_CONTENT_AUTHORITY;
-    public static final String TEMPSTORAGE_AUTHORITY = BuildConfig.APPLICATION_ID + ".tempstorage";
+    public static final String TEMP_FILE_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".tempstorage";
 
     public static final String CLIPBOARD_LABEL = "Keychain";
 
-    // as defined in http://tools.ietf.org/html/rfc3156, section 7
-    public static final String NFC_MIME = "application/pgp-keys";
-
     // as defined in http://tools.ietf.org/html/rfc3156
-    // we don't use application/pgp-encrypted as it only holds the version number
-    public static final String ENCRYPTED_FILES_MIME = "application/octet-stream";
-    public static final String ENCRYPTED_TEXT_MIME = "text/plain";
+    public static final String MIME_TYPE_KEYS = "application/pgp-keys";
+    // NOTE: don't use application/pgp-encrypted It only holds the version number!
+    public static final String MIME_TYPE_ENCRYPTED = "application/octet-stream";
+    // NOTE: Non-standard alternative, better use this, because application/octet-stream is too unspecific!
+    // also see https://tools.ietf.org/html/draft-bray-pgp-message-00
+    public static final String MIME_TYPE_ENCRYPTED_ALTERNATE = "application/pgp-message";
+    public static final String MIME_TYPE_TEXT = "text/plain";
 
-    public static final String FILE_EXTENSION_PGP_MAIN = ".gpg";
-    public static final String FILE_EXTENSION_PGP_ALTERNATE = ".pgp";
+    public static final String FILE_EXTENSION_PGP_MAIN = ".pgp";
+    public static final String FILE_EXTENSION_PGP_ALTERNATE = ".gpg";
     public static final String FILE_EXTENSION_ASC = ".asc";
+
+    public static final String FILE_BACKUP_PREFIX = "backup_";
+    public static final String FILE_EXTENSION_BACKUP_SECRET = ".sec.asc";
+    public static final String FILE_EXTENSION_BACKUP_PUBLIC = ".pub.asc";
+    public static final String FILE_ENCRYPTED_BACKUP_PREFIX = "backup_";
+    // actually it is ASCII Armor, so .asc would be more accurate, but Android displays a nice icon for .pgp files!
+    public static final String FILE_EXTENSION_ENCRYPTED_BACKUP_SECRET = ".sec.pgp";
+    public static final String FILE_EXTENSION_ENCRYPTED_BACKUP_PUBLIC = ".pub.pgp";
 
     // used by QR Codes (Guardian Project, Monkeysphere compatiblity)
     public static final String FINGERPRINT_SCHEME = "openpgp4fpr";
@@ -70,11 +80,13 @@ public final class Constants {
 
     public static final int TEMPFILE_TTL = 24 * 60 * 60 * 1000; // 1 day
 
+    // the maximal length of plaintext to read in encrypt/decrypt text activities
+    public static final int TEXT_LENGTH_LIMIT = 1024 * 50;
+
     public static final String SAFESLINGER_SERVER = "safeslinger-openpgp.appspot.com";
 
     public static final class Path {
         public static final File APP_DIR = new File(Environment.getExternalStorageDirectory(), "OpenKeychain");
-        public static final File APP_DIR_FILE = new File(APP_DIR, "export.asc");
     }
 
     public static final class Notification {
@@ -92,7 +104,6 @@ public final class Constants {
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
         public static final String SEARCH_KEYBASE = "search_keybase_pref";
-        public static final String USE_DEFAULT_YUBIKEY_PIN = "useDefaultYubikeyPin";
         public static final String USE_NUMKEYPAD_FOR_YUBIKEY_PIN = "useNumKeypadForYubikeyPin";
         public static final String ENCRYPT_FILENAMES = "encryptFilenames";
         public static final String FILE_USE_COMPRESSION = "useFileCompression";
@@ -140,8 +151,9 @@ public final class Constants {
     }
 
     public static final class key {
-        public static final int none = 0;
-        public static final int symmetric = -1;
+        public static final long none = 0;
+        public static final long symmetric = -1;
+        public static final long backup_code = -2;
     }
 
 }

@@ -38,6 +38,11 @@ public class EditKeyResult extends InputPendingResult {
         mMasterKeyId = null;
     }
 
+    public EditKeyResult(OperationLog log, InputPendingResult result) {
+        super(log, result);
+        mMasterKeyId = null;
+    }
+
     public EditKeyResult(Parcel source) {
         super(source);
         mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;

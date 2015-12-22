@@ -46,7 +46,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -57,8 +56,10 @@ public class EncryptTextFragment
 
     public static final String ARG_TEXT = "text";
     public static final String ARG_USE_COMPRESSION = "use_compression";
+    public static final String ARG_RETURN_PROCESS_TEXT = "return_process_text";
 
     private boolean mShareAfterEncrypt;
+    private boolean mReturnProcessTextAfterEncrypt;
     private boolean mUseCompression;
     private boolean mHiddenRecipients = false;
 
@@ -67,11 +68,12 @@ public class EncryptTextFragment
     /**
      * Creates new instance of this fragment
      */
-    public static EncryptTextFragment newInstance(String text) {
+    public static EncryptTextFragment newInstance(String text, boolean returnProcessTextAfterEncrypt) {
         EncryptTextFragment frag = new EncryptTextFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_TEXT, text);
+        args.putBoolean(ARG_RETURN_PROCESS_TEXT, returnProcessTextAfterEncrypt);
         frag.setArguments(args);
 
         return frag;
@@ -129,6 +131,7 @@ public class EncryptTextFragment
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             mMessage = getArguments().getString(ARG_TEXT);
+            mReturnProcessTextAfterEncrypt = getArguments().getBoolean(ARG_RETURN_PROCESS_TEXT, false);
         }
 
         Preferences prefs = Preferences.getPreferences(getActivity());
@@ -152,6 +155,12 @@ public class EncryptTextFragment
         inflater.inflate(R.menu.encrypt_text_fragment, menu);
 
         menu.findItem(R.id.check_enable_compression).setChecked(mUseCompression);
+
+        if (mReturnProcessTextAfterEncrypt) {
+            menu.findItem(R.id.encrypt_paste).setVisible(true);
+            menu.findItem(R.id.encrypt_copy).setVisible(false);
+            menu.findItem(R.id.encrypt_share).setVisible(false);
+        }
     }
 
     @Override
@@ -175,6 +184,11 @@ public class EncryptTextFragment
             case R.id.encrypt_share: {
                 hideKeyboard();
                 mShareAfterEncrypt = true;
+                cryptoOperation(new CryptoInputParcel(new Date()));
+                break;
+            }
+            case R.id.encrypt_paste: {
+                hideKeyboard();
                 cryptoOperation(new CryptoInputParcel(new Date()));
                 break;
             }
@@ -289,26 +303,10 @@ public class EncryptTextFragment
         result.createNotify(activity).show();
     }
 
-    /**
-     * Create Intent Chooser but exclude OK's EncryptActivity.
-     */
-    private Intent sendWithChooserExcludingEncrypt(byte[] resultBytes) {
-        Intent prototype = createSendIntent(resultBytes);
-        String title = getString(R.string.title_share_message);
-
-        // we don't want to encrypt the encrypted, no inception ;)
-        String[] blacklist = new String[]{
-                Constants.PACKAGE_NAME + ".ui.EncryptTextActivity",
-                "org.thialfihar.android.apg.ui.EncryptActivity"
-        };
-
-        return new ShareHelper(getActivity()).createChooserExcluding(prototype, title, blacklist);
-    }
-
     private Intent createSendIntent(byte[] resultBytes) {
         Intent sendIntent;
         sendIntent = new Intent(Intent.ACTION_SEND);
-        sendIntent.setType(Constants.ENCRYPTED_TEXT_MIME);
+        sendIntent.setType(Constants.MIME_TYPE_TEXT);
         sendIntent.putExtra(Intent.EXTRA_TEXT, new String(resultBytes));
 
         EncryptActivity modeInterface = (EncryptActivity) getActivity();
@@ -343,7 +341,13 @@ public class EncryptTextFragment
 
         if (mShareAfterEncrypt) {
             // Share encrypted message/file
-            startActivity(sendWithChooserExcludingEncrypt(result.getResultBytes()));
+            startActivity(Intent.createChooser(createSendIntent(result.getResultBytes()),
+                    getString(R.string.title_share_message)));
+        } else if (mReturnProcessTextAfterEncrypt) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra(Intent.EXTRA_PROCESS_TEXT, new String(result.getResultBytes()));
+            getActivity().setResult(Activity.RESULT_OK, resultIntent);
+            getActivity().finish();
         } else {
             // Copy to clipboard
             copyToClipboard(result);

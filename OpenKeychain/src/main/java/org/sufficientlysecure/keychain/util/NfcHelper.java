@@ -98,7 +98,7 @@ public class NfcHelper {
                      * guarantee that this activity starts when receiving a beamed message. For now, this code
                      * uses the tag dispatch system.
                      */
-                    return new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
+                    return new NdefMessage(NdefRecord.createMime(Constants.MIME_TYPE_KEYS,
                             mNfcKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
                 }
             };
@@ -141,6 +141,10 @@ public class NfcHelper {
                             }
 
                             protected void onPostExecute(Void unused) {
+                                if (mActivity.isFinishing()) {
+                                    return;
+                                }
+
                                 // Register callback to set NDEF message
                                 mNfcAdapter.setNdefPushMessageCallback(mNdefCallback,
                                         mActivity);

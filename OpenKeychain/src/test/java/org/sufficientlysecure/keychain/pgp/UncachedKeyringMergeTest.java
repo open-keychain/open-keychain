@@ -87,8 +87,8 @@ public class UncachedKeyringMergeTest {
 
     static UncachedKeyRing staticRingA, staticRingB;
     UncachedKeyRing ringA, ringB;
-    ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
-    ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
+    ArrayList<RawPacket> onlyA = new ArrayList<>();
+    ArrayList<RawPacket> onlyB = new ArrayList<>();
     OperationResult.OperationLog log = new OperationResult.OperationLog();
     PgpKeyOperation op;
     SaveKeyringParcel parcel;
@@ -234,7 +234,7 @@ public class UncachedKeyringMergeTest {
 
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
+                    Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
             modifiedA = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
             modifiedB = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
 

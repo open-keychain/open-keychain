@@ -17,18 +17,30 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.util.LongSparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -40,20 +52,11 @@ import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListCloudLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
-import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
-
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class ImportKeysListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
@@ -62,7 +65,9 @@ public class ImportKeysListFragment extends ListFragment implements
     private static final String ARG_BYTES = "bytes";
     public static final String ARG_SERVER_QUERY = "query";
     public static final String ARG_NON_INTERACTIVE = "non_interactive";
-    public static final String ARG_KEYSERVER_URL = "keyserver_url";
+    public static final String ARG_CLOUD_SEARCH_PREFS = "cloud_search_prefs";
+
+    private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
     private Activity mActivity;
     private ImportKeysAdapter mAdapter;
@@ -135,32 +140,35 @@ public class ImportKeysListFragment extends ListFragment implements
      * by dataUri, or searches a keyserver for serverQuery, if parameter is not null, in that order
      * Will immediately load data if non-null bytes/dataUri/serverQuery
      *
-     * @param bytes       byte data containing list of keyrings to be imported
-     * @param dataUri     file from which keyrings are to be imported
-     * @param serverQuery query to search for on keyserver
-     * @param keyserver   if not null, will perform search on specified keyserver. Else, uses
-     *                    keyserver specified in user preferences
+     * @param bytes            byte data containing list of keyrings to be imported
+     * @param dataUri          file from which keyrings are to be imported
+     * @param serverQuery      query to search for on keyserver
+     * @param cloudSearchPrefs search parameters to use. If null will retrieve from user's
+     *                         preferences.
      * @return fragment with arguments set based on passed parameters
      */
     public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri, String serverQuery,
-                                                     String keyserver) {
-        return newInstance(bytes, dataUri, serverQuery, false, keyserver);
+                                                     Preferences.CloudSearchPrefs cloudSearchPrefs) {
+        return newInstance(bytes, dataUri, serverQuery, false, cloudSearchPrefs);
     }
 
     /**
      * Visually consists of a list of keyrings with checkboxes to specify which are to be imported
      * Will immediately load data if non-null bytes/dataUri/serverQuery is supplied
      *
-     * @param bytes          byte data containing list of keyrings to be imported
-     * @param dataUri        file from which keyrings are to be imported
-     * @param serverQuery    query to search for on keyserver
-     * @param nonInteractive if true, users will not be able to check/uncheck items in the list
-     * @param keyserver      if set, will perform search on specified keyserver. If null, falls back
-     *                       to keyserver specified in user preferences
+     * @param bytes            byte data containing list of keyrings to be imported
+     * @param dataUri          file from which keyrings are to be imported
+     * @param serverQuery      query to search for on keyserver
+     * @param nonInteractive   if true, users will not be able to check/uncheck items in the list
+     * @param cloudSearchPrefs search parameters to use. If null will retrieve from user's
+     *                         preferences.
      * @return fragment with arguments set based on passed parameters
      */
-    public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri, String serverQuery,
-                                                     boolean nonInteractive, String keyserver) {
+    public static ImportKeysListFragment newInstance(byte[] bytes,
+                                                     Uri dataUri,
+                                                     String serverQuery,
+                                                     boolean nonInteractive,
+                                                     Preferences.CloudSearchPrefs cloudSearchPrefs) {
         ImportKeysListFragment frag = new ImportKeysListFragment();
 
         Bundle args = new Bundle();
@@ -168,7 +176,7 @@ public class ImportKeysListFragment extends ListFragment implements
         args.putParcelable(ARG_DATA_URI, dataUri);
         args.putString(ARG_SERVER_QUERY, serverQuery);
         args.putBoolean(ARG_NON_INTERACTIVE, nonInteractive);
-        args.putString(ARG_KEYSERVER_URL, keyserver);
+        args.putParcelable(ARG_CLOUD_SEARCH_PREFS, cloudSearchPrefs);
 
         frag.setArguments(args);
 
@@ -179,8 +187,8 @@ public class ImportKeysListFragment extends ListFragment implements
     }
 
     static public class BytesLoaderState extends LoaderState {
-        byte[] mKeyBytes;
-        Uri mDataUri;
+        public byte[] mKeyBytes;
+        public Uri mDataUri;
 
         BytesLoaderState(byte[] keyBytes, Uri dataUri) {
             mKeyBytes = keyBytes;
@@ -218,21 +226,7 @@ public class ImportKeysListFragment extends ListFragment implements
         Uri dataUri = args.getParcelable(ARG_DATA_URI);
         byte[] bytes = args.getByteArray(ARG_BYTES);
         String query = args.getString(ARG_SERVER_QUERY);
-        String keyserver = args.getString(ARG_KEYSERVER_URL);
         mNonInteractive = args.getBoolean(ARG_NON_INTERACTIVE, false);
-
-        if (dataUri != null || bytes != null) {
-            mLoaderState = new BytesLoaderState(bytes, dataUri);
-        } else if (query != null) {
-            Preferences.CloudSearchPrefs cloudSearchPrefs;
-            if (keyserver == null) {
-                cloudSearchPrefs = Preferences.getPreferences(getActivity()).getCloudSearchPrefs();
-            } else {
-                cloudSearchPrefs = new Preferences.CloudSearchPrefs(true, true, keyserver);
-            }
-
-            mLoaderState = new CloudLoaderState(query, cloudSearchPrefs);
-        }
 
         getListView().setOnTouchListener(new OnTouchListener() {
             @Override
@@ -246,7 +240,76 @@ public class ImportKeysListFragment extends ListFragment implements
 
         getListView().setFastScrollEnabled(true);
 
+        if (dataUri != null || bytes != null) {
+            mLoaderState = new BytesLoaderState(bytes, dataUri);
+        } else if (query != null) {
+            Preferences.CloudSearchPrefs cloudSearchPrefs
+                    = args.getParcelable(ARG_CLOUD_SEARCH_PREFS);
+            if (cloudSearchPrefs == null) {
+                cloudSearchPrefs = Preferences.getPreferences(getActivity()).getCloudSearchPrefs();
+            }
+
+            mLoaderState = new CloudLoaderState(query, cloudSearchPrefs);
+        }
+
+        if (dataUri != null && ! checkAndRequestReadPermission(dataUri)) {
+            return;
+        }
+
         restartLoaders();
+    }
+
+    /**
+     * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.
+     *
+     * This method returns true on Android < 6, or if permission is already granted. It
+     * requests the permission and returns false otherwise.
+     *
+     * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
+     */
+    private boolean checkAndRequestReadPermission(final Uri uri) {
+        if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+            return true;
+        }
+
+        // Additional check due to https://commonsware.com/blog/2015/11/09/you-cannot-hold-nonexistent-permissions.html
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+
+        requestPermissions(
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+
+        if (requestCode != REQUEST_PERMISSION_READ_EXTERNAL_STORAGE) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            return;
+        }
+
+        boolean permissionWasGranted = grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+        if (permissionWasGranted) {
+            // permission granted -> load key
+            restartLoaders();
+        } else {
+            Toast.makeText(getActivity(), R.string.error_denied_storage_permission, Toast.LENGTH_LONG).show();
+            getActivity().setResult(Activity.RESULT_CANCELED);
+            getActivity().finish();
+        }
     }
 
     @Override
@@ -304,9 +367,7 @@ public class ImportKeysListFragment extends ListFragment implements
     onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_BYTES: {
-                BytesLoaderState ls = (BytesLoaderState) mLoaderState;
-                InputData inputData = getInputData(ls.mKeyBytes, ls.mDataUri);
-                return new ImportKeysListLoader(mActivity, inputData);
+                return new ImportKeysListLoader(mActivity, (BytesLoaderState) mLoaderState);
             }
             case LOADER_ID_CLOUD: {
                 CloudLoaderState ls = (CloudLoaderState) mLoaderState;
@@ -429,26 +490,6 @@ public class ImportKeysListFragment extends ListFragment implements
             default:
                 break;
         }
-    }
-
-    private InputData getInputData(byte[] importBytes, Uri dataUri) {
-        InputData inputData = null;
-        if (importBytes != null) {
-            inputData = new InputData(new ByteArrayInputStream(importBytes), importBytes.length);
-        } else if (dataUri != null) {
-            try {
-                InputStream inputStream = getActivity().getContentResolver().openInputStream(dataUri);
-                int length = inputStream.available();
-
-                inputData = new InputData(inputStream, length);
-            } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "FileNotFoundException!", e);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "IOException!", e);
-            }
-        }
-
-        return inputData;
     }
 
 }

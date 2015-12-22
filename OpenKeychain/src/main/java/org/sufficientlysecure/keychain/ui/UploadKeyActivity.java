@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,10 +30,12 @@ import android.widget.Spinner;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.operations.results.UploadResult;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -42,7 +45,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
  * Sends the selected public key to a keyserver
  */
 public class UploadKeyActivity extends BaseActivity
-        implements CryptoOperationHelper.Callback<ExportKeyringParcel, ExportResult> {
+        implements CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult> {
     private View mUploadButton;
     private Spinner mKeyServerSpinner;
 
@@ -50,8 +53,8 @@ public class UploadKeyActivity extends BaseActivity
 
     // CryptoOperationHelper.Callback vars
     private String mKeyserver;
-    private Uri mUnifiedKeyringUri;
-    private CryptoOperationHelper<ExportKeyringParcel, ExportResult> mUploadOpHelper;
+    private long mMasterKeyId;
+    private CryptoOperationHelper<UploadKeyringParcel, UploadResult> mUploadOpHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +88,16 @@ public class UploadKeyActivity extends BaseActivity
             finish();
             return;
         }
+
+        try {
+            mMasterKeyId = new ProviderHelper(this).getCachedPublicKeyRing(
+                    KeyRings.buildUnifiedKeyRingUri(mDataUri)).getMasterKeyId();
+        } catch (PgpKeyNotFoundException e) {
+            Log.e(Constants.TAG, "Intent data pointed to bad key!");
+            finish();
+            return;
+        }
+
     }
 
     @Override
@@ -101,13 +114,10 @@ public class UploadKeyActivity extends BaseActivity
     }
 
     private void uploadKey() {
-        Uri blobUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
-        mUnifiedKeyringUri = blobUri;
-
         String server = (String) mKeyServerSpinner.getSelectedItem();
         mKeyserver = server;
 
-        mUploadOpHelper = new CryptoOperationHelper(1, this, this, R.string.progress_uploading);
+        mUploadOpHelper = new CryptoOperationHelper<>(1, this, this, R.string.progress_uploading);
         mUploadOpHelper.cryptoOperation();
     }
 
@@ -125,12 +135,12 @@ public class UploadKeyActivity extends BaseActivity
     }
 
     @Override
-    public ExportKeyringParcel createOperationInput() {
-        return new ExportKeyringParcel(mKeyserver, mUnifiedKeyringUri);
+    public UploadKeyringParcel createOperationInput() {
+        return new UploadKeyringParcel(mKeyserver, mMasterKeyId);
     }
 
     @Override
-    public void onCryptoOperationSuccess(ExportResult result) {
+    public void onCryptoOperationSuccess(UploadResult result) {
         result.createNotify(this).show();
     }
 
@@ -140,7 +150,7 @@ public class UploadKeyActivity extends BaseActivity
     }
 
     @Override
-    public void onCryptoOperationError(ExportResult result) {
+    public void onCryptoOperationError(UploadResult result) {
         result.createNotify(this).show();
     }
 

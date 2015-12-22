@@ -208,18 +208,12 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
 
     @Override
     public void onCryptoOperationSuccess(OperationResult result) {
-        // if bad -> display here!
-        if (!result.success()) {
-            result.createNotify(getActivity()).show(LinkedIdCreateFinalFragment.this);
-            return;
-        }
-
         getActivity().finish();
     }
 
     @Override
     public void onCryptoOperationError(OperationResult result) {
-
+        result.createNotify(getActivity()).show(this);
     }
 
 }

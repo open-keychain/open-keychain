@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
@@ -133,7 +133,7 @@ public class SymmetricTextOperationTests {
                     hasExtra(equalTo(Intent.EXTRA_INTENT), allOf(
                             hasAction(Intent.ACTION_VIEW),
                             hasFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                            hasData(allOf(hasScheme("content"), hasHost(TemporaryStorageProvider.AUTHORITY))),
+                            hasData(allOf(hasScheme("content"), hasHost(TemporaryFileProvider.AUTHORITY))),
                             hasType("text/plain")
                     ))
             )).respondWith(new ActivityResult(Activity.RESULT_OK, null));

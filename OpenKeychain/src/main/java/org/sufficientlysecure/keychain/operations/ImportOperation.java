@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,6 +38,7 @@ import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
@@ -82,6 +83,8 @@ import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
  */
 public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
+    public static final int MAX_THREADS = 10;
+
     public ImportOperation(Context context, ProviderHelper providerHelper, Progressable
             progressable) {
         super(context, providerHelper, progressable);
@@ -122,7 +125,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     /**
      * Since the introduction of multithreaded import, we expect calling functions to handle the
-     * contact-to-key sync i.e ContactSyncAdapterService.requestSync()
+     * contact-to-key sync i.e ContactSyncAdapterService.requestContactsSync()
      *
      * @param entries      keys to import
      * @param num          number of keys to import
@@ -133,7 +136,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     @NonNull
     private ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
                                                 String keyServerUri, Progressable progressable,
-                                                Proxy proxy) {
+                                                @NonNull Proxy proxy) {
         if (progressable != null) {
             progressable.setProgress(R.string.progress_importing, 0, 100);
         }
@@ -154,6 +157,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         double progSteps = 100.0 / num;
 
         KeybaseKeyserver keybaseServer = null;
+        FacebookKeyserver facebookServer = null;
         HkpKeyserver keyServer = null;
 
         // iterate over all entries
@@ -188,7 +192,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         // Make sure we have the keyserver instance cached
                         if (keyServer == null) {
                             log.add(LogType.MSG_IMPORT_KEYSERVER, 1, keyServerUri);
-                            keyServer = new HkpKeyserver(keyServerUri);
+                            keyServer = new HkpKeyserver(keyServerUri, proxy);
                         }
 
                         try {
@@ -197,11 +201,10 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                             if (entry.mExpectedFingerprint != null) {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" +
                                         entry.mExpectedFingerprint.substring(24));
-                                data = keyServer.get("0x" + entry.mExpectedFingerprint, proxy)
-                                        .getBytes();
+                                data = keyServer.get("0x" + entry.mExpectedFingerprint).getBytes();
                             } else {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
-                                data = keyServer.get(entry.mKeyIdHex, proxy).getBytes();
+                                data = keyServer.get(entry.mKeyIdHex).getBytes();
                             }
                             key = UncachedKeyRing.decodeFromData(data);
                             if (key != null) {
@@ -219,13 +222,19 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     if (entry.mKeybaseName != null) {
                         // Make sure we have this cached
                         if (keybaseServer == null) {
-                            keybaseServer = new KeybaseKeyserver();
+                            keybaseServer = new KeybaseKeyserver(proxy);
                         }
 
                         try {
                             log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.mKeybaseName);
-                            byte[] data = keybaseServer.get(entry.mKeybaseName, proxy).getBytes();
+                            byte[] data = keybaseServer.get(entry.mKeybaseName).getBytes();
                             UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
+
+                            if (keybaseKey != null) {
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
+                            } else {
+                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
+                            }
 
                             // If there already is a key, merge the two
                             if (key != null && keybaseKey != null) {
@@ -246,6 +255,44 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                             log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
                         }
                     }
+
+                    // if the key is from Facebook, fetch from there
+                    if (entry.mFbUsername != null) {
+                        // Make sure we have this cached
+                        if (facebookServer == null) {
+                            facebookServer = new FacebookKeyserver(proxy);
+                        }
+
+                        try {
+                            log.add(LogType.MSG_IMPORT_FETCH_FACEBOOK, 2, entry.mFbUsername);
+                            byte[] data = facebookServer.get(entry.mFbUsername).getBytes();
+                            UncachedKeyRing facebookKey = UncachedKeyRing.decodeFromData(data);
+
+                            if (facebookKey != null) {
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
+                            } else {
+                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
+                            }
+
+                            // If there already is a key, merge the two
+                            if (key != null && facebookKey != null) {
+                                log.add(LogType.MSG_IMPORT_MERGE, 3);
+                                facebookKey = key.merge(facebookKey, log, 4);
+                                // If the merge didn't fail, use the new merged key
+                                if (facebookKey != null) {
+                                    key = facebookKey;
+                                } else {
+                                    log.add(LogType.MSG_IMPORT_MERGE_ERROR, 4);
+                                }
+                            } else if (facebookKey != null) {
+                                key = facebookKey;
+                            }
+                        } catch (Keyserver.QueryFailedException e) {
+                            // download failed, too bad. just proceed
+                            Log.e(Constants.TAG, "query failed", e);
+                            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
+                        }
+                    }
                 }
 
                 if (key == null) {
@@ -259,12 +306,6 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER_SECRET, 2);
                     badKeys += 1;
                     continue;
-                }
-
-                // Another check if we have been cancelled
-                if (checkCancelled()) {
-                    cancelled = true;
-                    break;
                 }
 
                 SaveKeyringResult result;
@@ -330,7 +371,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         // Special: make sure new data is synced into contacts
         // disabling sync right now since it reduces speed while multi-threading
         // so, we expect calling functions to take care of it. KeychainService handles this
-        // ContactSyncAdapterService.requestSync();
+        // ContactSyncAdapterService.requestContactsSync();
 
         // convert to long array
         long[] importedMasterKeyIdsArray = new long[importedMasterKeyIds.size()];
@@ -365,13 +406,15 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             }
         }
 
-        // Final log entry, it's easier to do this individually
-        if ((newKeys > 0 || updatedKeys > 0) && badKeys > 0) {
-            log.add(LogType.MSG_IMPORT_PARTIAL, 1);
-        } else if (newKeys > 0 || updatedKeys > 0) {
-            log.add(LogType.MSG_IMPORT_SUCCESS, 1);
-        } else {
-            log.add(LogType.MSG_IMPORT_ERROR, 1);
+        if (!cancelled) {
+            // Final log entry, it's easier to do this individually
+            if ((newKeys > 0 || updatedKeys > 0) && badKeys > 0) {
+                log.add(LogType.MSG_IMPORT_PARTIAL, 1);
+            } else if (newKeys > 0 || updatedKeys > 0) {
+                log.add(LogType.MSG_IMPORT_SUCCESS, 1);
+            } else {
+                log.add(LogType.MSG_IMPORT_ERROR, 1);
+            }
         }
 
         return new ImportKeyResult(resultType, log, newKeys, updatedKeys, badKeys, secret,
@@ -400,8 +443,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     return new ImportKeyResult(null,
                             RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
                 }
-                proxy = Preferences.getPreferences(mContext).getProxyPrefs().parcelableProxy
-                        .getProxy();
+                proxy = Preferences.getPreferences(mContext).getProxyPrefs().getProxy();
             } else {
                 proxy = cryptoInput.getParcelableProxy().getProxy();
             }
@@ -409,67 +451,66 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             result = multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer, proxy);
         }
 
-        ContactSyncAdapterService.requestSync();
+        ContactSyncAdapterService.requestContactsSync();
         return result;
     }
 
     @NonNull
-    private ImportKeyResult multiThreadedKeyImport(Iterator<ParcelableKeyRing> keyListIterator,
+    private ImportKeyResult multiThreadedKeyImport(@NonNull Iterator<ParcelableKeyRing> keyListIterator,
                                                    int totKeys, final String keyServer,
                                                    final Proxy proxy) {
         Log.d(Constants.TAG, "Multi-threaded key import starting");
-        if (keyListIterator != null) {
-            KeyImportAccumulator accumulator = new KeyImportAccumulator(totKeys, mProgressable);
+        KeyImportAccumulator accumulator = new KeyImportAccumulator(totKeys, mProgressable);
 
-            final ProgressScaler ignoreProgressable = new ProgressScaler();
+        final ProgressScaler ignoreProgressable = new ProgressScaler();
 
-            final int maxThreads = 200;
-            ExecutorService importExecutor = new ThreadPoolExecutor(0, maxThreads,
-                    30L, TimeUnit.SECONDS,
-                    new SynchronousQueue<Runnable>());
+        ExecutorService importExecutor = new ThreadPoolExecutor(0, MAX_THREADS, 30L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>());
 
-            ExecutorCompletionService<ImportKeyResult> importCompletionService =
-                    new ExecutorCompletionService<>(importExecutor);
+        ExecutorCompletionService<ImportKeyResult> importCompletionService =
+                new ExecutorCompletionService<>(importExecutor);
 
-            while (keyListIterator.hasNext()) { // submit all key rings to be imported
+        while (keyListIterator.hasNext()) { // submit all key rings to be imported
 
-                final ParcelableKeyRing pkRing = keyListIterator.next();
+            final ParcelableKeyRing pkRing = keyListIterator.next();
 
-                Callable<ImportKeyResult> importOperationCallable = new Callable<ImportKeyResult>
-                        () {
+            Callable<ImportKeyResult> importOperationCallable = new Callable<ImportKeyResult>
+                    () {
 
-                    @Override
-                    public ImportKeyResult call() {
+                @Override
+                public ImportKeyResult call() {
 
-                        ArrayList<ParcelableKeyRing> list = new ArrayList<>();
-                        list.add(pkRing);
-
-                        return serialKeyRingImport(list.iterator(), 1, keyServer,
-                                ignoreProgressable, proxy);
+                    if (checkCancelled()) {
+                        return null;
                     }
-                };
 
-                importCompletionService.submit(importOperationCallable);
-            }
+                    ArrayList<ParcelableKeyRing> list = new ArrayList<>();
+                    list.add(pkRing);
 
-            while (!accumulator.isImportFinished()) { // accumulate the results of each import
-                try {
-                    accumulator.accumulateKeyImport(importCompletionService.take().get());
-                } catch (InterruptedException | ExecutionException e) {
-                    Log.e(Constants.TAG, "A key could not be imported during multi-threaded " +
-                            "import", e);
-                    // do nothing?
-                    if (e instanceof ExecutionException) {
-                        // Since serialKeyRingImport does not throw any exceptions, this is what
-                        // would have happened if
-                        // we were importing the key on this thread
-                        throw new RuntimeException();
-                    }
+                    return serialKeyRingImport(list.iterator(), 1, keyServer, ignoreProgressable, proxy);
+                }
+            };
+
+            importCompletionService.submit(importOperationCallable);
+        }
+
+        while (!accumulator.isImportFinished()) { // accumulate the results of each import
+            try {
+                accumulator.accumulateKeyImport(importCompletionService.take().get());
+            } catch (InterruptedException | ExecutionException e) {
+                Log.e(Constants.TAG, "A key could not be imported during multi-threaded " +
+                        "import", e);
+                // do nothing?
+                if (e instanceof ExecutionException) {
+                    // Since serialKeyRingImport does not throw any exceptions, this is what
+                    // would have happened if
+                    // we were importing the key on this thread
+                    throw new RuntimeException();
                 }
             }
-            return accumulator.getConsolidatedResult();
         }
-        return new ImportKeyResult(ImportKeyResult.RESULT_FAIL_NOTHING, new OperationLog());
+        return accumulator.getConsolidatedResult();
+
     }
 
     /**
@@ -486,6 +527,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         private int mUpdatedKeys = 0;
         private int mSecret = 0;
         private int mResultType = 0;
+        private boolean mHasCancelledResult;
 
         /**
          * Accumulates keyring imports and updates the progressable whenever a new key is imported.
@@ -503,14 +545,25 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             }
         }
 
-        public synchronized void accumulateKeyImport(ImportKeyResult result) {
+        public void accumulateKeyImport(ImportKeyResult result) {
             mImportedKeys++;
+
+            if (result == null) {
+                return;
+            }
 
             if (mProgressable != null) {
                 mProgressable.setProgress(mImportedKeys, mTotalKeys);
             }
 
-            mImportLog.addAll(result.getLog().toList());//accumulates log
+            boolean notCancelledOrFirstCancelled = !result.cancelled() || !mHasCancelledResult;
+            if (notCancelledOrFirstCancelled) {
+                mImportLog.addAll(result.getLog().toList()); //accumulates log
+                if (result.cancelled()) {
+                    mHasCancelledResult = true;
+                }
+            }
+
             mBadKeys += result.mBadKeys;
             mNewKeys += result.mNewKeys;
             mUpdatedKeys += result.mUpdatedKeys;
@@ -533,7 +586,9 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
             // adding required information to mResultType
             // special case,no keys requested for import
-            if (mBadKeys == 0 && mNewKeys == 0 && mUpdatedKeys == 0) {
+            if (mBadKeys == 0 && mNewKeys == 0 && mUpdatedKeys == 0
+                    && (mResultType & ImportKeyResult.RESULT_CANCELLED)
+                    != ImportKeyResult.RESULT_CANCELLED) {
                 mResultType = ImportKeyResult.RESULT_FAIL_NOTHING;
             } else {
                 if (mNewKeys > 0) {

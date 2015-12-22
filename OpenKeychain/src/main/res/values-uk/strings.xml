@@ -23,7 +23,6 @@
   <!--section-->
   <string name="section_user_ids">Сутності</string>
   <string name="section_keys">Підключі</string>
-  <string name="section_cloud_search">Хмарний пошук</string>
   <string name="section_actions">Дії</string>
   <string name="section_share_key">Ключ</string>
   <string name="section_key_server">Сервер ключів</string>
@@ -41,6 +40,7 @@
   <string name="btn_view_cert_key">Переглянути ключ сертифікації</string>
   <string name="btn_create_key">Створити ключ</string>
   <string name="btn_add_files">Додати файл(и)</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Параметри</string>
   <string name="menu_help">Довідка</string>
@@ -60,9 +60,7 @@
   <string name="label_file_ascii_armor">Увімкнути ASCII Armor</string>
   <string name="label_write_version_header">Нехай інші дізнаються, що ви користуєтеся OpenKeychain</string>
   <string name="label_write_version_header_summary">Напишіть \'OpenKeychain v2.7\' для підписів, зашифрованого тексту та експортованих ключів  OpenPGP</string>
-  <string name="label_use_default_yubikey_pin">Вживати типовий YubiKey PIN</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Вживати цифрову клавіатуру для YubiKey PIN</string>
-  <string name="label_label_use_default_yubikey_pin_summary">Вживається типовий PIN (123456) для доступу до YubiKey чреез NFC</string>
   <string name="label_to">Зашифрувати до:</string>
   <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
@@ -78,7 +76,6 @@
   <string name="label_name">Назва</string>
   <string name="label_comment">Коментар</string>
   <string name="label_email">Ел. пошта</string>
-  <string name="label_send_key">Синхронізувати із хмарою</string>
   <string name="label_fingerprint">Відбиток</string>
   <string name="expiry_date_dialog_title">Задати термін дії</string>
   <string name="label_preferred">бажаний</string>
@@ -88,8 +85,6 @@
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
   <!--StartOrbotDialogFragment strings-->
-  <string name="user_id_no_name">&lt;без імені&gt;</string>
-  <string name="none">&lt;жоден&gt;</string>
   <plurals name="n_keys">
     <item quantity="one">1 ключ</item>
     <item quantity="few">%d ключі</item>
@@ -130,7 +125,6 @@
   <string name="flag_authenticate">Перевірити справжність</string>
   <!--sentences-->
   <string name="no_filemanager_installed">Нема встановленого сумісного менеджера файлів.</string>
-  <string name="passphrase_for_symmetric_encryption">Симетричне шифрування.</string>
   <string name="encrypt_sign_successful">Успішно підписано та/або перевірено.</string>
   <string name="encrypt_sign_clipboard_successful">Успішно підписано та/або зашифровано до буфера обміну.</string>
   <string name="select_encryption_key">Виберіть принаймні один ключ шифрування.</string>
@@ -152,7 +146,6 @@
   <string name="nfc_successful">Успішно надіслано ключ через промінь NFC!</string>
   <string name="key_copied_to_clipboard">Ключ вже скопійовано у буфер обміну!</string>
   <string name="fingerprint_copied_to_clipboard">Відбиток вже скопійовано до буфера обміну!</string>
-  <string name="key_too_big_for_sharing">Ключ надто великий для цього способу поширення!</string>
   <string name="text_copied_to_clipboard">Текст вже скопійовано у буфер обміну!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -212,8 +205,8 @@
   <string name="progress_encrypting">шифруються дані…</string>
   <string name="progress_decrypting">розшифровуються дані…</string>
   <string name="progress_preparing_signature">підготовка підпису…</string>
-  <string name="progress_generating_signature">генерується підпис…</string>
   <string name="progress_processing_signature">обробляється підпис…</string>
+  <string name="progress_generating_signature">генерується підпис…</string>
   <string name="progress_verifying_signature">перевірка підпису…</string>
   <string name="progress_signing">підписання…</string>
   <string name="progress_certifying">сертифікується…</string>
@@ -227,10 +220,6 @@
   <string name="progress_con_reimport">consolidate: повторний імпорт…</string>
   <!--action strings-->
   <!--key bit length selections-->
-  <string name="key_size_512">512</string>
-  <string name="key_size_768">768</string>
-  <string name="key_size_1024">1024</string>
-  <string name="key_size_1536">1536</string>
   <string name="key_size_2048">2048</string>
   <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
@@ -266,16 +255,6 @@
   <!--Import from URL-->
   <!--Generic result toast-->
   <!--Import result toast-->
-  <plurals name="import_keys_added_and_updated_1">
-    <item quantity="one">Успішно імпортовано ключ.</item>
-    <item quantity="few">Успішно імпортовано %1$d ключі.</item>
-    <item quantity="other">Успішно імпортовано %1$d ключів.</item>
-  </plurals>
-  <plurals name="import_keys_added_and_updated_2">
-    <item quantity="one">та оновлено ключ%2$s.</item>
-    <item quantity="few">та оновлено %1$d ключі%2$s.</item>
-    <item quantity="other">та оновлено %1$d ключів%2$s.</item>
-  </plurals>
   <plurals name="import_keys_added">
     <item quantity="one">Успішно імпортований ключ%2$s.</item>
     <item quantity="few">Успішно імпортовано %1$d ключі%2$s.</item>
@@ -343,8 +322,6 @@
   <string name="key_view_tab_certs">Сертифікати</string>
   <string name="user_id_info_revoked_title">Відхилено</string>
   <string name="user_id_info_revoked_text">Ця сутність вже відкликана власником ключа. Вона більше не дійсна.</string>
-  <string name="user_id_info_certified_title">Сертифіковано</string>
-  <string name="user_id_info_uncertified_title">Несертифіковано</string>
   <string name="user_id_info_invalid_title">Недійсна</string>
   <string name="user_id_info_invalid_text">Щось неправильне у цій сутності!</string>
   <!--Key trust-->
@@ -454,7 +431,6 @@
   <string name="msg_cr">Генерується новий основний ключ</string>
   <string name="msg_cr_error_no_master">Не вказано параметрів основного ключа!</string>
   <string name="msg_cr_error_no_certify">Основний ключ повинен мати прапорець certify!</string>
-  <string name="msg_cr_error_keysize_512">Розмір ключа має бути більшим або рівним 512!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Змінюється в\'язка %s</string>
   <string name="msg_mf_error_encode">Виняток шифрування!</string>
@@ -501,13 +477,14 @@
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Linked Identity verification-->
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">частина завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
     <item quantity="few">частини завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
     <item quantity="other">частин завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
   </plurals>
   <!--Messages for Keybase Verification operation-->
-  <!--Messages for Export Log operation-->
+  <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <!--Keyserver sync-->
   <!--First Time-->
@@ -517,7 +494,6 @@
   <string name="section_certifier_id">Ким підписаний</string>
   <string name="section_cert">Дані сертифікату</string>
   <string name="label_user_id">Сутність</string>
-  <string name="unknown_uid">&lt;невідомо&gt;</string>
   <string name="empty_certs">Немає сертифікатів для цього ключа</string>
   <string name="label_revocation">Причина відхилення</string>
   <string name="label_cert_type">Тип</string>
@@ -535,4 +511,5 @@
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <!--Other Linked Identity strings-->
 </resources>

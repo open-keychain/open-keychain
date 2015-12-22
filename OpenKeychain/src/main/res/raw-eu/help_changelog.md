@@ -1,11 +1,27 @@
 [//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
 
+## 3.7
+  * Improved Android 6 support (permissions, integration into text selection)
+  * API: Version 10
+
+## 3.6
+
+  * Babeskopia enkriptatuak
+  * Segurtasun zuzenketak kanpoko segurtasun auditorian ohinarrituz
+  * YubiKey NEO giltza sortzeko laguntzailea
+  * Ohinarrizko barneko MIME sostengua
+  * Berezgaitasunezko giltza aldiberetzea
+  * Ezaugarri esperimentala: loturatu giltzak Github, Twitter kontuetara
+  * Ezaugarri esperimentala: giltza baieztapena esaldien bidez
+  * Ezaugarri esperimentala: azalgai iluna
+  * API: 9 bertsioa
+
 ## 3.5
 
-  * Key revocation on key deletion
-  * Improved checks for insecure cryptography
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  * Giltza ukapena giltza ezabatzean
+  * Hobetuta segurtasun gabeko kriptografia egiaztapena
+  * Zuzenduta: OpenKeychain ez da isten laguntzailearen lehen jardunaren ondoren
+  * API: 8 bertsioa
 
 ## 3.4
 

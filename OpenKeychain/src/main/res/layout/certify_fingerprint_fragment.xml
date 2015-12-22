@@ -1,155 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/certify_fingerprint_buttons_divider">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/certify_fingerprint_intro"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/certify_fingerprint_text" />
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/certify_fingerprint_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="?attr/colorCardViewBackground"
-                app:cardUseCompatPadding="true"
-                app:cardCornerRadius="4dp"
-                android:layout_gravity="top">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/CardViewHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_fingerprint" />
-
-                    <TextView
-                        android:id="@+id/certify_fingerprint_fingerprint"
-                        android:paddingLeft="16dp"
-                        android:paddingRight="16dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:textSize="20sp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:typeface="monospace"
-                        android:gravity="center_vertical" />
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:id="@+id/certify_fingerprint_buttons">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <TextView
-            android:id="@+id/certify_fingerprint_button_no"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/certify_fingerprint_intro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/btn_no"
-            android:minHeight="?android:attr/listPreferredItemHeight"
-            android:gravity="center_vertical"
-            android:clickable="true"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_gravity="center_vertical" />
+            android:layout_marginBottom="32dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:text="@string/certify_fingerprint_text"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="?android:attr/listDivider" />
-
-        <TextView
-            android:id="@+id/certify_fingerprint_button_yes"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+        <android.support.v7.widget.CardView
+            android:id="@+id/certify_fingerprint_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/btn_match"
-            android:minHeight="?android:attr/listPreferredItemHeight"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical"
-            android:clickable="true"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="top"
+            app:cardBackgroundColor="?attr/colorCardViewBackground"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="8dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/certify_fingerprint_fingerprint_header"
+                    style="@style/CardViewHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_fingerprint" />
+
+                <TextView
+                    android:id="@+id/certify_fingerprint_fingerprint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="24dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="16dp"
+                    android:textSize="18sp"
+                    android:typeface="monospace" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/certify_fingerprint_button_no"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:textColor="@color/android_red_dark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:drawableLeft="@drawable/ic_close_black_24dp"
+                    android:drawablePadding="8dp"
+                    android:gravity="left|center_vertical"
+                    android:minHeight="48dp"
+                    android:text="@string/btn_not_matching"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/certify_fingerprint_button_yes"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:textColor="@color/android_green_dark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:drawableLeft="@drawable/ic_check_black_24dp"
+                    android:drawablePadding="8dp"
+                    android:gravity="left|center_vertical"
+                    android:minHeight="48dp"
+                    android:text="@string/btn_match"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            </LinearLayout>
+
+
+        </android.support.v7.widget.CardView>
+
     </LinearLayout>
 
-    <View
-        android:id="@+id/certify_fingerprint_buttons_divider2"
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:background="?android:attr/listDivider"
-        android:layout_alignBottom="@+id/certify_fingerprint_buttons_text"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:id="@+id/certify_fingerprint_buttons_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/certify_fingerprint_text2"
-        android:layout_above="@+id/certify_fingerprint_buttons"
-        android:layout_centerHorizontal="true" />
-
-    <View
-        android:id="@+id/certify_fingerprint_buttons_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:background="?android:attr/listDivider"
-        android:layout_alignTop="@+id/certify_fingerprint_buttons_text"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-
-
-</RelativeLayout>
+</ScrollView>

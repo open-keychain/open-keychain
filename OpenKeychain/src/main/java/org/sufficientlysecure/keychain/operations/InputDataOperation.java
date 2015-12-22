@@ -25,9 +25,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import android.content.ClipDescription;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.codec.DecodeMonitor;
@@ -47,7 +50,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
@@ -100,32 +103,40 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
             decryptInput.setInputUri(input.getInputUri());
 
-            currentInputUri = TemporaryStorageProvider.createFile(mContext);
+            currentInputUri = TemporaryFileProvider.createFile(mContext);
             decryptInput.setOutputUri(currentInputUri);
 
             decryptResult = op.execute(decryptInput, cryptoInput);
             if (decryptResult.isPending()) {
                 return new InputDataResult(log, decryptResult);
             }
-            log.addByMerge(decryptResult, 2);
+            log.addByMerge(decryptResult, 1);
 
-            if (!decryptResult.success()) {
-                log.add(LogType.MSG_DATA_ERROR_OPENPGP, 1);
+            if ( ! decryptResult.success()) {
                 return new InputDataResult(InputDataResult.RESULT_ERROR, log);
+            }
+
+            // inform the storage provider about the mime type for this uri
+            if (decryptResult.getDecryptionMetadata() != null) {
+                TemporaryFileProvider.setMimeType(mContext, currentInputUri,
+                        decryptResult.getDecryptionMetadata().getMimeType());
             }
 
         } else {
             currentInputUri = input.getInputUri();
         }
 
-        // don't even attempt if we know the data isn't suitable for mime content
+        // don't even attempt if we know the data isn't suitable for mime content, or if we have a filename
         boolean skipMimeParsing = false;
         if (decryptResult != null && decryptResult.getDecryptionMetadata() != null) {
-            String contentType = decryptResult.getDecryptionMetadata().getMimeType();
-            if (contentType != null
-                    && !contentType.startsWith("multipart/")
-                    && !contentType.startsWith("text/")
-                    && !contentType.startsWith("application/")) {
+            OpenPgpMetadata metadata = decryptResult.getDecryptionMetadata();
+            String fileName = metadata.getFilename();
+            String contentType = metadata.getMimeType();
+            if (!TextUtils.isEmpty(fileName)
+                    || contentType != null
+                        && !contentType.startsWith("multipart/")
+                        && !contentType.startsWith("text/")
+                        && !"application/octet-stream".equals(contentType)) {
                 skipMimeParsing = true;
             }
         }
@@ -153,6 +164,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
         parser.setContentDecoding(true);
         parser.setRecurse();
         parser.setContentHandler(new AbstractContentHandler() {
+            private boolean mFoundHeaderWithFields = false;
             private Uri uncheckedSignedDataUri;
             String mFilename;
 
@@ -185,7 +197,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
                 log.add(LogType.MSG_DATA_DETACHED_RAW, 3);
 
-                uncheckedSignedDataUri = TemporaryStorageProvider.createFile(mContext, mFilename, "text/plain");
+                uncheckedSignedDataUri = TemporaryFileProvider.createFile(mContext, mFilename, "text/plain");
                 OutputStream out = mContext.getContentResolver().openOutputStream(uncheckedSignedDataUri, "w");
 
                 if (out == null) {
@@ -209,11 +221,19 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             }
 
             @Override
+            public void endHeader() throws MimeException {
+                if ( ! mFoundHeaderWithFields) {
+                    parser.stop();
+                }
+            }
+
+            @Override
             public void field(Field field) throws MimeException {
                 field = DefaultFieldParser.getParser().parse(field, DecodeMonitor.SILENT);
                 if (field instanceof ContentDispositionField) {
                     mFilename = ((ContentDispositionField) field).getFilename();
                 }
+                mFoundHeaderWithFields = true;
             }
 
             private void bodySignature(BodyDescriptor bd, InputStream is) throws MimeException, IOException {
@@ -282,12 +302,24 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
                 log.add(LogType.MSG_DATA_MIME_PART, 2);
 
-                log.add(LogType.MSG_DATA_MIME_TYPE, 3, bd.getMimeType());
+                String mimeType = bd.getMimeType();
+
                 if (mFilename != null) {
                     log.add(LogType.MSG_DATA_MIME_FILENAME, 3, mFilename);
+                    boolean isGenericMimeType = ClipDescription.compareMimeTypes(mimeType, "application/octet-stream")
+                            || ClipDescription.compareMimeTypes(mimeType, "application/x-download");
+                    if (isGenericMimeType) {
+                        String extension = MimeTypeMap.getFileExtensionFromUrl(mFilename);
+                        String extMimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                        if (extMimeType != null) {
+                            mimeType = extMimeType;
+                            log.add(LogType.MSG_DATA_MIME_FROM_EXTENSION, 3);
+                        }
+                    }
                 }
+                log.add(LogType.MSG_DATA_MIME_TYPE, 3, mimeType);
 
-                Uri uri = TemporaryStorageProvider.createFile(mContext, mFilename, bd.getMimeType());
+                Uri uri = TemporaryFileProvider.createFile(mContext, mFilename, mimeType);
                 OutputStream out = mContext.getContentResolver().openOutputStream(uri, "w");
 
                 if (out == null) {
@@ -308,7 +340,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     charset = "utf-8";
                 }
 
-                OpenPgpMetadata metadata = new OpenPgpMetadata(mFilename, bd.getMimeType(), 0L, totalLength, charset);
+                OpenPgpMetadata metadata = new OpenPgpMetadata(mFilename, mimeType, 0L, totalLength, charset);
 
                 out.close();
                 outputUris.add(uri);

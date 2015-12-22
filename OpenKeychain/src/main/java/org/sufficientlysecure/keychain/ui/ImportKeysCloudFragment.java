@@ -42,33 +42,35 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.List;
 
+/**
+ * Consists of the search bar, search button, and search settings button
+ */
 public class ImportKeysCloudFragment extends Fragment {
     public static final String ARG_QUERY = "query";
     public static final String ARG_DISABLE_QUERY_EDIT = "disable_query_edit";
-    public static final String ARG_KEYSERVER = "keyserver";
+    public static final String ARG_CLOUD_SEARCH_PREFS = "cloud_search_prefs";
 
     private ImportKeysActivity mImportActivity;
 
-    private View mSearchButton;
     private AutoCompleteTextView mQueryEditText;
-    private View mConfigButton;
 
     /**
      * Creates new instance of this fragment
      *
      * @param query            query to search for
      * @param disableQueryEdit if true, user cannot edit query
-     * @param keyserver        specified keyserver authority to use. If null, will use keyserver
-     *                         specified in user preferences
+     * @param cloudSearchPrefs search parameters to use. If null will retrieve from user's
+     *                         preferences.
      */
     public static ImportKeysCloudFragment newInstance(String query, boolean disableQueryEdit,
-                                                      String keyserver) {
+                                                      Preferences.CloudSearchPrefs
+                                                              cloudSearchPrefs) {
         ImportKeysCloudFragment frag = new ImportKeysCloudFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_QUERY, query);
         args.putBoolean(ARG_DISABLE_QUERY_EDIT, disableQueryEdit);
-        args.putString(ARG_KEYSERVER, keyserver);
+        args.putParcelable(ARG_CLOUD_SEARCH_PREFS, cloudSearchPrefs);
 
         frag.setArguments(args);
 
@@ -82,12 +84,11 @@ public class ImportKeysCloudFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.import_keys_cloud_fragment, container, false);
 
-        mSearchButton = view.findViewById(R.id.cloud_import_server_search);
         mQueryEditText = (AutoCompleteTextView) view.findViewById(R.id.cloud_import_server_query);
-        mConfigButton = view.findViewById(R.id.cloud_import_server_config_button);
 
-        List<String> namesAndEmails = ContactHelper.getContactNames(getActivity());
-        namesAndEmails.addAll(ContactHelper.getContactMails(getActivity()));
+        ContactHelper contactHelper = new ContactHelper(getActivity());
+        List<String> namesAndEmails = contactHelper.getContactNames();
+        namesAndEmails.addAll(contactHelper.getContactMails());
         mQueryEditText.setThreshold(3);
         mQueryEditText.setAdapter(
                 new ArrayAdapter<>
@@ -96,7 +97,8 @@ public class ImportKeysCloudFragment extends Fragment {
                         )
         );
 
-        mSearchButton.setOnClickListener(new OnClickListener() {
+        View searchButton = view.findViewById(R.id.cloud_import_server_search);
+        searchButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 search(mQueryEditText.getText().toString());
@@ -116,7 +118,8 @@ public class ImportKeysCloudFragment extends Fragment {
             }
         });
 
-        mConfigButton.setOnClickListener(new OnClickListener() {
+        View configButton = view.findViewById(R.id.cloud_import_server_config_button);
+        configButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mImportActivity, SettingsActivity.class);
@@ -159,15 +162,14 @@ public class ImportKeysCloudFragment extends Fragment {
     }
 
     private void search(String query) {
-        Preferences.CloudSearchPrefs cloudSearchPrefs;
-        String explicitKeyserver = getArguments().getString(ARG_KEYSERVER);
-        // no explicit keyserver passed
-        if (explicitKeyserver == null) {
+        Preferences.CloudSearchPrefs cloudSearchPrefs
+                = getArguments().getParcelable(ARG_CLOUD_SEARCH_PREFS);
+
+        // no explicit search preferences passed
+        if (cloudSearchPrefs == null) {
             cloudSearchPrefs = Preferences.getPreferences(getActivity()).getCloudSearchPrefs();
-        } else {
-            // assume we are also meant to search keybase.io
-            cloudSearchPrefs = new Preferences.CloudSearchPrefs(true, true, explicitKeyserver);
         }
+
         mImportActivity.loadCallback(
                 new ImportKeysListFragment.CloudLoaderState(query, cloudSearchPrefs));
         toggleKeyboard(false);

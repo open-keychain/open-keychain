@@ -348,30 +348,30 @@ public class AddSubkeyDialogFragment extends DialogFragment {
 
     /**
      * <h3>RSA</h3>
-     * <p>for RSA algorithm, key length must be greater than 1024 (according to
-     * <a href="https://github.com/open-keychain/open-keychain/issues/102">#102</a>). Possibility to generate keys bigger
+     * <p>for RSA algorithm, key length must be greater than 2048. Possibility to generate keys bigger
      * than 8192 bits is currently disabled, because it's almost impossible to generate them on a mobile device (check
      * <a href="http://www.javamex.com/tutorials/cryptography/rsa_key_length.shtml">RSA key length plot</a> and
      * <a href="http://www.keylength.com/">Cryptographic Key Length Recommendation</a>). Also, key length must be a
      * multiplicity of 8.</p>
      * <h3>ElGamal</h3>
-     * <p>For ElGamal algorithm, supported key lengths are 1536, 2048, 3072, 4096 or 8192 bits.</p>
+     * <p>For ElGamal algorithm, supported key lengths are 2048, 3072, 4096 or 8192 bits.</p>
      * <h3>DSA</h3>
-     * <p>For DSA algorithm key length must be between 512 and 1024. Also, it must me dividable by 64.</p>
+     * <p>For DSA algorithm key length must be between 2048 and 3072. Also, it must me dividable by 64.</p>
      *
      * @return correct key length, according to SpongyCastle specification. Returns <code>-1</code>, if key length is
      * inappropriate.
      */
     private int getProperKeyLength(Algorithm algorithm, int currentKeyLength) {
-        final int[] elGamalSupportedLengths = {1536, 2048, 3072, 4096, 8192};
+        final int[] elGamalSupportedLengths = {2048, 3072, 4096, 8192};
         int properKeyLength = -1;
         switch (algorithm) {
-            case RSA:
-                if (currentKeyLength > 1024 && currentKeyLength <= 16384) {
+            case RSA: {
+                if (currentKeyLength >= 2048 && currentKeyLength <= 16384) {
                     properKeyLength = currentKeyLength + ((8 - (currentKeyLength % 8)) % 8);
                 }
                 break;
-            case ELGAMAL:
+            }
+            case ELGAMAL: {
                 int[] elGammalKeyDiff = new int[elGamalSupportedLengths.length];
                 for (int i = 0; i < elGamalSupportedLengths.length; i++) {
                     elGammalKeyDiff[i] = Math.abs(elGamalSupportedLengths[i] - currentKeyLength);
@@ -386,11 +386,14 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 }
                 properKeyLength = elGamalSupportedLengths[minimalIndex];
                 break;
-            case DSA:
-                if (currentKeyLength >= 512 && currentKeyLength <= 1024) {
+            }
+            case DSA: {
+                // Bouncy Castle supports 4096 maximum
+                if (currentKeyLength >= 2048 && currentKeyLength <= 4096) {
                     properKeyLength = currentKeyLength + ((64 - (currentKeyLength % 64)) % 64);
                 }
                 break;
+            }
         }
         return properKeyLength;
     }
@@ -424,7 +427,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         final ArrayAdapter<CharSequence> keySizeAdapter = (ArrayAdapter<CharSequence>) mKeySizeSpinner.getAdapter();
         keySizeAdapter.clear();
         switch (algorithm) {
-            case RSA:
+            case RSA: {
                 replaceArrayAdapterContent(keySizeAdapter, R.array.rsa_key_size_spinner_values);
                 mKeySizeSpinner.setSelection(1);
                 mKeySizeRow.setVisibility(View.VISIBLE);
@@ -450,7 +453,8 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 }
                 mFlagAuthenticate.setChecked(false);
                 break;
-            case ELGAMAL:
+            }
+            case ELGAMAL: {
                 replaceArrayAdapterContent(keySizeAdapter, R.array.elgamal_key_size_spinner_values);
                 mKeySizeSpinner.setSelection(3);
                 mKeySizeRow.setVisibility(View.VISIBLE);
@@ -466,7 +470,8 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 mFlagAuthenticate.setChecked(false);
                 mFlagAuthenticate.setEnabled(false);
                 break;
-            case DSA:
+            }
+            case DSA: {
                 replaceArrayAdapterContent(keySizeAdapter, R.array.dsa_key_size_spinner_values);
                 mKeySizeSpinner.setSelection(2);
                 mKeySizeRow.setVisibility(View.VISIBLE);
@@ -482,7 +487,8 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 mFlagAuthenticate.setChecked(false);
                 mFlagAuthenticate.setEnabled(false);
                 break;
-            case ECDSA:
+            }
+            case ECDSA: {
                 mKeySizeRow.setVisibility(View.GONE);
                 mCurveRow.setVisibility(View.VISIBLE);
                 mCustomKeyInfoTextView.setText("");
@@ -496,7 +502,8 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 mFlagAuthenticate.setEnabled(true);
                 mFlagAuthenticate.setChecked(false);
                 break;
-            case ECDH:
+            }
+            case ECDH: {
                 mKeySizeRow.setVisibility(View.GONE);
                 mCurveRow.setVisibility(View.VISIBLE);
                 mCustomKeyInfoTextView.setText("");
@@ -510,6 +517,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 mFlagAuthenticate.setChecked(false);
                 mFlagAuthenticate.setEnabled(false);
                 break;
+            }
         }
         keySizeAdapter.notifyDataSetChanged();
 

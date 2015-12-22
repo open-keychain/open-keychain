@@ -154,8 +154,13 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return getRing().getEncoded();
     }
 
-    public boolean containsSubkey(String expectedFingerprint) {
+    /// Returns true iff the keyring contains a primary key or mutually bound subkey with the expected fingerprint
+    public boolean containsBoundSubkey(String expectedFingerprint) {
         for (CanonicalizedPublicKey key : publicKeyIterator()) {
+            boolean isMasterOrMutuallyBound = key.isMasterKey() || key.canSign();
+            if (!isMasterOrMutuallyBound) {
+                continue;
+            }
             if (KeyFormattingUtils.convertFingerprintToHex(
                     key.getFingerprint()).equalsIgnoreCase(expectedFingerprint)) {
                 return true;

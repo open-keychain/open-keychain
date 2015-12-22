@@ -1,0 +1,330 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
+  <!--title-->
+  <string name="title_encrypt_text">Cifrar</string>
+  <string name="title_encrypt_files">Cifrar</string>
+  <string name="title_decrypt">Descifrar</string>
+  <string name="title_add_subkey">Agregar subclave</string>
+  <string name="title_edit_key">Editar clave</string>
+  <string name="title_linked_create">Crear una identidad en LinkedIn</string>
+  <string name="title_preferences">Ajustes</string>
+  <string name="title_api_registered_apps">Apps</string>
+  <string name="title_key_server_preference">Servidores OpenPGP</string>
+  <string name="title_change_passphrase">Cambiar contraseña</string>
+  <string name="title_share_fingerprint_with">Compartir huella con...</string>
+  <string name="title_share_key">Compartir clave con...</string>
+  <string name="title_share_file">Compartir archivo con...</string>
+  <string name="title_share_message">Compartir texto con...</string>
+  <string name="title_encrypt_to_file">Cifrar a un archivo</string>
+  <string name="title_decrypt_to_file">Descifrar a un archivo</string>
+  <string name="title_import_keys">Importar claves</string>
+  <string name="title_export_key">Respaldar clave</string>
+  <string name="title_export_keys">Respaldar claves</string>
+  <string name="title_key_not_found">Clave no encontrada</string>
+  <string name="title_send_key">Subir clave a servidor</string>
+  <string name="title_backup">Respaldar clave</string>
+  <string name="title_certify_key">Confirmar clave</string>
+  <string name="title_key_details">Detalles de la clave</string>
+  <string name="title_help">Ayuda</string>
+  <string name="title_log_display">Registro</string>
+  <string name="title_exchange_keys">Intercambiar claves</string>
+  <string name="title_advanced_key_info">Información detallada</string>
+  <string name="title_delete_secret_key">¿Eliminar su clave \'%s\'?</string>
+  <string name="title_manage_my_keys">Administrar mis claves</string>
+  <!--section-->
+  <string name="section_user_ids">Identidades</string>
+  <string name="section_yubikey">Clave Yubi</string>
+  <string name="section_should_you_trust">¿Debería confiar en esta clave?</string>
+  <string name="section_proof_details">Prueba de verificación</string>
+  <string name="section_keys">Subclave</string>
+  <string name="section_cloud_search">Búsqueda de clave</string>
+  <string name="section_cloud_search_summary">Servidor de clave, keybase.io</string>
+  <string name="section_passphrase_cache">Contraseñas y NIPs</string>
+  <string name="section_proxy_settings">Anonimato de red</string>
+  <string name="section_proxy_settings_summary">Tor, Ajustes de proxy</string>
+  <string name="section_gui">Interfaz</string>
+  <string name="section_sync_settings">Sincronización</string>
+  <string name="section_experimental_features">Funciones experimentales</string>
+  <string name="section_certify">Confirmar</string>
+  <string name="section_actions">Acciones</string>
+  <string name="section_share_key">Clave</string>
+  <string name="section_key_server">Servidor de claves</string>
+  <string name="section_fingerprint">Huella digital</string>
+  <string name="section_phrases">Frase</string>
+  <string name="section_encrypt">Cifrar</string>
+  <string name="section_decrypt">Descifrar/verificar</string>
+  <string name="section_current_expiry">Expiración actual</string>
+  <string name="section_new_expiry">Nueva expiración</string>
+  <!--button-->
+  <string name="btn_decrypt_verify_file">Descifrar, verificar y guardar archivo</string>
+  <string name="btn_encrypt_share_file">Cifrar y compartir archivo</string>
+  <string name="btn_encrypt_save_file">Cifrar y guardar archivo</string>
+  <string name="btn_save_file">Guardar archivo</string>
+  <string name="btn_save">Guardar</string>
+  <string name="btn_view_log">Ver registro</string>
+  <string name="btn_do_not_save">Cancelar</string>
+  <string name="btn_delete">Eliminar</string>
+  <string name="btn_no_date">Sin expiración</string>
+  <string name="btn_okay">Aceptar</string>
+  <string name="btn_export_to_server">Subir a servidor de claves</string>
+  <string name="btn_next">Siguiente</string>
+  <string name="btn_back">Atrás</string>
+  <string name="btn_no">No</string>
+  <string name="btn_match">Coinciden huellas digitales</string>
+  <string name="btn_match_phrases">Coinciden frases</string>
+  <string name="btn_share_encrypted_signed">Cifrar, firmar y compartir texto </string>
+  <string name="btn_copy_encrypted_signed">Cifrar, firmar y copiar texto</string>
+  <string name="btn_paste_encrypted_signed">Cifrar, firmar y pegar texto</string>
+  <string name="btn_view_cert_key">Ver certificado de clave</string>
+  <string name="btn_create_key">Crear clave</string>
+  <string name="btn_add_files">Agregar archivo(s)</string>
+  <string name="btn_share_decrypted_text">Compartir</string>
+  <string name="btn_open_with">Abrir con...</string>
+  <string name="btn_copy_decrypted_text">Copiar texto descifrado</string>
+  <string name="btn_decrypt_clipboard">Leer desde el portapapeles</string>
+  <string name="btn_decrypt_files">Elegir archivo de entrada</string>
+  <string name="btn_encrypt_files">Cifrar archivos</string>
+  <string name="btn_encrypt_text">Cifrar texto</string>
+  <string name="btn_add_email">Agregar dirección de correo adicional</string>
+  <string name="btn_unlock">Desbloquear</string>
+  <string name="btn_add_keyserver">Agregar</string>
+  <string name="btn_save_default">Guardar como predeterminado</string>
+  <string name="btn_saved">¡Guardado!</string>
+  <string name="btn_not_matching">No coinciden</string>
+  <!--Content Description-->
+  <!--menu-->
+  <string name="menu_preferences">Ajustes</string>
+  <string name="menu_help">Ayuda</string>
+  <string name="menu_export_key">Respaldar clave</string>
+  <string name="menu_delete_key">Eliminar clave</string>
+  <string name="menu_manage_keys">Administrar mis claves</string>
+  <string name="menu_search">Buscar</string>
+  <string name="menu_nfc_preferences">Ajustes NFC</string>
+  <string name="menu_beam_preferences">Ajustes Beam</string>
+  <string name="menu_encrypt_to">Cifrar a...</string>
+  <string name="menu_select_all">Seleccionar todo</string>
+  <string name="menu_export_all_keys">Exportar todas las claves</string>
+  <string name="menu_update_all_keys">Subir todas las claves</string>
+  <string name="menu_keyserver_add">Agregar</string>
+  <!--label-->
+  <string name="label_message">Texto</string>
+  <string name="label_file">Archivo</string>
+  <string name="label_files">Archivo(s)</string>
+  <string name="label_file_colon">Archivo:</string>
+  <string name="label_no_passphrase">Sin contraseña</string>
+  <string name="label_passphrase">Contraseña</string>
+  <string name="label_pin">NIP</string>
+  <string name="label_unlock">Desbloqueando...</string>
+  <string name="label_passphrase_again">Repetir contraseña</string>
+  <string name="label_show_passphrase">Mostrar contraseña</string>
+  <string name="label_algorithm">Algoritmo</string>
+  <string name="label_write_version_header">Permitir que otros sepan que estás usando OpenKeychain</string>
+  <string name="label_use_num_keypad_for_yubikey_pin">Usar teclado numérico para NIP de clave Yubi</string>
+  <string name="label_asymmetric_from">Firmar con...</string>
+  <string name="label_to">Cifrar para:</string>
+  <string name="label_delete_after_encryption">Eliminar archivos después de cifrado</string>
+  <string name="label_delete_after_decryption">Eliminar después de descifrado</string>
+  <string name="label_encryption_algorithm">Algoritmo de cifrado</string>
+  <string name="label_hash_algorithm">Algoritmo de función hash</string>
+  <string name="label_symmetric">Cifrar con contraseña</string>
+  <string name="label_message_compression">Compresión de texto</string>
+  <string name="label_file_compression">Compresión de archivo</string>
+  <string name="label_keyservers">Seleccione servidor de claves OpenGPG</string>
+  <string name="label_key_id">Identificador de clave</string>
+  <string name="label_key_created">Clave creada el %s</string>
+  <string name="label_creation">Creación</string>
+  <string name="label_expiry">Expiración</string>
+  <string name="label_usage">Uso</string>
+  <string name="label_key_size">Tamaño de clave</string>
+  <string name="label_ecc_curve">Curva elíptica</string>
+  <string name="label_main_user_id">Identidad principal</string>
+  <string name="label_name">Nombre</string>
+  <string name="label_comment">Comentario</string>
+  <string name="label_email">Correo electrónico</string>
+  <string name="label_send_key">Sincronizar con Internet</string>
+  <string name="label_fingerprint">Huella digital</string>
+  <string name="expiry_date_dialog_title">Asignar fecha de expiración</string>
+  <string name="label_keyservers_title">Servidor de claves</string>
+  <string name="label_keyserver_settings_hint">Arrastre para cambiar el orden, pulse para editar o eliminar</string>
+  <string name="label_selected_keyserver_title">Servidor de claves seleccionado</string>
+  <string name="label_preferred">preferido</string>
+  <string name="label_enable_compression">Activar compresión</string>
+  <string name="label_encrypt_filenames">Cifrar nombres de archivos</string>
+  <string name="label_hidden_recipients">Ocultar destinatarios</string>
+  <string name="label_verify_keyserver_connection">Probar conexión</string>
+  <string name="label_only_trusted_keyserver">Sólo servidores de claves confiables</string>
+  <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_keyserver_dialog_delete">Eliminar servidor de claves</string>
+  <string name="label_theme">Tema</string>
+  <string name="pref_keyserver">Servidores OpenPGP</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
+  <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Activar Tor</string>
+  <string name="pref_proxy_tor_summary">Requiere Orbot instalado</string>
+  <string name="pref_proxy_normal_title">Activar otro proxy</string>
+  <string name="pref_proxy_host_title">Servidor proxy</string>
+  <string name="pref_proxy_host_err_invalid">El servidor de proxy ingresado no puede estar vacío</string>
+  <string name="pref_proxy_port_title">Puerto de proxy</string>
+  <string name="pref_proxy_port_err_invalid">El puerto de proxy ingresado no es válido</string>
+  <string name="pref_proxy_type_title">Tipo de proxy</string>
+  <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
+  <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">No usar Tor</string>
+  <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_cancel">Cancelar</string>
+  <string name="orbot_install_dialog_ignore_tor">No usar Tor</string>
+  <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_title">¿Iniciar Orbot?</string>
+  <string name="orbot_start_dialog_content">Parece que Orbot no está en ejecución, ¿Desea iniciarlo y conectarse a Tor?</string>
+  <string name="orbot_start_btn">Iniciar Orbot</string>
+  <string name="orbot_start_dialog_start">Iniciar Orbot</string>
+  <string name="orbot_start_dialog_cancel">Cancelar</string>
+  <string name="orbot_start_dialog_ignore_tor">No usar Tor</string>
+  <plurals name="n_keys">
+    <item quantity="one">1 clave</item>
+    <item quantity="other">%d claves</item>
+  </plurals>
+  <plurals name="n_keyservers">
+    <item quantity="one">%d servidor de claves</item>
+    <item quantity="other">%d servidores de claves</item>
+  </plurals>
+  <string name="secret_key">Clave secreta:</string>
+  <!--choice-->
+  <string name="choice_none">Ninguno</string>
+  <string name="choice_15secs">15 segundos</string>
+  <string name="choice_1min">1 minuto</string>
+  <string name="choice_3mins">3 minutos</string>
+  <string name="choice_5mins">5 minutos</string>
+  <string name="choice_10mins">10 minutos</string>
+  <string name="choice_20mins">20 minutos</string>
+  <string name="choice_40mins">40 minutos</string>
+  <string name="choice_1hour">1 hora</string>
+  <string name="choice_2hours">2 horas</string>
+  <string name="choice_4hours">4 horas</string>
+  <string name="choice_8hours">8 horas</string>
+  <string name="choice_forever">para siempre</string>
+  <string name="choice_select_cert">Elija una clave</string>
+  <string name="dsa">DSA</string>
+  <string name="elgamal">ElGamal</string>
+  <string name="rsa">RSA</string>
+  <string name="ecdh">ECDH</string>
+  <string name="ecdsa">ECDSA</string>
+  <string name="filemanager_title_open">Abrir...</string>
+  <string name="error">Error</string>
+  <string name="error_message">Error: %s</string>
+  <string name="theme_dark">Oscuro</string>
+  <string name="theme_light">Claro</string>
+  <!--key flags-->
+  <string name="flag_certify">Certificar</string>
+  <string name="flag_sign">Firmar</string>
+  <string name="flag_encrypt">Cifrar</string>
+  <string name="flag_authenticate">Autenticar</string>
+  <!--sentences-->
+  <string name="wrong_passphrase">Contraseña incorrecta.</string>
+  <string name="no_filemanager_installed">No hay instalado un administrador de archivos compatible.</string>
+  <string name="passphrases_do_not_match">Las contraseñas no coinciden.</string>
+  <string name="passphrase_must_not_be_empty">Por favor ingrese una contraseña.</string>
+  <string name="passphrase_for_symmetric_encryption">Ingrese una contraseña</string>
+  <string name="passphrase_for_backup">Ingrese un código de respaldo</string>
+  <string name="passphrase_for">Ingrese una contraseña para \'%s\'</string>
+  <string name="pin_for">Ingrese un NIP para \'%s\'</string>
+  <string name="yubikey_pin_for">Ingrese NIP para acceder a una clave Yubi para \'%s\'</string>
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--errors without preceeding Error:-->
+  <!--results shown after decryption/verification-->
+  <!--Add keys-->
+  <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">Cancelar</string>
+  <!--action strings-->
+  <!--key bit length selections-->
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+  <!--compression-->
+  <!--Help-->
+  <!--Import-->
+  <string name="import_tab_keyserver">Servidor de claves</string>
+  <string name="import_tab_cloud">Búsqueda de clave</string>
+  <!--Import from URL-->
+  <!--Generic result toast-->
+  <!--Import result toast-->
+  <!--Delete result toast-->
+  <!--Revoke result toast (snackbar)-->
+  <!--Certify result toast-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <string name="api_settings_no_key">Ninguna clave seleccionada</string>
+  <string name="api_settings_save">Guardar</string>
+  <string name="api_settings_cancel">Cancelar</string>
+  <string name="api_settings_advanced">Información detallada</string>
+  <string name="api_settings_settings">Ajustes</string>
+  <!--Share-->
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
+  <!--Key list-->
+  <string name="key_list_fab_search">Búsqueda de clave</string>
+  <!--Key view-->
+  <string name="key_view_action_encrypt">Cifrar texto</string>
+  <string name="key_view_tab_share">Compartir</string>
+  <string name="key_view_tab_keys">Subclave</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
+  <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">Cambiar contraseña</string>
+  <!--Create key-->
+  <string name="create_key_upload">Sincronizar con Internet</string>
+  <string name="create_key_yubi_key_pin">NIP</string>
+  <!--View key-->
+  <!--Add/Edit keyserver-->
+  <!--Navigation Drawer-->
+  <string name="nav_apps">Apps</string>
+  <!--hints-->
+  <!--certs-->
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
+  <!--modifySecretKeyRing-->
+  <!--Consolidate-->
+  <!--Edit Key (higher level than modify)-->
+  <!--Promote key-->
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for VerifySignedLiteralData operation-->
+  <!--Messages for SignEncrypt operation-->
+  <!--Messages for PgpSignEncrypt operation-->
+  <!--Linked Identity verification-->
+  <!--Messages for Keybase Verification operation-->
+  <!--Messages for Mime parsing operation-->
+  <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">Contraseña</string>
+  <!--Keyserver sync-->
+  <string name="keyserver_sync_orbot_notif_start">Iniciar Orbot</string>
+  <!--First Time-->
+  <!--unsorted-->
+  <!--Android Account-->
+  <!--Passphrase wizard-->
+  <!--TODO: rename all the things!-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">Ingrese una contraseña</string>
+  <string name="passphrase">Contraseña</string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">Ajustes</string>
+  <!--Other Linked Identity strings-->
+  <string name="linked_button_confirm">Confirmar</string>
+  <string name="linked_text_error">Error</string>
+  <string name="share_log_dialog_share_button">Compartir</string>
+  <string name="share_log_dialog_cancel_button">Cancelar</string>
+</resources>

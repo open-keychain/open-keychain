@@ -90,7 +90,7 @@ public class EmailEditText extends AppCompatAutoCompleteTextView {
     private void initAdapter() {
         setThreshold(1); // Start working from first character
         setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item,
-                ContactHelper.getPossibleUserEmails(getContext())));
+                new ContactHelper(getContext()).getPossibleUserEmails()));
     }
 
     /**

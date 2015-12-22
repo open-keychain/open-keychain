@@ -18,17 +18,21 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipDescription;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LabeledIntent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -36,8 +40,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -65,10 +73,14 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 // this import NEEDS to be above the ViewModel AND SubViewHolder one, or it won't compile! (as of 16.09.15)
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
@@ -82,8 +94,25 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableHashMap;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 
+/** Displays a list of decrypted inputs.
+ *
+ * This class has a complex control flow to manage its input URIs. Each URI
+ * which is in mInputUris is also in exactly one of mPendingInputUris,
+ * mCancelledInputUris, mCurrentInputUri, or a key in mInputDataResults.
+ *
+ * Processing of URIs happens using a looping approach:
+ * - There is always exactly one method running which works on mCurrentInputUri
+ * - Processing starts in cryptoOperation(), which pops a new mCurrentInputUri
+ *   from the list of mPendingInputUris.
+ * - Once a mCurrentInputUri is finished processing, it should be set to null and
+ *   control handed back to cryptoOperation()
+ * - Control flow can move through asynchronous calls, and resume in callbacks
+ *   like onActivityResult() or onPermissionRequestResult().
+ *
+ */
 public class DecryptListFragment
         extends QueueingCryptoOperationFragment<InputDataParcel,InputDataResult>
         implements OnMenuItemClickListener {
@@ -95,7 +124,7 @@ public class DecryptListFragment
     public static final String ARG_CAN_DELETE = "can_delete";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
-    public static final String ARG_CURRENT_URI = "current_uri";
+    private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
     private ArrayList<Uri> mInputUris;
     private HashMap<Uri, InputDataResult> mInputDataResults;
@@ -111,7 +140,7 @@ public class DecryptListFragment
     /**
      * Creates new instance of this fragment
      */
-    public static DecryptListFragment newInstance(ArrayList<Uri> uris, boolean canDelete) {
+    public static DecryptListFragment newInstance(@NonNull ArrayList<Uri> uris, boolean canDelete) {
         DecryptListFragment frag = new DecryptListFragment();
 
         Bundle args = new Bundle();
@@ -168,8 +197,11 @@ public class DecryptListFragment
         outState.putParcelable(ARG_RESULTS, new ParcelableHashMap<>(results));
         outState.putParcelable(ARG_OUTPUT_URIS, new ParcelableHashMap<>(mInputDataResults));
         outState.putParcelableArrayList(ARG_CANCELLED_URIS, mCancelledInputUris);
-        outState.putParcelable(ARG_CURRENT_URI, mCurrentInputUri);
         outState.putBoolean(ARG_CAN_DELETE, mCanDelete);
+
+        // this does not save mCurrentInputUri - if anything is being
+        // processed at fragment recreation time, the operation in
+        // progress will be lost!
 
     }
 
@@ -182,20 +214,21 @@ public class DecryptListFragment
         ArrayList<Uri> inputUris = getArguments().getParcelableArrayList(ARG_INPUT_URIS);
         ArrayList<Uri> cancelledUris = args.getParcelableArrayList(ARG_CANCELLED_URIS);
         ParcelableHashMap<Uri,InputDataResult> results = args.getParcelable(ARG_RESULTS);
-        Uri currentInputUri = args.getParcelable(ARG_CURRENT_URI);
 
         mCanDelete = args.getBoolean(ARG_CAN_DELETE, false);
 
-        displayInputUris(inputUris, currentInputUri, cancelledUris,
+        displayInputUris(inputUris, cancelledUris,
                 results != null ? results.getMap() : null
         );
     }
 
-    private void displayInputUris(ArrayList<Uri> inputUris, Uri currentInputUri,
-            ArrayList<Uri> cancelledUris, HashMap<Uri,InputDataResult> results) {
+    private void displayInputUris(
+            ArrayList<Uri> inputUris,
+            ArrayList<Uri> cancelledUris,
+            HashMap<Uri,InputDataResult> results) {
 
         mInputUris = inputUris;
-        mCurrentInputUri = currentInputUri;
+        mCurrentInputUri = null;
         mInputDataResults = results != null ? results : new HashMap<Uri,InputDataResult>(inputUris.size());
         mCancelledInputUris = cancelledUris != null ? cancelledUris : new ArrayList<Uri>();
 
@@ -204,30 +237,23 @@ public class DecryptListFragment
         for (final Uri uri : inputUris) {
             mAdapter.add(uri);
 
-            if (uri.equals(mCurrentInputUri)) {
+            boolean uriIsCancelled = mCancelledInputUris.contains(uri);
+            if (uriIsCancelled) {
+                mAdapter.setCancelled(uri, true);
                 continue;
             }
 
-            if (mCancelledInputUris.contains(uri)) {
-                mAdapter.setCancelled(uri, new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        retryUri(uri);
-                    }
-                });
-                continue;
-            }
-
-            if (results != null && results.containsKey(uri)) {
+            boolean uriHasResult = results != null && results.containsKey(uri);
+            if (uriHasResult) {
                 processResult(uri);
-            } else {
-                mPendingInputUris.add(uri);
+                continue;
             }
+
+            mPendingInputUris.add(uri);
         }
 
-        if (mCurrentInputUri == null) {
-            cryptoOperation();
-        }
+        // check if there are any pending input uris
+        cryptoOperation();
     }
 
     @Override
@@ -249,6 +275,7 @@ public class DecryptListFragment
         }
     }
 
+    @TargetApi(VERSION_CODES.KITKAT)
     private void saveFileDialog(InputDataResult result, int index) {
 
         Activity activity = getActivity();
@@ -257,17 +284,16 @@ public class DecryptListFragment
         }
 
         OpenPgpMetadata metadata = result.mMetadata.get(index);
-        Uri saveUri = Uri.fromFile(activity.getExternalFilesDir(metadata.getMimeType()));
         mCurrentSaveFileUri = result.getOutputUris().get(index);
 
         String filename = metadata.getFilename();
-        if (filename == null) {
+        if (TextUtils.isEmpty(filename)) {
             String ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(metadata.getMimeType());
             filename = "decrypted" + (ext != null ? "."+ext : "");
         }
 
-        FileHelper.saveDocument(this, filename, saveUri, metadata.getMimeType(),
-                R.string.title_decrypt_to_file, R.string.specify_file_to_decrypt_to, REQUEST_CODE_OUTPUT);
+        // requires >=kitkat
+        FileHelper.saveDocument(this, filename, metadata.getMimeType(), REQUEST_CODE_OUTPUT);
     }
 
     private void saveFile(Uri saveUri) {
@@ -320,6 +346,29 @@ public class DecryptListFragment
         Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
 
+        Activity activity = getActivity();
+
+        boolean isSingleInput = mInputDataResults.isEmpty() && mPendingInputUris.isEmpty();
+        if (isSingleInput) {
+
+            // there is always at least one mMetadata object, so we know this is >= 1 already
+            boolean isSingleMetadata = result.mMetadata.size() == 1;
+            OpenPgpMetadata metadata = result.mMetadata.get(0);
+            boolean isText = "text/plain".equals(metadata.getMimeType());
+            boolean isOverSized = metadata.getOriginalSize() > Constants.TEXT_LENGTH_LIMIT;
+
+            if (isSingleMetadata && isText && !isOverSized) {
+                Intent displayTextIntent = new Intent(activity, DisplayTextActivity.class)
+                        .setDataAndType(result.mOutputUris.get(0), "text/plain")
+                        .putExtra(DisplayTextActivity.EXTRA_RESULT, result.mDecryptVerifyResult)
+                        .putExtra(DisplayTextActivity.EXTRA_METADATA, metadata);
+                activity.startActivity(displayTextIntent);
+                activity.finish();
+                return;
+            }
+
+        }
+
         mInputDataResults.put(uri, result);
         processResult(uri);
 
@@ -334,12 +383,7 @@ public class DecryptListFragment
         mCurrentInputUri = null;
 
         mCancelledInputUris.add(uri);
-        mAdapter.setCancelled(uri, new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                retryUri(uri);
-            }
-        });
+        mAdapter.setCancelled(uri, true);
 
         cryptoOperation();
 
@@ -375,11 +419,20 @@ public class DecryptListFragment
                     if (ClipDescription.compareMimeTypes(type, "text/plain")) {
                         // noinspection deprecation, this should be called from Context, but not available in minSdk
                         icon = getResources().getDrawable(R.drawable.ic_chat_black_24dp);
+                    } else if (ClipDescription.compareMimeTypes(type, "application/octet-stream")) {
+                        // icons for this are just confusing
+                        // noinspection deprecation, this should be called from Context, but not available in minSdk
+                        icon = getResources().getDrawable(R.drawable.ic_doc_generic_am);
+                    } else if (ClipDescription.compareMimeTypes(type, Constants.MIME_TYPE_KEYS)) {
+                        // noinspection deprecation, this should be called from Context, but not available in minSdk
+                        icon = getResources().getDrawable(R.drawable.ic_key_plus_grey600_24dp);
                     } else if (ClipDescription.compareMimeTypes(type, "image/*")) {
-                        int px = FormattingUtils.dpToPx(context, 48);
+                        int px = FormattingUtils.dpToPx(context, 32);
                         Bitmap bitmap = FileHelper.getThumbnail(context, outputUri, new Point(px, px));
                         icon = new BitmapDrawable(context.getResources(), bitmap);
-                    } else {
+                    }
+
+                    if (icon == null) {
                         final Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setDataAndType(outputUri, type);
 
@@ -420,11 +473,12 @@ public class DecryptListFragment
 
         // un-cancel this one
         mCancelledInputUris.remove(uri);
+        mInputDataResults.remove(uri);
         mPendingInputUris.add(uri);
-        mAdapter.setCancelled(uri, null);
+        mAdapter.resetItemData(uri);
 
+        // check if there are any pending input uris
         cryptoOperation();
-
     }
 
     public void displayBottomSheet(final InputDataResult result, final int index) {
@@ -445,6 +499,7 @@ public class DecryptListFragment
                         displayWithViewIntent(result, index, true, true);
                         break;
                     case R.id.decrypt_save:
+                        // only inside the menu xml for Android >= 4.4
                         saveFileDialog(result, index);
                         break;
                 }
@@ -525,6 +580,11 @@ public class DecryptListFragment
             } else {
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(outputUri, metadata.getMimeType());
+
+                if (!forceChooser && Constants.MIME_TYPE_KEYS.equals(metadata.getMimeType())) {
+                    // bind Intent to this OpenKeychain, don't allow other apps to intercept here!
+                    intent.setPackage(getActivity().getPackageName());
+                }
             }
 
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -539,6 +599,11 @@ public class DecryptListFragment
     @Override
     public InputDataParcel createOperationInput() {
 
+        Activity activity = getActivity();
+        if (activity == null) {
+            return null;
+        }
+
         if (mCurrentInputUri == null) {
             if (mPendingInputUris.isEmpty()) {
                 // nothing left to do
@@ -548,11 +613,99 @@ public class DecryptListFragment
             mCurrentInputUri = mPendingInputUris.remove(0);
         }
 
-        Log.d(Constants.TAG, "mInputUri=" + mCurrentInputUri);
+        Log.d(Constants.TAG, "mCurrentInputUri=" + mCurrentInputUri);
+
+        if ( ! checkAndRequestReadPermission(activity, mCurrentInputUri)) {
+            return null;
+        }
 
         PgpDecryptVerifyInputParcel decryptInput = new PgpDecryptVerifyInputParcel()
                 .setAllowSymmetricDecryption(true);
         return new InputDataParcel(mCurrentInputUri, decryptInput);
+
+    }
+
+    /**
+     * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.
+     *
+     * This method returns true on Android < 6, or if permission is already granted. It
+     * requests the permission and returns false otherwise, taking over responsibility
+     * for mCurrentInputUri.
+     *
+     * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
+     */
+    private boolean checkAndRequestReadPermission(Activity activity, final Uri uri) {
+        if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+            return true;
+        }
+
+        // Additional check due to https://commonsware.com/blog/2015/11/09/you-cannot-hold-nonexistent-permissions.html
+        if (Build.VERSION.SDK_INT < VERSION_CODES.M) {
+            return true;
+        }
+
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+
+        requestPermissions(
+                new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+                REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+
+        return false;
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+
+        if (requestCode != REQUEST_PERMISSION_READ_EXTERNAL_STORAGE) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            return;
+        }
+
+        boolean permissionWasGranted = grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+        if (permissionWasGranted) {
+
+            // permission granted -> retry all cancelled file uris
+            Iterator<Uri> it = mCancelledInputUris.iterator();
+            while (it.hasNext()) {
+                Uri uri = it.next();
+                if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+                    continue;
+                }
+                it.remove();
+                mPendingInputUris.add(uri);
+                mAdapter.setCancelled(uri, false);
+            }
+
+        } else {
+
+            // permission denied -> cancel current, and all pending file uris
+            mCancelledInputUris.add(mCurrentInputUri);
+            mAdapter.setCancelled(mCurrentInputUri, true);
+
+            mCurrentInputUri = null;
+            Iterator<Uri> it = mPendingInputUris.iterator();
+            while (it.hasNext()) {
+                Uri uri = it.next();
+                if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+                    continue;
+                }
+                it.remove();
+                mCancelledInputUris.add(uri);
+                mAdapter.setCancelled(uri, true);
+            }
+
+        }
+
+        // hand control flow back
+        cryptoOperation();
 
     }
 
@@ -586,37 +739,77 @@ public class DecryptListFragment
         return false;
     }
 
+    private void lookupUnknownKey(final Uri inputUri, long unknownKeyId) {
+
+        final ArrayList<ParcelableKeyRing> keyList;
+        final String keyserver;
+
+        // search config
+        keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
+
+        {
+            ParcelableKeyRing keyEntry = new ParcelableKeyRing(null,
+                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId));
+            ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
+            selectedEntries.add(keyEntry);
+
+            keyList = selectedEntries;
+        }
+
+        CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> callback
+                = new CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult>() {
+
+            @Override
+            public ImportKeyringParcel createOperationInput() {
+                return new ImportKeyringParcel(keyList, keyserver);
+            }
+
+            @Override
+            public void onCryptoOperationSuccess(ImportKeyResult result) {
+                retryUri(inputUri);
+            }
+
+            @Override
+            public void onCryptoOperationCancelled() {
+                mAdapter.setProcessingKeyLookup(inputUri, false);
+            }
+
+            @Override
+            public void onCryptoOperationError(ImportKeyResult result) {
+                result.createNotify(getActivity()).show();
+                mAdapter.setProcessingKeyLookup(inputUri, false);
+            }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
+        };
+
+        mAdapter.setProcessingKeyLookup(inputUri, true);
+
+        CryptoOperationHelper importOpHelper = new CryptoOperationHelper<>(2, this, callback, null);
+        importOpHelper.cryptoOperation();
+
+    }
+
+
     private void deleteFile(Activity activity, Uri uri) {
 
         // we can only ever delete a file once, if we got this far either it's gone or it will never work
         mCanDelete = false;
 
-        if ("file".equals(uri.getScheme())) {
-            File file = new File(uri.getPath());
-            if (file.delete()) {
+        try {
+            int deleted = FileHelper.deleteFileSecurely(activity, uri);
+            if (deleted > 0) {
                 Notify.create(activity, R.string.file_delete_ok, Style.OK).show();
             } else {
                 Notify.create(activity, R.string.file_delete_none, Style.WARN).show();
             }
-            return;
+        } catch (Exception e) {
+            Log.e(Constants.TAG, "exception deleting file", e);
+            Notify.create(activity, R.string.file_delete_exception, Style.ERROR).show();
         }
-
-        if ("content".equals(uri.getScheme())) {
-            try {
-                int deleted = activity.getContentResolver().delete(uri, null, null);
-                if (deleted > 0) {
-                    Notify.create(activity, R.string.file_delete_ok, Style.OK).show();
-                } else {
-                    Notify.create(activity, R.string.file_delete_none, Style.WARN).show();
-                }
-            } catch (Exception e) {
-                Log.e(Constants.TAG, "exception deleting file", e);
-                Notify.create(activity, R.string.file_delete_exception, Style.ERROR).show();
-            }
-            return;
-        }
-
-        Notify.create(activity, R.string.file_delete_exception, Style.ERROR).show();
 
     }
 
@@ -631,6 +824,7 @@ public class DecryptListFragment
             int mProgress, mMax;
             String mProgressMsg;
             OnClickListener mCancelled;
+            boolean mProcessingKeyLookup;
 
             ViewModel(Uri uri) {
                 mInputUri = uri;
@@ -639,7 +833,7 @@ public class DecryptListFragment
                 mCancelled = null;
             }
 
-            void addResult(InputDataResult result) {
+            void setResult(InputDataResult result) {
                 mResult = result;
             }
 
@@ -659,6 +853,10 @@ public class DecryptListFragment
                 mMax = max;
             }
 
+            void setProcessingKeyLookup(boolean processingKeyLookup) {
+                mProcessingKeyLookup = processingKeyLookup;
+            }
+
             // Depends on inputUri only
             @Override
             public boolean equals(Object o) {
@@ -669,8 +867,10 @@ public class DecryptListFragment
                     return false;
                 }
                 ViewModel viewModel = (ViewModel) o;
-                return !(mInputUri != null ? !mInputUri.equals(viewModel.mInputUri)
-                        : viewModel.mInputUri != null);
+                if (mInputUri == null) {
+                    return viewModel.mInputUri == null;
+                }
+                return mInputUri.equals(viewModel.mInputUri);
             }
 
             // Depends on inputUri only
@@ -725,17 +925,13 @@ public class DecryptListFragment
         }
 
         private void bindItemCancelled(ViewHolder holder, ViewModel model) {
-            if (holder.vAnimator.getDisplayedChild() != 3) {
-                holder.vAnimator.setDisplayedChild(3);
-            }
+            holder.vAnimator.setDisplayedChild(3);
 
             holder.vCancelledRetry.setOnClickListener(model.mCancelled);
         }
 
         private void bindItemProgress(ViewHolder holder, ViewModel model) {
-            if (holder.vAnimator.getDisplayedChild() != 0) {
-                holder.vAnimator.setDisplayedChild(0);
-            }
+            holder.vAnimator.setDisplayedChild(0);
 
             holder.vProgress.setProgress(model.mProgress);
             holder.vProgress.setMax(model.mMax);
@@ -745,11 +941,10 @@ public class DecryptListFragment
         }
 
         private void bindItemSuccess(ViewHolder holder, final ViewModel model) {
-            if (holder.vAnimator.getDisplayedChild() != 1) {
-                holder.vAnimator.setDisplayedChild(1);
-            }
+            holder.vAnimator.setDisplayedChild(1);
 
-            KeyFormattingUtils.setStatus(getResources(), holder, model.mResult.mDecryptVerifyResult);
+            KeyFormattingUtils.setStatus(getResources(), holder,
+                    model.mResult.mDecryptVerifyResult, model.mProcessingKeyLookup);
 
             int numFiles = model.mResult.getOutputUris().size();
             holder.resizeFileList(numFiles, LayoutInflater.from(getActivity()));
@@ -762,11 +957,14 @@ public class DecryptListFragment
                 String filename;
                 if (metadata == null) {
                     filename = getString(R.string.filename_unknown);
-                } else if (TextUtils.isEmpty(metadata.getFilename())) {
-                    filename = getString("text/plain".equals(metadata.getMimeType())
-                            ? R.string.filename_unknown_text : R.string.filename_unknown);
-                } else {
+                } else if ( ! TextUtils.isEmpty(metadata.getFilename())) {
                     filename = metadata.getFilename();
+                } else if (ClipDescription.compareMimeTypes(metadata.getMimeType(), Constants.MIME_TYPE_KEYS)) {
+                    filename = getString(R.string.filename_keys);
+                } else if (ClipDescription.compareMimeTypes(metadata.getMimeType(), "text/plain")) {
+                    filename = getString(R.string.filename_unknown_text);
+                } else {
+                    filename = getString(R.string.filename_unknown);
                 }
                 fileHolder.vFilename.setText(filename);
 
@@ -824,6 +1022,13 @@ public class DecryptListFragment
                             activity.startActivity(intent);
                         }
                     });
+                } else {
+                    holder.vSignatureLayout.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            lookupUnknownKey(model.mInputUri, keyId);
+                        }
+                    });
                 }
             }
 
@@ -852,9 +1057,7 @@ public class DecryptListFragment
         }
 
         private void bindItemFailure(ViewHolder holder, final ViewModel model) {
-            if (holder.vAnimator.getDisplayedChild() != 2) {
-                holder.vAnimator.setDisplayedChild(2);
-            }
+            holder.vAnimator.setDisplayedChild(2);
 
             holder.vErrorMsg.setText(model.mResult.getLog().getLast().mType.getMsgId());
 
@@ -903,21 +1106,44 @@ public class DecryptListFragment
             notifyItemChanged(pos);
         }
 
-        public void setCancelled(Uri uri, OnClickListener retryListener) {
+        public void setCancelled(final Uri uri, boolean isCancelled) {
             ViewModel newModel = new ViewModel(uri);
             int pos = mDataset.indexOf(newModel);
-            mDataset.get(pos).setCancelled(retryListener);
+            if (isCancelled) {
+                mDataset.get(pos).setCancelled(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        retryUri(uri);
+                    }
+                });
+            } else {
+                mDataset.get(pos).setCancelled(null);
+            }
+            notifyItemChanged(pos);
+        }
+
+        public void setProcessingKeyLookup(Uri uri, boolean processingKeyLookup) {
+            ViewModel newModel = new ViewModel(uri);
+            int pos = mDataset.indexOf(newModel);
+            mDataset.get(pos).setProcessingKeyLookup(processingKeyLookup);
             notifyItemChanged(pos);
         }
 
         public void addResult(Uri uri, InputDataResult result) {
-
             ViewModel model = new ViewModel(uri);
             int pos = mDataset.indexOf(model);
             model = mDataset.get(pos);
+            model.setResult(result);
+            notifyItemChanged(pos);
+        }
 
-            model.addResult(result);
-
+        public void resetItemData(Uri uri) {
+            ViewModel model = new ViewModel(uri);
+            int pos = mDataset.indexOf(model);
+            model = mDataset.get(pos);
+            model.setResult(null);
+            model.setCancelled(null);
+            model.setProcessingKeyLookup(false);
             notifyItemChanged(pos);
         }
 
@@ -941,7 +1167,7 @@ public class DecryptListFragment
         public View vSignatureLayout;
         public TextView vSignatureName;
         public TextView vSignatureMail;
-        public TextView vSignatureAction;
+        public ViewAnimator vSignatureAction;
         public View vContextMenu;
 
         public TextView vErrorMsg;
@@ -984,7 +1210,7 @@ public class DecryptListFragment
             vSignatureLayout = itemView.findViewById(R.id.result_signature_layout);
             vSignatureName = (TextView) itemView.findViewById(R.id.result_signature_name);
             vSignatureMail= (TextView) itemView.findViewById(R.id.result_signature_email);
-            vSignatureAction = (TextView) itemView.findViewById(R.id.result_signature_action);
+            vSignatureAction = (ViewAnimator) itemView.findViewById(R.id.result_signature_action);
 
             vFileList = (LinearLayout) itemView.findViewById(R.id.file_list);
             for (int i = 0; i < vFileList.getChildCount(); i++) {
@@ -1048,7 +1274,7 @@ public class DecryptListFragment
         }
 
         @Override
-        public TextView getSignatureAction() {
+        public ViewAnimator getSignatureAction() {
             return vSignatureAction;
         }
 

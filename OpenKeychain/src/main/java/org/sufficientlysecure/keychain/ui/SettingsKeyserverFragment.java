@@ -155,7 +155,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
                                 data.getBoolean(AddEditKeyserverDialogFragment.MESSAGE_VERIFIED);
                         if (verified) {
                             Notify.create(getActivity(),
-                                    R.string.add_keyserver_verified, Notify.Style.OK).show();
+                                    R.string.add_keyserver_connection_verified, Notify.Style.OK).show();
                         } else {
                             Notify.create(getActivity(),
                                     R.string.add_keyserver_without_verification,
@@ -174,26 +174,6 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
                             case EDIT:
                                 editKeyserver(keyserver, position);
                                 break;
-                        }
-                        break;
-                    }
-                    case AddEditKeyserverDialogFragment.MESSAGE_VERIFICATION_FAILED: {
-                        AddEditKeyserverDialogFragment.FailureReason failureReason =
-                                (AddEditKeyserverDialogFragment.FailureReason) data.getSerializable(
-                                        AddEditKeyserverDialogFragment.MESSAGE_FAILURE_REASON);
-                        switch (failureReason) {
-                            case CONNECTION_FAILED: {
-                                Notify.create(getActivity(),
-                                        R.string.add_keyserver_connection_failed,
-                                        Notify.Style.ERROR).show();
-                                break;
-                            }
-                            case INVALID_URL: {
-                                Notify.create(getActivity(),
-                                        R.string.add_keyserver_invalid_url,
-                                        Notify.Style.ERROR).show();
-                                break;
-                            }
                         }
                         break;
                     }

@@ -23,7 +23,6 @@
   <!--section-->
   <string name="section_user_ids">Kimlikler</string>
   <string name="section_keys">Alt anahtarlar</string>
-  <string name="section_cloud_search">Bulut araması</string>
   <string name="section_actions">Eylemler</string>
   <string name="section_share_key">Anahtar</string>
   <string name="section_key_server">Anahtar Sunucusu</string>
@@ -41,6 +40,7 @@
   <string name="btn_view_cert_key">Tasdikleme anahtarını görüntüle</string>
   <string name="btn_create_key">Anahtar oluştur</string>
   <string name="btn_add_files">Dosya(lar) ekle</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Ayarlar</string>
   <string name="menu_help">Yardım</string>
@@ -60,9 +60,7 @@
   <string name="label_file_ascii_armor">ASCII formatında çıktıları etkinleştir</string>
   <string name="label_write_version_header">Diğerlerinin OpenKeychain kullandığını bilmesine izin ver</string>
   <string name="label_write_version_header_summary">OpenPGP imzalarına, şifrelenmiş metinlere ve dışa aktarılmış anahtarlara \'OpenKeychain v2.7\' yazar</string>
-  <string name="label_use_default_yubikey_pin">Varsayılan YubiKey PIN\'ini kullan</string>
   <string name="label_use_num_keypad_for_yubikey_pin">YubiKey PIN\'i için sayısal klavyeyi kullan</string>
-  <string name="label_label_use_default_yubikey_pin_summary">NFC üzerinden YubiKey\'e ulaşmak için varsayılan PIN\'i (123456) kullanır</string>
   <string name="label_to">Şuna şifrele:</string>
   <string name="label_delete_after_decryption">Şifre çözme sonrasında sil</string>
   <string name="label_encryption_algorithm">Şifreleme algoritması</string>
@@ -78,7 +76,6 @@
   <string name="label_name">İsim</string>
   <string name="label_comment">Yorum</string>
   <string name="label_email">Eposta</string>
-  <string name="label_send_key">Bulut ile eşitle</string>
   <string name="label_fingerprint">Parmak izi</string>
   <string name="expiry_date_dialog_title">Zaman aşımı tarihini ayarla</string>
   <string name="label_preferred">tercih edilen</string>
@@ -88,8 +85,6 @@
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
   <!--StartOrbotDialogFragment strings-->
-  <string name="user_id_no_name">&lt;isimsiz&gt;</string>
-  <string name="none">&lt;hiçbiri&gt;</string>
   <plurals name="n_keys">
     <item quantity="one">1 anahtar</item>
     <item quantity="other">%d anahtar</item>
@@ -128,7 +123,6 @@
   <string name="flag_authenticate">Kimlik kanıtlama</string>
   <!--sentences-->
   <string name="no_filemanager_installed">Uyumlu dosya yöneticisi yüklenmedi.</string>
-  <string name="passphrase_for_symmetric_encryption">Simetrik şifreleme.</string>
   <string name="encrypt_sign_successful">Başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="encrypt_sign_clipboard_successful">Kopyalama önbelleğine başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="select_encryption_key">En az bir şifreleme anahtarı seçiniz.</string>
@@ -147,7 +141,6 @@
   <string name="nfc_successful">Anahtar NFC Beam ile başarıyla gönderildi!</string>
   <string name="key_copied_to_clipboard">Anahtar kopyalama önbelleğine kopyalandı!</string>
   <string name="fingerprint_copied_to_clipboard">Parmak izi kopyalama önbelleğine kopyalandı!</string>
-  <string name="key_too_big_for_sharing">Anahtar bu yolla paylaşılamayacak kadar büyük!</string>
   <string name="text_copied_to_clipboard">Metin kopyalama önbelleğine kopyalandı!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -211,8 +204,8 @@
   <string name="progress_encrypting">veri şifreleniyor...</string>
   <string name="progress_decrypting">veri şifresi çözülüyor...</string>
   <string name="progress_preparing_signature">imza hazırlanıyor...</string>
-  <string name="progress_generating_signature">imza oluşturuluyor...</string>
   <string name="progress_processing_signature">imza işleniyor...</string>
+  <string name="progress_generating_signature">imza oluşturuluyor...</string>
   <string name="progress_verifying_signature">imza doğrulanıyor...</string>
   <string name="progress_signing">imzalanıyor...</string>
   <string name="progress_certifying">tasdikleniyor...</string>
@@ -226,10 +219,6 @@
   <string name="progress_con_reimport">birleştir: yeniden içe aktarılıyor...</string>
   <!--action strings-->
   <!--key bit length selections-->
-  <string name="key_size_512">512</string>
-  <string name="key_size_768">768</string>
-  <string name="key_size_1024">1024</string>
-  <string name="key_size_1536">1536</string>
   <string name="key_size_2048">2048</string>
   <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
@@ -258,7 +247,6 @@
   <string name="help_about_version">Sürüm:</string>
   <!--Import-->
   <string name="import_tab_keyserver">Anahtar Sunucusu</string>
-  <string name="import_tab_cloud">Bulutta Ara</string>
   <string name="import_tab_direct">Dosya/Kopyalama önbelleği</string>
   <string name="import_tab_qr_code">QR Kodu/NFC</string>
   <string name="import_import">Seçili anahtarları içe aktar</string>
@@ -269,10 +257,6 @@
   <string name="with_warnings">, uyarılarla</string>
   <string name="with_cancelled">, iptal edilene kadar</string>
   <!--Import result toast-->
-  <plurals name="import_keys_added_and_updated_1">
-    <item quantity="one">Anahtar başarıyla içe aktarıldı</item>
-    <item quantity="other">%1$d anahtar başarıyla içe aktarıldı</item>
-  </plurals>
   <plurals name="import_keys_with_errors">
     <item quantity="one">Bir anahtar için alma başarısız.</item>
     <item quantity="other">%d anahtar için içe aktarma başarısız!</item>
@@ -317,7 +301,6 @@
     <item quantity="other">%d anahtar seçildi.</item>
   </plurals>
   <string name="key_list_filter_show_all">Tüm anahtarları göster</string>
-  <string name="key_list_filter_show_certified">Sadece sertifikalı anahtarları göster</string>
   <!--Key view-->
   <string name="key_view_action_edit">Anahtarı düzenle</string>
   <string name="key_view_action_encrypt">Metni şifrele</string>
@@ -332,10 +315,6 @@
   <string name="key_view_tab_certs">Sertifikalar</string>
   <string name="user_id_info_revoked_title">Yürürlükten kaldırılmış</string>
   <string name="user_id_info_revoked_text">Bu kimlik anahtar sahibi tarafından yürürlükten kaldırılmış. Artık geçerli değil.</string>
-  <string name="user_id_info_certified_title">Tasdiklenmiş</string>
-  <string name="user_id_info_certified_text">Bu kimlik sizin tarafınızdan tasdiklendi.</string>
-  <string name="user_id_info_uncertified_title">Tasdiklenmemiş</string>
-  <string name="user_id_info_uncertified_text">Bu kimlik henüz tasdiklenmemiş. Bu kimliğin belirli bir kişiye ait olduğundan emin olamazsınız.</string>
   <string name="user_id_info_invalid_title">Geçersiz</string>
   <string name="user_id_info_invalid_text">Bu kimlikle ilgili yanlış olan bazı şeyler var!</string>
   <!--Key trust-->
@@ -408,17 +387,12 @@
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_crt_warn_not_found">Anahtar bulunamadı!</string>
   <string name="msg_import_keyserver">%s anahtar sunucusu kullanılıyor</string>
-  <string name="msg_import_fingerprint_ok">Parmakizi kontrolü TAMAM</string>
-  <string name="msg_export_all">Tüm anahtarları dışa aktarma</string>
-  <string name="msg_export_error_uri_open">URI akışı açılırken hata!</string>
-  <string name="msg_export_error_db">Veritabanı hatası!</string>
-  <string name="msg_export_error_io">Giriş/çıkış hatası!</string>
-  <string name="msg_export_success">Dışa aktarma işlemi başarılı</string>
   <string name="msg_del_error_empty">Silinecek bir şey yok!</string>
+  <!--Linked Identity verification-->
   <string name="msg_acc_saved">Hesap kaydedildi</string>
   <string name="msg_download_success">Başarıyla indirildi!</string>
   <!--Messages for Keybase Verification operation-->
-  <!--Messages for Export Log operation-->
+  <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <!--Keyserver sync-->
   <!--First Time-->
@@ -427,7 +401,6 @@
   <!--unsorted-->
   <string name="section_cert">Sertifika Detayları</string>
   <string name="label_user_id">Kimlik</string>
-  <string name="unknown_uid">&lt;bilinmeyen&gt;</string>
   <string name="empty_certs">Bu anahtar için sertifika yok</string>
   <string name="label_revocation">Yürürlükten Kaldırma Nedeni</string>
   <string name="label_cert_type">Tip</string>
@@ -450,4 +423,5 @@
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <!--Other Linked Identity strings-->
 </resources>

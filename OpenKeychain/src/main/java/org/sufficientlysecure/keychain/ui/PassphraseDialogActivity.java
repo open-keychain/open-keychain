@@ -29,7 +29,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
@@ -117,6 +119,10 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     mSubKeyId = Constants.key.symmetric;
                     break;
                 }
+                case BACKUP_CODE: {
+                    mSubKeyId = Constants.key.backup_code;
+                    break;
+                }
                 case PASSPHRASE: {
 
                     // handle empty passphrases by directly returning an empty crypto input parcel
@@ -186,6 +192,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
         private EditText mPassphraseEditText;
         private TextView mPassphraseText;
         private View mInput, mProgress;
+        private EditText[] mBackupCodeEditText;
 
         private CanonicalizedSecretKeyRing mSecretRing = null;
         private boolean mIsCancelled = false;
@@ -208,6 +215,24 @@ public class PassphraseDialogActivity extends FragmentActivity {
             // No title, see http://www.google.com/design/spec/components/dialogs.html#dialogs-alerts
             //alert.setTitle()
 
+            if (mSubKeyId == Constants.key.backup_code) {
+                LayoutInflater inflater = LayoutInflater.from(theme);
+                View view = inflater.inflate(R.layout.passphrase_dialog_backup_code, null);
+                alert.setView(view);
+
+                mBackupCodeEditText = new EditText[4];
+                mBackupCodeEditText[0] = (EditText) view.findViewById(R.id.backup_code_1);
+                mBackupCodeEditText[1] = (EditText) view.findViewById(R.id.backup_code_2);
+                mBackupCodeEditText[2] = (EditText) view.findViewById(R.id.backup_code_3);
+                mBackupCodeEditText[3] = (EditText) view.findViewById(R.id.backup_code_4);
+                setupEditTextFocusNext(mBackupCodeEditText);
+
+                AlertDialog dialog = alert.create();
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                        activity.getString(R.string.btn_unlock), (DialogInterface.OnClickListener) null);
+                return dialog;
+            }
+
             LayoutInflater inflater = LayoutInflater.from(theme);
             View view = inflater.inflate(R.layout.passphrase_dialog, null);
             alert.setView(view);
@@ -229,8 +254,10 @@ public class PassphraseDialogActivity extends FragmentActivity {
             CanonicalizedSecretKey.SecretKeyType keyType = CanonicalizedSecretKey.SecretKeyType.PASSPHRASE;
 
             String message;
+            String hint;
             if (mSubKeyId == Constants.key.symmetric || mSubKeyId == Constants.key.none) {
                 message = getString(R.string.passphrase_for_symmetric_encryption);
+                hint = getString(R.string.label_passphrase);
             } else {
                 try {
                     ProviderHelper helper = new ProviderHelper(activity);
@@ -255,12 +282,15 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     switch (keyType) {
                         case PASSPHRASE:
                             message = getString(R.string.passphrase_for, userId);
+                            hint = getString(R.string.label_passphrase);
                             break;
                         case PIN:
                             message = getString(R.string.pin_for, userId);
+                            hint = getString(R.string.label_pin);
                             break;
                         case DIVERT_TO_CARD:
                             message = getString(R.string.yubikey_pin_for, userId);
+                            hint = getString(R.string.label_pin);
                             break;
                         // special case: empty passphrase just returns the empty passphrase
                         case PASSPHRASE_EMPTY:
@@ -283,6 +313,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             }
 
             mPassphraseText.setText(message);
+            mPassphraseEditText.setHint(hint);
 
             // Hack to open keyboard.
             // This is the only method that I found to work across all Android versions
@@ -327,6 +358,34 @@ public class PassphraseDialogActivity extends FragmentActivity {
             return dialog;
         }
 
+        private static void setupEditTextFocusNext(final EditText[] backupCodes) {
+            for (int i = 0; i < backupCodes.length - 1; i++) {
+
+                final int next = i + 1;
+
+                backupCodes[i].addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        boolean inserting = before < count;
+                        boolean cursorAtEnd = (start + count) == 6;
+
+                        if (inserting && cursorAtEnd) {
+                            backupCodes[next].requestFocus();
+                        }
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                    }
+                });
+
+            }
+        }
+
         @Override
         public void onStart() {
             super.onStart();
@@ -336,7 +395,23 @@ public class PassphraseDialogActivity extends FragmentActivity {
             positive.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final Passphrase passphrase = new Passphrase(mPassphraseEditText);
+
+                    final Passphrase passphrase;
+                    if (mSubKeyId == Constants.key.backup_code) {
+                        StringBuilder backupCodeInput = new StringBuilder(26);
+                        for (EditText editText : mBackupCodeEditText) {
+                            if (editText.getText().length() < 6) {
+                                return;
+                            }
+                            backupCodeInput.append(editText.getText());
+                            backupCodeInput.append('-');
+                        }
+                        backupCodeInput.deleteCharAt(backupCodeInput.length() - 1);
+
+                        passphrase = new Passphrase(backupCodeInput.toString());
+                    } else {
+                        passphrase = new Passphrase(mPassphraseEditText);
+                    }
 
                     CryptoInputParcel cryptoInputParcel =
                             ((PassphraseDialogActivity) getActivity()).mCryptoInputParcel;

@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -33,8 +34,8 @@ public class HelpActivity extends BaseActivity {
     public static final String EXTRA_SELECTED_TAB = "selected_tab";
 
     public static final int TAB_START = 0;
-    public static final int TAB_FAQ = 1;
-    public static final int TAB_TRUST = 2;
+    public static final int TAB_CONFIRM = 1;
+    public static final int TAB_FAQ = 2;
     public static final int TAB_CHANGELOG = 3;
     public static final int TAB_ABOUT = 4;
 
@@ -99,4 +100,11 @@ public class HelpActivity extends BaseActivity {
     protected void initLayout() {
         setContentView(R.layout.help_activity);
     }
+
+    public static void startHelpActivity(Context context, int code) {
+        Intent intent = new Intent(context, HelpActivity.class);
+        intent.putExtra(HelpActivity.EXTRA_SELECTED_TAB, code);
+        context.startActivity(intent);
+    }
+
 }

@@ -3,6 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     >
 
     <!--rebuild functionality of ListFragment -->
@@ -23,10 +25,11 @@
         <LinearLayout
             android:id="@+id/key_list_empty"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="240dp"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:animateLayoutChanges="true"
+            >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -34,6 +37,30 @@
                 android:gravity="center"
                 android:text="@string/key_list_empty_text1"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/search_container"
+                android:inAnimation="@anim/fade_in_delayed"
+                android:outAnimation="@anim/fade_out"
+                android:measureAllChildren="true"
+                custom:initialView="1">
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:id="@+id/search_button"
+                    android:gravity="center"
+                    tools:text="@string/btn_search_for_query"
+                    />
+
+            </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
         </LinearLayout>
     </FrameLayout>

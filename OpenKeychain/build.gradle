@@ -8,11 +8,11 @@ dependencies {
     // NOTE: libraries are pinned to a specific build, see below
 
     // from local Android SDK
-    compile 'com.android.support:support-v4:22.2.1'
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:design:22.2.1'
-    compile 'com.android.support:recyclerview-v7:22.2.1'
-    compile 'com.android.support:cardview-v7:22.2.1'
+    compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.android.support:cardview-v7:23.1.1'
 
     // Unit tests in the local JVM with Robolectric
     // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
@@ -20,7 +20,7 @@ dependencies {
     // http://www.vogella.com/tutorials/Robolectric/article.html
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.0'
-    testCompile 'org.mockito:mockito-core:1.+'
+    testCompile 'org.mockito:mockito-core:1.10.19'
 
     // UI testing with Espresso
     androidTestCompile 'com.android.support.test:runner:0.3'
@@ -36,28 +36,29 @@ dependencies {
     // Temporary workaround for bug: https://code.google.com/p/android-test-kit/issues/detail?id=136
     // from https://github.com/googlesamples/android-testing/blob/master/build.gradle#L21
     configurations.all {
-        resolutionStrategy.force 'com.android.support:support-annotations:22.2.0'
+        resolutionStrategy.force 'com.android.support:support-annotations:23.1.1'
     }
 
     // JCenter etc.
-    compile 'com.eftimoff:android-patternview:1.0.1@aar'
-    compile 'com.journeyapps:zxing-android-embedded:2.3.0@aar'
-    compile 'com.journeyapps:zxing-android-integration:2.3.0@aar'
+    compile 'com.eftimoff:android-patternview:1.0.3@aar'
+    compile 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
     compile 'com.google.zxing:core:3.2.0'
-    compile 'com.jpardogo.materialtabstrip:library:1.0.9'
-    compile 'com.getbase:floatingactionbutton:1.9.0'
+    compile 'com.jpardogo.materialtabstrip:library:1.1.0'
+    compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
     compile 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
-    compile "com.splitwise:tokenautocomplete:1.3.3@aar"
-    compile 'se.emilsjolander:stickylistheaders:2.6.0'
-    compile 'org.sufficientlysecure:html-textview:1.2'
-    compile 'com.mikepenz:materialdrawer:3.0.9@aar'
-    compile 'com.mikepenz:iconics:1.0.2'
-    compile 'com.mikepenz.iconics:octicons-typeface:2.2.0@aar'
-    compile 'com.mikepenz.iconics:meteocons-typeface:1.1.1@aar'
-    compile 'com.mikepenz.iconics:community-material-typeface:1.0.0@aar'
+    compile 'com.splitwise:tokenautocomplete:2.0.2@aar'
+    compile 'se.emilsjolander:stickylistheaders:2.7.0'
+    compile 'org.sufficientlysecure:html-textview:1.3'
+    compile 'com.mikepenz:materialdrawer:4.4.2@aar'
+    compile 'com.mikepenz:materialize:0.2.7'
+    compile 'com.mikepenz:iconics-core:1.7.9@aar'
+    compile 'com.mikepenz:google-material-typeface:1.2.0.1@aar'
+    compile 'com.mikepenz:fontawesome-typeface:4.4.0.1@aar'
+    compile 'com.mikepenz:community-material-typeface:1.2.64.1@aar'
     compile 'com.nispok:snackbar:2.11.0'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
     compile 'org.apache.james:apache-mime4j-core:0.7.2'
     compile 'org.apache.james:apache-mime4j-dom:0.7.2'
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
@@ -68,7 +69,6 @@ dependencies {
     compile project(':extern:openkeychain-api-lib:openkeychain-intents')
     compile project(':extern:spongycastle:core')
     compile project(':extern:spongycastle:pg')
-    compile project(':extern:spongycastle:pkix')
     compile project(':extern:spongycastle:prov')
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
@@ -79,52 +79,62 @@ dependencies {
 // Comment out the libs referenced as git submodules!
 dependencyVerification {
     verify = [
-            'com.android.support:support-v4:c62f0d025dafa86f423f48df9185b0d89496adbc5f6a9be5a7c394d84cf91423',
-            'com.android.support:appcompat-v7:4b5ccba8c4557ef04f99aa0a80f8aa7d50f05f926a709010a54afd5c878d3618',
-            'com.android.support:design:58be3ca6a73789615f7ece0937d2f683b98b594bb90aa10565fa760fb10b07ee',
-            'com.android.support:recyclerview-v7:b0f530a5b14334d56ce0de85527ffe93ac419bc928e2884287ce1dddfedfb505',
-            'com.android.support:cardview-v7:2c2354761a4e20ba451ae903ab808f15c9acc8343b1e74001869c2d0a672c1fc',
-            'com.eftimoff:android-patternview:cec80e7265b8d8278b3c55b5fcdf551e4600ac2c8bf60d8dd76adca538af0b1e',
-            'com.journeyapps:zxing-android-embedded:702a4f58154dbd9baa80f66b6a15410f7a4d403f3e73b66537a8bfb156b4b718',
-            'com.journeyapps:zxing-android-integration:562737821b6d34c899b6fd2234ce0a8a31e02ff1fd7c59f6211961ce9767c7c8',
+            'com.android.support:support-v4:5c7dceb6c824089fe80f502e5206264048ef8bffa4e8ddeab180b81723e79b7f',
+            'com.android.support:appcompat-v7:0a8762214382b7e8d4b989b4ac10b5c846b957d767ccb7bccbc6be5afa885a82',
+            'com.android.support:design:41a9cd75ca78f25df5f573db7cedf8bb66beae00c330943923ba9f3e2051736d',
+            'com.android.support:recyclerview-v7:7606373da0931a1e62588335465a0e390cd676c98117edab29220317495faefd',
+            'com.android.support:cardview-v7:5a5bc04a278662bfafdea5b11b2108a4b354dca6c68958b312f6f45cc5fe2e38',
+            'com.eftimoff:android-patternview:2e7a2bbfb4fed229d4b5598aa4e69e45066fbea72c971d69461db7d916cb7ebc',
+            'com.journeyapps:zxing-android-embedded:561c5d94391342bb77689b8d32a320d085a11853f72afda1128d595b815ef563',
             'com.google.zxing:core:7fe5a8ff437635a540e56317649937b768b454795ce999ed5f244f83373dee7b',
-            'com.jpardogo.materialtabstrip:library:c6ef812fba4f74be7dc4a905faa4c2908cba261a94c13d4f96d5e67e4aad4aaa',
-            'com.getbase:floatingactionbutton:052aa2a94e49e5dccc97cb99f2add87e8698b84859f0e3ac181100c0bc7640ca',
+            'com.jpardogo.materialtabstrip:library:24d19232b319f8c73e25793432357919a7ed972186f57a3b2c9093ea74ad8311',
+            'com.getbase:floatingactionbutton:3edefa511aac4d90794c7b0496aca59cff2eee1e32679247b4f85acbeee05240',
             'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
-            'com.splitwise:tokenautocomplete:20bee71cc59b3828eb000b684d46ddf738efd56b8fee453a509cd16fda42c8cb',
-            'se.emilsjolander:stickylistheaders:8c05981ec5725be33f7cee5e68c13f3db49cd5c75f1aaeb04024920b1ef96ad4',
-            'org.sufficientlysecure:html-textview:1d3bed31ef837437154de8d2362a0e6b0e59b6c3535d87ee48c2fab12c84f9bb',
-            'com.mikepenz:iconics:c1a02203d8e0d638959463c00af3ab9096e0a7c1ad5928762eb10ef5ce8a63cd',
-            'com.mikepenz:materialdrawer:70c3efb3842461db41df6a918ea93969a7da21e63c092be838b153e5a47a17bf',
-            'com.mikepenz.iconics:meteocons-typeface:39a8a9e70cd8287cdb119af57a672a41dd09240dba6697f5a0dbda1ccc33298b',
-            'com.mikepenz.iconics:octicons-typeface:67ed7d456a9ce5f5307b85f955797bfb3dd674e2f6defb31c6b8bbe2ede290be',
+            'org.ocpsoft.prettytime:prettytime:a6bc2641b3ab7873df604b77b6680c75b86d98e78afefb367940972f925591b5',
+            'com.splitwise:tokenautocomplete:2fc238424130b42155b5f2e39799a90bbbd13b148850afbe534ab08bb913c7f7',
+            'se.emilsjolander:stickylistheaders:a08ca948aa6b220f09d82f16bbbac395f6b78897e9eeac6a9f0b0ba755928eeb',
+            'org.sufficientlysecure:html-textview:39048e35894e582adada388e6c00631803283f8defed8e07ad58a5f284f272ee',
+            'com.mikepenz:materialize:db365f859084048ac4e9cc4254642593dbb1ae9ce25c8fc26c93e2a5fadb3480',
+            'com.mikepenz:materialdrawer:fe9726e0f045eb3fe63832aa5383d9e2c7bcd8b87a6f26478aba1c330e9d36fe',
+            'com.mikepenz:google-material-typeface:a8319333a7f7ca369b9b5c62913f96787d934e312acefa8c9a5fcefd394fc6ee',
+            'com.mikepenz:iconics-core:e1ba25442c1645b7adfb7d101871c26ed64a6c5b892e9abee8d4d2a80d948d9e',
+            'com.mikepenz:community-material-typeface:520f1065730a1171763696ac9c4e770fedbbcf1a8dad6eb1028ba29489e1a2ce',
+            'com.mikepenz:fontawesome-typeface:8c58117eb42efe301a170049336f7838af7559d84b0cc9a2bd7aca8b130f0a50',
+            'com.squareup.okhttp:okhttp:1cc716e29539adcda677949508162796daffedb4794cbf947a6f65e696f0381c',
             'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
-            'com.mikepenz.iconics:community-material-typeface:f1c5afee5f0f10d66beb3ed0df977246a02a9c46de4e05d7c0264bcde53b6b7f',
-            'com.squareup.okhttp:okhttp:bc0da7ac1f5441619faa2082811938acf7df97e4a8e08f0e043ff4937414d5ad',
-//            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:111d7d53b9e920ad3405f8f3eb0ab7bd3aee66d577442452754b83c7c1c1d49a',
-//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:544b7b2e20955556b83d1b72763543aa789836ebc1e77b332ed7cd83ef765c4a',
-//            'com.madgag.spongycastle:core:97276487be598747ba78c063c90cea7fc3c7ad9bc7aeba03c0b9c98692052b8a',
-//            'com.madgag.spongycastle:pkix:979aa4b2aaef94866e0f97b05b1922244eaf8b650f3691a3c44760ff0a41562b',
-//            'com.madgag.spongycastle:pg:da319de706d946f178140959c74aec126f7803f1104dbad89bb1f55a53f6e1a9',
-//            'OpenKeychain.extern:minidns:8274d50124d9584e95df0c5da7798269ac9caf0eab560df929c2c658ca624037',
-//            'com.madgag.spongycastle:prov:902a484219bbf4e395a1c32da65b2453133e195bcc92336dc8c33b7c58edcd60',
-            'com.android.support:support-annotations:beac5cae60bdb597df9af9c916f785c2f71f8c8ae4be9a32d4298dea85496a42',
-//            'OpenKeychain.extern.KeybaseLib:Lib:d52e7888cea6de9e077501bb533270b2a86b52cb8af49e5f44ee8c4bb19ea017',
-//            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:76e5da6b4f5f8835b12649e17569f0d0d8d89552815a61383c128545632689d1',
-            'com.squareup.okio:okio:b53c1760864e1c39b5275d9023e2a6fbe8f3189e6e67b4c87877b8ec8f92e05a',
+            'org.apache.james:apache-mime4j-core:4d7434c68f94b81a253c12f28e6bbb4d6239c361d6086a46e22e594bb43ac660',
+            'com.squareup.okhttp:okhttp-urlconnection:79ec6f4e79e683105e87fe83278a531c693e538d30e3b9237000ce7c94fcb2cf',
+            'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
+            'org.apache.james:apache-mime4j-dom:7e6b06ee164a1c21b7e477249ea0b74a18fddce44764e5764085f58dd8c34633',
+//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:262e58d318d19e8ce8a78934136c9656fa51dc5fd026caa034c41390e0ef299d',
+            'com.cocosw:bottomsheet:871f5f4d6c10936569caf3528271efd77594a67aa5511765c96d7096c9b05f96',
+//            'com.madgag.spongycastle:core:d898b5b81ce9d456c65a3a2fe0b0be9b74e366aabe4ee1d13499a865cd20ee19',
+//            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:c25d0c05cc129e2975161f8454350a8868dbe1ffca8583e900935cb0b38db842',
+//            'com.madgag.spongycastle:pg:abd30d5a3c6ab6edbf7e2b60de3dae865bb5b5e4b41925ea8ac985e2a7fce4a0',
+//            'com.madgag.spongycastle:pkix:c5fd572191d31d2b05d7143d9e22d74ee3e8a43552c26d31114a27022b7a06ce',
+//            'com.madgag.spongycastle:prov:7a28f314e20683281254f92124f137d48173ea1dc3364a709d7cc66a5e46ec4e',
+//            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:75a3d23eff4d5c14fdc8912b5d593bf340f07b833ceabacbcd60a8e83b5b8b79',
+            'com.android.support:support-annotations:f347a35b9748a4103b39a6714a77e2100f488d623fd6268e259c177b200e9d82',
+//            'OpenKeychain.extern:minidns:0084c81e30a4b06edac9b00689eeaa3cbbb9ea3b26aaa4fad205bb660ea0fcdb',
+//            'OpenKeychain.extern.KeybaseLib:Lib:c11785bf613f3fad8bf1670ef9fce1a10027cefbf2b3a67d487c6b8964f0e05a',
+            'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
     ]
 }
+
 
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
+    // TODO: remove org.apache dependencies in LinkedTokenResource etc.
+    useLibrary 'org.apache.http.legacy'
+
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 22
-        versionCode 35100
-        versionName "3.5.1"
+        targetSdkVersion 23
+        versionCode 37000
+        versionName "3.7"
         applicationId "org.sufficientlysecure.keychain"
         // the androidjunitrunner is broken regarding coverage, see here:
         // https://code.google.com/p/android/issues/detail?id=170607
@@ -152,6 +162,10 @@ android {
             // Reference them in .xml files.
             resValue "string", "account_type", "org.sufficientlysecure.keychain.account"
             resValue "string", "provider_content_authority", "org.sufficientlysecure.keychain.provider"
+
+            // Github API
+            buildConfigField "String", "GITHUB_CLIENT_ID", "\"c942cd81844d94e7e41b\""
+            buildConfigField "String", "GITHUB_CLIENT_SECRET", "\"f1dd17e70a0614abbd9310b00a310e23c6c8edff\""
         }
 
         debug {
@@ -161,13 +175,13 @@ android {
             buildConfigField "String", "ACCOUNT_TYPE", "\"org.sufficientlysecure.keychain.debug.account\""
             buildConfigField "String", "PROVIDER_CONTENT_AUTHORITY", "\"org.sufficientlysecure.keychain.debug.provider\""
 
-            // Github api for debug build only
-            buildConfigField "String", "GITHUB_CLIENT_ID", "\"7a011b66275f244d3f21\""
-            buildConfigField "String", "GITHUB_CLIENT_SECRET", "\"eaced8a6655719d8c6848396de97b3f5d7a89fec\""
-
             // Reference them in .xml files.
             resValue "string", "account_type", "org.sufficientlysecure.keychain.debug.account"
             resValue "string", "provider_content_authority", "org.sufficientlysecure.keychain.debug.provider"
+
+            // Github API
+            buildConfigField "String", "GITHUB_CLIENT_ID", "\"c942cd81844d94e7e41b\""
+            buildConfigField "String", "GITHUB_CLIENT_SECRET", "\"f1dd17e70a0614abbd9310b00a310e23c6c8edff\""
 
             // Enable code coverage (Jacoco)
             testCoverageEnabled true
@@ -234,7 +248,7 @@ android {
 
 // apply plugin: 'spoon'
 
-task jacocoTestReport(type:JacocoReport) {
+task jacocoTestReport(type:JacocoReport, dependsOn: "testDebugUnitTest") {
     group = "Reporting"
     description = "Generate Jacoco coverage reports"
 
@@ -244,7 +258,9 @@ task jacocoTestReport(type:JacocoReport) {
                        '**/R$*.class',
                        '**/*$ViewInjector*.*',
                        '**/BuildConfig.*',
-                       '**/Manifest*.*']
+                       '**/Manifest*.*',
+                       '**/*Activity*.*',
+                       '**/*Fragment*.*']
     )
 
     sourceDirectories = files("${buildDir.parent}/src/main/java")
@@ -252,10 +268,7 @@ task jacocoTestReport(type:JacocoReport) {
             "${buildDir}/generated/source/buildConfig/debug",
             "${buildDir}/generated/source/r/debug"
     ])
-    executionData = files([
-        "${buildDir}/jacoco/testDebug.exec",
-        "${buildDir}/outputs/code-coverage/connected/coverage.ec"
-    ])
+    executionData = fileTree(dir: "${buildDir}/jacoco", include: "**/*.exec")
 
     reports {
         xml.enabled = true

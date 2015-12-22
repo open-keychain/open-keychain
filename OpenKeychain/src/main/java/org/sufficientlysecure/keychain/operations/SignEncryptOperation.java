@@ -17,6 +17,16 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -40,21 +50,13 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-/** This is a high-level operation, which encapsulates one or more sign/encrypt
+/**
+ * This is a high-level operation, which encapsulates one or more sign/encrypt
  * operations, using URIs or byte arrays as input and output.
  *
  * This operation is fail-fast: If any sign/encrypt sub-operation fails or returns
  * a pending result, it will terminate.
- *
  */
 public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
 
@@ -62,6 +64,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
                                 Progressable progressable, AtomicBoolean cancelled) {
         super(context, providerHelper, progressable, cancelled);
     }
+
 
     @NonNull
     public SignEncryptResult execute(SignEncryptParcel input, CryptoInputParcel cryptoInput) {
@@ -115,7 +118,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
                     log.add(LogType.MSG_SE_INPUT_URI, 1);
                     Uri uri = inputUris.removeFirst();
                     try {
-                        InputStream is = mContext.getContentResolver().openInputStream(uri);
+                        InputStream is = FileHelper.openInputStreamSafe(mContext.getContentResolver(), uri);
                         long fileSize = FileHelper.getFileSize(mContext, uri, 0);
                         String filename = FileHelper.getFilename(mContext, uri);
                         inputData = new InputData(is, fileSize, filename);

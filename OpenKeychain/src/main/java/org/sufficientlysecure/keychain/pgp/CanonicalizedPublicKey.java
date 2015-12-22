@@ -44,11 +44,15 @@ import java.util.Iterator;
 public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     // this is the parent key ring
-    final KeyRing mRing;
+    final CanonicalizedKeyRing mRing;
 
-    CanonicalizedPublicKey(KeyRing ring, PGPPublicKey key) {
+    CanonicalizedPublicKey(CanonicalizedKeyRing ring, PGPPublicKey key) {
         super(key);
         mRing = ring;
+    }
+
+    public CanonicalizedKeyRing getKeyRing() {
+        return mRing;
     }
 
     public IterableIterator<String> getUserIds() {

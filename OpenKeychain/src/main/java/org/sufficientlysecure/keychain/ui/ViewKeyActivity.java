@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -34,6 +33,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,6 +41,7 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -67,12 +68,14 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
@@ -81,13 +84,12 @@ import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
-import org.sufficientlysecure.keychain.ui.util.LongClick;
+import org.sufficientlysecure.keychain.ui.util.ContentDescriptionHint;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
-import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NFCNotSupportedException;
 import org.sufficientlysecure.keychain.util.NfcHelper;
@@ -185,12 +187,12 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
         mRotateSpin = AnimationUtils.loadAnimation(this, R.anim.rotate_spin);
 
-        //Long Click Listeners implemented
+        //ContentDescriptionHint Listeners implemented
 
-        LongClick.setup(mActionEncryptFile);
-        LongClick.setup(mActionEncryptText);
-        LongClick.setup(mActionNfc);
-        LongClick.setup(mFab);
+        ContentDescriptionHint.setup(mActionEncryptFile);
+        ContentDescriptionHint.setup(mActionEncryptText);
+        ContentDescriptionHint.setup(mActionNfc);
+        ContentDescriptionHint.setup(mFab);
 
 
         mRotateSpin.setAnimationListener(new AnimationListener() {
@@ -244,7 +246,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             return;
         }
         if (mDataUri.getHost().equals(ContactsContract.AUTHORITY)) {
-            mDataUri = ContactHelper.dataUriFromContactUri(this, mDataUri);
+            mDataUri = new ContactHelper(this).dataUriFromContactUri(mDataUri);
             if (mDataUri == null) {
                 Log.e(Constants.TAG, "Contact Data missing. Should be uri of key!");
                 Toast.makeText(this, R.string.error_contacts_key_id_missing, Toast.LENGTH_LONG).show();
@@ -379,7 +381,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 startActivity(homeIntent);
                 return true;
             }
-            case R.id.menu_key_view_export_file: {
+            case R.id.menu_key_view_backup: {
                 startPassphraseActivity(REQUEST_BACKUP);
                 return true;
             }
@@ -429,8 +431,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         MenuItem editKey = menu.findItem(R.id.menu_key_view_edit);
         editKey.setVisible(mIsSecret);
 
-        MenuItem exportKey = menu.findItem(R.id.menu_key_view_export_file);
-        exportKey.setVisible(mIsSecret);
+        MenuItem backupKey = menu.findItem(R.id.menu_key_view_backup);
+        backupKey.setVisible(mIsSecret);
 
         MenuItem addLinked = menu.findItem(R.id.menu_key_view_add_linked_identity);
         addLinked.setVisible(mIsSecret
@@ -484,15 +486,40 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     private void startPassphraseActivity(int requestCode) {
-        Intent intent = new Intent(this, PassphraseDialogActivity.class);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mMasterKeyId);
-        startActivityForResult(intent, requestCode);
+
+        if (keyHasPassphrase()) {
+            Intent intent = new Intent(this, PassphraseDialogActivity.class);
+            intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mMasterKeyId);
+            startActivityForResult(intent, requestCode);
+        } else {
+            startBackupActivity();
+        }
     }
 
-    private void backupToFile() {
-        new ExportHelper(this).showExportKeysDialog(
-                mMasterKeyId, new File(Constants.Path.APP_DIR,
-                        KeyFormattingUtils.convertKeyIdToHex(mMasterKeyId) + ".sec.asc"), true);
+    private boolean keyHasPassphrase() {
+        try {
+            SecretKeyType secretKeyType =
+                    mProviderHelper.getCachedPublicKeyRing(mMasterKeyId).getSecretKeyType(mMasterKeyId);
+            switch (secretKeyType) {
+                // all of these make no sense to ask
+                case PASSPHRASE_EMPTY:
+                case GNU_DUMMY:
+                case DIVERT_TO_CARD:
+                case UNAVAILABLE:
+                    return false;
+                default:
+                    return true;
+            }
+        } catch (NotFoundException e) {
+            return false;
+        }
+    }
+
+    private void startBackupActivity() {
+        Intent intent = new Intent(this, BackupActivity.class);
+        intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[] { mMasterKeyId });
+        intent.putExtra(BackupActivity.EXTRA_SECRET, true);
+        startActivity(intent);
     }
 
     private void deleteKey() {
@@ -548,7 +575,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     return;
                 }
 
-                backupToFile();
+                startBackupActivity();
                 return;
             }
 
@@ -588,7 +615,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     @Override
-    protected void onNfcPostExecute() throws IOException {
+    protected void onNfcPostExecute() {
 
         long yubiKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
 
@@ -852,8 +879,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     AsyncTask<Long, Void, Bitmap> photoTask =
                             new AsyncTask<Long, Void, Bitmap>() {
                                 protected Bitmap doInBackground(Long... mMasterKeyId) {
-                                    return ContactHelper.loadPhotoByMasterKeyId(getContentResolver(),
-                                            mMasterKeyId[0], true);
+                                    return new ContactHelper(ViewKeyActivity.this)
+                                            .loadPhotoByMasterKeyId(mMasterKeyId[0], true);
                                 }
 
                                 protected void onPostExecute(Bitmap photo) {
@@ -878,7 +905,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
                         mActionNfc.setVisibility(View.INVISIBLE);
-                        mFab.setVisibility(View.GONE);
+                        hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsExpired) {
                         if (mIsSecret) {
@@ -894,7 +921,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
                         mActionNfc.setVisibility(View.INVISIBLE);
-                        mFab.setVisibility(View.GONE);
+                        hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsSecret) {
                         mStatusText.setText(R.string.view_key_my_key);
@@ -931,19 +958,20 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mActionEncryptText.setVisibility(View.VISIBLE);
 
                         // invokeBeam is available from API 21
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                                && NfcAdapter.getDefaultAdapter(this) != null) {
                             mActionNfc.setVisibility(View.VISIBLE);
                         } else {
-                            mActionNfc.setVisibility(View.GONE);
+                            mActionNfc.setVisibility(View.INVISIBLE);
                         }
-                        mFab.setVisibility(View.VISIBLE);
+                        showFab();
                         // noinspection deprecation (no getDrawable with theme at current minApi level 15!)
                         mFab.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
                     } else {
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
                         mQrCodeLayout.setVisibility(View.GONE);
-                        mActionNfc.setVisibility(View.GONE);
+                        mActionNfc.setVisibility(View.INVISIBLE);
 
                         if (mIsVerified) {
                             mStatusText.setText(R.string.view_key_verified);
@@ -953,7 +981,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             color = getResources().getColor(R.color.key_flag_green);
                             photoTask.execute(mMasterKeyId);
 
-                            mFab.setVisibility(View.GONE);
+                            hideFab();
                         } else {
                             mStatusText.setText(R.string.view_key_unverified);
                             mStatusImage.setVisibility(View.VISIBLE);
@@ -961,7 +989,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                                     State.UNVERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.key_flag_orange);
 
-                            mFab.setVisibility(View.VISIBLE);
+                            showFab();
                         }
                     }
 
@@ -991,6 +1019,28 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         }
     }
 
+    /**
+     * Helper to show Fab, from http://stackoverflow.com/a/31047038
+     */
+    private void showFab() {
+        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) mFab.getLayoutParams();
+        p.setBehavior(new FloatingActionButton.Behavior());
+        p.setAnchorId(R.id.app_bar_layout);
+        mFab.setLayoutParams(p);
+        mFab.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Helper to hide Fab, from http://stackoverflow.com/a/31047038
+     */
+    private void hideFab() {
+        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) mFab.getLayoutParams();
+        p.setBehavior(null); //should disable default animations
+        p.setAnchorId(View.NO_ID); //should let you set visibility
+        mFab.setLayoutParams(p);
+        mFab.setVisibility(View.GONE);
+    }
+
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
@@ -1012,18 +1062,12 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
 
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null);
         ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
         entries.add(keyEntry);
         mKeyList = entries;
 
-        // search config
-        {
-            Preferences prefs = Preferences.getPreferences(this);
-            Preferences.CloudSearchPrefs cloudPrefs =
-                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            mKeyserver = cloudPrefs.keyserver;
-        }
+        mKeyserver = Preferences.getPreferences(this).getPreferredKeyserver();
 
         mOperationHelper.cryptoOperation();
     }

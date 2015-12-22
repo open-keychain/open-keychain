@@ -30,6 +30,7 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureList;
 import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
+import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -131,7 +132,7 @@ public class WrappedSignature {
                 SignatureSubpacketTags.REVOCATION_REASON);
         // For some reason, this is missing in SignatureSubpacketInputStream:146
         if (!(p instanceof RevocationReason)) {
-            p = new RevocationReason(false, p.getData());
+            p = new RevocationReason(false, false, p.getData());
         }
         return ((RevocationReason) p).getRevocationDescription();
     }
@@ -222,7 +223,7 @@ public class WrappedSignature {
     }
 
     public static WrappedSignature fromBytes(byte[] data) {
-        PGPObjectFactory factory = new PGPObjectFactory(data);
+        PGPObjectFactory factory = new PGPObjectFactory(data, new JcaKeyFingerprintCalculator());
         PGPSignatureList signatures = null;
         try {
             if ((signatures = (PGPSignatureList) factory.nextObject()) == null || signatures.isEmpty()) {

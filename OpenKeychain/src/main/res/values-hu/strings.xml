@@ -5,6 +5,7 @@
   <!--title-->
   <!--section-->
   <!--button-->
+  <!--Content Description-->
   <!--menu-->
   <!--label-->
   <!--label shown in Android settings under the OpenKeychain account-->
@@ -71,8 +72,9 @@
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
-  <!--Messages for Export Log operation-->
+  <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <!--Keyserver sync-->
   <!--First Time-->
@@ -82,4 +84,5 @@
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <!--Other Linked Identity strings-->
 </resources>

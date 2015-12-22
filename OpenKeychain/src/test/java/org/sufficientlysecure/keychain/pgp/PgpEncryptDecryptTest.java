@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.apache.tools.ant.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -45,6 +46,7 @@ import org.spongycastle.bcpg.PacketTags;
 import org.spongycastle.bcpg.PublicKeyEncSessionPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.openpgp.PGPKeyFlags;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -55,6 +57,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
@@ -77,7 +80,7 @@ public class PgpEncryptDecryptTest {
     static UncachedKeyRing mStaticRing1, mStaticRing2, mStaticRingInsecure;
     static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
     static Passphrase mKeyPhrase2 = TestingUtils.genPassphrase(true);
-    static Passphrase mKeyPhraseInsecure = TestingUtils.genPassphrase(true);
+//    static Passphrase mKeyPhraseInsecure = TestingUtils.genPassphrase(true);
 
     static PrintStream oldShadowStream;
 
@@ -127,24 +130,24 @@ public class PgpEncryptDecryptTest {
             mStaticRing2 = result.getRing();
         }
 
-        {
-            // insecure (1024 bit) RSA key
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
-            parcel.mAddUserIds.add("eve");
-            parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhraseInsecure);
-
-            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
-            Assert.assertTrue("initial test key creation must succeed", result.success());
-            Assert.assertNotNull("initial test key creation must succeed", result.getRing());
-
-            mStaticRingInsecure = result.getRing();
-        }
+//        {
+//            // insecure (1024 bit) RSA key
+//            SaveKeyringParcel parcel = new SaveKeyringParcel();
+//            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+//                    Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+//            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+//                    Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
+//            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+//                    Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+//            parcel.mAddUserIds.add("eve");
+//            parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhraseInsecure);
+//
+//            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+//            Assert.assertTrue("initial test key creation must succeed", result.success());
+//            Assert.assertNotNull("initial test key creation must succeed", result.getRing());
+//
+//            mStaticRingInsecure = result.getRing();
+//        }
 
     }
 
@@ -287,7 +290,7 @@ public class PgpEncryptDecryptTest {
     }
 
     @Test
-    public void testAsymmetricSign() {
+    public void testAsymmetricSignLiteral() {
 
         String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
         byte[] ciphertext;
@@ -335,6 +338,121 @@ public class PgpEncryptDecryptTest {
             OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
                     out.toByteArray().length, metadata.getOriginalSize());
+
+        }
+
+    }
+
+    @Test
+    public void testAsymmetricSignCleartext() {
+
+        String plaintext = "dies ist ein\r\nplaintext\n ☭" + TestingUtils.genPassphrase(true);
+        byte[] ciphertext;
+
+        { // encrypt data with key
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
+
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
+
+            InputData data = new InputData(in, in.available());
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
+
+            // only sign, as cleartext
+            input.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
+            input.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
+            input.setCleartextSignature(true);
+            input.setEnableAsciiArmorOutput(true);
+            input.setDetachedSignature(false);
+
+            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
+            Assert.assertTrue("signing must succeed", result.success());
+
+            ciphertext = out.toByteArray();
+        }
+
+        Assert.assertTrue("clearsigned text must contain plaintext (ignoring newlines)",
+                new String(ciphertext).replace("\r\n", "").contains(plaintext.replace("\r", "").replace("\n", "")));
+
+        { // verification should succeed
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
+            InputData data = new InputData(in, in.available());
+
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
+
+            Assert.assertTrue("verification must succeed", result.success());
+
+            Assert.assertTrue("verification text should equal plaintext (ignoring newlines)",
+                    new String(out.toByteArray()).replace(StringUtils.LINE_SEP, "")
+                            .equals(plaintext.replace("\r", "").replace("\n", "")));
+            Assert.assertEquals("decryptionResult should be RESULT_NOT_ENCRYPTED",
+                    OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_VALID_CONFIRMED",
+                    OpenPgpSignatureResult.RESULT_VALID_CONFIRMED, result.getSignatureResult().getResult());
+
+            OpenPgpMetadata metadata = result.getDecryptionMetadata();
+            Assert.assertEquals("filesize must be correct",
+                    out.toByteArray().length, metadata.getOriginalSize());
+
+        }
+
+    }
+
+    @Test
+    public void testAsymmetricSignDetached() {
+
+        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        byte[] detachedSignature;
+
+        { // encrypt data with key
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
+
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
+
+            InputData data = new InputData(in, in.available());
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
+
+            // only sign, as cleartext
+            input.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
+            input.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
+            input.setDetachedSignature(true);
+
+            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
+            Assert.assertTrue("signing must succeed", result.success());
+
+            detachedSignature = result.getDetachedSignature();
+        }
+
+        { // verification should succeed
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
+            InputData data = new InputData(in, in.available());
+
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            input.setDetachedSignature(detachedSignature);
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
+
+            Assert.assertTrue("verification must succeed", result.success());
+            Assert.assertArrayEquals("verification text should equal plaintext (save for a newline)",
+                    plaintext.getBytes(), out.toByteArray());
+            Assert.assertEquals("decryptionResult should be RESULT_NOT_ENCRYPTED",
+                    OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_VALID_CONFIRMED",
+                    OpenPgpSignatureResult.RESULT_VALID_CONFIRMED, result.getSignatureResult().getResult());
+
+            // TODO should detached verify return any metadata?
+            // OpenPgpMetadata metadata = result.getDecryptionMetadata();
+            // Assert.assertEquals("filesize must be correct",
+                    // out.toByteArray().length, metadata.getOriginalSize());
 
         }
 
@@ -438,12 +556,14 @@ public class PgpEncryptDecryptTest {
     }
 
     @Test
-    public void testAsymmetricMultiSubkeyEncrypt() throws Exception {
+    public void testMultiSubkeyEncryptSkipStripOrBadFlag() throws Exception {
 
         String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
 
+        byte[] ciphertext;
+        long encKeyId1;
+
         { // encrypt data with key
-            byte[] ciphertext;
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
@@ -473,7 +593,7 @@ public class PgpEncryptDecryptTest {
             Packet p;
             p = new BCPGInputStream(new ByteArrayInputStream(enc1.buf)).readPacket();
             Assert.assertTrue("first packet must be session packet", p instanceof PublicKeyEncSessionPacket);
-            long encKeyId1 = ((PublicKeyEncSessionPacket) p).getKeyID();
+            encKeyId1 = ((PublicKeyEncSessionPacket) p).getKeyID();
 
             p = new BCPGInputStream(new ByteArrayInputStream(enc2.buf)).readPacket();
             Assert.assertTrue("second packet must be session packet", p instanceof PublicKeyEncSessionPacket);
@@ -488,6 +608,57 @@ public class PgpEncryptDecryptTest {
 
         }
 
+        { // strip first encrypted subkey, decryption should skip it
+
+            SaveKeyringParcel parcel =
+                    new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
+            parcel.mChangeSubKeys.add(new SubkeyChange(encKeyId1, true, false));
+            UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
+                    new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
+                    new CryptoInputParcel(new Date(), mKeyPhrase1));
+
+            ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
+            providerHelper.saveSecretKeyRing(modified, new ProgressScaler());
+
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(ciphertext);
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1));
+
+            Assert.assertTrue("decryption must succeed", result.success());
+            Assert.assertTrue("decryption must have skipped first key",
+                    result.getLog().containsType(LogType.MSG_DC_ASKIP_UNAVAILABLE));
+        }
+
+        { // change flags of second encrypted subkey, decryption should skip it
+
+            SaveKeyringParcel parcel =
+                    new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
+            parcel.mChangeSubKeys.add(new SubkeyChange(encKeyId1, KeyFlags.CERTIFY_OTHER, null));
+            UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
+                    new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
+                    new CryptoInputParcel(new Date(), mKeyPhrase1));
+
+            ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
+            providerHelper.saveSecretKeyRing(modified, new ProgressScaler());
+
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(ciphertext);
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1));
+
+            Assert.assertTrue("decryption must succeed", result.success());
+            Assert.assertTrue("decryption must have skipped first key",
+                    result.getLog().containsType(LogType.MSG_DC_ASKIP_BAD_FLAGS));
+        }
+
+    }
+
+    @Test
+    public void testMultiSubkeyEncryptSkipRevoked() throws Exception {
+
+        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+
         { // revoke first encryption subkey of keyring in database
             SaveKeyringParcel parcel = new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
             parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(mStaticRing1, 2));
@@ -500,7 +671,6 @@ public class PgpEncryptDecryptTest {
         }
 
         { // encrypt to this keyring, make sure it's not encrypted to the revoked subkey
-            byte[] ciphertext;
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
@@ -518,7 +688,7 @@ public class PgpEncryptDecryptTest {
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
-            ciphertext = out.toByteArray();
+            byte[] ciphertext = out.toByteArray();
 
             Iterator<RawPacket> packets = KeyringTestingHelper.parseKeyring(ciphertext);
 

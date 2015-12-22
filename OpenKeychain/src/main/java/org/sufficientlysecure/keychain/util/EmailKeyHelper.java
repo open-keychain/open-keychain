@@ -44,7 +44,7 @@ public class EmailKeyHelper {
         private String mKeyserver;
 
         public ImportContactKeysCallback(Context context, String keyserver, Proxy proxy) {
-            this(context, ContactHelper.getContactMails(context), keyserver, proxy);
+            this(context, new ContactHelper(context).getContactMails(), keyserver, proxy);
         }
 
         public ImportContactKeysCallback(Context context, List<String> mails, String keyserver,
@@ -57,7 +57,7 @@ public class EmailKeyHelper {
             // Put them in a list and import
             ArrayList<ParcelableKeyRing> keys = new ArrayList<>(entries.size());
             for (ImportKeysListEntry entry : entries) {
-                keys.add(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(), null));
+                keys.add(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex()));
             }
             mKeyList = keys;
             mKeyserver = keyserver;
@@ -74,9 +74,9 @@ public class EmailKeyHelper {
         // Try _hkp._tcp SRV record first
         String[] mailparts = mail.split("@");
         if (mailparts.length == 2) {
-            HkpKeyserver hkp = HkpKeyserver.resolve(mailparts[1]);
+            HkpKeyserver hkp = HkpKeyserver.resolve(mailparts[1], proxy);
             if (hkp != null) {
-                keys.addAll(getEmailKeys(mail, hkp, proxy));
+                keys.addAll(getEmailKeys(mail, hkp));
             }
         }
 
@@ -84,18 +84,17 @@ public class EmailKeyHelper {
             // Most users don't have the SRV record, so ask a default server as well
             String server = Preferences.getPreferences(context).getPreferredKeyserver();
             if (server != null) {
-                HkpKeyserver hkp = new HkpKeyserver(server);
-                keys.addAll(getEmailKeys(mail, hkp, proxy));
+                HkpKeyserver hkp = new HkpKeyserver(server, proxy);
+                keys.addAll(getEmailKeys(mail, hkp));
             }
         }
         return keys;
     }
 
-    public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer,
-                                                         Proxy proxy) {
+    public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer) {
         Set<ImportKeysListEntry> keys = new HashSet<>();
         try {
-            for (ImportKeysListEntry key : keyServer.search(mail, proxy)) {
+            for (ImportKeysListEntry key : keyServer.search(mail)) {
                 if (key.isRevoked() || key.isExpired()) continue;
                 for (String userId : key.getUserIds()) {
                     if (userId.toLowerCase().contains(mail.toLowerCase(Locale.ENGLISH))) {
@@ -103,8 +102,7 @@ public class EmailKeyHelper {
                     }
                 }
             }
-        } catch (Keyserver.QueryFailedException ignored) {
-        } catch (Keyserver.QueryNeedsRepairException ignored) {
+        } catch (Keyserver.CloudSearchFailureException ignored) {
         }
         return new ArrayList<>(keys);
     }

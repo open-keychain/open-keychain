@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -72,7 +73,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
     private RequiredInputParcel mRequiredInput;
     private Intent mServiceIntent;
 
-    private static final byte[] BLANK_FINGERPRINT = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     private CryptoInputParcel mInputParcel;
 
@@ -91,7 +92,9 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
         // prevent annoying orientation changes while fumbling with the device
         OrientationUtils.lockOrientation(this);
-
+        // prevent close when touching outside of the dialog (happens easily when fumbling with the device)
+        setFinishOnTouchOutside(false);
+        // keep screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
@@ -107,11 +110,16 @@ public class NfcOperationActivity extends BaseNfcActivity {
             public void onClick(View v) {
                 resumeTagHandling();
 
-                // obtain passphrase for this subkey
-                if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD) {
-                    obtainYubiKeyPin(mRequiredInput);
-                }
+                obtainPassphraseIfRequired();
                 vAnimator.setDisplayedChild(0);
+            }
+        });
+        Button vCancel = (Button) findViewById(R.id.nfc_activity_0_cancel);
+        vCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED);
+                finish();
             }
         });
 
@@ -121,8 +129,13 @@ public class NfcOperationActivity extends BaseNfcActivity {
         mRequiredInput = data.getParcelable(EXTRA_REQUIRED_INPUT);
         mServiceIntent = data.getParcelable(EXTRA_SERVICE_INTENT);
 
+        obtainPassphraseIfRequired();
+    }
+
+    private void obtainPassphraseIfRequired() {
         // obtain passphrase for this subkey
-        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD) {
+        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD
+                && mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_RESET_CARD) {
             obtainYubiKeyPin(mRequiredInput);
         }
     }
@@ -237,6 +250,11 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
                 break;
             }
+            case NFC_RESET_CARD: {
+                nfcResetCard();
+
+                break;
+            }
             default: {
                 throw new AssertionError("Unhandled mRequiredInput.mType");
             }
@@ -245,7 +263,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
     }
 
     @Override
-    protected void onNfcPostExecute() throws IOException {
+    protected void onNfcPostExecute() {
         if (mServiceIntent != null) {
             // if we're triggered by OpenPgpService
             // save updated cryptoInputParcel in cache
@@ -276,6 +294,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     }
                 }
             }
+
             @Override
             protected void onPostExecute(Void result) {
                 super.onPostExecute(result);
@@ -292,33 +311,32 @@ public class NfcOperationActivity extends BaseNfcActivity {
         vAnimator.setDisplayedChild(3);
     }
 
+    @Override
+    public void onNfcPinError(String error) {
+        onNfcError(error);
+
+        // clear (invalid) passphrase
+        PassphraseCacheService.clearCachedPassphrase(
+                this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
+    }
+
     private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
-        byte[] cardFingerprint = nfcGetFingerprint(idx);
+        byte[] cardFingerprint = nfcGetMasterKeyFingerprint(idx);
+
+        // Note: special case: This should not happen, but happens with
+        // https://github.com/FluffyKaon/OpenPGP-Card, thus for now assume true
+        if (cardFingerprint == null) {
+            return true;
+        }
+
         // Slot is empty, or contains this key already. PUT KEY operation is safe
         if (Arrays.equals(cardFingerprint, BLANK_FINGERPRINT) ||
-            Arrays.equals(cardFingerprint, fingerprint)) {
+                Arrays.equals(cardFingerprint, fingerprint)) {
             return true;
         }
 
         // Slot already contains a different key; don't overwrite it.
         return false;
-    }
-
-    @Override
-    public void handlePinError() {
-
-        // avoid a loop
-        Preferences prefs = Preferences.getPreferences(this);
-        if (prefs.useDefaultYubiKeyPin()) {
-            toast(getString(R.string.error_pin_nodefault));
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
-        }
-
-        // clear (invalid) passphrase
-        PassphraseCacheService.clearCachedPassphrase(
-                this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
     }
 
 }

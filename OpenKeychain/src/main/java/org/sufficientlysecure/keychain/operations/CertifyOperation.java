@@ -17,15 +17,18 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
@@ -40,17 +43,12 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
+import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
-
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An operation which implements a high level user id certification operation.
@@ -204,23 +202,9 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
         }
 
         // these variables are used inside the following loop, but they need to be created only once
-        HkpKeyserver keyServer = null;
-        ExportOperation exportOperation = null;
-        Proxy proxy = null;
+        UploadOperation uploadOperation = null;
         if (parcel.keyServerUri != null) {
-            keyServer = new HkpKeyserver(parcel.keyServerUri);
-            exportOperation = new ExportOperation(mContext, mProviderHelper, mProgressable);
-            if (cryptoInput.getParcelableProxy() == null) {
-                // explicit proxy not set
-                if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
-                    return new CertifyResult(null,
-                            RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
-                }
-                proxy = Preferences.getPreferences(mContext).getProxyPrefs()
-                        .parcelableProxy.getProxy();
-            } else {
-                proxy = cryptoInput.getParcelableProxy().getProxy();
-            }
+            uploadOperation = new UploadOperation(mContext, mProviderHelper, mProgressable, mCancelled);
         }
 
         // Write all certified keys into the database
@@ -239,11 +223,10 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             mProviderHelper.clearLog();
             SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
 
-            if (exportOperation != null) {
-                ExportResult uploadResult = exportOperation.uploadKeyRingToServer(
-                        keyServer,
-                        certifiedKey,
-                        proxy);
+            if (uploadOperation != null) {
+                UploadKeyringParcel uploadInput =
+                        new UploadKeyringParcel(parcel.keyServerUri, certifiedKey.getMasterKeyId());
+                UploadResult uploadResult = uploadOperation.execute(uploadInput, cryptoInput);
                 log.add(uploadResult, 2);
 
                 if (uploadResult.success()) {
@@ -269,7 +252,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
         }
 
         // since only verified keys are synced to contacts, we need to initiate a sync now
-        ContactSyncAdapterService.requestSync();
+        ContactSyncAdapterService.requestContactsSync();
 
         log.add(LogType.MSG_CRT_SUCCESS, 0);
         if (uploadError != 0) {

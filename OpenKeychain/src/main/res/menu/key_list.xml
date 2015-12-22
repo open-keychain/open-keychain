@@ -26,6 +26,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/menu_key_list_debug_bench"
+        android:title="Debug / Benchmark"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_key_list_debug_read"
         android:title="Debug / DB restore"
         android:visible="false"

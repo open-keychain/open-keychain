@@ -49,7 +49,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private String mAlgorithm;
     private boolean mSecretKey;
     private String mPrimaryUserId;
-    private String mExtraData;
+    private String mKeybaseName;
+    private String mFbUsername;
     private String mQuery;
     private ArrayList<String> mOrigins;
     private Integer mHashCode = null;
@@ -81,7 +82,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeString(mAlgorithm);
         dest.writeByte((byte) (mSecretKey ? 1 : 0));
         dest.writeByte((byte) (mSelected ? 1 : 0));
-        dest.writeString(mExtraData);
+        dest.writeString(mKeybaseName);
+        dest.writeString(mFbUsername);
         dest.writeStringList(mOrigins);
     }
 
@@ -102,7 +104,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mAlgorithm = source.readString();
             vr.mSecretKey = source.readByte() == 1;
             vr.mSelected = source.readByte() == 1;
-            vr.mExtraData = source.readString();
+            vr.mKeybaseName = source.readString();
+            vr.mFbUsername = source.readString();
             vr.mOrigins = new ArrayList<>();
             source.readStringList(vr.mOrigins);
 
@@ -229,12 +232,20 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mPrimaryUserId = uid;
     }
 
-    public String getExtraData() {
-        return mExtraData;
+    public String getKeybaseName() {
+        return mKeybaseName;
     }
 
-    public void setExtraData(String extraData) {
-        mExtraData = extraData;
+    public String getFbUsername() {
+        return mFbUsername;
+    }
+
+    public void setKeybaseName(String keybaseName) {
+        mKeybaseName = keybaseName;
+    }
+
+    public void setFbUsername(String fbUsername) {
+        mFbUsername = fbUsername;
     }
 
     public String getQuery() {

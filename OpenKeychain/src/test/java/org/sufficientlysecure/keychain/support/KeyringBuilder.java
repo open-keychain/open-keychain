@@ -182,7 +182,7 @@ public class KeyringBuilder {
                 createPreferencesSignatureSubpacket()
         };
         SignatureSubpacket[] unhashedData = new SignatureSubpacket[]{
-                new IssuerKeyID(false, KEY_ID.toByteArray())
+                new IssuerKeyID(false, false, KEY_ID.toByteArray())
         };
         byte[] fingerPrint = new BigInteger("522c", 16).toByteArray();
 
@@ -223,7 +223,7 @@ public class KeyringBuilder {
                 new KeyExpirationTime(false, TimeUnit.DAYS.toSeconds(2)),
         };
         SignatureSubpacket[] unhashedData = new SignatureSubpacket[]{
-                new IssuerKeyID(false, KEY_ID.toByteArray())
+                new IssuerKeyID(false, false, KEY_ID.toByteArray())
         };
         byte[] fingerPrint = new BigInteger("234a", 16).toByteArray();
         MPInteger[] signature = new MPInteger[]{

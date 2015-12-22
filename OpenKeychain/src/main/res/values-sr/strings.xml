@@ -4,59 +4,66 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">Отворени кључарник</string>
   <!--title-->
-  <string name="title_encrypt_text">Шифруј</string>
-  <string name="title_encrypt_files">Шифруј</string>
-  <string name="title_decrypt">Дешифруј</string>
+  <string name="title_encrypt_text">Шифровање</string>
+  <string name="title_encrypt_files">Шифровање</string>
+  <string name="title_decrypt">Дешифровање</string>
   <string name="title_add_subkey">Додај поткључ</string>
   <string name="title_edit_key">Уреди кључ</string>
+  <string name="title_linked_create">Направи повезани идентитет</string>
   <string name="title_preferences">Поставке</string>
   <string name="title_api_registered_apps">Апликације</string>
   <string name="title_key_server_preference">ОпенПГП сервери кључева</string>
   <string name="title_change_passphrase">Измена лозинке</string>
-  <string name="title_share_fingerprint_with">Подели отисак са…</string>
-  <string name="title_share_key">Подели кључ преко…</string>
-  <string name="title_share_file">Подели фајл преко…</string>
-  <string name="title_share_message">Подели текст преко…</string>
+  <string name="title_share_fingerprint_with">Подели отисак помоћу…</string>
+  <string name="title_share_key">Подели кључ помоћу…</string>
+  <string name="title_share_file">Подели фајл помоћу…</string>
+  <string name="title_share_message">Подели текст помоћу…</string>
   <string name="title_encrypt_to_file">Шифруј у фајл</string>
   <string name="title_decrypt_to_file">Дешифруј у фајл</string>
   <string name="title_import_keys">Увези кључеве</string>
-  <string name="title_export_key">Направи резерву кључа</string>
-  <string name="title_export_keys">Направи резерву кључева</string>
+  <string name="title_export_key">Резерва кључа</string>
+  <string name="title_export_keys">Резерва кључева</string>
   <string name="title_key_not_found">Кључ није нађен</string>
   <string name="title_send_key">Отпреми на сервер кључева</string>
-  <string name="title_certify_key">Потврда кључа</string>
+  <string name="title_backup">Резерва кључа</string>
+  <string name="title_certify_key">Потврђивање кључа</string>
   <string name="title_key_details">Детаљи кључа</string>
   <string name="title_help">Помоћ</string>
   <string name="title_log_display">Дневник</string>
   <string name="title_exchange_keys">Размена кључева</string>
   <string name="title_advanced_key_info">Додатни подаци</string>
   <string name="title_delete_secret_key">Обрисати ВАШ кључ „%s“?</string>
-  <string name="title_export_log">Извоз дневника</string>
   <string name="title_manage_my_keys">Управљање мојим кључевима</string>
   <!--section-->
   <string name="section_user_ids">Идентитети</string>
   <string name="section_yubikey">Јубикључ</string>
   <string name="section_linked_system_contact">Повезани контакт</string>
-  <string name="section_should_you_trust">Смијете ли да се поуздате у овај кључ?</string>
-  <string name="section_proof_details">Овера доказа</string>
-  <string name="section_cloud_evidence">Докази са клауда</string>
+  <string name="section_keybase_proofs">Keybase.io докази</string>
+  <string name="section_should_you_trust">Смете ли да се поуздате у овај кључ?</string>
+  <string name="section_proof_details">Провера доказа</string>
   <string name="section_keys">Поткључеви</string>
-  <string name="section_cloud_search">Претрага клауда</string>
-  <string name="section_passphrase_cache">Руковање лозинком/ПИНом</string>
-  <string name="section_proxy_settings">Поставке проксија</string>
+  <string name="section_cloud_search">Претрага кључа</string>
+  <string name="section_cloud_search_summary">Сервер кључева, keybase.io</string>
+  <string name="section_passphrase_cache">Лозинке и пинови</string>
+  <string name="section_passphrase_cache_summary">Руковање, корисничко сучеље, време памћења</string>
+  <string name="section_proxy_settings">Анонимност на мрежи</string>
+  <string name="section_proxy_settings_summary">Тор, поставке проксија</string>
   <string name="section_gui">Сучеље</string>
-  <string name="section_sync_settings">Поставке синхронизације</string>
+  <string name="section_sync_settings">Синхронизација</string>
+  <string name="section_sync_settings_summary">Аутоматско ажурирање кључева, повезивање контаката</string>
+  <string name="section_experimental_features">Експерименталне функције</string>
   <string name="section_certify">Потврда</string>
   <string name="section_actions">Радње</string>
   <string name="section_share_key">Кључ</string>
   <string name="section_key_server">Сервер кључева</string>
   <string name="section_fingerprint">Отисак</string>
+  <string name="section_phrases">Фразе</string>
   <string name="section_encrypt">Шифровање</string>
-  <string name="section_decrypt">Дешифруј/овери</string>
+  <string name="section_decrypt">Дешифруј/провери</string>
   <string name="section_current_expiry">Текући истек</string>
   <string name="section_new_expiry">Нови истек</string>
   <!--button-->
-  <string name="btn_decrypt_verify_file">Дешифруј, овери и сачувај фајл</string>
+  <string name="btn_decrypt_verify_file">Дешифруј, провери и сачувај фајл</string>
   <string name="btn_encrypt_share_file">Шифруј и подели фајл</string>
   <string name="btn_encrypt_save_file">Шифруј и сачувај фајл</string>
   <string name="btn_save_file">Сачувај фајл</string>
@@ -71,12 +78,15 @@
   <string name="btn_back">Назад</string>
   <string name="btn_no">Не</string>
   <string name="btn_match">Отисци се поклапају</string>
-  <string name="btn_share_encrypted_signed">Шифруј и подели текст</string>
-  <string name="btn_copy_encrypted_signed">Шифруј и копирај текст</string>
+  <string name="btn_match_phrases">Фразе се поклапају</string>
+  <string name="btn_share_encrypted_signed">Шифруј/потпиши и подели текст</string>
+  <string name="btn_copy_encrypted_signed">Шифруј/потпиши и копирај текст</string>
+  <string name="btn_paste_encrypted_signed">Шифруј/потпиши и налепи текст</string>
   <string name="btn_view_cert_key">Прикажи кључ за оверавање</string>
   <string name="btn_create_key">Направи кључ</string>
   <string name="btn_add_files">Додај фајл(ове)</string>
-  <string name="btn_share_decrypted_text">Подели дешифровани текст</string>
+  <string name="btn_share_decrypted_text">Дели</string>
+  <string name="btn_open_with">Отвори помоћу…</string>
   <string name="btn_copy_decrypted_text">Копирај дешифровани текст</string>
   <string name="btn_decrypt_clipboard">Учитај са клипборда</string>
   <string name="btn_decrypt_files">Изабери фајл</string>
@@ -87,10 +97,12 @@
   <string name="btn_add_keyserver">Додај</string>
   <string name="btn_save_default">Сачувај за подразумевано</string>
   <string name="btn_saved">Сачувано!</string>
+  <string name="btn_not_matching">Не поклапа се</string>
+  <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Поставке</string>
   <string name="menu_help">Помоћ</string>
-  <string name="menu_export_key">Направи резерву у фајл</string>
+  <string name="menu_export_key">Направи резерву кључа</string>
   <string name="menu_delete_key">Обриши кључ</string>
   <string name="menu_manage_keys">Управљај мојим кључевима</string>
   <string name="menu_search">Претрага</string>
@@ -101,8 +113,6 @@
   <string name="menu_export_all_keys">Извези све кључеве</string>
   <string name="menu_update_all_keys">Ажурирај све кључеве</string>
   <string name="menu_advanced">Додатни подаци</string>
-  <string name="menu_certify_fingerprint">Потврди поређењем отисака</string>
-  <string name="menu_export_log">Извези дневник</string>
   <string name="menu_keyserver_add">Додај</string>
   <!--label-->
   <string name="label_message">Текст</string>
@@ -111,6 +121,7 @@
   <string name="label_file_colon">Фајл:</string>
   <string name="label_no_passphrase">Без лозинке</string>
   <string name="label_passphrase">Лозинка</string>
+  <string name="label_pin">ПИН</string>
   <string name="label_unlock">Откључавам…</string>
   <string name="label_passphrase_again">Лозинка поново</string>
   <string name="label_show_passphrase">Прикажи лозинку</string>
@@ -119,9 +130,7 @@
   <string name="label_file_ascii_armor">Омогући Аски оклоп</string>
   <string name="label_write_version_header">Упиши да користим Отворени кључарник</string>
   <string name="label_write_version_header_summary">Уписује „OpenKeychain v3.0“ у ОпенПГП потписе, шифровани текст и извезене кључеве</string>
-  <string name="label_use_default_yubikey_pin">Користи подразумевани Јубикључ ПИН</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Користи бројчану тастатуру за Јубикључ ПИН</string>
-  <string name="label_label_use_default_yubikey_pin_summary">Користи подразумевани ПИН (123456) за приступ Јубикључевима преко НФЦ-а</string>
   <string name="label_asymmetric_from">Потпиши помоћу:</string>
   <string name="label_to">Шифруј за:</string>
   <string name="label_delete_after_encryption">Обриши фајлове након шифровања</string>
@@ -145,7 +154,7 @@
   <string name="label_name">Име</string>
   <string name="label_comment">Коментар</string>
   <string name="label_email">Е-адреса</string>
-  <string name="label_send_key">Синхронизуј са клаудом</string>
+  <string name="label_send_key">Синхронизуј са интернетом</string>
   <string name="label_fingerprint">Отисак</string>
   <string name="expiry_date_dialog_title">Датум истицања</string>
   <string name="label_keyservers_title">Сервери кључева</string>
@@ -155,22 +164,29 @@
   <string name="label_enable_compression">Омогући компресију</string>
   <string name="label_encrypt_filenames">Шифруј имена фајлова</string>
   <string name="label_hidden_recipients">Сакриј примаоце</string>
-  <string name="label_verify_keyserver">Овери сервер кључева</string>
-  <string name="label_enter_keyserver_url">Унесите УРЛ сервера кључева</string>
+  <string name="label_verify_keyserver_connection">Тестирај везу</string>
+  <string name="label_only_trusted_keyserver">Само поуздани сервер кључева</string>
+  <string name="label_enter_keyserver_url">УРЛ</string>
   <string name="label_keyserver_dialog_delete">Обриши сервер кључева</string>
   <string name="label_theme">Тема</string>
-  <string name="pref_keyserver">ОпенПГП сервера кључева</string>
+  <string name="pref_keyserver">Сервери ОпенПГП кључева</string>
   <string name="pref_keyserver_summary">Тражи кључеве на изабраним ОпенПГП серверима кључева (ХКП протокол)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Тражи кључеве на keybase.io</string>
-  <string name="label_sync_settings_keyserver_title">Аутоматски ажурирај кључеве</string>
-  <string name="label_sync_settings_keyserver_summary_on">Кључеви старији од седам дана се ажурирају са пожељног сервера кључева</string>
+  <string name="label_sync_settings_keyserver_title">Аутоматско ажурирање кључева</string>
+  <string name="label_sync_settings_keyserver_summary_on">Кључеви се ажурирају са пожељног сервера кључева свака три дана</string>
   <string name="label_sync_settings_keyserver_summary_off">Кључеви се не ажурирају аутоматски</string>
-  <string name="label_sync_settings_contacts_title">Синхронизуј контакте са кључевима</string>
-  <string name="label_sync_settings_contacts_summary_on">Кључеви повезани са контактима са поклапајућим е-адресама, одвија се у потпуности ван везе</string>
+  <string name="label_sync_settings_contacts_title">Повежи кључеве са контактима</string>
+  <string name="label_sync_settings_contacts_summary_on">Повезивање кључева са контактима на основу имена и е-адреса. Одвија се у потпуности ван везе на вашем уређају.</string>
   <string name="label_sync_settings_contacts_summary_off">Нови кључеви неће бити повезани са контактима</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Аутоматски ажурирај кључеве</string>
+  <string name="keyserver_sync_settings_title">Аутоматско ажурирање кључева</string>
+  <string name="label_experimental_settings_desc_title">Упозорење</string>
+  <string name="label_experimental_settings_word_confirm_summary">Потврђивање кључева помоћу фраза уместо помоћу хексадецималних отисака</string>
+  <string name="label_experimental_settings_linked_identities_title">Повезани идентитети</string>
+  <string name="label_experimental_settings_keybase_title">Keybase.io докази</string>
+  <string name="label_experimental_settings_keybase_summary">Тражење доказа кључева на keybase.io и њихов приказ приликом приказивања кључа</string>
+  <string name="label_experimental_settings_theme_summary">(Иконе и многи екрани још нису прилагођени за тамну тему)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Омогући Тор</string>
   <string name="pref_proxy_tor_summary">Захтева Орбот</string>
@@ -198,8 +214,8 @@
   <string name="orbot_start_dialog_start">Покрени Орбот</string>
   <string name="orbot_start_dialog_cancel">Одустани</string>
   <string name="orbot_start_dialog_ignore_tor">Не користи Тор</string>
-  <string name="user_id_no_name">&lt;нема имена&gt;</string>
-  <string name="none">&lt;нема&gt;</string>
+  <string name="user_id_no_name"><![CDATA[<нема имена>]]></string>
+  <string name="none"><![CDATA[<ништа>]]></string>
   <plurals name="n_keys">
     <item quantity="one">%d кључ</item>
     <item quantity="few">%d кључа</item>
@@ -225,6 +241,7 @@
   <string name="choice_4hours">4 сата</string>
   <string name="choice_8hours">8 сати</string>
   <string name="choice_forever">заувек</string>
+  <string name="choice_select_cert">Изаберите кључ</string>
   <string name="dsa">ДСА</string>
   <string name="elgamal">Елгамал</string>
   <string name="rsa">РСА</string>
@@ -245,14 +262,14 @@
   <string name="no_filemanager_installed">Нема подесног менаџера фајлова.</string>
   <string name="passphrases_do_not_match">Лозинке се не поклапају.</string>
   <string name="passphrase_must_not_be_empty">Унесите лозинку.</string>
-  <string name="passphrase_for_symmetric_encryption">Симетрично шифровање.</string>
+  <string name="passphrase_for_symmetric_encryption">Унесите лозинку</string>
+  <string name="passphrase_for_backup">Унесите кôд за резерву</string>
   <string name="passphrase_for">Унесите лозинку за „%s“</string>
   <string name="pin_for">Унесите ПИН за „%s“</string>
   <string name="yubikey_pin_for">Унесите ПИН за приступ Јубикључу за „%s“</string>
   <string name="nfc_text">Држите Јубикључ на НФЦ ознаци на полеђини вашег уређаја.</string>
   <string name="nfc_wait">Држите Јубикључ на полеђини!</string>
   <string name="nfc_finished">Склоните сада Јубикључ.</string>
-  <string name="nfc_try_again_text">Склоните сада Јубикључ и тапните на ПОКУШАЈ ПОНОВО.</string>
   <string name="file_delete_confirmation_title">Обрисати оригиналне фајлове?</string>
   <string name="file_delete_confirmation">Следећи фајлови ће бити обрисани:%s</string>
   <string name="file_delete_successful">%1$d од %2$d фајлова је обрисано.%3$s</string>
@@ -268,7 +285,7 @@
   <string name="specify_backup_dest_secret_single">Биће направљена потпуна резерва вашег кључа, наведите одредишни фајл.\nУПОЗОРЕЊЕ: Фајл ће бити пребрисан ако већ постоји!</string>
   <string name="specify_backup_dest_secret">Биће направљена потпуна резерва свих кључева укључујући и ваше, наведите одредишни фајл.\nУПОЗОРЕЊЕ: Фајл ће бити пребрисан ако већ постоји!</string>
   <string name="key_deletion_confirmation_multi">Желите ли заиста да обришете све изабране кључеве?</string>
-  <string name="secret_key_deletion_confirmation">Након брисања нећете моћи да читате поруке шифроване овим кључем и изгубићете све потврде кључева направљене њиме!</string>
+  <string name="secret_key_deletion_confirmation">Након брисања нећете моћи да дешифрујете поруке или фајлове шифроване овим кључем и изгубићете све потврде кључева направљене њиме!</string>
   <string name="public_key_deletetion_confirmation">Да обришем кључ „%s“?</string>
   <string name="also_export_secret_keys">Такође извези тајне кључеве</string>
   <string name="reinstall_openkeychain">Наишли сте на познату грешку у Андроиду. Поново инсталирајте Отворени кључарник ако желите да повежете ваше контакте са кључевима.</string>
@@ -276,8 +293,7 @@
   <string name="keys_exported">Успешно извезено %d кључева.</string>
   <string name="no_keys_exported">Ниједан кључ није извезен.</string>
   <string name="key_creation_el_gamal_info">Напомена: само поткључеви подржавају Елгамал.</string>
-  <string name="key_not_found">Нисам могао да нађем кључ %08X.</string>
-  <string name="specify_file_to_export_log_to">Наведите у који фајл да извезем.\nУПОЗОРЕЊЕ: Фајл ће бити пребрисан ако постоји.</string>
+  <string name="key_not_found">Не могох да нађем кључ %08X.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d лош тајни кључ игнорисан. Можда сте извезли са аргументом\n --export-secret-subkeys\nУместо тога извезите са\n --export-secret-keys\"</item>
     <item quantity="few">%d лоша тајна кључа игнорисана. Можда сте извезли са аргументом\n --export-secret-subkeys\nУместо тога извезите са\n --export-secret-keys\"</item>
@@ -288,7 +304,6 @@
   <string name="key_copied_to_clipboard">Кључ је копиран на клипборд!</string>
   <string name="fingerprint_copied_to_clipboard">Отисак је копиран на клипборд!</string>
   <string name="select_key_to_certify">Изаберите кључ којим ћете извршити потврду!</string>
-  <string name="key_too_big_for_sharing">Кључ је превелик да би се делио на овај начин!</string>
   <string name="text_copied_to_clipboard">Текст је копиран на клипборд!</string>
   <!--errors
          no punctuation, all lowercase,
@@ -307,7 +322,7 @@
   <string name="error_invalid_data">нема исправног шифрованог или потписаног ОпенПГП садржаја!</string>
   <string name="error_integrity_check_failed">провера интегритета није успела! Подаци су измењени!</string>
   <string name="error_wrong_passphrase">погрешна лозинка</string>
-  <string name="error_could_not_extract_private_key">нисам могао да извучем лични кључ</string>
+  <string name="error_could_not_extract_private_key">не могох да извучем лични кључ</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Потребан вам је Андроид 4.1 да бисте користили Андроидову могућност НФЦ Снопа!</string>
   <string name="error_nfc_needed">НФЦ мора бити укључен!</string>
@@ -377,28 +392,24 @@
   <string name="progress_encrypting">шифрујем податке…</string>
   <string name="progress_decrypting">дешифрујем податке…</string>
   <string name="progress_preparing_signature">припремам потпис…</string>
-  <string name="progress_generating_signature">генеришем потпис…</string>
   <string name="progress_processing_signature">обрађујем потпис…</string>
-  <string name="progress_verifying_signature">оверавам потпис…</string>
+  <string name="progress_generating_signature">генеришем потпис…</string>
+  <string name="progress_verifying_signature">проверавам потпис…</string>
   <string name="progress_signing">потписујем…</string>
   <string name="progress_certifying">оверавам…</string>
   <string name="progress_reading_data">читам податке…</string>
   <string name="progress_finding_key">тражим кључ…</string>
   <string name="progress_decompressing_data">распакујем податке…</string>
-  <string name="progress_verifying_integrity">оверавам интегритет…</string>
+  <string name="progress_verifying_integrity">проверавам интегритет…</string>
   <string name="progress_deleting_securely">бришем „%s“ сигурно…</string>
   <string name="progress_deleting">бришем кључеве…</string>
   <string name="progress_con_saving">учвршћивање: уписујем у кеш…</string>
   <string name="progress_con_reimport">учвршћивање: поново увозим…</string>
-  <string name="progress_verifying_keyserver_url">оверавам сервер кључева…</string>
+  <string name="progress_verifying_keyserver_connection">проверавам везу…</string>
   <string name="progress_starting_orbot">Покрећем Орбот…</string>
   <!--action strings-->
   <string name="hint_cloud_search_hint">Тражи преко имена, е-адресе…</string>
   <!--key bit length selections-->
-  <string name="key_size_512">512</string>
-  <string name="key_size_768">768</string>
-  <string name="key_size_1024">1024</string>
-  <string name="key_size_1536">1536</string>
   <string name="key_size_2048">2048</string>
   <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
@@ -428,7 +439,7 @@
   <string name="help_about_version">Издање:</string>
   <!--Import-->
   <string name="import_tab_keyserver">Сервер кључева</string>
-  <string name="import_tab_cloud">Клауд претрага</string>
+  <string name="import_tab_cloud">Претрага кључа</string>
   <string name="import_tab_direct">Фајл/клипборд</string>
   <string name="import_tab_qr_code">Бар-кôд/НФЦ</string>
   <string name="import_import">Увези изабране кључеве</string>
@@ -445,12 +456,12 @@
   <string name="with_cancelled">, док није отказано</string>
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
-    <item quantity="one">Успешно увезен %1$d кључ</item>
+    <item quantity="one">Успешно увезен један кључ</item>
     <item quantity="few">Успешно увезена %1$d кључа</item>
     <item quantity="other">Успешно увезено %1$d кључева</item>
   </plurals>
   <plurals name="import_keys_added_and_updated_2">
-    <item quantity="one">и ажуриран %1$d кључ%2$s.</item>
+    <item quantity="one">и ажуриран један кључ%2$s.</item>
     <item quantity="few">и ажурирана %1$d кључа%2$s.</item>
     <item quantity="other">и ажурирано %1$d кључева%2$s.</item>
   </plurals>
@@ -506,9 +517,9 @@
   <string name="revoke_cancelled">Радња опозива је отказана.</string>
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
-    <item quantity="one">Успешно оверен кључ%2$s.</item>
-    <item quantity="few">Успешно оверена %1$d кључа%2$s.</item>
-    <item quantity="other">Успешно оверено %1$d кључева%2$s.</item>
+    <item quantity="one">Успешно потврђен један кључ%2$s.</item>
+    <item quantity="few">Успешно потврђена %1$d кључа%2$s.</item>
+    <item quantity="other">Успешно потврђено %1$d кључева%2$s.</item>
   </plurals>
   <plurals name="certify_keys_with_errors">
     <item quantity="one">Оверавање није успело!</item>
@@ -561,7 +572,7 @@
   <string name="api_select_sign_key_text">Изаберите ваш постојећи кључ или направите нови.</string>
   <string name="api_select_keys_text">Ниједан од дозвољених кључева није у стању да дешифрује садржај. Изаберите дозвољене кључеве.</string>
   <!--Share-->
-  <string name="share_qr_code_dialog_title">Поделите бар-кôдом</string>
+  <string name="share_qr_code_dialog_title">Дељење помоћу бар-кôда</string>
   <string name="share_nfc_dialog">Поделите преко НФЦ-а</string>
   <!--retry upload dialog-->
   <string name="retry_up_dialog_title">Отпремање није успело</string>
@@ -584,40 +595,36 @@
   </plurals>
   <string name="key_list_empty_text1">Нема нађених кључева!</string>
   <string name="key_list_filter_show_all">Прикажи све кључеве</string>
-  <string name="key_list_filter_show_certified">Прикажи само оверене кључеве</string>
+  <string name="key_list_filter_show_certified">Прикажи само потврђене кључеве</string>
+  <string name="key_list_fab_qr_code">Очитај бар-кôд</string>
+  <string name="key_list_fab_search">Претрага кључа</string>
+  <string name="key_list_fab_import">Увези из фајла</string>
   <!--Key view-->
   <string name="key_view_action_edit">Уреди кључ</string>
   <string name="key_view_action_encrypt">Шифруј текст</string>
   <string name="key_view_action_encrypt_files">фајлови</string>
   <string name="key_view_action_certify">Потврди кључ</string>
   <string name="key_view_action_update">Ажурирај са сервера кључева</string>
-  <string name="key_view_action_share_with">Подели преко…</string>
-  <string name="key_view_action_share_nfc">Подели преко НФЦ</string>
+  <string name="key_view_action_share_with">Дели помоћу…</string>
+  <string name="key_view_action_share_nfc">Дели преко НФЦ</string>
   <string name="key_view_action_upload">Отпреми на сервер кључева</string>
   <string name="key_view_tab_main">Главни подаци</string>
-  <string name="key_view_tab_share">Подела</string>
+  <string name="key_view_tab_share">Дељење</string>
   <string name="key_view_tab_keys">Поткључеви</string>
   <string name="key_view_tab_certs">Сертификати</string>
   <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Опозван</string>
   <string name="user_id_info_revoked_text">Власник кључа је опозвао овај идентитет. Више није исправан.</string>
-  <string name="user_id_info_certified_title">Оверен</string>
-  <string name="user_id_info_certified_text">Овај идентитет сте ви оверили.</string>
-  <string name="user_id_info_uncertified_title">Није оверен</string>
-  <string name="user_id_info_uncertified_text">Овај идентитет још није оверен. Не можете бити сигурни да идентитет заиста одговара одређеној особи.</string>
+  <string name="user_id_info_certified_title">Потврђен</string>
+  <string name="user_id_info_certified_text">Овај идентитет сте ви потврдили.</string>
+  <string name="user_id_info_uncertified_title">Није потврђен</string>
+  <string name="user_id_info_uncertified_text">Овај идентитет још није потврђен. Не можете бити сигурни да идентитет заиста одговара одређеној особи.</string>
   <string name="user_id_info_invalid_title">Неисправан</string>
   <string name="user_id_info_invalid_text">Нешто није у реду са овим идентитетом!</string>
   <!--Key trust-->
-  <string name="key_trust_already_verified">Већ сте потврдили овај кључ!</string>
-  <string name="key_trust_it_is_yours">Ово је један од ваших кључева!</string>
-  <string name="key_trust_maybe">Кључ није ни опозван нити је истекао.\nЈош га нисте потврдили, али можете да се поуздате у њега ако желите.</string>
-  <string name="key_trust_revoked">Власник је опозвао овај кључ. Не бисте требали да се поуздате у њега.</string>
-  <string name="key_trust_expired">Овај кључ је истекао. Не бисте требали да се поуздате у њега.</string>
-  <string name="key_trust_old_keys">Можда је у реду користити овај кључ за дешифровање старе поруке из времена кад је био важећи.</string>
-  <string name="key_trust_no_cloud_evidence">Нема доказа са клауда о поузданости овог кључа.</string>
+  <string name="key_trust_no_cloud_evidence">Нема доказа на интернету о веродостојности овог кључа.</string>
   <string name="key_trust_start_cloud_search">Почни претрагу</string>
-  <string name="key_trust_results_prefix">Keybase.io нуди „доказе“ који потврђују да власник овог кључа: </string>
-  <string name="key_trust_header_text">Напомена: Докази са Keybase.io су експериментална функција Отвореног кључарника. Препорука је да очитавате бар-кôдове или размењујете кључеве преко НФЦ-а како бисте их потврдили.</string>
+  <string name="key_trust_results_prefix">Keybase.io даје „доказе“ који потврђују да власник овог кључа: </string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">Објављује на Твитеру као %s</string>
   <string name="keybase_narrative_github">Познат је на Гитхабу као %s</string>
@@ -627,7 +634,7 @@
   <string name="keybase_narrative_coinbase">Познат на Коинбејсу као %s</string>
   <string name="keybase_narrative_hackernews">Објављује на Хакер Њуз као %s</string>
   <string name="keybase_narrative_unknown">Непознат тип доказа %s</string>
-  <string name="keybase_proof_failure">Нажалост, овај доказ не може да се овери.</string>
+  <string name="keybase_proof_failure">Нажалост, овај доказ не може бити проверен.</string>
   <string name="keybase_unknown_proof_failure">Непрепознат проблем са провером доказа</string>
   <string name="keybase_problem_fetching_evidence">Проблем са доказом</string>
   <string name="keybase_key_mismatch">Отисак кључа се не поклапа са оним у објави доказа</string>
@@ -635,7 +642,7 @@
   <string name="keybase_no_prover_found">Нема провере доказа за</string>
   <string name="keybase_message_payload_mismatch">Дешифрована објава доказа се не поклапа са очекиваном вредношћу</string>
   <string name="keybase_message_fetching_data">Добављам доказ</string>
-  <string name="keybase_proof_succeeded">Овај доказ је оверен!</string>
+  <string name="keybase_proof_succeeded">Овај доказ је проверен!</string>
   <string name="keybase_a_post">Објава</string>
   <string name="keybase_fetched_from">добављен/а са</string>
   <string name="keybase_for_the_domain">за домен</string>
@@ -646,7 +653,7 @@
   <string name="keybase_github_proof">гист</string>
   <string name="keybase_reddit_proof">ЈСОН фајл</string>
   <string name="keybase_reddit_attribution">приписује Редит за</string>
-  <string name="keybase_verify">Овери</string>
+  <string name="keybase_verify">Провери</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Измени лозинку</string>
   <string name="edit_key_action_add_identity">Додај идентитет</string>
@@ -675,7 +682,7 @@
   <string name="edit_key_error_bad_nfc_size">Смарт картица не подржава ову величину кључа!</string>
   <string name="edit_key_error_bad_nfc_stripped">Не могу да преместим кључ на смарт картицу (или је огољен или је „преусмери-на-картицу“)!</string>
   <!--Create key-->
-  <string name="create_key_upload">Синхронизуј са клаудом</string>
+  <string name="create_key_upload">Синхронизуј са интернетом</string>
   <string name="create_key_empty">Ово поље је обавезно</string>
   <string name="create_key_passphrases_not_equal">Лозинке се не поклапају</string>
   <string name="create_key_final_text">Унели сте следећи идентитет:</string>
@@ -691,13 +698,14 @@
   <string name="create_key_add_email_text">Додатне е-адресе се такође односе на овај кљул и могу да се користе за безбедну комуникацију.</string>
   <string name="create_key_email_already_exists_text">Е-адреса је већ додата</string>
   <string name="create_key_email_invalid_email">Формат е-адресе није исправан</string>
-  <string name="create_key_yubi_key_pin_text">Запамтите ПИН, биће вам потребан за касније коришћење Јубикључа. Запишите администраторски ПИН и сачувајте га на безбедном месту.</string>
+  <string name="create_key_yubi_key_pin_text">Одредите ПИН од 6 бројки.</string>
+  <string name="create_key_yubi_key_admin_pin_text">Запишите администраторски ПИН и успремите га на сигурно место (потребан је ако унесете погрешан ПИН 3 пута).</string>
   <string name="create_key_yubi_key_pin">ПИН</string>
   <string name="create_key_yubi_key_admin_pin">Администраторски ПИН</string>
-  <string name="create_key_yubi_key_pin_repeat_text">Унесите ПИН и администраторски ПИН да бисте наставили.</string>
   <string name="create_key_yubi_key_pin_repeat">Поновите ПИН</string>
-  <string name="create_key_yubi_key_admin_pin_repeat">Поновите администраторски ПИН</string>
   <string name="create_key_yubi_key_pin_not_correct">ПИН није тачан!</string>
+  <string name="create_key_yubi_key_pin_too_short">ПИН мора бити од најмање 6 бројки!</string>
+  <string name="create_key_yubi_key_pin_insecure">Одредите безбедан ПИН, не 000000, 123456 или сличне комбинације.</string>
   <!--View key-->
   <string name="view_key_revoked">Опозван: кључ више не смије бити коришћен!</string>
   <string name="view_key_expired">Истекао: контакт мора да продужи ваљаност кључа!</string>
@@ -709,8 +717,8 @@
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Додај сервер кључева</string>
   <string name="edit_keyserver_dialog_title">Промени сервер кључева</string>
-  <string name="add_keyserver_verified">Сервер кључева оверен!</string>
-  <string name="add_keyserver_without_verification">Сервер кључева додат без оверивања.</string>
+  <string name="add_keyserver_connection_verified">Веза проверена!</string>
+  <string name="add_keyserver_without_verification">Сервер кључева додат без провере.</string>
   <string name="add_keyserver_invalid_url">Неисправан УРЛ!</string>
   <string name="add_keyserver_connection_failed">Неуспех повезивања са сервером кључева. Проверите УРЛ и вашу везу са интернетом.</string>
   <string name="keyserver_preference_deleted">%s обрисан</string>
@@ -722,7 +730,7 @@
   <string name="drawer_open">Отвори навигациону фиоку</string>
   <string name="drawer_close">Затвори навигациону фиоку</string>
   <string name="my_keys">Моји кључеви</string>
-  <string name="nav_backup">Резерва</string>
+  <string name="nav_backup">Резерва/враћање</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Укуцајте текст</string>
   <!--certs-->
@@ -748,6 +756,8 @@
   <string name="msg_ip_error_op_exc">Радња није успела због грешке базе података</string>
   <string name="msg_ip_error_remote_ex">Радња није успела због унутрашње грешке</string>
   <string name="msg_ip">Увозим јавни привезак %s</string>
+  <string name="msg_ip_fingerprint_error">Отисак увезеног кључа не одговара очекиваном!</string>
+  <string name="msg_ip_fingerprint_ok">Провера отиска је у реду</string>
   <string name="msg_ip_insert_keyring">Кодирам податке привеска</string>
   <string name="msg_ip_insert_keys">Рашчлањујем кључеве</string>
   <string name="msg_ip_prepare">Припремам радње на бази података</string>
@@ -772,7 +782,7 @@
   <string name="msg_ip_master_flags_xxxa">Заставице главног: аутентификовање</string>
   <string name="msg_ip_master_flags_xxxx">Заставице главног: ниједна</string>
   <string name="msg_ip_merge_public">Спајам увезене податке у постојећи јавни привезак</string>
-  <string name="msg_ip_merge_secret">Спајам увезене податке у постојећи јавни привезак</string>
+  <string name="msg_ip_merge_secret">Спајам увезене податке у постојећи тајни привезак</string>
   <string name="msg_ip_subkey">Обрађујем поткључ %s</string>
   <string name="msg_ip_subkey_expired">Поткључ је истекао %s</string>
   <string name="msg_ip_subkey_expires">Поткључ истиче %s</string>
@@ -841,7 +851,7 @@
   <string name="msg_is_importing_subkeys">Обрађујем тајне поткључеве</string>
   <string name="msg_is_error_io_exc">Грешка кодирања привеска</string>
   <string name="msg_is_merge_public">Спајам увезене податке у постојећи јавни привезак</string>
-  <string name="msg_is_merge_secret">Спајам увезене податке у постојећи јавни привезак</string>
+  <string name="msg_is_merge_secret">Спајам увезене податке у постојећи тајни привезак</string>
   <string name="msg_is_merge_special">Спајам податке сопствених сертификата из јавног привеска</string>
   <string name="msg_is_pubring_generate">Генеришем јавни привезак од тајног привеска</string>
   <string name="msg_is_subkey_nonexistent">Поткључ %s није доступан у тајном кључу</string>
@@ -913,6 +923,7 @@
   <string name="msg_kc_uid_no_cert">Није нађен исправан сопствени сертификат за кориснички ИД „%s“, уклањам из прстена</string>
   <string name="msg_kc_uid_remove">Уклањам неисправан кориснички ИД „%s“</string>
   <string name="msg_kc_uid_dup">Уклањам дупли кориснички ИД „%s“. Привезак је садржао два. Ово може да доведе до недостајућих сертификата!</string>
+  <string name="msg_kc_uid_too_many">Уклањам кориснички ИД „%s“. Више од 100 корисничких ИД-а се не увозе!</string>
   <string name="msg_kc_uid_warn_encoding">ИД корисника није потврђен као УТФ-8!</string>
   <string name="msg_kc_uat_jpeg">Обрађујем кориснички атрибут ЈПЕГ типа</string>
   <string name="msg_kc_uat_unknown">Обрађујем кориснички атрибут непознатог типа</string>
@@ -944,7 +955,7 @@
   <string name="msg_cr_error_no_user_id">Привесци морају садржати бар један кориснички ИД!</string>
   <string name="msg_cr_error_no_certify">Главни кључ мора имати заставицу овере!</string>
   <string name="msg_cr_error_null_expiry">Датум истицања не може бити „исти као пре“ на стварању кључа. Ово је грешка у програмирању, поднесите извештај о грешци!</string>
-  <string name="msg_cr_error_keysize_512">Величина кључа мора бити већа или једнака 512!</string>
+  <string name="msg_cr_error_keysize_2048">Величина кључа мора бити већа или једнака 2048!</string>
   <string name="msg_cr_error_no_curve">Није наведена величина кључа! Ово је грешка у програмирању, поднесите извештај о грешци!</string>
   <string name="msg_cr_error_no_keysize">Није наведена елиптичка крива! Ово је грешка у програмирању, поднесите извештај о грешци!</string>
   <string name="msg_cr_error_internal_pgp">Унутрашња ОпенПГП грешка!</string>
@@ -985,7 +996,7 @@
   <string name="msg_mf_admin_pin">Мењам администраторски ПИН на картици</string>
   <string name="msg_mf_passphrase_key">Поново шифрујем поткључ %s новом лозинком</string>
   <string name="msg_mf_passphrase_empty_retry">Постављање нове лозинке није успело, покушавам поново са празном старом лозинком</string>
-  <string name="msg_mf_passphrase_fail">Не могу да променим лозинку за поткључ! (Да ли се разликује од оне у осталим кључевима?)</string>
+  <string name="msg_mf_passphrase_fail">Не могох да променим лозинку за поткључ! (Да ли се разликује од оне у осталим кључевима?)</string>
   <string name="msg_mf_primary_replace_old">Замењујем сертификат претходног примарног корисничког ИД-а</string>
   <string name="msg_mf_primary_new">Генеришем нови сертификат за нови примарни кориснички ИД</string>
   <string name="msg_mf_restricted_mode">Пребацујем на ограничени режим рада</string>
@@ -1026,9 +1037,9 @@
   <string name="msg_con_error_io_secret">У/И грешка при упису тајних кључева у кеш!</string>
   <string name="msg_con_error_public">Грешка поновног увоза јавних кључева!</string>
   <string name="msg_con_error_secret">Грешка поновног увоза тајних кључева!</string>
-  <string name="msg_con_recover">Настављам процес учвршћивања</string>
+  <string name="msg_con_recover">Настављам поступак учвршћивања</string>
   <string name="msg_con_recursive">Прескачем рекурзивно учвршћивање</string>
-  <string name="msg_con_recover_unknown">Настављам процес учвршћивања из непознатог стања</string>
+  <string name="msg_con_recover_unknown">Настављам поступак учвршћивања из непознатог стања</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="one">Поново увозим %d јавни кључ</item>
     <item quantity="few">Поново увозим %d јавна кључа</item>
@@ -1063,6 +1074,7 @@
   <string name="msg_ek_error_dummy">Не могу да уредим кључ са огољеним главним кључем!</string>
   <string name="msg_ek_error_not_found">Кључ није нађен!</string>
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_askip_unavailable">Кључ није доступан, прескачем…</string>
   <string name="msg_dc_askip_no_key">Подаци нису шифровани познатим кључем, прескачем…</string>
   <string name="msg_dc_askip_not_allowed">Подаци нису шифровани дозвољеним кључем, прескачем…</string>
   <string name="msg_dc_asym">Нађен блок асиметрично шифрованих података за кључ %s</string>
@@ -1075,7 +1087,7 @@
   <string name="msg_dc_clear_meta_size_unknown">Величина није позната</string>
   <string name="msg_dc_clear_meta_time">Време измене: %s</string>
   <string name="msg_dc_clear_signature_bad">Провера потписа НИЈЕ У РЕДУ!</string>
-  <string name="msg_dc_clear_signature_check">Оверавам податке потписа</string>
+  <string name="msg_dc_clear_signature_check">Проверавам податке потписа</string>
   <string name="msg_dc_clear_signature_ok">Провера потписа је у реду</string>
   <string name="msg_dc_clear_signature">Уписујем податке потписа за касније</string>
   <string name="msg_dc_clear">Обрађујем податке обичног текста</string>
@@ -1089,10 +1101,11 @@
   <string name="msg_dc_error_input">Грешка отварања тока улазних података!</string>
   <string name="msg_dc_error_no_data">Шифровани подаци нису нађени у току!</string>
   <string name="msg_dc_error_no_key">Подаци шифровани познатим тајним кључем нису нађени у току!</string>
+  <string name="msg_dc_error_no_signature">Недостају подаци потписа!</string>
   <string name="msg_dc_error_pgp_exception">Наиђох на ОпенПГП изузетак током радње!</string>
   <string name="msg_dc_integrity_check_ok">Провера интегритета је у реду!</string>
   <string name="msg_dc_ok_meta_only">Само су метаподаци затражени, прескачем дешифровање</string>
-  <string name="msg_dc_ok">Дешифровање/оверавање завршено</string>
+  <string name="msg_dc_ok">Дешифровање/проверавање завршено</string>
   <string name="msg_dc_pass_cached">Користим лозинку из кеша</string>
   <string name="msg_dc_pending_nfc">Потребан је НФЦ токен, захтевам унос корисника…</string>
   <string name="msg_dc_pending_passphrase">Потребна је лозинка, захтевам унос корисника…</string>
@@ -1104,20 +1117,22 @@
   <string name="msg_dc_trail_sym">Наиђох на пратеће симетрично шифроване податке</string>
   <string name="msg_dc_trail_unknown">Наиђох на пратеће податке непознатог типа</string>
   <string name="msg_dc_unlocking">Откључавам тајни кључ</string>
-  <string name="msg_dc_insecure_symmetric_encryption_algo">Коришћен је небезбедан алгоритам шифровања. Ово може да се деси ако је апликација за застарела, или услед напада.</string>
+  <string name="msg_dc_insecure_encryption_key">Коришћен је небезбедан кључ за шифровање. Ово може да се деси ако је кључ застарео, или услед напада.</string>
+  <string name="msg_dc_insecure_symmetric_encryption_algo">Коришћен је небезбедан алгоритам шифровања. Ово може да се деси ако је апликација застарела, или услед напада.</string>
   <string name="msg_dc_insecure_hash_algo">Коришћен је небезбедан алгоритам хеша. Ово може да се деси ако је апликација застарела, или услед напада.</string>
   <string name="msg_dc_insecure_mdc_missing">Недостаје пакет Кôда детекције измена (МДЦ)! Ово може да се деси ако је апликација за шифровање застарела, или услед напада старијег издања.</string>
-  <string name="msg_dc_insecure_key">Небезбедан кључ: или је дужина РСА/ДСА/Елгамал кључа прекратка или је ЕЦЦ кривуља/алгоритам сматрана небезбедном! Ово може да се деси ако је апликација застарела, или услед напада.</string>
+  <string name="msg_dc_insecure_key">Небезбедан кључ: или је дужина РСА/ДСА/Елгамал кључа прекратка или се ЕЦЦ кривуља/алгоритам сматра небезбедном! Ово може да се деси ако је апликација застарела, или услед напада.</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">Почињем проверу потписа</string>
-  <string name="msg_vl_error_no_siglist">Нема списка потписа у потписаним дословним подацима</string>
-  <string name="msg_vl_error_wrong_key">Порука није потписана правим кључем</string>
+  <string name="msg_vl_error_no_siglist">Нема списка потписа у потписаним дословним подацима!</string>
+  <string name="msg_vl_error_wrong_key">Порука није потписана очекиваним кључем!</string>
+  <string name="msg_vl_error_no_signature">Недостају подаци потписа!</string>
   <string name="msg_vl_error_missing_literal">Нема корисних података у потписаним дословним подацима</string>
   <string name="msg_vl_clear_meta_file">Име фајла: %s</string>
   <string name="msg_vl_clear_meta_mime">МИМЕ тип: %s</string>
   <string name="msg_vl_clear_meta_time">Време измене: %s</string>
   <string name="msg_vl_clear_meta_size">Величина: %s</string>
-  <string name="msg_vl_clear_signature_check">Оверавам податке потписа</string>
+  <string name="msg_vl_clear_signature_check">Проверавам податке потписа</string>
   <string name="msg_vl_error_integrity_check">Грешка провере интегритета!</string>
   <string name="msg_vl_ok">У реду</string>
   <!--Messages for SignEncrypt operation-->
@@ -1131,7 +1146,6 @@
   <string name="msg_se_success">Радња потписивања/шифровања је успела!</string>
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_pse_asymmetric">Припремам јавне кључеве за шифровање</string>
-  <string name="msg_pse_clearsign_only">Потписивање обичног текста није подржано!</string>
   <string name="msg_pse_compressing">Припремам компресију</string>
   <string name="msg_pse_encrypting">Шифрујем податке</string>
   <string name="msg_pse_error_bad_passphrase">Нетачна лозинка!</string>
@@ -1188,41 +1202,34 @@
     <item quantity="other">Увозим %d кључева</item>
   </plurals>
   <string name="msg_import_fetch_error_decode">Грешка декодирања добављеног привеска!</string>
-  <string name="msg_import_fetch_error">Не могу да добавим кључ! (Проблеми са мрежом?)</string>
+  <string name="msg_import_fetch_error">Не могох да добавим кључ! (Проблеми са мрежом?)</string>
+  <string name="msg_import_fetch_error_keyserver">Не могох да добавим кључ са сервера кључева: %s</string>
+  <string name="msg_import_fetch_error_keyserver_secret">Не могу да увезем тајни кључ са сервера кључева!</string>
   <string name="msg_import_fetch_keybase">Добављам са keybase.io: %s</string>
-  <string name="msg_import_fetch_error_keyserver">Не могу да добавим кључ са сервера кључева: %s</string>
   <string name="msg_import_fetch_keyserver">Добављам са сервера кључева: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Добављање кључева је успело</string>
   <string name="msg_import_keyserver">Користим сервер кључева %s</string>
-  <string name="msg_import_fingerprint_error">Отисак добављеног кључа не одговара очекиваном!</string>
-  <string name="msg_import_fingerprint_ok">Провера отиска је у реду</string>
   <string name="msg_import_merge">Спајам добављене податке</string>
   <string name="msg_import_merge_error">Грешка спајања добављених података!</string>
   <string name="msg_import_error">Радња увоза није успела!</string>
   <string name="msg_import_error_io">Радња увоза није успела због У/И грешке!</string>
   <string name="msg_import_partial">Радња увоза је успела, са грешкама!</string>
   <string name="msg_import_success">Радња увоза је успела!</string>
-  <plurals name="msg_export">
-    <item quantity="one">Извозим један кључ</item>
-    <item quantity="few">Извозим %d кључа</item>
-    <item quantity="other">Извозим %d кључева</item>
-  </plurals>
-  <string name="msg_export_file_name">Име фајла: %s</string>
-  <string name="msg_export_all">Извозим све кључеве</string>
-  <string name="msg_export_public">Извозим јавни кључ %s</string>
-  <string name="msg_export_upload_public">Отпремам јавни кључ %s</string>
-  <string name="msg_export_secret">Извозим тајни кључ %s</string>
-  <string name="msg_export_error_no_file">Није наведено име фајла!</string>
-  <string name="msg_export_error_fopen">Грешка отварања фајла!</string>
-  <string name="msg_export_error_no_uri">Није наведен УРИ!</string>
-  <string name="msg_export_error_uri_open">Грешка отварања УРИ тока!</string>
-  <string name="msg_export_error_storage">Складиште није спремно за уписивање!</string>
-  <string name="msg_export_error_db">Грешка базе података!</string>
-  <string name="msg_export_error_io">Грешка улаза/излаза!</string>
-  <string name="msg_export_error_key">Грешка предобраде података кључа!</string>
-  <string name="msg_export_error_upload">Грешка отпремања кључа на сервер. Проверите вашу везу са интернетом.</string>
-  <string name="msg_export_success">Радња извоза је успела</string>
-  <string name="msg_export_upload_success">Отпремање на сервер кључева је успело</string>
+  <string name="msg_backup_public">Правим резерву јавног кључа %s</string>
+  <string name="msg_backup_secret">Правим резерву тајног кључа %s</string>
+  <string name="msg_backup_error_uri_open">Грешка отварања УРИ тока!</string>
+  <string name="msg_backup_error_db">Грешка базе података!</string>
+  <string name="msg_backup_error_io">Улазно/излазна грешка!</string>
+  <string name="msg_backup_success">Радња прављења резерве је успела</string>
+  <string name="msg_upload">Отпремам јавни кључ</string>
+  <string name="msg_upload_proxy_direct">Користим прокси: ништа</string>
+  <string name="msg_upload_proxy_tor">Користим прокси: ТОР</string>
+  <string name="msg_upload_proxy">Користим прокси: %s</string>
+  <string name="msg_upload_server">Сервер: %s</string>
+  <string name="msg_upload_error_key">Грешка предобраде података кључа!</string>
+  <string name="msg_upload_error_not_found">Кључ није нађен!</string>
+  <string name="msg_upload_error_upload">Грешка отпремања кључа на сервер. Проверите вашу везу са интернетом</string>
+  <string name="msg_upload_success">Отпремање на сервер кључева је успело</string>
   <string name="msg_del_error_empty">Нема ништа за брисање!</string>
   <string name="msg_del_error_multi_secret">Тајне кључеве можете брисати само појединачно!</string>
   <plurals name="msg_del">
@@ -1248,6 +1255,42 @@
   <string name="msg_revoke_key">Опозивам кључ %s</string>
   <string name="msg_revoke_key_fail">Неуспех опозивања кључа</string>
   <string name="msg_revoke_ok">Успешно опозван кључ</string>
+  <!--Linked Identity verification-->
+  <string name="msg_lv">Проверавам повезани идентитет…</string>
+  <string name="msg_lv_fp_ok">Отисак је у реду.</string>
+  <string name="msg_lv_fp_error">Отисак се не поклапа!</string>
+  <string name="msg_lv_error_twitter_response">Неочекивани одзив Твитер АПИ-ја!</string>
+  <string name="msg_lv_fetch">Добављам УРИ „%s“</string>
+  <string name="msg_lv_fetch_redir">Пратим преусмерење на „%s“</string>
+  <string name="msg_lv_fetch_ok">Успешно добављено (ХТТП %s)</string>
+  <string name="msg_lv_fetch_error">Грешка сервера (ХТТП %s)</string>
+  <string name="msg_lv_fetch_error_url">УРЛ је деформисан!</string>
+  <string name="msg_lv_fetch_error_io">У/И грешка!</string>
+  <string name="msg_lv_fetch_error_format">Грешка формата!</string>
+  <string name="msg_lv_fetch_error_nothing">Ресурс није нађен!</string>
+  <string name="msg_bench_enc_time">Време шифровања: %ss</string>
+  <string name="msg_bench_enc_time_avg">Просечно време шифровања 5M: %ss</string>
+  <string name="msg_bench_dec_time">Време дешифровања: %ss</string>
+  <string name="msg_bench_dec_time_avg">Просечно време дешифровања 5M: %ss</string>
+  <string name="msg_bench_s2k_for_it">Време за %1$s СХА1 S2K итерације: %2$sms</string>
+  <string name="msg_data">Обрађујем улазне податке</string>
+  <string name="msg_data_openpgp">Покушавам да обрадим ОпенПГП податке</string>
+  <string name="msg_data_detached_clear">Чистим претходне, непотписане податке!</string>
+  <string name="msg_data_detached_sig">Обрађујем одвојени потпис</string>
+  <string name="msg_data_detached_raw">Обрађујем потписане податке</string>
+  <string name="msg_data_detached_nested">Прескачем угнежђене потписане податке!</string>
+  <string name="msg_data_detached_unsupported">Неподржани тип одвојеног потписа!</string>
+  <string name="msg_data_error_io">Грешка читања улазних података!</string>
+  <string name="msg_data_mime_bad">Не могох да рашчланим као МИМЕ податке</string>
+  <string name="msg_data_mime_filename">Назив фајла: „%s“</string>
+  <string name="msg_data_mime_from_extension">Погађам МИМЕ тип на основу екстензије</string>
+  <string name="msg_data_mime_length">Дужина садржаја: %s</string>
+  <string name="msg_data_mime">Рашчлањујем структуру МИМЕ података</string>
+  <string name="msg_data_mime_none">Није нађена МИМЕ структура</string>
+  <string name="msg_data_mime_part">Обрађујем МИМЕ део</string>
+  <string name="msg_data_mime_type">Тип садржаја: %s</string>
+  <string name="msg_data_ok">Обрада података је успела</string>
+  <string name="msg_data_skip_mime">Прескачем рашчлањивање МИМЕ-а</string>
   <string name="msg_acc_saved">Налог је сачуван</string>
   <string name="msg_download_success">Успешно преузето!</string>
   <string name="msg_download_no_valid_keys">Нема исправних кључева у фајлу/клипборду!</string>
@@ -1262,21 +1305,18 @@
   <string name="msg_download_query_too_short_or_too_many_responses">Или није нађен ниједан кључ или их је нађено превише. Побољшајте ваш упит!</string>
   <string name="msg_download_query_failed">Дошло је до грешке приликом претраге кључева.</string>
   <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_verification">Покушавам оверавање на keybase.io за %s</string>
+  <string name="msg_keybase_verification">Проверавам %s на keybase.io</string>
   <string name="msg_keybase_error_no_prover">Нема провере доказа за %s</string>
   <string name="msg_keybase_error_fetching_evidence">Проблем са добављањем доказа</string>
   <string name="msg_keybase_error_key_mismatch">Отисак кључа се не поклапа са оним у објави доказа</string>
   <string name="msg_keybase_error_dns_fail">Добављање ДНС ТЕКСТ записа није успело</string>
   <string name="msg_keybase_error_specific">%s</string>
   <string name="msg_keybase_error_msg_payload_mismatch">Дешифрована објава доказа се не поклапа са очекиваном вредношћу</string>
-  <!--Messages for Export Log operation-->
-  <string name="msg_export_log_start">Извозим дневник</string>
-  <string name="msg_export_log_error_fopen">Грешка отварања фајла</string>
-  <string name="msg_export_log_error_no_file">Није наведено име фајла!</string>
-  <string name="msg_export_log_error_writing">У/И грешка уписа у фајл!</string>
-  <string name="msg_export_log_success">Дневник успешно извезен!</string>
+  <!--Messages for Mime parsing operation-->
+  <string name="msg_mime_parsing_start">Рашчлањујем МИМЕ структуру</string>
+  <string name="msg_mime_parsing_error">Рашчлањивање МИМЕ-а није успело</string>
+  <string name="msg_mime_parsing_success">МИМЕ успешно рашчлањен!</string>
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_click_to_clear">Тапните да очистите лозинке.</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%d лозинка запамћена</item>
     <item quantity="few">%d лозинке запамћене</item>
@@ -1286,7 +1326,7 @@
   <string name="passp_cache_notif_clear">Очисти лозинке</string>
   <string name="passp_cache_notif_pwd">Лозинка</string>
   <!--Keyserver sync-->
-  <string name="keyserver_sync_orbot_notif_title">Синхронизација са облака захтева Орбот</string>
+  <string name="keyserver_sync_orbot_notif_title">Синхронизација са сервера захтева Орбот</string>
   <string name="keyserver_sync_orbot_notif_msg">Тапните да бисте покренули Орбот</string>
   <string name="keyserver_sync_orbot_notif_start">Покрени Орбот</string>
   <string name="keyserver_sync_orbot_notif_ignore">Директно</string>
@@ -1302,17 +1342,18 @@
   <string name="backup_all">Свих кључева + сопствених</string>
   <string name="backup_public_keys">Свих кључева</string>
   <string name="backup_section">Резерва</string>
+  <string name="restore_section">Врати</string>
   <!--unsorted-->
   <string name="section_certifier_id">Сертификатор</string>
   <string name="section_cert">Детаљи сертификата</string>
   <string name="label_user_id">Идентитет</string>
-  <string name="unknown_uid">&lt;непознат&gt;</string>
+  <string name="unknown_uid"><![CDATA[<непознато>]]></string>
   <string name="empty_certs">Нема сертификата за овај кључ</string>
   <string name="certs_text">Приказани су само потврђени сопствени сертификати и потврђени сертификати направљени вашим кључем.</string>
   <string name="section_uids_to_certify">Идентитети за</string>
   <string name="certify_text">Кључеви које увозите садрже „идентитете“: имена и е-адресе. Одредите за потврду само оне који одговарају ономе што очекујете.</string>
-  <string name="certify_fingerprint_text">Упоредите приказани отисак, знак по знак, са оним приказаним на другаревом уређају.</string>
-  <string name="certify_fingerprint_text2">Да ли се приказани отисци поклапају?</string>
+  <string name="certify_fingerprint_text">Упоредите отисак, знак по знак, са отиском приказаним на другаревом уређају.</string>
+  <string name="certify_fingerprint_text_phrases">Упоредите ове фразе са онима приказаним на другаревом уређају.</string>
   <string name="label_revocation">Разлог опозива</string>
   <string name="label_cert_type">Тип</string>
   <string name="error_key_not_found">Кључ није нађен!</string>
@@ -1333,6 +1374,7 @@
   <string name="error_multi_clipboard">Дешифровање више фајлова на клипборд није подржано.</string>
   <string name="error_detached_signature">Радња само потписивања бинарних фајлова није подржана, одредите бар један кључ шифровања.</string>
   <string name="error_empty_text">Укуцајте неки текст за шифровање!</string>
+  <string name="error_log_share_internal">Унутрашња грешка током припреме записа!</string>
   <string name="key_colon">Кључ:</string>
   <string name="exchange_description">Да бисте почели размену кључева, са десне стране изаберите број учесника и додирните дугме „Почни размену“.\n\nБиће вам постављено још два питања да би се осигурало да су само исправни учесници у размени и да су њихови отисци тачни.</string>
   <string name="btn_start_exchange">Почни размену</string>
@@ -1367,17 +1409,20 @@
   <string name="nfc_write_succesful">Успешно уписах на НФЦ ознаку</string>
   <string name="unlocked">Откључан</string>
   <string name="nfc_settings">Поставке</string>
-  <string name="snack_yubikey_view">Приказ</string>
+  <string name="snack_yubikey_view">Прикажи</string>
   <string name="snack_yubikey_import">Увоз</string>
   <string name="button_bind_key">Повежи кључ</string>
   <string name="yubikey_serno">Серијски број: %s</string>
   <string name="yubikey_key_holder">Власник кључа: </string>
-  <string name="yubikey_key_holder_not_set">Власник кључа: &lt;није постављен&gt;</string>
+  <string name="yubikey_key_holder_not_set"><![CDATA[Држач кључа: <није постављено>]]></string>
   <string name="yubikey_status_bound">Јубикључ одговара и повезан са кључем</string>
   <string name="yubikey_status_unbound">Јубикључ одговара, може да се повеже са кључем</string>
   <string name="yubikey_status_partly">Јубикључ одговара, делимично повезан са кључем</string>
   <string name="yubikey_create">Држите Јубикључ на полеђини вашег уређаја.</string>
   <string name="btn_import">Увези</string>
+  <string name="btn_reset">Ресетуј</string>
+  <string name="yubikey_import_radio">Увези кључ</string>
+  <string name="yubikey_reset_radio">Ресетуј Јубикључ</string>
   <string name="snack_yubi_other">Други кључ је смештен на Јубикључу!</string>
   <string name="error_nfc">НФЦ грешка: %s</string>
   <plurals name="error_pin">
@@ -1397,7 +1442,7 @@
   <string name="error_nfc_header">Јубикључ је пријавио неисправан %s бит.</string>
   <string name="error_nfc_tag_lost">Јубикључ је прерано склоњен. Држите Јубикључ на полеђини уређаја док се радња не заврши.</string>
   <string name="error_nfc_try_again">Покушај поново</string>
-  <string name="error_pin_nodefault">Подразумевани ПИН је одбијен!</string>
+  <string name="error_pin_wrong">ПИН је погрешан!</string>
   <string name="error_temp_file">Грешка стварања привременог фајла.</string>
   <string name="btn_delete_original">Обриши оригинални фајл</string>
   <string name="snack_encrypt_filenames_on">Имена фајлова <b>су</b> шифрована.</string>
@@ -1408,10 +1453,9 @@
   <string name="snack_compression_off">Компресија је <b>онемогућена</b>.</string>
   <string name="error_loading_keys">Грешка учитавања кључева!</string>
   <string name="error_empty_log">(грешка, празан дневник)</string>
-  <string name="error_reading_text">Не могу да очитам унос за дешифровање!</string>
-  <string name="filename_unknown">&lt;нема имена&gt;</string>
-  <string name="filename_unknown_text">&lt;обични текстуални подаци&gt;</string>
+  <string name="error_reading_text">Не могох да очитам унос за дешифровање!</string>
   <string name="intent_show">Прикажи потписани/шифровани садржај</string>
+  <string name="intent_share">Дели потписани/шифровани садржај</string>
   <string name="view_internal">Прикажи у Отвореном кључарнику</string>
   <string name="error_preparing_data">Грешка припремања података!</string>
   <string name="label_clip_title">Шифровани подаци</string>
@@ -1426,4 +1470,75 @@
   <string name="error_scan_fp">Грешка очитавања отиска!</string>
   <string name="error_scan_match">Отисци се не поклапају!</string>
   <string name="error_expiry_past">Датум истицања је у прошлости!</string>
+  <string name="linked_create_https_1_1">Прављењем повезаног идентитета овог типа можете да повежете ваш кључ са вашим вебсајтом.</string>
+  <string name="linked_create_https_1_3">Унесите УРЛ где ћете да сместите текстуални фајл за доказ. Имајте на уму да ваш сервер мора да подржава https и има исправан ТЛС сертификат!</string>
+  <string name="linked_create_https_1_4">На пример: https://example.com/pgpkey.txt</string>
+  <string name="linked_create_https_created">Фајл доказа је направљен. У следећем кораку требате да га сачувате и отпремите на наведени УРИ:</string>
+  <string name="linked_create_https_2_1">Фајл доказа за овај УРИ је направљен:</string>
+  <string name="linked_create_https_2_3">Уверите се да је фајл доступан на тачном УРИ-ију, затим проверите подешавања.</string>
+  <string name="linked_create_twitter_1_1">Прављењем повезаног идентитета овог типа можете да повежете ваш кључ са вашим налогом на Твитеру.</string>
+  <string name="linked_create_verify">Провери</string>
+  <string name="linked_text_clipboard">Текст је копиран на клипборд</string>
+  <string name="linked_verified_secret_https">Све изгледа у реду.</string>
+  <string name="linked_verified_secret_github">Све изгледа у реду.</string>
+  <string name="linked_verified_secret_dns">Све изгледа у реду.</string>
+  <string name="linked_verified_secret_twitter">Све изгледа у реду.</string>
+  <plurals name="linked_id_expand">
+    <item quantity="one">Има још један непознат тип идентитета</item>
+    <item quantity="few">Има још %d непозната типа идентитета</item>
+    <item quantity="other">Има још %d непознатих типова идентитета</item>
+  </plurals>
+  <!--Other Linked Identity strings-->
+  <string name="linked_select_2">Изаберите тип:</string>
+  <string name="linked_id_generic_text">Овај фајл потврђује власништво ОпенПГП кључа са дугим ИД-ом %2$s.\n\nЗнак за доказ:\n%1$s</string>
+  <string name="linked_id_github_text">Овај гист потврђује повезани идентитет у мом ОпенПГП кључу и веже га за овај Гитхаб налог.\n\nЗнак за доказ:\n%1$s</string>
+  <string name="linked_verifying">Проверавам…</string>
+  <string name="linked_verify_success">Проверен!</string>
+  <string name="linked_verify_error">Грешка провере!</string>
+  <string name="linked_verify_pending">Још није проверен</string>
+  <string name="linked_need_verify">Ресурс мора бити проверен пре него наставите!</string>
+  <string name="menu_linked_add_identity">Повежи са налогом</string>
+  <string name="section_linked_identities">Повезани идентитети</string>
+  <string name="btn_finish">Заврши</string>
+  <string name="linked_title_https">Вебсајт (ХТТПС)</string>
+  <string name="linked_title_dns">Име домене (DNS)</string>
+  <string name="linked_title_github">Гитхаб</string>
+  <string name="linked_title_twitter">Твитер</string>
+  <string name="card_linked_identity">Повезани идентитет</string>
+  <string name="linked_button_verify">Провери</string>
+  <string name="linked_button_retry">Покушај поново</string>
+  <string name="linked_button_retry_step">Поново покушај последњи корак</string>
+  <string name="linked_button_confirm">Потврди</string>
+  <string name="linked_button_view">Прикажи</string>
+  <string name="linked_text_verifying">Проверавам…</string>
+  <string name="linked_text_error">Грешка</string>
+  <string name="linked_text_confirming">Потврђујем…</string>
+  <string name="linked_ids_more_unknown">још %d непознатих типова идентитета</string>
+  <string name="title_linked_id_create">Направи повезани идентитет</string>
+  <string name="linked_progress_update_key">Ажурирам кључ…</string>
+  <string name="linked_error_auth_failed">Овлашћивање није успело!</string>
+  <string name="linked_error_timeout">Истекло прековреме повезивања!</string>
+  <string name="linked_error_network">Грешка мреже!</string>
+  <string name="linked_error_http">Грешка комуникације: %s</string>
+  <string name="linked_webview_title_github">Гитхаб овлашћење</string>
+  <string name="linked_gist_description">Тестови АПИ-ија Отвореног кључарника</string>
+  <string name="snack_btn_overwrite">Пребриши</string>
+  <string name="backup_code_explanation">Резерва ће бити обезбеђена кôдом за резерву. Запишите га пре него што наставите даље!</string>
+  <string name="backup_code_enter">Унесите кôд за резерву:</string>
+  <string name="backup_code_ok">Кôд прихваћен!</string>
+  <string name="btn_code_wrotedown">У реду, записах га!</string>
+  <string name="backup_code_wrong">Унесени кôд за резерву је погрешан!\nДа ли сте га записали тачно?</string>
+  <string name="btn_backup_share">Дели резерву</string>
+  <string name="btn_backup_save">Сачувај резерву</string>
+  <string name="snack_backup_error_saving">Грешка успремања резерве!</string>
+  <string name="snack_backup_saved">Резерва сачувана</string>
+  <string name="snack_backup_exists">Резерва већ постоји!</string>
+  <string name="snack_backup_saved_dir">Сачувано у директоријум „OpenKeychain“</string>
+  <string name="snack_text_too_long">Текст је предугачак да би био приказан у целости!</string>
+  <string name="snack_shared_text_too_long">Дељени текст је одсечен јер је био предугачак!</string>
+  <string name="share_log_dialog_title">Поделити запис?</string>
+  <string name="share_log_dialog_share_button">Дели</string>
+  <string name="share_log_dialog_cancel_button">Одустани</string>
+  <string name="toast_no_text">Нема текста у дељеним подацима!</string>
+  <string name="btn_search_for_query">Тражи\n\'%s\'</string>
 </resources>
