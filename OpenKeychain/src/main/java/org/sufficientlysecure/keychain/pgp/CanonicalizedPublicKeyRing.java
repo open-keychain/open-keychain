@@ -23,6 +23,7 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
@@ -42,7 +43,7 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
         super(verified);
         if(mRing == null) {
             // get first object in block
-            PGPObjectFactory factory = new PGPObjectFactory(blob);
+            PGPObjectFactory factory = new PGPObjectFactory(blob, new JcaKeyFingerprintCalculator());
             try {
                 Object obj = factory.nextObject();
                 if (! (obj instanceof PGPPublicKeyRing)) {
