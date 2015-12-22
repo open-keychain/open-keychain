@@ -2,8 +2,8 @@
     <Preference
         android:persistent="true"
         android:selectable="false"
-        android:title="@string/label_experimental_settings_desc_title"
-        android:summary="@string/label_experimental_settings_desc_summary" />
+        android:summary="@string/label_experimental_settings_desc_summary"
+        android:title="@string/label_experimental_settings_desc_title" />
 
     <SwitchPreference
         android:defaultValue="false"
@@ -27,6 +27,7 @@
         android:title="@string/label_experimental_settings_keybase_title" />
 
     <ListPreference
+        android:defaultValue="light"
         android:dialogTitle="@string/label_theme"
         android:entries="@array/theme_entries"
         android:entryValues="@array/theme_values"
