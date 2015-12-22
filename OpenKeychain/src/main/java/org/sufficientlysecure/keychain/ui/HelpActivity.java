@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.IntDef;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
@@ -29,9 +28,6 @@ import com.astuetz.PagerSlidingTabStrip;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 
 public class HelpActivity extends BaseActivity {
