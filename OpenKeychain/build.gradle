@@ -69,7 +69,6 @@ dependencies {
     compile project(':extern:openkeychain-api-lib:openkeychain-intents')
     compile project(':extern:spongycastle:core')
     compile project(':extern:spongycastle:pg')
-    compile project(':extern:spongycastle:pkix')
     compile project(':extern:spongycastle:prov')
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
