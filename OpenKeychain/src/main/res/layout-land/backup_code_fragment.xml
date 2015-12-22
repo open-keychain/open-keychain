@@ -309,53 +309,51 @@
             style="?android:buttonBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <LinearLayout
+                style="?android:buttonBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
+                <Button
+                    android:id="@+id/button_backup_share"
+                    style="?android:buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/ic_share_grey_24dp"
+                    android:drawablePadding="8dp"
+                    android:padding="12dp"
+                    android:text="@string/btn_backup_share" />
+
+                <Button
+                    android:id="@+id/button_backup_save"
+                    style="?android:buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/ic_save_grey_24dp"
+                    android:drawablePadding="8dp"
+                    android:padding="12dp"
+                    android:text="@string/btn_backup_save" />
+
+
+            </LinearLayout>
 
             <Button
-                android:id="@+id/button_backup_share"
+                android:id="@+id/button_faq"
                 style="?android:buttonBarButtonStyle"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/ic_share_grey_24dp"
-                android:drawablePadding="8dp"
-                android:padding="12dp"
-                android:text="@string/btn_backup_share" />
-
-            <Button
-                android:id="@+id/button_backup_save"
-                style="?android:buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/ic_save_grey_24dp"
-                android:drawablePadding="8dp"
-                android:padding="12dp"
-                android:text="@string/btn_backup_save" />
-
+                android:gravity="center"
+                android:text="@string/how_to_import" />
         </LinearLayout>
 
-    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
-
-    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
-
-        android:id="@+id/faq_animator"
-        android:inAnimation="@anim/fade_in"
-        android:outAnimation="@anim/fade_out"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <android.support.v4.widget.Space
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-        <TextView
-            android:id="@+id/tv_faq"
-            android:text="@string/how_to_import"
-            android:gravity="center"
-            style="?android:buttonBarButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
     </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
 </LinearLayout>

@@ -54,7 +54,6 @@ import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -81,7 +80,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     String mBackupCode;
 
     private EditText[] mCodeEditText;
-    private ToolableViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator, mFaqAnimator;
+    private ToolableViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
     private Integer mBackStackLevel;
 
     private Uri mCachedBackupUri;
@@ -115,14 +114,12 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 mTitleAnimator.setDisplayedChild(0, animate);
                 mStatusAnimator.setDisplayedChild(0, animate);
                 mCodeFieldsAnimator.setDisplayedChild(0, animate);
-                mFaqAnimator.setDisplayedChild(0, animate);
                 break;
 
             case STATE_INPUT:
                 mTitleAnimator.setDisplayedChild(1, animate);
                 mStatusAnimator.setDisplayedChild(1, animate);
                 mCodeFieldsAnimator.setDisplayedChild(1, animate);
-                mFaqAnimator.setDisplayedChild(1, animate);
                 for (EditText editText : mCodeEditText) {
                     editText.setText("");
                 }
@@ -135,7 +132,6 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 mTitleAnimator.setDisplayedChild(1, false);
                 mStatusAnimator.setDisplayedChild(2, animate);
                 mCodeFieldsAnimator.setDisplayedChild(1, false);
-                mFaqAnimator.setDisplayedChild(0, false);
 
                 hideKeyboard();
 
@@ -152,7 +148,6 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 mTitleAnimator.setDisplayedChild(2, animate);
                 mStatusAnimator.setDisplayedChild(3, animate);
                 mCodeFieldsAnimator.setDisplayedChild(1, false);
-                mFaqAnimator.setDisplayedChild(0, animate);
 
                 hideKeyboard();
 
@@ -222,7 +217,6 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         mStatusAnimator = (ToolableViewAnimator) view.findViewById(R.id.status_animator);
         mTitleAnimator = (ToolableViewAnimator) view.findViewById(R.id.title_animator);
         mCodeFieldsAnimator = (ToolableViewAnimator) view.findViewById(R.id.code_animator);
-        mFaqAnimator = (ToolableViewAnimator) view.findViewById(R.id.faq_animator);
 
         View backupInput = view.findViewById(R.id.button_backup_input);
         backupInput.setOnClickListener(new OnClickListener() {
@@ -258,7 +252,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
             }
         });
 
-        view.findViewById(R.id.tv_faq).setOnClickListener(new OnClickListener() {
+        view.findViewById(R.id.button_faq).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 showFaq();
