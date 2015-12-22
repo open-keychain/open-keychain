@@ -40,6 +40,7 @@
         <org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView
             android:id="@+id/recipient_list"
             android:layout_width="match_parent"
+            android:hint="@string/label_to"
             android:minHeight="56dip"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"

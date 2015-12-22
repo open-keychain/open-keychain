@@ -88,10 +88,6 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
 
     @Override
     protected KeyItem defaultObject(String completionText) {
-        // TODO: We could try to automagically download the key if it's unknown but a key id
-        /*if (completionText.startsWith("0x")) {
-
-        }*/
         return null;
     }
 
