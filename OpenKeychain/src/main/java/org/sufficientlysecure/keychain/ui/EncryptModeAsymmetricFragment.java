@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ViewAnimator;
 
+import com.tokenautocomplete.TokenCompleteTextView;
 import com.tokenautocomplete.TokenCompleteTextView.TokenListener;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -59,7 +60,6 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
      */
     public static EncryptModeAsymmetricFragment newInstance(long signatureKey, long[] encryptionKeyIds) {
         EncryptModeAsymmetricFragment frag = new EncryptModeAsymmetricFragment();
-
         Bundle args = new Bundle();
         args.putLong(ARG_SINGATURE_KEY_ID, signatureKey);
         args.putLongArray(ARG_ENCRYPTION_KEY_IDS, encryptionKeyIds);
@@ -74,11 +74,10 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_asymmetric_fragment, container, false);
-
         mSignKeySpinner = (KeySpinner) view.findViewById(R.id.sign);
         mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
         mEncryptKeyView.setThreshold(1); // Start working from first character
-
+        mEncryptKeyView.setDeletionStyle(TokenCompleteTextView.TokenDeleteStyle.ToString);
         final ViewAnimator vSignatureIcon = (ViewAnimator) view.findViewById(R.id.result_signature_icon);
         mSignKeySpinner.setOnKeyChangedListener(new OnKeyChangedListener() {
             @Override

@@ -334,6 +334,12 @@ public class KeyAdapter extends CursorAdapter {
             }
         }
 
+        @Override
+        public String toString()
+        {
+            return mUserId.name;
+        }
+
     }
 
     public static String[] getProjectionWith(String[] projection) {

@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 
 public class EncryptActivity extends BaseActivity {
 

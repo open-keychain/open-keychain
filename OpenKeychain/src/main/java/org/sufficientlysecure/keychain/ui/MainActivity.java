@@ -36,11 +36,13 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
+import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -59,7 +61,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
 
     public Drawer mDrawer;
     private Toolbar mToolbar;
-
+    private EncryptKeyCompletionView encryptKeyCompletionView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -268,5 +270,4 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
             mDrawer.setSelection(mDrawer.getPosition(ID_BACKUP), false);
         }
     }
-
 }

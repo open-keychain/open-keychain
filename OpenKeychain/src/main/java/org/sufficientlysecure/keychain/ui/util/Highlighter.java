@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.util;
 import android.content.Context;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -42,10 +43,8 @@ public class Highlighter {
         if (mQuery == null) {
             return highlight;
         }
-
         Pattern pattern = Pattern.compile("(?i)(" + mQuery.trim().replaceAll("\\s+", "|") + ")");
         Matcher matcher = pattern.matcher(text);
-
         int colorEmphasis = FormattingUtils.getColorFromAttr(mContext, R.attr.colorEmphasis);
 
         while (matcher.find()) {
