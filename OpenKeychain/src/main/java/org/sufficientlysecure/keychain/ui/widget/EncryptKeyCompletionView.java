@@ -49,7 +49,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 
 public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
-        implements LoaderCallbacks<Cursor> {
+        implements LoaderCallbacks<Cursor>,TokenCompleteTextView.TokenListener {
 
     public static final String ARG_QUERY = "query";
 
@@ -73,7 +73,6 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
 
     private void initView() {
         allowDuplicates(false);
-
         mAdapter = new KeyAdapter(getContext(), null, 0);
         setAdapter(mAdapter);
     }
@@ -81,9 +80,19 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
     @Override
     protected View getViewForObject(KeyItem keyItem) {
         LayoutInflater l = LayoutInflater.from(getContext());
-        View view = l.inflate(R.layout.recipient_box_entry, null);
+        View view = l.inflate(R.layout.recipient_box_entry,null);
         ((TextView) view.findViewById(android.R.id.text1)).setText(keyItem.getReadableName());
         return view;
+    }
+
+    @Override
+    public void onTokenAdded(Object token) {
+        Log.e("TOKEN ADD",token.toString());
+    }
+
+    @Override
+    public void onTokenRemoved(Object token) {
+        Log.e("TOKEN REMOVED: ",token.toString());
     }
 
     @Override
@@ -151,6 +160,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
 
     @Override
     public void onFocusChanged(boolean hasFocus, int direction, Rect previous) {
+        int dta = direction;
         super.onFocusChanged(hasFocus, direction, previous);
         if (hasFocus) {
             ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))

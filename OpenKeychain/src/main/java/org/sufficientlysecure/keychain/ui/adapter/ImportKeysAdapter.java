@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -142,6 +143,8 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         // main user id
         String userId = entry.getUserIds().get(0);
         KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
+        Log.e("userID",userId);
+        Log.e("userIdSplit",userIdSplit.name);
 
         // name
         if (userIdSplit.name != null) {

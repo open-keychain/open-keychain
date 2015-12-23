@@ -27,6 +27,8 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -89,6 +91,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.NFCNotSupportedException;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -288,7 +291,28 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         mActionNfc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mNfcHelper.invokeNfcBeam();
+                try
+                {
+                    boolean mNFCNotSupported = mNfcHelper.invokeNfcBeam();
+                    Log.e("ViewKeyActvity","Inside OnClickListener "+mNFCNotSupported);
+                    if(!mNFCNotSupported)
+                        throw new NFCNotSupportedException(getString(R.string.nfc_not_supported));
+                }
+                catch(NFCNotSupportedException nf)
+                {
+                    AlertDialog malertDialog = new AlertDialog.Builder(ViewKeyActivity.this).create();
+                    malertDialog.setTitle("Feature Not Supported");
+                    malertDialog.setMessage(nf.error_msg);
+                    malertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    malertDialog.show();
+
+                }
             }
         });
 
