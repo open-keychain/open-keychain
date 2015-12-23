@@ -65,7 +65,6 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         args.putLong(ARG_SINGATURE_KEY_ID, signatureKey);
         args.putLongArray(ARG_ENCRYPTION_KEY_IDS, encryptionKeyIds);
         frag.setArguments(args);
-
         return frag;
     }
 
@@ -79,7 +78,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         mSignKeySpinner = (KeySpinner) view.findViewById(R.id.sign);
         mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
         mEncryptKeyView.setThreshold(1); // Start working from first character
-        mEncryptKeyView.setDeletionStyle(TokenCompleteTextView.TokenDeleteStyle.ToString);
+        mEncryptKeyView.setDeletionStyle(TokenCompleteTextView.TokenDeleteStyle.Clear);
 
         final ViewAnimator vSignatureIcon = (ViewAnimator) view.findViewById(R.id.result_signature_icon);
         mSignKeySpinner.setOnKeyChangedListener(new OnKeyChangedListener() {

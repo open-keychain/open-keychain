@@ -38,6 +38,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.zxing.common.StringUtils;
+
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -337,7 +339,7 @@ public class KeyAdapter extends CursorAdapter {
         @Override
         public String toString()
         {
-            return mUserId.name;
+            return " ";
         }
 
     }
