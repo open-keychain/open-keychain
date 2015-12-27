@@ -104,7 +104,7 @@
     <string name="btn_add_keyserver">"Add"</string>
     <string name="btn_save_default">"Save as default"</string>
     <string name="btn_saved">"Saved!"</string>
-    <string name="btn_not_matching">"Doesn't match"</string>
+    <string name="btn_not_matching">"Not matching"</string>
 
     <!-- Content Description -->
     <string name="cd_encrypt_files">"Encrypt files"</string>
@@ -1378,9 +1378,9 @@
 
     <string name="msg_bench">"Benchmarking some operations…"</string>
     <string name="msg_bench_enc_time">"Encryption time: %ss"</string>
-    <string name="msg_bench_enc_time_avg">"Average time to encrypt 5M: %ss"</string>
+    <string name="msg_bench_enc_time_avg">"Average time to encrypt 5MB: %ss"</string>
     <string name="msg_bench_dec_time">"Decryption time: %ss"</string>
-    <string name="msg_bench_dec_time_avg">"Average time to decrypt 5M: %ss"</string>
+    <string name="msg_bench_dec_time_avg">"Average time to decrypt 5MB: %ss"</string>
     <string name="msg_bench_s2k_100ms_its">"S2K iteration count for 100ms: %s"</string>
     <string name="msg_bench_s2k_for_it">"Time for %1$s SHA1 S2K iterations: %2$sms"</string>
     <string name="msg_bench_success">"Benchmarking complete!"</string>
