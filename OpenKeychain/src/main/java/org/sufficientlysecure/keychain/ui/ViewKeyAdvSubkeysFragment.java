@@ -58,6 +58,8 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
     public static final String ARG_DATA_URI = "data_uri";
     public static final String ARG_HAS_SECRET = "has_secret";
+    public static final String ARG_MASTER_KEY_ID = "master_key_id";
+    public static final String ARG_FINGERPRINT = "fingerprint";
 
     public static final int LOADER_ID_SUBKEYS = 0;
 
@@ -71,22 +73,10 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
     private Uri mDataUriSubkeys;
 
+    private long mMasterKeyId;
+    private byte[] mFingerprint;
     private boolean mHasSecret;
     private SaveKeyringParcel mEditModeSaveKeyringParcel;
-
-    /**
-     * Creates new instance of this fragment
-     */
-    public static ViewKeyAdvSubkeysFragment newInstance(Uri dataUri, boolean hasSecret) {
-        ViewKeyAdvSubkeysFragment frag = new ViewKeyAdvSubkeysFragment();
-
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_DATA_URI, dataUri);
-        args.putBoolean(ARG_HAS_SECRET, hasSecret);
-
-        frag.setArguments(args);
-        return frag;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
@@ -139,6 +129,8 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
             return;
         }
         mHasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
+        mMasterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
+        mFingerprint = getArguments().getByteArray(ARG_FINGERPRINT);
 
         loadData(dataUri);
     }
@@ -204,7 +196,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
-                mEditModeSaveKeyringParcel = new SaveKeyringParcel(0L, new byte[0]);
+                mEditModeSaveKeyringParcel = new SaveKeyringParcel(mMasterKeyId, mFingerprint);
 
                 mSubkeysAddedAdapter =
                         new SubkeysAddedAdapter(getActivity(), mEditModeSaveKeyringParcel.mAddSubKeys, false);

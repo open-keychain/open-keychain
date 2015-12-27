@@ -120,7 +120,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         setContentView(R.layout.view_key_adv_activity);
     }
 
-    private void initTabs(Uri dataUri, boolean hasSecret) {
+    private void initTabs(Uri dataUri, boolean hasSecret, long masterKeyId, byte[] fingerprint) {
 
         mHasSecret = hasSecret;
 
@@ -139,6 +139,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         Bundle userIdsBundle = new Bundle();
         userIdsBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
         userIdsBundle.putBoolean(ViewKeyAdvUserIdsFragment.ARG_HAS_SECRET, hasSecret);
+        userIdsBundle.putLong(ViewKeyAdvUserIdsFragment.ARG_MASTER_KEY_ID, masterKeyId);
+        userIdsBundle.putByteArray(ViewKeyAdvUserIdsFragment.ARG_FINGERPRINT, fingerprint);
         mTabAdapter.addTab(ViewKeyAdvUserIdsFragment.class,
                 userIdsBundle, getString(R.string.section_user_ids));
         mTabsWithActionMode[1] = true;
@@ -146,6 +148,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         Bundle keysBundle = new Bundle();
         keysBundle.putParcelable(ViewKeyAdvSubkeysFragment.ARG_DATA_URI, dataUri);
         keysBundle.putBoolean(ViewKeyAdvSubkeysFragment.ARG_HAS_SECRET, hasSecret);
+        keysBundle.putLong(ViewKeyAdvSubkeysFragment.ARG_MASTER_KEY_ID, masterKeyId);
+        keysBundle.putByteArray(ViewKeyAdvSubkeysFragment.ARG_FINGERPRINT, fingerprint);
         mTabAdapter.addTab(ViewKeyAdvSubkeysFragment.class,
                 keysBundle, getString(R.string.key_view_tab_keys));
         mTabsWithActionMode[2] = true;
@@ -175,7 +179,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             KeychainContract.KeyRings.IS_REVOKED,
             KeychainContract.KeyRings.IS_EXPIRED,
             KeychainContract.KeyRings.VERIFIED,
-            KeychainContract.KeyRings.HAS_ANY_SECRET
+            KeychainContract.KeyRings.HAS_ANY_SECRET,
+            KeychainContract.KeyRings.FINGERPRINT,
     };
 
     static final int INDEX_MASTER_KEY_ID = 1;
@@ -184,6 +189,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
     static final int INDEX_IS_EXPIRED = 4;
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_ANY_SECRET = 6;
+    static final int INDEX_FINGERPRINT = 7;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -217,6 +223,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
                         setTitle(R.string.user_id_no_name);
                     }
 
+                    byte[] fingerprint = data.getBlob(INDEX_FINGERPRINT);
+
                     // get key id from MASTER_KEY_ID
                     long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                     getSupportActionBar().setSubtitle(KeyFormattingUtils.beautifyKeyIdWithPrefix(this, masterKeyId));
@@ -243,7 +251,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
                     mStatusBar.setBackgroundColor(ViewKeyActivity.getStatusBarBackgroundColor(color));
                     mSlidingTabLayout.setBackgroundColor(color);
 
-                    initTabs(mDataUri, isSecret);
+                    initTabs(mDataUri, isSecret, masterKeyId, fingerprint);
 
                     break;
                 }

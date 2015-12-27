@@ -57,6 +57,8 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
     public static final String ARG_DATA_URI = "uri";
     public static final String ARG_HAS_SECRET = "has_secret";
+    public static final String ARG_MASTER_KEY_ID = "master_key_id";
+    public static final String ARG_FINGERPRINT = "fingerprint";
 
     private static final int LOADER_ID_USER_IDS = 0;
 
@@ -69,6 +71,9 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
     private UserIdsAddedAdapter mUserIdsAddedAdapter;
 
     private Uri mDataUri;
+
+    private long mMasterKeyId;
+    private byte[] mFingerprint;
     private boolean mHasSecret;
     private SaveKeyringParcel mEditModeSaveKeyringParcel;
 
@@ -216,14 +221,15 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
             getActivity().finish();
             return;
         }
-        boolean hasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
+        mHasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
+        mMasterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
+        mFingerprint = getArguments().getByteArray(ARG_FINGERPRINT);
 
-        loadData(dataUri, hasSecret);
+        loadData(dataUri);
     }
 
-    private void loadData(Uri dataUri, boolean hasSecret) {
+    private void loadData(Uri dataUri) {
         mDataUri = dataUri;
-        mHasSecret = hasSecret;
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri);
 
@@ -295,7 +301,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
-                mEditModeSaveKeyringParcel = new SaveKeyringParcel(0L, new byte[0]);
+                mEditModeSaveKeyringParcel = new SaveKeyringParcel(mMasterKeyId, mFingerprint);
 
                 mUserIdsAddedAdapter =
                         new UserIdsAddedAdapter(getActivity(), mEditModeSaveKeyringParcel.mAddUserIds, false);
