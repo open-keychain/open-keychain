@@ -85,7 +85,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_adv_main_fragment, getContainer());
+        View view = inflater.inflate(R.layout.view_key_adv_user_ids_fragment, getContainer());
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
         mUserIdsAddedList = (ListView) view.findViewById(R.id.view_key_user_ids_added);
