@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,12 +42,14 @@ import android.widget.ViewAnimator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
@@ -70,6 +73,8 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
     private SubkeysAdapter mSubkeysAdapter;
     private SubkeysAddedAdapter mSubkeysAddedAdapter;
+
+    private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mEditKeyHelper;
 
     private Uri mDataUriSubkeys;
 
@@ -133,6 +138,15 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         mFingerprint = getArguments().getByteArray(ARG_FINGERPRINT);
 
         loadData(dataUri);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mEditKeyHelper != null) {
+            mEditKeyHelper.handleActivityResult(requestCode, resultCode, data);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void loadData(Uri dataUri) {
@@ -220,7 +234,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                mode.finish();
+                editKey(mode);
                 return true;
             }
 
@@ -388,6 +402,41 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                 dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyExpiryDialog");
             }
         });
+    }
+
+
+    private void editKey(final ActionMode mode) {
+        CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult> editKeyCallback
+                = new CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult>() {
+
+            @Override
+            public SaveKeyringParcel createOperationInput() {
+                return mEditModeSaveKeyringParcel;
+            }
+
+            @Override
+            public void onCryptoOperationSuccess(EditKeyResult result) {
+                mode.finish();
+                result.createNotify(getActivity()).show();
+            }
+
+            @Override
+            public void onCryptoOperationCancelled() {
+
+            }
+
+            @Override
+            public void onCryptoOperationError(EditKeyResult result) {
+
+            }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
+        };
+        mEditKeyHelper = new CryptoOperationHelper<>(1, this, editKeyCallback, R.string.progress_saving);
+        mEditKeyHelper.cryptoOperation();
     }
 
 }
