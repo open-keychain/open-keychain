@@ -28,6 +28,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -75,6 +76,7 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
+    private static final int KEY_RINGS_FIND_BY_USER_ID = 402;
 
     private static final int UPDATED_KEYS = 500;
     private static final int UPDATED_KEYS_SPECIFIC = 501;
@@ -126,6 +128,9 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
                 + KeychainContract.PATH_FIND + "/" + KeychainContract.PATH_BY_SUBKEY + "/*",
                 KEY_RINGS_FIND_BY_SUBKEY);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                        + KeychainContract.PATH_FIND + "/" + KeychainContract.PATH_BY_USER_ID + "/*",
+                KEY_RINGS_FIND_BY_USER_ID);
 
         /**
          * list key_ring specifics
@@ -226,7 +231,7 @@ public class KeychainProvider extends ContentProvider {
      * {@inheritDoc}
      */
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         final int match = mUriMatcher.match(uri);
         switch (match) {
             case KEY_RING_PUBLIC:
@@ -270,7 +275,7 @@ public class KeychainProvider extends ContentProvider {
      * {@inheritDoc}
      */
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
         Log.v(Constants.TAG, "query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
 
@@ -285,7 +290,8 @@ public class KeychainProvider extends ContentProvider {
             case KEY_RING_UNIFIED:
             case KEY_RINGS_UNIFIED:
             case KEY_RINGS_FIND_BY_EMAIL:
-            case KEY_RINGS_FIND_BY_SUBKEY: {
+            case KEY_RINGS_FIND_BY_SUBKEY:
+            case KEY_RINGS_FIND_BY_USER_ID: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(KeyRings._ID, Tables.KEYS + ".oid AS _id");
                 projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
@@ -432,7 +438,8 @@ public class KeychainProvider extends ContentProvider {
                         }
                         break;
                     }
-                    case KEY_RINGS_FIND_BY_EMAIL: {
+                    case KEY_RINGS_FIND_BY_EMAIL:
+                    case KEY_RINGS_FIND_BY_USER_ID: {
                         String chunks[] = uri.getLastPathSegment().split(" *, *");
                         boolean gotCondition = false;
                         String emailWhere = "";
@@ -446,7 +453,11 @@ public class KeychainProvider extends ContentProvider {
                             }
                             emailWhere += "tmp." + UserPackets.USER_ID + " LIKE ";
                             // match '*<email>', so it has to be at the *end* of the user id
-                            emailWhere += DatabaseUtils.sqlEscapeString("%<" + chunks[i] + ">");
+                            if (match == KEY_RINGS_FIND_BY_EMAIL) {
+                                emailWhere += DatabaseUtils.sqlEscapeString("%<" + chunks[i] + ">");
+                            } else {
+                                emailWhere += DatabaseUtils.sqlEscapeString("%" + chunks[i] + "%");
+                            }
                             gotCondition = true;
                         }
                         if(gotCondition) {

@@ -109,6 +109,7 @@ public class KeychainContract {
     public static final String PATH_FIND = "find";
     public static final String PATH_BY_EMAIL = "email";
     public static final String PATH_BY_SUBKEY = "subkey";
+    public static final String PATH_BY_USER_ID = "user_id";
 
     public static final String PATH_PUBLIC = "public";
     public static final String PATH_SECRET = "secret";
@@ -172,6 +173,11 @@ public class KeychainContract {
         public static Uri buildUnifiedKeyRingsFindByEmailUri(String email) {
             return CONTENT_URI.buildUpon().appendPath(PATH_FIND)
                     .appendPath(PATH_BY_EMAIL).appendPath(email).build();
+        }
+
+        public static Uri buildUnifiedKeyRingsFindByUserIdUri(String query) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_FIND)
+                    .appendPath(PATH_BY_USER_ID).appendPath(query).build();
         }
 
         public static Uri buildUnifiedKeyRingsFindBySubkeyUri(long subkey) {
