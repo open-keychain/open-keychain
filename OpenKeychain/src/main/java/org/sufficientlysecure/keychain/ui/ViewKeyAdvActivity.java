@@ -25,7 +25,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -41,6 +40,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -113,6 +113,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         // or start new ones.
         getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
 
+        initTabs(mDataUri);
     }
 
     @Override
@@ -120,10 +121,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         setContentView(R.layout.view_key_adv_activity);
     }
 
-    private void initTabs(Uri dataUri, boolean hasSecret, long masterKeyId, byte[] fingerprint) {
-
-        mHasSecret = hasSecret;
-
+    private void initTabs(Uri dataUri) {
         mTabAdapter = new PagerTabStripAdapter(this);
         mViewPager.setAdapter(mTabAdapter);
 
@@ -138,18 +136,12 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
         Bundle userIdsBundle = new Bundle();
         userIdsBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
-        userIdsBundle.putBoolean(ViewKeyAdvUserIdsFragment.ARG_HAS_SECRET, hasSecret);
-        userIdsBundle.putLong(ViewKeyAdvUserIdsFragment.ARG_MASTER_KEY_ID, masterKeyId);
-        userIdsBundle.putByteArray(ViewKeyAdvUserIdsFragment.ARG_FINGERPRINT, fingerprint);
         mTabAdapter.addTab(ViewKeyAdvUserIdsFragment.class,
                 userIdsBundle, getString(R.string.section_user_ids));
         mTabsWithActionMode[1] = true;
 
         Bundle keysBundle = new Bundle();
         keysBundle.putParcelable(ViewKeyAdvSubkeysFragment.ARG_DATA_URI, dataUri);
-        keysBundle.putBoolean(ViewKeyAdvSubkeysFragment.ARG_HAS_SECRET, hasSecret);
-        keysBundle.putLong(ViewKeyAdvSubkeysFragment.ARG_MASTER_KEY_ID, masterKeyId);
-        keysBundle.putByteArray(ViewKeyAdvSubkeysFragment.ARG_FINGERPRINT, fingerprint);
         mTabAdapter.addTab(ViewKeyAdvSubkeysFragment.class,
                 keysBundle, getString(R.string.key_view_tab_keys));
         mTabsWithActionMode[2] = true;
@@ -229,7 +221,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
                     long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                     getSupportActionBar().setSubtitle(KeyFormattingUtils.beautifyKeyIdWithPrefix(this, masterKeyId));
 
-                    boolean isSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                    mHasSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                     boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
                     boolean isExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
                     boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
@@ -238,7 +230,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
                     int color;
                     if (isRevoked || isExpired) {
                         color = getResources().getColor(R.color.key_flag_red);
-                    } else if (isSecret) {
+                    } else if (mHasSecret) {
                         color = getResources().getColor(R.color.android_green_light);
                     } else {
                         if (isVerified) {
@@ -250,8 +242,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements
                     mToolbar.setBackgroundColor(color);
                     mStatusBar.setBackgroundColor(ViewKeyActivity.getStatusBarBackgroundColor(color));
                     mSlidingTabLayout.setBackgroundColor(color);
-
-                    initTabs(mDataUri, isSecret, masterKeyId, fingerprint);
 
                     break;
                 }
@@ -284,7 +274,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
         // always add the item, switch its visibility depending on fragment
         getMenuInflater().inflate(R.menu.action_mode_edit, menu);
-        final MenuItem vActionModeItem  = menu.findItem(R.id.menu_action_mode_edit);
+        final MenuItem vActionModeItem = menu.findItem(R.id.menu_action_mode_edit);
 
         boolean isCurrentActionFragment = mTabsWithActionMode[mViewPager.getCurrentItem()];
 

@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
@@ -59,11 +60,9 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
-    public static final String ARG_HAS_SECRET = "has_secret";
-    public static final String ARG_MASTER_KEY_ID = "master_key_id";
-    public static final String ARG_FINGERPRINT = "fingerprint";
 
-    private static final int LOADER_ID_USER_IDS = 0;
+    private static final int LOADER_ID_UNIFIED = 0;
+    private static final int LOADER_ID_USER_IDS = 1;
 
     private ListView mUserIds;
     private ListView mUserIdsAddedList;
@@ -226,9 +225,6 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
             getActivity().finish();
             return;
         }
-        mHasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
-        mMasterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
-        mFingerprint = getArguments().getByteArray(ARG_FINGERPRINT);
 
         loadData(dataUri);
     }
@@ -252,36 +248,67 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
+        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
         getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
     }
 
+    // These are the rows that we will retrieve.
+    static final String[] PROJECTION = new String[]{
+            KeychainContract.KeyRings._ID,
+            KeychainContract.KeyRings.MASTER_KEY_ID,
+            KeychainContract.KeyRings.HAS_ANY_SECRET,
+            KeychainContract.KeyRings.FINGERPRINT,
+    };
+
+    static final int INDEX_MASTER_KEY_ID = 1;
+    static final int INDEX_HAS_ANY_SECRET = 2;
+    static final int INDEX_FINGERPRINT = 3;
+
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        setContentShown(false);
+        switch (id) {
+            case LOADER_ID_UNIFIED: {
+                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
+                return new CursorLoader(getActivity(), baseUri,
+                        PROJECTION, null, null, null);
+            }
 
-        if (id != LOADER_ID_USER_IDS) {
-            return null;
+            case LOADER_ID_USER_IDS: {
+                setContentShown(false);
+
+                Uri userIdUri = UserPackets.buildUserIdsUri(mDataUri);
+                return new CursorLoader(getActivity(), userIdUri,
+                        UserIdsAdapter.USER_PACKETS_PROJECTION, null, null, null);
+            }
+
+            default:
+                return null;
         }
-
-        Uri baseUri = UserPackets.buildUserIdsUri(mDataUri);
-        return new CursorLoader(getActivity(), baseUri,
-                UserIdsAdapter.USER_PACKETS_PROJECTION, null, null, null);
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (loader.getId() != LOADER_ID_USER_IDS) {
-            return;
-        }
-
-        /* TODO better error handling? May cause problems when a key is deleted,
-         * because the notification triggers faster than the activity closes.
-         */
-        // Avoid NullPointerExceptions...
+        // Avoid NullPointerExceptions, if we get an empty result set.
         if (data.getCount() == 0) {
             return;
         }
 
-        mUserIdsAdapter.swapCursor(data);
-        setContentShown(true);
+        switch (loader.getId()) {
+            case LOADER_ID_UNIFIED: {
+                data.moveToFirst();
+
+                mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                mHasSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                mFingerprint = data.getBlob(INDEX_FINGERPRINT);
+                break;
+            }
+            case LOADER_ID_USER_IDS: {
+                // Swap the new cursor in. (The framework will take care of closing the
+                // old cursor once we return.)
+                mUserIdsAdapter.swapCursor(data);
+
+                setContentShown(true);
+                break;
+            }
+        }
     }
 
     /**
@@ -371,12 +398,13 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
             @Override
             public void onCryptoOperationCancelled() {
-
+                mode.finish();
             }
 
             @Override
             public void onCryptoOperationError(EditKeyResult result) {
-
+                mode.finish();
+                result.createNotify(getActivity()).show();
             }
 
             @Override

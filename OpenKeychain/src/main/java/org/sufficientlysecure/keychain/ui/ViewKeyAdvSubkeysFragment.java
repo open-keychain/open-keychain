@@ -60,11 +60,9 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "data_uri";
-    public static final String ARG_HAS_SECRET = "has_secret";
-    public static final String ARG_MASTER_KEY_ID = "master_key_id";
-    public static final String ARG_FINGERPRINT = "fingerprint";
 
-    public static final int LOADER_ID_SUBKEYS = 0;
+    private static final int LOADER_ID_UNIFIED = 0;
+    private static final int LOADER_ID_SUBKEYS = 1;
 
     private ListView mSubkeysList;
     private ListView mSubkeysAddedList;
@@ -76,7 +74,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
     private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mEditKeyHelper;
 
-    private Uri mDataUriSubkeys;
+    private Uri mDataUri;
 
     private long mMasterKeyId;
     private byte[] mFingerprint;
@@ -133,9 +131,6 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
             getActivity().finish();
             return;
         }
-        mHasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
-        mMasterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
-        mFingerprint = getArguments().getByteArray(ARG_FINGERPRINT);
 
         loadData(dataUri);
     }
@@ -150,7 +145,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
     }
 
     private void loadData(Uri dataUri) {
-        mDataUriSubkeys = KeychainContract.Keys.buildKeysUri(dataUri);
+        mDataUri = dataUri;
 
         // Create an empty adapter we will use to display the loaded data.
         mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
@@ -158,14 +153,42 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
+        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
         getLoaderManager().initLoader(LOADER_ID_SUBKEYS, null, this);
     }
 
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        setContentShown(false);
+    // These are the rows that we will retrieve.
+    static final String[] PROJECTION = new String[]{
+            KeychainContract.KeyRings._ID,
+            KeychainContract.KeyRings.MASTER_KEY_ID,
+            KeychainContract.KeyRings.HAS_ANY_SECRET,
+            KeychainContract.KeyRings.FINGERPRINT,
+    };
 
-        return new CursorLoader(getActivity(), mDataUriSubkeys,
-                SubkeysAdapter.SUBKEYS_PROJECTION, null, null, null);
+    static final int INDEX_MASTER_KEY_ID = 1;
+    static final int INDEX_HAS_ANY_SECRET = 2;
+    static final int INDEX_FINGERPRINT = 3;
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id) {
+            case LOADER_ID_UNIFIED: {
+                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
+                return new CursorLoader(getActivity(), baseUri,
+                        PROJECTION, null, null, null);
+            }
+
+            case LOADER_ID_SUBKEYS: {
+                setContentShown(false);
+
+                Uri subkeysUri = KeychainContract.Keys.buildKeysUri(mDataUri);
+                return new CursorLoader(getActivity(), subkeysUri,
+                        SubkeysAdapter.SUBKEYS_PROJECTION, null, null, null);
+            }
+
+            default:
+                return null;
+        }
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -174,12 +197,26 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
             return;
         }
 
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        mSubkeysAdapter.swapCursor(data);
+        switch (loader.getId()) {
+            case LOADER_ID_UNIFIED: {
+                data.moveToFirst();
+                
+                mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                mHasSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                mFingerprint = data.getBlob(INDEX_FINGERPRINT);
+                break;
+            }
+            case LOADER_ID_SUBKEYS: {
+                // Swap the new cursor in. (The framework will take care of closing the
+                // old cursor once we return.)
+                mSubkeysAdapter.swapCursor(data);
 
-        // TODO: maybe show not before both are loaded!
-        setContentShown(true);
+                // TODO: maybe show not before both are loaded!
+                setContentShown(true);
+                break;
+            }
+        }
+
     }
 
     /**
@@ -244,7 +281,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                 mSubkeysAdapter.setEditMode(null);
                 mSubkeysAddedLayout.setVisibility(View.GONE);
                 mSubkeyAddFabLayout.setDisplayedChild(0);
-                getLoaderManager().restartLoader(0, null, ViewKeyAdvSubkeysFragment.this);
+                getLoaderManager().restartLoader(LOADER_ID_SUBKEYS, null, ViewKeyAdvSubkeysFragment.this);
             }
         });
     }
@@ -422,12 +459,13 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
             @Override
             public void onCryptoOperationCancelled() {
-
+                mode.finish();
             }
 
             @Override
             public void onCryptoOperationError(EditKeyResult result) {
-
+                mode.finish();
+                result.createNotify(getActivity()).show();
             }
 
             @Override
