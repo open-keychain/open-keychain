@@ -391,11 +391,11 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 return true;
             }
             case R.id.menu_key_view_certify_fingerprint: {
-                certifyFingeprint(mDataUri, false);
+                certifyFingerprint(mDataUri, false);
                 return true;
             }
             case R.id.menu_key_view_certify_fingerprint_word: {
-                certifyFingeprint(mDataUri, true);
+                certifyFingerprint(mDataUri, true);
                 return true;
             }
         }
@@ -423,14 +423,13 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         return true;
     }
 
-
     private void scanQrCode() {
         Intent scanQrCode = new Intent(this, ImportKeysProxyActivity.class);
         scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_WITH_RESULT);
         startActivityForResult(scanQrCode, REQUEST_QR_FINGERPRINT);
     }
 
-    private void certifyFingeprint(Uri dataUri, boolean enableWordConfirm) {
+    private void certifyFingerprint(Uri dataUri, boolean enableWordConfirm) {
         Intent intent = new Intent(this, CertifyFingerprintActivity.class);
         intent.setData(dataUri);
         intent.putExtra(CertifyFingerprintActivity.EXTRA_ENABLE_WORD_CONFIRM, enableWordConfirm);

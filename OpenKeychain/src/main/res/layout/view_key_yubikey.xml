@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right|end"
                     android:text="@string/button_bind_key"
-                    android:textColor="@color/link_text_material_light"
+                    android:textColor="@color/card_view_button"
                     style="?android:attr/borderlessButtonStyle"
                     android:visibility="gone"
                     />

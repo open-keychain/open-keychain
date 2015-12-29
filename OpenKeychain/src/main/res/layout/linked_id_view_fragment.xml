@@ -144,14 +144,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="right|end">
+                android:gravity="left|start">
 
                 <Button
                     android:id="@+id/button_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/linked_button_view"
-                    android:textColor="@color/link_text_material_light"
+                    android:textColor="@color/card_view_button"
                     style="?android:attr/borderlessButtonStyle"
                     />
 
@@ -166,21 +166,21 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/linked_button_verify"
-                        android:textColor="@color/link_text_material_light"
+                        android:textColor="@color/card_view_button"
                         style="?android:attr/borderlessButtonStyle" />
                     <Button
                         android:id="@+id/button_retry"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/linked_button_retry"
-                        android:textColor="@color/link_text_material_light"
+                        android:textColor="@color/card_view_button"
                         style="?android:attr/borderlessButtonStyle" />
                     <Button
                         android:id="@+id/button_confirm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/linked_button_confirm"
-                        android:textColor="@color/link_text_material_light"
+                        android:textColor="@color/card_view_button"
                         style="?android:attr/borderlessButtonStyle" />
                 </ViewAnimator>
 

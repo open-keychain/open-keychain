@@ -34,6 +34,6 @@
     <color name="translucent_scrim_bottom_center">#2A000000</color>
 
     <!-- linked ID view -->
-    <color name="link_text_material_light">#ff009688</color>
+    <color name="card_view_button">#7bad45</color>
 
 </resources>

@@ -200,7 +200,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         switch (loader.getId()) {
             case LOADER_ID_UNIFIED: {
                 data.moveToFirst();
-                
+
                 mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                 mHasSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                 mFingerprint = data.getBlob(INDEX_FINGERPRINT);

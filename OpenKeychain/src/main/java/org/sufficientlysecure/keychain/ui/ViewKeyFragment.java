@@ -162,7 +162,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         try {
             frag = mLinkedIdsAdapter.getLinkedIdFragment(mDataUri, position, mFingerprint);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(Constants.TAG, "IOException", e);
             return;
         }
 
@@ -429,8 +429,17 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
 
             case LOADER_ID_USER_IDS: {
+                LinearLayout editButtonsLayout =
+                        (LinearLayout) getActivity().findViewById(R.id.view_key_card_user_ids_buttons);
+                if (mIsSecret) {
+                    editButtonsLayout.setVisibility(View.VISIBLE);
+                } else {
+                    editButtonsLayout.setVisibility(View.GONE);
+                }
+
                 setContentShown(true, false);
                 mUserIdsAdapter.swapCursor(data);
+
                 break;
             }
 

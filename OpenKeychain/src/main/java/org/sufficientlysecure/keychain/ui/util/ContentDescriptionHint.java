@@ -1,8 +1,3 @@
-package org.sufficientlysecure.keychain.ui.util;
-
-/**
- * Created by rohan on 20/9/15.
- */
 /*
  * Copyright 2012 Google Inc.
  *
@@ -19,14 +14,18 @@ package org.sufficientlysecure.keychain.ui.util;
  * limitations under the License.
  */
 
+package org.sufficientlysecure.keychain.ui.util;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
+
 public class ContentDescriptionHint {
     private static final int ESTIMATED_TOAST_HEIGHT_DIPS = 48;
+
     public static void setup(View view) {
         view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
