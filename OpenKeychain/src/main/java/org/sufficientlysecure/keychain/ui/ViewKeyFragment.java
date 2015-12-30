@@ -51,6 +51,7 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -76,6 +77,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     public static final String ARG_POSTPONE_TYPE = "postpone_type";
 
     private ListView mUserIds;
+    private Button mUserIdsEditButton;
     //private ListView mLinkedSystemContact;
 
     enum PostponeType {
@@ -131,10 +133,20 @@ public class ViewKeyFragment extends LoaderFragment implements
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
         mLinkedIdsCard = (CardView) view.findViewById(R.id.card_linked_ids);
-
         mLinkedIds = (ListView) view.findViewById(R.id.view_key_linked_ids);
-
         mLinkedIdsExpander = (TextView) view.findViewById(R.id.view_key_linked_ids_expander);
+        mUserIdsEditButton = (Button) view.findViewById(R.id.view_key_card_user_ids_edit);
+        mSystemContactCard = (CardView) view.findViewById(R.id.linked_system_contact_card);
+        mSystemContactLayout = (LinearLayout) view.findViewById(R.id.system_contact_layout);
+        mSystemContactName = (TextView) view.findViewById(R.id.system_contact_name);
+        mSystemContactPicture = (ImageView) view.findViewById(R.id.system_contact_picture);
+
+        mUserIdsEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editIdentities(mDataUri);
+            }
+        });
 
         mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -149,12 +161,13 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
         });
 
-        mSystemContactCard = (CardView) view.findViewById(R.id.linked_system_contact_card);
-        mSystemContactLayout = (LinearLayout) view.findViewById(R.id.system_contact_layout);
-        mSystemContactName = (TextView) view.findViewById(R.id.system_contact_name);
-        mSystemContactPicture = (ImageView) view.findViewById(R.id.system_contact_picture);
-
         return root;
+    }
+
+    private void editIdentities(Uri dataUri) {
+        Intent editIntent = new Intent(getActivity(), EditIdentitiesActivity.class);
+        editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
+        startActivityForResult(editIntent, 0);
     }
 
     private void showLinkedId(final int position) {

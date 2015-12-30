@@ -386,10 +386,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 finish();
                 return true;
             }
-            case R.id.menu_key_view_edit: {
-                editKey(mDataUri);
-                return true;
-            }
             case R.id.menu_key_view_certify_fingerprint: {
                 certifyFingerprint(mDataUri, false);
                 return true;
@@ -404,9 +400,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem editKey = menu.findItem(R.id.menu_key_view_edit);
-        editKey.setVisible(mIsSecret);
-
         MenuItem backupKey = menu.findItem(R.id.menu_key_view_backup);
         backupKey.setVisible(mIsSecret);
 
@@ -689,12 +682,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
-    }
-
-    private void editKey(Uri dataUri) {
-        Intent editIntent = new Intent(this, EditKeyActivity.class);
-        editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
-        startActivityForResult(editIntent, 0);
     }
 
     private void startSafeSlinger(Uri dataUri) {
