@@ -129,6 +129,7 @@
     <string name="menu_certify_fingerprint">"Confirm with fingerprint"</string>
     <string name="menu_certify_fingerprint_phrases">"Confirm with phrases"</string>
     <string name="menu_share_log">"Share log"</string>
+    <string name="menu_change_password">"Change password"</string>
 
     <string name="menu_keyserver_add">"Add"</string>
 
