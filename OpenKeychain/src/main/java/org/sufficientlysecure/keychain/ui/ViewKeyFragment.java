@@ -24,7 +24,6 @@ import java.util.List;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -47,7 +46,6 @@ import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -67,6 +65,7 @@ import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment.OnIdentityLoadedListener;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -78,8 +77,6 @@ public class ViewKeyFragment extends LoaderFragment implements
     public static final String ARG_POSTPONE_TYPE = "postpone_type";
 
     private ListView mUserIds;
-    private Button mUserIdsEditButton;
-    //private ListView mLinkedSystemContact;
 
     enum PostponeType {
         NONE, LINKED;
@@ -89,8 +86,8 @@ public class ViewKeyFragment extends LoaderFragment implements
 
     private static final int LOADER_ID_UNIFIED = 0;
     private static final int LOADER_ID_USER_IDS = 1;
-    private static final int LOADER_ID_LINKED_CONTACT = 2;
-    private static final int LOADER_ID_LINKED_IDS = 3;
+    private static final int LOADER_ID_LINKED_IDS = 2;
+    private static final int LOADER_ID_LINKED_CONTACT = 3;
 
     private static final String LOADER_EXTRA_LINKED_CONTACT_MASTER_KEY_ID
             = "loader_linked_contact_master_key_id";
@@ -110,6 +107,7 @@ public class ViewKeyFragment extends LoaderFragment implements
 
     private ListView mLinkedIds;
     private CardView mLinkedIdsCard;
+    private TextView mLinkedIdsEmpty;
     private byte[] mFingerprint;
     private TextView mLinkedIdsExpander;
 
@@ -133,19 +131,28 @@ public class ViewKeyFragment extends LoaderFragment implements
         View view = inflater.inflate(R.layout.view_key_fragment, getContainer());
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
+        Button userIdsEditButton = (Button) view.findViewById(R.id.view_key_card_user_ids_edit);
         mLinkedIdsCard = (CardView) view.findViewById(R.id.card_linked_ids);
         mLinkedIds = (ListView) view.findViewById(R.id.view_key_linked_ids);
         mLinkedIdsExpander = (TextView) view.findViewById(R.id.view_key_linked_ids_expander);
-        mUserIdsEditButton = (Button) view.findViewById(R.id.view_key_card_user_ids_edit);
+        mLinkedIdsEmpty = (TextView)  view.findViewById(R.id.view_key_linked_ids_empty);
+        Button linkedIdsAddButton = (Button) view.findViewById(R.id.view_key_card_linked_ids_add);
         mSystemContactCard = (CardView) view.findViewById(R.id.linked_system_contact_card);
         mSystemContactLayout = (LinearLayout) view.findViewById(R.id.system_contact_layout);
         mSystemContactName = (TextView) view.findViewById(R.id.system_contact_name);
         mSystemContactPicture = (ImageView) view.findViewById(R.id.system_contact_picture);
 
-        mUserIdsEditButton.setOnClickListener(new View.OnClickListener() {
+        userIdsEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 editIdentities(mDataUri);
+            }
+        });
+
+        linkedIdsAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addLinkedIdentity(mDataUri);
             }
         });
 
@@ -171,6 +178,13 @@ public class ViewKeyFragment extends LoaderFragment implements
         startActivityForResult(editIntent, 0);
     }
 
+    private void addLinkedIdentity(Uri dataUri) {
+        Intent intent = new Intent(getActivity(), LinkedIdWizard.class);
+        intent.setData(dataUri);
+        startActivity(intent);
+        getActivity().finish();
+    }
+
     private void showLinkedId(final int position) {
         final LinkedIdViewFragment frag;
         try {
@@ -182,7 +196,7 @@ public class ViewKeyFragment extends LoaderFragment implements
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Transition trans = TransitionInflater.from(getActivity())
-                            .inflateTransition(R.transition.linked_id_card_trans);
+                    .inflateTransition(R.transition.linked_id_card_trans);
             // setSharedElementReturnTransition(trans);
             setExitTransition(new Fade());
             frag.setSharedElementEnterTransition(trans);
@@ -235,7 +249,7 @@ public class ViewKeyFragment extends LoaderFragment implements
      */
     private void loadLinkedSystemContact(final long contactId) {
         // contact doesn't exist, stop
-        if(contactId == -1) return;
+        if (contactId == -1) return;
 
         final Context context = mSystemContactName.getContext();
         ContactHelper contactHelper = new ContactHelper(context);
@@ -323,7 +337,6 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
     }
 
-    // These are the rows that we will retrieve.
     static final String[] UNIFIED_PROJECTION = new String[]{
             KeychainContract.KeyRings._ID,
             KeychainContract.KeyRings.MASTER_KEY_ID,
@@ -350,7 +363,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     @SuppressWarnings("unused")
     static final int INDEX_HAS_ENCRYPT = 8;
 
-    private static final String[] RAWCONTACT_PROJECTION = {
+    private static final String[] RAW_CONTACT_PROJECTION = {
             ContactsContract.RawContacts.CONTACT_ID
     };
 
@@ -384,29 +397,28 @@ public class ViewKeyFragment extends LoaderFragment implements
                 return LinkedIdsAdapter.createLoader(getActivity(), mDataUri);
             }
 
-            //we need a separate loader for linked contact to ensure refreshing on verification
             case LOADER_ID_LINKED_CONTACT: {
-                //passed in args to explicitly specify their need
+                // we need a separate loader for linked contact
+                // to ensure refreshing on verification
+
+                // passed in args to explicitly specify their need
                 long masterKeyId = args.getLong(LOADER_EXTRA_LINKED_CONTACT_MASTER_KEY_ID);
                 boolean isSecret = args.getBoolean(LOADER_EXTRA_LINKED_CONTACT_IS_SECRET);
 
-                Uri baseUri;
-                if (isSecret)
-                    baseUri = ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI;
-                else
-                    baseUri = ContactsContract.RawContacts.CONTENT_URI;
+                Uri baseUri = isSecret ? ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI :
+                        ContactsContract.RawContacts.CONTENT_URI;
 
                 return new CursorLoader(
                         getActivity(),
                         baseUri,
-                        RAWCONTACT_PROJECTION,
+                        RAW_CONTACT_PROJECTION,
                         ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " +
                                 ContactsContract.RawContacts.SOURCE_ID + "=? AND " +
                                 ContactsContract.RawContacts.DELETED + "=?",
-                        new String[]{//"0" for "not deleted"
+                        new String[]{
                                 Constants.ACCOUNT_TYPE,
                                 Long.toString(masterKeyId),
-                                "0"
+                                "0" // "0" for "not deleted"
                         },
                         null);
             }
@@ -421,47 +433,29 @@ public class ViewKeyFragment extends LoaderFragment implements
         /* TODO better error handling? May cause problems when a key is deleted,
          * because the notification triggers faster than the activity closes.
          */
-        // Avoid NullPointerExceptions...
-        if (data == null || data.getCount() == 0) {
+        if (data == null) {
             return;
         }
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         switch (loader.getId()) {
             case LOADER_ID_UNIFIED: {
-                if (data.moveToFirst()) {
+                if (data.getCount() == 1 && data.moveToFirst()) {
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                     mFingerprint = data.getBlob(INDEX_FINGERPRINT);
                     long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
 
-                    // load user ids after we know if it's a secret key
-                    mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
-                    mUserIds.setAdapter(mUserIdsAdapter);
-                    getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-
-                    if (Preferences.getPreferences(getActivity()).getExperimentalEnableLinkedIdentities()) {
-                        mLinkedIdsAdapter =
-                                new LinkedIdsAdapter(getActivity(), null, 0, mIsSecret, mLinkedIdsExpander);
-                        mLinkedIds.setAdapter(mLinkedIdsAdapter);
-                        getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
-                    }
-
+                    // init other things after we know if it's a secret key
+                    initUserIds(mIsSecret);
+                    initLinkedIds(mIsSecret);
                     initLinkedContactLoader(masterKeyId, mIsSecret);
-
-                    break;
+                    initCardButtonsVisibility(mIsSecret);
                 }
+                break;
             }
 
             case LOADER_ID_USER_IDS: {
-                LinearLayout editButtonsLayout =
-                        (LinearLayout) getActivity().findViewById(R.id.view_key_card_user_ids_buttons);
-                if (mIsSecret) {
-                    editButtonsLayout.setVisibility(View.VISIBLE);
-                } else {
-                    editButtonsLayout.setVisibility(View.GONE);
-                }
-
                 setContentShown(true, false);
                 mUserIdsAdapter.swapCursor(data);
 
@@ -470,7 +464,15 @@ public class ViewKeyFragment extends LoaderFragment implements
 
             case LOADER_ID_LINKED_IDS: {
                 mLinkedIdsAdapter.swapCursor(data);
-                mLinkedIdsCard.setVisibility(mLinkedIdsAdapter.getCount() > 0 ? View.VISIBLE : View.GONE);
+
+                if (mIsSecret) {
+                    mLinkedIdsCard.setVisibility(View.VISIBLE);
+                    mLinkedIdsEmpty.setVisibility(mLinkedIdsAdapter.getCount() > 0 ? View.GONE : View.VISIBLE);
+                } else {
+                    mLinkedIdsCard.setVisibility(mLinkedIdsAdapter.getCount() > 0 ? View.VISIBLE : View.GONE);
+                    mLinkedIdsEmpty.setVisibility(View.GONE);
+                }
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mPostponeType == PostponeType.LINKED) {
                     mLinkedIdsCard.getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener() {
                         @TargetApi(VERSION_CODES.LOLLIPOP)
@@ -486,13 +488,27 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
 
             case LOADER_ID_LINKED_CONTACT: {
-                if (data.moveToFirst()) {// if we have a linked contact
+                if (data.moveToFirst()) { // if we have a linked contact
                     long contactId = data.getLong(INDEX_CONTACT_ID);
                     loadLinkedSystemContact(contactId);
                 }
                 break;
             }
+        }
+    }
 
+    private void initUserIds(boolean isSecret) {
+        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !isSecret, null);
+        mUserIds.setAdapter(mUserIdsAdapter);
+        getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
+    }
+
+    private void initLinkedIds(boolean isSecret) {
+        if (Preferences.getPreferences(getActivity()).getExperimentalEnableLinkedIdentities()) {
+            mLinkedIdsAdapter =
+                    new LinkedIdsAdapter(getActivity(), null, 0, isSecret, mLinkedIdsExpander);
+            mLinkedIds.setAdapter(mLinkedIdsAdapter);
+            getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
         }
     }
 
@@ -512,6 +528,20 @@ public class ViewKeyFragment extends LoaderFragment implements
         getLoaderManager().initLoader(LOADER_ID_LINKED_CONTACT, linkedContactData, this);
     }
 
+    private void initCardButtonsVisibility(boolean isSecret) {
+        LinearLayout buttonsUserIdsLayout =
+                (LinearLayout) getActivity().findViewById(R.id.view_key_card_user_ids_buttons);
+        LinearLayout buttonsLinkedIdsLayout =
+                (LinearLayout) getActivity().findViewById(R.id.view_key_card_linked_ids_buttons);
+        if (isSecret) {
+            buttonsUserIdsLayout.setVisibility(View.VISIBLE);
+            buttonsLinkedIdsLayout.setVisibility(View.VISIBLE);
+        } else {
+            buttonsUserIdsLayout.setVisibility(View.GONE);
+            buttonsLinkedIdsLayout.setVisibility(View.GONE);
+        }
+    }
+
     /**
      * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
      * We need to make sure we are no longer using it.
@@ -524,7 +554,6 @@ public class ViewKeyFragment extends LoaderFragment implements
                 break;
             }
             case LOADER_ID_LINKED_IDS: {
-                mLinkedIdsCard.setVisibility(View.GONE);
                 mLinkedIdsAdapter.swapCursor(null);
                 break;
             }

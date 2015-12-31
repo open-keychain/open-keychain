@@ -36,9 +36,4 @@
         android:visible="false"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/menu_key_view_add_linked_identity"
-        android:title="@string/menu_linked_add_identity"
-        app:showAsAction="never" />
-
 </menu>

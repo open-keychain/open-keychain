@@ -379,13 +379,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 }
                 return true;
             }
-            case R.id.menu_key_view_add_linked_identity: {
-                Intent intent = new Intent(this, LinkedIdWizard.class);
-                intent.setData(mDataUri);
-                startActivity(intent);
-                finish();
-                return true;
-            }
             case R.id.menu_key_view_certify_fingerprint: {
                 certifyFingerprint(mDataUri, false);
                 return true;
@@ -402,10 +395,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem backupKey = menu.findItem(R.id.menu_key_view_backup);
         backupKey.setVisible(mIsSecret);
-
-        MenuItem addLinked = menu.findItem(R.id.menu_key_view_add_linked_identity);
-        addLinked.setVisible(mIsSecret
-                && Preferences.getPreferences(this).getExperimentalEnableLinkedIdentities());
 
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
         certifyFingerprint.setVisible(!mIsSecret && !mIsVerified && !mIsExpired && !mIsRevoked);
@@ -432,7 +421,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     private void certifyImmediate() {
         Intent intent = new Intent(this, CertifyKeyActivity.class);
-        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[] { mMasterKeyId });
+        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{mMasterKeyId});
 
         startActivityForResult(intent, REQUEST_CERTIFY);
     }
@@ -794,14 +783,15 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         /* TODO better error handling? May cause problems when a key is deleted,
          * because the notification triggers faster than the activity closes.
          */
-        // Avoid NullPointerExceptions...
-        if (data.getCount() == 0) {
-            return;
-        }
+
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         switch (loader.getId()) {
             case LOADER_ID_UNIFIED: {
+                // Avoid NullPointerExceptions...
+                if (data.getCount() == 0) {
+                    return;
+                }
 
                 if (data.moveToFirst()) {
                     // get name, email, and comment from USER_ID

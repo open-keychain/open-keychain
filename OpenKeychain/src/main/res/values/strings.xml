@@ -1680,7 +1680,8 @@
     <string name="linked_error_network">"Network error!"</string>
     <string name="linked_error_http">"Communication error: %s"</string>
     <string name="linked_webview_title_github">"GitHub Authorization"</string>
-    <string name="linked_gist_description">"OpenKeychain API Tests"</string>
+    <string name="linked_gist_description">"OpenKeychain Linked Identity"</string>
+    <string name="linked_empty">Link your key to Github, Twitter or other websites!</string>
     <string name="snack_btn_overwrite">"Overwrite"</string>
     <string name="backup_code_explanation">"The backup will be secured with a backup code. Write it down before you proceed!"</string>
     <string name="backup_code_enter">"Please enter the backup code:"</string>

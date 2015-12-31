@@ -40,6 +40,14 @@
                 android:layout_marginBottom="4dp" />
 
             <TextView
+                android:id="@+id/view_key_linked_ids_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:gravity="center"
+                android:text="@string/linked_empty" />
+
+            <TextView
                 android:id="@+id/view_key_linked_ids_expander"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -57,6 +65,28 @@
                 android:text="@string/linked_ids_more_unknown"
                 android:visibility="gone"
                 tools:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/view_key_card_linked_ids_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|start"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:background="?android:attr/listDivider" />
+
+                <Button
+                    android:id="@+id/view_key_card_linked_ids_add"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_linked_add_identity"
+                    android:textColor="@color/card_view_button" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
