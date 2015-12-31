@@ -19,6 +19,15 @@
             android:paddingRight="16dp"
             android:paddingTop="16dp">
 
+            <CheckBox
+                android:id="@+id/edit_identities_upload_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/label_send_key"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"/>
+
             <android.support.v7.widget.CardView
                 android:id="@+id/edit_identities_user_ids_card"
                 android:layout_width="match_parent"

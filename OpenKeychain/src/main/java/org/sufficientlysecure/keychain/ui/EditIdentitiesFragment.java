@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -33,14 +34,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
+import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -49,22 +53,22 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
-import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
-import java.util.Date;
-
-public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<SaveKeyringParcel, OperationResult>
+public class EditIdentitiesFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
 
+    private CheckBox mUploadKeyCheckbox;
     private ListView mUserIdsList;
     private ListView mUserIdsAddedList;
     private View mAddUserId;
@@ -77,6 +81,9 @@ public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<Save
     private Uri mDataUri;
 
     private SaveKeyringParcel mSaveKeyringParcel;
+
+    private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mEditOpHelper;
+    private CryptoOperationHelper<UploadKeyringParcel, UploadResult> mUploadOpHelper;
 
     private String mPrimaryUserId;
 
@@ -98,9 +105,15 @@ public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<Save
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.edit_identities_fragment, null);
 
+        mUploadKeyCheckbox = (CheckBox) view.findViewById(R.id.edit_identities_upload_checkbox);
         mUserIdsList = (ListView) view.findViewById(R.id.edit_identities_user_ids);
         mUserIdsAddedList = (ListView) view.findViewById(R.id.edit_identities_user_ids_added);
         mAddUserId = view.findViewById(R.id.edit_identities_add_user_id);
+
+        // If this is a debug build, don't upload by default
+        if (Constants.DEBUG) {
+            mUploadKeyCheckbox.setChecked(false);
+        }
 
         return view;
     }
@@ -113,7 +126,7 @@ public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<Save
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        cryptoOperation(new CryptoInputParcel(new Date()));
+                        editKey();
                     }
                 }, new OnClickListener() {
                     @Override
@@ -132,6 +145,18 @@ public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<Save
 
         initView();
         loadData(dataUri);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mEditOpHelper != null) {
+            mEditOpHelper.handleActivityResult(requestCode, resultCode, data);
+        }
+        if (mUploadOpHelper != null) {
+            mUploadOpHelper.handleActivityResult(requestCode, resultCode, data);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void loadData(Uri dataUri) {
@@ -301,6 +326,104 @@ public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<Save
         addUserIdDialog.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
     }
 
+
+    private void editKey() {
+        EditIdentitiesActivity activity = (EditIdentitiesActivity) getActivity();
+        if (activity == null) {
+            // this is a ui-triggered action, nvm if it fails while detached!
+            return;
+        }
+
+        CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult> editKeyCallback
+                = new CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult>() {
+            @Override
+            public SaveKeyringParcel createOperationInput() {
+                return mSaveKeyringParcel;
+            }
+
+            @Override
+            public void onCryptoOperationSuccess(EditKeyResult result) {
+
+                if (result.mMasterKeyId != null && mUploadKeyCheckbox.isChecked()) {
+                    // result will be displayed after upload
+                    uploadKey(result);
+                    return;
+                }
+
+                finishWithResult(result);
+            }
+
+            @Override
+            public void onCryptoOperationCancelled() {
+
+            }
+
+            @Override
+            public void onCryptoOperationError(EditKeyResult result) {
+                displayResult(result);
+            }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
+        };
+
+        mEditOpHelper = new CryptoOperationHelper<>(1, this, editKeyCallback, R.string.progress_building_key);
+        mEditOpHelper.cryptoOperation();
+    }
+
+
+    private void uploadKey(final EditKeyResult editKeyResult) {
+        Activity activity = getActivity();
+        // if the activity is gone at this point, there is nothing we can do!
+        if (activity == null) {
+            return;
+        }
+
+        // set data uri as path to keyring
+        final long masterKeyId = editKeyResult.mMasterKeyId;
+        // upload to favorite keyserver
+        final String keyserver = Preferences.getPreferences(activity).getPreferredKeyserver();
+
+        CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult> callback
+                = new CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult>() {
+
+            @Override
+            public UploadKeyringParcel createOperationInput() {
+                return new UploadKeyringParcel(keyserver, masterKeyId);
+            }
+
+            @Override
+            public void onCryptoOperationSuccess(UploadResult result) {
+                handleResult(result);
+            }
+
+            @Override
+            public void onCryptoOperationCancelled() {
+
+            }
+
+            @Override
+            public void onCryptoOperationError(UploadResult result) {
+                displayResult(result);
+            }
+
+            public void handleResult(UploadResult result) {
+                editKeyResult.getLog().add(result, 0);
+                finishWithResult(editKeyResult);
+            }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
+        };
+
+        mUploadOpHelper = new CryptoOperationHelper<>(3, this, callback, R.string.progress_uploading);
+        mUploadOpHelper.cryptoOperation();
+    }
+
     /**
      * Closes this activity, returning a result parcel with a single error log entry.
      */
@@ -315,23 +438,24 @@ public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<Save
         getActivity().finish();
     }
 
-    @Override
-    public SaveKeyringParcel createOperationInput() {
-        return mSaveKeyringParcel;
+    private void displayResult(OperationResult result) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        result.createNotify(activity).show();
     }
 
-    @Override
-    public void onQueuedOperationSuccess(OperationResult result) {
-
-        // null-protected from Queueing*Fragment
+    public void finishWithResult(OperationResult result) {
         Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
 
-        // if good -> finish, return result to showkey and display there!
-        Intent intent = new Intent();
-        intent.putExtra(OperationResult.EXTRA_RESULT, result);
-        activity.setResult(Activity.RESULT_OK, intent);
+        Intent data = new Intent();
+        data.putExtra(OperationResult.EXTRA_RESULT, result);
+        activity.setResult(Activity.RESULT_OK, data);
         activity.finish();
-
     }
 
 }
