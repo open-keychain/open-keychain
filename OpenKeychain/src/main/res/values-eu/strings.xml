@@ -576,7 +576,7 @@
   <string name="key_list_fab_search">Giltza Bilaketa</string>
   <string name="key_list_fab_import">Inportatu Agiritik</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Editatu giltza</string>
+  <string name="key_view_action_edit_ids">Editatu giltza</string>
   <string name="key_view_action_encrypt">Enkriptatu idazkia</string>
   <string name="key_view_action_encrypt_files">agiriak</string>
   <string name="key_view_action_certify">Baieztatu giltza</string>

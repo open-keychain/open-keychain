@@ -309,7 +309,7 @@
   <string name="key_list_empty_text1">Ключ не знайдено!</string>
   <string name="key_list_filter_show_all">Показати усі ключі</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Редагувати ключ</string>
+  <string name="key_view_action_edit_ids">Редагувати ключ</string>
   <string name="key_view_action_encrypt">Зашифрувати текст</string>
   <string name="key_view_action_encrypt_files">файли</string>
   <string name="key_view_action_update">Оновити із сервера ключів</string>

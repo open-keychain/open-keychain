@@ -72,7 +72,7 @@ public class UserIdsAddedAdapter extends ArrayAdapter<String> {
             holder.vDelete.setVisibility(View.VISIBLE); // always visible
 
             // not used:
-            View certifiedLayout = convertView.findViewById(R.id.user_id_item_certified_layout);
+            View certifiedLayout = convertView.findViewById(R.id.user_id_icon_animator);
             ImageView editImage = (ImageView) convertView.findViewById(R.id.user_id_item_edit_image);
             certifiedLayout.setVisibility(View.GONE);
             editImage.setVisibility(View.GONE);

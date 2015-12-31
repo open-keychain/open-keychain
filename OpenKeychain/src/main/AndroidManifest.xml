@@ -129,12 +129,16 @@
             android:name=".ui.EditKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_edit_key" />
-        <!-- NOTE: Dont use configChanges for QR Code view! We use a different layout for landscape -->
+        <activity
+            android:name=".ui.EditIdentitiesActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_edit_identities" />
         <activity
             android:name=".ui.linked.LinkedIdWizard"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_linked_create"
-            android:parentActivityName=".ui.ViewKeyActivity"></activity>
+            android:parentActivityName=".ui.ViewKeyActivity"/>
+        <!-- NOTE: Dont use configChanges for QR Code view! We use a different layout for landscape -->
         <activity
             android:name=".ui.QrCodeViewActivity"
             android:label="@string/share_qr_code_dialog_title" />

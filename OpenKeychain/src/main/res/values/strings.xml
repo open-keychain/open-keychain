@@ -129,6 +129,7 @@
     <string name="menu_certify_fingerprint">"Confirm with fingerprint"</string>
     <string name="menu_certify_fingerprint_phrases">"Confirm with phrases"</string>
     <string name="menu_share_log">"Share log"</string>
+    <string name="menu_change_password">"Change password"</string>
 
     <string name="menu_keyserver_add">"Add"</string>
 
@@ -666,7 +667,7 @@
     <string name="key_list_fab_import">"Import from File"</string>
 
     <!-- Key view -->
-    <string name="key_view_action_edit">"Edit key"</string>
+    <string name="key_view_action_edit">"Edit"</string>
     <string name="key_view_action_encrypt">"Encrypt text"</string>
     <string name="key_view_action_encrypt_files">"files"</string>
     <string name="key_view_action_certify">"Confirm key"</string>
@@ -1680,7 +1681,8 @@
     <string name="linked_error_network">"Network error!"</string>
     <string name="linked_error_http">"Communication error: %s"</string>
     <string name="linked_webview_title_github">"GitHub Authorization"</string>
-    <string name="linked_gist_description">"OpenKeychain API Tests"</string>
+    <string name="linked_gist_description">"OpenKeychain Linked Identity"</string>
+    <string name="linked_empty">Link your key to Github, Twitter or other websites!</string>
     <string name="snack_btn_overwrite">"Overwrite"</string>
     <string name="backup_code_explanation">"The backup will be secured with a backup code. Write it down before you proceed!"</string>
     <string name="backup_code_enter">"Please enter the backup code:"</string>
@@ -1703,6 +1705,9 @@
     <string name="share_log_dialog_cancel_button">"Cancel"</string>
     <string name="toast_wrong_mimetype">"Wrong data type, text was expected!"</string>
     <string name="toast_no_text">"No text in shared data!"</string>
+    <string name="menu_uids_save">"Save"</string>
+    <string name="title_edit_identities">"Edit Identities"</string>
+    <string name="title_edit_subkeys">"Edit Subkeys"</string>
     <string name="btn_search_for_query">"Search for\n'%s'"</string>
 
 </resources>

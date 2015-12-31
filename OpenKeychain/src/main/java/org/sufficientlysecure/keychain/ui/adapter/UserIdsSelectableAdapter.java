@@ -18,8 +18,8 @@ public class UserIdsSelectableAdapter extends UserIdsAdapter implements AdapterV
 
     private final ArrayList<Boolean> mCheckStates;
 
-    public UserIdsSelectableAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
-        super(context, c, flags, saveKeyringParcel);
+    public UserIdsSelectableAdapter(Context context, Cursor c, int flags) {
+        super(context, c, flags);
 
         mCheckStates = new ArrayList<Boolean>();
     }

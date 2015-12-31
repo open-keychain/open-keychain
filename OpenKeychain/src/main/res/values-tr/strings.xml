@@ -302,7 +302,7 @@
   </plurals>
   <string name="key_list_filter_show_all">Tüm anahtarları göster</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Anahtarı düzenle</string>
+  <string name="key_view_action_edit_ids">Anahtarı düzenle</string>
   <string name="key_view_action_encrypt">Metni şifrele</string>
   <string name="key_view_action_encrypt_files">dosyalar</string>
   <string name="key_view_action_update">Anahtar sunucusundan güncelle</string>

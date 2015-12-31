@@ -1,5 +1,6 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
+
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;

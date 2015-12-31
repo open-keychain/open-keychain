@@ -573,7 +573,7 @@
   <string name="key_list_fab_search">鍵の検索</string>
   <string name="key_list_fab_import">ファイルからインポート</string>
   <!--Key view-->
-  <string name="key_view_action_edit">鍵の編集</string>
+  <string name="key_view_action_edit_ids">鍵の編集</string>
   <string name="key_view_action_encrypt">テキスト暗号化</string>
   <string name="key_view_action_encrypt_files">ファイル</string>
   <string name="key_view_action_certify">鍵の確認</string>

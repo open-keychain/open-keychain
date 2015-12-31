@@ -479,7 +479,7 @@
   <!--Key list-->
   <string name="key_list_empty_text1">找不到金鑰！</string>
   <!--Key view-->
-  <string name="key_view_action_edit">編輯金鑰</string>
+  <string name="key_view_action_edit_ids">編輯金鑰</string>
   <string name="key_view_action_encrypt">加密文字</string>
   <string name="key_view_action_encrypt_files">檔案</string>
   <string name="key_view_action_share_with">分享...</string>

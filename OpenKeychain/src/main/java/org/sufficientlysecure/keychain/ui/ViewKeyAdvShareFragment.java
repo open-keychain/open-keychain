@@ -44,6 +44,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
@@ -85,6 +86,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
     private byte[] mFingerprint;
     private String mUserId;
+    private Bitmap mQrCodeBitmapCache;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
@@ -96,6 +98,34 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
         mFingerprintView = (TextView) view.findViewById(R.id.view_key_fingerprint);
         mQrCode = (ImageView) view.findViewById(R.id.view_key_qr_code);
+
+        // We cache the QR code bitmap in its smallest possible size, then scale
+        // it manually for the correct size whenever the layout of the ImageView
+        // changes.  The fingerprint qr code loader which runs in the background
+        // just calls requestLayout when it is finished, this way the loader and
+        // background task are disconnected from any layouting the ImageView may
+        // undergo. Please note how these six lines are perfectly right-aligned.
+        mQrCode.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
+                    int oldRight,
+                    int oldBottom) {
+                // bitmap scaling is expensive, avoid doing it if we already have the correct size!
+                int mCurrentWidth = 0, mCurrentHeight = 0;
+                if (mQrCodeBitmapCache != null) {
+                    if (mCurrentWidth == mQrCode.getWidth() && mCurrentHeight == mQrCode.getHeight()) {
+                        return;
+                    }
+                    mCurrentWidth = mQrCode.getWidth();
+                    mCurrentHeight = mQrCode.getHeight();
+                    // scale the image up to our actual size. we do this in code rather
+                    // than let the ImageView do this because we don't require filtering.
+                    Bitmap scaled = Bitmap.createScaledBitmap(mQrCodeBitmapCache,
+                            mCurrentWidth, mCurrentHeight, false);
+                    mQrCode.setImageBitmap(scaled);
+                }
+            }
+        });
         mQrCodeLayout = (CardView) view.findViewById(R.id.view_key_qr_code_layout);
         mQrCodeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -379,6 +409,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
      */
     public void onLoaderReset(Loader<Cursor> loader) {
         mFingerprint = null;
+        mQrCodeBitmapCache = null;
     }
 
     /**
@@ -389,6 +420,10 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
         final String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
         mFingerprintView.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));
+
+        if (mQrCodeBitmapCache != null) {
+            return;
+        }
 
         AsyncTask<Void, Void, Bitmap> loadTask =
                 new AsyncTask<Void, Void, Bitmap>() {
@@ -402,15 +437,11 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                     }
 
                     protected void onPostExecute(Bitmap qrCode) {
-                        // only change view, if fragment is attached to activity
-                        if (ViewKeyAdvShareFragment.this.isAdded()) {
+                        // cache for later, and if we are attached request re-layout
+                        mQrCodeBitmapCache = qrCode;
 
-                            // scale the image up to our actual size. we do this in code rather
-                            // than let the ImageView do this because we don't require filtering.
-                            Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
-                                    mQrCode.getHeight(), mQrCode.getHeight(),
-                                    false);
-                            mQrCode.setImageBitmap(scaled);
+                        if (ViewKeyAdvShareFragment.this.isAdded()) {
+                            mQrCode.requestLayout();
 
                             // simple fade-in animation
                             AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);

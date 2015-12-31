@@ -572,7 +572,7 @@
   <string name="key_list_fab_search">Schlüsselsuche</string>
   <string name="key_list_fab_import">Aus Datei importieren</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Schlüssel bearbeiten</string>
+  <string name="key_view_action_edit_ids">Schlüssel bearbeiten</string>
   <string name="key_view_action_encrypt">Text verschlüsseln</string>
   <string name="key_view_action_encrypt_files">Dateien</string>
   <string name="key_view_action_certify">Schlüssel bestätigen</string>

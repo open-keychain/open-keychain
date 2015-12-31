@@ -3,49 +3,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_key_view_edit"
-        android:icon="@drawable/ic_mode_edit_white_24dp"
-        android:visible="false"
-        app:showAsAction="always"
-        android:title="@string/key_view_action_edit" />
-
-    <item
         android:id="@+id/menu_key_view_refresh"
         android:icon="@drawable/ic_refresh_white_24dp"
-        app:showAsAction="always"
-        android:title="@string/key_view_action_update" />
+        android:title="@string/key_view_action_update"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_key_change_password"
+        android:title="@string/menu_change_password"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_key_view_backup"
-        app:showAsAction="never"
-        android:title="@string/menu_export_key" />
+        android:title="@string/menu_export_key"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_key_view_delete"
         android:icon="@drawable/ic_delete_grey_24dp"
-        app:showAsAction="never"
-        android:title="@string/menu_delete_key" />
+        android:title="@string/menu_delete_key"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_key_view_advanced"
-        app:showAsAction="never"
-        android:title="@string/menu_advanced" />
+        android:title="@string/menu_advanced"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_key_view_certify_fingerprint"
-        app:showAsAction="never"
+        android:title="@string/menu_certify_fingerprint"
         android:visible="false"
-        android:title="@string/menu_certify_fingerprint" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_key_view_certify_fingerprint_word"
-        app:showAsAction="never"
+        android:title="@string/menu_certify_fingerprint_phrases"
         android:visible="false"
-        android:title="@string/menu_certify_fingerprint_phrases" />
-
-    <item
-        android:id="@+id/menu_key_view_add_linked_identity"
-        app:showAsAction="never"
-        android:title="@string/menu_linked_add_identity" />
+        app:showAsAction="never" />
 
 </menu>

@@ -586,7 +586,7 @@
   <string name="key_list_fab_search">Recherche de clefs</string>
   <string name="key_list_fab_import">Importer d\'un fichier</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Modifier la clef</string>
+  <string name="key_view_action_edit_ids">Modifier la clef</string>
   <string name="key_view_action_encrypt">Chiffrer un texte</string>
   <string name="key_view_action_encrypt_files">fichiers</string>
   <string name="key_view_action_certify">Confirmer la clef</string>

@@ -600,7 +600,7 @@
   <string name="key_list_fab_search">Претрага кључа</string>
   <string name="key_list_fab_import">Увези из фајла</string>
   <!--Key view-->
-  <string name="key_view_action_edit">Уреди кључ</string>
+  <string name="key_view_action_edit_ids">Уреди кључ</string>
   <string name="key_view_action_encrypt">Шифруј текст</string>
   <string name="key_view_action_encrypt_files">фајлови</string>
   <string name="key_view_action_certify">Потврди кључ</string>
