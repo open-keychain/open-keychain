@@ -210,7 +210,8 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         Messenger messenger = new Messenger(returnHandler);
 
         // pre-fill out primary name
-        AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger, "");
+        AddUserIdDialogFragment addUserIdDialog =
+                AddUserIdDialogFragment.newInstance(messenger, "", true);
 
         addUserIdDialog.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
     }

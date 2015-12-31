@@ -56,7 +56,6 @@ import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
@@ -99,9 +98,9 @@ public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<Save
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.edit_identities_fragment, null);
 
-        mUserIdsList = (ListView) view.findViewById(R.id.edit_key_user_ids);
-        mUserIdsAddedList = (ListView) view.findViewById(R.id.edit_key_user_ids_added);
-        mAddUserId = view.findViewById(R.id.edit_key_action_add_user_id);
+        mUserIdsList = (ListView) view.findViewById(R.id.edit_identities_user_ids);
+        mUserIdsAddedList = (ListView) view.findViewById(R.id.edit_identities_user_ids_added);
+        mAddUserId = view.findViewById(R.id.edit_identities_add_user_id);
 
         return view;
     }
@@ -114,12 +113,7 @@ public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<Save
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // if we are working on an Uri, save directly
-                        if (mDataUri == null) {
-                            returnKeyringParcel();
-                        } else {
-                            cryptoOperation(new CryptoInputParcel(new Date()));
-                        }
+                        cryptoOperation(new CryptoInputParcel(new Date()));
                     }
                 }, new OnClickListener() {
                     @Override
@@ -302,25 +296,9 @@ public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<Save
         // pre-fill out primary name
         String predefinedName = KeyRing.splitUserId(mPrimaryUserId).name;
         AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger,
-                predefinedName);
+                predefinedName, false);
 
         addUserIdDialog.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
-    }
-
-
-    protected void returnKeyringParcel() {
-        if (mSaveKeyringParcel.mAddUserIds.size() == 0) {
-            Notify.create(getActivity(), R.string.edit_key_error_add_identity, Notify.Style.ERROR).show();
-            return;
-        }
-
-        // use first user id as primary
-        mSaveKeyringParcel.mChangePrimaryUserId = mSaveKeyringParcel.mAddUserIds.get(0);
-
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL, mSaveKeyringParcel);
-        getActivity().setResult(Activity.RESULT_OK, returnIntent);
-        getActivity().finish();
     }
 
     /**
@@ -333,7 +311,7 @@ public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<Save
                 new SingletonResult(SingletonResult.RESULT_ERROR, reason));
 
         // Finish with result
-        getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
+        getActivity().setResult(Activity.RESULT_OK, intent);
         getActivity().finish();
     }
 
@@ -351,7 +329,7 @@ public class EditIdentitiesFragment extends QueueingCryptoOperationFragment<Save
         // if good -> finish, return result to showkey and display there!
         Intent intent = new Intent();
         intent.putExtra(OperationResult.EXTRA_RESULT, result);
-        activity.setResult(EditKeyActivity.RESULT_OK, intent);
+        activity.setResult(Activity.RESULT_OK, intent);
         activity.finish();
 
     }
