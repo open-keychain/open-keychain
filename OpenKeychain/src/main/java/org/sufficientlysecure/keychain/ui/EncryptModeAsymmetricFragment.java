@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ViewAnimator;
 
+import com.tokenautocomplete.TokenCompleteTextView;
 import com.tokenautocomplete.TokenCompleteTextView.TokenListener;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -78,6 +79,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         mSignKeySpinner = (KeySpinner) view.findViewById(R.id.sign);
         mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
         mEncryptKeyView.setThreshold(1); // Start working from first character
+        mEncryptKeyView.setDeletionStyle(TokenCompleteTextView.TokenDeleteStyle.ToString);
 
         final ViewAnimator vSignatureIcon = (ViewAnimator) view.findViewById(R.id.result_signature_icon);
         mSignKeySpinner.setOnKeyChangedListener(new OnKeyChangedListener() {
