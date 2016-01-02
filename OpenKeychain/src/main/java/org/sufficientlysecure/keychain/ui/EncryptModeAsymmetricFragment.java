@@ -79,6 +79,8 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         mSignKeySpinner = (KeySpinner) view.findViewById(R.id.sign);
         mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
         mEncryptKeyView.setThreshold(1); // Start working from first character
+        // TODO: workaround for bug in TokenAutoComplete,
+        // see https://github.com/open-keychain/open-keychain/issues/1636
         mEncryptKeyView.setDeletionStyle(TokenCompleteTextView.TokenDeleteStyle.ToString);
 
         final ViewAnimator vSignatureIcon = (ViewAnimator) view.findViewById(R.id.result_signature_icon);

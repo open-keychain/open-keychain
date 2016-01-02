@@ -334,12 +334,12 @@ public class KeyAdapter extends CursorAdapter {
             }
         }
 
-
-                @Override
-                public String toString()
-                {
-                        return " ";
-                    }
+        // TODO: workaround for bug in TokenAutoComplete,
+        // see https://github.com/open-keychain/open-keychain/issues/1636
+        @Override
+        public String toString() {
+            return " ";
+        }
 
     }
 
