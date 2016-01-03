@@ -150,6 +150,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
+    testOptions.unitTests.all {
+        // log results of tests to console, useful for travis
+        testLogging {
+            events 'passed', 'skipped', 'failed' //, 'standardOut', 'standardError'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
