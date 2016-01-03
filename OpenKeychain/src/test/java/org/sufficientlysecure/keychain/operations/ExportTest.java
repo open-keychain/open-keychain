@@ -100,11 +100,11 @@ public class ExportTest {
         {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.DSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ELGAMAL, 2048, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                    Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snips");
             parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase1);
 
@@ -118,11 +118,11 @@ public class ExportTest {
         {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.DSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ELGAMAL, 2048, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                    Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snails");
             parcel.mNewUnlock = new ChangeUnlockParcel(null, new Passphrase("1234"));
 
