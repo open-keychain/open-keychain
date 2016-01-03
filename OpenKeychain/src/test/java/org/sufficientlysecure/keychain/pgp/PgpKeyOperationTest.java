@@ -94,11 +94,11 @@ public class PgpKeyOperationTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.DSA, 3072, null, KeyFlags.CERTIFY_OTHER, 0L));
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 3072, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
@@ -152,7 +152,7 @@ public class PgpKeyOperationTest {
             parcel.mAddUserIds.add("shy");
             parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
-            assertFailure("creating ring with < 512 bytes keysize should fail", parcel,
+            assertFailure("creating ring with < 2048 bit keysize should fail", parcel,
                     LogType.MSG_CR_ERROR_KEYSIZE_2048);
         }
 
@@ -170,7 +170,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 2048, null, KeyFlags.CERTIFY_OTHER, null));
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddUserIds.add("lotus");
             parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
@@ -181,7 +181,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
@@ -192,7 +192,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
             assertFailure("creating ring without user ids should fail", parcel,
@@ -216,7 +216,7 @@ public class PgpKeyOperationTest {
     public void testMasterFlags() throws Exception {
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 4096, null, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, 0L));
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, 0L));
         parcel.mAddUserIds.add("luna");
         ring = assertCreateSuccess("creating ring with master key flags must succeed", parcel);
 
@@ -347,8 +347,8 @@ public class PgpKeyOperationTest {
 
         long expiry = new Date().getTime() / 1000 + 159;
         int flags = KeyFlags.SIGN_DATA;
-        int bits = 2048 + new Random().nextInt(8);
-        parcel.mAddSubKeys.add(new SubkeyAdd(Algorithm.RSA, bits, null, flags, expiry));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, flags, expiry));
 
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
@@ -383,31 +383,27 @@ public class PgpKeyOperationTest {
                 expiry, newKey.getUnsafeExpiryTimeForTesting().getTime()/1000);
         Assert.assertEquals("added key must have expected flags",
                 flags, (long) newKey.getKeyUsage());
-        Assert.assertEquals("added key must have expected bitsize",
-                bits, (int) newKey.getBitStrength());
 
         { // bad keysize should fail
             parcel.reset();
             parcel.mAddSubKeys.add(new SubkeyAdd(
                     Algorithm.RSA, new Random().nextInt(512), null, KeyFlags.SIGN_DATA, 0L));
-            assertModifyFailure("creating a subkey with keysize < 512 should fail", ring, parcel,
+            assertModifyFailure("creating a subkey with keysize < 2048 should fail", ring, parcel,
                     LogType.MSG_CR_ERROR_KEYSIZE_2048);
-
         }
 
-        {
+        { // null expiry should fail
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, null));
-
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, null));
             assertModifyFailure("creating master key with null expiry should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_NULL_EXPIRY);
         }
 
         { // a past expiry should fail
             parcel.reset();
-            parcel.mAddSubKeys.add(new SubkeyAdd(Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA,
-                    new Date().getTime()/1000-10));
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, new Date().getTime()/1000-10));
             assertModifyFailure("creating subkey with past expiry date should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_PAST_EXPIRY);
         }
@@ -835,37 +831,61 @@ public class PgpKeyOperationTest {
     @Test
     public void testKeyToCard() throws Exception {
 
+        // Special keyring for security token tests with 2048 bit RSA as a subkey
+        SaveKeyringParcel parcelKey = new SaveKeyringParcel();
+        parcelKey.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.DSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
+        parcelKey.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
+        parcelKey.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.RSA, 3072, null, KeyFlags.ENCRYPT_COMMS, 0L));
+
+        parcelKey.mAddUserIds.add("yubikey");
+
+        parcelKey.mNewUnlock = new ChangeUnlockParcel(passphrase);
+        PgpKeyOperation opSecurityToken = new PgpKeyOperation(null);
+
+        PgpEditKeyResult resultSecurityToken = opSecurityToken.createSecretKeyRing(parcelKey);
+        Assert.assertTrue("initial test key creation must succeed", resultSecurityToken.success());
+        Assert.assertNotNull("initial test key creation must succeed", resultSecurityToken.getRing());
+
+        UncachedKeyRing ringSecurityToken = resultSecurityToken.getRing();
+
+        SaveKeyringParcel parcelSecurityToken = new SaveKeyringParcel();
+        parcelSecurityToken.mMasterKeyId = ringSecurityToken.getMasterKeyId();
+        parcelSecurityToken.mFingerprint = ringSecurityToken.getFingerprint();
+
         UncachedKeyRing modified;
 
         { // keytocard should fail with BAD_NFC_SIZE when presented with the RSA-3072 key
-            long keyId = KeyringTestingHelper.getSubkeyId(ring, 2);
-            parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
+            long keyId = KeyringTestingHelper.getSubkeyId(ringSecurityToken, 2);
+            parcelSecurityToken.reset();
+            parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
 
-            assertModifyFailure("keytocard operation should fail on invalid key size", ring,
-                    parcel, cryptoInput, LogType.MSG_MF_ERROR_BAD_NFC_SIZE);
+            assertModifyFailure("keytocard operation should fail on invalid key size", ringSecurityToken,
+                    parcelSecurityToken, cryptoInput, LogType.MSG_MF_ERROR_BAD_NFC_SIZE);
         }
 
-        { // keytocard should fail with BAD_NFC_ALGO when presented with the DSA-3072 key
-            long keyId = KeyringTestingHelper.getSubkeyId(ring, 0);
-            parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
+        { // keytocard should fail with BAD_NFC_ALGO when presented with the DSA-1024 key
+            long keyId = KeyringTestingHelper.getSubkeyId(ringSecurityToken, 0);
+            parcelSecurityToken.reset();
+            parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
 
-            assertModifyFailure("keytocard operation should fail on invalid key algorithm", ring,
-                    parcel, cryptoInput, LogType.MSG_MF_ERROR_BAD_NFC_ALGO);
+            assertModifyFailure("keytocard operation should fail on invalid key algorithm", ringSecurityToken,
+                    parcelSecurityToken, cryptoInput, LogType.MSG_MF_ERROR_BAD_NFC_ALGO);
         }
 
-        long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
+        long keyId = KeyringTestingHelper.getSubkeyId(ringSecurityToken, 1);
 
         { // keytocard should return a pending NFC_MOVE_KEY_TO_CARD result when presented with the RSA-2048
           // key, and then make key divert-to-card when it gets a serial in the cryptoInputParcel.
-            parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
+            parcelSecurityToken.reset();
+            parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
 
             CanonicalizedSecretKeyRing secretRing =
-                    new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
+                    new CanonicalizedSecretKeyRing(ringSecurityToken.getEncoded(), false, 0);
             PgpKeyOperation op = new PgpKeyOperation(null);
-            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
+            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcelSecurityToken);
             Assert.assertTrue("keytocard operation should be pending", result.isPending());
             Assert.assertEquals("required input should be RequiredInputType.NFC_MOVE_KEY_TO_CARD",
                     result.getRequiredInputParcel().mType, RequiredInputType.NFC_MOVE_KEY_TO_CARD);
@@ -881,7 +901,7 @@ public class PgpKeyOperationTest {
             CryptoInputParcel inputParcel = new CryptoInputParcel();
             inputParcel.addCryptoData(keyIdBytes, serial);
 
-            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, inputParcel);
+            modified = applyModificationWithChecks(parcelSecurityToken, ringSecurityToken, onlyA, onlyB, inputParcel);
             Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
             Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
@@ -893,13 +913,13 @@ public class PgpKeyOperationTest {
         }
 
         { // editing a signing subkey requires a primary key binding sig -> pendinginput
-            parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true));
+            parcelSecurityToken.reset();
+            parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, true));
 
             CanonicalizedSecretKeyRing secretRing =
                     new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
             PgpKeyOperation op = new PgpKeyOperation(null);
-            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
+            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcelSecurityToken);
             Assert.assertTrue("keytocard operation should be pending", result.isPending());
             Assert.assertEquals("required input should be RequiredInputType.NFC_SIGN",
                     RequiredInputType.NFC_SIGN, result.getRequiredInputParcel().mType);

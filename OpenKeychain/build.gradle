@@ -23,11 +23,11 @@ dependencies {
     testCompile 'org.mockito:mockito-core:1.10.19'
 
     // UI testing with Espresso
-    androidTestCompile 'com.android.support.test:runner:0.3'
-    androidTestCompile 'com.android.support.test:rules:0.3'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2'
-    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2') {
+    androidTestCompile 'com.android.support.test:runner:0.4.1'
+    androidTestCompile 'com.android.support.test:rules:0.4.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.1'
+    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2.1') {
         exclude group: 'com.android.support', module: 'appcompat'
         exclude group: 'com.android.support', module: 'support-v4'
         exclude module: 'recyclerview-v7'
@@ -40,29 +40,29 @@ dependencies {
     }
 
     // JCenter etc.
-    compile 'com.eftimoff:android-patternview:1.0.3@aar'
-    compile 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
-    compile 'com.google.zxing:core:3.2.0'
+    compile 'com.eftimoff:android-patternview:1.0.5@aar'
+    compile 'com.journeyapps:zxing-android-embedded:3.1.0@aar'
+    compile 'com.google.zxing:core:3.2.1'
     compile 'com.jpardogo.materialtabstrip:library:1.1.0'
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
-    compile 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
+    compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     compile 'com.splitwise:tokenautocomplete:2.0.2@aar'
     compile 'se.emilsjolander:stickylistheaders:2.7.0'
     compile 'org.sufficientlysecure:html-textview:1.3'
-    compile 'com.mikepenz:materialdrawer:4.4.2@aar'
-    compile 'com.mikepenz:materialize:0.2.7'
-    compile 'com.mikepenz:iconics-core:1.7.9@aar'
-    compile 'com.mikepenz:google-material-typeface:1.2.0.1@aar'
-    compile 'com.mikepenz:fontawesome-typeface:4.4.0.1@aar'
-    compile 'com.mikepenz:community-material-typeface:1.2.64.1@aar'
+    compile 'com.mikepenz:materialdrawer:4.6.3@aar'
+    compile 'com.mikepenz:materialize:0.5.1'
+    compile 'com.mikepenz:iconics-core:2.5.3@aar'
+    compile 'com.mikepenz:google-material-typeface:2.2.0.1@aar'
+    compile 'com.mikepenz:fontawesome-typeface:4.5.0.1@aar'
+    compile 'com.mikepenz:community-material-typeface:1.3.41.1@aar'
     compile 'com.nispok:snackbar:2.11.0'
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
+    compile 'com.squareup.okhttp:okhttp:2.7.1'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.7.1'
     compile 'org.apache.james:apache-mime4j-core:0.7.2'
     compile 'org.apache.james:apache-mime4j-dom:0.7.2'
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
-    compile 'com.cocosw:bottomsheet:1.1.1@aar'
+    compile 'com.cocosw:bottomsheet:1.2.0@aar'
 
     // libs as submodules
     compile project(':extern:openpgp-api-lib:openpgp-api')
@@ -84,42 +84,42 @@ dependencyVerification {
             'com.android.support:design:41a9cd75ca78f25df5f573db7cedf8bb66beae00c330943923ba9f3e2051736d',
             'com.android.support:recyclerview-v7:7606373da0931a1e62588335465a0e390cd676c98117edab29220317495faefd',
             'com.android.support:cardview-v7:5a5bc04a278662bfafdea5b11b2108a4b354dca6c68958b312f6f45cc5fe2e38',
-            'com.eftimoff:android-patternview:2e7a2bbfb4fed229d4b5598aa4e69e45066fbea72c971d69461db7d916cb7ebc',
-            'com.journeyapps:zxing-android-embedded:561c5d94391342bb77689b8d32a320d085a11853f72afda1128d595b815ef563',
-            'com.google.zxing:core:7fe5a8ff437635a540e56317649937b768b454795ce999ed5f244f83373dee7b',
+            'com.eftimoff:android-patternview:594dde382fb9a445ef0c92d614f6f127727ce699f124de8167929e10f298bf8b',
+            'com.journeyapps:zxing-android-embedded:90840a4457e68962fdfb74f691c6a736be7596291001045241901f1f0e6db2ac',
+            'com.google.zxing:core:b4d82452e7a6bf6ec2698904b332431717ed8f9a850224f295aec89de80f2259',
             'com.jpardogo.materialtabstrip:library:24d19232b319f8c73e25793432357919a7ed972186f57a3b2c9093ea74ad8311',
             'com.getbase:floatingactionbutton:3edefa511aac4d90794c7b0496aca59cff2eee1e32679247b4f85acbeee05240',
             'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
-            'org.ocpsoft.prettytime:prettytime:a6bc2641b3ab7873df604b77b6680c75b86d98e78afefb367940972f925591b5',
+            'org.ocpsoft.prettytime:prettytime:ef7098d973ae78b57d1a22dc37d3b8a771bf030301300e24055d676b6cdc5e75',
             'com.splitwise:tokenautocomplete:2fc238424130b42155b5f2e39799a90bbbd13b148850afbe534ab08bb913c7f7',
             'se.emilsjolander:stickylistheaders:a08ca948aa6b220f09d82f16bbbac395f6b78897e9eeac6a9f0b0ba755928eeb',
             'org.sufficientlysecure:html-textview:39048e35894e582adada388e6c00631803283f8defed8e07ad58a5f284f272ee',
-            'com.mikepenz:materialize:db365f859084048ac4e9cc4254642593dbb1ae9ce25c8fc26c93e2a5fadb3480',
-            'com.mikepenz:materialdrawer:fe9726e0f045eb3fe63832aa5383d9e2c7bcd8b87a6f26478aba1c330e9d36fe',
-            'com.mikepenz:google-material-typeface:a8319333a7f7ca369b9b5c62913f96787d934e312acefa8c9a5fcefd394fc6ee',
-            'com.mikepenz:iconics-core:e1ba25442c1645b7adfb7d101871c26ed64a6c5b892e9abee8d4d2a80d948d9e',
-            'com.mikepenz:community-material-typeface:520f1065730a1171763696ac9c4e770fedbbcf1a8dad6eb1028ba29489e1a2ce',
-            'com.mikepenz:fontawesome-typeface:8c58117eb42efe301a170049336f7838af7559d84b0cc9a2bd7aca8b130f0a50',
-            'com.squareup.okhttp:okhttp:1cc716e29539adcda677949508162796daffedb4794cbf947a6f65e696f0381c',
+            'com.mikepenz:materialize:2457dbe0b874a422c0a21bc6716cf5af1d5a8d39387857ff7c20855ab5543bf8',
+            'com.mikepenz:materialdrawer:4e2644f454cc2ce48b956536d3339957c3f592adb2e0b6dad72d477da29f7677',
+            'com.mikepenz:google-material-typeface:48b2712de87d542e9b050846e9f602238a367f38e2d5e8ea4557c5b12adfcbec',
+            'com.mikepenz:iconics-core:d2495547db9d881168b1b502b1934f6a000ed5086c6c6a7114f3bbcbbb7ec306',
+            'com.mikepenz:community-material-typeface:990acfcfb892a733d36748fe29176bd61dd5ab34bc8ca1c591200e639d955b99',
+            'com.mikepenz:fontawesome-typeface:69cb09934a83bac607e78a29459868d537f766224b4a65a042d1f84c98c7b05d',
+            'com.squareup.okhttp:okhttp:8df336e3e93b22ba8c05da5d94caf968950db845869c7ca16ed682e065135aa8',
             'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
             'org.apache.james:apache-mime4j-core:4d7434c68f94b81a253c12f28e6bbb4d6239c361d6086a46e22e594bb43ac660',
-            'com.squareup.okhttp:okhttp-urlconnection:79ec6f4e79e683105e87fe83278a531c693e538d30e3b9237000ce7c94fcb2cf',
+            'com.squareup.okhttp:okhttp-urlconnection:8dce03792fd7b5f089dc4fc0fdcecbbe50ae6cca21cb08a787a3b902a9914111',
             'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
             'org.apache.james:apache-mime4j-dom:7e6b06ee164a1c21b7e477249ea0b74a18fddce44764e5764085f58dd8c34633',
-//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:262e58d318d19e8ce8a78934136c9656fa51dc5fd026caa034c41390e0ef299d',
-            'com.cocosw:bottomsheet:871f5f4d6c10936569caf3528271efd77594a67aa5511765c96d7096c9b05f96',
-//            'com.madgag.spongycastle:core:d898b5b81ce9d456c65a3a2fe0b0be9b74e366aabe4ee1d13499a865cd20ee19',
-//            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:c25d0c05cc129e2975161f8454350a8868dbe1ffca8583e900935cb0b38db842',
-//            'com.madgag.spongycastle:pg:abd30d5a3c6ab6edbf7e2b60de3dae865bb5b5e4b41925ea8ac985e2a7fce4a0',
-//            'com.madgag.spongycastle:pkix:c5fd572191d31d2b05d7143d9e22d74ee3e8a43552c26d31114a27022b7a06ce',
-//            'com.madgag.spongycastle:prov:7a28f314e20683281254f92124f137d48173ea1dc3364a709d7cc66a5e46ec4e',
-//            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:75a3d23eff4d5c14fdc8912b5d593bf340f07b833ceabacbcd60a8e83b5b8b79',
+//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:2aedbdd2df12df4879c9af2e2917e6b2f1da6e4209a299be6e5e7fa998eaef95',
+            'com.cocosw:bottomsheet:40d2187c9cdaf224acbf876abc138cd9d4a293ef89091982ecf2492c8fcd186b',
+//            'OpenKeychain.extern.spongycastle:core:84bf273bad2208fda941be9f26ece4b588e5a86c1b6bdb1c9f6344b72a343931',
+//            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:d025e4ae1ec539663a35c0b904efd84e1a1a72f32f909174c110d65e19e51c28',
+//            'OpenKeychain.extern.spongycastle:pg:ab73a3b9cc495b1b1bda466fccead031c10138fe6bf0f147bcf625c4838b3e59',
+//            'OpenKeychain.extern.spongycastle:prov:eac23e551195c8876fa91d9bc9f735f27a264f1f5fa0d3bc21f141d0013d417b',
+//            'OpenKeychain.extern.KeybaseLib:Lib:d6a543fdee0a736a65bedcd225b98c9f8d5c9f5b72a0c2714e5b369019cd0ec6',
+//            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:b0238b99fb237bd7e2721d709930dbc85d21a7f533866899edc829dbe4d5f478',
+//            'OpenKeychain.extern:minidns:51e34ebab23ebd6bdd4cc681024040e5cfd2d713a51a4b209e4fbeaa73e5fe57',
             'com.android.support:support-annotations:f347a35b9748a4103b39a6714a77e2100f488d623fd6268e259c177b200e9d82',
-//            'OpenKeychain.extern:minidns:0084c81e30a4b06edac9b00689eeaa3cbbb9ea3b26aaa4fad205bb660ea0fcdb',
-//            'OpenKeychain.extern.KeybaseLib:Lib:c11785bf613f3fad8bf1670ef9fce1a10027cefbf2b3a67d487c6b8964f0e05a',
             'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
     ]
 }
+
 
 
 
@@ -148,6 +148,13 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    testOptions.unitTests.all {
+        // log results of tests to console, useful for travis
+        testLogging {
+            events 'passed', 'skipped', 'failed' //, 'standardOut', 'standardError'
+        }
     }
 
     buildTypes {
