@@ -27,6 +27,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.MenuItem;
 import android.view.View;
@@ -161,14 +162,16 @@ public class ViewCertActivity extends BaseActivity
                     break;
                 case WrappedSignature.CERTIFICATION_REVOCATION: {
                     mType.setText(R.string.cert_revoke);
-                    if (sig.isRevocation()) {
-                        try {
+                    try {
+                        if (! TextUtils.isEmpty(sig.getRevocationReason())) {
                             mReason.setText(sig.getRevocationReason());
-                        } catch(PgpGeneralException e) {
+                        } else {
                             mReason.setText(R.string.none);
                         }
-                        mRowReason.setVisibility(View.VISIBLE);
+                    } catch (PgpGeneralException e) {
+                        mReason.setText(R.string.none);
                     }
+                    mRowReason.setVisibility(View.VISIBLE);
                     break;
                 }
             }
