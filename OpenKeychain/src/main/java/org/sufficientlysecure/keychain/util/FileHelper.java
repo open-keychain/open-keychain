@@ -47,6 +47,7 @@ import android.provider.OpenableColumns;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 
 /** This class offers a number of helper functions for saving documents.
@@ -94,7 +95,7 @@ public class FileHelper {
 
     public static void openDocument(Fragment fragment, Uri last, String mimeType, boolean multiple, int requestCode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            openDocumentKitKat(fragment, mimeType, multiple, requestCode);
+            openDocumentKitKat(fragment, last, mimeType, multiple, requestCode);
         } else {
             openDocumentPreKitKat(fragment, last, mimeType, multiple, requestCode);
         }
@@ -125,14 +126,22 @@ public class FileHelper {
 
     /** Opens the storage browser on Android 4.4 or later for opening a file */
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    private static void openDocumentKitKat(Fragment fragment, String mimeType, boolean multiple, int requestCode) {
+    private static void openDocumentKitKat(Fragment fragment, Uri last, String mimeType, boolean multiple, int requestCode) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(mimeType);
         // Note: This is not documented, but works: Show the Internal Storage menu item in the drawer!
         intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiple);
-        fragment.startActivityForResult(intent, requestCode);
+
+        try {
+            fragment.startActivityForResult(intent, requestCode);
+        } catch (ActivityNotFoundException e) {
+            // NOTE: Looks like some Android distributions are missing the ACTION_OPEN_DOCUMENT intent
+            // even on Android 4.4, see https://github.com/open-keychain/open-keychain/issues/1625
+            Log.w(Constants.TAG, "Couldn't start ACTION_OPEN_DOCUMENT intent, no activity found, falling back to ");
+            openDocumentPreKitKat(fragment, last, mimeType, multiple, requestCode);
+        }
     }
 
     public static String getFilename(Context context, Uri uri) {
