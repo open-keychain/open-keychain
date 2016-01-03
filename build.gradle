@@ -1,3 +1,5 @@
+apply plugin: 'com.github.ben-manes.versions'
+
 buildscript {
     repositories {
         jcenter()
@@ -12,6 +14,9 @@ buildscript {
         
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
         // classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.0.2'
+
+        // allows to check for lib updates with "gradle dependencyUpdates -Drevision=release"
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.11.3'
     }
 }
 
