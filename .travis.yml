@@ -10,10 +10,6 @@ sudo: false
 android:
     components:
         - build-tools-23.0.1
-        - build-tools-22.0.1
-        - build-tools-21.1.2
-        - build-tools-21.1.1
-        - build-tools-19.1.0
         - android-23
         - android-22
         - android-21
