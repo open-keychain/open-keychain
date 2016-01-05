@@ -931,7 +931,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                 State.REVOKED, R.color.icons, true);
-                        color = getResources().getColor(R.color.key_flag_red, null);
+                        // noinspection deprecation, fix requires api level 23
+                        color = getResources().getColor(R.color.key_flag_red);
 
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
@@ -947,7 +948,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                 State.EXPIRED, R.color.icons, true);
-                        color = getResources().getColor(R.color.key_flag_red, null);
+                        // noinspection deprecation, fix requires api level 23
+                        color = getResources().getColor(R.color.key_flag_red);
 
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
@@ -957,7 +959,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     } else if (mIsSecret) {
                         mStatusText.setText(R.string.view_key_my_key);
                         mStatusImage.setVisibility(View.GONE);
-                        color = getResources().getColor(R.color.key_flag_green, null);
+                        // noinspection deprecation, fix requires api level 23
+                        color = getResources().getColor(R.color.key_flag_green);
                         // reload qr code only if the fingerprint changed
                         if (!mFingerprintString.equals(mQrCodeLoaded)) {
                             loadQrCode(mFingerprintString);
@@ -1009,7 +1012,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                     State.VERIFIED, R.color.icons, true);
-                            color = getResources().getColor(R.color.key_flag_green, null);
+                            // noinspection deprecation, fix requires api level 23
+                            color = getResources().getColor(R.color.key_flag_green);
                             photoTask.execute(mMasterKeyId);
 
                             hideFab();
@@ -1018,7 +1022,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                     State.UNVERIFIED, R.color.icons, true);
-                            color = getResources().getColor(R.color.key_flag_orange, null);
+                            // noinspection deprecation, fix requires api level 23
+                            color = getResources().getColor(R.color.key_flag_orange);
 
                             showFab();
                         }
