@@ -307,14 +307,12 @@ public class Preferences {
         if (pref == null) {
             return CacheTTLPrefs.getDefault();
         }
-        int def = mSharedPreferences.getInt(Pref.PASSPHRASE_CACHE_DEFAULT, 300);
-        return new CacheTTLPrefs(pref, def);
+        return new CacheTTLPrefs(pref);
     }
 
     public void setPassphraseCacheTtl(CacheTTLPrefs prefs) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putStringSet(Constants.Pref.PASSPHRASE_CACHE_TTLS, prefs.getStringSet());
-        editor.putInt(Pref.PASSPHRASE_CACHE_DEFAULT, prefs.defaultTtl);
         editor.commit();
     }
 
@@ -336,10 +334,8 @@ public class Preferences {
         }
 
         public HashSet<Integer> ttlTimes;
-        public int defaultTtl;
 
-        public CacheTTLPrefs(Collection<String> ttlStrings, int defaultTtl) {
-            this.defaultTtl = defaultTtl;
+        public CacheTTLPrefs(Collection<String> ttlStrings) {
             ttlTimes = new HashSet<>();
             for (String ttlString : ttlStrings) {
                 ttlTimes.add(Integer.parseInt(ttlString));
@@ -356,11 +352,10 @@ public class Preferences {
 
         public static CacheTTLPrefs getDefault() {
             ArrayList<String> ttlStrings = new ArrayList<>();
-            ttlStrings.add(Integer.toString(0));
             ttlStrings.add(Integer.toString(60 * 5));
             ttlStrings.add(Integer.toString(60 * 60));
             ttlStrings.add(Integer.toString(60 * 60 * 24));
-            return new CacheTTLPrefs(ttlStrings, 0);
+            return new CacheTTLPrefs(ttlStrings);
         }
 
     }

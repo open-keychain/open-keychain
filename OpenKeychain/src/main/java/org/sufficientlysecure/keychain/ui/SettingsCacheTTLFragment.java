@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
@@ -93,31 +92,23 @@ public class SettingsCacheTTLFragment extends Fragment {
     public class CacheTTLListAdapter extends RecyclerView.Adapter<CacheTTLListAdapter.ViewHolder> {
 
         private final ArrayList<Boolean> mPositionIsChecked;
-        private int mDefaultPosition;
 
         public CacheTTLListAdapter(CacheTTLPrefs prefs) {
             this.mPositionIsChecked = new ArrayList<>();
             for (int ttlTime : CacheTTLPrefs.CACHE_TTLS) {
                 mPositionIsChecked.add(prefs.ttlTimes.contains(ttlTime));
-                if (ttlTime == prefs.defaultTtl) {
-                    mDefaultPosition = mPositionIsChecked.size() -1;
-                }
             }
 
         }
 
         public CacheTTLPrefs getPrefs() {
             ArrayList<String> ttls = new ArrayList<>();
-            int defaultTtl = 0;
             for (int i = 0; i < mPositionIsChecked.size(); i++) {
                 if (mPositionIsChecked.get(i)) {
                     ttls.add(Integer.toString(CacheTTLPrefs.CACHE_TTLS.get(i)));
-                    if (i == mDefaultPosition) {
-                        defaultTtl = CacheTTLPrefs.CACHE_TTLS.get(i);
-                    }
                 }
             }
-            return new CacheTTLPrefs(ttls, defaultTtl);
+            return new CacheTTLPrefs(ttls);
         }
 
         @Override
@@ -141,13 +132,11 @@ public class SettingsCacheTTLFragment extends Fragment {
 
             CheckBox mChecked;
             TextView mTitle;
-            RadioButton mIsDefault;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 mChecked = (CheckBox) itemView.findViewById(R.id.ttl_selected);
                 mTitle = (TextView) itemView.findViewById(R.id.ttl_title);
-                mIsDefault = (RadioButton) itemView.findViewById(R.id.ttl_default);
 
                 itemView.setOnClickListener(new OnClickListener() {
                     @Override
@@ -161,30 +150,17 @@ public class SettingsCacheTTLFragment extends Fragment {
 
                 int ttl = CacheTTLPrefs.CACHE_TTLS.get(position);
                 boolean isChecked = mPositionIsChecked.get(position);
-                boolean isDefault = position == mDefaultPosition;
 
                 mTitle.setText(CacheTTLPrefs.CACHE_TTL_NAMES.get(ttl));
                 // avoid some ui flicker by skipping unnecessary updates
                 if (mChecked.isChecked() != isChecked) {
                     mChecked.setChecked(isChecked);
                 }
-                if (mIsDefault.isChecked() != isDefault) {
-                    mIsDefault.setChecked(isDefault);
-                }
-                mIsDefault.setEnabled(isChecked);
 
                 mChecked.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         setTtlChecked(position);
-                        savePreference();
-                    }
-                });
-
-                mIsDefault.setOnClickListener(!isChecked ? null : new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        setTtlDefault(position);
                         savePreference();
                     }
                 });
@@ -203,45 +179,8 @@ public class SettingsCacheTTLFragment extends Fragment {
                     Notify.create(getActivity(), R.string.settings_cache_ttl_max_three, Style.ERROR).show();
                 } else {
                     mPositionIsChecked.set(position, !isChecked);
-                    repositionDefault();
                 }
                 notifyItemChanged(position);
-            }
-
-            private void repositionDefault() {
-                boolean defaultPositionIsChecked = mPositionIsChecked.get(mDefaultPosition);
-                if (defaultPositionIsChecked) {
-                    return;
-                }
-
-                // prefer moving default up
-                int i = mDefaultPosition;
-                while (--i >= 0) {
-                    if (mPositionIsChecked.get(i)) {
-                        setTtlDefault(i);
-                        return;
-                    }
-                }
-
-                // if that didn't work, move it down
-                i = mDefaultPosition;
-                while (++i < mPositionIsChecked.size()) {
-                    if (mPositionIsChecked.get(i)) {
-                        setTtlDefault(i);
-                        return;
-                    }
-                }
-
-                // we should never get here - if we do, leave default as is (there is a sanity check in the
-                // set preference method, so no biggie)
-
-            }
-
-            private void setTtlDefault(int position) {
-                int previousDefaultPosition = mDefaultPosition;
-                mDefaultPosition = position;
-                notifyItemChanged(previousDefaultPosition);
-                notifyItemChanged(mDefaultPosition);
             }
 
             private int countCheckedItems() {

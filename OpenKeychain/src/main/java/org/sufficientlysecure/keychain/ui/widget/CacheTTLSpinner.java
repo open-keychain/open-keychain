@@ -46,23 +46,16 @@ public class CacheTTLSpinner extends AppCompatSpinner {
 
         CacheTTLPrefs prefs = Preferences.getPreferences(context).getPassphraseCacheTtl();
         MatrixCursor  cursor = new MatrixCursor(new String[] { "_id", "TTL", "description" }, 5);
-        int i = 0, defaultPosition = 0;
+        int i = 0;
         for (int ttl : CacheTTLPrefs.CACHE_TTLS) {
             if ( ! prefs.ttlTimes.contains(ttl)) {
                 continue;
-            }
-            if (ttl == prefs.defaultTtl) {
-                defaultPosition = i;
             }
             cursor.addRow(new Object[] { i++, ttl, getContext().getString(CacheTTLPrefs.CACHE_TTL_NAMES.get(ttl)) });
         }
 
         setAdapter(new SimpleCursorAdapter(getContext(), R.layout.simple_item, cursor,
-                new String[] { "description" },
-                new int[] { R.id.simple_item_text },
-                0));
-
-        setSelection(defaultPosition);
+                new String[] { "description" }, new int[] { R.id.simple_item_text }, 0));
     }
 
     public int getSelectedTimeToLive() {

@@ -26,11 +26,4 @@
         tools:text="One Hour"
         />
 
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ttl_default"
-        android:padding="4dp"
-        />
-
 </LinearLayout>

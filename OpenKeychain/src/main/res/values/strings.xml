@@ -1716,8 +1716,7 @@
     <string name="cache_ttl_three_hours">"for Three Hours"</string>
     <string name="cache_ttl_one_day">"for One Day"</string>
     <string name="cache_ttl_three_days">"for Three Days"</string>
-    <string name="settings_cache_select_three">"Pick up to three"</string>
-    <string name="setting_cache_select_default">"and one default"</string>
+    <string name="settings_cache_select_three">"Pick up to three."</string>
     <string name="settings_cache_ttl_at_least_one">"At least one item must be selected!"</string>
     <string name="settings_cache_ttl_max_three">"Can\'t select more than three items!"</string>
     <string name="remember">"Remember"</string>
