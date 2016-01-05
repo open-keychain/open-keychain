@@ -35,7 +35,6 @@
             android:id="@+id/user_id_item_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorTertiaryText"
             android:text="comment"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 

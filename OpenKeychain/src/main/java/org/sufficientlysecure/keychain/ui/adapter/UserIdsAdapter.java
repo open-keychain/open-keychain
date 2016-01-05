@@ -65,7 +65,7 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         TextView vComment = (TextView) view.findViewById(R.id.user_id_item_comment);
         ImageView vVerified = (ImageView) view.findViewById(R.id.user_id_item_certified);
         ViewAnimator vVerifiedLayout = (ViewAnimator) view.findViewById(R.id.user_id_icon_animator);
-        ImageView vEditImage = (ImageView) view.findViewById(R.id.user_id_item_edit_image);
+
         ImageView vDeleteButton = (ImageView) view.findViewById(R.id.user_id_item_delete_button);
         vDeleteButton.setVisibility(View.GONE); // not used
 

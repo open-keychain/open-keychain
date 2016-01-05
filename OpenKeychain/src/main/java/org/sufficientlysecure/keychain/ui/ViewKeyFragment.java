@@ -79,7 +79,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     private ListView mUserIds;
 
     enum PostponeType {
-        NONE, LINKED;
+        NONE, LINKED
     }
 
     boolean mIsSecret = false;
@@ -118,7 +118,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         ViewKeyFragment frag = new ViewKeyFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_DATA_URI, dataUri);
-        args.putInt(ARG_POSTPONE_TYPE, postponeType.ordinal());
+        args.putString(ARG_POSTPONE_TYPE, postponeType.toString());
 
         frag.setArguments(args);
 
@@ -316,7 +316,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         super.onActivityCreated(savedInstanceState);
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-        mPostponeType = PostponeType.values()[getArguments().getInt(ARG_POSTPONE_TYPE, 0)];
+        mPostponeType = PostponeType.valueOf(getArguments().getString(ARG_POSTPONE_TYPE));
         if (dataUri == null) {
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
             getActivity().finish();

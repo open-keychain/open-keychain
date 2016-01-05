@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -344,7 +345,7 @@ public class EditIdentitiesFragment extends Fragment
             @Override
             public void onCryptoOperationSuccess(EditKeyResult result) {
 
-                if (result.mMasterKeyId != null && mUploadKeyCheckbox.isChecked()) {
+                if (mUploadKeyCheckbox.isChecked()) {
                     // result will be displayed after upload
                     uploadKey(result);
                     return;
@@ -381,7 +382,10 @@ public class EditIdentitiesFragment extends Fragment
             return;
         }
 
-        // set data uri as path to keyring
+        if (editKeyResult.mMasterKeyId == null) {
+            throw new AssertionError("A successful edit key result must include a master key id!");
+        }
+
         final long masterKeyId = editKeyResult.mMasterKeyId;
         // upload to favorite keyserver
         final String keyserver = Preferences.getPreferences(activity).getPreferredKeyserver();
@@ -424,26 +428,17 @@ public class EditIdentitiesFragment extends Fragment
         mUploadOpHelper.cryptoOperation();
     }
 
-    /**
-     * Closes this activity, returning a result parcel with a single error log entry.
-     */
-    void finishWithError(LogType reason) {
-        // Prepare an intent with an EXTRA_RESULT
-        Intent intent = new Intent();
-        intent.putExtra(OperationResult.EXTRA_RESULT,
-                new SingletonResult(SingletonResult.RESULT_ERROR, reason));
-
-        // Finish with result
-        getActivity().setResult(Activity.RESULT_OK, intent);
-        getActivity().finish();
-    }
-
     private void displayResult(OperationResult result) {
         Activity activity = getActivity();
         if (activity == null) {
             return;
         }
         result.createNotify(activity).show();
+    }
+
+    void finishWithError(LogType reason) {
+        SingletonResult errorResult = new SingletonResult(SingletonResult.RESULT_ERROR, reason);
+        finishWithResult(errorResult);
     }
 
     public void finishWithResult(OperationResult result) {
@@ -457,5 +452,4 @@ public class EditIdentitiesFragment extends Fragment
         activity.setResult(Activity.RESULT_OK, data);
         activity.finish();
     }
-
 }

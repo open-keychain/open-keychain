@@ -20,6 +20,8 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 import android.animation.ArgbEvaluator;
@@ -39,6 +41,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.provider.ContactsContract;
+import android.support.annotation.IntDef;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -106,6 +109,9 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     public static final String EXTRA_NFC_AID = "nfc_aid";
     public static final String EXTRA_NFC_FINGERPRINTS = "nfc_fingerprints";
 
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({REQUEST_QR_FINGERPRINT, REQUEST_BACKUP, REQUEST_CERTIFY, REQUEST_DELETE})
+    private @interface RequestType {}
     static final int REQUEST_QR_FINGERPRINT = 1;
     static final int REQUEST_BACKUP = 2;
     static final int REQUEST_CERTIFY = 3;
@@ -574,7 +580,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(@RequestType int requestCode, int resultCode, Intent data) {
         if (mImportOpHelper.handleActivityResult(requestCode, resultCode, data)) {
             return;
         }
@@ -582,12 +588,13 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             mEditOpHelper.handleActivityResult(requestCode, resultCode, data);
         }
 
+        if (resultCode != Activity.RESULT_OK) {
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
+
         switch (requestCode) {
             case REQUEST_QR_FINGERPRINT: {
-
-                if (resultCode != Activity.RESULT_OK) {
-                    return;
-                }
 
                 // If there is an EXTRA_RESULT, that's an error. Just show it.
                 if (data.hasExtra(OperationResult.EXTRA_RESULT)) {
@@ -610,19 +617,17 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             }
 
             case REQUEST_BACKUP: {
-                if (resultCode != Activity.RESULT_OK) {
-                    return;
-                }
-
                 startBackupActivity();
                 return;
             }
 
-            case REQUEST_CERTIFY: {
-                if (resultCode != Activity.RESULT_OK) {
-                    return;
-                }
+            case REQUEST_DELETE: {
+                setResult(RESULT_OK, data);
+                finish();
+                return;
+            }
 
+            case REQUEST_CERTIFY: {
                 if (data.hasExtra(OperationResult.EXTRA_RESULT)) {
                     OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
                     result.createNotify(this).show();
@@ -630,15 +635,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 return;
             }
 
-            case REQUEST_DELETE: {
-                if (resultCode != Activity.RESULT_OK) {
-                    return;
-                }
-
-                setResult(RESULT_OK, data);
-                finish();
-                return;
-            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -935,7 +931,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                 State.REVOKED, R.color.icons, true);
-                        color = getResources().getColor(R.color.key_flag_red);
+                        color = getResources().getColor(R.color.key_flag_red, null);
 
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
@@ -951,7 +947,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                 State.EXPIRED, R.color.icons, true);
-                        color = getResources().getColor(R.color.key_flag_red);
+                        color = getResources().getColor(R.color.key_flag_red, null);
 
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
@@ -961,7 +957,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     } else if (mIsSecret) {
                         mStatusText.setText(R.string.view_key_my_key);
                         mStatusImage.setVisibility(View.GONE);
-                        color = getResources().getColor(R.color.key_flag_green);
+                        color = getResources().getColor(R.color.key_flag_green, null);
                         // reload qr code only if the fingerprint changed
                         if (!mFingerprintString.equals(mQrCodeLoaded)) {
                             loadQrCode(mFingerprintString);
@@ -1013,7 +1009,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                     State.VERIFIED, R.color.icons, true);
-                            color = getResources().getColor(R.color.key_flag_green);
+                            color = getResources().getColor(R.color.key_flag_green, null);
                             photoTask.execute(mMasterKeyId);
 
                             hideFab();
@@ -1022,7 +1018,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                     State.UNVERIFIED, R.color.icons, true);
-                            color = getResources().getColor(R.color.key_flag_orange);
+                            color = getResources().getColor(R.color.key_flag_orange, null);
 
                             showFab();
                         }

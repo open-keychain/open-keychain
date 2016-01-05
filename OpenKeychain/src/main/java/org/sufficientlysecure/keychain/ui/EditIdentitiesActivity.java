@@ -54,17 +54,11 @@ public class EditIdentitiesActivity extends BaseActivity {
             return;
         }
 
-        // Create an instance of the fragment
-        EditIdentitiesFragment mEditIdentitiesFragment;
-        mEditIdentitiesFragment = EditIdentitiesFragment.newInstance(dataUri);
+        EditIdentitiesFragment editIdentitiesFragment = EditIdentitiesFragment.newInstance(dataUri);
 
-        // Add the fragment to the 'fragment_container' FrameLayout
-        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.edit_key_fragment_container, mEditIdentitiesFragment)
-                .commitAllowingStateLoss();
-        // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+                .replace(R.id.edit_key_fragment_container, editIdentitiesFragment)
+                .commit();
     }
 
 }
