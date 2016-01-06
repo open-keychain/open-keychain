@@ -1,8 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
-        android:entries="@array/passphrase_cache_ttl_entries"
-        android:entryValues="@array/passphrase_cache_ttl_values"
-        android:key="passphraseCacheTtl"
+    <PreferenceScreen
+        android:key="passphraseCacheTtls"
         android:persistent="false"
         android:title="@string/label_passphrase_cache_ttl" />
     <CheckBoxPreference

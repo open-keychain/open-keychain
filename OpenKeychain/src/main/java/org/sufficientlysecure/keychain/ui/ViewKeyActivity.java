@@ -82,6 +82,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -531,7 +532,10 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
         if (keyHasPassphrase()) {
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
-            intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mMasterKeyId);
+            RequiredInputParcel requiredInput =
+                    RequiredInputParcel.createRequiredDecryptPassphrase(mMasterKeyId, mMasterKeyId);
+            requiredInput.mSkipCaching = true;
+            intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
             startActivityForResult(intent, requestCode);
         } else {
             startBackupActivity();

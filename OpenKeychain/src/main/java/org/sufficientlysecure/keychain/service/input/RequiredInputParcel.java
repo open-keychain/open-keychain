@@ -28,6 +28,8 @@ public class RequiredInputParcel implements Parcelable {
     private Long mMasterKeyId;
     private Long mSubKeyId;
 
+    public boolean mSkipCaching = false;
+
     private RequiredInputParcel(RequiredInputType type, byte[][] inputData,
             int[] signAlgos, Date signatureTime, Long masterKeyId, Long subKeyId) {
         mType = type;
@@ -66,6 +68,7 @@ public class RequiredInputParcel implements Parcelable {
         mSignatureTime = source.readInt() != 0 ? new Date(source.readLong()) : null;
         mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
         mSubKeyId = source.readInt() != 0 ? source.readLong() : null;
+        mSkipCaching = source.readInt() != 0;
 
     }
 
@@ -171,6 +174,7 @@ public class RequiredInputParcel implements Parcelable {
         } else {
             dest.writeInt(0);
         }
+        dest.writeInt(mSkipCaching ? 1 : 0);
 
     }
 

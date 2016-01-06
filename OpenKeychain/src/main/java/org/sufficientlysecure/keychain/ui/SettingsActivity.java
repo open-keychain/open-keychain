@@ -18,6 +18,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.List;
+
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -29,6 +32,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -49,12 +53,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
-import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
-
-import java.util.List;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -103,6 +104,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         Toolbar toolbar = (Toolbar) toolbarContainer.findViewById(R.id.toolbar);
 
         toolbar.setTitle(R.string.title_preferences);
+        // noinspection deprecation, TODO use alternative in API level 21
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,23 +197,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.passphrase_preferences);
 
-            initializePassphraseCacheTtl(
-                    (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
-        }
-
-        private static void initializePassphraseCacheTtl(
-                final IntegerListPreference passphraseCacheTtl) {
-            passphraseCacheTtl.setValue("" + sPreferences.getPassphraseCacheTtl());
-            passphraseCacheTtl.setSummary(passphraseCacheTtl.getEntry());
-            passphraseCacheTtl
-                    .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                        public boolean onPreferenceChange(Preference preference, Object newValue) {
-                            passphraseCacheTtl.setValue(newValue.toString());
-                            passphraseCacheTtl.setSummary(passphraseCacheTtl.getEntry());
-                            sPreferences.setPassphraseCacheTtl(Integer.parseInt(newValue.toString()));
+            findPreference(Constants.Pref.PASSPHRASE_CACHE_TTLS)
+                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        public boolean onPreferenceClick(Preference preference) {
+                            Intent intent = new Intent(getActivity(), SettingsCacheTTLActivity.class);
+                            intent.putExtra(SettingsCacheTTLActivity.EXTRA_TTL_PREF,
+                                    sPreferences.getPassphraseCacheTtl());
+                            startActivity(intent);
                             return false;
                         }
                     });
+
+            initializePassphraseCacheSubs(
+                    (CheckBoxPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_SUBS));
         }
     }
 
@@ -579,5 +577,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || SyncPrefsFragment.class.getName().equals(fragmentName)
                 || ExperimentalPrefsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
+    }
+
+    private static void initializePassphraseCacheSubs(final CheckBoxPreference mPassphraseCacheSubs) {
+        mPassphraseCacheSubs.setChecked(sPreferences.getPassphraseCacheSubs());
+        mPassphraseCacheSubs.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mPassphraseCacheSubs.setChecked((Boolean) newValue);
+                sPreferences.setPassphraseCacheSubs((Boolean) newValue);
+                return false;
+            }
+        });
     }
 }

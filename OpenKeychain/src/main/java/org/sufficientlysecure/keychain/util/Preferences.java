@@ -18,9 +18,23 @@
 
 package org.sufficientlysecure.keychain.util;
 
+
+import java.io.Serializable;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -28,17 +42,13 @@ import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ListIterator;
-import java.util.Vector;
 
 /**
  * Singleton Implementation of a Preference Helper
  */
+@SuppressLint("CommitPrefEdits")
 public class Preferences {
     private static Preferences sPreferences;
     private SharedPreferences mSharedPreferences;
@@ -90,22 +100,6 @@ public class Preferences {
         editor.commit();
     }
 
-    public long getPassphraseCacheTtl() {
-        int ttl = mSharedPreferences.getInt(Constants.Pref.PASSPHRASE_CACHE_TTL, 180);
-        // fix the value if it was set to "never" in previous versions, which currently is not
-        // supported
-        if (ttl == 0) {
-            ttl = 180;
-        }
-        return (long) ttl;
-    }
-
-    public void setPassphraseCacheTtl(int value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.Pref.PASSPHRASE_CACHE_TTL, value);
-        editor.commit();
-    }
-
     public boolean getPassphraseCacheSubs() {
         return mSharedPreferences.getBoolean(Pref.PASSPHRASE_CACHE_SUBS, false);
     }
@@ -143,7 +137,7 @@ public class Preferences {
     public String[] getKeyServers() {
         String rawData = mSharedPreferences.getString(Constants.Pref.KEY_SERVERS,
                 Constants.Defaults.KEY_SERVERS);
-        if (rawData.equals("")) {
+        if ("".equals(rawData)) {
             return new String[0];
         }
         Vector<String> servers = new Vector<>();
@@ -308,6 +302,64 @@ public class Preferences {
 
     }
 
+    public CacheTTLPrefs getPassphraseCacheTtl() {
+        Set<String> pref = mSharedPreferences.getStringSet(Constants.Pref.PASSPHRASE_CACHE_TTLS, null);
+        if (pref == null) {
+            return CacheTTLPrefs.getDefault();
+        }
+        return new CacheTTLPrefs(pref);
+    }
+
+    public void setPassphraseCacheTtl(CacheTTLPrefs prefs) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putStringSet(Constants.Pref.PASSPHRASE_CACHE_TTLS, prefs.getStringSet());
+        editor.commit();
+    }
+
+    public static class CacheTTLPrefs implements Serializable {
+        public static final Map<Integer,Integer> CACHE_TTL_NAMES;
+        public static final ArrayList<Integer> CACHE_TTLS;
+        static {
+            HashMap<Integer,Integer> cacheTtlNames = new HashMap<>();
+            cacheTtlNames.put(0, R.string.cache_ttl_lock_screen);
+            cacheTtlNames.put(60 * 5, R.string.cache_ttl_five_minutes);
+            cacheTtlNames.put(60 * 60, R.string.cache_ttl_one_hour);
+            cacheTtlNames.put(60 * 60 * 3, R.string.cache_ttl_three_hours);
+            cacheTtlNames.put(60 * 60 * 24, R.string.cache_ttl_one_day);
+            cacheTtlNames.put(60 * 60 * 24 * 3, R.string.cache_ttl_three_days);
+            CACHE_TTL_NAMES = Collections.unmodifiableMap(cacheTtlNames);
+
+            CACHE_TTLS = new ArrayList<>(CacheTTLPrefs.CACHE_TTL_NAMES.keySet());
+            Collections.sort(CACHE_TTLS);
+        }
+
+        public HashSet<Integer> ttlTimes;
+
+        public CacheTTLPrefs(Collection<String> ttlStrings) {
+            ttlTimes = new HashSet<>();
+            for (String ttlString : ttlStrings) {
+                ttlTimes.add(Integer.parseInt(ttlString));
+            }
+        }
+
+        public HashSet<String> getStringSet() {
+            HashSet<String> ttlTimeStrings = new HashSet<>();
+            for (Integer ttlTime : ttlTimes) {
+                ttlTimeStrings.add(Integer.toString(ttlTime));
+            }
+            return ttlTimeStrings;
+        }
+
+        public static CacheTTLPrefs getDefault() {
+            ArrayList<String> ttlStrings = new ArrayList<>();
+            ttlStrings.add(Integer.toString(60 * 5));
+            ttlStrings.add(Integer.toString(60 * 60));
+            ttlStrings.add(Integer.toString(60 * 60 * 24));
+            return new CacheTTLPrefs(ttlStrings);
+        }
+
+    }
+
     // cloud prefs
 
     public CloudSearchPrefs getCloudSearchPrefs() {
@@ -402,15 +454,19 @@ public class Preferences {
                         if (server == null) {
                             continue;
                         }
-                        if (server.equals("pool.sks-keyservers.net")) {
-                            // use HKPS!
-                            it.set("hkps://hkps.pool.sks-keyservers.net");
-                        } else if (server.equals("pgp.mit.edu")) {
-                            // use HKPS!
-                            it.set("hkps://pgp.mit.edu");
-                        } else if (server.equals("subkeys.pgp.net")) {
-                            // remove, because often down and no HKPS!
-                            it.remove();
+                        switch (server) {
+                            case "pool.sks-keyservers.net":
+                                // use HKPS!
+                                it.set("hkps://hkps.pool.sks-keyservers.net");
+                                break;
+                            case "pgp.mit.edu":
+                                // use HKPS!
+                                it.set("hkps://pgp.mit.edu");
+                                break;
+                            case "subkeys.pgp.net":
+                                // remove, because often down and no HKPS!
+                                it.remove();
+                                break;
                         }
 
                     }
