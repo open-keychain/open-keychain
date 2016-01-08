@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
@@ -89,9 +90,14 @@ public class ImportKeysActivity extends BaseNfcActivity
 
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
 
+    private boolean mFreshIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // we're started with a new Intent that needs to be handled by onResumeFragments
+        mFreshIntent = true;
 
         setFullScreenDialogClose(Activity.RESULT_CANCELED, true);
         findViewById(R.id.import_import).setOnClickListener(new OnClickListener() {
@@ -116,15 +122,22 @@ public class ImportKeysActivity extends BaseNfcActivity
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        // new Intent, so onResumeFragments needs to handle it with handleActions(Intent)
+        mFreshIntent = true;
     }
 
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
-        handleActions(getIntent());
+        if (mFreshIntent) {
+            handleActions(getIntent());
+            // we've consumed this Intent, we don't want to repeat the action it represents
+            // every time the activity is resumed
+            mFreshIntent = false;
+        }
     }
 
-    protected void handleActions(Intent intent) {
+    protected void handleActions(@NonNull Intent intent) {
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
         Uri dataUri = intent.getData();
