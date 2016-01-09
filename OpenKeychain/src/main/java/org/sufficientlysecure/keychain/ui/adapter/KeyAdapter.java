@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.ui.KeyListFragment;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -96,6 +97,7 @@ public class KeyAdapter extends CursorAdapter {
         public Long mMasterKeyId;
         public TextView mMainUserId;
         public TextView mMainUserIdRest;
+        public TextView mComment;
         public TextView mCreationDate;
         public ImageView mStatus;
         public View mSlinger;
@@ -109,6 +111,7 @@ public class KeyAdapter extends CursorAdapter {
             mLayoutDummy = view.findViewById(R.id.key_list_item_dummy);
             mMainUserId = (TextView) view.findViewById(R.id.key_list_item_name);
             mMainUserIdRest = (TextView) view.findViewById(R.id.key_list_item_email);
+            mComment = (TextView) view.findViewById(R.id.key_list_item_comment);
             mStatus = (ImageView) view.findViewById(R.id.key_list_item_status_icon);
             mSlinger = view.findViewById(R.id.key_list_item_slinger_view);
             mSlingerButton = (ImageButton) view.findViewById(R.id.key_list_item_slinger_button);
@@ -119,6 +122,7 @@ public class KeyAdapter extends CursorAdapter {
 
             mLayoutData.setVisibility(View.VISIBLE);
             mLayoutDummy.setVisibility(View.GONE);
+            mComment.setVisibility(View.GONE);
 
             mDisplayedItem = item;
 
@@ -134,6 +138,17 @@ public class KeyAdapter extends CursorAdapter {
                     mMainUserIdRest.setVisibility(View.VISIBLE);
                 } else {
                     mMainUserIdRest.setVisibility(View.GONE);
+                }
+
+                /*
+                Check the list if the name/email combination has been set to true, and if so,
+                check if there are comments, and display them.
+                 */
+                String key = userIdSplit.name + userIdSplit.email;
+                if(KeyListFragment.duplicateNameEmail.get(key) == true){
+                    if(userIdSplit.comment != null)
+                        mComment.setVisibility(View.VISIBLE);
+                    mComment.setText(userIdSplit.comment);
                 }
             }
 
