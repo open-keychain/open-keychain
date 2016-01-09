@@ -141,8 +141,10 @@ public class KeyAdapter extends CursorAdapter {
                 }
 
                 /*
-                Check the list if the name/email combination has been set to true, and if so,
-                check if there are comments, and display them.
+                Check the list if the name/email combination has been set to true which means that there is duplicate name/email pair
+                And if so,
+                check if there are comments,
+                Display them.
                  */
                 String key = userIdSplit.name + userIdSplit.email;
                 if(KeyListFragment.duplicateNameEmail.get(key) == true){

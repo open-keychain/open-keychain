@@ -333,6 +333,8 @@ public class KeyListFragment extends LoaderFragment
         /*
         Check all the entries and set the name/email pair to true if more than one of them exist.
         Else set to false.
+        So, all name/email pairs set to true would mean there are more of such pairs (Hack for Duplicate name/email)
+        If there's only one, it will remain false.
          */
         if(data.moveToFirst())
         {
@@ -353,12 +355,15 @@ public class KeyListFragment extends LoaderFragment
         }
         /*
         Testing whether the entries are built properly
+        Can Ignore, Test Code!
+
         Set set = duplicateNameEmail.entrySet();
         Iterator i = set.iterator();
         while (i.hasNext()){
             Map.Entry me = (Map.Entry) i.next();
             Log.e("KEY,VALUE : ",String.valueOf(me.getKey())+","+String.valueOf(me.getValue()));
         }
+
          */
 
         if (data != null && (mQuery == null || TextUtils.isEmpty(mQuery))) {
