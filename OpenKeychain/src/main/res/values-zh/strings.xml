@@ -36,7 +36,7 @@
   <string name="title_manage_my_keys">管理我的密钥</string>
   <!--section-->
   <string name="section_user_ids">用户名</string>
-  <string name="section_yubikey">YubiKey</string>
+  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">关联系统联系人</string>
   <string name="section_should_you_trust">信任此密钥?</string>
   <string name="section_proof_details">验证</string>
@@ -128,7 +128,7 @@
   <string name="label_file_ascii_armor">启用ASCII文本化</string>
   <string name="label_write_version_header">写入文件头信息</string>
   <string name="label_write_version_header_summary">在OpenPGP签名、加密文本和导出密钥中写入 \'OpenKeychain v2.7\' 标记。</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">为YubiKey PIN使用数字键盘</string>
+  <string name="label_use_num_keypad_for_security_token_pin">为YubiKey PIN使用数字键盘</string>
   <string name="label_asymmetric_from">签名为：</string>
   <string name="label_to">加密到</string>
   <string name="label_delete_after_encryption">加密文件后删除</string>
@@ -254,10 +254,10 @@
   <string name="passphrase_for_backup">输入备份码</string>
   <string name="passphrase_for">输入密码为 \'%s\'</string>
   <string name="pin_for">输入PIN码为 \'%s\'</string>
-  <string name="yubikey_pin_for">输入访问YubiKey的PIN为 \'%s\'</string>
-  <string name="nfc_text">保持YubiKey 的NFC标签靠近你的手机背部</string>
-  <string name="nfc_wait">挺住！</string>
-  <string name="nfc_finished">现在拿开YubiKey</string>
+  <string name="security_token_pin_for">输入访问YubiKey的PIN为 \'%s\'</string>
+  <string name="security_token_nfc_text">保持YubiKey 的NFC标签靠近你的手机背部</string>
+  <string name="security_token_nfc_wait">挺住！</string>
+  <string name="security_token_nfc_finished">现在拿开YubiKey</string>
   <string name="file_delete_confirmation_title">删除源文件？</string>
   <string name="file_delete_confirmation">这些文件将被删除:%s</string>
   <string name="file_delete_successful">共%2$d个文件 %1$d 个文件已删除.%3$s</string>

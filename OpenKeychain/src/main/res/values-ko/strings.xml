@@ -36,7 +36,7 @@
   <string name="title_manage_my_keys">내 키 관리</string>
   <!--section-->
   <string name="section_user_ids">신원</string>
-  <string name="section_yubikey">YubiKey</string>
+  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">연결된 시스템 연락처</string>
   <string name="section_keybase_proofs">Keybase.io 증명</string>
   <string name="section_should_you_trust">이 키를 믿어야 할까요?</string>
@@ -127,7 +127,7 @@
   <string name="label_file_ascii_armor">ASCII 표시 활성화</string>
   <string name="label_write_version_header">다른 사람에게 OpenKeychain을 사용하고 있다는 걸 알리세요</string>
   <string name="label_write_version_header_summary">\'OpenKeychain v2.7\'을 OpenPGP 서명, 암호화 텍스트, 내보낸 키에 쓰기</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">YubiKey PIN 입력에 숫자 키패드 사용</string>
+  <string name="label_use_num_keypad_for_security_token_pin">YubiKey PIN 입력에 숫자 키패드 사용</string>
   <string name="label_asymmetric_from">다음으로 서명:</string>
   <string name="label_to">다음에게 암호화:</string>
   <string name="label_delete_after_encryption">암호화 후 파일들 삭제</string>
@@ -257,10 +257,10 @@
   <string name="passphrase_for_backup">백업 코드 입력</string>
   <string name="passphrase_for">\'%s\'을(를) 위해 암호를 입력 해 주세요</string>
   <string name="pin_for">\'%s\'을(를) 위해 PIN을 입력 해 주세요</string>
-  <string name="yubikey_pin_for">\'%s\'를 위해 YubiKey를 엑세스 하기 위한 PIN을 입력 해 주세요</string>
-  <string name="nfc_text">YubiKey를 장치 뒤의 NFC 표시에 대어 주세요</string>
-  <string name="nfc_wait">YubiKey를 뒷면에 계속 대고 있으세요!</string>
-  <string name="nfc_finished">이제 YubiKey를 떼어도 됩니다.</string>
+  <string name="security_token_pin_for">\'%s\'를 위해 YubiKey를 엑세스 하기 위한 PIN을 입력 해 주세요</string>
+  <string name="security_token_nfc_text">YubiKey를 장치 뒤의 NFC 표시에 대어 주세요</string>
+  <string name="security_token_nfc_wait">YubiKey를 뒷면에 계속 대고 있으세요!</string>
+  <string name="security_token_nfc_finished">이제 YubiKey를 떼어도 됩니다.</string>
   <string name="file_delete_confirmation_title">원본 파일을 삭제할까요?</string>
   <string name="file_delete_confirmation">다음 파일이 삭제 될 것입니다:%s</string>
   <string name="file_delete_successful">%2$d개 중 %1$d개의 파일이 삭제되었습니다.%3$s</string>

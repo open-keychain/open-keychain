@@ -84,7 +84,7 @@
   <string name="label_file_ascii_armor">Omogoči ASCII ovoj</string>
   <string name="label_write_version_header">Daj drugim vedeti, da uporabljate OpenKeychain</string>
   <string name="label_write_version_header_summary">Zapiše \'OpenKeychain v2.7\' v OpenPGP podpis, šifrirano besedilo in izvožene ključe</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">Uporabi numerično tipkovnico za YubiKey PIN kodo</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Uporabi numerično tipkovnico za YubiKey PIN kodo</string>
   <string name="label_to">Šifriraj za:</string>
   <string name="label_delete_after_encryption">Po dešifriranju izbriši datoteke</string>
   <string name="label_delete_after_decryption">Izbriši po dešifriranju</string>
@@ -157,7 +157,7 @@
   <!--sentences-->
   <string name="no_filemanager_installed">Nimate nameščenega združljivega upravljalnika datotek.</string>
   <string name="pin_for">Vnesite PIN kodo za \'%s\'</string>
-  <string name="yubikey_pin_for">Vnesite PIN kodo za dostop YubiKey za \'%s\'</string>
+  <string name="security_token_pin_for">Vnesite PIN kodo za dostop YubiKey za \'%s\'</string>
   <string name="file_delete_confirmation_title">Izbrišem izvirne datoteke?</string>
   <string name="file_delete_confirmation">Izbrisane bodo naslednje datoteke:%s</string>
   <string name="file_delete_successful">Izbrisanih je bilo %1$d od %2$d datotek.%3$s</string>

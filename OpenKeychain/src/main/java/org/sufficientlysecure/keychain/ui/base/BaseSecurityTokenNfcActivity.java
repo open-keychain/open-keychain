@@ -60,9 +60,8 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.Preferences;
 
-public abstract class BaseNfcActivity extends BaseActivity {
+public abstract class BaseSecurityTokenNfcActivity extends BaseActivity {
 
     public static final int REQUEST_CODE_PIN = 1;
 
@@ -113,9 +112,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
             Intent intent = new Intent(this, ViewKeyActivity.class);
             intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
+            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mNfcAid);
+            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mNfcUserId);
+            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mNfcFingerprints);
             startActivity(intent);
         } catch (PgpKeyNotFoundException e) {
             Intent intent = new Intent(this, CreateKeyActivity.class);
@@ -224,12 +223,12 @@ public abstract class BaseNfcActivity extends BaseActivity {
     private void handleNfcError(IOException e) {
 
         if (e instanceof TagLostException) {
-            onNfcError(getString(R.string.error_nfc_tag_lost));
+            onNfcError(getString(R.string.security_token_error_tag_lost));
             return;
         }
 
         if (e instanceof IsoDepNotSupportedException) {
-            onNfcError(getString(R.string.error_nfc_iso_dep_not_supported));
+            onNfcError(getString(R.string.security_token_error_iso_dep_not_supported));
             return;
         }
 
@@ -244,69 +243,69 @@ public abstract class BaseNfcActivity extends BaseActivity {
         if ((status & (short) 0xFFF0) == 0x63C0) {
             int tries = status & 0x000F;
             // hook to do something different when PIN is wrong
-            onNfcPinError(getResources().getQuantityString(R.plurals.error_pin, tries, tries));
+            onNfcPinError(getResources().getQuantityString(R.plurals.security_token_error_pin, tries, tries));
             return;
         }
 
         // Otherwise, all status codes are fixed values.
         switch (status) {
             // These errors should not occur in everyday use; if they are returned, it means we
-            // made a mistake sending data to the card, or the card is misbehaving.
+            // made a mistake sending data to the token, or the token is misbehaving.
             case 0x6A80: {
-                onNfcError(getString(R.string.error_nfc_bad_data));
+                onNfcError(getString(R.string.security_token_error_bad_data));
                 break;
             }
             case 0x6883: {
-                onNfcError(getString(R.string.error_nfc_chaining_error));
+                onNfcError(getString(R.string.security_token_error_chaining_error));
                 break;
             }
             case 0x6B00: {
-                onNfcError(getString(R.string.error_nfc_header, "P1/P2"));
+                onNfcError(getString(R.string.security_token_error_header, "P1/P2"));
                 break;
             }
             case 0x6D00: {
-                onNfcError(getString(R.string.error_nfc_header, "INS"));
+                onNfcError(getString(R.string.security_token_error_header, "INS"));
                 break;
             }
             case 0x6E00: {
-                onNfcError(getString(R.string.error_nfc_header, "CLA"));
+                onNfcError(getString(R.string.security_token_error_header, "CLA"));
                 break;
             }
             // These error conditions are more likely to be experienced by an end user.
             case 0x6285: {
-                onNfcError(getString(R.string.error_nfc_terminated));
+                onNfcError(getString(R.string.security_token_error_terminated));
                 break;
             }
             case 0x6700: {
-                onNfcPinError(getString(R.string.error_nfc_wrong_length));
+                onNfcPinError(getString(R.string.security_token_error_wrong_length));
                 break;
             }
             case 0x6982: {
-                onNfcError(getString(R.string.error_nfc_security_not_satisfied));
+                onNfcError(getString(R.string.security_token_error_security_not_satisfied));
                 break;
             }
             case 0x6983: {
-                onNfcError(getString(R.string.error_nfc_authentication_blocked));
+                onNfcError(getString(R.string.security_token_error_authentication_blocked));
                 break;
             }
             case 0x6985: {
-                onNfcError(getString(R.string.error_nfc_conditions_not_satisfied));
+                onNfcError(getString(R.string.security_token_error_conditions_not_satisfied));
                 break;
             }
             // 6A88 is "Not Found" in the spec, but Yubikey also returns 6A83 for this in some cases.
             case 0x6A88:
             case 0x6A83: {
-                onNfcError(getString(R.string.error_nfc_data_not_found));
+                onNfcError(getString(R.string.security_token_error_data_not_found));
                 break;
             }
             // 6F00 is a JavaCard proprietary status code, SW_UNKNOWN, and usually represents an
-            // unhandled exception on the smart card.
+            // unhandled exception on the security token.
             case 0x6F00: {
-                onNfcError(getString(R.string.error_nfc_unknown));
+                onNfcError(getString(R.string.security_token_error_unknown));
                 break;
             }
             default: {
-                onNfcError(getString(R.string.error_nfc, e.getMessage()));
+                onNfcError(getString(R.string.security_token_error, e.getMessage()));
                 break;
             }
         }
@@ -335,7 +334,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         enableNfcForegroundDispatch();
     }
 
-    protected void obtainYubiKeyPin(RequiredInputParcel requiredInput) {
+    protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput) {
 
         try {
             Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
@@ -471,7 +470,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         return fptlv.mV;
     }
 
-    /** Return the PW Status Bytes from the card. This is a simple DO; no TLV decoding needed.
+    /** Return the PW Status Bytes from the token. This is a simple DO; no TLV decoding needed.
      *
      * @return Seven bytes in fixed format, plus 0x9000 status word at the end.
      */
@@ -697,7 +696,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
             }
         }
 
-        // reactivate card!
+        // reactivate token!
         String reactivate1 = "00" + "e6" + "00" + "00";
         String reactivate2 = "00" + "44" + "00" + "00";
         String response1 = nfcCommunicate(reactivate1);
@@ -722,7 +721,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
     }
 
     /** Modifies the user's PW1 or PW3. Before sending, the new PIN will be validated for
-     *  conformance to the card's requirements for key length.
+     *  conformance to the token's requirements for key length.
      *
      * @param pw For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
      * @param newPin The new PW1 or PW3.
@@ -767,7 +766,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
     }
 
     /**
-     * Stores a data object on the card. Automatically validates the proper PIN for the operation.
+     * Stores a data object on the token. Automatically validates the proper PIN for the operation.
      * Supported for all data objects < 255 bytes in length. Only the cardholder certificate
      * (0x7F21) can exceed this length.
      *
@@ -800,9 +799,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
     }
 
     /**
-     * Puts a key on the card in the given slot.
+     * Puts a key on the token in the given slot.
      *
-     * @param slot The slot on the card where the key should be stored:
+     * @param slot The slot on the token where the key should be stored:
      *             0xB6: Signature Key
      *             0xB8: Decipherment Key
      *             0xA4: Authentication Key
@@ -823,12 +822,12 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
         // Shouldn't happen; the UI should block the user from getting an incompatible key this far.
         if (crtSecretKey.getModulus().bitLength() > 2048) {
-            throw new IOException("Key too large to export to smart card.");
+            throw new IOException("Key too large to export to Security Token.");
         }
 
         // Should happen only rarely; all GnuPG keys since 2006 use public exponent 65537.
         if (!crtSecretKey.getPublicExponent().equals(new BigInteger("65537"))) {
-            throw new IOException("Invalid public exponent for smart card key.");
+            throw new IOException("Invalid public exponent for smart Security Token.");
         }
 
         if (!mPw3Validated) {
@@ -884,7 +883,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         String putKeyCommand = "10DB3FFF";
         String lastPutKeyCommand = "00DB3FFF";
 
-        // Now we're ready to communicate with the card.
+        // Now we're ready to communicate with the token.
         offset = 0;
         String response;
         while(offset < dataToSend.length) {
@@ -903,7 +902,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
             }
 
             if (!response.endsWith("9000")) {
-                throw new CardException("Key export to card failed", parseCardStatus(response));
+                throw new CardException("Key export to Security Token failed", parseCardStatus(response));
             }
         }
 
@@ -914,7 +913,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
     /**
      * Parses out the status word from a JavaCard response string.
      *
-     * @param response A hex string with the response from the card
+     * @param response A hex string with the response from the token
      * @return A short indicating the SW1/SW2, or 0 if a status could not be determined.
      */
     short parseCardStatus(String response) {

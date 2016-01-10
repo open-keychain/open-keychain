@@ -24,7 +24,6 @@ import java.util.Iterator;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -188,7 +187,7 @@ public class CreateKeyFinalFragment extends Fragment {
         if (mSaveKeyringParcel == null) {
             mSaveKeyringParcel = new SaveKeyringParcel();
 
-            if (createKeyActivity.mCreateYubiKey) {
+            if (createKeyActivity.mCreateSecurityToken) {
                 mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
                         2048, null, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER, 0L));
                 mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
@@ -263,7 +262,7 @@ public class CreateKeyFinalFragment extends Fragment {
             return;
         }
 
-        final boolean createYubiKey = activity.mCreateYubiKey;
+        final boolean createSecurityToken = activity.mCreateSecurityToken;
 
         CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult> createKeyCallback
                 = new CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult>() {
@@ -275,7 +274,7 @@ public class CreateKeyFinalFragment extends Fragment {
             @Override
             public void onCryptoOperationSuccess(EditKeyResult result) {
 
-                if (createYubiKey) {
+                if (createSecurityToken) {
                     moveToCard(result);
                     return;
                 }
@@ -327,7 +326,7 @@ public class CreateKeyFinalFragment extends Fragment {
         try {
             changeKeyringParcel = new SaveKeyringParcel(key.getMasterKeyId(), key.getFingerprint());
         } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "Key that should be moved to YubiKey not found in database!");
+            Log.e(Constants.TAG, "Key that should be moved to Security Token not found in database!");
             return;
         }
 
@@ -339,7 +338,7 @@ public class CreateKeyFinalFragment extends Fragment {
         try {
             while (cursor != null && cursor.moveToNext()) {
                 long subkeyId = cursor.getLong(0);
-                changeKeyringParcel.getOrCreateSubkeyChange(subkeyId).mMoveKeyToCard = true;
+                changeKeyringParcel.getOrCreateSubkeyChange(subkeyId).mMoveKeyToSecurityToken = true;
             }
         } finally {
             if (cursor != null) {
@@ -348,8 +347,8 @@ public class CreateKeyFinalFragment extends Fragment {
         }
 
         // define new PIN and Admin PIN for the card
-        changeKeyringParcel.mCardPin = activity.mYubiKeyPin;
-        changeKeyringParcel.mCardAdminPin = activity.mYubiKeyAdminPin;
+        changeKeyringParcel.mSecurityTokenPin = activity.mSecurityTokenPin;
+        changeKeyringParcel.mSecurityTokenAdminPin = activity.mSecurityTokenAdminPin;
 
         CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult> callback
                 = new CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult>() {

@@ -235,10 +235,10 @@ public class CreateKeyEmailFragment extends Fragment {
 
             CreateKeyActivity createKeyActivity = ((CreateKeyActivity) getActivity());
 
-            if (createKeyActivity.mCreateYubiKey) {
+            if (createKeyActivity.mCreateSecurityToken) {
                 hideKeyboard();
 
-                CreateYubiKeyPinFragment frag = CreateYubiKeyPinFragment.newInstance();
+                CreateSecurityTokenPinFragment frag = CreateSecurityTokenPinFragment.newInstance();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
             } else {
                 CreateKeyPassphraseFragment frag = CreateKeyPassphraseFragment.newInstance();

@@ -49,7 +49,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class CreateYubiKeyImportResetFragment
+public class CreateSecurityTokenImportResetFragment
         extends QueueingCryptoOperationFragment<ImportKeyringParcel, ImportKeyResult>
         implements NfcListenerFragment {
 
@@ -61,10 +61,10 @@ public class CreateYubiKeyImportResetFragment
 
     CreateKeyActivity mCreateKeyActivity;
 
-    private byte[] mNfcFingerprints;
-    private byte[] mNfcAid;
-    private String mNfcUserId;
-    private String mNfcFingerprint;
+    private byte[] mTokenFingerprints;
+    private byte[] mTokenAid;
+    private String mTokenUserId;
+    private String mTokenFingerprint;
     private ImportKeysListFragment mListFragment;
     private TextView vSerNo;
     private TextView vUserId;
@@ -79,7 +79,7 @@ public class CreateYubiKeyImportResetFragment
 
     public static Fragment newInstance(byte[] scannedFingerprints, byte[] nfcAid, String userId) {
 
-        CreateYubiKeyImportResetFragment frag = new CreateYubiKeyImportResetFragment();
+        CreateSecurityTokenImportResetFragment frag = new CreateSecurityTokenImportResetFragment();
 
         Bundle args = new Bundle();
         args.putByteArray(ARG_FINGERPRINTS, scannedFingerprints);
@@ -96,26 +96,26 @@ public class CreateYubiKeyImportResetFragment
 
         Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
 
-        mNfcFingerprints = args.getByteArray(ARG_FINGERPRINTS);
-        mNfcAid = args.getByteArray(ARG_AID);
-        mNfcUserId = args.getString(ARG_USER_ID);
+        mTokenFingerprints = args.getByteArray(ARG_FINGERPRINTS);
+        mTokenAid = args.getByteArray(ARG_AID);
+        mTokenUserId = args.getString(ARG_USER_ID);
 
         byte[] fp = new byte[20];
-        ByteBuffer.wrap(fp).put(mNfcFingerprints, 0, 20);
-        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
+        ByteBuffer.wrap(fp).put(mTokenFingerprints, 0, 20);
+        mTokenFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.create_yubi_key_import_reset_fragment, container, false);
+        View view = inflater.inflate(R.layout.create_security_token_import_reset_fragment, container, false);
 
-        vSerNo = (TextView) view.findViewById(R.id.yubikey_serno);
-        vUserId = (TextView) view.findViewById(R.id.yubikey_userid);
+        vSerNo = (TextView) view.findViewById(R.id.token_serno);
+        vUserId = (TextView) view.findViewById(R.id.token_userid);
         mNextButton = (TextView) view.findViewById(R.id.create_key_next_button);
-        mRadioImport = (RadioButton) view.findViewById(R.id.yubikey_decision_import);
-        mRadioReset = (RadioButton) view.findViewById(R.id.yubikey_decision_reset);
-        mResetWarning = view.findViewById(R.id.yubikey_import_reset_warning);
+        mRadioImport = (RadioButton) view.findViewById(R.id.token_decision_import);
+        mRadioReset = (RadioButton) view.findViewById(R.id.token_decision_reset);
+        mResetWarning = view.findViewById(R.id.token_import_reset_warning);
 
         View mBackButton = view.findViewById(R.id.create_key_back_button);
         mBackButton.setOnClickListener(new View.OnClickListener() {
@@ -142,7 +142,7 @@ public class CreateYubiKeyImportResetFragment
         });
 
         mListFragment = ImportKeysListFragment.newInstance(null, null,
-                "0x" + mNfcFingerprint, true, null);
+                "0x" + mTokenFingerprint, true, null);
 
         mRadioImport.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -154,7 +154,7 @@ public class CreateYubiKeyImportResetFragment
                     mResetWarning.setVisibility(View.GONE);
 
                     getFragmentManager().beginTransaction()
-                            .replace(R.id.yubikey_import_fragment, mListFragment, "yubikey_import")
+                            .replace(R.id.security_token_import_fragment, mListFragment, "token_import")
                             .commit();
 
                     getFragmentManager().executePendingTransactions();
@@ -188,9 +188,9 @@ public class CreateYubiKeyImportResetFragment
     public void onSaveInstanceState(Bundle args) {
         super.onSaveInstanceState(args);
 
-        args.putByteArray(ARG_FINGERPRINTS, mNfcFingerprints);
-        args.putByteArray(ARG_AID, mNfcAid);
-        args.putString(ARG_USER_ID, mNfcUserId);
+        args.putByteArray(ARG_FINGERPRINTS, mTokenFingerprints);
+        args.putByteArray(ARG_AID, mTokenAid);
+        args.putString(ARG_USER_ID, mTokenUserId);
     }
 
     @Override
@@ -200,25 +200,25 @@ public class CreateYubiKeyImportResetFragment
     }
 
     public void setData() {
-        String serno = Hex.toHexString(mNfcAid, 10, 4);
-        vSerNo.setText(getString(R.string.yubikey_serno, serno));
+        String serno = Hex.toHexString(mTokenAid, 10, 4);
+        vSerNo.setText(getString(R.string.security_token_serial_no, serno));
 
-        if (!mNfcUserId.isEmpty()) {
-            vUserId.setText(getString(R.string.yubikey_key_holder, mNfcUserId));
+        if (!mTokenUserId.isEmpty()) {
+            vUserId.setText(getString(R.string.security_token_key_holder, mTokenUserId));
         } else {
-            vUserId.setText(getString(R.string.yubikey_key_holder_not_set));
+            vUserId.setText(getString(R.string.security_token_key_holder_not_set));
         }
     }
 
     public void refreshSearch() {
-        mListFragment.loadNew(new ImportKeysListFragment.CloudLoaderState("0x" + mNfcFingerprint,
+        mListFragment.loadNew(new ImportKeysListFragment.CloudLoaderState("0x" + mTokenFingerprint,
                 Preferences.getPreferences(getActivity()).getCloudSearchPrefs()));
     }
 
     public void importKey() {
 
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
-        keyList.add(new ParcelableKeyRing(mNfcFingerprint, null));
+        keyList.add(new ParcelableKeyRing(mTokenFingerprint, null));
         mKeyList = keyList;
 
         mKeyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
@@ -230,11 +230,11 @@ public class CreateYubiKeyImportResetFragment
     }
 
     public void resetCard() {
-        Intent intent = new Intent(getActivity(), NfcOperationActivity.class);
-        intent.putExtra(NfcOperationActivity.EXTRA_SERVICE_INTENT, (Parcelable[]) null);
+        Intent intent = new Intent(getActivity(), SecurityTokenOperationActivity.class);
+        intent.putExtra(SecurityTokenOperationActivity.EXTRA_SERVICE_INTENT, (Parcelable[]) null);
         RequiredInputParcel resetP = RequiredInputParcel.createNfcReset();
-        intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, resetP);
-        intent.putExtra(NfcOperationActivity.EXTRA_CRYPTO_INPUT, new CryptoInputParcel());
+        intent.putExtra(SecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, resetP);
+        intent.putExtra(SecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, new CryptoInputParcel());
         startActivityForResult(intent, REQUEST_CODE_RESET);
     }
 
@@ -251,13 +251,13 @@ public class CreateYubiKeyImportResetFragment
     @Override
     public void doNfcInBackground() throws IOException {
 
-        mNfcFingerprints = mCreateKeyActivity.nfcGetFingerprints();
-        mNfcAid = mCreateKeyActivity.nfcGetAid();
-        mNfcUserId = mCreateKeyActivity.nfcGetUserId();
+        mTokenFingerprints = mCreateKeyActivity.nfcGetFingerprints();
+        mTokenAid = mCreateKeyActivity.nfcGetAid();
+        mTokenUserId = mCreateKeyActivity.nfcGetUserId();
 
         byte[] fp = new byte[20];
-        ByteBuffer.wrap(fp).put(mNfcFingerprints, 0, 20);
-        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
+        ByteBuffer.wrap(fp).put(mTokenFingerprints, 0, 20);
+        mTokenFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
     }
 
     @Override
@@ -284,13 +284,13 @@ public class CreateYubiKeyImportResetFragment
         Activity activity = getActivity();
 
         Intent intent = new Intent(activity, ViewKeyActivity.class);
-        // use the imported masterKeyId, not the one from the yubikey, because
+        // use the imported masterKeyId, not the one from the token, because
         // that one might* just have been a subkey of the imported key
         intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyIds[0]));
         intent.putExtra(ViewKeyActivity.EXTRA_DISPLAY_RESULT, result);
-        intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
-        intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
-        intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
+        intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mTokenAid);
+        intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mTokenUserId);
+        intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mTokenFingerprints);
         startActivity(intent);
         activity.finish();
     }

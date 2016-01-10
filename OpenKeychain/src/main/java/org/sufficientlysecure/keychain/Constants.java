@@ -105,7 +105,7 @@ public final class Constants {
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
         public static final String SEARCH_KEYBASE = "search_keybase_pref";
-        public static final String USE_NUMKEYPAD_FOR_YUBIKEY_PIN = "useNumKeypadForYubikeyPin";
+        public static final String USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN = "useNumKeypadForYubikeyPin";
         public static final String ENCRYPT_FILENAMES = "encryptFilenames";
         public static final String FILE_USE_COMPRESSION = "useFileCompression";
         public static final String TEXT_USE_COMPRESSION = "useTextCompression";

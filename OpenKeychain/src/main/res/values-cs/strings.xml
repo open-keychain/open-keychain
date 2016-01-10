@@ -32,7 +32,7 @@
   <string name="title_manage_my_keys">Spravovat klíče</string>
   <!--section-->
   <string name="section_user_ids">Identity</string>
-  <string name="section_yubikey">YubiKey</string>
+  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">Propojený kontakt v systému</string>
   <string name="section_should_you_trust">Důvěřujete tomuto klíči?</string>
   <string name="section_proof_details">Doložit ověření</string>
@@ -98,7 +98,7 @@
   <string name="label_file_ascii_armor">Povolit ASCII armor</string>
   <string name="label_write_version_header">Dát ostatním vědět, že používáte OpenKeychain</string>
   <string name="label_write_version_header_summary">Zapisovat \'OpenKeychain v2.7\' do OpenPGP podpisů, šifrovaného textu a exportovaných klíčů</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">Použít numerickou klávesnici pro YubiKey PIN</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Použít numerickou klávesnici pro YubiKey PIN</string>
   <string name="label_to">Zašifrovat pro:</string>
   <string name="label_delete_after_encryption">Smazat soubory po zašifrování</string>
   <string name="label_delete_after_decryption">Smazat po rozšifrování</string>
@@ -180,7 +180,7 @@
   <string name="passphrase_must_not_be_empty">Zadejte heslo.</string>
   <string name="passphrase_for">Zadejte heslo pro \'%s\'</string>
   <string name="pin_for">Zadejte PIN pro \'%s\'</string>
-  <string name="yubikey_pin_for">Zadejte PIN pro přístup k YubiKey pro \'%s\'</string>
+  <string name="security_token_pin_for">Zadejte PIN pro přístup k YubiKey pro \'%s\'</string>
   <string name="file_delete_confirmation_title">Smazat původní soubory?</string>
   <string name="file_delete_confirmation">Následjící soubory budou vymazány:%s</string>
   <string name="file_delete_successful">%1$d z %2$d souborů bylo vymazáno.%3$s</string>

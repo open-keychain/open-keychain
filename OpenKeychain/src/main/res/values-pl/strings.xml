@@ -71,7 +71,7 @@
   <string name="label_file_ascii_armor">Włącz ASCII Armor</string>
   <string name="label_write_version_header">Niech inni wiedzą, że używasz OpenKeychain</string>
   <string name="label_write_version_header_summary">Wpisuje \'\'OpenKeychain v2.7\' do podpisów, szyfrogramów i wyeksportowanych kluczy OpenPGP.</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">Użyj klawiatury numerycznej dla PIN-u YubiKey</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Użyj klawiatury numerycznej dla PIN-u YubiKey</string>
   <string name="label_to">Szyfruj do:</string>
   <string name="label_delete_after_decryption">Usuń po odszyfrowaniu</string>
   <string name="label_encryption_algorithm">Algorytm szyfrowania</string>

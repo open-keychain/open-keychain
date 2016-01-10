@@ -261,7 +261,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                             hint = getString(R.string.label_pin);
                             break;
                         case DIVERT_TO_CARD:
-                            message = getString(R.string.yubikey_pin_for, userId);
+                            message = getString(R.string.security_token_pin_for, userId);
                             hint = getString(R.string.label_pin);
                             break;
                         // special case: empty passphrase just returns the empty passphrase
@@ -313,7 +313,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
             mPassphraseEditText.setOnEditorActionListener(this);
 
-            if ((keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForYubiKeyPin())
+            if ((keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForSecurityTokenPin())
                     || keyType == CanonicalizedSecretKey.SecretKeyType.PIN) {
                 mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
                 mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());

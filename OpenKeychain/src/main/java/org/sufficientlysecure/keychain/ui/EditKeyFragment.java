@@ -435,9 +435,9 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                         }
                         // toggle
                         change.mDummyStrip = !change.mDummyStrip;
-                        if (change.mDummyStrip && change.mMoveKeyToCard) {
+                        if (change.mDummyStrip && change.mMoveKeyToSecurityToken) {
                             // User had chosen to divert key, but now wants to strip it instead.
-                            change.mMoveKeyToCard = false;
+                            change.mMoveKeyToSecurityToken = false;
                         }
                         break;
                     }
@@ -479,8 +479,8 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
 //                            break;
 //                        }
 //                        // toggle
-//                        change.mMoveKeyToCard = !change.mMoveKeyToCard;
-//                        if (change.mMoveKeyToCard && change.mDummyStrip) {
+//                        change.mMoveKeyToSecurityToken = !change.mMoveKeyToSecurityToken;
+//                        if (change.mMoveKeyToSecurityToken && change.mDummyStrip) {
 //                            // User had chosen to strip key, but now wants to divert it.
 //                            change.mDummyStrip = false;
 //                        }

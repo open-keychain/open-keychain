@@ -34,7 +34,7 @@
   <string name="title_manage_my_keys">مدیریت کلیدهام</string>
   <!--section-->
   <string name="section_user_ids">هویت‌ها</string>
-  <string name="section_yubikey">کلید Yubi</string>
+  <string name="section_security_token">کلید Yubi</string>
   <string name="section_should_you_trust">آیا به این کلید اعتماد دارید؟</string>
   <string name="section_keys">زیرکلیدها</string>
   <string name="section_gui">رابط</string>
@@ -104,7 +104,7 @@
   <string name="label_file_ascii_armor">فعال‌کردن ASCII Armor</string>
   <string name="label_write_version_header">به دیگران اطلاع دهید که شما از OpenKeyChain استفاده می‌کنید</string>
   <string name="label_write_version_header_summary">عبارت \'OpenKeychain v2.7\' را در امضاها، متن رمزگذاری‌شده و کلیدها می‌نویسید</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">از صفحه‌کلیدِ شماره‌ای برای وارد کردن رمز کلیدِ Yubi استفاده کن</string>
+  <string name="label_use_num_keypad_for_security_token_pin">از صفحه‌کلیدِ شماره‌ای برای وارد کردن رمز کلیدِ Yubi استفاده کن</string>
   <string name="label_asymmetric_from">امضاء با:</string>
   <string name="label_to">رمزگذاری به:</string>
   <string name="label_delete_after_encryption">حذف فایل‌ها پس از رمزگذاری</string>

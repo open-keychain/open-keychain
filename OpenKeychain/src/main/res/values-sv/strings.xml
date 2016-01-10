@@ -35,7 +35,7 @@
   <string name="title_manage_my_keys">Hantera mina nycklar</string>
   <!--section-->
   <string name="section_user_ids">Identiteter</string>
-  <string name="section_yubikey">YubiKey</string>
+  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">Länkade systemkontakten</string>
   <string name="section_keybase_proofs">Keybase.io-bevis</string>
   <string name="section_should_you_trust">Skulle du lita på denna nyckel?</string>
@@ -114,7 +114,7 @@
   <string name="label_file_ascii_armor">Aktivera ASCII-format</string>
   <string name="label_write_version_header">Låt andra se att du använder OpenKeychain</string>
   <string name="label_write_version_header_summary">Skriver \'OpenKeychain v2.7\' till OpenPGP-signaturer, chiffertext och exporterade nycklar.</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">Använd numeriska tangentbordet för YubiKey PIN</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Använd numeriska tangentbordet för YubiKey PIN</string>
   <string name="label_asymmetric_from">Signera med:</string>
   <string name="label_to">Kryptera till:</string>
   <string name="label_delete_after_encryption">Radera filer efter kryptering</string>
@@ -210,7 +210,7 @@
   <string name="passphrase_must_not_be_empty">Var god ange ett lösenord.</string>
   <string name="passphrase_for">Ange lösenord för \'%s\'</string>
   <string name="pin_for">Ange PIN för \'%s\'</string>
-  <string name="yubikey_pin_for">Ange PIN för att få åtkomst till YubiKey för \'%s\'</string>
+  <string name="security_token_pin_for">Ange PIN för att få åtkomst till YubiKey för \'%s\'</string>
   <string name="file_delete_confirmation_title">Radera orginalfiler?</string>
   <string name="file_delete_confirmation">Följande filer kommer raderas:%s</string>
   <string name="file_delete_successful">%1$d av %2$d filer har raderats.%3$s</string>
@@ -530,8 +530,8 @@
   <string name="edit_key_select_flag">Välj åtminstone en flagga!</string>
   <string name="edit_key_error_add_identity">Lägg till åtminstone en identitet!</string>
   <string name="edit_key_error_add_subkey">Lägg till åtminstone en undernyckel!</string>
-  <string name="edit_key_error_bad_nfc_algo">Algoritmen stöds inte av smartcard!</string>
-  <string name="edit_key_error_bad_nfc_size">Nyckelstorleken stöds inte av smartcard!</string>
+  <string name="edit_key_error_bad_security_token_algo">Algoritmen stöds inte av smartcard!</string>
+  <string name="edit_key_error_bad_security_token_size">Nyckelstorleken stöds inte av smartcard!</string>
   <!--Create key-->
   <string name="create_key_empty">Detta fält krävs</string>
   <string name="create_key_passphrases_not_equal">Lösenorden stämmer inte överens</string>
@@ -858,7 +858,7 @@
   <string name="first_time_text1">Ta tillbaka din integritet med OpenKeychain!</string>
   <string name="first_time_create_key">Skapa min nyckel</string>
   <string name="first_time_import_key">Importera nyckel från fil</string>
-  <string name="first_time_yubikey">Använd YubiKey NEO</string>
+  <string name="first_time_security_token">Använd YubiKey NEO</string>
   <string name="first_time_skip">Hoppa över inställning</string>
   <!--unsorted-->
   <string name="section_cert">Certifikatinformation</string>
@@ -897,8 +897,8 @@
   <string name="no_nfc_support">Denna enhet stöder inte NFC</string>
   <string name="unlocked">Upplåst</string>
   <string name="nfc_settings">Inställningar</string>
-  <string name="error_nfc_unknown">Okänt fel</string>
-  <string name="error_nfc_try_again">Försök igen</string>
+  <string name="security_token_error_unknown">Okänt fel</string>
+  <string name="security_token_error_try_again">Försök igen</string>
   <string name="btn_delete_original">Radera ursprunglig fil</string>
   <string name="view_internal">Visa i OpenKeychain</string>
   <string name="error_clipboard_empty">Urklipp är tomt!</string>

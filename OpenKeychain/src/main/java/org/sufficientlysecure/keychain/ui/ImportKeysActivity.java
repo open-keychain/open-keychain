@@ -35,7 +35,7 @@ import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
+import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenNfcActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -47,7 +47,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ImportKeysActivity extends BaseNfcActivity
+public class ImportKeysActivity extends BaseSecurityTokenNfcActivity
         implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
     public static final String ACTION_IMPORT_KEY = OpenKeychainIntents.IMPORT_KEY;

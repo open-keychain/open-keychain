@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -40,12 +39,11 @@ import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
+import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenNfcActivity;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.OrientationUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -56,7 +54,7 @@ import java.util.Arrays;
  * NFC devices.
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
-public class NfcOperationActivity extends BaseNfcActivity {
+public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity {
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
     public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
@@ -99,12 +97,12 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
         mInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
 
-        setTitle(R.string.nfc_text);
+        setTitle(R.string.security_token_nfc_text);
 
         vAnimator = (ViewAnimator) findViewById(R.id.view_animator);
         vAnimator.setDisplayedChild(0);
-        vErrorText = (TextView) findViewById(R.id.nfc_activity_3_error_text);
-        vErrorTryAgainButton = (Button) findViewById(R.id.nfc_activity_3_error_try_again);
+        vErrorText = (TextView) findViewById(R.id.security_token_activity_3_error_text);
+        vErrorTryAgainButton = (Button) findViewById(R.id.security_token_activity_3_error_try_again);
         vErrorTryAgainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,7 +112,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                 vAnimator.setDisplayedChild(0);
             }
         });
-        Button vCancel = (Button) findViewById(R.id.nfc_activity_0_cancel);
+        Button vCancel = (Button) findViewById(R.id.security_token_activity_0_cancel);
         vCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,13 +134,13 @@ public class NfcOperationActivity extends BaseNfcActivity {
         // obtain passphrase for this subkey
         if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD
                 && mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_RESET_CARD) {
-            obtainYubiKeyPin(mRequiredInput);
+            obtainSecurityTokenPin(mRequiredInput);
         }
     }
 
     @Override
     protected void initLayout() {
-        setContentView(R.layout.nfc_operation_activity);
+        setContentView(R.layout.security_token_operation_activity);
     }
 
     @Override
@@ -186,7 +184,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                             KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId())
                     );
                 } catch (ProviderHelper.NotFoundException e) {
-                    throw new IOException("Couldn't find subkey for key to card operation.");
+                    throw new IOException("Couldn't find subkey for key to token operation.");
                 }
 
                 byte[] newPin = mRequiredInput.mInputData[0];
@@ -202,7 +200,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     long keyGenerationTimestampMillis = key.getCreationTime().getTime();
                     long keyGenerationTimestamp = keyGenerationTimestampMillis / 1000;
                     byte[] timestampBytes = ByteBuffer.allocate(4).putInt((int) keyGenerationTimestamp).array();
-                    byte[] cardSerialNumber = Arrays.copyOf(nfcGetAid(), 16);
+                    byte[] tokenSerialNumber = Arrays.copyOf(nfcGetAid(), 16);
 
                     Passphrase passphrase;
                     try {
@@ -218,7 +216,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                             nfcPutData(0xCE, timestampBytes);
                             nfcPutData(0xC7, key.getFingerprint());
                         } else {
-                            throw new IOException("Key slot occupied; card must be reset to put new signature key.");
+                            throw new IOException("Key slot occupied; token must be reset to put new signature key.");
                         }
                     } else if (key.canEncrypt()) {
                         if (shouldPutKey(key.getFingerprint(), 1)) {
@@ -226,7 +224,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                             nfcPutData(0xCF, timestampBytes);
                             nfcPutData(0xC8, key.getFingerprint());
                         } else {
-                            throw new IOException("Key slot occupied; card must be reset to put new decryption key.");
+                            throw new IOException("Key slot occupied; token must be reset to put new decryption key.");
                         }
                     } else if (key.canAuthenticate()) {
                         if (shouldPutKey(key.getFingerprint(), 2)) {
@@ -234,14 +232,14 @@ public class NfcOperationActivity extends BaseNfcActivity {
                             nfcPutData(0xD0, timestampBytes);
                             nfcPutData(0xC9, key.getFingerprint());
                         } else {
-                            throw new IOException("Key slot occupied; card must be reset to put new authentication key.");
+                            throw new IOException("Key slot occupied; token must be reset to put new authentication key.");
                         }
                     } else {
-                        throw new IOException("Inappropriate key flags for smart card key.");
+                        throw new IOException("Inappropriate key flags for Security Token key.");
                     }
 
                     // TODO: Is this really used anywhere?
-                    mInputParcel.addCryptoData(subkeyBytes, cardSerialNumber);
+                    mInputParcel.addCryptoData(subkeyBytes, tokenSerialNumber);
                 }
 
                 // change PINs afterwards
@@ -282,7 +280,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                // check all 200ms if YubiKey has been taken away
+                // check all 200ms if Security Token has been taken away
                 while (true) {
                     if (isNfcConnected()) {
                         try {
@@ -307,7 +305,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
     protected void onNfcError(String error) {
         pauseTagHandling();
 
-        vErrorText.setText(error + "\n\n" + getString(R.string.nfc_try_again_text));
+        vErrorText.setText(error + "\n\n" + getString(R.string.security_token_nfc_try_again_text));
         vAnimator.setDisplayedChild(3);
     }
 
@@ -321,17 +319,17 @@ public class NfcOperationActivity extends BaseNfcActivity {
     }
 
     private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
-        byte[] cardFingerprint = nfcGetMasterKeyFingerprint(idx);
+        byte[] tokenFingerprint = nfcGetMasterKeyFingerprint(idx);
 
         // Note: special case: This should not happen, but happens with
         // https://github.com/FluffyKaon/OpenPGP-Card, thus for now assume true
-        if (cardFingerprint == null) {
+        if (tokenFingerprint == null) {
             return true;
         }
 
         // Slot is empty, or contains this key already. PUT KEY operation is safe
-        if (Arrays.equals(cardFingerprint, BLANK_FINGERPRINT) ||
-                Arrays.equals(cardFingerprint, fingerprint)) {
+        if (Arrays.equals(tokenFingerprint, BLANK_FINGERPRINT) ||
+                Arrays.equals(tokenFingerprint, fingerprint)) {
             return true;
         }
 

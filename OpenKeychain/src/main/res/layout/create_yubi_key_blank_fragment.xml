@@ -22,7 +22,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/first_time_blank_yubikey" />
+                android:text="@string/first_time_blank_security_token" />
 
         </LinearLayout>
     </ScrollView>
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
-            android:text="@string/first_time_blank_yubikey_yes"
+            android:text="@string/first_time_blank_security_token_yes"
             android:textAllCaps="true"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:drawableRight="@drawable/ic_chevron_right_grey_24dp"

@@ -34,7 +34,7 @@
   <string name="title_manage_my_keys">管理我的金鑰</string>
   <!--section-->
   <string name="section_user_ids">身份</string>
-  <string name="section_yubikey">YubiKey</string>
+  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">已關聯帳戶</string>
   <string name="section_should_you_trust">您信任這把金鑰嗎？</string>
   <string name="section_keys">子金鑰</string>
@@ -105,7 +105,7 @@
   <string name="label_file_ascii_armor">以ASCII輸出</string>
   <string name="label_write_version_header">讓別人知道我在使用OpenKeychain</string>
   <string name="label_write_version_header_summary">在簽名、密文與匯出的金鑰裡寫入\'OpenKeychain v2.7\'</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">輸入 YubiKey PIN 時使用數字鍵盤</string>
+  <string name="label_use_num_keypad_for_security_token_pin">輸入 YubiKey PIN 時使用數字鍵盤</string>
   <string name="label_asymmetric_from">簽名：</string>
   <string name="label_to">加密給:</string>
   <string name="label_delete_after_encryption">加密後刪除檔案</string>
@@ -210,7 +210,7 @@
   <string name="passphrase_must_not_be_empty">請輸入密碼。</string>
   <string name="passphrase_for">輸入 %s 的密碼</string>
   <string name="pin_for">輸入 \'%s\' 的 PIN</string>
-  <string name="yubikey_pin_for">輸入 PIN 來存取 \'%s\' 的 YubiKey</string>
+  <string name="security_token_pin_for">輸入 PIN 來存取 \'%s\' 的 YubiKey</string>
   <string name="file_delete_confirmation_title">刪除原始檔案？</string>
   <string name="file_delete_confirmation">下列的檔案將會被刪除：%s</string>
   <string name="file_delete_successful">%1$d 之 %2$d 的檔案已經被刪除。%3$s</string>
@@ -536,9 +536,9 @@
   <string name="edit_key_select_flag">請至少選擇一個用途！</string>
   <string name="edit_key_error_add_identity">新增至少一組身分識別！</string>
   <string name="edit_key_error_add_subkey">新增至少一組子金鑰！</string>
-  <string name="edit_key_error_bad_nfc_algo">智慧卡不支援該算法！</string>
-  <string name="edit_key_error_bad_nfc_size">智慧卡不支援該金鑰長度！</string>
-  <string name="edit_key_error_bad_nfc_stripped">無法移動金鑰至智慧卡(已移動或被卸除)！</string>
+  <string name="edit_key_error_bad_security_token_algo">智慧卡不支援該算法！</string>
+  <string name="edit_key_error_bad_security_token_size">智慧卡不支援該金鑰長度！</string>
+  <string name="edit_key_error_bad_security_token_stripped">無法移動金鑰至智慧卡(已移動或被卸除)！</string>
   <!--Create key-->
   <string name="create_key_empty">必填欄位</string>
   <string name="create_key_passphrases_not_equal">密碼不相符</string>
@@ -692,7 +692,7 @@
   <!--First Time-->
   <string name="first_time_create_key">建立金鑰</string>
   <string name="first_time_import_key">從檔案匯入金鑰</string>
-  <string name="first_time_yubikey">使用YubiKey NEO</string>
+  <string name="first_time_security_token">使用YubiKey NEO</string>
   <string name="first_time_skip">跳過設置</string>
   <!--unsorted-->
   <string name="empty_certs">這把金鑰未經過認證</string>
@@ -717,7 +717,7 @@
   <string name="nfc_wrong_tag">錯誤的標籤。請再試一次。</string>
   <string name="enable_nfc">請在您的設定中啓用 NFC</string>
   <string name="no_nfc_support">該裝置不支援 NFC</string>
-  <string name="nfc_write_succesful">成功寫入 NFC 標籤</string>
+  <string name="nfc_write_successful">成功寫入 NFC 標籤</string>
   <string name="unlocked">解鎖</string>
   <string name="nfc_settings">設定</string>
   <!--Other Linked Identity strings-->

@@ -37,7 +37,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class CreateYubiKeyPinFragment extends Fragment {
+public class CreateSecurityTokenPinFragment extends Fragment {
 
     // view
     CreateKeyActivity mCreateKeyActivity;
@@ -65,8 +65,8 @@ public class CreateYubiKeyPinFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static CreateYubiKeyPinFragment newInstance() {
-        CreateYubiKeyPinFragment frag = new CreateYubiKeyPinFragment();
+    public static CreateSecurityTokenPinFragment newInstance() {
+        CreateSecurityTokenPinFragment frag = new CreateSecurityTokenPinFragment();
 
         Bundle args = new Bundle();
         frag.setArguments(args);
@@ -109,7 +109,7 @@ public class CreateYubiKeyPinFragment extends Fragment {
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mNextButton = view.findViewById(R.id.create_key_next_button);
 
-        if (mCreateKeyActivity.mYubiKeyPin == null) {
+        if (mCreateKeyActivity.mSecurityTokenPin == null) {
             new AsyncTask<Void, Void, Passphrase>() {
                 @Override
                 protected Passphrase doInBackground(Void... unused) {
@@ -129,13 +129,13 @@ public class CreateYubiKeyPinFragment extends Fragment {
 
                 @Override
                 protected void onPostExecute(Passphrase adminPin) {
-                    mCreateKeyActivity.mYubiKeyAdminPin = adminPin;
+                    mCreateKeyActivity.mSecurityTokenAdminPin = adminPin;
 
-                    mAdminPin.setText(mCreateKeyActivity.mYubiKeyAdminPin.toStringUnsafe());
+                    mAdminPin.setText(mCreateKeyActivity.mSecurityTokenAdminPin.toStringUnsafe());
                 }
             }.execute();
         } else {
-            mAdminPin.setText(mCreateKeyActivity.mYubiKeyAdminPin.toStringUnsafe());
+            mAdminPin.setText(mCreateKeyActivity.mSecurityTokenAdminPin.toStringUnsafe());
         }
 
         mPin.requestFocus();
@@ -187,7 +187,7 @@ public class CreateYubiKeyPinFragment extends Fragment {
                 return;
             }
 
-            mCreateKeyActivity.mYubiKeyPin = new Passphrase(mPin.getText().toString());
+            mCreateKeyActivity.mSecurityTokenPin = new Passphrase(mPin.getText().toString());
 
             CreateKeyFinalFragment frag = CreateKeyFinalFragment.newInstance();
             hideKeyboard();

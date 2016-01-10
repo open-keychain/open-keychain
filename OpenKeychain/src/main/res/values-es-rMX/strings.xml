@@ -36,7 +36,7 @@
   <string name="title_manage_my_keys">Administrar mis claves</string>
   <!--section-->
   <string name="section_user_ids">Identidades</string>
-  <string name="section_yubikey">Clave Yubi</string>
+  <string name="section_security_token">Clave Yubi</string>
   <string name="section_should_you_trust">¿Debería confiar en esta clave?</string>
   <string name="section_proof_details">Prueba de verificación</string>
   <string name="section_keys">Subclave</string>
@@ -122,7 +122,7 @@
   <string name="label_show_passphrase">Mostrar contraseña</string>
   <string name="label_algorithm">Algoritmo</string>
   <string name="label_write_version_header">Permitir que otros sepan que estás usando OpenKeychain</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">Usar teclado numérico para NIP de clave Yubi</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Usar teclado numérico para NIP de clave Yubi</string>
   <string name="label_asymmetric_from">Firmar con...</string>
   <string name="label_to">Cifrar para:</string>
   <string name="label_delete_after_encryption">Eliminar archivos después de cifrado</string>
@@ -233,7 +233,7 @@
   <string name="passphrase_for_backup">Ingrese un código de respaldo</string>
   <string name="passphrase_for">Ingrese una contraseña para \'%s\'</string>
   <string name="pin_for">Ingrese un NIP para \'%s\'</string>
-  <string name="yubikey_pin_for">Ingrese NIP para acceder a una clave Yubi para \'%s\'</string>
+  <string name="security_token_pin_for">Ingrese NIP para acceder a una clave Yubi para \'%s\'</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->

@@ -174,7 +174,7 @@ public class SubkeysAdapter extends CursorAdapter {
                 ? mSaveKeyringParcel.getSubkeyChange(keyId)
                 : null;
 
-        if (change != null && (change.mDummyStrip || change.mMoveKeyToCard)) {
+        if (change != null && (change.mDummyStrip || change.mMoveKeyToSecurityToken)) {
             if (change.mDummyStrip) {
                 algorithmStr.append(", ");
                 final SpannableString boldStripped = new SpannableString(
@@ -183,7 +183,7 @@ public class SubkeysAdapter extends CursorAdapter {
                 boldStripped.setSpan(new StyleSpan(Typeface.BOLD), 0, boldStripped.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 algorithmStr.append(boldStripped);
             }
-            if (change.mMoveKeyToCard) {
+            if (change.mMoveKeyToSecurityToken) {
                 algorithmStr.append(", ");
                 final SpannableString boldDivert = new SpannableString(
                         context.getString(R.string.key_divert)

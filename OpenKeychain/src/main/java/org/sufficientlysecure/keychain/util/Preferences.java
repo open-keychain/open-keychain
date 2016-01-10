@@ -124,8 +124,8 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME, true);
     }
 
-    public boolean useNumKeypadForYubiKeyPin() {
-        return mSharedPreferences.getBoolean(Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN, true);
+    public boolean useNumKeypadForSecurityTokenPin() {
+        return mSharedPreferences.getBoolean(Pref.USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN, true);
     }
 
     public void setFirstTime(boolean value) {

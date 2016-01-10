@@ -36,14 +36,14 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/yubikey_serno"
+                        android:id="@+id/token_serno"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="Yubikey #" />
 
                     <TextView
-                        android:id="@+id/yubikey_userid"
+                        android:id="@+id/token_userid"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -67,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
-                    android:text="@string/yubikey_reset_or_import"
+                    android:text="@string/security_token_reset_or_import"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <RadioGroup
@@ -76,19 +76,19 @@
                     android:orientation="vertical">
 
                     <RadioButton
-                        android:id="@+id/yubikey_decision_import"
+                        android:id="@+id/token_decision_import"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="@string/yubikey_import_radio" />
+                        android:text="@string/security_token_import_radio" />
 
                     <RadioButton
-                        android:id="@+id/yubikey_decision_reset"
+                        android:id="@+id/token_decision_reset"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         android:layout_marginTop="16dp"
-                        android:text="@string/yubikey_reset_radio" />
+                        android:text="@string/security_token_reset_radio" />
                 </RadioGroup>
 
             </LinearLayout>
@@ -101,19 +101,19 @@
                 android:background="?android:attr/listDivider" />
 
             <FrameLayout
-                android:id="@+id/yubikey_import_fragment"
+                android:id="@+id/security_token_import_fragment"
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/yubikey_decision"
                 android:layout_marginTop="8dp">
 
                 <TextView
-                    android:id="@+id/yubikey_import_reset_warning"
+                    android:id="@+id/token_import_reset_warning"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_margin="24dp"
-                    android:text="@string/yubikey_reset_warning"
+                    android:text="@string/security_token_reset_warning"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/android_red_dark"
                     android:visibility="gone" />

@@ -27,7 +27,7 @@ import android.view.ViewGroup;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 
-public class CreateYubiKeyBlankFragment extends Fragment {
+public class CreateSecurityTokenBlankFragment extends Fragment {
 
     CreateKeyActivity mCreateKeyActivity;
     View mBackButton;
@@ -36,8 +36,8 @@ public class CreateYubiKeyBlankFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static CreateYubiKeyBlankFragment newInstance() {
-        CreateYubiKeyBlankFragment frag = new CreateYubiKeyBlankFragment();
+    public static CreateSecurityTokenBlankFragment newInstance() {
+        CreateSecurityTokenBlankFragment frag = new CreateSecurityTokenBlankFragment();
 
         Bundle args = new Bundle();
 
@@ -81,7 +81,7 @@ public class CreateYubiKeyBlankFragment extends Fragment {
     }
 
     private void nextClicked() {
-        mCreateKeyActivity.mCreateYubiKey = true;
+        mCreateKeyActivity.mCreateSecurityToken = true;
 
         CreateKeyNameFragment frag = CreateKeyNameFragment.newInstance();
         mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);

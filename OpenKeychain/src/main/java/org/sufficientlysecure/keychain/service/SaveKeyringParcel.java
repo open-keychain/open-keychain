@@ -61,9 +61,9 @@ public class SaveKeyringParcel implements Parcelable {
     public ArrayList<String> mRevokeUserIds;
     public ArrayList<Long> mRevokeSubKeys;
 
-    // if these are non-null, PINs will be changed on the card
-    public Passphrase mCardPin;
-    public Passphrase mCardAdminPin;
+    // if these are non-null, PINs will be changed on the token
+    public Passphrase mSecurityTokenPin;
+    public Passphrase mSecurityTokenAdminPin;
 
     // private because they have to be set together with setUpdateOptions
     private boolean mUpload;
@@ -89,8 +89,8 @@ public class SaveKeyringParcel implements Parcelable {
         mChangeSubKeys = new ArrayList<>();
         mRevokeUserIds = new ArrayList<>();
         mRevokeSubKeys = new ArrayList<>();
-        mCardPin = null;
-        mCardAdminPin = null;
+        mSecurityTokenPin = null;
+        mSecurityTokenAdminPin = null;
         mUpload = false;
         mUploadAtomic = false;
         mKeyserver = null;
@@ -128,7 +128,7 @@ public class SaveKeyringParcel implements Parcelable {
 
         for (SubkeyChange change : mChangeSubKeys) {
             if (change.mRecertify || change.mFlags != null || change.mExpiry != null
-                    || change.mMoveKeyToCard) {
+                    || change.mMoveKeyToSecurityToken) {
                 return false;
             }
         }
@@ -175,11 +175,11 @@ public class SaveKeyringParcel implements Parcelable {
         public boolean mRecertify;
         // if this flag is true, the subkey should be changed to a stripped key
         public boolean mDummyStrip;
-        // if this flag is true, the subkey should be moved to a card
-        public boolean mMoveKeyToCard;
+        // if this flag is true, the subkey should be moved to a security token
+        public boolean mMoveKeyToSecurityToken;
         // if this is non-null, the subkey will be changed to a divert-to-card
-        // key for the given serial number
-        public byte[] mDummyDivert;
+        // (security token) key for the given serial number
+        public byte[] mSecurityTokenSerialNo;
 
         public SubkeyChange(long keyId) {
             mKeyId = keyId;
@@ -196,16 +196,17 @@ public class SaveKeyringParcel implements Parcelable {
             mExpiry = expiry;
         }
 
-        public SubkeyChange(long keyId, boolean dummyStrip, boolean moveKeyToCard) {
+        public SubkeyChange(long keyId, boolean dummyStrip, boolean moveKeyToSecurityToken) {
             this(keyId, null, null);
 
             // these flags are mutually exclusive!
-            if (dummyStrip && moveKeyToCard) {
+            if (dummyStrip && moveKeyToSecurityToken) {
                 throw new AssertionError(
-                        "cannot set strip and keytocard flags at the same time - this is a bug!");
+                        "cannot set strip and moveKeyToSecurityToken" +
+                                " flags at the same time - this is a bug!");
             }
             mDummyStrip = dummyStrip;
-            mMoveKeyToCard = moveKeyToCard;
+            mMoveKeyToSecurityToken = moveKeyToSecurityToken;
         }
 
         @Override
@@ -214,8 +215,8 @@ public class SaveKeyringParcel implements Parcelable {
             out += "mFlags: " + mFlags + ", ";
             out += "mExpiry: " + mExpiry + ", ";
             out += "mDummyStrip: " + mDummyStrip + ", ";
-            out += "mMoveKeyToCard: " + mMoveKeyToCard + ", ";
-            out += "mDummyDivert: [" + (mDummyDivert == null ? 0 : mDummyDivert.length) + " bytes]";
+            out += "mMoveKeyToSecurityToken: " + mMoveKeyToSecurityToken + ", ";
+            out += "mSecurityTokenSerialNo: [" + (mSecurityTokenSerialNo == null ? 0 : mSecurityTokenSerialNo.length) + " bytes]";
 
             return out;
         }
@@ -259,8 +260,8 @@ public class SaveKeyringParcel implements Parcelable {
         mRevokeUserIds = source.createStringArrayList();
         mRevokeSubKeys = (ArrayList<Long>) source.readSerializable();
 
-        mCardPin = source.readParcelable(Passphrase.class.getClassLoader());
-        mCardAdminPin  = source.readParcelable(Passphrase.class.getClassLoader());
+        mSecurityTokenPin = source.readParcelable(Passphrase.class.getClassLoader());
+        mSecurityTokenAdminPin = source.readParcelable(Passphrase.class.getClassLoader());
 
         mUpload = source.readByte() != 0;
         mUploadAtomic = source.readByte() != 0;
@@ -288,8 +289,8 @@ public class SaveKeyringParcel implements Parcelable {
         destination.writeStringList(mRevokeUserIds);
         destination.writeSerializable(mRevokeSubKeys);
 
-        destination.writeParcelable(mCardPin, flags);
-        destination.writeParcelable(mCardAdminPin, flags);
+        destination.writeParcelable(mSecurityTokenPin, flags);
+        destination.writeParcelable(mSecurityTokenAdminPin, flags);
 
         destination.writeByte((byte) (mUpload ? 1 : 0));
         destination.writeByte((byte) (mUploadAtomic ? 1 : 0));
@@ -322,8 +323,8 @@ public class SaveKeyringParcel implements Parcelable {
         out += "mChangePrimaryUserId: " + mChangePrimaryUserId + "\n";
         out += "mRevokeUserIds: " + mRevokeUserIds + "\n";
         out += "mRevokeSubKeys: " + mRevokeSubKeys + "\n";
-        out += "mCardPin: " + mCardPin + "\n";
-        out += "mCardAdminPin: " + mCardAdminPin;
+        out += "mSecurityTokenPin: " + mSecurityTokenPin + "\n";
+        out += "mSecurityTokenAdminPin: " + mSecurityTokenAdminPin;
 
         return out;
     }

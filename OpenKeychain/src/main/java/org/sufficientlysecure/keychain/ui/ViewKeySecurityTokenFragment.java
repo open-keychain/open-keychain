@@ -44,7 +44,7 @@ import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
-public class ViewKeyYubiKeyFragment
+public class ViewKeySecurityTokenFragment
         extends QueueingCryptoOperationFragment<PromoteKeyringParcel, PromoteKeyResult>
         implements LoaderCallbacks<Cursor> {
 
@@ -62,9 +62,9 @@ public class ViewKeyYubiKeyFragment
     private Button vButton;
     private TextView vStatus;
 
-    public static ViewKeyYubiKeyFragment newInstance(long masterKeyId,
+    public static ViewKeySecurityTokenFragment newInstance(long masterKeyId,
             byte[] fingerprints, String userId, byte[] aid) {
-        ViewKeyYubiKeyFragment frag = new ViewKeyYubiKeyFragment();
+        ViewKeySecurityTokenFragment frag = new ViewKeySecurityTokenFragment();
 
         Bundle args = new Bundle();
         args.putLong(ARG_MASTER_KEY_ID, masterKeyId);
@@ -76,7 +76,7 @@ public class ViewKeyYubiKeyFragment
         return frag;
     }
 
-    public ViewKeyYubiKeyFragment() {
+    public ViewKeySecurityTokenFragment() {
         super(null);
     }
 
@@ -102,18 +102,18 @@ public class ViewKeyYubiKeyFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.view_key_yubikey, null);
+        View view = inflater.inflate(R.layout.view_key_security_token, null);
 
-        TextView vSerNo = (TextView) view.findViewById(R.id.yubikey_serno);
-        TextView vUserId = (TextView) view.findViewById(R.id.yubikey_userid);
+        TextView vSerNo = (TextView) view.findViewById(R.id.token_serno);
+        TextView vUserId = (TextView) view.findViewById(R.id.token_userid);
 
         String serno = Hex.toHexString(mCardAid, 10, 4);
-        vSerNo.setText(getString(R.string.yubikey_serno, serno));
+        vSerNo.setText(getString(R.string.security_token_serial_no, serno));
 
         if (!mUserId.isEmpty()) {
-            vUserId.setText(getString(R.string.yubikey_key_holder, mUserId));
+            vUserId.setText(getString(R.string.security_token_key_holder, mUserId));
         } else {
-            vUserId.setText(getString(R.string.yubikey_key_holder_not_set));
+            vUserId.setText(getString(R.string.security_token_key_holder_not_set));
         }
 
         vButton = (Button) view.findViewById(R.id.button_bind);
@@ -124,7 +124,7 @@ public class ViewKeyYubiKeyFragment
             }
         });
 
-        vStatus = (TextView) view.findViewById(R.id.yubikey_status);
+        vStatus = (TextView) view.findViewById(R.id.token_status);
 
         return view;
     }
@@ -185,12 +185,12 @@ public class ViewKeyYubiKeyFragment
 
         if (allBound) {
             vButton.setVisibility(View.GONE);
-            vStatus.setText(R.string.yubikey_status_bound);
+            vStatus.setText(R.string.security_token_status_bound);
         } else {
             vButton.setVisibility(View.VISIBLE);
             vStatus.setText(noneBound
-                    ? R.string.yubikey_status_unbound
-                    : R.string.yubikey_status_partly);
+                    ? R.string.security_token_status_unbound
+                    : R.string.security_token_status_partly);
         }
 
     }

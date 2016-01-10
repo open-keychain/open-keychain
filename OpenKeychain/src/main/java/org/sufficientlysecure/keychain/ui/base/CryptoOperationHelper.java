@@ -39,7 +39,7 @@ import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
+import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.RetryUploadDialogActivity;
@@ -133,9 +133,9 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             case NFC_MOVE_KEY_TO_CARD:
             case NFC_DECRYPT:
             case NFC_SIGN: {
-                Intent intent = new Intent(activity, NfcOperationActivity.class);
-                intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                intent.putExtra(NfcOperationActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);
+                Intent intent = new Intent(activity, SecurityTokenOperationActivity.class);
+                intent.putExtra(SecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                intent.putExtra(SecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);
                 startActivityForResult(intent, REQUEST_CODE_NFC);
                 return;
             }
@@ -212,7 +212,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             case REQUEST_CODE_NFC: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     CryptoInputParcel cryptoInput =
-                            data.getParcelableExtra(NfcOperationActivity.RESULT_CRYPTO_INPUT);
+                            data.getParcelableExtra(SecurityTokenOperationActivity.RESULT_CRYPTO_INPUT);
                     cryptoOperation(cryptoInput);
                 }
                 break;

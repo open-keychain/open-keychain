@@ -43,7 +43,7 @@
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
-    <string name="section_yubikey">"YubiKey"</string>
+    <string name="section_security_token">"Security Token"</string>
     <string name="section_linked_system_contact">"Linked System Contact"</string>
     <string name="section_keybase_proofs">"Keybase.io Proofs"</string>
     <string name="section_should_you_trust">"Should you trust this key?"</string>
@@ -150,7 +150,7 @@
     <string name="label_file_ascii_armor">"Enable ASCII Armor"</string>
     <string name="label_write_version_header">"Let others know that you're using OpenKeychain"</string>
     <string name="label_write_version_header_summary">"Writes 'OpenKeychain v2.7' to OpenPGP signatures, ciphertext, and exported keys"</string>
-    <string name="label_use_num_keypad_for_yubikey_pin">Use number keypad for YubiKey PIN</string>
+    <string name="label_use_num_keypad_for_security_token_pin">Use number keypad for Security Token PIN</string>
     <string name="label_asymmetric_from">"Sign with:"</string>
     <string name="label_to">"Encrypt to"</string>
     <string name="label_delete_after_encryption">"Delete files after encryption"</string>
@@ -307,11 +307,11 @@
     <string name="passphrase_for_backup">"Enter backup code"</string>
     <string name="passphrase_for">"Enter password for '%s'"</string>
     <string name="pin_for">"Enter PIN for '%s'"</string>
-    <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
-    <string name="nfc_text">"Hold YubiKey against the NFC marker at the back of your device."</string>
-    <string name="nfc_wait">"Keep the YubiKey at the back!"</string>
-    <string name="nfc_finished">"Take away the YubiKey now."</string>
-    <string name="nfc_try_again_text">"Take away the YubiKey now and touch TRY AGAIN."</string>
+    <string name="security_token_pin_for">"Enter PIN to access Security Token for '%s'"</string>
+    <string name="security_token_nfc_text">"Hold Security Token against the NFC marker at the back of your device."</string>
+    <string name="security_token_nfc_wait">"Keep the Security Token at the back!"</string>
+    <string name="security_token_nfc_finished">"Take away the Security Token now."</string>
+    <string name="security_token_nfc_try_again_text">"Take away the Security Token now and touch TRY AGAIN."</string>
     <string name="file_delete_confirmation_title">"Delete original files?"</string>
     <string name="file_delete_confirmation">"The following files will be deleted:%s"</string>
     <string name="file_delete_successful">"%1$d out of %2$d files have been deleted.%3$s"</string>
@@ -743,15 +743,15 @@
         <item>"Change Expiry"</item>
         <item>"Revoke Subkey"</item>
         <item>"Strip Subkey"</item>
-        <item>"Move Subkey to YubiKey / Smart Card"</item>
+        <item>"Move Subkey to Security Token"</item>
     </string-array>
     <string name="edit_key_new_subkey">"new subkey"</string>
     <string name="edit_key_select_flag">"Please select at least one flag!"</string>
     <string name="edit_key_error_add_identity">"Add at least one identity!"</string>
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
-    <string name="edit_key_error_bad_nfc_algo">"Algorithm not supported by smart card!"</string>
-    <string name="edit_key_error_bad_nfc_size">"Key size not supported by smart card!"</string>
-    <string name="edit_key_error_bad_nfc_stripped">"Cannot move key to smart card (either stripped or 'divert-to-card')!"</string>
+    <string name="edit_key_error_bad_security_token_algo">"Algorithm not supported by Security Token!"</string>
+    <string name="edit_key_error_bad_security_token_size">"Key size not supported by Security Token!"</string>
+    <string name="edit_key_error_bad_security_token_stripped">"Cannot move key to Security Token (either stripped or 'divert-to-card')!"</string>
 
     <!-- Create key -->
     <string name="create_key_upload">"Synchronize with the Internet"</string>
@@ -1050,7 +1050,7 @@
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
-    <string name="msg_mf_divert">"Will divert to smart card for crypto operations"</string>
+    <string name="msg_mf_divert">"Will divert to Security Token for crypto operations"</string>
     <string name="msg_mf_error_divert_newsub">"Creation of new subkeys is not supported for 'divert-to-card' primary keys!"</string>
     <string name="msg_mf_error_divert_serial">"The serial number of a 'divert-to-card' key must be 16 bytes! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_encode">"Encoding exception!"</string>
@@ -1069,9 +1069,9 @@
     <string name="msg_mf_error_sig">"Signature exception!"</string>
     <string name="msg_mf_error_sub_stripped">"Cannot modify stripped subkey %s!"</string>
     <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
-    <string name="msg_mf_error_conflicting_nfc_commands">"Cannot move key to smart card in same operation that creates an on-card signature."</string>
+    <string name="msg_mf_error_conflicting_nfc_commands">"Cannot move key to Security Token in same operation that creates an on-card signature."</string>
     <string name="msg_mf_error_duplicate_keytocard_for_slot">"Smart card supports only one slot per key type."</string>
-    <string name="msg_mf_error_invalid_flags_for_keytocard">"Inappropriate key flags for smart card key."</string>
+    <string name="msg_mf_error_invalid_flags_for_keytocard">"Inappropriate key flags for Security Token key."</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
     <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
@@ -1085,15 +1085,15 @@
     <string name="msg_mf_primary_new">"Generating new certificate for new primary user ID"</string>
     <string name="msg_mf_restricted_mode">"Changing to restricted operation mode"</string>
     <string name="msg_mf_subkey_change">"Modifying subkey %s"</string>
-    <string name="msg_mf_require_divert">"Diverting to smart card for crypto operations"</string>
+    <string name="msg_mf_require_divert">"Diverting to Security Token for crypto operations"</string>
     <string name="msg_mf_require_passphrase">"Password required for operations"</string>
     <string name="msg_mf_subkey_new">"Adding new subkey of type %s"</string>
     <string name="msg_mf_subkey_new_id">"New subkey ID: %s"</string>
     <string name="msg_mf_error_past_expiry">"Expiry date cannot be in the past!"</string>
     <string name="msg_mf_subkey_revoke">"Revoking subkey %s"</string>
     <string name="msg_mf_subkey_strip">"Stripping subkey %s"</string>
-    <string name="msg_mf_keytocard_start">"Moving subkey %s to smart card"</string>
-    <string name="msg_mf_keytocard_finish">"Moved %1$s to smart card %2$s"</string>
+    <string name="msg_mf_keytocard_start">"Moving subkey %s to Security Token"</string>
+    <string name="msg_mf_keytocard_finish">"Moved %1$s to Security Token %2$s"</string>
     <string name="msg_mf_success">"Keyring successfully modified"</string>
     <string name="msg_mf_uid_add">"Adding user ID %s"</string>
     <string name="msg_mf_uid_primary">"Changing primary user ID to %s"</string>
@@ -1153,7 +1153,7 @@
     <string name="msg_pr_error_key_not_found">"Key not found!"</string>
     <string name="msg_pr_fetching">"Fetching key to modify (%s)"</string>
     <string name="msg_pr_subkey_match">"Promoting subkey: %s"</string>
-    <string name="msg_pr_subkey_nomatch">"Subkey not on YubiKey: %s"</string>
+    <string name="msg_pr_subkey_nomatch">"Subkey not on Security Token: %s"</string>
     <string name="msg_pr_success">"Key successfully promoted"</string>
 
     <!-- Other messages used in OperationLogs -->
@@ -1458,10 +1458,11 @@
     <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
     <string name="first_time_create_key">"Create my key"</string>
     <string name="first_time_import_key">"Import key from file"</string>
-    <string name="first_time_yubikey">"Use YubiKey NEO"</string>
+    <string name="first_time_security_token">"Use Security Token"</string>
+    <string name="first_time_security_token_subtitle">"(Fidesmo, YubiKey NEO, SIGILANCE, …)"</string>
     <string name="first_time_skip">"Skip Setup"</string>
-    <string name="first_time_blank_yubikey">"Would you like to use this blank YubiKey NEO with OpenKeychain?\n\nPlease take away the YubiKey now, you will be prompted when it is needed again!"</string>
-    <string name="first_time_blank_yubikey_yes">"Use this YubiKey"</string>
+    <string name="first_time_blank_security_token">"Would you like to use this blank Security Token with OpenKeychain?\n\nPlease take away the Security Token now, you will be prompted when it is needed again!"</string>
+    <string name="first_time_blank_security_token_yes">"Use this Security Token"</string>
 
     <string name="backup_text">"Backups that include your own keys must never be shared with other people!"</string>
     <string name="backup_all">"All keys + your own keys"</string>
@@ -1485,7 +1486,7 @@
     <string name="error_key_not_found">"Key not found!"</string>
     <string name="error_key_processing">"Error processing key!"</string>
     <string name="key_stripped">"stripped"</string>
-    <string name="key_divert">"divert to smart card"</string>
+    <string name="key_divert">"divert to Security Token"</string>
     <string name="key_no_passphrase">"no password"</string>
     <string name="key_unavailable">"unavailable"</string>
     <string name="secret_cannot_multiple">"Your own keys can only be deleted individually!"</string>
@@ -1536,46 +1537,44 @@
     <string name="nfc_wrong_tag">Wrong Tag. Please try again.</string>
     <string name="enable_nfc">Please activate NFC in your settings</string>
     <string name="no_nfc_support">This device does not support NFC</string>
-    <string name="nfc_write_succesful">Successfully written on NFC tag</string>
+    <string name="nfc_write_successful">Successfully written on NFC tag</string>
     <string name="unlocked">Unlocked</string>
     <string name="nfc_settings">Settings</string>
-    <string name="snack_yubikey_view">"View"</string>
-    <string name="snack_yubikey_import">"Import"</string>
+    <string name="snack_security_token_view">"View"</string>
+    <string name="snack_security_token_import">"Import"</string>
     <string name="button_bind_key">"Bind Key"</string>
-    <string name="yubikey_serno">"Serial No: %s"</string>
-    <string name="yubikey_key_holder">"Key holder: "</string>
-    <string name="yubikey_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
-    <string name="yubikey_status_bound">"YubiKey matches and is bound to key"</string>
-    <string name="yubikey_status_unbound">"YubiKey matches, can be bound to key"</string>
-    <string name="yubikey_status_partly">"YubiKey matches, partly bound to key"</string>
-    <string name="yubikey_create">"Hold YubiKey against the back of your device."</string>
-    <string name="yubikey_reset_or_import">"This YubiKey already contains a key. You can import the key using the cloud or reset the YubiKey."</string>
+    <string name="security_token_serial_no">"Serial No: %s"</string>
+    <string name="security_token_key_holder">"Key holder: "</string>
+    <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
+    <string name="security_token_status_bound">"Security Token matches and is bound to key"</string>
+    <string name="security_token_status_unbound">"Security Token matches, can be bound to key"</string>
+    <string name="security_token_status_partly">"Security Token matches, partly bound to key"</string>
+    <string name="security_token_create">"Hold Security Token against the back of your device."</string>
+    <string name="security_token_reset_or_import">"This Security Token already contains a key. You can import the key using the cloud or reset the Security Token."</string>
     <string name="btn_import">"Import"</string>
     <string name="btn_reset">"Reset"</string>
-    <string name="yubikey_import_radio">"Import key"</string>
-    <string name="yubikey_reset_radio">"Reset YubiKey"</string>
-    <string name="yubikey_reset_warning">"Resetting the YubiKey completely destroys the keys on it. Afterwards, you will not be able to decrypt messages/files encrypted with this key!"</string>
-    <string name="snack_yubi_other">Different key stored on YubiKey!</string>
-    <string name="error_nfc">"NFC Error: %s"</string>
-    <plurals name="error_pin">
+    <string name="security_token_import_radio">"Import key"</string>
+    <string name="security_token_reset_radio">"Reset Security Token"</string>
+    <string name="security_token_reset_warning">"Resetting the Security Token completely destroys the keys on it. Afterwards, you will not be able to decrypt messages/files encrypted with this key!"</string>
+    <string name="snack_security_token_other">Different key stored on Security Token!</string>
+    <string name="security_token_error">"Error: %s"</string>
+    <plurals name="security_token_error_pin">
         <item quantity="one">"Incorrect PIN!\n%d try remaining."</item>
         <item quantity="other">"Incorrect PIN!\n%d tries remaining."</item>
     </plurals>
-    <string name="error_nfc_terminated">"YubiKey in termination state."</string>
-    <string name="error_nfc_wrong_length">"Entered PIN is too short. PINs are at least 6 digits long."</string>
-    <string name="error_nfc_conditions_not_satisfied">"Conditions of use not satisfied."</string>
-    <string name="error_nfc_security_not_satisfied">"Security status not satisfied."</string>
-    <string name="error_nfc_authentication_blocked">"PIN blocked after too many attempts."</string>
-    <string name="error_nfc_data_not_found">"Key or object not found."</string>
-    <string name="error_nfc_unknown">"Unknown Error"</string>
-    <string name="error_nfc_bad_data">"YubiKey reported invalid data."</string>
-    <string name="error_nfc_chaining_error">"YubiKey expected last command in a chain."</string>
-    <string name="error_nfc_header">"YubiKey reported invalid %s byte."</string>
-    <string name="error_nfc_tag_lost">"YubiKey has been taken off too early. Keep the YubiKey at the back until the operation finishes."</string>
-    <string name="error_nfc_iso_dep_not_supported">"Tag does not support ISO-DEP (ISO 14443-4)"</string>
-    <string name="error_nfc_try_again">"Try again"</string>
-    <string name="error_pin_wrong">PIN is wrong!</string>
-    <string name="error_temp_file">Error creating temporary file.</string>
+    <string name="security_token_error_terminated">"Security Token in termination state."</string>
+    <string name="security_token_error_wrong_length">"Entered PIN is too short. PINs are at least 6 digits long."</string>
+    <string name="security_token_error_conditions_not_satisfied">"Conditions of use not satisfied."</string>
+    <string name="security_token_error_security_not_satisfied">"Security status not satisfied."</string>
+    <string name="security_token_error_authentication_blocked">"PIN blocked after too many attempts."</string>
+    <string name="security_token_error_data_not_found">"Key or object not found."</string>
+    <string name="security_token_error_unknown">"Unknown Error"</string>
+    <string name="security_token_error_bad_data">"Security Token reported invalid data."</string>
+    <string name="security_token_error_chaining_error">"Security Token expected last command in a chain."</string>
+    <string name="security_token_error_header">"Security Token reported invalid %s byte."</string>
+    <string name="security_token_error_tag_lost">"Security Token has been taken off too early. Keep the Security Token at the back until the operation finishes."</string>
+    <string name="security_token_error_iso_dep_not_supported">"Tag does not support ISO-DEP (ISO 14443-4)"</string>
+    <string name="security_token_error_try_again">"Try again"</string>
     <string name="btn_delete_original">Delete original file</string>
 
     <string name="snack_encrypt_filenames_on">"Filenames <b>are</b> encrypted."</string>

@@ -36,7 +36,7 @@
   <string name="title_manage_my_keys">Управление ключами</string>
   <!--section-->
   <string name="section_user_ids">Идентификаторы</string>
-  <string name="section_yubikey">YubiKey</string>
+  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">Связанные контакты</string>
   <string name="section_keybase_proofs">Доказательства Keybase.io</string>
   <string name="section_should_you_trust">Должны ли Вы доверять этому ключу?</string>
@@ -127,7 +127,7 @@
   <string name="label_file_ascii_armor">Использовать ASCII формат</string>
   <string name="label_write_version_header">Добавить комментарий об использовании OpenKeychain</string>
   <string name="label_write_version_header_summary">Дописывать \'OpenKeychain v2.x\' в OpenPGP подписи, шифры, и экспортируемые ключи</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">Использовать цифровую клавиатуру для YubiKey PIN</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Использовать цифровую клавиатуру для YubiKey PIN</string>
   <string name="label_asymmetric_from">Подписать:</string>
   <string name="label_to">Зашифровать для:</string>
   <string name="label_delete_after_encryption">Удалить файлы после шифрования</string>
@@ -258,7 +258,7 @@
   <string name="passphrase_for">Введите пароль для \'%s\'</string>
   <string name="pin_for">Введите PIN для
 \'%s\'</string>
-  <string name="yubikey_pin_for">Введите PIN для доступа к YubiKey для
+  <string name="security_token_pin_for">Введите PIN для доступа к YubiKey для
 \'%s\'</string>
   <string name="file_delete_confirmation_title">Удалить исходные файлы?</string>
   <string name="file_delete_confirmation">Следующие файлы будут удалены:%s</string>
@@ -893,7 +893,7 @@
   <string name="first_time_text1">Верните вашу приватность с помощью OpenKeychain!</string>
   <string name="first_time_create_key">Создать свой ключ</string>
   <string name="first_time_import_key">Импорт ключа из файла</string>
-  <string name="first_time_yubikey">Использовать YubiKey NEO</string>
+  <string name="first_time_security_token">Использовать YubiKey NEO</string>
   <string name="first_time_skip">Пропустить настройку</string>
   <!--unsorted-->
   <string name="section_certifier_id">Кем подписан</string>
@@ -935,10 +935,10 @@
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="unlocked">Разблокирован</string>
   <string name="nfc_settings">Настройки</string>
-  <string name="snack_yubikey_view">Просмотр</string>
-  <string name="snack_yubikey_import">Импорт</string>
-  <string name="yubikey_key_holder">Владелец ключа:</string>
-  <string name="error_nfc">Ошибка NFC: %s</string>
+  <string name="snack_security_token_view">Просмотр</string>
+  <string name="snack_security_token_import">Импорт</string>
+  <string name="security_token_key_holder">Владелец ключа:</string>
+  <string name="security_token_error">Ошибка NFC: %s</string>
   <!--Other Linked Identity strings-->
   <string name="linked_select_2">Пожалуйста, выберите тип:</string>
   <string name="section_linked_identities">Связанные идентификаторы</string>

@@ -11,5 +11,5 @@
         android:defaultValue="false"
         android:key="useNumKeypadForYubikeyPin"
         android:persistent="true"
-        android:title="@string/label_use_num_keypad_for_yubikey_pin" />
+        android:title="@string/label_use_num_keypad_for_security_token_pin" />
 </PreferenceScreen>

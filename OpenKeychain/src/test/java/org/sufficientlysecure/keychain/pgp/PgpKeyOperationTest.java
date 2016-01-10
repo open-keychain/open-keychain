@@ -829,7 +829,7 @@ public class PgpKeyOperationTest {
     }
 
     @Test
-    public void testKeyToCard() throws Exception {
+    public void testKeyToSecurityToken() throws Exception {
 
         // Special keyring for security token tests with 2048 bit RSA as a subkey
         SaveKeyringParcel parcelKey = new SaveKeyringParcel();
@@ -857,27 +857,27 @@ public class PgpKeyOperationTest {
 
         UncachedKeyRing modified;
 
-        { // keytocard should fail with BAD_NFC_SIZE when presented with the RSA-3072 key
+        { // moveKeyToSecurityToken should fail with BAD_NFC_SIZE when presented with the RSA-3072 key
             long keyId = KeyringTestingHelper.getSubkeyId(ringSecurityToken, 2);
             parcelSecurityToken.reset();
             parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
 
-            assertModifyFailure("keytocard operation should fail on invalid key size", ringSecurityToken,
-                    parcelSecurityToken, cryptoInput, LogType.MSG_MF_ERROR_BAD_NFC_SIZE);
+            assertModifyFailure("moveKeyToSecurityToken operation should fail on invalid key size", ringSecurityToken,
+                    parcelSecurityToken, cryptoInput, LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_SIZE);
         }
 
-        { // keytocard should fail with BAD_NFC_ALGO when presented with the DSA-1024 key
+        { // moveKeyToSecurityToken should fail with BAD_NFC_ALGO when presented with the DSA-1024 key
             long keyId = KeyringTestingHelper.getSubkeyId(ringSecurityToken, 0);
             parcelSecurityToken.reset();
             parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
 
-            assertModifyFailure("keytocard operation should fail on invalid key algorithm", ringSecurityToken,
-                    parcelSecurityToken, cryptoInput, LogType.MSG_MF_ERROR_BAD_NFC_ALGO);
+            assertModifyFailure("moveKeyToSecurityToken operation should fail on invalid key algorithm", ringSecurityToken,
+                    parcelSecurityToken, cryptoInput, LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_ALGO);
         }
 
         long keyId = KeyringTestingHelper.getSubkeyId(ringSecurityToken, 1);
 
-        { // keytocard should return a pending NFC_MOVE_KEY_TO_CARD result when presented with the RSA-2048
+        { // moveKeyToSecurityToken should return a pending NFC_MOVE_KEY_TO_CARD result when presented with the RSA-2048
           // key, and then make key divert-to-card when it gets a serial in the cryptoInputParcel.
             parcelSecurityToken.reset();
             parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
@@ -886,11 +886,11 @@ public class PgpKeyOperationTest {
                     new CanonicalizedSecretKeyRing(ringSecurityToken.getEncoded(), false, 0);
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcelSecurityToken);
-            Assert.assertTrue("keytocard operation should be pending", result.isPending());
+            Assert.assertTrue("moveKeyToSecurityToken operation should be pending", result.isPending());
             Assert.assertEquals("required input should be RequiredInputType.NFC_MOVE_KEY_TO_CARD",
                     result.getRequiredInputParcel().mType, RequiredInputType.NFC_MOVE_KEY_TO_CARD);
 
-            // Create a cryptoInputParcel that matches what the NFCOperationActivity would return.
+            // Create a cryptoInputParcel that matches what the SecurityTokenOperationActivity would return.
             byte[] keyIdBytes = new byte[8];
             ByteBuffer buf = ByteBuffer.wrap(keyIdBytes);
             buf.putLong(keyId).rewind();
@@ -920,7 +920,7 @@ public class PgpKeyOperationTest {
                     new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcelSecurityToken);
-            Assert.assertTrue("keytocard operation should be pending", result.isPending());
+            Assert.assertTrue("moveKeyToSecurityToken operation should be pending", result.isPending());
             Assert.assertEquals("required input should be RequiredInputType.NFC_SIGN",
                     RequiredInputType.NFC_SIGN, result.getRequiredInputParcel().mType);
         }

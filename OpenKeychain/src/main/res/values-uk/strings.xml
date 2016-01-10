@@ -60,7 +60,7 @@
   <string name="label_file_ascii_armor">Увімкнути ASCII Armor</string>
   <string name="label_write_version_header">Нехай інші дізнаються, що ви користуєтеся OpenKeychain</string>
   <string name="label_write_version_header_summary">Напишіть \'OpenKeychain v2.7\' для підписів, зашифрованого тексту та експортованих ключів  OpenPGP</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">Вживати цифрову клавіатуру для YubiKey PIN</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Вживати цифрову клавіатуру для YubiKey PIN</string>
   <string name="label_to">Зашифрувати до:</string>
   <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>

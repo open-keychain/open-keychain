@@ -413,8 +413,8 @@ public class PgpKeyOperation {
         boolean hasEncrypt = false;
         boolean hasAuth = false;
         for(SaveKeyringParcel.SubkeyChange change : saveParcel.mChangeSubKeys) {
-            if (change.mMoveKeyToCard) {
-                // If this is a keytocard operation, see if it was completed: look for a hash
+            if (change.mMoveKeyToSecurityToken) {
+                // If this is a moveKeyToSecurityToken operation, see if it was completed: look for a hash
                 // matching the given subkey ID in cryptoData.
                 byte[] subKeyId = new byte[8];
                 ByteBuffer buf = ByteBuffer.wrap(subKeyId);
@@ -422,13 +422,13 @@ public class PgpKeyOperation {
 
                 byte[] serialNumber = cryptoInput.getCryptoData().get(buf);
                 if (serialNumber != null) {
-                    change.mMoveKeyToCard = false;
-                    change.mDummyDivert = serialNumber;
+                    change.mMoveKeyToSecurityToken = false;
+                    change.mSecurityTokenSerialNo = serialNumber;
                 }
             }
 
-            if (change.mMoveKeyToCard) {
-                // Pending keytocard operation. Need to make sure that we don't have multiple
+            if (change.mMoveKeyToSecurityToken) {
+                // Pending moveKeyToSecurityToken operation. Need to make sure that we don't have multiple
                 // subkeys pending for the same slot.
                 CanonicalizedSecretKey wsK = wsKR.getSecretKey(change.mKeyId);
 
@@ -810,26 +810,26 @@ public class PgpKeyOperation {
                     // no really, it is. this operation irrevocably removes the private key data from the key
                     sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
                     sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
-                } else if (change.mMoveKeyToCard) {
-                    if (checkSmartCardCompatibility(sKey, log, indent + 1)) {
+                } else if (change.mMoveKeyToSecurityToken) {
+                    if (checkSecurityTokenCompatibility(sKey, log, indent + 1)) {
                         log.add(LogType.MSG_MF_KEYTOCARD_START, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
                         nfcKeyToCardOps.addSubkey(change.mKeyId);
                     } else {
-                        // Appropriate log message already set by checkSmartCardCompatibility
+                        // Appropriate log message already set by checkSecurityTokenCompatibility
                         return new PgpEditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                     }
-                } else if (change.mDummyDivert != null) {
+                } else if (change.mSecurityTokenSerialNo != null) {
                     // NOTE: Does this code get executed? Or always handled in internalRestricted?
-                    if (change.mDummyDivert.length != 16) {
+                    if (change.mSecurityTokenSerialNo.length != 16) {
                         log.add(LogType.MSG_MF_ERROR_DIVERT_SERIAL,
                                 indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
                         return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                     }
                     log.add(LogType.MSG_MF_KEYTOCARD_FINISH, indent + 1,
                             KeyFormattingUtils.convertKeyIdToHex(change.mKeyId),
-                            Hex.toHexString(change.mDummyDivert, 8, 6));
-                    sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(), change.mDummyDivert);
+                            Hex.toHexString(change.mSecurityTokenSerialNo, 8, 6));
+                    sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(), change.mSecurityTokenSerialNo);
                     sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
                 }
 
@@ -1063,22 +1063,22 @@ public class PgpKeyOperation {
                 indent -= 1;
             }
 
-            // 7. if requested, change PIN and/or Admin PIN on card
-            if (saveParcel.mCardPin != null) {
+            // 7. if requested, change PIN and/or Admin PIN on security token
+            if (saveParcel.mSecurityTokenPin != null) {
                 progress(R.string.progress_modify_pin, 90);
                 log.add(LogType.MSG_MF_PIN, indent);
                 indent += 1;
 
-                nfcKeyToCardOps.setPin(saveParcel.mCardPin);
+                nfcKeyToCardOps.setPin(saveParcel.mSecurityTokenPin);
 
                 indent -= 1;
             }
-            if (saveParcel.mCardAdminPin != null) {
+            if (saveParcel.mSecurityTokenAdminPin != null) {
                 progress(R.string.progress_modify_admin_pin, 90);
                 log.add(LogType.MSG_MF_ADMIN_PIN, indent);
                 indent += 1;
 
-                nfcKeyToCardOps.setAdminPin(saveParcel.mCardAdminPin);
+                nfcKeyToCardOps.setAdminPin(saveParcel.mSecurityTokenAdminPin);
 
                 indent -= 1;
             }
@@ -1157,22 +1157,22 @@ public class PgpKeyOperation {
                 return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
             }
 
-            if (change.mDummyStrip || change.mDummyDivert != null) {
+            if (change.mDummyStrip || change.mSecurityTokenSerialNo != null) {
                 // IT'S DANGEROUS~
                 // no really, it is. this operation irrevocably removes the private key data from the key
                 if (change.mDummyStrip) {
                     sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
                 } else {
                     // the serial number must be 16 bytes in length
-                    if (change.mDummyDivert.length != 16) {
+                    if (change.mSecurityTokenSerialNo.length != 16) {
                         log.add(LogType.MSG_MF_ERROR_DIVERT_SERIAL,
                                 indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
                         return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                     }
                     log.add(LogType.MSG_MF_KEYTOCARD_FINISH, indent + 1,
                             KeyFormattingUtils.convertKeyIdToHex(change.mKeyId),
-                            Hex.toHexString(change.mDummyDivert, 8, 6));
-                    sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(), change.mDummyDivert);
+                            Hex.toHexString(change.mSecurityTokenSerialNo, 8, 6));
+                    sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(), change.mSecurityTokenSerialNo);
                 }
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
             }
@@ -1625,26 +1625,26 @@ public class PgpKeyOperation {
                 && s2k.getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD;
     }
 
-    private static boolean checkSmartCardCompatibility(PGPSecretKey key, OperationLog log, int indent) {
+    private static boolean checkSecurityTokenCompatibility(PGPSecretKey key, OperationLog log, int indent) {
         PGPPublicKey publicKey = key.getPublicKey();
         int algorithm = publicKey.getAlgorithm();
         if (algorithm != PublicKeyAlgorithmTags.RSA_ENCRYPT &&
                 algorithm != PublicKeyAlgorithmTags.RSA_SIGN &&
                 algorithm != PublicKeyAlgorithmTags.RSA_GENERAL) {
-            log.add(LogType.MSG_MF_ERROR_BAD_NFC_ALGO, indent + 1);
+            log.add(LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_ALGO, indent + 1);
             return false;
         }
 
         // Key size must be 2048
         int keySize = publicKey.getBitStrength();
         if (keySize != 2048) {
-            log.add(LogType.MSG_MF_ERROR_BAD_NFC_SIZE, indent + 1);
+            log.add(LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_SIZE, indent + 1);
             return false;
         }
 
         // Secret key parts must be available
         if (isDivertToCard(key) || isDummy(key)) {
-            log.add(LogType.MSG_MF_ERROR_BAD_NFC_STRIPPED, indent + 1);
+            log.add(LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_STRIPPED, indent + 1);
             return false;
         }
 

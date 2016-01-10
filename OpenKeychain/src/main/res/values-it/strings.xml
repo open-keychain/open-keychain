@@ -35,7 +35,7 @@
   <string name="title_manage_my_keys">Gestisci le mie chiavi</string>
   <!--section-->
   <string name="section_user_ids">Identità</string>
-  <string name="section_yubikey">YubiKey</string>
+  <string name="section_security_token">YubiKey</string>
   <string name="section_should_you_trust">Ci si potrà fidare di questa chiave?</string>
   <string name="section_proof_details">Verifica prova</string>
   <string name="section_keys">Sottochiavi</string>
@@ -114,7 +114,7 @@
   <string name="label_file_ascii_armor">Abilita Armatura ASCII</string>
   <string name="label_write_version_header">Fai sapere agli altri che utilizzi OpenKeychain</string>
   <string name="label_write_version_header_summary">Scrive \'OpenKeychain v2.7\' nelle firme OpenPGP, testi cifrati e chiavi esportate</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">Utilizza la tastiera numerica per il PIN di YubiKey</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Utilizza la tastiera numerica per il PIN di YubiKey</string>
   <string name="label_to">Codifica per:</string>
   <string name="label_delete_after_encryption">Elimina file dopo la codifica</string>
   <string name="label_delete_after_decryption">Elimina dopo la decodifica</string>
@@ -212,7 +212,7 @@
   <string name="passphrase_must_not_be_empty">Si prega di inserire una password.</string>
   <string name="passphrase_for">Inserisci la password per \'%s\'</string>
   <string name="pin_for">Inserisci il PIN per \'%s\'</string>
-  <string name="yubikey_pin_for">Inserisci il PIN per accedere a YubiKey con \'%s\'</string>
+  <string name="security_token_pin_for">Inserisci il PIN per accedere a YubiKey con \'%s\'</string>
   <string name="file_delete_confirmation_title">Eliminare i file originali?</string>
   <string name="file_delete_confirmation">I seguenti file verranno cancellati:%s</string>
   <string name="file_delete_successful">%1$d di %2$d file sono stati cancellati.%3$s</string>

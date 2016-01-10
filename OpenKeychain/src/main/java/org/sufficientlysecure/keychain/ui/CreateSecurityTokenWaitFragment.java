@@ -28,14 +28,14 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 
 
-public class CreateYubiKeyWaitFragment extends Fragment {
+public class CreateSecurityTokenWaitFragment extends Fragment {
 
     CreateKeyActivity mCreateKeyActivity;
     View mBackButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.create_yubi_key_wait_fragment, container, false);
+        View view = inflater.inflate(R.layout.create_security_token_wait_fragment, container, false);
 
         mBackButton = view.findViewById(R.id.create_key_back_button);
 
