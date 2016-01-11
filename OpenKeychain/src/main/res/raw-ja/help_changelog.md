@@ -1,7 +1,7 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 ## 3.7
-  * Improved Android 6 support (permissions, integration into text selection)
+  * Android 6 サポートの改善 (アクセス許可、テキスト選択への統合)
   * API: Version 10
 
 ## 3.6

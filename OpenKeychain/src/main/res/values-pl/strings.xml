@@ -71,8 +71,6 @@
   <string name="label_file_ascii_armor">Włącz ASCII Armor</string>
   <string name="label_write_version_header">Niech inni wiedzą, że używasz OpenKeychain</string>
   <string name="label_write_version_header_summary">Wpisuje \'\'OpenKeychain v2.7\' do podpisów, szyfrogramów i wyeksportowanych kluczy OpenPGP.</string>
-  <string name="label_use_num_keypad_for_security_token_pin">Użyj klawiatury numerycznej dla PIN-u YubiKey</string>
-  <string name="label_to">Szyfruj do:</string>
   <string name="label_delete_after_decryption">Usuń po odszyfrowaniu</string>
   <string name="label_encryption_algorithm">Algorytm szyfrowania</string>
   <string name="label_hash_algorithm">Funkcja skrótu</string>
@@ -373,7 +371,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="key_list_empty_text1">Nie znaleziono kluczy!</string>
   <string name="key_list_filter_show_all">Pokaż wszystkie klucze</string>
   <!--Key view-->
-  <string name="key_view_action_edit_ids">Edytuj klucz</string>
   <string name="key_view_action_encrypt">Szyfruj tekst</string>
   <string name="key_view_action_encrypt_files">pliki</string>
   <string name="key_view_action_update">Aktualizuj z serwera kluczy</string>

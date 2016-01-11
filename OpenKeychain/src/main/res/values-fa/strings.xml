@@ -29,12 +29,10 @@
   <string name="title_help">کمک</string>
   <string name="title_log_display">لاگ</string>
   <string name="title_exchange_keys">مبادلهٔ کلیدها</string>
-  <string name="title_advanced_key_info">اطلاعات بیشتر</string>
   <string name="title_delete_secret_key">آیا کلید \'%s\' خود را پاک می‌کنید؟</string>
   <string name="title_manage_my_keys">مدیریت کلیدهام</string>
   <!--section-->
   <string name="section_user_ids">هویت‌ها</string>
-  <string name="section_security_token">کلید Yubi</string>
   <string name="section_should_you_trust">آیا به این کلید اعتماد دارید؟</string>
   <string name="section_keys">زیرکلیدها</string>
   <string name="section_gui">رابط</string>
@@ -87,7 +85,6 @@
   <string name="menu_select_all">انتخاب همه</string>
   <string name="menu_export_all_keys">خروج همهٔ کلیدها</string>
   <string name="menu_update_all_keys">آپدیت همهٔ کلیدها</string>
-  <string name="menu_advanced">اطلاعات بیشتر</string>
   <string name="menu_keyserver_add">اضافه‌کردن</string>
   <!--label-->
   <string name="label_message">متن</string>
@@ -104,15 +101,12 @@
   <string name="label_file_ascii_armor">فعال‌کردن ASCII Armor</string>
   <string name="label_write_version_header">به دیگران اطلاع دهید که شما از OpenKeyChain استفاده می‌کنید</string>
   <string name="label_write_version_header_summary">عبارت \'OpenKeychain v2.7\' را در امضاها، متن رمزگذاری‌شده و کلیدها می‌نویسید</string>
-  <string name="label_use_num_keypad_for_security_token_pin">از صفحه‌کلیدِ شماره‌ای برای وارد کردن رمز کلیدِ Yubi استفاده کن</string>
   <string name="label_asymmetric_from">امضاء با:</string>
-  <string name="label_to">رمزگذاری به:</string>
   <string name="label_delete_after_encryption">حذف فایل‌ها پس از رمزگذاری</string>
   <string name="label_delete_after_decryption">حذف پس از رمزگشایی</string>
   <string name="label_encryption_algorithm">الگوریتم رمزگذاری</string>
   <string name="label_hash_algorithm">الگوریتم هَش</string>
   <string name="label_symmetric">رمزگذاری با رمز عبور</string>
-  <string name="label_passphrase_cache_ttl">زمان را به یاد داشته باش</string>
   <string name="label_passphrase_cache_subs">رمز‌عبورها را با زیرکلیدها به یاد داشته باش</string>
   <string name="label_message_compression">فشرده‌کردن متن</string>
   <string name="label_file_compression">فشرده‌کردن فایل</string>

@@ -1,19 +1,19 @@
-[//]: # (NOTITZ: Bitte setze jeden Satz in eine eigene Zeile, Transifex setzt jede Zeile in ein eigenes Übersetzungsfeld!)
+[//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
 ## 3.7
-  * Improved Android 6 support (permissions, integration into text selection)
+  * Verbesserte Unterstützung für Android 6 (Berechtigungen, Integration in Textauswahl)
   * API: Version 10
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
+  * Verschlüsselte Sicherheitskopien
+  * Sicherheitsfixes basierend auf Resultaten des externen Sicherheitsaudits
+  * YubiKey NEO Schlüsselerzeugungsassistent verbessert
+  * Grundlegende interne MIME-Unterstützung
+  * Automatische Schlüsselsynchronisierung
+  * Experimentelles Feature: Verknüpfen von Schlüssel mit Github- und Twitter-Accounts
+  * Experimentelles Feature: Schlüsselbestätigung mithilfe von Passphrasen
+  * Experimentelles Feature: Dunkles Design
   * API: Version 9
 
 ## 3.5

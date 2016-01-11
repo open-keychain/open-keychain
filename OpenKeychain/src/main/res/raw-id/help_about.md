@@ -19,7 +19,7 @@ Lisensi: GPLv3+
   * 'Thialfihar' (Pengembang APG)
   * Tim Bray
 
-## Occasional Contributors
+## Kontributor Lainnya
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov
@@ -53,7 +53,7 @@ Lisensi: GPLv3+
 
 [//]: # (NOTE: Alphabetic ordering)
 
-## Libraries
+## Daftar Pustaka
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache License v2)
   * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Apache License v2)

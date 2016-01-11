@@ -14,7 +14,7 @@
   <string name="title_api_registered_apps">已注册应用</string>
   <string name="title_key_server_preference">OenPGP 密钥服务器</string>
   <string name="title_change_passphrase">变更密码</string>
-  <string name="title_share_fingerprint_with">分享签名</string>
+  <string name="title_share_fingerprint_with">分享指纹</string>
   <string name="title_share_key">分享密钥</string>
   <string name="title_share_file">分享文件</string>
   <string name="title_share_message">分享文本</string>
@@ -23,7 +23,7 @@
   <string name="title_import_keys">导入密钥</string>
   <string name="title_export_key">导出密钥</string>
   <string name="title_export_keys">导出密钥</string>
-  <string name="title_key_not_found">无法找到密钥</string>
+  <string name="title_key_not_found">未找到密钥</string>
   <string name="title_send_key">上传到密钥服务器</string>
   <string name="title_backup">备份密钥</string>
   <string name="title_certify_key">确认密钥</string>
@@ -31,19 +31,19 @@
   <string name="title_help">帮助</string>
   <string name="title_log_display">日志</string>
   <string name="title_exchange_keys">交换密钥</string>
-  <string name="title_advanced_key_info">更多信息</string>
   <string name="title_delete_secret_key">删除你的密钥 \'%s\' ？</string>
   <string name="title_manage_my_keys">管理我的密钥</string>
   <!--section-->
   <string name="section_user_ids">用户名</string>
-  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">关联系统联系人</string>
+  <string name="section_keybase_proofs">Keybase.io 证书</string>
   <string name="section_should_you_trust">信任此密钥?</string>
   <string name="section_proof_details">验证</string>
   <string name="section_keys">子密钥</string>
   <string name="section_cloud_search">搜索密钥</string>
   <string name="section_cloud_search_summary">密钥服务器， keybase.io</string>
   <string name="section_passphrase_cache">密码和PIN码</string>
+  <string name="section_passphrase_cache_summary">处理，用户界面，记忆时间</string>
   <string name="section_proxy_settings">匿名网络</string>
   <string name="section_proxy_settings_summary">Tor，代理服务器设置</string>
   <string name="section_gui">界面</string>
@@ -82,7 +82,7 @@
   <string name="btn_paste_encrypted_signed">加密/签名并粘贴文本</string>
   <string name="btn_view_cert_key">显示密钥</string>
   <string name="btn_create_key">创建密钥</string>
-  <string name="btn_add_files">添加密钥</string>
+  <string name="btn_add_files">添加文件(多个)</string>
   <string name="btn_share_decrypted_text">分享</string>
   <string name="btn_open_with">打开为</string>
   <string name="btn_copy_decrypted_text">复制解密文本</string>
@@ -97,6 +97,10 @@
   <string name="btn_saved">已保存</string>
   <string name="btn_not_matching">不匹配</string>
   <!--Content Description-->
+  <string name="cd_encrypt_files">加密文件</string>
+  <string name="cd_exchange_keys">交换密钥</string>
+  <string name="cd_encrypt_text">加密文本</string>
+  <string name="cd_share_nfc">使用NFC分享</string>
   <!--menu-->
   <string name="menu_preferences">参数设置</string>
   <string name="menu_help">帮助</string>
@@ -110,7 +114,10 @@
   <string name="menu_select_all">选择全部</string>
   <string name="menu_export_all_keys">导出全部密钥</string>
   <string name="menu_update_all_keys">更新所有密钥</string>
-  <string name="menu_advanced">更多信息</string>
+  <string name="menu_certify_fingerprint">通过指纹确认</string>
+  <string name="menu_certify_fingerprint_phrases">通过短语认证</string>
+  <string name="menu_share_log">分享记录</string>
+  <string name="menu_change_password">更改密码</string>
   <string name="menu_keyserver_add">添加</string>
   <!--label-->
   <string name="label_message">文本</string>
@@ -128,7 +135,6 @@
   <string name="label_file_ascii_armor">启用ASCII文本化</string>
   <string name="label_write_version_header">写入文件头信息</string>
   <string name="label_write_version_header_summary">在OpenPGP签名、加密文本和导出密钥中写入 \'OpenKeychain v2.7\' 标记。</string>
-  <string name="label_use_num_keypad_for_security_token_pin">为YubiKey PIN使用数字键盘</string>
   <string name="label_asymmetric_from">签名为：</string>
   <string name="label_to">加密到</string>
   <string name="label_delete_after_encryption">加密文件后删除</string>
@@ -136,7 +142,6 @@
   <string name="label_encryption_algorithm">加密算法</string>
   <string name="label_hash_algorithm">哈希算法</string>
   <string name="label_symmetric">用密码加密</string>
-  <string name="label_passphrase_cache_ttl">记录时间</string>
   <string name="label_passphrase_cache_subs">用公钥记录密码</string>
   <string name="label_message_compression">文本压缩</string>
   <string name="label_file_compression">文件压缩</string>
@@ -171,15 +176,24 @@
   <string name="pref_keyserver_summary">在指定的OpenPGP密钥服务器上搜索（HKP协议）</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">在keybase.io搜索密钥</string>
+  <string name="pref_facebook">脸书</string>
+  <string name="pref_facebook_summary">根据用户名在脸书上搜索密钥</string>
+  <string name="label_sync_settings_keyserver_title">自动更新密钥</string>
+  <string name="label_sync_settings_keyserver_summary_on">每三天，自动从密钥服务器更新</string>
+  <string name="label_sync_settings_keyserver_summary_off">不自动更新密钥</string>
   <string name="label_sync_settings_contacts_title">关联联系方式</string>
   <string name="label_sync_settings_contacts_summary_on">关联密钥到联系方式基于名字和email地址。这发生在设备离线时。</string>
   <string name="label_sync_settings_contacts_summary_off">新密钥将不关联到联系方式</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="keyserver_sync_settings_title">自动更新密钥</string>
   <string name="label_experimental_settings_desc_title">警告</string>
   <string name="label_experimental_settings_desc_summary">这些功能目前尚未完成或者用户经验性/安全性的研究结果。所以，不保证他们是安全的，请不要对我们发牢骚！</string>
+  <string name="label_experimental_settings_word_confirm_title">通过短语认证</string>
   <string name="label_experimental_settings_word_confirm_summary">确认具有短语的密钥代替16进制指纹</string>
   <string name="label_experimental_settings_linked_identities_title">关联身份</string>
   <string name="label_experimental_settings_linked_identities_summary">关联密钥到Twitter,GitHub,网页或者DNS（类似Keybase.io但是分布式）</string>
+  <string name="label_experimental_settings_keybase_title">Keybase.io 证书</string>
+  <string name="label_experimental_settings_keybase_summary">每次展示密钥时自动从keybase.io获取证明并显示它们</string>
   <string name="label_experimental_settings_theme_summary">图标和</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">启用Tor代理</string>
@@ -208,11 +222,13 @@
   <string name="orbot_start_dialog_start">运行Orbot</string>
   <string name="orbot_start_dialog_cancel">取消</string>
   <string name="orbot_start_dialog_ignore_tor">不使用Tor代理</string>
+  <string name="user_id_no_name"><![CDATA[<no name>]]></string>
+  <string name="none"><![CDATA[<none>]]></string>
   <plurals name="n_keys">
-    <item quantity="other">其他</item>
+    <item quantity="other">%d 密匙</item>
   </plurals>
   <plurals name="n_keyservers">
-    <item quantity="other">其他</item>
+    <item quantity="other">%d 密匙服务器</item>
   </plurals>
   <string name="secret_key">私钥</string>
   <!--choice-->
@@ -254,10 +270,6 @@
   <string name="passphrase_for_backup">输入备份码</string>
   <string name="passphrase_for">输入密码为 \'%s\'</string>
   <string name="pin_for">输入PIN码为 \'%s\'</string>
-  <string name="security_token_pin_for">输入访问YubiKey的PIN为 \'%s\'</string>
-  <string name="security_token_nfc_text">保持YubiKey 的NFC标签靠近你的手机背部</string>
-  <string name="security_token_nfc_wait">挺住！</string>
-  <string name="security_token_nfc_finished">现在拿开YubiKey</string>
   <string name="file_delete_confirmation_title">删除源文件？</string>
   <string name="file_delete_confirmation">这些文件将被删除:%s</string>
   <string name="file_delete_successful">共%2$d个文件 %1$d 个文件已删除.%3$s</string>
@@ -280,7 +292,7 @@
   <string name="key_exported">成功地导出了1个密钥</string>
   <string name="keys_exported">成功导出多个密钥</string>
   <string name="no_keys_exported">没有密钥被导出</string>
-  <string name="key_creation_el_gamal_info">Note：只有公钥支持ElGamal。</string>
+  <string name="key_creation_el_gamal_info">注意: 只有公钥支持ElGamal。</string>
   <string name="key_not_found">没有找到密钥</string>
   <plurals name="bad_keys_encountered">
     <item quantity="other">其他</item>
@@ -291,6 +303,7 @@
   <string name="fingerprint_copied_to_clipboard">复制签名到剪贴板</string>
   <string name="select_key_to_certify">选择验证密钥</string>
   <string name="text_copied_to_clipboard">复制文本到剪贴板</string>
+  <string name="how_to_import">如何将此导入我的桌面 PC？</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -317,6 +330,7 @@
   <string name="error_nothing_import_selected">未选择导入的密钥！</string>
   <string name="error_contacts_key_id_missing">从联系人取回密钥ID失败！</string>
   <string name="error_generic_report_bug">发生错误，请建立一个新的错误反馈给 OpenKeychain。</string>
+  <string name="error_denied_storage_permission">不能读取文件因为访问被拒绝</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">尚未签名</string>
   <string name="decrypt_result_invalid_signature">无效签名</string>
@@ -388,18 +402,25 @@
   <string name="progress_verifying_integrity">验证完整性...</string>
   <string name="progress_deleting_securely">安全地删除 \'%s\'…</string>
   <string name="progress_deleting">删除密钥中...</string>
+  <string name="progress_con_saving">合并：正在保存到缓存......</string>
+  <string name="progress_con_reimport">合并：重新导入中......</string>
   <string name="progress_verifying_keyserver_connection">验证连接中...</string>
   <string name="progress_starting_orbot">启动Orbot...</string>
   <!--action strings-->
   <string name="hint_cloud_search_hint">通过姓名,邮件查找</string>
   <!--key bit length selections-->
   <string name="key_size_2048">2048</string>
+  <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
+  <string name="key_size_8192">8192</string>
   <string name="key_size_custom">自定义密钥长度</string>
   <string name="key_size_custom_info">输入自定义密钥长度(字):</string>
   <string name="key_size_custom_info_rsa">RSA密钥长度必须大于1024小于等于16384。且为８的倍数。</string>
   <string name="key_size_custom_info_dsa">DSA密钥长度必须大于512小于等于1024。且为64的倍数。</string>
   <!--elliptic curve names-->
+  <string name="key_curve_nist_p256">NIST P-256</string>
+  <string name="key_curve_nist_p384">NIST P-384</string>
+  <string name="key_curve_nist_p521">NIST P-521</string>
   <!--not in for now, see SaveKeyringParcel
     <string name="key_curve_bp_p256">"Brainpool P-256"</string>
     <string name="key_curve_bp_p384">"Brainpool P-384"</string>
@@ -411,6 +432,7 @@
   <string name="help_tab_start">开始</string>
   <string name="help_tab_faq">常见问题</string>
   <string name="help_tab_wot">密钥认证</string>
+  <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">更新日志</string>
   <string name="help_tab_about">关于</string>
   <string name="help_about_version">版本:</string>
@@ -435,6 +457,9 @@
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="other">成功导入 %1$d 个密钥</item>
   </plurals>
+  <plurals name="import_keys_added_and_updated_2">
+    <item quantity="other">并更新了 %1$d 个密钥 %2$s。</item>
+  </plurals>
   <plurals name="import_keys_added">
     <item quantity="other">成功导入 %1$d 密钥%2$s.</item>
   </plurals>
@@ -453,44 +478,274 @@
   <plurals name="delete_ok_but_fail_1">
     <item quantity="other">成功删除%1$d密钥</item>
   </plurals>
+  <plurals name="delete_ok_but_fail_2">
+    <item quantity="other">，然是删除 %1$d 个密钥 %2$s 失败。</item>
+  </plurals>
+  <plurals name="delete_ok">
+    <item quantity="other">成功删除 %1$d 个密钥 %2$s。</item>
+  </plurals>
+  <plurals name="delete_fail">
+    <item quantity="other">删除 %1$d 个密钥错误。</item>
+  </plurals>
+  <string name="delete_nothing">无物可删。</string>
+  <string name="delete_cancelled">删除操作已取消</string>
   <!--Revoke result toast (snackbar)-->
+  <string name="revoke_ok">成功撤销密钥。</string>
+  <string name="revoke_fail">撤销密钥错误！</string>
+  <string name="revoke_nothing">无物可撤销。</string>
+  <string name="revoke_cancelled">撤销操作已取消。</string>
   <!--Certify result toast-->
+  <plurals name="certify_keys_ok">
+    <item quantity="other">成功确认 %1$d 密钥%2$s.</item>
+  </plurals>
+  <plurals name="certify_keys_with_errors">
+    <item quantity="other">认证 %d 个密钥失败!</item>
+  </plurals>
+  <plurals name="certify_error">
+    <item quantity="other">认证 %d 个密钥失败!</item>
+  </plurals>
   <!--Intent labels-->
+  <string name="intent_decrypt_file">用  OpenKeychain 解密文件</string>
+  <string name="intent_import_key">用 OpenKeychain 导入密钥</string>
+  <string name="intent_send_encrypt">用  OpenKeychain 加密文件</string>
+  <string name="intent_send_decrypt">用  OpenKeychain 解密</string>
   <!--Remote API-->
+  <string name="api_settings_no_key">尚未选择密钥</string>
   <string name="api_settings_select_key">选择密钥</string>
+  <string name="api_settings_create_key">创建密钥</string>
   <string name="api_settings_save">保存</string>
+  <string name="api_settings_save_msg">帐户已保存</string>
   <string name="api_settings_cancel">取消</string>
   <string name="api_settings_revoke">撤销访问</string>
+  <string name="api_settings_start">启动应用</string>
+  <string name="api_settings_delete_account">删除帐号</string>
+  <string name="api_settings_package_name">包名字</string>
+  <string name="api_settings_package_certificate">证书的指纹(sha256)</string>
+  <string name="api_settings_accounts">账户（使用旧的应用接口）</string>
+  <string name="api_settings_allowed_keys">允许的密钥</string>
+  <string name="api_settings_settings">设置</string>
+  <string name="api_settings_key">账户密钥</string>
+  <string name="api_settings_accounts_empty">该应用未加入任何账户</string>
+  <string name="api_create_account_text">没找到此账户的密匙。请从已有的密匙中选择一个或者新建一个。
+只有选好了密匙，应用才能进行解密或者签名</string>
+  <string name="api_update_account_text">此账户的密钥已被删除，请重新选择一个！
+如果没有密钥，应用将无法进行加密或签名！</string>
+  <string name="api_register_text">以下应用希望解密或加密信息以及以你的名义来签名。
+是否允许？
+
+警告：如果你不清楚为何出现这个问题，请选择拒绝！另外你也可以在已允许应用列表那里吊销访问权限</string>
   <string name="api_register_allow">允许访问</string>
-  <string name="api_register_disallow">不允许访问</string>
+  <string name="api_register_disallow">禁止访问</string>
   <string name="api_register_error_select_key">请选择一个密钥</string>
+  <string name="api_select_pub_keys_missing_text">未找到该邮件的密钥</string>
+  <string name="api_select_pub_keys_dublicates_text">发现多个与这些邮件地址匹配的密钥</string>
   <string name="api_select_pub_keys_text">请重审收件人列表</string>
+  <string name="api_select_pub_keys_text_no_user_ids">请选择接收人</string>
+  <string name="api_error_wrong_signature">签名检查失败！你是否由其他途径安装的该应用？如果你确定该应用没安全问题，请在OpenKeychain里面撤销此应用的访问权限然后重新认证</string>
+  <string name="api_select_sign_key_text">请选择一个已有的密钥或者新建一个</string>
+  <string name="api_select_keys_text">未能从已允许的密钥中找到能加密该内容的密钥，请选择允许的密钥</string>
   <!--Share-->
+  <string name="share_qr_code_dialog_title">用二维码分享</string>
   <string name="share_nfc_dialog">使用NFC分享</string>
   <!--retry upload dialog-->
+  <string name="retry_up_dialog_title">上传失败</string>
+  <string name="retry_up_dialog_message">上传失败，是否重试？</string>
+  <string name="retry_up_dialog_btn_reupload">重试</string>
+  <string name="retry_up_dialog_btn_cancel">取消操作</string>
   <!--Delete or revoke private key dialog-->
+  <string name="del_rev_dialog_message">如果不再使用该密匙，你应该吊销它并上传。如果不想在OpenKeychain里使用，但希望在其他地方继续使用它，必须选择“仅删除”</string>
+  <string name="del_rev_dialog_title">吊销或删除密钥 \'%s\'</string>
+  <string name="del_rev_dialog_btn_revoke">吊销并上传</string>
+  <string name="del_rev_dialog_btn_delete">仅删除</string>
   <!--Delete Or Revoke Dialog spinner-->
+  <string name="del_rev_dialog_choice_delete">仅删除</string>
+  <string name="del_rev_dialog_choice_rev_upload">吊销并上传</string>
   <!--Key list-->
+  <plurals name="key_list_selected_keys">
+    <item quantity="other">已选择 %d 个密钥</item>
+  </plurals>
   <string name="key_list_empty_text1">未发现密钥！</string>
+  <string name="key_list_filter_show_all">显示所有密匙</string>
+  <string name="key_list_filter_show_certified">仅显示验证过的密钥</string>
   <string name="key_list_fab_qr_code">扫描二维码</string>
   <string name="key_list_fab_search">搜索密钥</string>
+  <string name="key_list_fab_import">从文件导入</string>
   <!--Key view-->
+  <string name="key_view_action_edit">编辑</string>
+  <string name="key_view_action_encrypt">加密文本</string>
+  <string name="key_view_action_encrypt_files">多个文件</string>
+  <string name="key_view_action_certify">确认密钥</string>
+  <string name="key_view_action_update">从密钥服务器更新</string>
+  <string name="key_view_action_share_with">分享到</string>
+  <string name="key_view_action_share_nfc">通过NFC分享</string>
+  <string name="key_view_action_upload">上传至服务器</string>
+  <string name="key_view_tab_main">主要信息</string>
   <string name="key_view_tab_share">分享</string>
+  <string name="key_view_tab_keys">子密钥</string>
+  <string name="key_view_tab_certs">证书列表</string>
+  <string name="key_view_tab_keybase">Keybase.io</string>
+  <string name="user_id_info_revoked_title">已吊销</string>
+  <string name="user_id_info_revoked_text">该用户标识已被密钥拥有者吊销，即不再可用</string>
+  <string name="user_id_info_certified_title">已验证</string>
+  <string name="user_id_info_certified_text">该用户标识已被你验证</string>
+  <string name="user_id_info_uncertified_title">未验证</string>
+  <string name="user_id_info_uncertified_text">该用户标识还未验证，你不能确定它是否属于指定的用户</string>
+  <string name="user_id_info_invalid_title">不可用</string>
+  <string name="user_id_info_invalid_text">该用户标识有问题</string>
   <!--Key trust-->
+  <string name="key_trust_no_cloud_evidence">网上没有关于此密钥可信度的证明</string>
+  <string name="key_trust_start_cloud_search">开始搜索</string>
+  <string name="key_trust_results_prefix">Keybase.io提供的用来断定该密钥所有者身份的证明</string>
   <!--keybase proof stuff-->
+  <string name="keybase_narrative_twitter">能发送推文到 %s </string>
+  <string name="keybase_narrative_github">在GitHub上的用户名是 %s</string>
+  <string name="keybase_narrative_dns">拥有的域名 %s</string>
+  <string name="keybase_narrative_web_site">能发送网页到 %s</string>
+  <string name="keybase_narrative_reddit">以 %s 之名发送到 Reddit </string>
+  <string name="keybase_narrative_coinbase">在Coinbase上的用户名是 %s</string>
+  <string name="keybase_narrative_hackernews">以 %s 之名发送到 Hacker News</string>
+  <string name="keybase_narrative_unknown">未知的证明类型 %s</string>
+  <string name="keybase_proof_failure">很不幸，该证明检验失败</string>
+  <string name="keybase_unknown_proof_failure">检验证明时出现未知问题</string>
+  <string name="keybase_problem_fetching_evidence">证明有问题</string>
+  <string name="keybase_key_mismatch">证明内容与该密钥指纹不匹配</string>
+  <string name="keybase_dns_query_failure">取回 DNS 的 TXT 记录失败</string>
+  <string name="keybase_message_payload_mismatch">加密证明内容不匹配</string>
+  <string name="keybase_message_fetching_data">正在获取证明</string>
+  <string name="keybase_proof_succeeded">该证明已被检验</string>
+  <string name="keybase_a_post">一个网页</string>
+  <string name="keybase_fetched_from">取自</string>
+  <string name="keybase_for_the_domain">为该域名</string>
+  <string name="keybase_contained_signature">包括一条只能被该密钥持有人发送的信息。</string>
+  <string name="keybase_twitter_proof">一条推文</string>
+  <string name="keybase_dns_proof">一个DNS TXT记录</string>
+  <string name="keybase_web_site_proof">一个文本文件</string>
+  <string name="keybase_github_proof">一个gist</string>
+  <string name="keybase_reddit_proof">一个JSON文件</string>
+  <string name="keybase_verify">校验</string>
   <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">变更密码</string>
+  <string name="edit_key_action_add_identity">添加用户标识</string>
+  <string name="edit_key_action_add_subkey">添加子密钥</string>
+  <string name="edit_key_edit_user_id_title">选择一个操作</string>
+  <string-array name="edit_key_edit_user_id">
+    <item>设为首选用户标识</item>
+    <item>吊销该用户标识</item>
+  </string-array>
+  <string-array name="edit_key_edit_user_id_revert_revocation">
+    <item>撤销吊销</item>
+  </string-array>
+  <string name="edit_key_edit_user_id_revoked">该用户标识已被吊销，该情况不能恢复</string>
+  <string name="edit_key_edit_subkey_title">选择一个操作</string>
+  <string name="edit_key_new_subkey">新建子密钥</string>
+  <string name="edit_key_select_flag">至少选择一个标志！</string>
+  <string name="edit_key_error_add_identity">至少要有一个用户标识！</string>
+  <string name="edit_key_error_add_subkey">至少要有一个子密钥！</string>
   <!--Create key-->
   <string name="create_key_upload">网络同步</string>
+  <string name="create_key_empty">该内容是必须的</string>
+  <string name="create_key_passphrases_not_equal">密码不匹配</string>
+  <string name="create_key_final_text">你输入了以下用户标识</string>
+  <string name="create_key_final_robot_text">生成密钥可能需要相当长的一段时间，你可以边喝咖啡边等待…</string>
+  <string name="create_key_rsa">(3个子密钥，RSA，4096位)</string>
+  <string name="create_key_custom">手动设置密钥</string>
+  <string name="create_key_name_text">选择一个关联到此密钥的名字，可以是全名，例如‘John Doe’，或者一个妮称‘Johnny’。</string>
+  <string name="create_key_email_text">输入你用来加密通信的主邮箱地址</string>
+  <string name="create_key_passphrase_text">选择一个强壮密码.在你的设备丢失时它能保护你的密匙.</string>
+  <string name="create_key_hint_full_name">全名或昵称</string>
+  <string name="create_key_edit">更改密匙配置</string>
+  <string name="create_key_add_email">添加电子邮件地址</string>
+  <string name="create_key_add_email_text">其它能用此密钥通信的邮件地址</string>
+  <string name="create_key_email_already_exists_text">电子邮件地址已经被添加</string>
+  <string name="create_key_email_invalid_email">电子邮件地址格式无效</string>
+  <string name="create_key_yubi_key_pin_text">请选择一个有6位数字的PIN.</string>
+  <string name="create_key_yubi_key_admin_pin_text">请写下管理员密码并将其存放在安全的地方(如果你输错密码3次将需要管理员密码)。</string>
   <string name="create_key_yubi_key_pin">PIN</string>
+  <string name="create_key_yubi_key_admin_pin">Admin PIN</string>
+  <string name="create_key_yubi_key_pin_repeat">重复PIN</string>
+  <string name="create_key_yubi_key_pin_not_correct">错误的PIN!</string>
+  <string name="create_key_yubi_key_pin_too_short">PIN最少要求为6位数字!</string>
+  <string name="create_key_yubi_key_pin_insecure">请选择一个安全的PIN,不要使用类似000000, 123456的组合.</string>
   <!--View key-->
+  <string name="view_key_revoked">已吊销：该密钥已不能再被使用！</string>
+  <string name="view_key_expired">已过期：需要该联系人延长该密钥的可用时间！</string>
+  <string name="view_key_expired_secret">已过期：你可以编辑它来延长该密钥的可用时间！</string>
+  <string name="view_key_my_key">我的密钥</string>
+  <string name="view_key_verified">已验证的密钥</string>
+  <string name="view_key_unverified">未验证：扫描二维码以验证密钥！</string>
+  <string name="view_key_fragment_no_system_contact">&lt;无&gt;</string>
   <!--Add/Edit keyserver-->
+  <string name="add_keyserver_dialog_title">添加密钥服务器</string>
+  <string name="edit_keyserver_dialog_title">编辑密钥服务器</string>
+  <string name="add_keyserver_connection_verified">连接认证成功！</string>
+  <string name="add_keyserver_without_verification">未验证的密钥服务器已添加</string>
+  <string name="add_keyserver_invalid_url">URL无效！</string>
+  <string name="add_keyserver_keyserver_not_trusted">该密钥服务器不可信(证书无效)！</string>
+  <string name="add_keyserver_connection_failed">连接密钥服务器失败，请确保URL正确以及网络通畅。</string>
+  <string name="keyserver_preference_deleted">%s 已删除</string>
+  <string name="keyserver_preference_cannot_delete_last">由于至少要有一个密钥服务器，所以不能删除最后一个密钥服务器</string>
   <!--Navigation Drawer-->
+  <string name="nav_keys">密钥</string>
+  <string name="nav_encrypt_decrypt">加密/解密</string>
+  <string name="nav_apps">关联的应用</string>
+  <string name="drawer_open">打开抽屉</string>
+  <string name="drawer_close">关闭抽屉</string>
+  <string name="my_keys">我的密钥</string>
+  <string name="nav_backup">备份/恢复</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">此处输入要加密的内容</string>
   <!--certs-->
+  <string name="cert_default">默认</string>
+  <string name="cert_none">无</string>
+  <string name="cert_revoke">已吊销</string>
+  <string name="cert_verify_ok">正常</string>
+  <string name="cert_verify_failed">失败！</string>
+  <string name="cert_verify_error">错误！</string>
+  <string name="cert_verify_unavailable">密钥不可用</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="msg_internal_error">内部错误！</string>
+  <string name="msg_cancelled">操作已取消</string>
   <!--Import Public log entries-->
+  <string name="msg_ip_apply_batch">开始批量导入</string>
+  <string name="msg_ip_bad_type_secret">已将私钥导入为公钥，这是一个BUG，请提交报告！</string>
+  <string name="msg_ip_delete_old_ok">已从数据库中删除旧的密钥</string>
+  <string name="msg_ip_encode_fail">由于编码错误，操作失败</string>
+  <string name="msg_ip_error_io_exc">由于i/o异常，操作失败</string>
+  <string name="msg_ip_error_op_exc">由于数据库错误，操作失败</string>
+  <string name="msg_ip_error_remote_ex">由于内部错误，操作失败</string>
+  <string name="msg_ip">正在导入公钥钥匙环 %s</string>
+  <string name="msg_ip_fingerprint_error">正在导入的密钥指纹匹配失败</string>
+  <string name="msg_ip_fingerprint_ok">指纹检验正常</string>
+  <string name="msg_ip_insert_keyring">正在编码钥匙环数据</string>
+  <string name="msg_ip_insert_keys">解析密钥中</string>
+  <string name="msg_ip_prepare">准备数据库的操作中</string>
+  <string name="msg_ip_master">正在处理主密钥 %s</string>
+  <string name="msg_ip_master_expired">钥匙环过期于 %s</string>
+  <string name="msg_ip_master_expires">钥匙环过期于 %s</string>
+  <string name="msg_ip_master_flags_unspecified">主标志：未指定的(假定全部 )</string>
+  <string name="msg_ip_merge_public">正在合并已导入的数据到现有的公共钥匙环</string>
+  <string name="msg_ip_merge_secret">正在合并已导入的数据到现有的私有钥匙环</string>
+  <string name="msg_ip_subkey">正在处理子密钥 %s</string>
+  <string name="msg_ip_subkey_expired">子密钥过期于 %s</string>
+  <string name="msg_ip_subkey_expires">子密钥过期于 %s</string>
+  <string name="msg_ip_success">成功导入公共钥匙环</string>
+  <string name="msg_ip_success_identical">钥匙环不包含任何新的数据，无动作</string>
+  <string name="msg_ip_reinsert_secret">重新插入私钥</string>
+  <string name="msg_ip_uid_cert_bad">发现损坏的证书！</string>
+  <string name="msg_ip_uat_cert_bad">发现损坏的证书！</string>
+  <string name="msg_is_bad_type_public">试图把公钥导入为私钥，这是一个漏洞，请报告错误！</string>
   <!--Import Secret log entries-->
+  <string name="msg_is_merge_public">正在合并导入的数据到现有的公钥钥匙环</string>
+  <string name="msg_is_merge_secret">正在合并已导入的数据到现有的私有钥匙环</string>
+  <string name="msg_is_success_identical">钥匙环不包含任何新的数据，无动作</string>
   <!--Keyring Canonicalization log entries-->
+  <string name="msg_kc_master">正在处理主密钥</string>
+  <string name="msg_kc_master_bad_type">正在移除未知类型 (%s) 的主密钥</string>
+  <string name="msg_kc_master_bad_local">正在移除标记为\'local\'的主密钥</string>
+  <string name="msg_kc_master_bad_err">正在移除损坏的主密钥证书</string>
+  <string name="msg_kc_master_bad">正在移除损坏的主密钥证书</string>
+  <string name="msg_kc_master_local">正在移除标记为\'local\'的主密钥</string>
+  <string name="msg_kc_sub">正在处理子密钥 %s</string>
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
@@ -500,24 +755,75 @@
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">正常</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_error_key_mismatch">证明内容与该密钥指纹不匹配</string>
+  <string name="msg_keybase_error_dns_fail">取回 DNS 的 TXT 记录失败</string>
+  <string name="msg_keybase_error_msg_payload_mismatch">证明内容匹配失败</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <!--Keyserver sync-->
   <string name="keyserver_sync_orbot_notif_start">打开Orbot</string>
   <!--First Time-->
+  <string name="backup_public_keys">所有密匙</string>
+  <string name="backup_section">备份</string>
+  <string name="restore_section">恢复</string>
   <!--unsorted-->
+  <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">输入密码</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">设置</string>
+  <string name="snack_compression_on">压缩 <b>启用</b>.</string>
+  <string name="snack_compression_off">压缩 <b>禁用</b>.</string>
+  <string name="error_loading_keys">加载密匙出现错误！</string>
+  <string name="error_empty_log">(错误，空日志)</string>
+  <string name="filename_unknown_text">文本(触摸显示)</string>
+  <string name="filename_keys">密匙备份(触摸导出)</string>
+  <string name="intent_show">显示 签名/加密 内容</string>
+  <string name="intent_share">分享 签名/加密 内容</string>
+  <string name="label_clip_title">数据已加密</string>
+  <string name="progress_processing">处理中...</string>
+  <string name="error_saving_file">保存文件出现错误!</string>
+  <string name="file_saved">文件已保存!</string>
+  <string name="file_delete_ok">原文件已被删除.</string>
+  <string name="linked_create_https_1_4">范例:https://example.com/pgpkey.txt</string>
+  <string name="linked_create_verify">校验</string>
   <!--Other Linked Identity strings-->
+  <string name="linked_select_2">请选择一个类型:</string>
   <string name="section_linked_identities">关联身份</string>
+  <string name="btn_finish">完成</string>
+  <string name="linked_title_https">网站 (HTTPS)</string>
+  <string name="linked_title_dns">域名(DNS)</string>
+  <string name="linked_button_verify">校验</string>
+  <string name="linked_button_view">查看</string>
+  <string name="linked_text_confirming">确认中...</string>
+  <string name="linked_progress_post_gist">提交摘要...</string>
+  <string name="linked_progress_update_key">更新密钥...</string>
+  <string name="linked_button_start">链接到GitHub帐户</string>
+  <string name="linked_error_auth_failed">验证失败!</string>
+  <string name="linked_error_timeout">连接超时！</string>
+  <string name="linked_error_network">网络错误！</string>
+  <string name="linked_error_http">通讯错误:%s</string>
+  <string name="linked_webview_title_github">GitHub授权</string>
+  <string name="snack_btn_overwrite">重写</string>
+  <string name="backup_code_enter">请输入备份代码:</string>
+  <string name="backup_code_ok">编码已接受!</string>
+  <string name="btn_backup_share">分享备份</string>
+  <string name="btn_backup_save">保存备份</string>
+  <string name="snack_backup_error_saving">备份时出现错误！</string>
+  <string name="snack_backup_saved">备份已保存</string>
+  <string name="snack_backup_exists">备份已存在!</string>
+  <string name="btn_backup_back">后退并检查</string>
+  <string name="share_log_dialog_title">分享日志?</string>
   <string name="share_log_dialog_share_button">分享</string>
   <string name="share_log_dialog_cancel_button">取消</string>
+  <string name="toast_wrong_mimetype">错误的数据类型，文本是预设值</string>
+  <string name="btn_search_for_query">查找\n\'%s\'</string>
 </resources>

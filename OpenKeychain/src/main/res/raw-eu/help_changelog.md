@@ -1,8 +1,8 @@
 [//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
 
 ## 3.7
-  * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * Hobetuta Android 6 sostengua (baimenak, baterapena idazki hautapenean)
+  * API: 10 bertsioa
 
 ## 3.6
 

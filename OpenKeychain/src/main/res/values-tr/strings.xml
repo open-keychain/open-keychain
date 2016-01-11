@@ -60,8 +60,6 @@
   <string name="label_file_ascii_armor">ASCII formatında çıktıları etkinleştir</string>
   <string name="label_write_version_header">Diğerlerinin OpenKeychain kullandığını bilmesine izin ver</string>
   <string name="label_write_version_header_summary">OpenPGP imzalarına, şifrelenmiş metinlere ve dışa aktarılmış anahtarlara \'OpenKeychain v2.7\' yazar</string>
-  <string name="label_use_num_keypad_for_security_token_pin">YubiKey PIN\'i için sayısal klavyeyi kullan</string>
-  <string name="label_to">Şuna şifrele:</string>
   <string name="label_delete_after_decryption">Şifre çözme sonrasında sil</string>
   <string name="label_encryption_algorithm">Şifreleme algoritması</string>
   <string name="label_hash_algorithm">Özet algoritması</string>
@@ -302,7 +300,6 @@
   </plurals>
   <string name="key_list_filter_show_all">Tüm anahtarları göster</string>
   <!--Key view-->
-  <string name="key_view_action_edit_ids">Anahtarı düzenle</string>
   <string name="key_view_action_encrypt">Metni şifrele</string>
   <string name="key_view_action_encrypt_files">dosyalar</string>
   <string name="key_view_action_update">Anahtar sunucusundan güncelle</string>

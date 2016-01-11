@@ -31,12 +31,10 @@
   <string name="title_help">Помощь</string>
   <string name="title_log_display">Журнал</string>
   <string name="title_exchange_keys">Обмен ключами</string>
-  <string name="title_advanced_key_info">Дополнительные сведения</string>
   <string name="title_delete_secret_key">Удалить ВАШ ключ \'%s\'?</string>
   <string name="title_manage_my_keys">Управление ключами</string>
   <!--section-->
   <string name="section_user_ids">Идентификаторы</string>
-  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">Связанные контакты</string>
   <string name="section_keybase_proofs">Доказательства Keybase.io</string>
   <string name="section_should_you_trust">Должны ли Вы доверять этому ключу?</string>
@@ -95,7 +93,6 @@
   <string name="btn_add_keyserver">Добавить</string>
   <string name="btn_save_default">Сохранить по умолчанию</string>
   <string name="btn_saved">Сохранено!</string>
-  <string name="btn_not_matching">Нет совпадений</string>
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Настройки</string>
@@ -110,7 +107,6 @@
   <string name="menu_select_all">Выбрать все</string>
   <string name="menu_export_all_keys">Экспорт всех ключей</string>
   <string name="menu_update_all_keys">Обновить все ключи</string>
-  <string name="menu_advanced">Дополнительные сведения</string>
   <string name="menu_keyserver_add">Добавить</string>
   <!--label-->
   <string name="label_message">Текст</string>
@@ -127,15 +123,12 @@
   <string name="label_file_ascii_armor">Использовать ASCII формат</string>
   <string name="label_write_version_header">Добавить комментарий об использовании OpenKeychain</string>
   <string name="label_write_version_header_summary">Дописывать \'OpenKeychain v2.x\' в OpenPGP подписи, шифры, и экспортируемые ключи</string>
-  <string name="label_use_num_keypad_for_security_token_pin">Использовать цифровую клавиатуру для YubiKey PIN</string>
   <string name="label_asymmetric_from">Подписать:</string>
-  <string name="label_to">Зашифровать для:</string>
   <string name="label_delete_after_encryption">Удалить файлы после шифрования</string>
   <string name="label_delete_after_decryption">Удалить после шифрования</string>
   <string name="label_encryption_algorithm">Алгоритм шифрования</string>
   <string name="label_hash_algorithm">ХЭШ-алгоритм</string>
   <string name="label_symmetric">Зашифровать с паролем</string>
-  <string name="label_passphrase_cache_ttl">Запомнить время</string>
   <string name="label_passphrase_cache_subs">Запомнить пароли для подключей</string>
   <string name="label_message_compression">Сжатие текста</string>
   <string name="label_file_compression">Сжатие файла</string>
@@ -257,8 +250,6 @@
   <string name="passphrase_for_symmetric_encryption">Введите пароль</string>
   <string name="passphrase_for">Введите пароль для \'%s\'</string>
   <string name="pin_for">Введите PIN для
-\'%s\'</string>
-  <string name="security_token_pin_for">Введите PIN для доступа к YubiKey для
 \'%s\'</string>
   <string name="file_delete_confirmation_title">Удалить исходные файлы?</string>
   <string name="file_delete_confirmation">Следующие файлы будут удалены:%s</string>
@@ -439,10 +430,6 @@
   <string name="intent_send_encrypt">OpenKeychain: Зашифровать</string>
   <string name="intent_send_decrypt">OpenKeychain: Расшифровать</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">Показать подробную информацию</string>
-  <string name="api_settings_hide_info">Скрыть дополнительную информацию</string>
-  <string name="api_settings_show_advanced">Показать расширенные настройки</string>
-  <string name="api_settings_hide_advanced">Скрыть расширенные настройки</string>
   <string name="api_settings_no_key">Ключ не выбран</string>
   <string name="api_settings_select_key">Выбрать ключ</string>
   <string name="api_settings_create_key">Создать новый ключ</string>
@@ -454,7 +441,6 @@
   <string name="api_settings_delete_account">Удалить аккаунт</string>
   <string name="api_settings_package_name">Наименование пакета</string>
   <string name="api_settings_accounts">Аккаунты (устаревший API)</string>
-  <string name="api_settings_advanced">Дополнительные сведения</string>
   <string name="api_settings_allowed_keys">Разрешённые ключи</string>
   <string name="api_settings_settings">Настройки</string>
   <string name="api_settings_key">Ключ аккаунта:</string>
@@ -487,7 +473,6 @@
   <string name="key_list_filter_show_all">Показать все ключи</string>
   <string name="key_list_fab_search">Поиск ключа</string>
   <!--Key view-->
-  <string name="key_view_action_edit_ids">Изменить ключ</string>
   <string name="key_view_action_encrypt">Зашифровать текст</string>
   <string name="key_view_action_encrypt_files">файлы</string>
   <string name="key_view_action_certify">Подтвердить ключ</string>
@@ -893,7 +878,6 @@
   <string name="first_time_text1">Верните вашу приватность с помощью OpenKeychain!</string>
   <string name="first_time_create_key">Создать свой ключ</string>
   <string name="first_time_import_key">Импорт ключа из файла</string>
-  <string name="first_time_security_token">Использовать YubiKey NEO</string>
   <string name="first_time_skip">Пропустить настройку</string>
   <!--unsorted-->
   <string name="section_certifier_id">Кем подписан</string>
@@ -935,10 +919,6 @@
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="unlocked">Разблокирован</string>
   <string name="nfc_settings">Настройки</string>
-  <string name="snack_security_token_view">Просмотр</string>
-  <string name="snack_security_token_import">Импорт</string>
-  <string name="security_token_key_holder">Владелец ключа:</string>
-  <string name="security_token_error">Ошибка NFC: %s</string>
   <!--Other Linked Identity strings-->
   <string name="linked_select_2">Пожалуйста, выберите тип:</string>
   <string name="section_linked_identities">Связанные идентификаторы</string>

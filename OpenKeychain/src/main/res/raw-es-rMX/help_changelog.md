@@ -8,31 +8,31 @@
 
   * Respaldos cifrados
   * Soluciones de seguridad basadas en auditoría de seguridad externa
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
-  * API: Version 9
+  * Asistente para creación de clave YubiKey NEO
+  * Soporte interno básico MIME
+  * Sincronización automática de clave
+  * Característica experimental: vincular claves a cuentas de Github y Twitter
+  * Característica experimental: confirmación de claves mediante frases
+  * Característica experimentar: tema oscuro
+  * API: Versión 9
 
 ## 3.5
 
-  * Key revocation on key deletion
-  * Improved checks for insecure cryptography
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  * Revocación de clave al eliminarla
+  * Mejorar revisiones para criptografía insegura
+  * Mejora: No cerrar OpenKeychain después de finalizar el asistente de primera vez
+  * API: Versión 8
 
 ## 3.4
 
   * Anonymous key download over Tor
-  * Proxy support
+  * Soporte de proxy
   * Better YubiKey error handling
 
 ## 3.3
 
-  * New decryption screen
-  * Decryption of multiple files at once
+  * Nueva pantalla de descifrado
+  * Descifrado de múltiples archivos a la vez
   * Better handling of YubiKey errors
 
 ## 3.2

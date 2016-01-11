@@ -1,8 +1,8 @@
 [//]: #
 
 ## 3.7
-  * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * Побољшана подршка за Андроид 6 (дозволе, интеграција у избор текста)
+  * АПИ: Издање 10
 
 ## 3.6
 

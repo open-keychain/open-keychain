@@ -31,12 +31,10 @@
   <string name="title_help">도움말</string>
   <string name="title_log_display">로그</string>
   <string name="title_exchange_keys">키 교환</string>
-  <string name="title_advanced_key_info">확장 정보</string>
   <string name="title_delete_secret_key">당신의 키 \'%s\' 을(를) 삭제할까요?</string>
   <string name="title_manage_my_keys">내 키 관리</string>
   <!--section-->
   <string name="section_user_ids">신원</string>
-  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">연결된 시스템 연락처</string>
   <string name="section_keybase_proofs">Keybase.io 증명</string>
   <string name="section_should_you_trust">이 키를 믿어야 할까요?</string>
@@ -96,7 +94,6 @@
   <string name="btn_add_keyserver">추가</string>
   <string name="btn_save_default">기본값으로 저장</string>
   <string name="btn_saved">저장 성공!</string>
-  <string name="btn_not_matching">일치하지 않음</string>
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">설정</string>
@@ -111,7 +108,6 @@
   <string name="menu_select_all">모두 선택</string>
   <string name="menu_export_all_keys">모든 키 내보내기</string>
   <string name="menu_update_all_keys">모든 키 업데이트</string>
-  <string name="menu_advanced">확장 정보</string>
   <string name="menu_keyserver_add">추가</string>
   <!--label-->
   <string name="label_files">파일(들)</string>
@@ -127,15 +123,12 @@
   <string name="label_file_ascii_armor">ASCII 표시 활성화</string>
   <string name="label_write_version_header">다른 사람에게 OpenKeychain을 사용하고 있다는 걸 알리세요</string>
   <string name="label_write_version_header_summary">\'OpenKeychain v2.7\'을 OpenPGP 서명, 암호화 텍스트, 내보낸 키에 쓰기</string>
-  <string name="label_use_num_keypad_for_security_token_pin">YubiKey PIN 입력에 숫자 키패드 사용</string>
   <string name="label_asymmetric_from">다음으로 서명:</string>
-  <string name="label_to">다음에게 암호화:</string>
   <string name="label_delete_after_encryption">암호화 후 파일들 삭제</string>
   <string name="label_delete_after_decryption">복호화 후 삭제</string>
   <string name="label_encryption_algorithm">암호화 알고리즘</string>
   <string name="label_hash_algorithm">해시 알고리즘</string>
   <string name="label_symmetric">암호로 암호화</string>
-  <string name="label_passphrase_cache_ttl">기억 시간</string>
   <string name="label_passphrase_cache_subs">서브키 당 암호 기억</string>
   <string name="label_message_compression">텍스트 압축</string>
   <string name="label_file_compression">파일 압축</string>
@@ -257,10 +250,6 @@
   <string name="passphrase_for_backup">백업 코드 입력</string>
   <string name="passphrase_for">\'%s\'을(를) 위해 암호를 입력 해 주세요</string>
   <string name="pin_for">\'%s\'을(를) 위해 PIN을 입력 해 주세요</string>
-  <string name="security_token_pin_for">\'%s\'를 위해 YubiKey를 엑세스 하기 위한 PIN을 입력 해 주세요</string>
-  <string name="security_token_nfc_text">YubiKey를 장치 뒤의 NFC 표시에 대어 주세요</string>
-  <string name="security_token_nfc_wait">YubiKey를 뒷면에 계속 대고 있으세요!</string>
-  <string name="security_token_nfc_finished">이제 YubiKey를 떼어도 됩니다.</string>
   <string name="file_delete_confirmation_title">원본 파일을 삭제할까요?</string>
   <string name="file_delete_confirmation">다음 파일이 삭제 될 것입니다:%s</string>
   <string name="file_delete_successful">%2$d개 중 %1$d개의 파일이 삭제되었습니다.%3$s</string>
@@ -499,10 +488,6 @@
   <string name="intent_send_encrypt">OpenKeychain으로 암호화</string>
   <string name="intent_send_decrypt">OpenKeychain으로 복호화</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">확장 정보 표시</string>
-  <string name="api_settings_hide_info">확장 정보 숨기기</string>
-  <string name="api_settings_show_advanced">확장 설정 표시</string>
-  <string name="api_settings_hide_advanced">확장 설정 숨기기</string>
   <string name="api_settings_no_key">키가 선택되지 않음</string>
   <string name="api_settings_select_key">키 선택</string>
   <string name="api_settings_create_key">새로운 키 만들기</string>
@@ -515,7 +500,6 @@
   <string name="api_settings_package_name">패키지 이름</string>
   <string name="api_settings_package_certificate">패키지 인증서의 SHA-256 해시</string>
   <string name="api_settings_accounts">계정 (오래된 API)</string>
-  <string name="api_settings_advanced">확장 정보</string>
   <string name="api_settings_allowed_keys">혀용된 키</string>
   <string name="api_settings_settings">설정</string>
   <string name="api_settings_key">계정 키:</string>

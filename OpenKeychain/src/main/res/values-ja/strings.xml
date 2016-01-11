@@ -13,6 +13,7 @@
   <string name="title_preferences">設定</string>
   <string name="title_api_registered_apps">アプリ</string>
   <string name="title_key_server_preference">OpenPGP鍵サーバ</string>
+  <string name="title_cache_ttl_preference">\'記憶する\' 選択肢をカスタマイズ</string>
   <string name="title_change_passphrase">パスワードの変更</string>
   <string name="title_share_fingerprint_with">...で指紋の共有</string>
   <string name="title_share_key">...で鍵の共有</string>
@@ -31,12 +32,10 @@
   <string name="title_help">ヘルプ</string>
   <string name="title_log_display">ログ</string>
   <string name="title_exchange_keys">鍵の交換</string>
-  <string name="title_advanced_key_info">拡張情報</string>
   <string name="title_delete_secret_key">あなたの鍵 \'%s\' を削除しますか?</string>
   <string name="title_manage_my_keys">自分の鍵の管理</string>
   <!--section-->
   <string name="section_user_ids">ユーザID</string>
-  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">リンクしているシステムの連絡先</string>
   <string name="section_keybase_proofs">Keybase.io 検証</string>
   <string name="section_should_you_trust">この鍵を信頼しますか?</string>
@@ -45,7 +44,7 @@
   <string name="section_cloud_search">鍵検索</string>
   <string name="section_cloud_search_summary">鍵サーバ, keybase.io</string>
   <string name="section_passphrase_cache">パスワードとPIN</string>
-  <string name="section_passphrase_cache_summary">取り扱い、ユーザインタフェース、時間を忘れない</string>
+  <string name="section_passphrase_cache_summary">取り扱い、ユーザインタフェース、忘れない時間</string>
   <string name="section_proxy_settings">ネットワーク匿名性</string>
   <string name="section_proxy_settings_summary">Tor、Proxyの設定</string>
   <string name="section_gui">インタフェース</string>
@@ -99,6 +98,10 @@
   <string name="btn_saved">保存しました!</string>
   <string name="btn_not_matching">一致せず</string>
   <!--Content Description-->
+  <string name="cd_encrypt_files">ファイルの暗号化</string>
+  <string name="cd_exchange_keys">鍵の交換</string>
+  <string name="cd_encrypt_text">テキストの暗号化</string>
+  <string name="cd_share_nfc">NFCで共有</string>
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">ヘルプ</string>
@@ -112,7 +115,10 @@
   <string name="menu_select_all">すべて選択</string>
   <string name="menu_export_all_keys">すべての鍵のエクスポート</string>
   <string name="menu_update_all_keys">全部のキーをアップデートする</string>
-  <string name="menu_advanced">拡張情報</string>
+  <string name="menu_certify_fingerprint">指紋による確認</string>
+  <string name="menu_certify_fingerprint_phrases">語句による検証</string>
+  <string name="menu_share_log">ログを共有</string>
+  <string name="menu_change_password">パスワードの変更</string>
   <string name="menu_keyserver_add">追加</string>
   <!--label-->
   <string name="label_message">テキスト</string>
@@ -130,15 +136,14 @@
   <string name="label_file_ascii_armor">アスキー形式ファイルを有効</string>
   <string name="label_write_version_header">OpenKeychainの利用を通知する</string>
   <string name="label_write_version_header_summary">OpenPGPの 署名、暗号文、そしてエクスポートした鍵に  \'OpenKeychain v2.7\' と書くようになりました</string>
-  <string name="label_use_num_keypad_for_security_token_pin">Yubikey PINで数字キーパッドを使う</string>
   <string name="label_asymmetric_from">署名:</string>
-  <string name="label_to">暗号化:</string>
+  <string name="label_to">暗号化...</string>
   <string name="label_delete_after_encryption">暗号化後にファイル削除</string>
   <string name="label_delete_after_decryption">復号化後に削除</string>
   <string name="label_encryption_algorithm">暗号化アルゴリズム</string>
   <string name="label_hash_algorithm">ハッシュアルゴリズム</string>
   <string name="label_symmetric">パスワードで暗号化</string>
-  <string name="label_passphrase_cache_ttl">時刻を忘れない</string>
+  <string name="label_passphrase_cache_ttl">\'記憶する\' 選択肢をカスタマイズ</string>
   <string name="label_passphrase_cache_subs">副鍵のパスワードを忘れない</string>
   <string name="label_message_compression">テキストの圧縮</string>
   <string name="label_file_compression">ファイルの圧縮</string>
@@ -173,12 +178,19 @@
   <string name="pref_keyserver_summary">選択したOpenPGP鍵サーバで鍵を探す (HKPプロトコル)</string>
   <string name="pref_keybase">Keybase.io</string>
   <string name="pref_keybase_summary">Keybase.ioで鍵を探す</string>
+  <string name="pref_facebook">Facebook</string>
+  <string name="pref_facebook_summary">Facebookでユーザー名から鍵を探す</string>
+  <string name="label_sync_settings_keyserver_title">鍵の自動アップデート</string>
+  <string name="label_sync_settings_keyserver_summary_on">3日ごとに鍵サーバから鍵をアップデートします</string>
+  <string name="label_sync_settings_keyserver_summary_off">鍵を自動でアップデートしません</string>
   <string name="label_sync_settings_contacts_title">連絡先へ鍵をリンク</string>
   <string name="label_sync_settings_contacts_summary_on">オフランで完結して、名前とメールアドレスに基づいて、鍵を連絡先にリンク</string>
   <string name="label_sync_settings_contacts_summary_off">新しい鍵は連絡先と関連付けしない</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="keyserver_sync_settings_title">鍵の自動アップデート</string>
   <string name="label_experimental_settings_desc_title">注意</string>
   <string name="label_experimental_settings_desc_summary">これらの機能はまだ完成していないか、ユーザーエクスペリエンス/セキュリティ研究の結果ではありません。そのため、このセキュリティに依存したり、遭遇した問題を報告しないでください!</string>
+  <string name="label_experimental_settings_word_confirm_title">語句による検証</string>
   <string name="label_experimental_settings_word_confirm_summary">16進指紋の変りに語句で鍵を検証</string>
   <string name="label_experimental_settings_linked_identities_title">リンクしたユーザID</string>
   <string name="label_experimental_settings_linked_identities_summary">Twitter、GitHub、Webサイト、またはDNSに鍵をリンク (keybase.ioに似ていますが、分散型)</string>
@@ -260,10 +272,6 @@
   <string name="passphrase_for_backup">バックアップコードの入力</string>
   <string name="passphrase_for">\'%s\' にパスワードを入れてください</string>
   <string name="pin_for">\'%s\' にPINを入力してください</string>
-  <string name="security_token_pin_for">\'%s\' の Yubikey にアクセスするためのPINを入力してください</string>
-  <string name="security_token_nfc_text">YubiKeyをあなたのデバイスの背中にあるNFCの印に対向させて固定してください。</string>
-  <string name="security_token_nfc_wait">YubiKeyを背後に維持してください!</string>
-  <string name="security_token_nfc_finished">YubiKeyを取り外してください。</string>
   <string name="file_delete_confirmation_title">オリジナルのファイルを削除しますか?</string>
   <string name="file_delete_confirmation">以下のファイルを削除します:%s</string>
   <string name="file_delete_successful">%1$d 中の %2$d のファイルの削除が完了しました。%3$s</string>
@@ -301,6 +309,7 @@
   <string name="fingerprint_copied_to_clipboard">指紋はクリップボードにコピーされました!</string>
   <string name="select_key_to_certify">確認に使う鍵を選択して下さい!</string>
   <string name="text_copied_to_clipboard">鍵はクリップボードにコピーされました!</string>
+  <string name="how_to_import">これを自分のデスクトップPCにインポートする方法は?</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -507,10 +516,6 @@
   <string name="intent_send_encrypt">OpenKeychainで暗号化</string>
   <string name="intent_send_decrypt">OpenKeychainで復号化</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">拡張情報を表示</string>
-  <string name="api_settings_hide_info">拡張情報を非表示</string>
-  <string name="api_settings_show_advanced">拡張設定を表示</string>
-  <string name="api_settings_hide_advanced">拡張設定を非表示</string>
   <string name="api_settings_no_key">鍵が選択されていない</string>
   <string name="api_settings_select_key">鍵の選択</string>
   <string name="api_settings_create_key">新しい鍵の生成</string>
@@ -523,7 +528,6 @@
   <string name="api_settings_package_name">パッケージ名</string>
   <string name="api_settings_package_certificate">パッケージの署名 SHA-256</string>
   <string name="api_settings_accounts">アカウント(古いAPI)</string>
-  <string name="api_settings_advanced">拡張情報</string>
   <string name="api_settings_allowed_keys">受け入れる鍵</string>
   <string name="api_settings_settings">設定</string>
   <string name="api_settings_key">アカウント鍵:</string>
@@ -573,7 +577,7 @@
   <string name="key_list_fab_search">鍵の検索</string>
   <string name="key_list_fab_import">ファイルからインポート</string>
   <!--Key view-->
-  <string name="key_view_action_edit_ids">鍵の編集</string>
+  <string name="key_view_action_edit">編集</string>
   <string name="key_view_action_encrypt">テキスト暗号化</string>
   <string name="key_view_action_encrypt_files">ファイル</string>
   <string name="key_view_action_certify">鍵の確認</string>
@@ -641,19 +645,10 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">このIDは破棄されています。続けることができません。</string>
   <string name="edit_key_edit_subkey_title">アクションを選んでください!</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>期限の変更</item>
-    <item>副鍵の破棄</item>
-    <item>副鍵のストリップ</item>
-    <item>副鍵をYubiKey/スマートカードへ移動</item>
-  </string-array>
   <string name="edit_key_new_subkey">新しい副鍵</string>
   <string name="edit_key_select_flag">最低1つフラグを選択してください!</string>
   <string name="edit_key_error_add_identity">最低でも1つのユーザIDを追加!</string>
   <string name="edit_key_error_add_subkey">最低でも1つの副鍵を追加!</string>
-  <string name="edit_key_error_bad_security_token_algo">スマートカードではアルゴリズムをサポートしません!</string>
-  <string name="edit_key_error_bad_security_token_size">スマートカードでは鍵サイズをサポートしません!</string>
-  <string name="edit_key_error_bad_security_token_stripped">鍵をスマートカードに移動できません(ストリップしてあるか、\'カードへ迂回\'がない)</string>
   <!--Create key-->
   <string name="create_key_upload">インターネットでの同期</string>
   <string name="create_key_empty">このフィールドは必須です</string>
@@ -930,7 +925,6 @@
   <string name="msg_cr_error_flags_ecdh">問題のある鍵フラグが選択されています、楕円曲線DHは署名に使えません!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">鍵輪 %s を変更中</string>
-  <string name="msg_mf_divert">カードでの暗号化操作に切り替えられます</string>
   <string name="msg_mf_error_divert_newsub">\'カードに迂回\' の主鍵に対する、新しい副鍵の作成はサポートされていません!</string>
   <string name="msg_mf_error_divert_serial">カードに対比した鍵のシリアル番号には16バイトは必要です!これはプロラグラムエラーで、バグレポートでファイルの提出をお願いします!</string>
   <string name="msg_mf_error_encode">エンコード例外!</string>
@@ -949,9 +943,7 @@
   <string name="msg_mf_error_sig">署名例外!</string>
   <string name="msg_mf_error_sub_stripped">ストリップした副鍵である %s は変更できません!</string>
   <string name="msg_mf_error_subkey_missing">見付からない副鍵 %s の操作をしようとした!</string>
-  <string name="msg_mf_error_conflicting_nfc_commands">カード上で鍵の署名を作るのと同じ操作でスマートカードに移動できません</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">スマートカードでは鍵の種別ごとに1つのスロットのみサポートします。</string>
-  <string name="msg_mf_error_invalid_flags_for_keytocard">スマートカードの鍵に不適合な鍵のフラグです。</string>
   <string name="msg_mf_master">マスター認証を変更</string>
   <string name="msg_mf_notation_empty">空のノーテーションパケットを追加</string>
   <string name="msg_mf_notation_pin">PINノーテーションパケットを追加</string>
@@ -965,15 +957,12 @@
   <string name="msg_mf_primary_new">新しい主ユーザIDで新しい証明を生成中</string>
   <string name="msg_mf_restricted_mode">制限操作モードへ変更</string>
   <string name="msg_mf_subkey_change">副鍵 %s を変更中</string>
-  <string name="msg_mf_require_divert">スマートカードでの暗号化操作に切り替え</string>
   <string name="msg_mf_require_passphrase">操作にパスワードが必要です</string>
   <string name="msg_mf_subkey_new">種類%sの新しい副鍵を追加</string>
   <string name="msg_mf_subkey_new_id">新しい副鍵 ID: %s</string>
   <string name="msg_mf_error_past_expiry">期限切れ日を過去にはできません!</string>
   <string name="msg_mf_subkey_revoke">副鍵 %s を破棄中</string>
   <string name="msg_mf_subkey_strip">副鍵 %s のストリップ中</string>
-  <string name="msg_mf_keytocard_start">副鍵 %s をスマートカードへ移動</string>
-  <string name="msg_mf_keytocard_finish">%1$s をスマートカード %2$s へ移動した</string>
   <string name="msg_mf_success">鍵輪の変更に成功</string>
   <string name="msg_mf_uid_add">ユーザID %s を追加中</string>
   <string name="msg_mf_uid_primary">主UIDを %s に変更中</string>
@@ -1028,7 +1017,6 @@
   <string name="msg_pr_error_key_not_found">鍵が見当りません!</string>
   <string name="msg_pr_fetching">フェッチした鍵を変更 (%s)</string>
   <string name="msg_pr_subkey_match">副鍵を昇格: %s</string>
-  <string name="msg_pr_subkey_nomatch">YubiKeyに副鍵がありません: %s</string>
   <string name="msg_pr_success">鍵は正常に昇格しました</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_dummy">ストリップした主鍵では鍵輪を編集できません!</string>
@@ -1162,6 +1150,7 @@
   <string name="msg_import_fetch_error_keyserver">鍵サーバから展開できません: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">鍵サーバから秘密鍵をインポートできません!</string>
   <string name="msg_import_fetch_keybase">keybase.ioから回収: %s</string>
+  <string name="msg_import_fetch_facebook">Facebookから取得中: %s</string>
   <string name="msg_import_fetch_keyserver">鍵サーバからの回収: %s</string>
   <string name="msg_import_fetch_keyserver_ok">鍵の展開に成功</string>
   <string name="msg_import_keyserver">鍵サーバ %s を使う</string>
@@ -1186,6 +1175,7 @@
   <string name="msg_upload_proxy_tor">使用中のプロキシ: TOR</string>
   <string name="msg_upload_proxy">使用中のプロキシ: %s</string>
   <string name="msg_upload_server">サーバー: %s</string>
+  <string name="msg_upload_key">鍵 ID: %s</string>
   <string name="msg_upload_error_key">鍵データの事前処理でエラー!</string>
   <string name="msg_upload_error_not_found">鍵が見つかりません!</string>
   <string name="msg_upload_error_upload">サーバに鍵をアップロード中にエラー! インターネット接続を確認してください</string>
@@ -1233,6 +1223,7 @@
   <string name="msg_bench_enc_time_avg">5M を暗号化する平均時間: %ss</string>
   <string name="msg_bench_dec_time">復号化時間: %ss</string>
   <string name="msg_bench_dec_time_avg">5M を復号化する平均時間: %ss</string>
+  <string name="msg_bench_s2k_100ms_its">100ms 間の S2K 繰り返し回数: %s</string>
   <string name="msg_bench_s2k_for_it">%1$s SHA1 S2K 繰り返しの時間: %2$sms</string>
   <string name="msg_bench_success">ベンチマークを完了しました!</string>
   <string name="msg_data">入力データの処理中</string>
@@ -1250,6 +1241,7 @@
   <string name="msg_data_mime_from_extension">拡張子からMIME種別を推測しています</string>
   <string name="msg_data_mime_length">コンテンツ長: %s</string>
   <string name="msg_data_mime">MIMEデータ構造の解析中</string>
+  <string name="msg_data_mime_ok">解析完了</string>
   <string name="msg_data_mime_none">MIME構造が見つかりません</string>
   <string name="msg_data_mime_part">MIME部分の処理中</string>
   <string name="msg_data_mime_type">コンテンツ種別: %s</string>
@@ -1279,6 +1271,7 @@
   <string name="msg_mime_parsing_error">MIME解析に失敗</string>
   <string name="msg_mime_parsing_success">MIME解析に成功!</string>
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_touch_to_clear">クリックしてパスワードをクリア。</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="other">%d のパスワードを忘れない</item>
   </plurals>
@@ -1294,10 +1287,7 @@
   <string name="first_time_text1">OpenKeychainであなたのプライバシーを取り戻しましょう!</string>
   <string name="first_time_create_key">自分のキーを作る</string>
   <string name="first_time_import_key">ファイルから鍵をインポート</string>
-  <string name="first_time_security_token">YubiKey NEOを使用する</string>
   <string name="first_time_skip">セットアップをスキップ</string>
-  <string name="first_time_blank_security_token">OpenKeychainで、この空白のYubiKey NEOを使用しますか?\n\nYubiKeyを取り除いてください。再度必要になったときにプロンプトが表示されます!</string>
-  <string name="first_time_blank_security_token_yes">YubiKeyを使用する</string>
   <string name="backup_text">あなた自身の鍵を含んだバックアップは、決して他の人と共有しないでください!</string>
   <string name="backup_all">すべての鍵とあなた所有の鍵</string>
   <string name="backup_public_keys">すべての鍵</string>
@@ -1319,7 +1309,6 @@
   <string name="error_key_not_found">鍵が見当りません!</string>
   <string name="error_key_processing">鍵処理中のエラー!</string>
   <string name="key_stripped">スリム化</string>
-  <string name="key_divert">スマートカードへ迂回</string>
   <string name="key_no_passphrase">パスワードなし</string>
   <string name="key_unavailable">存在しない</string>
   <string name="secret_cannot_multiple">あなたが所有者の鍵は個別にしか削除できません!</string>
@@ -1343,6 +1332,8 @@
   <string name="account_no_manual_account_creation">手動でOpenKeychainのアカウントを作成することはできません。</string>
   <string name="account_privacy_title">プライバシー</string>
   <string name="account_privacy_text">OpenKeychainは、インターネットを使用して連絡先を同期しません。名前とメールアドレスに基づいて、鍵に連絡先をリンクするだけです。これはお使いのデバイス上でオフラインで行います。</string>
+  <string name="sync_notification_permission_required_title">連絡先へのアクセスが必要</string>
+  <string name="sync_notification_permission_required_text">クリックして連絡先へのリンクを設定</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <string name="title_unlock_method">アンロックする手段を選択してください</string>
@@ -1366,45 +1357,11 @@
   <string name="nfc_wrong_tag">ダメなタグ。再度実施してください。</string>
   <string name="enable_nfc">設定からNFCを有効にしてください</string>
   <string name="no_nfc_support">この装置ではNFCをサポートしていません</string>
-  <string name="nfc_write_successful">NFCタグに書けました!</string>
   <string name="unlocked">アンロック</string>
   <string name="nfc_settings">設定</string>
-  <string name="snack_security_token_view">閲覧</string>
-  <string name="snack_security_token_import">インポート</string>
   <string name="button_bind_key">鍵と紐付け</string>
-  <string name="security_token_serial_no">シリアルナンバー: %s</string>
-  <string name="security_token_key_holder">鍵ホルダ:</string>
-  <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
-  <string name="security_token_status_bound">鍵がYubiKeyがマッチし紐付いている</string>
-  <string name="security_token_status_unbound">YubiKeyがマッチ、鍵に紐付けることができる</string>
-  <string name="security_token_status_partly">YubiKeyがマッチ、鍵に部分的に紐付いている</string>
-  <string name="security_token_create">あなたのデバイスの背面にYubiKeyを固定してください。</string>
-  <string name="security_token_reset_or_import">このYubiKeyは既に鍵を含んでいます。クラウドを使用して鍵をインポートしたり、YubiKeyをリセットすることができます。</string>
   <string name="btn_import">インポート</string>
   <string name="btn_reset">リセット</string>
-  <string name="security_token_import_radio">鍵のインポート</string>
-  <string name="security_token_reset_radio">YubiKeyをリセット</string>
-  <string name="security_token_reset_warning">YubiKeyをリセットすると、その上のキーを完全に破壊します。その後は、この鍵で暗号化されたメッセージ/ファイルを復号化することができなくなります!</string>
-  <string name="snack_security_token_other">違う鍵がYubiKeyに格納されています!</string>
-  <string name="security_token_error">NFCエラー: %s</string>
-  <plurals name="security_token_error_pin">
-    <item quantity="other">PINが正しくありません! 再挑戦はあと%d回です。</item>
-  </plurals>
-  <string name="security_token_error_terminated">YubiKeyが完了状態</string>
-  <string name="security_token_error_wrong_length">入力されたPINが短すぎます。 PINの長さは少なくとも6桁にします。</string>
-  <string name="security_token_error_conditions_not_satisfied">使用条件を満たしていません。</string>
-  <string name="security_token_error_security_not_satisfied">セキュリティステータスを満していません。</string>
-  <string name="security_token_error_authentication_blocked">試行回数が多すぎるためPINがブロックされています。</string>
-  <string name="security_token_error_data_not_found">鍵もしくはオブジェクトが見当りません。</string>
-  <string name="security_token_error_unknown">不明なエラー</string>
-  <string name="security_token_error_bad_data">YubiKeyが不正なデータを報告した。</string>
-  <string name="security_token_error_chaining_error">YubiKeyがチェーン中の最後のコマンドを待っています。</string>
-  <string name="security_token_error_header">YubiKeyが不正な%sバイトを報告。</string>
-  <string name="security_token_error_tag_lost">YubiKeyを取り出すのが早すぎました。操作が完了するまでYubiKeyを戻してしてください。</string>
-  <string name="security_token_error_iso_dep_not_supported">タグは ISO-DEP (ISO 14443-4) をサポートしていません</string>
-  <string name="security_token_error_try_again">再実行</string>
-  <string name="error_pin_wrong">PINが正しくありません!</string>
-  <string name="error_temp_file">一時ファイルの生成でエラーしました。</string>
   <string name="btn_delete_original">オリジナルのファイルを削除します</string>
   <string name="snack_encrypt_filenames_on">ファイル名を暗号化<b>した</b>。</string>
   <string name="snack_encrypt_filenames_off">ファイル名を暗号化<b>していません</b>。</string>
@@ -1416,6 +1373,10 @@
   <string name="error_empty_log">(エラー、空のログ)</string>
   <string name="error_reading_text">復号化のための入力が読めない!</string>
   <string name="error_reading_aosp">データの読み込みに失敗しました。これはAndroidメールクライアントのバグです! (Issue #290)</string>
+  <string name="error_reading_k9">不完全なデータを受信しました。 K-9 メールで、\'完全なメッセージをダウンロード\' を押してみてください!</string>
+  <string name="filename_unknown">不明なファイル名 (クリックすると開きます)</string>
+  <string name="filename_unknown_text">テキスト(クリックして表示)</string>
+  <string name="filename_keys">鍵のバックアップ (クリックしてインポート)</string>
   <string name="intent_show">署名/暗号化した内容を表示</string>
   <string name="intent_share">署名/暗号化した内容を共有</string>
   <string name="view_internal">OpenKeychainで閲覧</string>
@@ -1440,11 +1401,15 @@
   <string name="linked_create_https_2_1">このURIの検証ファイルが作成されました:</string>
   <string name="linked_create_https_2_2">次のステップでは、このファイルを保存して、アップロードしてください。</string>
   <string name="linked_create_https_2_3">ファイルが正しいURIで到達可能であることを確認してください。その後、セットアップを確認します。</string>
+  <string name="linked_create_https_2_4">検証に成功した後、終了ボタンを押して、鍵輪にリンクされたIDを追加し、処理を終了してください。</string>
   <string name="linked_create_twitter_1_1">この種別のリンクしたユーザIDを作成することにより、あなたの鍵を制御するTwitterアカウントにリンクすることができます。</string>
   <string name="linked_create_twitter_1_2">これを行うには、あなたのタイムラインで特定のツイートを公開し、その後、このツイートへのリンクされたIDを作成します。</string>
   <string name="linked_create_twitter_1_3">続行するにはTwitterのスクリーンネームを入力してください。</string>
   <string name="linked_create_twitter_handle">Twitter ハンドル</string>
+  <string name="linked_create_twitter_2_1">ボタンをクリックして、メッセージをツィートしてください!</string>
   <string name="linked_create_twitter_2_2">括弧内のテキストが変更されていない限り、投稿する前にツイートを編集することができます。</string>
+  <string name="linked_create_twitter_2_3">&lt;b&gt;@%s&lt;/b&gt; としてあなたのツィートが公開されたら、検証ボタンをクリックして、あなたのタイムラインをスキャンしてください。</string>
+  <string name="linked_create_twitter_2_4">検証に成功した後、終了ボタンを押して、鍵輪にリンクされたIDを追加し、処理を終了してください。</string>
   <string name="linked_create_verify">検証</string>
   <string name="linked_text_clipboard">テキストをクリップボードにコピーしました</string>
   <string name="linked_verified_https">このウェブサイトと鍵の間のリンクは確実に検証しました。<b>あなたがウェブサイトが本物であると思われる場合</b>、あなたの鍵でこの検証を確認します。</string>
@@ -1459,6 +1424,7 @@
     <item quantity="other">%d 以上の不明なユーザID種別があります</item>
   </plurals>
   <!--Other Linked Identity strings-->
+  <string name="linked_select_1">\'リンクしたユーザID\' は、あなたのPGP鍵をWeb上のリソースに接続します。</string>
   <string name="linked_select_2">種別を選択してください: </string>
   <string name="linked_id_generic_text">このファイルは、長いID %2$s のOpenPGP鍵の所有権を請求しています。\n\n検証のトークン:\n%1$s</string>
   <string name="linked_id_github_text">このGistは私のOpenPGP鍵でリンクされたIDを確認し、このGitHubアカウントにリンクします。\n\n検証のトークン:\n%1$s</string>
@@ -1485,15 +1451,18 @@
   <string name="linked_text_confirming">確認中…</string>
   <string name="linked_ids_more_unknown">%d 以上の不明なユーザID種別</string>
   <string name="title_linked_id_create">リンクしたユーザIDを作成</string>
+  <string name="linked_github_text">この操作で、鍵をあなたのGitHubアカウントにリンクします。\nボタンを押すと続行します。</string>
   <string name="linked_progress_auth_github">GitHubで認証…</string>
   <string name="linked_progress_post_gist">Gistを投稿…</string>
   <string name="linked_progress_update_key">鍵のアップデート…</string>
+  <string name="linked_button_start">GitHubアカウントへリンク</string>
   <string name="linked_error_auth_failed">認証に失敗!</string>
   <string name="linked_error_timeout">接続タイムアウト!</string>
   <string name="linked_error_network">ネットワークエラー!</string>
   <string name="linked_error_http">通信エラー: %s</string>
   <string name="linked_webview_title_github">GitHub認証</string>
-  <string name="linked_gist_description">OpenKeychain API テスト</string>
+  <string name="linked_gist_description">OpenKeychain リンクしたユーザID</string>
+  <string name="linked_empty">GitHub、Twitter、またはその他のWebサイトに鍵をリンク!</string>
   <string name="snack_btn_overwrite">上書</string>
   <string name="backup_code_explanation">バックアップは、バックアップコードで保護されます。先に進む前に、それを書き留めてください!</string>
   <string name="backup_code_enter">バックアップコードを入力してください:</string>
@@ -1513,6 +1482,20 @@
   <string name="share_log_dialog_message">開発者がOpenKeychainのバグを見つけるためにログは非常に参考になりますが、更新された鍵に関するデータなど、潜在的な機密情報が含まれることがあります。この情報を共有しても大丈夫であることを確認してください。</string>
   <string name="share_log_dialog_share_button">共有</string>
   <string name="share_log_dialog_cancel_button">キャンセル</string>
+  <string name="toast_wrong_mimetype">データ種別が正しくありません。テキストを期待しました!</string>
   <string name="toast_no_text">共有データにテキストはありません!</string>
+  <string name="menu_uids_save">保存</string>
+  <string name="title_edit_identities">ユーザIDを編集</string>
+  <string name="title_edit_subkeys">副鍵を編集</string>
   <string name="btn_search_for_query">検索\n\'%s\'</string>
+  <string name="cache_ttl_lock_screen">画面オフまで</string>
+  <string name="cache_ttl_five_minutes">5分間</string>
+  <string name="cache_ttl_one_hour">1時間</string>
+  <string name="cache_ttl_three_hours">3時間</string>
+  <string name="cache_ttl_one_day">1日間</string>
+  <string name="cache_ttl_three_days">3日間</string>
+  <string name="settings_cache_select_three">3つまで選んでください。</string>
+  <string name="settings_cache_ttl_at_least_one">少なくとも項目を1つ選択する必要があります!</string>
+  <string name="settings_cache_ttl_max_three">3つ以上の項目を選択することはできません!</string>
+  <string name="remember">記憶する</string>
 </resources>

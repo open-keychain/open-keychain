@@ -27,12 +27,10 @@
   <string name="title_help">Help</string>
   <string name="title_log_display">Log</string>
   <string name="title_exchange_keys">Sleutels uitwisselen</string>
-  <string name="title_advanced_key_info">Uitgebreide informatie</string>
   <string name="title_delete_secret_key">JOUW sleutel \'%s\' verwijderen?</string>
   <string name="title_manage_my_keys">Beheer mijn sleutels</string>
   <!--section-->
   <string name="section_user_ids">Identiteiten</string>
-  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">Verbonden systeemcontact</string>
   <string name="section_should_you_trust">Zou je deze sleutel vertrouwen?</string>
   <string name="section_proof_details">Bewijs van verificatie</string>
@@ -89,7 +87,6 @@
   <string name="menu_select_all">Alles selecteren</string>
   <string name="menu_export_all_keys">Alle sleutels exporteren</string>
   <string name="menu_update_all_keys">Alle sleutels bijwerken</string>
-  <string name="menu_advanced">Uitgebreide informatie</string>
   <string name="menu_keyserver_add">Toevoegen</string>
   <!--label-->
   <string name="label_message">Tekst</string>
@@ -106,15 +103,12 @@
   <string name="label_file_ascii_armor">ASCII Armor aanzetten</string>
   <string name="label_write_version_header">Laat anderen weten dat je OpenKeychain gebruikt</string>
   <string name="label_write_version_header_summary">Voegt \'OpenKeychain v2.7\' toe aan OpenPGP ondertekeningen, cijfertekst en geëxporteerde sleutels</string>
-  <string name="label_use_num_keypad_for_security_token_pin">Gebruik numeriek toetsenbord voor YubiKey PIN</string>
   <string name="label_asymmetric_from">Ondertekenen met:</string>
-  <string name="label_to">Versleutelen naar:</string>
   <string name="label_delete_after_encryption">Verwijder bestanden na versleuteling</string>
   <string name="label_delete_after_decryption">Verwijderen na ontsleuteling</string>
   <string name="label_encryption_algorithm">Versleutelingsalgoritme</string>
   <string name="label_hash_algorithm">Hashalgoritme</string>
   <string name="label_symmetric">Versleutelen met wachtwoord</string>
-  <string name="label_passphrase_cache_ttl">Onthou tijd</string>
   <string name="label_passphrase_cache_subs">Onthou wachtwoorden per subsleutel</string>
   <string name="label_message_compression">Tekstcompressie</string>
   <string name="label_file_compression">Bestandscompressie</string>
@@ -212,10 +206,6 @@
   <string name="passphrase_must_not_be_empty">Geef een wachtwoord in.</string>
   <string name="passphrase_for">Voer het wachtwoord in voor \'%s\'</string>
   <string name="pin_for">Voer PIN in voor \'%s\'</string>
-  <string name="security_token_pin_for">Voer PIN in om toegang te verkrijgen tot YubiKey voor \'%s\'</string>
-  <string name="security_token_nfc_text">Hou de YubiKey tegen de NFC-aanduiding aan de achterkant van je toestel.</string>
-  <string name="security_token_nfc_wait">Hou de YubiKey tegen de achterkant!</string>
-  <string name="security_token_nfc_finished">Neem de YubiKey nu weg.</string>
   <string name="file_delete_confirmation_title">Oorspronkelijke bestanden verwijderen?</string>
   <string name="file_delete_confirmation">De volgende bestanden zullen worden verwijderd:%s</string>
   <string name="file_delete_successful">%1$d van %2$d bestanden zijn verwijderd.%3$s</string>
@@ -441,10 +431,6 @@
   <string name="intent_send_encrypt">Codeer met OpenKeychain</string>
   <string name="intent_send_decrypt">Ontsleutelen met OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">Uitgebreide informatie weergeven</string>
-  <string name="api_settings_hide_info">Uitgebreide informatie verbergen</string>
-  <string name="api_settings_show_advanced">Uitgebreide instellingen weergeven</string>
-  <string name="api_settings_hide_advanced">Uitgebreide instellingen verbergen</string>
   <string name="api_settings_no_key">Geen sleutel geselecteerd</string>
   <string name="api_settings_select_key">Sleutel selecteren</string>
   <string name="api_settings_create_key">Nieuwe sleutel aanmaken</string>
@@ -457,7 +443,6 @@
   <string name="api_settings_package_name">Pakketnaam</string>
   <string name="api_settings_package_certificate">SHA-256 van Pakketcertificaat</string>
   <string name="api_settings_accounts">Accounts (oude API)</string>
-  <string name="api_settings_advanced">Uitgebreide informatie</string>
   <string name="api_settings_allowed_keys">Toegestane sleutels</string>
   <string name="api_settings_settings">Instellingen</string>
   <string name="api_settings_key">Accountsleutel:</string>
@@ -489,7 +474,6 @@
   <string name="key_list_empty_text1">Geen sleutels gevonden!</string>
   <string name="key_list_filter_show_all">Alle sleutels weergeven</string>
   <!--Key view-->
-  <string name="key_view_action_edit_ids">Sleutel bewerken</string>
   <string name="key_view_action_encrypt">Versleutel tekst</string>
   <string name="key_view_action_encrypt_files">bestanden</string>
   <string name="key_view_action_certify">Sleutel bevestigen</string>
@@ -544,19 +528,10 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Deze identiteit is ingetrokken. Dit kan niet ongedaan gemaakt worden.</string>
   <string name="edit_key_edit_subkey_title">Selecteer een actie!</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>Vervaldatum veranderen</item>
-    <item>Subsleutel intrekken</item>
-    <item>Subsleutel strippen</item>
-    <item>Subsleutel verplaatsen naar YubiKey / smartcard</item>
-  </string-array>
   <string name="edit_key_new_subkey">nieuwe subsleutel</string>
   <string name="edit_key_select_flag">Gelieve minstens een vlag te selecteren!</string>
   <string name="edit_key_error_add_identity">Voeg minstens een identiteit toe!</string>
   <string name="edit_key_error_add_subkey">Voeg minstens een subsleutel toe!</string>
-  <string name="edit_key_error_bad_security_token_algo">Algoritme wordt niet ondersteund door smartcard!</string>
-  <string name="edit_key_error_bad_security_token_size">Sleutelgrootte wordt niet ondersteund door smartcard!</string>
-  <string name="edit_key_error_bad_security_token_stripped">Kan sleutel niet verplaatsen naar smartcard (ofwel gestript ofwel \'doorschakelen-naar-kaart\')!</string>
   <!--Create key-->
   <string name="create_key_empty">Dit veld moet ingevuld worden</string>
   <string name="create_key_passphrases_not_equal">Wachtwoorden komen niet overeen</string>
@@ -823,7 +798,6 @@
   <string name="msg_cr_error_flags_ecdh">Slechte sleutelvlaggen geselecteerd, ECDH kan niet gebruikt worden voor versleuteling!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Bezig met wijzigen van sleutelbos %s</string>
-  <string name="msg_mf_divert">Zal doorschakelen naar smartcard voor versleutelingsbewerkingen</string>
   <string name="msg_mf_error_divert_serial">Het serienummer van een \'doorschakelen-naar-kaart\'-sleutel moet 16 bytes zijn! Dit is een programmeerfout, gelieve een verslag in te dienen!</string>
   <string name="msg_mf_error_encode">Codeeruitzondering!</string>
   <string name="msg_mf_error_fingerprint">Eigenlijke vingerafdruk van sleutel komt niet overeen met verwachte vingerafdruk!</string>
@@ -841,9 +815,7 @@
   <string name="msg_mf_error_sig">Ondertekeningsuitzondering!</string>
   <string name="msg_mf_error_sub_stripped">Kan gestripte subsleutel %s niet wijzigen!</string>
   <string name="msg_mf_error_subkey_missing">Geprobeerd om bewerking uit te voeren op ontbrekende subsleutel %s!</string>
-  <string name="msg_mf_error_conflicting_nfc_commands">Kan sleutel niet tegelijk verplaatsen naar smartcard en een on-card-ondertekening aanmaken.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">Smartcard ondersteunt slechts een slot per sleuteltype</string>
-  <string name="msg_mf_error_invalid_flags_for_keytocard">Ongeldige sleutelvlaggen voor smartcardsleutel</string>
   <string name="msg_mf_master">Bezig met wijzigen van hoofdcertificaten</string>
   <string name="msg_mf_notation_empty">Bezig met toevoegen van leeg notatiepakket</string>
   <string name="msg_mf_notation_pin">Bezig met toevoegen van PIN-notatiepakket</string>
@@ -857,15 +829,12 @@
   <string name="msg_mf_primary_new">Bezig met aanmaken van nieuw certificaat voor nieuwe primaire gebruikers-ID</string>
   <string name="msg_mf_restricted_mode">Veranderen naar beperkte bewerkingsmodus</string>
   <string name="msg_mf_subkey_change">Bezig met wijzigen van subsleutel %s</string>
-  <string name="msg_mf_require_divert">Doorschakelen naar smartcard voor versleutelingsbewerkingen</string>
   <string name="msg_mf_require_passphrase">Wachtwoord vereist voor bewerkingen</string>
   <string name="msg_mf_subkey_new">Bezig met toevoegen van nieuwe subsleutel of type %s</string>
   <string name="msg_mf_subkey_new_id">Nieuwe subsleutel-ID: %s</string>
   <string name="msg_mf_error_past_expiry">Verloopdatum kan niet in het verleden zijn!</string>
   <string name="msg_mf_subkey_revoke">Bezig met intrekken van subsleutel %s</string>
   <string name="msg_mf_subkey_strip">Bezig met strippen van subsleutel %s</string>
-  <string name="msg_mf_keytocard_start">Subsleutel %s wordt verplaatst naar smartcard</string>
-  <string name="msg_mf_keytocard_finish">%1$s verplaatst naar smartcard %2$s</string>
   <string name="msg_mf_success">Sleutelbos succesvol gewijzigd</string>
   <string name="msg_mf_uid_add">Bezig met toevoegen van gebruikers-ID %s</string>
   <string name="msg_mf_uid_primary">Bezig met wijzigen van primaire gebruikers-ID naar %s</string>
@@ -921,7 +890,6 @@
   <string name="msg_pr_error_key_not_found">Sleutel niet gevonden!</string>
   <string name="msg_pr_fetching">Bezig met ophalen van de te wijzigen sleutel (%s)</string>
   <string name="msg_pr_subkey_match">Bezig met promoveren van subsleutel: %s</string>
-  <string name="msg_pr_subkey_nomatch">Subsleutel niet op YubiKey: %s</string>
   <string name="msg_pr_success">Sleutel succesvol gepromoveerd!</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_dummy">Kan sleutelbos niet bewerken met gestripte hoofdsleutel!</string>
@@ -1105,10 +1073,7 @@
   <string name="first_time_text1">Neem je privacy terug met OpenKeychain!</string>
   <string name="first_time_create_key">Mijn sleutel aanmaken</string>
   <string name="first_time_import_key">Sleutel importeren uit bestand</string>
-  <string name="first_time_security_token">Gebruik YubiKey NEO</string>
   <string name="first_time_skip">Setup overslaan</string>
-  <string name="first_time_blank_security_token">Wil je deze lege YubiKey NEO gebruiken met OpenKeychain?\n\nNeem de YubiKey nu weg, je zal gevraagd worden deze terug boven te halen wanneer nodig!</string>
-  <string name="first_time_blank_security_token_yes">Gebruik deze YubiKey</string>
   <string name="backup_all">Alle sleutels + je eigen sleutels</string>
   <string name="backup_public_keys">Alle sleutels</string>
   <!--unsorted-->
@@ -1124,7 +1089,6 @@
   <string name="error_key_not_found">Sleutel niet gevonden!</string>
   <string name="error_key_processing">Fout bij verwerken sleutel!</string>
   <string name="key_stripped">gestript</string>
-  <string name="key_divert">doorschakelen naar smartcard</string>
   <string name="key_no_passphrase">geen wachtwoord</string>
   <string name="key_unavailable">niet beschikbaar</string>
   <string name="secret_cannot_multiple">Je eigen sleutels kunnen enkel individueel verwijderd worden!</string>
@@ -1168,34 +1132,10 @@
   <string name="nfc_wrong_tag">Verkeerde tag. Gelieve opnieuw te proberen.</string>
   <string name="enable_nfc">Gelieve NFC in je instellingen te activeren</string>
   <string name="no_nfc_support">Dit toestel biedt geen ondersteuning voor NFC</string>
-  <string name="nfc_write_successful">Succesvol geschreven op NFC-tag</string>
   <string name="unlocked">Ontgrendeld</string>
   <string name="nfc_settings">Instellingen</string>
-  <string name="snack_security_token_view">Bekijken</string>
-  <string name="snack_security_token_import">Importeren</string>
   <string name="button_bind_key">Sleutel binden</string>
-  <string name="security_token_serial_no">Serienummer: %s</string>
-  <string name="security_token_key_holder">Sleutelhouder:</string>
-  <string name="security_token_status_bound">YubiKey komt overeen en is gebonden aan sleutel</string>
-  <string name="security_token_status_unbound">YubiKey komt overeen en kan worden gebonden aan sleutel</string>
-  <string name="security_token_status_partly">YubiKey komt overeen en is gedeeltelijk gebonden aan sleutel</string>
-  <string name="security_token_create">Hou de YubiKey tegen de achterkant van je toestel.</string>
   <string name="btn_import">Importeren</string>
-  <string name="snack_security_token_other">Andere sleutel opgeslagen op YubiKey!</string>
-  <string name="security_token_error">NFC-fout: %s</string>
-  <plurals name="security_token_error_pin">
-    <item quantity="one">Ongeldige PIN!\n%d resterende poging.</item>
-    <item quantity="other">Ongeldige PIN!\n%d resterende pogingen.</item>
-  </plurals>
-  <string name="security_token_error_terminated">YubiKey in beëindigingsstaat.</string>
-  <string name="security_token_error_wrong_length">Ingevoerde PIN is te kort. PIN\'s zijn minstens 6 tekens lang.</string>
-  <string name="security_token_error_conditions_not_satisfied">Gebruiksvoorwaarden niet voldaan.</string>
-  <string name="security_token_error_security_not_satisfied">Veiligheidsstatus niet voldaan.</string>
-  <string name="security_token_error_authentication_blocked">PIN geblokkeerd na te veel pogingen.</string>
-  <string name="security_token_error_data_not_found">Sleutel of object niet gevonden.</string>
-  <string name="security_token_error_unknown">Onbekende fout</string>
-  <string name="security_token_error_try_again">Opnieuw proberen</string>
-  <string name="error_temp_file">Fout bij aanmaken van tijdelijk bestand.</string>
   <string name="btn_delete_original">Oorspronkelijk bestand verwijderen</string>
   <string name="snack_encrypt_filenames_on">Bestandsnamen <b>zijn</b> versleuteld.</string>
   <string name="snack_encrypt_filenames_off">Bestandsnamen <b>zijn niet</b> versleuteld.</string>

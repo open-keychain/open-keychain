@@ -1,20 +1,20 @@
 [//] : # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
 ## 3.7
-  * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * Prise en charge améliorée d'Android 6 (permissions, intégration dans la sélection des textes)
+  * API : version 10
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
-  * API: Version 9
+  * Sauvegardes chiffrées
+  * Correctifs de sécurité suite à un audit externe de sécurité
+  * Assistant de création de clefs YubiKey NEO
+  * Prise en charge interne MIME de base
+  * Synchronisation automatique des clefs
+  * Fonction expérimentale : relier les clefs aux comptes GitHub, Twitter
+  * Fonction expérimentale : confirmation des clefs par des phrases
+  * Fonction expérimentale : thème foncé
+  * API : version 9
 
 ## 3.5
 
@@ -27,17 +27,17 @@
 
   * Téléchargement anonyme de clefs avec Tor
   * Prise en charge des serveurs mandataires
-  * Meilleur gestion des erreurs Yubikey
+  * Meilleur gestion des erreurs YubiKey
 
 ## 3.3
 
   * Nouvel écran de déchiffrement
   * Déchiffrement simultané de plusieurs fichiers
-  * Meilleure gestion des erreurs Yubikey
+  * Meilleure gestion des erreurs YubiKey
 
 ## 3.2
 
-  * Première version avec prise en charge complète de la Yubikey, proposée dans l'interface utilisateur : modifier les clefs, relier la Yubikey aux clefs...
+  * Première version avec prise en charge complète de la YubiKey, proposée dans l'interface utilisateur : modifier les clefs, relier la YubiKey aux clefs...
   * Conception matérielle
   * Intégration de la lecture de code QR (nouvelles permissions exigées)
   * Amélioration de l'assistant de création de clef
@@ -72,7 +72,7 @@
   * Écran de déchiffrement redessiné
   * Nouveaux agencement et couleurs d'icônes
   * Importation des clefs secrètes corrigée de Symantec Encryption Desktop
-  * Prise en charge expérimentale de la Yubikey : les ID de sous-clefs sont maintenant vérifiés correctement
+  * Prise en charge expérimentale de la YubiKey : les ID de sous-clefs sont maintenant vérifiés correctement
 
 
 ## 3.0.1
@@ -91,13 +91,13 @@
   * Corrigé - Certificats de révocation des ID utilisateurs
   * Nouvelle recherche nuagique (dans les serveurs traditionnels et dans keybase.io)
   * Prise en charge du dépouillement des clefs dans OpenKeychain
-  * Prise en charge expérimentale de la Yubikey : prise en charge de la génération de signature et le déchiffrement
+  * Prise en charge expérimentale de la YubiKey : prise en charge de la génération de signature et le déchiffrement
 
 
 ## 2.9.2
 
   * Correctif - Clefs brisées dans 2.9.1
-  * Prise en charge expérimentale de la Yubikey : le déchiffrement fonctionne maintenant avec l'API
+  * Prise en charge expérimentale de la YubiKey : le déchiffrement fonctionne maintenant avec l'API
 
 
 ## 2.9.1
@@ -106,7 +106,7 @@
   * Correctif - Gestion des drapeaux de clefs (prend maintenant en charge les clefs Mailvelope 0.7)
   * Gestion des phrases de passe améliorée
   * Partage de clefs par SafeSlinger
-  * Prise en charge expérimentale de la Yubikey : préférence pour permettre d'autres NIP, seule la signature par l'API OpenPGP fonctionne actuellement, mais pas dans OpenKeychain
+  * Prise en charge expérimentale de la YubiKey : préférence pour permettre d'autres NIP, seule la signature par l'API OpenPGP fonctionne actuellement, mais pas dans OpenKeychain
   * Correctif - Utilisation de clefs dépouillées
   * SHA256 par défaut pour la compatibilité
   * L'API des intentions a changé, voir https://github.com/open-keychain/open-keychain/wiki/Intent-API
@@ -117,7 +117,7 @@
 
   * Correction des plantages présents dans v2.8
   * Prise en charge expérimentale CCE
-  * Prise en charge expérimentale de la Yubikey : signature seulement avec les clefs importées
+  * Prise en charge expérimentale de la YubiKey : signature seulement avec les clefs importées
 
 
 ## 2.8

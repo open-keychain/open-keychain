@@ -1,15 +1,15 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 ## 3.7
-  * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * Dukungan Android 6 yang lebih baik (perizinan, intregrasi ke seleksi tulisan)
+  * API: Versi 10
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
+  * Backup yang terenkripsi
+  * Perbaikan keamanan berdasarkan audit keamanan eksternal
   * YubiKey NEO key creation wizard
-  * Basic internal MIME support
+  * Dukungan basic internal MIME
   * Automatic key synchronization
   * Experimental feature: link keys to Github, Twitter accounts
   * Experimental feature: key confirmation via phrases

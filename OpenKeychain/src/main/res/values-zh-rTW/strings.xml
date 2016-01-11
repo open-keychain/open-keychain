@@ -29,12 +29,10 @@
   <string name="title_help">說明</string>
   <string name="title_log_display">紀錄</string>
   <string name="title_exchange_keys">交換金鑰</string>
-  <string name="title_advanced_key_info">延伸資訊</string>
   <string name="title_delete_secret_key">刪除您的金鑰 \'%s\'？</string>
   <string name="title_manage_my_keys">管理我的金鑰</string>
   <!--section-->
   <string name="section_user_ids">身份</string>
-  <string name="section_security_token">YubiKey</string>
   <string name="section_linked_system_contact">已關聯帳戶</string>
   <string name="section_should_you_trust">您信任這把金鑰嗎？</string>
   <string name="section_keys">子金鑰</string>
@@ -89,7 +87,6 @@
   <string name="menu_select_all">全選</string>
   <string name="menu_export_all_keys">匯出所有金鑰</string>
   <string name="menu_update_all_keys">更新所有金鑰</string>
-  <string name="menu_advanced">附加訊息</string>
   <string name="menu_keyserver_add">新增</string>
   <!--label-->
   <string name="label_message">文字</string>
@@ -105,15 +102,12 @@
   <string name="label_file_ascii_armor">以ASCII輸出</string>
   <string name="label_write_version_header">讓別人知道我在使用OpenKeychain</string>
   <string name="label_write_version_header_summary">在簽名、密文與匯出的金鑰裡寫入\'OpenKeychain v2.7\'</string>
-  <string name="label_use_num_keypad_for_security_token_pin">輸入 YubiKey PIN 時使用數字鍵盤</string>
   <string name="label_asymmetric_from">簽名：</string>
-  <string name="label_to">加密給:</string>
   <string name="label_delete_after_encryption">加密後刪除檔案</string>
   <string name="label_delete_after_decryption">解密後刪除檔案</string>
   <string name="label_encryption_algorithm">加密演算法</string>
   <string name="label_hash_algorithm">雜湊演算法</string>
   <string name="label_symmetric">透過密碼加密</string>
-  <string name="label_passphrase_cache_ttl">快取保存時間</string>
   <string name="label_message_compression">文字壓縮</string>
   <string name="label_file_compression">檔案壓縮</string>
   <string name="label_keyservers">選擇OpenPGP金鑰伺服器</string>
@@ -210,7 +204,6 @@
   <string name="passphrase_must_not_be_empty">請輸入密碼。</string>
   <string name="passphrase_for">輸入 %s 的密碼</string>
   <string name="pin_for">輸入 \'%s\' 的 PIN</string>
-  <string name="security_token_pin_for">輸入 PIN 來存取 \'%s\' 的 YubiKey</string>
   <string name="file_delete_confirmation_title">刪除原始檔案？</string>
   <string name="file_delete_confirmation">下列的檔案將會被刪除：%s</string>
   <string name="file_delete_successful">%1$d 之 %2$d 的檔案已經被刪除。%3$s</string>
@@ -432,10 +425,6 @@
   <string name="intent_send_encrypt">使用OpenKeychain加密</string>
   <string name="intent_send_decrypt">使用OpenKeychain解密</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">顯示延伸資訊</string>
-  <string name="api_settings_hide_info">隱藏延伸資訊</string>
-  <string name="api_settings_show_advanced">顯示延伸設定</string>
-  <string name="api_settings_hide_advanced">隱藏延伸設定</string>
   <string name="api_settings_no_key">沒有選擇金鑰</string>
   <string name="api_settings_select_key">選擇金鑰</string>
   <string name="api_settings_create_key">建立新金鑰</string>
@@ -448,7 +437,6 @@
   <string name="api_settings_package_name">打包名稱</string>
   <string name="api_settings_package_certificate">封裝證書的SHA-256</string>
   <string name="api_settings_accounts">帳戶(舊版API)</string>
-  <string name="api_settings_advanced">延伸資訊</string>
   <string name="api_settings_allowed_keys">允許的金鑰</string>
   <string name="api_settings_settings">設定</string>
   <string name="api_settings_key">帳戶金鑰：</string>
@@ -479,7 +467,6 @@
   <!--Key list-->
   <string name="key_list_empty_text1">找不到金鑰！</string>
   <!--Key view-->
-  <string name="key_view_action_edit_ids">編輯金鑰</string>
   <string name="key_view_action_encrypt">加密文字</string>
   <string name="key_view_action_encrypt_files">檔案</string>
   <string name="key_view_action_share_with">分享...</string>
@@ -526,19 +513,10 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">這個身分識別已被撤銷。此動作無法還原。</string>
   <string name="edit_key_edit_subkey_title">選擇一個動作！</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>變更效期</item>
-    <item>撤銷子金鑰</item>
-    <item>卸除子金鑰</item>
-    <item>移動子金鑰至YubiKey / 智慧卡</item>
-  </string-array>
   <string name="edit_key_new_subkey">新增子金鑰</string>
   <string name="edit_key_select_flag">請至少選擇一個用途！</string>
   <string name="edit_key_error_add_identity">新增至少一組身分識別！</string>
   <string name="edit_key_error_add_subkey">新增至少一組子金鑰！</string>
-  <string name="edit_key_error_bad_security_token_algo">智慧卡不支援該算法！</string>
-  <string name="edit_key_error_bad_security_token_size">智慧卡不支援該金鑰長度！</string>
-  <string name="edit_key_error_bad_security_token_stripped">無法移動金鑰至智慧卡(已移動或被卸除)！</string>
   <!--Create key-->
   <string name="create_key_empty">必填欄位</string>
   <string name="create_key_passphrases_not_equal">密碼不相符</string>
@@ -692,7 +670,6 @@
   <!--First Time-->
   <string name="first_time_create_key">建立金鑰</string>
   <string name="first_time_import_key">從檔案匯入金鑰</string>
-  <string name="first_time_security_token">使用YubiKey NEO</string>
   <string name="first_time_skip">跳過設置</string>
   <!--unsorted-->
   <string name="empty_certs">這把金鑰未經過認證</string>
@@ -717,7 +694,6 @@
   <string name="nfc_wrong_tag">錯誤的標籤。請再試一次。</string>
   <string name="enable_nfc">請在您的設定中啓用 NFC</string>
   <string name="no_nfc_support">該裝置不支援 NFC</string>
-  <string name="nfc_write_successful">成功寫入 NFC 標籤</string>
   <string name="unlocked">解鎖</string>
   <string name="nfc_settings">設定</string>
   <!--Other Linked Identity strings-->
