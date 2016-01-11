@@ -1,8 +1,16 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 3.8
+
+  * Redesigned key editing
+  * Choose remember time individually when entering passwords
+
+
 ## 3.7
+
   * Improved Android 6 support (permissions, integration into text selection)
   * API: Version 10
+
 
 ## 3.6
 
@@ -16,6 +24,7 @@
   * Experimental feature: dark theme
   * API: Version 9
 
+
 ## 3.5
 
   *可以在刪除金鑰時撤銷金鑰
@@ -23,17 +32,20 @@
   *修正：在OpenKeychain第一次執行精靈成功後不自動關閉程式
   * API: Version 8
 
+
 ## 3.4
 
   * Anonymous key download over Tor
   *支援代理伺服器
   * Better YubiKey error handling
 
+
 ## 3.3
 
   *新的解密畫面
   *可同時解密多個檔案
   * Better handling of YubiKey errors
+
 
 ## 3.2
 

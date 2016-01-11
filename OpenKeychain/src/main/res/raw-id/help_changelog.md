@@ -1,8 +1,16 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 3.8
+
+  * Redesigned key editing
+  * Choose remember time individually when entering passwords
+
+
 ## 3.7
+
   * Dukungan Android 6 yang lebih baik (perizinan, intregrasi ke seleksi tulisan)
   * API: Versi 10
+
 
 ## 3.6
 
@@ -16,6 +24,7 @@
   * Experimental feature: dark theme
   * API: Version 9
 
+
 ## 3.5
 
   * Key revocation on key deletion
@@ -23,17 +32,20 @@
   * Fix: Don't close OpenKeychain after first time wizard succeeds
   * API: Version 8
 
+
 ## 3.4
 
   * Anonymous key download over Tor
   * Proxy support
   * Better YubiKey error handling
 
+
 ## 3.3
 
   * New decryption screen
   * Decryption of multiple files at once
   * Better handling of YubiKey errors
+
 
 ## 3.2
 

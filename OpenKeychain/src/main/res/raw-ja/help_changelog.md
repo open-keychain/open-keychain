@@ -1,8 +1,16 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 3.8
+
+  * Redesigned key editing
+  * Choose remember time individually when entering passwords
+
+
 ## 3.7
+
   * Android 6 サポートの改善 (アクセス許可、テキスト選択への統合)
   * API: Version 10
+
 
 ## 3.6
 
@@ -16,6 +24,7 @@
   * 試験的機能: ダークテーマ
   * API: Version 9
 
+
 ## 3.5
 
   * 鍵削除時の鍵の破棄
@@ -23,17 +32,20 @@
   * 修正: OpenKeychainの初回ウィザード成功後クローズされない問題
   * API: Version 8
 
+
 ## 3.4
 
   * Tor経由での匿名鍵ダウンロード
   * プロキシのサポート
   * よりよりYubiKeyのエラーの扱い
 
+
 ## 3.3
 
   * 新しい復号画面
   * 一度に複数のファイルの復号
   * YubiKeyのエラーについてよりよい扱い
+
 
 ## 3.2
 

@@ -1,8 +1,16 @@
 [//]: # (Observe: ¡Por favor ingrese cada enunciado en su propia línea, Transifex coloca cada línea en su propio campo de traducción!)
 
+## 3.8
+
+  * Redesigned key editing
+  * Choose remember time individually when entering passwords
+
+
 ## 3.7
+
   * Improved Android 6 support (permissions, integration into text selection)
   * API: Version 10
+
 
 ## 3.6
 
@@ -16,6 +24,7 @@
   * Característica experimentar: tema oscuro
   * API: Versión 9
 
+
 ## 3.5
 
   * Revocación de clave al eliminarla
@@ -23,17 +32,20 @@
   * Mejora: No cerrar OpenKeychain después de finalizar el asistente de primera vez
   * API: Versión 8
 
+
 ## 3.4
 
   * Anonymous key download over Tor
   * Soporte de proxy
   * Better YubiKey error handling
 
+
 ## 3.3
 
   * Nueva pantalla de descifrado
   * Descifrado de múltiples archivos a la vez
   * Better handling of YubiKey errors
+
 
 ## 3.2
 

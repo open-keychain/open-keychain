@@ -1,8 +1,16 @@
 [//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
 
+## 3.8
+
+  * Redesigned key editing
+  * Choose remember time individually when entering passwords
+
+
 ## 3.7
+
   * Hobetuta Android 6 sostengua (baimenak, baterapena idazki hautapenean)
   * API: 10 bertsioa
+
 
 ## 3.6
 
@@ -16,6 +24,7 @@
   * Ezaugarri esperimentala: azalgai iluna
   * API: 9 bertsioa
 
+
 ## 3.5
 
   * Giltza ukapena giltza ezabatzean
@@ -23,17 +32,20 @@
   * Zuzenduta: OpenKeychain ez da isten laguntzailearen lehen jardunaren ondoren
   * API: 8 bertsioa
 
+
 ## 3.4
 
   * Izengabeko giltza jeisketa Tor gain
   * Proxy sostengua
   * YubiKey akats kudeaketa hobea
 
+
 ## 3.3
 
   * Azalpen ikusleiho berria
   * Agiri ugariren azalpena aldiberean
   * YubiKey akatsen kudeaketa hobea
+
 
 ## 3.2
 

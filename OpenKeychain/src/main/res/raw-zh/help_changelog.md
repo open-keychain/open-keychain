@@ -1,8 +1,16 @@
 [//]: # (备注: 请把每个句子保持在它自己的一行里，Transifex会把每一行放到他应该的位置！)
 
+## 3.8
+
+  * Redesigned key editing
+  * Choose remember time individually when entering passwords
+
+
 ## 3.7
+
   * 改善对安卓6的支持 (权限，文本选择)
   * API: 第10版
+
 
 ## 3.6
 
@@ -16,6 +24,7 @@
   * 实验性功能：深色主题
   * API: 第9版
 
+
 ## 3.5
 
   * 密钥删除同时撤销
@@ -23,17 +32,20 @@
   * 修复: 第一次向导成功后OpenKeychain不关闭
   * API: 第8版
 
+
 ## 3.4
 
   * 通过Tor下载匿名密钥
   * 支持代理
   * 更好的YubiKey错误处理
 
+
 ## 3.3
 
   * 新的解密屏幕
   * 一次解密多个文件
   * 更好的YubiKey错误处理机制
+
 
 ## 3.2
 

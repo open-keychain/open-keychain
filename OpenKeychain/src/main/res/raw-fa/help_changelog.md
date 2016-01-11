@@ -1,8 +1,16 @@
 [//]: # (تذکر: هر جمله در همان خط!)
 
+## 3.8
+
+  * Redesigned key editing
+  * Choose remember time individually when entering passwords
+
+
 ## 3.7
+
   * Improved Android 6 support (permissions, integration into text selection)
   * API: Version 10
+
 
 ## 3.6
 
@@ -16,6 +24,7 @@
   * Experimental feature: dark theme
   * API: Version 9
 
+
 ## 3.5
 
   * Key revocation on key deletion
@@ -23,17 +32,20 @@
   * Fix: Don't close OpenKeychain after first time wizard succeeds
   * API: Version 8
 
+
 ## 3.4
 
   * دانلود کلید به صورت مخفی توسط Tor
   * پشتیبانی از پراکسی
   * مدیریت بهترِ خطاهای کلید Yubi
 
+
 ## 3.3
 
   * New decryption screen
   * Decryption of multiple files at once
   * Better handling of YubiKey errors
+
 
 ## 3.2
 
