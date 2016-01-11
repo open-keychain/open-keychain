@@ -7,6 +7,11 @@ file_filter = OpenKeychain/src/main/res/values-<lang>/strings.xml
 source_file = OpenKeychain/src/main/res/values/strings.xml
 source_lang = en
 
+[open-keychain.advanced]
+file_filter = OpenKeychain/src/main/res/raw-<lang>/advanced.md
+source_file = OpenKeychain/src/main/res/raw/advanced.md
+source_lang = en
+
 [open-keychain.help-about]
 file_filter = OpenKeychain/src/main/res/raw-<lang>/help_about.md
 source_file = OpenKeychain/src/main/res/raw/help_about.md
