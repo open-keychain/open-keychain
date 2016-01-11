@@ -80,7 +80,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:paddingRight="10dp"
+                android:paddingRight="4dp"
                 android:src="@drawable/ic_chevron_right_grey_24dp" />
 
             <TextView

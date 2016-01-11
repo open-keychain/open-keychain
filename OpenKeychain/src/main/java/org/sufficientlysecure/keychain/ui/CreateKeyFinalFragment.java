@@ -17,16 +17,15 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-
-import java.util.Date;
-import java.util.Iterator;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -54,6 +53,9 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.util.Date;
+import java.util.Iterator;
+
 public class CreateKeyFinalFragment extends Fragment {
 
     public static final int REQUEST_EDIT_KEY = 0x00008007;
@@ -63,8 +65,6 @@ public class CreateKeyFinalFragment extends Fragment {
     CheckBox mUploadCheckbox;
     View mBackButton;
     View mCreateButton;
-    TextView mEditText;
-    View mEditButton;
 
     SaveKeyringParcel mSaveKeyringParcel;
 
@@ -96,8 +96,6 @@ public class CreateKeyFinalFragment extends Fragment {
         mUploadCheckbox = (CheckBox) view.findViewById(R.id.create_key_upload);
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mCreateButton = view.findViewById(R.id.create_key_next_button);
-        mEditText = (TextView) view.findViewById(R.id.create_key_edit_text);
-        mEditButton = view.findViewById(R.id.create_key_edit_button);
 
         CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
 
@@ -135,21 +133,44 @@ public class CreateKeyFinalFragment extends Fragment {
             }
         });
 
-        mEditButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent edit = new Intent(getActivity(), EditKeyActivity.class);
-                edit.putExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL, mSaveKeyringParcel);
-                startActivityForResult(edit, REQUEST_EDIT_KEY);
-            }
-        });
-
         // If this is a debug build, don't upload by default
         if (Constants.DEBUG) {
             mUploadCheckbox.setChecked(false);
         }
 
         return view;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
+
+        MenuItem editItem = menu.findItem(R.id.menu_create_key_edit);
+        editItem.setEnabled(!createKeyActivity.mCreateSecurityToken);
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.create_key_final, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.menu_create_key_edit:
+                Intent edit = new Intent(getActivity(), EditKeyActivity.class);
+                edit.putExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL, mSaveKeyringParcel);
+                startActivityForResult(edit, REQUEST_EDIT_KEY);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -168,7 +189,6 @@ public class CreateKeyFinalFragment extends Fragment {
             case REQUEST_EDIT_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
                     mSaveKeyringParcel = data.getParcelableExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL);
-                    mEditText.setText(R.string.create_key_custom);
                 }
                 break;
             }
@@ -184,6 +204,9 @@ public class CreateKeyFinalFragment extends Fragment {
 
         CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
 
+        // We have a menu item to show in action bar.
+        setHasOptionsMenu(true);
+
         if (mSaveKeyringParcel == null) {
             mSaveKeyringParcel = new SaveKeyringParcel();
 
@@ -194,8 +217,6 @@ public class CreateKeyFinalFragment extends Fragment {
                         2048, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
                 mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
                         2048, null, KeyFlags.AUTHENTICATION, 0L));
-                mEditText.setText(R.string.create_key_custom);
-                mEditButton.setEnabled(false);
 
                 // use empty passphrase
                 mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase(), null);
@@ -333,7 +354,7 @@ public class CreateKeyFinalFragment extends Fragment {
         // define subkeys that should be moved to the card
         Cursor cursor = activity.getContentResolver().query(
                 KeychainContract.Keys.buildKeysUri(changeKeyringParcel.mMasterKeyId),
-                new String[] { KeychainContract.Keys.KEY_ID, }, null, null, null
+                new String[]{KeychainContract.Keys.KEY_ID,}, null, null, null
         );
         try {
             while (cursor != null && cursor.moveToNext()) {
