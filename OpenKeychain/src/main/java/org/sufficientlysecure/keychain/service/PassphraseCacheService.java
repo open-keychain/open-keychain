@@ -365,6 +365,8 @@ public class PassphraseCacheService extends Service {
                 CachedPassphrase cachedPassphrase;
                 if (timeoutTtl == 0L) {
                     cachedPassphrase = CachedPassphrase.getPassphraseLock(passphrase, primaryUserID);
+                } else if (timeoutTtl >= Integer.MAX_VALUE) {
+                    cachedPassphrase = CachedPassphrase.getPassphraseNoTimeout(passphrase, primaryUserID);
                 } else {
                     cachedPassphrase = CachedPassphrase.getPassphraseTtlTimeout(passphrase, primaryUserID, timeoutTtl);
 
@@ -427,7 +429,10 @@ public class PassphraseCacheService extends Service {
 
                     // Stop all ttl alarms
                     for (int i = 0; i < mPassphraseCache.size(); i++) {
-                        am.cancel(buildIntent(this, mPassphraseCache.keyAt(i)));
+                        CachedPassphrase cachedPassphrase = mPassphraseCache.valueAt(i);
+                        if (cachedPassphrase.mTimeoutMode == TimeoutMode.TTL) {
+                            am.cancel(buildIntent(this, mPassphraseCache.keyAt(i)));
+                        }
                     }
                     mPassphraseCache.clear();
 
