@@ -36,7 +36,7 @@ import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenNfcActivity;
+import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -48,7 +48,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ImportKeysActivity extends BaseSecurityTokenNfcActivity
+public class ImportKeysActivity extends BaseActivity
         implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
     public static final String ACTION_IMPORT_KEY = OpenKeychainIntents.IMPORT_KEY;
@@ -116,14 +116,6 @@ public class ImportKeysActivity extends BaseSecurityTokenNfcActivity
     @Override
     protected void initLayout() {
         setContentView(R.layout.import_keys_activity);
-    }
-
-    @Override
-    public void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        // new Intent, so onResumeFragments needs to handle it with handleActions(Intent)
-        mFreshIntent = true;
     }
 
     @Override
@@ -409,12 +401,6 @@ public class ImportKeysActivity extends BaseSecurityTokenNfcActivity
             mOperationHelper.cryptoOperation();
 
         }
-    }
-
-    @Override
-    protected void onNfcPostExecute() {
-        // either way, finish after NFC AsyncTask
-        finish();
     }
 
     @Override

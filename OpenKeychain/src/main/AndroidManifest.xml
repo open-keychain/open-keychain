@@ -94,6 +94,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Keychain.Light">
+        <!-- singleTop for NFC dispatch, see SecurityTokenOperationActivity -->
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -105,6 +106,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- singleTop for NFC dispatch, see SecurityTokenOperationActivity -->
         <activity
             android:name=".ui.CreateKeyActivity"
             android:allowTaskReparenting="true"
@@ -137,7 +139,7 @@
             android:name=".ui.linked.LinkedIdWizard"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_linked_create"
-            android:parentActivityName=".ui.ViewKeyActivity"/>
+            android:parentActivityName=".ui.ViewKeyActivity" />
         <!-- NOTE: Dont use configChanges for QR Code view! We use a different layout for landscape -->
         <activity
             android:name=".ui.QrCodeViewActivity"
@@ -536,8 +538,7 @@
         <activity
             android:name=".ui.ImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_import_keys"
-            android:launchMode="singleTop">
+            android:label="@string/title_import_keys">
 
             <!-- VIEW with mimeType: Allows to import keys (attached to emails) from email apps  -->
             <intent-filter android:label="@string/intent_import_key">
@@ -796,18 +797,15 @@
         <activity
             android:name=".remote.ui.RemoteServiceActivity"
             android:exported="false"
-            android:label="@string/app_name"
-            android:launchMode="singleTop" />
+            android:label="@string/app_name" />
         <activity
             android:name=".remote.ui.SelectSignKeyIdActivity"
             android:exported="false"
-            android:label="@string/app_name"
-            android:launchMode="singleTop" />
+            android:label="@string/app_name" />
         <activity
             android:name=".remote.ui.SelectAllowedKeysActivity"
             android:exported="false"
-            android:label="@string/app_name"
-            android:launchMode="singleTop" />
+            android:label="@string/app_name" />
         <activity
             android:name=".remote.ui.AppSettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
