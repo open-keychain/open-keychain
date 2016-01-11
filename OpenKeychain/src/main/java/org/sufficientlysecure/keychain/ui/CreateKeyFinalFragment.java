@@ -27,7 +27,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -65,6 +67,8 @@ public class CreateKeyFinalFragment extends Fragment {
     CheckBox mUploadCheckbox;
     View mBackButton;
     View mCreateButton;
+    View mCustomKeyLayout;
+    Button mCustomKeyRevertButton;
 
     SaveKeyringParcel mSaveKeyringParcel;
 
@@ -96,6 +100,8 @@ public class CreateKeyFinalFragment extends Fragment {
         mUploadCheckbox = (CheckBox) view.findViewById(R.id.create_key_upload);
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mCreateButton = view.findViewById(R.id.create_key_next_button);
+        mCustomKeyLayout = view.findViewById(R.id.custom_key_layout);
+        mCustomKeyRevertButton = (Button) view.findViewById(R.id.revert_key_configuration);
 
         CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
 
@@ -120,6 +126,13 @@ public class CreateKeyFinalFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 createKey();
+            }
+        });
+
+        mCustomKeyRevertButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                keyConfigRevertToDefault();
             }
         });
 
@@ -188,7 +201,9 @@ public class CreateKeyFinalFragment extends Fragment {
         switch (requestCode) {
             case REQUEST_EDIT_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
-                    mSaveKeyringParcel = data.getParcelableExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL);
+                    SaveKeyringParcel customKeyConfiguration =
+                            data.getParcelableExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL);
+                    keyConfigUseCustom(customKeyConfiguration);
                 }
                 break;
             }
@@ -198,54 +213,29 @@ public class CreateKeyFinalFragment extends Fragment {
         }
     }
 
+    public void keyConfigUseCustom(SaveKeyringParcel customKeyConfiguration) {
+        mSaveKeyringParcel = customKeyConfiguration;
+        mCustomKeyLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void keyConfigRevertToDefault() {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        mSaveKeyringParcel = createDefaultSaveKeyringParcel((CreateKeyActivity) activity);
+        mCustomKeyLayout.setVisibility(View.GONE);
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
 
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
         if (mSaveKeyringParcel == null) {
-            mSaveKeyringParcel = new SaveKeyringParcel();
-
-            if (createKeyActivity.mCreateSecurityToken) {
-                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                        2048, null, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER, 0L));
-                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                        2048, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
-                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                        2048, null, KeyFlags.AUTHENTICATION, 0L));
-
-                // use empty passphrase
-                mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase(), null);
-            } else {
-                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                        4096, null, KeyFlags.CERTIFY_OTHER, 0L));
-                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                        4096, null, KeyFlags.SIGN_DATA, 0L));
-                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                        4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
-
-                mSaveKeyringParcel.mNewUnlock = createKeyActivity.mPassphrase != null
-                        ? new ChangeUnlockParcel(createKeyActivity.mPassphrase, null)
-                        : null;
-            }
-            String userId = KeyRing.createUserId(
-                    new KeyRing.UserId(createKeyActivity.mName, createKeyActivity.mEmail, null)
-            );
-            mSaveKeyringParcel.mAddUserIds.add(userId);
-            mSaveKeyringParcel.mChangePrimaryUserId = userId;
-            if (createKeyActivity.mAdditionalEmails != null
-                    && createKeyActivity.mAdditionalEmails.size() > 0) {
-                for (String email : createKeyActivity.mAdditionalEmails) {
-                    String thisUserId = KeyRing.createUserId(
-                            new KeyRing.UserId(createKeyActivity.mName, email, null)
-                    );
-                    mSaveKeyringParcel.mAddUserIds.add(thisUserId);
-                }
-            }
+            keyConfigRevertToDefault();
         }
 
         // handle queued actions
@@ -274,6 +264,49 @@ public class CreateKeyFinalFragment extends Fragment {
             }
         }
 
+    }
+
+    private static SaveKeyringParcel createDefaultSaveKeyringParcel(CreateKeyActivity createKeyActivity) {
+        SaveKeyringParcel saveKeyringParcel = new SaveKeyringParcel();
+
+        if (createKeyActivity.mCreateSecurityToken) {
+            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                    2048, null, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER, 0L));
+            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                    2048, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                    2048, null, KeyFlags.AUTHENTICATION, 0L));
+
+            // use empty passphrase
+            saveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase(), null);
+        } else {
+            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                    4096, null, KeyFlags.CERTIFY_OTHER, 0L));
+            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                    4096, null, KeyFlags.SIGN_DATA, 0L));
+            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                    4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+
+            saveKeyringParcel.mNewUnlock = createKeyActivity.mPassphrase != null
+                    ? new ChangeUnlockParcel(createKeyActivity.mPassphrase, null)
+                    : null;
+        }
+        String userId = KeyRing.createUserId(
+                new KeyRing.UserId(createKeyActivity.mName, createKeyActivity.mEmail, null)
+        );
+        saveKeyringParcel.mAddUserIds.add(userId);
+        saveKeyringParcel.mChangePrimaryUserId = userId;
+        if (createKeyActivity.mAdditionalEmails != null
+                && createKeyActivity.mAdditionalEmails.size() > 0) {
+            for (String email : createKeyActivity.mAdditionalEmails) {
+                String thisUserId = KeyRing.createUserId(
+                        new KeyRing.UserId(createKeyActivity.mName, email, null)
+                );
+                saveKeyringParcel.mAddUserIds.add(thisUserId);
+            }
+        }
+
+        return saveKeyringParcel;
     }
 
     private void createKey() {
