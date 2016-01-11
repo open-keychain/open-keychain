@@ -14,7 +14,7 @@
         android:title="@string/section_passphrase_cache" />
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$ProxyPrefsFragment"
-        android:icon="@drawable/ic_settings_ethernet_black_24dp"
+        android:icon="@drawable/ic_tor_black_24dp"
         android:summary="@string/section_proxy_settings_summary"
         android:title="@string/section_proxy_settings" />
     <header
