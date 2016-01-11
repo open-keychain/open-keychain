@@ -61,10 +61,11 @@ public class ViewKeyAdvActivity extends BaseActivity implements
     protected Uri mDataUri;
 
     public static final String EXTRA_SELECTED_TAB = "selected_tab";
-    public static final int TAB_SHARE = 0;
-    public static final int TAB_IDENTITIES = 1;
-    public static final int TAB_SUBKEYS = 2;
-    public static final int TAB_CERTS = 3;
+    public static final int TAB_START = 0;
+    public static final int TAB_SHARE = 1;
+    public static final int TAB_IDENTITIES = 2;
+    public static final int TAB_SUBKEYS = 3;
+    public static final int TAB_CERTS = 4;
 
     // view
     private ViewPager mViewPager;
@@ -126,31 +127,35 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         mViewPager.setAdapter(mTabAdapter);
 
         // keep track which of these are action mode enabled!
-        mTabsWithActionMode = new boolean[4];
+        mTabsWithActionMode = new boolean[5];
+
+        mTabAdapter.addTab(ViewKeyAdvStartFragment.class,
+                null, getString(R.string.key_view_tab_start));
+        mTabsWithActionMode[0] = false;
 
         Bundle shareBundle = new Bundle();
         shareBundle.putParcelable(ViewKeyAdvShareFragment.ARG_DATA_URI, dataUri);
         mTabAdapter.addTab(ViewKeyAdvShareFragment.class,
                 shareBundle, getString(R.string.key_view_tab_share));
-        mTabsWithActionMode[0] = false;
+        mTabsWithActionMode[1] = false;
 
         Bundle userIdsBundle = new Bundle();
         userIdsBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
         mTabAdapter.addTab(ViewKeyAdvUserIdsFragment.class,
                 userIdsBundle, getString(R.string.section_user_ids));
-        mTabsWithActionMode[1] = true;
+        mTabsWithActionMode[2] = true;
 
         Bundle keysBundle = new Bundle();
         keysBundle.putParcelable(ViewKeyAdvSubkeysFragment.ARG_DATA_URI, dataUri);
         mTabAdapter.addTab(ViewKeyAdvSubkeysFragment.class,
                 keysBundle, getString(R.string.key_view_tab_keys));
-        mTabsWithActionMode[2] = true;
+        mTabsWithActionMode[3] = true;
 
         Bundle certsBundle = new Bundle();
         certsBundle.putParcelable(ViewKeyAdvCertsFragment.ARG_DATA_URI, dataUri);
         mTabAdapter.addTab(ViewKeyAdvCertsFragment.class,
                 certsBundle, getString(R.string.key_view_tab_certs));
-        mTabsWithActionMode[3] = false;
+        mTabsWithActionMode[4] = false;
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
@@ -158,7 +163,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
         // switch to tab selected by extra
         Intent intent = getIntent();
-        int switchToTab = intent.getIntExtra(EXTRA_SELECTED_TAB, TAB_SHARE);
+        int switchToTab = intent.getIntExtra(EXTRA_SELECTED_TAB, TAB_START);
         mViewPager.setCurrentItem(switchToTab);
 
     }
