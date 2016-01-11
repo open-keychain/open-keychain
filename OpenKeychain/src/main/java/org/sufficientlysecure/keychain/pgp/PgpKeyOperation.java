@@ -460,6 +460,11 @@ public class PgpKeyOperation {
             }
         }
 
+        if (isDummy(masterSecretKey) && ! saveParcel.isRestrictedOnly()) {
+            log.add(LogType.MSG_EK_ERROR_DUMMY, indent);
+            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+        }
+
         if (isDummy(masterSecretKey) || saveParcel.isRestrictedOnly()) {
             log.add(LogType.MSG_MF_RESTRICTED_MODE, indent);
             return internalRestricted(sKR, saveParcel, log, indent + 1);
@@ -1128,7 +1133,7 @@ public class PgpKeyOperation {
 
         progress(R.string.progress_modify, 0);
 
-        // Make sure the saveParcel includes only operations available without passphrae!
+        // Make sure the saveParcel includes only operations available without passphrase!
         if (!saveParcel.isRestrictedOnly()) {
             log.add(LogType.MSG_MF_ERROR_RESTRICTED, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
