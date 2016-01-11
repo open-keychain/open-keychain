@@ -322,11 +322,13 @@ public class Preferences {
         static {
             HashMap<Integer,Integer> cacheTtlNames = new HashMap<>();
             cacheTtlNames.put(0, R.string.cache_ttl_lock_screen);
-            cacheTtlNames.put(60 * 5, R.string.cache_ttl_five_minutes);
+            cacheTtlNames.put(60 * 10, R.string.cache_ttl_ten_minutes);
+            cacheTtlNames.put(60 * 30, R.string.cache_ttl_thirty_minutes);
             cacheTtlNames.put(60 * 60, R.string.cache_ttl_one_hour);
             cacheTtlNames.put(60 * 60 * 3, R.string.cache_ttl_three_hours);
             cacheTtlNames.put(60 * 60 * 24, R.string.cache_ttl_one_day);
             cacheTtlNames.put(60 * 60 * 24 * 3, R.string.cache_ttl_three_days);
+            cacheTtlNames.put(Integer.MAX_VALUE, R.string.cache_ttl_forever);
             CACHE_TTL_NAMES = Collections.unmodifiableMap(cacheTtlNames);
 
             CACHE_TTLS = new ArrayList<>(CacheTTLPrefs.CACHE_TTL_NAMES.keySet());
@@ -352,7 +354,7 @@ public class Preferences {
 
         public static CacheTTLPrefs getDefault() {
             ArrayList<String> ttlStrings = new ArrayList<>();
-            ttlStrings.add(Integer.toString(60 * 5));
+            ttlStrings.add(Integer.toString(0));
             ttlStrings.add(Integer.toString(60 * 60));
             ttlStrings.add(Integer.toString(60 * 60 * 24));
             return new CacheTTLPrefs(ttlStrings);

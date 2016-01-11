@@ -1709,11 +1709,13 @@
     <string name="title_edit_subkeys">"Edit Subkeys"</string>
     <string name="btn_search_for_query">"Search for\n'%s'"</string>
     <string name="cache_ttl_lock_screen">"until Screen Off"</string>
-    <string name="cache_ttl_five_minutes">"for Five Minutes"</string>
+    <string name="cache_ttl_ten_minutes">"for Ten Minutes"</string>
+    <string name="cache_ttl_thirty_minutes">"for Thirty Minutes"</string>
     <string name="cache_ttl_one_hour">"for One Hour"</string>
     <string name="cache_ttl_three_hours">"for Three Hours"</string>
     <string name="cache_ttl_one_day">"for One Day"</string>
     <string name="cache_ttl_three_days">"for Three Days"</string>
+    <string name="cache_ttl_forever">"forever"</string>
     <string name="settings_cache_select_three">"Pick up to three."</string>
     <string name="settings_cache_ttl_at_least_one">"At least one item must be selected!"</string>
     <string name="settings_cache_ttl_max_three">"Can\'t select more than three items!"</string>

@@ -77,7 +77,6 @@ public class SettingsCacheTTLFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
-
     }
 
     private void savePreference() {
