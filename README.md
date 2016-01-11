@@ -42,10 +42,10 @@ Development mailinglist at https://lists.riseup.net/www/subscribe/openkeychain
 1. Clone the project from GitHub
 2. Get all external submodules with ``git submodule update --init --recursive``
 3. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
-4. Open the Android SDK Manager (shell command: ``android``).  
-Expand the Tools directory and select "Android SDK Build-tools (Version 21.1.2)".  
-Expand the Extras directory and install "Android Support Repository"  
-Select everything for the newest SDK Platform, API 22, and also API 21
+4. Open the Android SDK Manager (shell command: ``android``).
+Expand the Tools directory and select "Android SDK Build-tools (Version 23.0.1)".
+Expand the Extras directory and install "Android Support Repository"
+Select SDK Platform for API levels 21, 22, and 23.
 5. Export ANDROID_HOME pointing to your Android SDK
 6. Execute ``./gradlew assembleDebug``
 7. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
