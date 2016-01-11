@@ -1,23 +1,22 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:gravity="center"
+    android:orientation="vertical">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/view_key_adv_start_text"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal|top"
+        android:layout_weight="1"
         android:src="@drawable/ic_beaker_grey600_48dp" />
 
     <org.sufficientlysecure.htmltextview.HtmlTextView
-        android:id="@+id/view_key_adv_start_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
+        android:layout_weight="2.41"
+        android:id="@+id/view_key_adv_start_text"
+        tools:text="(start description as parsed from markdown here)" />
 
-</RelativeLayout>
+</LinearLayout>
