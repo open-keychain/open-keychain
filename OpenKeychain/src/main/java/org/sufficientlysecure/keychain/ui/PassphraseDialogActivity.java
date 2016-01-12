@@ -200,8 +200,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 return dialog;
             }
 
-            long subKeyId = mRequiredInput.getSubKeyId();
-
             LayoutInflater inflater = LayoutInflater.from(theme);
             mLayout = (ViewAnimator) inflater.inflate(R.layout.passphrase_dialog, null);
             alert.setView(mLayout);
@@ -232,6 +230,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 hint = getString(R.string.label_passphrase);
             } else {
                 try {
+                    long subKeyId = mRequiredInput.getSubKeyId();
+
                     ProviderHelper helper = new ProviderHelper(activity);
                     mSecretRing = helper.getCanonicalizedSecretKeyRing(
                             KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
