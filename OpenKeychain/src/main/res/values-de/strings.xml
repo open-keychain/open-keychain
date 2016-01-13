@@ -13,6 +13,7 @@
   <string name="title_preferences">Einstellungen</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">OpenPGP-Schlüsselserver</string>
+  <string name="title_cache_ttl_preference">Merkdauer von Passwörtern</string>
   <string name="title_change_passphrase">Passwort ändern</string>
   <string name="title_share_fingerprint_with">Teile Fingerabdruck über…</string>
   <string name="title_share_key">Teile Schlüssel über...</string>
@@ -31,10 +32,12 @@
   <string name="title_help">Hilfe</string>
   <string name="title_log_display">Protokoll</string>
   <string name="title_exchange_keys">Schlüssel austauschen</string>
+  <string name="title_advanced_key_info">Erweitert</string>
   <string name="title_delete_secret_key">DEINEN Schlüssel \'%s\' löschen?</string>
   <string name="title_manage_my_keys">Meine Schlüssel verwalten</string>
   <!--section-->
   <string name="section_user_ids">Identitäten</string>
+  <string name="section_security_token">Smartcard</string>
   <string name="section_linked_system_contact">Verknüpfter Systemkontakt</string>
   <string name="section_keybase_proofs">Keybase.io-Nachweise</string>
   <string name="section_should_you_trust">Sollte ich diesem Schlüssel vertrauen?</string>
@@ -114,6 +117,7 @@
   <string name="menu_select_all">Alles auswählen</string>
   <string name="menu_export_all_keys">Alle Schlüssel exportieren</string>
   <string name="menu_update_all_keys">Alle Schlüssel aktualisieren</string>
+  <string name="menu_advanced">Erweiterte Einstellungen</string>
   <string name="menu_certify_fingerprint">Mit Fingerabdruck bestätigen</string>
   <string name="menu_certify_fingerprint_phrases">Mit Phrases bestätigen</string>
   <string name="menu_share_log">Log teilen</string>
@@ -135,6 +139,7 @@
   <string name="label_file_ascii_armor">Aktiviere ASCII Armor</string>
   <string name="label_write_version_header">Lass andere wissen dass du OpenKeychain nutzt</string>
   <string name="label_write_version_header_summary">Fügt \'OpenKeychain v2.7\' zu OpenPGP-Signaturen, Daten und exportierten Schlüsseln hinzu</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Zifferntastatur für Sicherheits-PIN benutzen</string>
   <string name="label_asymmetric_from">Signiere mit:</string>
   <string name="label_to">Verschlüsseln an</string>
   <string name="label_delete_after_encryption">Dateien nach Verschlüsselung löschen</string>
@@ -142,6 +147,7 @@
   <string name="label_encryption_algorithm">Verschlüsselungsalgorithmus</string>
   <string name="label_hash_algorithm">Hash-Algorithmus</string>
   <string name="label_symmetric">Mit Passwort verschlüsseln</string>
+  <string name="label_passphrase_cache_ttl">Merkdauer von Passwörtern</string>
   <string name="label_passphrase_cache_subs">Passwort pro Unterschlüssel merken</string>
   <string name="label_message_compression">Textkomprimierung</string>
   <string name="label_file_compression">Dateikomprimierung</string>
@@ -272,6 +278,11 @@
   <string name="passphrase_for_backup">Backupcode eingeben</string>
   <string name="passphrase_for">Passwort für \'%s\' eingeben</string>
   <string name="pin_for">PIN für \'%s\' eingeben</string>
+  <string name="security_token_pin_for">PIN für Zugriff auf Smartcard für \'%s\' eingeben</string>
+  <string name="security_token_nfc_text">Halte die Smartcard an den NFC-Marker an der Rückseite Deines Geräts.</string>
+  <string name="security_token_nfc_wait">Halte die Smartcard an die Rückseite!</string>
+  <string name="security_token_nfc_finished">Entferne jetzt die Smartcard.</string>
+  <string name="security_token_nfc_try_again_text">Entferne jetzt die Smartcard und tippe \"Erneut versuchen\"</string>
   <string name="file_delete_confirmation_title">Originaldateien löschen?</string>
   <string name="file_delete_confirmation">Die folgenden Dateien werden gelöscht: %s</string>
   <string name="file_delete_successful">%1$d von %2$d Dateien wurden gelöscht.%3$s</string>
@@ -527,6 +538,8 @@
   <string name="intent_send_encrypt">Verschlüsseln mit OpenKeychain </string>
   <string name="intent_send_decrypt">Entschlüsseln mit OpenKeychain </string>
   <!--Remote API-->
+  <string name="api_settings_show_info">Erweiterte Informationen anzeigen</string>
+  <string name="api_settings_hide_info">Erweiterte Informationen ausblenden</string>
   <string name="api_settings_no_key">Kein Schlüssel ausgewählt</string>
   <string name="api_settings_select_key">Schlüssel auswählen</string>
   <string name="api_settings_create_key">Neuen Schlüssel erzeugen</string>
@@ -539,6 +552,7 @@
   <string name="api_settings_package_name">Paketname</string>
   <string name="api_settings_package_certificate">SHA-256 des Paketzertifikats</string>
   <string name="api_settings_accounts">Benutzerkonten (veraltete API)</string>
+  <string name="api_settings_advanced">Erweitert</string>
   <string name="api_settings_allowed_keys">Erlaubte Schlüssel</string>
   <string name="api_settings_settings">Einstellungen</string>
   <string name="api_settings_key">Schlüssel des Benutzerkontos:</string>
@@ -593,6 +607,7 @@
   <string name="key_view_action_share_nfc">Über NFC teilen</string>
   <string name="key_view_action_upload">Auf Schlüsselserver hochladen</string>
   <string name="key_view_tab_main">Informationen</string>
+  <string name="key_view_tab_start">Start</string>
   <string name="key_view_tab_share">Teilen</string>
   <string name="key_view_tab_keys">Unterschlüssel</string>
   <string name="key_view_tab_certs">Beglaubigungen</string>
@@ -652,10 +667,19 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Diese Identität wurde widerrufen. Dies kann nicht rückgängig gemacht werden.</string>
   <string name="edit_key_edit_subkey_title">Wähle eine Aktion aus!</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>Ablaufdatum ändern</item>
+    <item>Unterschlüssel widerrufen</item>
+    <item>Unterschlüssel kürzen</item>
+    <item>Unterschlüssel auf YubiKey / Smartcard verschieben</item>
+  </string-array>
   <string name="edit_key_new_subkey">neuer Unterschlüssel</string>
   <string name="edit_key_select_flag">Bitte mindestens ein Attribut wählen!</string>
   <string name="edit_key_error_add_identity">Füge mindestens eine Identität hinzu!</string>
   <string name="edit_key_error_add_subkey">Füge mindestens einen Unterschlüssel hinzu!</string>
+  <string name="edit_key_error_bad_security_token_algo">Algorithmus von Smartcard nicht unterstützt</string>
+  <string name="edit_key_error_bad_security_token_size">Schlüssellänge wird von dieser Smartcard nicht unterstützt!</string>
+  <string name="edit_key_error_bad_security_token_stripped">Kann Schlüssel nicht auf Smartcard verschieben (entweder gekürzt oder \'auf Karte umleiten\')!</string>
   <!--Create key-->
   <string name="create_key_upload">Mit dem Internet synchronisieren</string>
   <string name="create_key_empty">Dieses Feld wird benötigt</string>
@@ -938,6 +962,7 @@
   <string name="msg_cr_error_flags_ecdh">Falsche Schlüsselattribute ausgewählt, ECDH kann nicht zum Signieren verwendet werden!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Schlüsselbund %s wird verändert</string>
+  <string name="msg_mf_divert">Leite für Verschlüsselungsoperationen auf Smartcard um</string>
   <string name="msg_mf_error_divert_newsub">Erzeugung neuer Unterschlüssel wird für \'auf Karte umgeleitete\' Hauptschlüssel nicht unterstützt!</string>
   <string name="msg_mf_error_divert_serial">Die Seriennummer eines \'auf Karte umgeleiteten\' Schlüssels muss 16 Byte lang sein! Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_mf_error_encode">Kodierungsfehler!</string>
@@ -957,6 +982,7 @@
   <string name="msg_mf_error_sub_stripped">Gekürzter Unterschlüssel %s kann nicht verändert werden!</string>
   <string name="msg_mf_error_subkey_missing">Versuch mit fehlendem Unterschlüssel %s zu arbeiten!</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">Smartcard unterstützt nur einen Slot pro Schlüsseltyp.</string>
+  <string name="msg_mf_error_invalid_flags_for_keytocard">Ungeeignete Schlüsselattribute für Schlüssel auf Smartcard.</string>
   <string name="msg_mf_master">Hauptbeglaubigungen werden verändert</string>
   <string name="msg_mf_notation_empty">Füge leeres Vermerk-Paket hinzu</string>
   <string name="msg_mf_notation_pin">Füge PIN-Vermerk-Paket hinzu</string>
@@ -970,12 +996,15 @@
   <string name="msg_mf_primary_new">Neue Beglaubigung für neue primäre User-ID wird erzeugt</string>
   <string name="msg_mf_restricted_mode">Wechsle zu eingeschränktem Vorgangsmodus</string>
   <string name="msg_mf_subkey_change">Unterschlüssel %s wird verändert</string>
+  <string name="msg_mf_require_divert">Werde für Verschlüsselungsoperationen auf Smartcard umleiten</string>
   <string name="msg_mf_require_passphrase">Für die Vorgänge ist ein Passwort erforderlich</string>
   <string name="msg_mf_subkey_new">Füge neuen Unterschlüssel vom Typ %s hinzu</string>
   <string name="msg_mf_subkey_new_id">Neue Unterschlüsselkennung: %s</string>
   <string name="msg_mf_error_past_expiry">Ablaufdatum kann nicht in der Vergangenheit liegen!</string>
   <string name="msg_mf_subkey_revoke">Unterschlüssel %s wird widerrufen</string>
   <string name="msg_mf_subkey_strip">Kürze Unterschlüssel %s</string>
+  <string name="msg_mf_keytocard_start">Verschiebe Unterschlüssel %s auf Smartcard</string>
+  <string name="msg_mf_keytocard_finish">%1$s auf Smartcard %2$s verschoben</string>
   <string name="msg_mf_success">Schlüsselbund erfolgreich verändert</string>
   <string name="msg_mf_uid_add">User-ID %s wird hinzugefügt</string>
   <string name="msg_mf_uid_primary">Primäre User-ID wird geändert in %s</string>
@@ -1032,6 +1061,7 @@
   <string name="msg_pr_error_key_not_found">Schlüssel nicht gefunden!</string>
   <string name="msg_pr_fetching">Zu bearbeitender Schlüssel wird abgerufen (%s)</string>
   <string name="msg_pr_subkey_match">Stufe Unterschlüssel hoch: %s</string>
+  <string name="msg_pr_subkey_nomatch">Unterschlüssel nicht auf Smartcard: %s</string>
   <string name="msg_pr_success">Schlüssel erfolgreich hochgestuft</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_dummy">Schlüsselbund mit gekürztem Hauptschlüssel kann nicht bearbeitet werden!</string>
@@ -1255,6 +1285,7 @@
   <string name="msg_data_detached_sig">Verarbeite abgetrennte Signatur</string>
   <string name="msg_data_detached_raw">Verarbeite signierte Daten</string>
   <string name="msg_data_detached_nested">Überspringe verschachtelte signierte Daten!</string>
+  <string name="msg_data_detached_trailing">Überspringe Daten nach signiertem Teil!</string>
   <string name="msg_data_detached_unsupported">Typ von abgetrennter Signatur nicht unterstützt!</string>
   <string name="msg_data_error_io">Fehler beim Lesen der Daten!</string>
   <string name="msg_data_mime_bad">MIME-Daten konnten nicht verarbeitet werden</string>
@@ -1310,7 +1341,10 @@
   <string name="first_time_text1">Hol dir deine Privatsphäre mit OpenKeychain zurück!</string>
   <string name="first_time_create_key">Meinen Schlüssel erzeugen</string>
   <string name="first_time_import_key">Schlüssel aus Datei importieren</string>
+  <string name="first_time_security_token">Verwende Smartcard</string>
+  <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, ...)</string>
   <string name="first_time_skip">Setup überspringen</string>
+  <string name="first_time_blank_security_token_yes">Diese Smartcard verwenden</string>
   <string name="backup_text">Backups, die deine eigenen Schlüssel beinhalten, dürfen unter keinen Umständen an anderen Personen gegeben werden.</string>
   <string name="backup_all">Alle Schlüssel + deine eigenen Schlüssel</string>
   <string name="backup_public_keys">Alle Schlüssel</string>
@@ -1332,6 +1366,7 @@
   <string name="error_key_not_found">Schlüssel nicht gefunden!</string>
   <string name="error_key_processing">Fehler bei der Verarbeitung des Schlüssels!</string>
   <string name="key_stripped">gekürzt</string>
+  <string name="key_divert">auf Smartcard umleiten</string>
   <string name="key_no_passphrase">kein Passwort</string>
   <string name="key_unavailable">nicht verfügbar</string>
   <string name="secret_cannot_multiple">Deine eigenen Schlüssel können nur einzeln gelöscht werden!</string>
@@ -1356,6 +1391,7 @@
   <string name="account_privacy_title">Datenschutz</string>
   <string name="account_privacy_text">OpenKeychain synchronisiert deine Kontakte nicht mit dem Internet. Es verknüpft lediglich Kontakte mit Schlüsseln auf der Basis von Namen und E-Mail-Adressen. Das alles findet offline auf deinem Gerät statt.</string>
   <string name="sync_notification_permission_required_title">Zugang zu Kontakten erforderlich</string>
+  <string name="sync_notification_permission_required_text">Berühren um verbundene Kontakte zu konfigurieren</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <string name="title_unlock_method">Wähle eine Entsperrmethode</string>
@@ -1379,11 +1415,43 @@
   <string name="nfc_wrong_tag">Falscher Tag, bitte versuche es erneut.</string>
   <string name="enable_nfc">Bitte aktiviere NFC in deinen Einstellungen.</string>
   <string name="no_nfc_support">Dieses Gerät unterstützt kein NFC</string>
+  <string name="nfc_write_successful">Erfolgreich auf den NFC Tag geschrieben</string>
   <string name="unlocked">Entsperrt</string>
   <string name="nfc_settings">Einstellungen</string>
+  <string name="snack_security_token_view">Ansicht</string>
+  <string name="snack_security_token_import">Importieren</string>
   <string name="button_bind_key">Schlüssel verbinden</string>
+  <string name="security_token_serial_no">Seriennummer: %s</string>
+  <string name="security_token_key_holder">Schlüsseleigner:</string>
+  <string name="security_token_key_holder_not_set"><![CDATA[Schlüsselinhaber: <nicht festgelegt>]]></string>
+  <string name="security_token_status_bound">Smartcard stimmt überein und ist mit dem Schlüssel verbunden</string>
+  <string name="security_token_status_unbound">Smartcard stimmt überein und kann mit dem Schlüssel verbunden werden</string>
+  <string name="security_token_status_partly">Smartcard stimmt überein und ist teilweise mit dem Schlüssel verbunden</string>
+  <string name="security_token_create">Halte die Smartcard gegen die Rückseite Deines Geräts.</string>
+  <string name="security_token_reset_or_import">Diese Smartcard enthält bereits einen Schlüssel. Importiere den Schlüssel über die Cloud oder setze die Smartcard zurück.</string>
   <string name="btn_import">Import</string>
   <string name="btn_reset">Reset</string>
+  <string name="security_token_import_radio">Schlüssel Importieren</string>
+  <string name="security_token_reset_radio">Smartcard zurücksetzen</string>
+  <string name="security_token_reset_warning">Rücksetzen der Smartcard zerstört die darauf gespeicherten Schlüssel. Mit diesen Schlüssel verschlüsselte Nachrichten/Dateien können danach nicht mehr entschlüsselt werden!</string>
+  <string name="snack_security_token_other">Anderer Schlüssel auf Smartcard gespeichert!</string>
+  <string name="security_token_error">Fehler: %s</string>
+  <plurals name="security_token_error_pin">
+    <item quantity="one">Falsche PIN\n%d Versuch verbleibend</item>
+    <item quantity="other">Falsche PIN\n%d Versuche verbleibend</item>
+  </plurals>
+  <string name="security_token_error_terminated">Smartcard befindet sich in beendetem Zustand.</string>
+  <string name="security_token_error_wrong_length">Eingegebene PIN zu kurz. PINs müssen mindestens 6 Ziffern lang sein.</string>
+  <string name="security_token_error_conditions_not_satisfied">Nutzungsbedingungen werden nicht erfüllt. </string>
+  <string name="security_token_error_security_not_satisfied">Sicherheitsstatus nicht erfüllt.</string>
+  <string name="security_token_error_authentication_blocked">PIN nach zu vielen Versuchen gesperrt.</string>
+  <string name="security_token_error_data_not_found">Schlüssel oder Objekt nicht gefunden!</string>
+  <string name="security_token_error_unknown">Unbekannter Fehler</string>
+  <string name="security_token_error_bad_data">Smartcard meldete ungültige Daten.</string>
+  <string name="security_token_error_chaining_error">Smartcard erwartete das letzte Kommando in einer Kette.</string>
+  <string name="security_token_error_header">Smartcard meldete ungültige %s Byte.</string>
+  <string name="security_token_error_tag_lost">Smartcard wurde zu früh abgenommen. Halte die Smartcard an die Rückseite bis der Vorgang beendet ist.</string>
+  <string name="security_token_error_try_again">Erneut versuchen</string>
   <string name="btn_delete_original">Originaldatei löschen</string>
   <string name="snack_encrypt_filenames_on">Dateinamen <b>sind</b> verschlüsselt.</string>
   <string name="snack_encrypt_filenames_off">Dateinamen <b>sind nicht</b> verschlüsselt.</string>
@@ -1395,6 +1463,7 @@
   <string name="error_empty_log">(Fehler, Protokoll leer)</string>
   <string name="error_reading_text">Konnte Eingabe zur Entschlüsselung nicht lesen!</string>
   <string name="error_reading_aosp">Daten konnten nicht gelesen, dies ist ein Bug im Android E-Mail-Client! (Issue #290)</string>
+  <string name="error_reading_k9">Unvollständige Daten erhalten. Versuche \'Vollständige Nachricht herunterladen\' in K-9 Mail zu drücken.</string>
   <string name="filename_unknown">Unbekanter Dateiname (Zum Öffnen berühren)</string>
   <string name="filename_unknown_text">Text (Zum Anzeigen berühren)</string>
   <string name="filename_keys">Schlüssel Sicherheitskopie (berühren zum importieren)</string>
@@ -1511,7 +1580,6 @@
   <string name="title_edit_subkeys">Unterschlüssel bearbeiten</string>
   <string name="btn_search_for_query">Suche nach\n\'%s\'</string>
   <string name="cache_ttl_lock_screen">bis Bildschirm abschaltet</string>
-  <string name="cache_ttl_five_minutes">für 5 Minuten</string>
   <string name="cache_ttl_one_hour">für eine Stunde</string>
   <string name="cache_ttl_three_hours">für drei Stunden</string>
   <string name="cache_ttl_one_day">für einen Tag</string>

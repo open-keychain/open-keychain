@@ -2,8 +2,9 @@
 
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
+  * 鍵編集の再デザイン
+  * パスワードを入力する際、個別に記録した時間を選択します
+  * Facebook 鍵インポート
 
 
 ## 3.7

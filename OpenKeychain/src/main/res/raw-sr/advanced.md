@@ -1,9 +1,9 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: #
 
-Advanced screen allows you to
-* share key in non-recommended ways
-* edit identities
-* edit subkeys
-* examine certificates in detail
+У напредним поставкама можете да
+* делите кључ на непрепоручене начине
+* уредите идентитете
+* уредите поткључеве
+* испитате детаље сертификата
 
-Only proceed if you know what you are doing!
+Наставите само ако знате шта радите!

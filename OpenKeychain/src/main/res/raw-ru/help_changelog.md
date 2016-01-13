@@ -4,6 +4,7 @@
 
   * Redesigned key editing
   * Choose remember time individually when entering passwords
+  * Facebook key import
 
 
 ## 3.7

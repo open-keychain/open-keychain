@@ -13,6 +13,7 @@
   <string name="title_preferences">Поставке</string>
   <string name="title_api_registered_apps">Апликације</string>
   <string name="title_key_server_preference">ОпенПГП сервери кључева</string>
+  <string name="title_cache_ttl_preference">Прилагођавање избора „памћења“</string>
   <string name="title_change_passphrase">Измена лозинке</string>
   <string name="title_share_fingerprint_with">Подели отисак помоћу…</string>
   <string name="title_share_key">Подели кључ помоћу…</string>
@@ -31,6 +32,7 @@
   <string name="title_help">Помоћ</string>
   <string name="title_log_display">Дневник</string>
   <string name="title_exchange_keys">Размена кључева</string>
+  <string name="title_advanced_key_info">Напредно</string>
   <string name="title_delete_secret_key">Обрисати ВАШ кључ „%s“?</string>
   <string name="title_manage_my_keys">Управљање мојим кључевима</string>
   <!--section-->
@@ -114,6 +116,7 @@
   <string name="menu_select_all">Изабери све</string>
   <string name="menu_export_all_keys">Извези све кључеве</string>
   <string name="menu_update_all_keys">Ажурирај све кључеве</string>
+  <string name="menu_advanced">Напредно</string>
   <string name="menu_certify_fingerprint">Потврди помоћу отиска</string>
   <string name="menu_certify_fingerprint_phrases">Потврди помоћу фраза</string>
   <string name="menu_share_log">Подели запис</string>
@@ -142,6 +145,7 @@
   <string name="label_encryption_algorithm">Алгоритам шифровања</string>
   <string name="label_hash_algorithm">Алгоритам хеша</string>
   <string name="label_symmetric">Шифровање са лозинком</string>
+  <string name="label_passphrase_cache_ttl">Прилагодите изборе „памћења“</string>
   <string name="label_passphrase_cache_subs">Памти лозинке по поткључу</string>
   <string name="label_message_compression">Компресија текста</string>
   <string name="label_file_compression">Компресија фајла</string>
@@ -544,6 +548,8 @@
   <string name="intent_send_encrypt">Шифруј помоћу Отвореног кључарника</string>
   <string name="intent_send_decrypt">Дешифруј помоћу Отвореног кључарника</string>
   <!--Remote API-->
+  <string name="api_settings_show_info">Прикажи напредне податке</string>
+  <string name="api_settings_hide_info">Сакриј напредне податке</string>
   <string name="api_settings_no_key">Није изабран кључ</string>
   <string name="api_settings_select_key">Изаберите кључ</string>
   <string name="api_settings_create_key">Направи нови кључ</string>
@@ -556,6 +562,7 @@
   <string name="api_settings_package_name">Име пакета</string>
   <string name="api_settings_package_certificate">СХА-256 сертификата пакета</string>
   <string name="api_settings_accounts">Налози (стари АПИ)</string>
+  <string name="api_settings_advanced">Напредно</string>
   <string name="api_settings_allowed_keys">Дозвољени кључеви</string>
   <string name="api_settings_settings">Поставке</string>
   <string name="api_settings_key">Кључ налога:</string>
@@ -611,6 +618,7 @@
   <string name="key_view_action_share_nfc">Дели преко НФЦ</string>
   <string name="key_view_action_upload">Отпреми на сервер кључева</string>
   <string name="key_view_tab_main">Главни подаци</string>
+  <string name="key_view_tab_start">Почетак</string>
   <string name="key_view_tab_share">Дељење</string>
   <string name="key_view_tab_keys">Поткључеви</string>
   <string name="key_view_tab_certs">Сертификати</string>
@@ -670,6 +678,12 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Идентитет је опозван. Ово не може да се поништи.</string>
   <string name="edit_key_edit_subkey_title">Изаберите радњу!</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>Измени истицање</item>
+    <item>Опозови поткључ</item>
+    <item>Оголи поткључ</item>
+    <item>Премести поткључ у безбедносни токен</item>
+  </string-array>
   <string name="edit_key_new_subkey">нови поткључ</string>
   <string name="edit_key_select_flag">Изаберите бар једну заставицу!</string>
   <string name="edit_key_error_add_identity">Додајте бар један идентитет!</string>
@@ -1340,6 +1354,7 @@
   <string name="first_time_text1">Преузмите вашу приватност помоћу Отвореног кључарника!</string>
   <string name="first_time_create_key">Направи ми кључ</string>
   <string name="first_time_import_key">Увези кључ из фајла</string>
+  <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">Прескочи поставу</string>
   <string name="backup_text">Резерве које укључују ваше сопствене кључеве никад немојте делити са другима!</string>
   <string name="backup_all">Свих кључева + сопствених</string>
@@ -1407,14 +1422,32 @@
   <string name="draw_lockpattern">Нацртајте шаблон</string>
   <string name="nfc_title">НФЦ</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="nfc_wrong_tag">Погрешна ознака. Покушајте поново.</string>
   <string name="enable_nfc">Активирајте НФЦ у поставкама</string>
   <string name="no_nfc_support">Овај уређај не подржава НФЦ</string>
   <string name="unlocked">Откључан</string>
   <string name="nfc_settings">Поставке</string>
+  <string name="snack_security_token_view">Прикажи</string>
+  <string name="snack_security_token_import">Увези</string>
   <string name="button_bind_key">Повежи кључ</string>
+  <string name="security_token_serial_no">Серијски број: %s</string>
+  <string name="security_token_key_holder">Држач кључа: </string>
+  <string name="security_token_key_holder_not_set"><![CDATA[Држач кључа: <није постављено>]]></string>
   <string name="btn_import">Увези</string>
   <string name="btn_reset">Ресетуј</string>
+  <string name="security_token_import_radio">Увези кључ</string>
+  <string name="security_token_error">Грешка: %s</string>
+  <plurals name="security_token_error_pin">
+    <item quantity="one">Нетачан ПИН!\n%d покушај преостао.</item>
+    <item quantity="few">Нетачан ПИН!\n%d покушаја преостала.</item>
+    <item quantity="other">Нетачан ПИН!\n%d покушаја преостало.</item>
+  </plurals>
+  <string name="security_token_error_wrong_length">Унети ПИН је прекратак. ПИНови су дуги најмање 6 бројки.</string>
+  <string name="security_token_error_conditions_not_satisfied">Услови употребе нису задовољени.</string>
+  <string name="security_token_error_security_not_satisfied">Безбедносно стање није задовољено.</string>
+  <string name="security_token_error_authentication_blocked">ПИН блокиран након превише покушаја.</string>
+  <string name="security_token_error_data_not_found">Кључ или објекат нису нађени!</string>
+  <string name="security_token_error_unknown">Непозната грешка</string>
+  <string name="security_token_error_try_again">Покушај поново</string>
   <string name="btn_delete_original">Обриши оригинални фајл</string>
   <string name="snack_encrypt_filenames_on">Имена фајлова <b>су</b> шифрована.</string>
   <string name="snack_encrypt_filenames_off">Имена фајлова <b>нису</b> шифрована.</string>
@@ -1529,4 +1562,16 @@
   <string name="title_edit_identities">Уређивање идентитета</string>
   <string name="title_edit_subkeys">Уређивање поткључева</string>
   <string name="btn_search_for_query">Тражи\n\'%s\'</string>
+  <string name="cache_ttl_lock_screen">док се екран не искључи</string>
+  <string name="cache_ttl_ten_minutes">десет минута</string>
+  <string name="cache_ttl_thirty_minutes">тридесет минута</string>
+  <string name="cache_ttl_one_hour">један сат</string>
+  <string name="cache_ttl_three_hours">три сата</string>
+  <string name="cache_ttl_one_day">један дан</string>
+  <string name="cache_ttl_three_days">три дана</string>
+  <string name="cache_ttl_forever">заувек</string>
+  <string name="settings_cache_select_three">Изаберите највише три</string>
+  <string name="settings_cache_ttl_at_least_one">Бар једна ставка мора бити изабрана!</string>
+  <string name="settings_cache_ttl_max_three">Не можете изабрати више од три ставке!</string>
+  <string name="remember">Запамти</string>
 </resources>

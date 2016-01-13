@@ -1421,7 +1421,6 @@
   <string name="title_edit_subkeys">Editatu Azpigiltzak</string>
   <string name="btn_search_for_query">Bilatu\n\'%s\'</string>
   <string name="cache_ttl_lock_screen">Ikusleihoa Itzali arte</string>
-  <string name="cache_ttl_five_minutes">Bost Minutuz</string>
   <string name="cache_ttl_one_hour">Ordubetez</string>
   <string name="cache_ttl_three_hours">Hiru Orduz</string>
   <string name="cache_ttl_one_day">Egun batez</string>

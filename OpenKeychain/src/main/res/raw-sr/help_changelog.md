@@ -2,8 +2,9 @@
 
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
+  * Редизајн уређивања кључа
+  * Засебно одређивање времена памћења приликом уноса лозинки
+  * Увоз кључа са Фејсбука
 
 
 ## 3.7

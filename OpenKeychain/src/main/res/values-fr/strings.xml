@@ -13,7 +13,7 @@
   <string name="title_preferences">Paramètres</string>
   <string name="title_api_registered_apps">Applis</string>
   <string name="title_key_server_preference">Serveurs de clefs OpenPGP</string>
-  <string name="title_cache_ttl_preference">Personnaliser les choix « Se souvenir »</string>
+  <string name="title_cache_ttl_preference">Personnaliser les choix « Mémorisation »</string>
   <string name="title_change_passphrase">Changer le mot de passe</string>
   <string name="title_share_fingerprint_with">Partager l\'empreinte avec...</string>
   <string name="title_share_key">Partager la clef avec...</string>
@@ -32,10 +32,12 @@
   <string name="title_help">Aide</string>
   <string name="title_log_display">Journal</string>
   <string name="title_exchange_keys">Échanger des clefs</string>
+  <string name="title_advanced_key_info">Avancées</string>
   <string name="title_delete_secret_key">Supprimer VOTRE clef « %s » ?</string>
   <string name="title_manage_my_keys">Gérer mes clefs</string>
   <!--section-->
   <string name="section_user_ids">identités</string>
+  <string name="section_security_token">Jeton de sécurité</string>
   <string name="section_linked_system_contact">Contact système relié</string>
   <string name="section_keybase_proofs">Preuves keybase.io</string>
   <string name="section_should_you_trust">Devriez-vous faire confiance à cette clef ?</string>
@@ -115,6 +117,7 @@
   <string name="menu_select_all">Tout sélectionner</string>
   <string name="menu_export_all_keys">Exporter toutes les clefs</string>
   <string name="menu_update_all_keys">Mettre toutes les clefs à jour</string>
+  <string name="menu_advanced">Avancé</string>
   <string name="menu_certify_fingerprint">Confirmer par une empreinte</string>
   <string name="menu_certify_fingerprint_phrases">Confirmer par des phrases</string>
   <string name="menu_share_log">Partager le journal</string>
@@ -136,6 +139,7 @@
   <string name="label_file_ascii_armor">Activer l\'armure ASCII</string>
   <string name="label_write_version_header">Faire savoir aux autres que vous utilisez OpenKeychain</string>
   <string name="label_write_version_header_summary">Ajoute « OpenKeychain v2.7 » aux signatures OpenPGP, aux cryptogrammes et aux clefs exportées</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Utiliser le pavé numérique pour le NIP du jeton de sécurité</string>
   <string name="label_asymmetric_from">Signer avec :</string>
   <string name="label_to">Chiffrer vers</string>
   <string name="label_delete_after_encryption">Supprimer les fichiers après chiffrement</string>
@@ -274,6 +278,11 @@
   <string name="passphrase_for_backup">Saisir le code de sauvegarde</string>
   <string name="passphrase_for">Saisir le mot de passe pour « %s »</string>
   <string name="pin_for">Saisir le NIP pour « %s »</string>
+  <string name="security_token_pin_for">Saisir le NIP pour accéder au jeton de sécurité pour « %s »</string>
+  <string name="security_token_nfc_text">Tenez le jeton de sécurité contre le logo NFC au dos de votre appareil.</string>
+  <string name="security_token_nfc_wait">Garder le jeton de sécurité contre le dos !</string>
+  <string name="security_token_nfc_finished">Retirer le jeton de sécurité maintenant.</string>
+  <string name="security_token_nfc_try_again_text">Retirer le jeton de sécurité maintenant et toucher RESSAYER.</string>
   <string name="file_delete_confirmation_title">Supprimer les fichiers originaux ?</string>
   <string name="file_delete_confirmation">Les fichiers suivants seront détruits : %s</string>
   <string name="file_delete_successful">%1$d fichiers sur %2$d ont déjà été supprimés. %3$s</string>
@@ -529,6 +538,8 @@
   <string name="intent_send_encrypt">Chiffrer avec OpenKeychain</string>
   <string name="intent_send_decrypt">Déchiffrer avec OpenKeychain</string>
   <!--Remote API-->
+  <string name="api_settings_show_info">Afficher les informations avancées</string>
+  <string name="api_settings_hide_info">Masquer les informations avancées</string>
   <string name="api_settings_no_key">Aucune clef choisie</string>
   <string name="api_settings_select_key">Choisir une clef</string>
   <string name="api_settings_create_key">Créer une nouvelle clef</string>
@@ -541,6 +552,7 @@
   <string name="api_settings_package_name">Nom du paquet</string>
   <string name="api_settings_package_certificate">SHA-256 du certificat du paquet</string>
   <string name="api_settings_accounts">Comptes (ancienne API)</string>
+  <string name="api_settings_advanced">Avancés</string>
   <string name="api_settings_allowed_keys">Clefs autorisées</string>
   <string name="api_settings_settings">Paramètres</string>
   <string name="api_settings_key">Clef du compte :</string>
@@ -595,6 +607,7 @@
   <string name="key_view_action_share_nfc">Partager par la NFC</string>
   <string name="key_view_action_upload">Téléverser vers le serveur de clefs</string>
   <string name="key_view_tab_main">Infos principales</string>
+  <string name="key_view_tab_start">Début</string>
   <string name="key_view_tab_share">Partager</string>
   <string name="key_view_tab_keys">Sous-clefs</string>
   <string name="key_view_tab_certs">Certificats</string>
@@ -654,10 +667,19 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Cette identité a été révoquée ! Cela ne peut pas être annulé.</string>
   <string name="edit_key_edit_subkey_title">Choisissez une action !</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>Changer l\'expiration</item>
+    <item>Révoquer la sous-clef</item>
+    <item>Dépouiller la sous-clef</item>
+    <item>Déplacer la sous-clef vers le jeton de sécurité</item>
+  </string-array>
   <string name="edit_key_new_subkey">nouvelle sous-clef</string>
   <string name="edit_key_select_flag">Veuillez sélectionner au moins un drapeau !</string>
   <string name="edit_key_error_add_identity">Ajouter au moins une identité !</string>
   <string name="edit_key_error_add_subkey">Ajouter au moins une sous-clef !</string>
+  <string name="edit_key_error_bad_security_token_algo">L’algorithme n\'est pas pris en charge par le jeton de sécurité !</string>
+  <string name="edit_key_error_bad_security_token_size">La taille de clef n\'est pas prise en charge par le jeton de sécurité !</string>
+  <string name="edit_key_error_bad_security_token_stripped">Impossible de déplacer la clef vers le jeton de sécurité (soit elle a été dépouillée ou « déviée-vers-la-carte ») !</string>
   <!--Create key-->
   <string name="create_key_upload">Synchroniser avec l\'Internet</string>
   <string name="create_key_empty">Ce champ est exigé</string>
@@ -939,8 +961,9 @@
   <string name="msg_cr_error_flags_ecdh">Les drapeaux de clef choisis sont incorrects, ECDH ne peut pas être utilisé pour le chiffrement ! </string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Modification du trousseau %s</string>
+  <string name="msg_mf_divert">Déviera vers le jeton de sécurité pour les opérations de chiffrement</string>
   <string name="msg_mf_error_divert_newsub">La création de nouvelles sous-clef n\'est pas prise en charge pour les clefs primaires « dévier-vers-la-carte » ! </string>
-  <string name="msg_mf_error_divert_serial">Le numéro de série d\'une clef « dévier-vers-la-carte » doit avoir 16 bytes ! C\'est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
+  <string name="msg_mf_error_divert_serial">Le numéro de série d\'une clef « dévier-vers-la-carte » doit avoir 16 octets ! C\'est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_mf_error_encode">Exception d\'encodage !</string>
   <string name="msg_mf_error_fingerprint">L\'empreinte de clef effective ne correspond pas à celle attendue !</string>
   <string name="msg_mf_error_keyid">Aucune ID de clef. C\'est une erreur interne, veuillez remplir un rapport de bogue !</string>
@@ -957,7 +980,9 @@
   <string name="msg_mf_error_sig">Exception de signature !</string>
   <string name="msg_mf_error_sub_stripped">Impossible de modifier la sous-clef dépouillée %s !</string>
   <string name="msg_mf_error_subkey_missing">Une action a été tentée sur la sous-clef manquante %s !</string>
+  <string name="msg_mf_error_conflicting_nfc_commands">Impossible de déplacer la clef vers le jeton de sécurité dans une même opération créant une signature sur la carte.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">La carte à puce ne prend en charge qu\'un emplacement par type de clef.</string>
+  <string name="msg_mf_error_invalid_flags_for_keytocard">Drapeaux de clef inadéquats pour la clef du jeton de sécurité.</string>
   <string name="msg_mf_master">Modification des certifications maîtresses</string>
   <string name="msg_mf_notation_empty">Ajout d\'un paquet de notation vide</string>
   <string name="msg_mf_notation_pin">Ajout d\'un paquet de notation NIP</string>
@@ -971,12 +996,15 @@
   <string name="msg_mf_primary_new">Génération d\'un nouveau certificat pour le nouvel ID utilisateur principal</string>
   <string name="msg_mf_restricted_mode">Changement vers le mode opérationnel restreint</string>
   <string name="msg_mf_subkey_change">Modification de la sous-clef %s</string>
+  <string name="msg_mf_require_divert">Déviation vers le jeton de sécurité pour les opérations de chiffrement</string>
   <string name="msg_mf_require_passphrase">Mot de passe exigé pour les opérations</string>
   <string name="msg_mf_subkey_new">Ajout d\'une nouvelle sous-clef de type %s</string>
   <string name="msg_mf_subkey_new_id">Nouvelle ID de sous-clef : %s</string>
   <string name="msg_mf_error_past_expiry">La date d\'expiration ne peut pas être dans le passé !</string>
   <string name="msg_mf_subkey_revoke">Révocation de la sous-clef %s</string>
   <string name="msg_mf_subkey_strip">Dépouillement de la sous-clef %s</string>
+  <string name="msg_mf_keytocard_start">Déplacement de la sous-clef %s vers le jeton de sécurité</string>
+  <string name="msg_mf_keytocard_finish">%1$s déplacé vers le jeton de sécurité %2$s</string>
   <string name="msg_mf_success">Trousseau modifié avec succès</string>
   <string name="msg_mf_uid_add">Ajout de l\'ID utilisateur %s</string>
   <string name="msg_mf_uid_primary">Changement de l\'ID utilisateur principal en %s</string>
@@ -1033,6 +1061,7 @@
   <string name="msg_pr_error_key_not_found">Clef introuvable !</string>
   <string name="msg_pr_fetching">Obtention de la clef à modifier (%s)</string>
   <string name="msg_pr_subkey_match">Promotion de la sous-clef : %s</string>
+  <string name="msg_pr_subkey_nomatch">La sous-clef n\'est pas sur le jeton de sécurité : %s</string>
   <string name="msg_pr_success">Clef promue avec succès</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_dummy">Impossible de modifier un trousseau avec une clef maîtresse dépouillée !</string>
@@ -1103,7 +1132,7 @@
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se">Début de l\'opération de signature/chiffrement</string>
-  <string name="msg_se_input_bytes">Traitement de l\'entrée du tableau de bytes</string>
+  <string name="msg_se_input_bytes">Traitement de l\'entrée du tableau d\'octets</string>
   <string name="msg_se_input_uri">Traitement de l\'entrée de l\'URI</string>
   <string name="msg_se_error_no_input">Aucune entrée donnée !</string>
   <string name="msg_se_error_input_uri_not_found">Erreur d\'ouverture de l\'URI en lecture !</string>
@@ -1312,7 +1341,11 @@
   <string name="first_time_text1">Reprenez le contrôle de votre vie privée avec OpenKeychain |</string>
   <string name="first_time_create_key">Créer ma clef</string>
   <string name="first_time_import_key">Importer la clef d\'un fichier</string>
+  <string name="first_time_security_token">Utiliser le jeton de sécurité</string>
+  <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">Ignorer le paramétrage</string>
+  <string name="first_time_blank_security_token">Voulez-vous utiliser ce jeton de sécurité vide avec OpenKeychain ?\n\nVeuillez retirer le jeton de sécurité maintenant, vous serez informé quand elle sera requis de nouveau !</string>
+  <string name="first_time_blank_security_token_yes">Utiliser ce jeton de sécurité</string>
   <string name="backup_text">Les sauvegardes incluant vos propres clefs ne doivent jamais être partagées avec d\'autres personnes !</string>
   <string name="backup_all">Toutes les clefs  + vos propres clefs</string>
   <string name="backup_public_keys">Toutes les clefs</string>
@@ -1334,6 +1367,7 @@
   <string name="error_key_not_found">Clef introuvable !</string>
   <string name="error_key_processing">Erreur de traitement de la clef !</string>
   <string name="key_stripped">dépouillée</string>
+  <string name="key_divert">dévier vers le jeton de sécurité</string>
   <string name="key_no_passphrase">aucun mot de passe</string>
   <string name="key_unavailable">non disponible</string>
   <string name="secret_cannot_multiple">Vos propres clefs ne peuvent être supprimées qu\'individuellement !</string>
@@ -1382,11 +1416,44 @@
   <string name="nfc_wrong_tag">Mauvaise balise. Veuillez ressayer.</string>
   <string name="enable_nfc">Veuillez activer la NFC dans vos paramètres</string>
   <string name="no_nfc_support">Cet appareil ne prends pas en charge la NFC</string>
+  <string name="nfc_write_successful">Écrit avec succès sur la balise NFC</string>
   <string name="unlocked">Déverrouillé</string>
   <string name="nfc_settings">Paramètres</string>
+  <string name="snack_security_token_view">Visualiser</string>
+  <string name="snack_security_token_import">Importer</string>
   <string name="button_bind_key">Relier la clef</string>
+  <string name="security_token_serial_no">No de série : %s</string>
+  <string name="security_token_key_holder">Détenteur de la clef :</string>
+  <string name="security_token_key_holder_not_set"><![CDATA[Détenteur de la clef : <not set>]]></string>
+  <string name="security_token_status_bound">Le jeton de sécurité correspond et est relié à la clef</string>
+  <string name="security_token_status_unbound">Le jeton de sécurité correspond et peut être relié à la clef</string>
+  <string name="security_token_status_partly">Le jeton de sécurité correspond et est partiellement relié à la clef</string>
+  <string name="security_token_create">Tenez le jeton de sécurité contre le dos de votre appareil.</string>
+  <string name="security_token_reset_or_import">Ce jeton de sécurité contient déjà une clef. Vous pouvez importer la clef grâce au nuage, ou réinitialiser le jeton de sécurité.</string>
   <string name="btn_import">Importer</string>
   <string name="btn_reset">Réinitialiser</string>
+  <string name="security_token_import_radio">Importer la clef</string>
+  <string name="security_token_reset_radio">Réinitialiser le jeton de sécurité</string>
+  <string name="security_token_reset_warning">La réinitialisation du jeton de sécurité détruit complètement les clefs qu\'il contient. Par la suite, vous ne pourrez plus déchiffrer les messages/les fichiers chiffrés avec cette clef !</string>
+  <string name="snack_security_token_other">Une clef différente est stockée sur le jeton de sécurité !</string>
+  <string name="security_token_error">Erreur : %s</string>
+  <plurals name="security_token_error_pin">
+    <item quantity="one">NIP erroné !\nil reste %d essai</item>
+    <item quantity="other">NIP erroné !\nil reste %d essais</item>
+  </plurals>
+  <string name="security_token_error_terminated">Le jeton de sécurité est en état de fin d\'opération.</string>
+  <string name="security_token_error_wrong_length">Le NIP saisi est trop court. Les NIP comportent au moins 6 chiffres.</string>
+  <string name="security_token_error_conditions_not_satisfied">Les conditions d\'utilisation ne sont pas satisfaites.</string>
+  <string name="security_token_error_security_not_satisfied">L\'état de sécurité n\'est pas satisfait.</string>
+  <string name="security_token_error_authentication_blocked">NIP bloqué après trop d\'essais.</string>
+  <string name="security_token_error_data_not_found">Clef ou objet introuvable.</string>
+  <string name="security_token_error_unknown">Erreur inconnue</string>
+  <string name="security_token_error_bad_data">Le jeton de sécurité a signalé des données invalides.</string>
+  <string name="security_token_error_chaining_error">Le jeton de sécurité attendait la dernière commande d\'une chaîne.</string>
+  <string name="security_token_error_header">Le jeton de sécurité a signalé %s octets invalides.</string>
+  <string name="security_token_error_tag_lost">Le jeton de sécurité a été retiré trop tôt. Gardez le jeton de sécurité contre le dos jusqu\'à la fin de l\'opération.</string>
+  <string name="security_token_error_iso_dep_not_supported">La balise ne prend pas en charge ISO-DEP (ISO 14443-4)</string>
+  <string name="security_token_error_try_again">Ressayer</string>
   <string name="btn_delete_original">Supprimer le fichier original</string>
   <string name="snack_encrypt_filenames_on">Les noms de fichiers <b>sont</b> chiffrés.</string>
   <string name="snack_encrypt_filenames_off">Les noms de fichiers <b>ne sont pas</b> chiffrés.</string>
@@ -1515,13 +1582,15 @@
   <string name="title_edit_subkeys">Modifier les sous-clefs</string>
   <string name="btn_search_for_query">Rechercher\n« %s »</string>
   <string name="cache_ttl_lock_screen">jusqu\'à ce que l\'écran soit éteint</string>
-  <string name="cache_ttl_five_minutes">pendant cinq minutes</string>
+  <string name="cache_ttl_ten_minutes">pendant dix minutes</string>
+  <string name="cache_ttl_thirty_minutes">pendant trente minutes</string>
   <string name="cache_ttl_one_hour">pendant une heure</string>
   <string name="cache_ttl_three_hours">pendant trois heures</string>
   <string name="cache_ttl_one_day">pendant un jour</string>
   <string name="cache_ttl_three_days">pendant trois jours</string>
+  <string name="cache_ttl_forever">permanent</string>
   <string name="settings_cache_select_three">En choisir jusqu\'à trois.</string>
   <string name="settings_cache_ttl_at_least_one">Vous devez choisir au moins un élément !</string>
   <string name="settings_cache_ttl_max_three">Vous ne pouvez pas choisir plus de trois éléments !</string>
-  <string name="remember">Se souvenir</string>
+  <string name="remember">Mémorisation</string>
 </resources>

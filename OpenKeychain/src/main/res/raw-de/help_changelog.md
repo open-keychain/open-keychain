@@ -2,8 +2,9 @@
 
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
+  * Bearbeiten von Schlüsseln überarbeitet
+  * Wähle die Zeit wie lange dein Passwort erinnert wird beim jedem Eingeben
+  * Facebook key import
 
 
 ## 3.7

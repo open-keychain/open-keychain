@@ -32,10 +32,12 @@
   <string name="title_help">ヘルプ</string>
   <string name="title_log_display">ログ</string>
   <string name="title_exchange_keys">鍵の交換</string>
+  <string name="title_advanced_key_info">詳細</string>
   <string name="title_delete_secret_key">あなたの鍵 \'%s\' を削除しますか?</string>
   <string name="title_manage_my_keys">自分の鍵の管理</string>
   <!--section-->
   <string name="section_user_ids">ユーザID</string>
+  <string name="section_security_token">セキュリティ トークン</string>
   <string name="section_linked_system_contact">リンクしているシステムの連絡先</string>
   <string name="section_keybase_proofs">Keybase.io 検証</string>
   <string name="section_should_you_trust">この鍵を信頼しますか?</string>
@@ -115,6 +117,7 @@
   <string name="menu_select_all">すべて選択</string>
   <string name="menu_export_all_keys">すべての鍵のエクスポート</string>
   <string name="menu_update_all_keys">全部のキーをアップデートする</string>
+  <string name="menu_advanced">詳細</string>
   <string name="menu_certify_fingerprint">指紋による確認</string>
   <string name="menu_certify_fingerprint_phrases">語句による検証</string>
   <string name="menu_share_log">ログを共有</string>
@@ -136,6 +139,7 @@
   <string name="label_file_ascii_armor">アスキー形式ファイルを有効</string>
   <string name="label_write_version_header">OpenKeychainの利用を通知する</string>
   <string name="label_write_version_header_summary">OpenPGPの 署名、暗号文、そしてエクスポートした鍵に  \'OpenKeychain v2.7\' と書くようになりました</string>
+  <string name="label_use_num_keypad_for_security_token_pin">セキュリティトークンPINで数字キーパッドを使う</string>
   <string name="label_asymmetric_from">署名:</string>
   <string name="label_to">暗号化...</string>
   <string name="label_delete_after_encryption">暗号化後にファイル削除</string>
@@ -272,6 +276,11 @@
   <string name="passphrase_for_backup">バックアップコードの入力</string>
   <string name="passphrase_for">\'%s\' にパスワードを入れてください</string>
   <string name="pin_for">\'%s\' にPINを入力してください</string>
+  <string name="security_token_pin_for">\'%s\' のセキュリティトークンにアクセスするためのPINを入力してください</string>
+  <string name="security_token_nfc_text">セキュリティトークンをあなたのデバイスの背中にあるNFCの印に対向させて固定してください。</string>
+  <string name="security_token_nfc_wait">セキュリティトークンを背面に保持してください!</string>
+  <string name="security_token_nfc_finished">セキュリティトークンを取り外してください。</string>
+  <string name="security_token_nfc_try_again_text">セキュリティトークンを取り外し、再実行を押してください。</string>
   <string name="file_delete_confirmation_title">オリジナルのファイルを削除しますか?</string>
   <string name="file_delete_confirmation">以下のファイルを削除します:%s</string>
   <string name="file_delete_successful">%1$d 中の %2$d のファイルの削除が完了しました。%3$s</string>
@@ -516,6 +525,8 @@
   <string name="intent_send_encrypt">OpenKeychainで暗号化</string>
   <string name="intent_send_decrypt">OpenKeychainで復号化</string>
   <!--Remote API-->
+  <string name="api_settings_show_info">詳細情報を表示</string>
+  <string name="api_settings_hide_info">詳細情報を非表示</string>
   <string name="api_settings_no_key">鍵が選択されていない</string>
   <string name="api_settings_select_key">鍵の選択</string>
   <string name="api_settings_create_key">新しい鍵の生成</string>
@@ -528,6 +539,7 @@
   <string name="api_settings_package_name">パッケージ名</string>
   <string name="api_settings_package_certificate">パッケージの署名 SHA-256</string>
   <string name="api_settings_accounts">アカウント(古いAPI)</string>
+  <string name="api_settings_advanced">詳細</string>
   <string name="api_settings_allowed_keys">受け入れる鍵</string>
   <string name="api_settings_settings">設定</string>
   <string name="api_settings_key">アカウント鍵:</string>
@@ -586,6 +598,7 @@
   <string name="key_view_action_share_nfc">NFC越しに共有</string>
   <string name="key_view_action_upload">鍵サーバへアップロード</string>
   <string name="key_view_tab_main">情報</string>
+  <string name="key_view_tab_start">開始</string>
   <string name="key_view_tab_share">共有</string>
   <string name="key_view_tab_keys">副鍵</string>
   <string name="key_view_tab_certs">証明</string>
@@ -645,10 +658,19 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">このIDは破棄されています。続けることができません。</string>
   <string name="edit_key_edit_subkey_title">アクションを選んでください!</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>期限の変更</item>
+    <item>副鍵の破棄</item>
+    <item>副鍵のストリップ</item>
+    <item>副鍵をセキュリティトークンへ移動</item>
+  </string-array>
   <string name="edit_key_new_subkey">新しい副鍵</string>
   <string name="edit_key_select_flag">最低1つフラグを選択してください!</string>
   <string name="edit_key_error_add_identity">最低でも1つのユーザIDを追加!</string>
   <string name="edit_key_error_add_subkey">最低でも1つの副鍵を追加!</string>
+  <string name="edit_key_error_bad_security_token_algo">セキュリティトークンでサポートされないアルゴリズムです!</string>
+  <string name="edit_key_error_bad_security_token_size">セキュリティトークンで鍵サイズをサポートしません!</string>
+  <string name="edit_key_error_bad_security_token_stripped">セキュリティトークンに鍵を移動できません (取り外しているか、\'カードへ転換\'されています)</string>
   <!--Create key-->
   <string name="create_key_upload">インターネットでの同期</string>
   <string name="create_key_empty">このフィールドは必須です</string>
@@ -925,6 +947,7 @@
   <string name="msg_cr_error_flags_ecdh">問題のある鍵フラグが選択されています、楕円曲線DHは署名に使えません!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">鍵輪 %s を変更中</string>
+  <string name="msg_mf_divert">セキュリティトークンでの暗号化操作に切り替え</string>
   <string name="msg_mf_error_divert_newsub">\'カードに迂回\' の主鍵に対する、新しい副鍵の作成はサポートされていません!</string>
   <string name="msg_mf_error_divert_serial">カードに対比した鍵のシリアル番号には16バイトは必要です!これはプロラグラムエラーで、バグレポートでファイルの提出をお願いします!</string>
   <string name="msg_mf_error_encode">エンコード例外!</string>
@@ -943,7 +966,9 @@
   <string name="msg_mf_error_sig">署名例外!</string>
   <string name="msg_mf_error_sub_stripped">ストリップした副鍵である %s は変更できません!</string>
   <string name="msg_mf_error_subkey_missing">見付からない副鍵 %s の操作をしようとした!</string>
+  <string name="msg_mf_error_conflicting_nfc_commands">カード上に署名を作るのと同じ操作で、セキュリティトークンに鍵を移動できません</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">スマートカードでは鍵の種別ごとに1つのスロットのみサポートします。</string>
+  <string name="msg_mf_error_invalid_flags_for_keytocard">セキュリティトークンの鍵に不適合な鍵のフラグです。</string>
   <string name="msg_mf_master">マスター認証を変更</string>
   <string name="msg_mf_notation_empty">空のノーテーションパケットを追加</string>
   <string name="msg_mf_notation_pin">PINノーテーションパケットを追加</string>
@@ -957,12 +982,15 @@
   <string name="msg_mf_primary_new">新しい主ユーザIDで新しい証明を生成中</string>
   <string name="msg_mf_restricted_mode">制限操作モードへ変更</string>
   <string name="msg_mf_subkey_change">副鍵 %s を変更中</string>
+  <string name="msg_mf_require_divert">セキュリティトークンでの暗号化操作に切り替えます</string>
   <string name="msg_mf_require_passphrase">操作にパスワードが必要です</string>
   <string name="msg_mf_subkey_new">種類%sの新しい副鍵を追加</string>
   <string name="msg_mf_subkey_new_id">新しい副鍵 ID: %s</string>
   <string name="msg_mf_error_past_expiry">期限切れ日を過去にはできません!</string>
   <string name="msg_mf_subkey_revoke">副鍵 %s を破棄中</string>
   <string name="msg_mf_subkey_strip">副鍵 %s のストリップ中</string>
+  <string name="msg_mf_keytocard_start">副鍵 %s をセキュリティトークンへ移動</string>
+  <string name="msg_mf_keytocard_finish">%1$s をセキュリティトークン %2$s へ移動しました</string>
   <string name="msg_mf_success">鍵輪の変更に成功</string>
   <string name="msg_mf_uid_add">ユーザID %s を追加中</string>
   <string name="msg_mf_uid_primary">主UIDを %s に変更中</string>
@@ -1017,6 +1045,7 @@
   <string name="msg_pr_error_key_not_found">鍵が見当りません!</string>
   <string name="msg_pr_fetching">フェッチした鍵を変更 (%s)</string>
   <string name="msg_pr_subkey_match">副鍵を昇格: %s</string>
+  <string name="msg_pr_subkey_nomatch">セキュリティトークンに副鍵がありません: %s</string>
   <string name="msg_pr_success">鍵は正常に昇格しました</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_dummy">ストリップした主鍵では鍵輪を編集できません!</string>
@@ -1287,7 +1316,11 @@
   <string name="first_time_text1">OpenKeychainであなたのプライバシーを取り戻しましょう!</string>
   <string name="first_time_create_key">自分のキーを作る</string>
   <string name="first_time_import_key">ファイルから鍵をインポート</string>
+  <string name="first_time_security_token">セキュリティトークンを使用する</string>
+  <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">セットアップをスキップ</string>
+  <string name="first_time_blank_security_token">OpenKeychainで、この空のセキュリティトークンを使用しますか?\n\nセキュリティトークンを取り除いてください。再度必要になったときにプロンプトが表示されます!</string>
+  <string name="first_time_blank_security_token_yes">このセキュリティトークンを使用する</string>
   <string name="backup_text">あなた自身の鍵を含んだバックアップは、決して他の人と共有しないでください!</string>
   <string name="backup_all">すべての鍵とあなた所有の鍵</string>
   <string name="backup_public_keys">すべての鍵</string>
@@ -1309,6 +1342,7 @@
   <string name="error_key_not_found">鍵が見当りません!</string>
   <string name="error_key_processing">鍵処理中のエラー!</string>
   <string name="key_stripped">スリム化</string>
+  <string name="key_divert">セキュリティトークンへ転換</string>
   <string name="key_no_passphrase">パスワードなし</string>
   <string name="key_unavailable">存在しない</string>
   <string name="secret_cannot_multiple">あなたが所有者の鍵は個別にしか削除できません!</string>
@@ -1357,11 +1391,43 @@
   <string name="nfc_wrong_tag">ダメなタグ。再度実施してください。</string>
   <string name="enable_nfc">設定からNFCを有効にしてください</string>
   <string name="no_nfc_support">この装置ではNFCをサポートしていません</string>
+  <string name="nfc_write_successful">NFCタグに書き込みました!</string>
   <string name="unlocked">アンロック</string>
   <string name="nfc_settings">設定</string>
+  <string name="snack_security_token_view">閲覧</string>
+  <string name="snack_security_token_import">インポート</string>
   <string name="button_bind_key">鍵と紐付け</string>
+  <string name="security_token_serial_no">シリアルNo: %s</string>
+  <string name="security_token_key_holder">鍵ホルダ:</string>
+  <string name="security_token_key_holder_not_set"><![CDATA[鍵ホルダ: <未設定>]]></string>
+  <string name="security_token_status_bound">セキュリティトークンが一致、鍵に紐付けます</string>
+  <string name="security_token_status_unbound">セキュリティトークンが一致、鍵に紐付けることができます</string>
+  <string name="security_token_status_partly">セキュリティトークンが一致、鍵が部分的に紐付いています</string>
+  <string name="security_token_create">あなたのデバイスの背面にセキュリティトークンを保持してください。</string>
+  <string name="security_token_reset_or_import">このセキュリティトークンは既に鍵を含んでいます。クラウドを使用して鍵をインポートしたり、セキュリティトークンをリセットすることができます。</string>
   <string name="btn_import">インポート</string>
   <string name="btn_reset">リセット</string>
+  <string name="security_token_import_radio">鍵のインポート</string>
+  <string name="security_token_reset_radio">セキュリティトークンのリセット</string>
+  <string name="security_token_reset_warning">セキュリティトークンをリセットすると、その上の鍵を完全に破壊します。その後は、この鍵で暗号化されたメッセージ/ファイルを復号化することができなくなります!</string>
+  <string name="snack_security_token_other">違う鍵がセキュリティトークンに格納されています!</string>
+  <string name="security_token_error">エラー: %s</string>
+  <plurals name="security_token_error_pin">
+    <item quantity="other">PINが正しくありません!\n再挑戦はあと%d回です。</item>
+  </plurals>
+  <string name="security_token_error_terminated">セキュリティトークンが停止状態です。</string>
+  <string name="security_token_error_wrong_length">入力されたPINが短すぎます。 PINの長さは少なくとも6桁にしてください。</string>
+  <string name="security_token_error_conditions_not_satisfied">使用条件を満たしていません。</string>
+  <string name="security_token_error_security_not_satisfied">セキュリティステータスを満していません。</string>
+  <string name="security_token_error_authentication_blocked">試行回数が多すぎるためPINがブロックされています。</string>
+  <string name="security_token_error_data_not_found">鍵もしくはオブジェクトが見つかりません。</string>
+  <string name="security_token_error_unknown">不明なエラー</string>
+  <string name="security_token_error_bad_data">セキュリティトークンが不正なデータを報告しました。</string>
+  <string name="security_token_error_chaining_error">セキュリティトークンがチェーン中の最後のコマンドを待っています。</string>
+  <string name="security_token_error_header">セキュリティトークンが不正な%sバイトを報告しました。</string>
+  <string name="security_token_error_tag_lost">セキュリティトークンを取り出すのが早すぎました。操作が完了するまでセキュリティトークンを背面に保持してしてください。</string>
+  <string name="security_token_error_iso_dep_not_supported">タグは ISO-DEP (ISO 14443-4) をサポートしていません</string>
+  <string name="security_token_error_try_again">再実行</string>
   <string name="btn_delete_original">オリジナルのファイルを削除します</string>
   <string name="snack_encrypt_filenames_on">ファイル名を暗号化<b>した</b>。</string>
   <string name="snack_encrypt_filenames_off">ファイル名を暗号化<b>していません</b>。</string>
@@ -1489,11 +1555,13 @@
   <string name="title_edit_subkeys">副鍵を編集</string>
   <string name="btn_search_for_query">検索\n\'%s\'</string>
   <string name="cache_ttl_lock_screen">画面オフまで</string>
-  <string name="cache_ttl_five_minutes">5分間</string>
+  <string name="cache_ttl_ten_minutes">10分間</string>
+  <string name="cache_ttl_thirty_minutes">30分間</string>
   <string name="cache_ttl_one_hour">1時間</string>
   <string name="cache_ttl_three_hours">3時間</string>
   <string name="cache_ttl_one_day">1日間</string>
   <string name="cache_ttl_three_days">3日間</string>
+  <string name="cache_ttl_forever">永遠</string>
   <string name="settings_cache_select_three">3つまで選んでください。</string>
   <string name="settings_cache_ttl_at_least_one">少なくとも項目を1つ選択する必要があります!</string>
   <string name="settings_cache_ttl_max_three">3つ以上の項目を選択することはできません!</string>
