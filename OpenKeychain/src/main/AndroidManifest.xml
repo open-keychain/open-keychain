@@ -772,6 +772,17 @@
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />
 
+        <activity
+            android:name=".ui.PanicResponderActivity"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="info.guardianproject.panic.action.TRIGGER" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <!-- Internal services/content providers (not exported) -->
         <service
             android:name=".service.PassphraseCacheService"
