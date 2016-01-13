@@ -23,27 +23,30 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-
-public class PanicResponderActivity extends Activity {
-
-    public static final String PANIC_TRIGGER_ACTION = "info.guardianproject.panic.action.TRIGGER";
+public class ExitActivity extends Activity {
 
     @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        if (intent != null && PANIC_TRIGGER_ACTION.equals(intent.getAction())) {
-            PassphraseCacheService.clearCachedPassphrases(this);
-            ExitActivity.exitAndRemoveFromRecentApps(this);
-        }
-
         if (Build.VERSION.SDK_INT >= 21) {
             finishAndRemoveTask();
         } else {
             finish();
         }
+
+        System.exit(0);
+    }
+
+    public static void exitAndRemoveFromRecentApps(Activity activity) {
+        Intent intent = new Intent(activity, ExitActivity.class);
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+        activity.startActivity(intent);
     }
 }
