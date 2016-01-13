@@ -368,7 +368,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 @Override
                 public void onClick(View v) {
 
-                    final Passphrase passphrase;
                     if (mRequiredInput.mType == RequiredInputType.BACKUP_CODE) {
                         StringBuilder backupCodeInput = new StringBuilder(26);
                         for (EditText editText : mBackupCodeEditText) {
@@ -380,16 +379,18 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         }
                         backupCodeInput.deleteCharAt(backupCodeInput.length() - 1);
 
-                        passphrase = new Passphrase(backupCodeInput.toString());
-                    } else {
-                        passphrase = new Passphrase(mPassphraseEditText);
+                        Passphrase passphrase = new Passphrase(backupCodeInput.toString());
+                        finishCaching(passphrase);
+
+                        return;
                     }
 
+                    final Passphrase passphrase = new Passphrase(mPassphraseEditText);
                     final int timeToLiveSeconds = mTimeToLiveSpinner.getSelectedTimeToLive();
 
                     // Early breakout if we are dealing with a symmetric key
                     if (mSecretRing == null) {
-                        if ( ! mRequiredInput.mSkipCaching) {
+                        if (!mRequiredInput.mSkipCaching) {
                             PassphraseCacheService.addCachedPassphrase(getActivity(),
                                     Constants.key.symmetric, Constants.key.symmetric, passphrase,
                                     getString(R.string.passp_cache_notif_pwd), timeToLiveSeconds);
