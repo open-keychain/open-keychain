@@ -28,6 +28,7 @@ import java.util.Random;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -39,8 +40,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -85,6 +90,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
     private Uri mCachedBackupUri;
     private boolean mShareNotSave;
+    private boolean mDebugModeAcceptAnyCode;
 
     public static BackupCodeFragment newInstance(long[] masterKeyIds, boolean exportSecret) {
         BackupCodeFragment frag = new BackupCodeFragment();
@@ -103,6 +109,41 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     }
 
     BackupCodeState mCurrentState = BackupCodeState.STATE_UNINITIALIZED;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (Constants.DEBUG) {
+            setHasOptionsMenu(true);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        if (Constants.DEBUG) {
+            inflater.inflate(R.menu.backup_fragment_debug_menu, menu);
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (Constants.DEBUG && item.getItemId() == R.id.debug_accept_any_log) {
+            boolean newCheckedState = !item.isChecked();
+            item.setChecked(newCheckedState);
+            if (newCheckedState && TextUtils.isEmpty(mCodeEditText[0].getText())) {
+                mCodeEditText[0].setText("ABCDEF");
+                mCodeEditText[1].setText("GHIJKL");
+                mCodeEditText[2].setText("MNOPQR");
+                mCodeEditText[3].setText("STUVW");
+                Notify.create(getActivity(), "Actual backup code is all 'A's", Style.WARN).show();
+            }
+            mDebugModeAcceptAnyCode = newCheckedState;
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     void switchState(BackupCodeState state, boolean animate) {
 
@@ -325,6 +366,11 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
     private void checkIfCodeIsCorrect() {
 
+        if (Constants.DEBUG && mDebugModeAcceptAnyCode) {
+            switchState(BackupCodeState.STATE_OK, true);
+            return;
+        }
+
         StringBuilder backupCodeInput = new StringBuilder(26);
         for (EditText editText : mCodeEditText) {
             if (editText.getText().length() < 6) {
@@ -509,7 +555,11 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     @Nullable
     @Override
     public BackupKeyringParcel createOperationInput() {
-        return new BackupKeyringParcel(new Passphrase(mBackupCode), mMasterKeyIds, mExportSecret, mCachedBackupUri);
+        Passphrase passphrase = new Passphrase(mBackupCode);
+        if (Constants.DEBUG && mDebugModeAcceptAnyCode) {
+            passphrase = new Passphrase("AAAAAA-AAAAAA-AAAAAA-AAAAAA");
+        }
+        return new BackupKeyringParcel(passphrase, mMasterKeyIds, mExportSecret, mCachedBackupUri);
     }
 
     @Override
