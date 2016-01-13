@@ -77,7 +77,7 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
         // NOTE: ACTION_NDEF_DISCOVERED and not ACTION_TAG_DISCOVERED like in BaseNfcActivity
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
 
-            handleIntentInBackground(getIntent());
+            mTagDispatcher.interceptIntent(getIntent());
 
             setTitle(R.string.title_manage_my_keys);
 
