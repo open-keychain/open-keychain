@@ -22,3 +22,6 @@
 	path = extern/safeslinger-exchange
 	url = https://github.com/open-keychain/exchange-android
 	ignore = dirty
+[submodule "OpenKeychain/src/test/resources/openpgp-interop"]
+	path = OpenKeychain/src/test/resources/openpgp-interop
+	url = https://github.com/google/openpgp-interop

@@ -250,8 +250,21 @@ public class UncachedKeyRing {
      *  - Remove all non-verifying self-certificates
      *  - Remove all "future" self-certificates
      *  - Remove all certificates flagged as "local"
-     *  - Remove all certificates which are superseded by a newer one on the same target,
-     *      including revocations with later re-certifications.
+     *  - For UID certificates, remove all certificates which are
+     *      superseded by a newer one on the same target, including
+     *      revocations with later re-certifications.
+     *  - For subkey certifications, remove all certificates which
+     *      are superseded by a newer one on the same target, unless
+     *      it encounters a revocation certificate. The revocation
+     *      certificate is considered to permanently revoke the key,
+     *      even if contains later re-certifications.
+     *  This is the "behavior in practice" used by (e.g.) GnuPG, and
+     *  the rationale for both can be found as comments in the GnuPG
+     *  source.
+     *  UID signatures:
+     *  https://github.com/mtigas/gnupg/blob/50c98c7ed6b542857ee2f902eca36cda37407737/g10/getkey.c#L1668-L1674
+     *  Subkey signatures:
+     *  https://github.com/mtigas/gnupg/blob/50c98c7ed6b542857ee2f902eca36cda37407737/g10/getkey.c#L1990-L1997
      *  - Remove all certificates in other positions if not of known type:
      *   - key revocation signatures on the master key
      *   - subkey binding signatures for subkeys
@@ -278,8 +291,21 @@ public class UncachedKeyRing {
      *  - Remove all non-verifying self-certificates
      *  - Remove all "future" self-certificates
      *  - Remove all certificates flagged as "local"
-     *  - Remove all certificates which are superseded by a newer one on the same target,
-     *      including revocations with later re-certifications.
+     *  - For UID certificates, remove all certificates which are
+     *      superseded by a newer one on the same target, including
+     *      revocations with later re-certifications.
+     *  - For subkey certifications, remove all certificates which
+     *      are superseded by a newer one on the same target, unless
+     *      it encounters a revocation certificate. The revocation
+     *      certificate is considered to permanently revoke the key,
+     *      even if contains later re-certifications.
+     *  This is the "behavior in practice" used by (e.g.) GnuPG, and
+     *  the rationale for both can be found as comments in the GnuPG
+     *  source.
+     *  UID signatures:
+     *  https://github.com/mtigas/gnupg/blob/50c98c7ed6b542857ee2f902eca36cda37407737/g10/getkey.c#L1668-L1674
+     *  Subkey signatures:
+     *  https://github.com/mtigas/gnupg/blob/50c98c7ed6b542857ee2f902eca36cda37407737/g10/getkey.c#L1990-L1997
      *  - Remove all certificates in other positions if not of known type:
      *   - key revocation signatures on the master key
      *   - subkey binding signatures for subkeys
@@ -950,12 +976,6 @@ public class UncachedKeyRing {
                     }
 
                     selfCert = zert;
-                    // if this is newer than a possibly existing revocation, drop that one
-                    if (revocation != null && selfCert.getCreationTime().after(revocation.getCreationTime())) {
-                        log.add(LogType.MSG_KC_SUB_REVOKE_DUP, indent);
-                        redundantCerts += 1;
-                        revocation = null;
-                    }
 
                 // it must be a revocation, then (we made sure above)
                 } else {
@@ -974,8 +994,9 @@ public class UncachedKeyRing {
                         continue;
                     }
 
-                    // if there is a certification that is newer than this revocation, don't bother
-                    if (selfCert != null && selfCert.getCreationTime().after(cert.getCreationTime())) {
+                    // If we already have a newer revocation cert, skip this one.
+                    if (revocation != null &&
+                        revocation.getCreationTime().after(cert.getCreationTime())) {
                         log.add(LogType.MSG_KC_SUB_REVOKE_DUP, indent);
                         redundantCerts += 1;
                         continue;
