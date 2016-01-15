@@ -1720,5 +1720,14 @@
     <string name="settings_cache_ttl_at_least_one">"At least one item must be selected!"</string>
     <string name="settings_cache_ttl_max_three">"Can\'t select more than three items!"</string>
     <string name="remember">"Remember"</string>
+    <string name="security_token_error_pgp_app_not_installed">"No PGP app was found on the security token"</string>
+    <string name="prompt_fidesmo_pgp_install_title">"Install PGP?"</string>
+    <string name="prompt_fidesmo_pgp_install_message">"There was no PGP app available on your Fidesmo device."</string>
+    <string name="prompt_fidesmo_pgp_install_button_positive">"Install"</string>
+    <string name="prompt_fidesmo_pgp_install_button_negative">"Cancel"</string>
+    <string name="prompt_fidesmo_app_install_title">"Install Fidesmo?"</string>
+    <string name="prompt_fidesmo_app_install_message">"To install PGP you need the Fidesmo Android app."</string>
+    <string name="prompt_fidesmo_app_install_button_positive">"Install"</string>
+    <string name="prompt_fidesmo_app_install_button_negative">"Cancel"</string>
 
 </resources>
