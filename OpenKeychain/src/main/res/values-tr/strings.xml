@@ -387,7 +387,7 @@
   <string name="msg_del_error_empty">Silinecek bir şey yok!</string>
   <!--Linked Identity verification-->
   <string name="msg_acc_saved">Hesap kaydedildi</string>
-  <string name="msg_download_success">Başarıyla indirildi!</string>
+  <string name="msg_get_success">Başarıyla indirildi!</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->

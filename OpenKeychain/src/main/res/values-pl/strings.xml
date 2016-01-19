@@ -517,7 +517,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   </plurals>
   <!--Linked Identity verification-->
   <string name="msg_acc_saved">Zapisano konto</string>
-  <string name="msg_download_success">Pobrano pomyślnie!</string>
+  <string name="msg_get_success">Pobrano pomyślnie!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">Część wczytanego pliku jest poprawnym obiektem OpenPGP, ale nie jest kluczem OpenPGP</item>
     <item quantity="few">Część wczytanego pliku to poprawne obiekty OpenPGP, ale nie są kluczami OpenPGP</item>

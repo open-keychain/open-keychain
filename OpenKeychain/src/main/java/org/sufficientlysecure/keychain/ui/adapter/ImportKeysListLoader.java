@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.util.LongSparseArray;
 
@@ -34,6 +35,8 @@ import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.ui.ImportKeysListFragment.BytesLoaderState;
@@ -65,16 +68,25 @@ public class ImportKeysListLoader
             return mEntryListWrapper;
         }
 
-        GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_OK, null);
-        mEntryListWrapper = new AsyncTaskResultWrapper<>(mData, getKeyResult);
+        {
+            GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_OK, null);
+            mEntryListWrapper = new AsyncTaskResultWrapper<>(mData, getKeyResult);
+        }
 
         if (mLoaderState == null) {
             Log.e(Constants.TAG, "Input data is null!");
             return mEntryListWrapper;
         }
 
-        InputData inputData = getInputData(getContext(), mLoaderState);
-        generateListOfKeyrings(inputData);
+        try {
+            InputData inputData = getInputData(getContext(), mLoaderState);
+            generateListOfKeyrings(inputData);
+        } catch (FileNotFoundException e) {
+            OperationLog log = new OperationLog();
+            log.add(LogType.MSG_GET_FILE_NOT_FOUND, 0);
+            GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_ERROR_FILE_NOT_FOUND, log);
+            mEntryListWrapper = new AsyncTaskResultWrapper<>(mData, getKeyResult);
+        }
 
         return mEntryListWrapper;
     }
@@ -129,25 +141,22 @@ public class ImportKeysListLoader
             OperationResult.OperationLog log = new OperationResult.OperationLog();
             log.add(OperationResult.LogType.MSG_GET_NO_VALID_KEYS, 0);
             GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_ERROR_NO_VALID_KEYS, log);
-            mEntryListWrapper = new AsyncTaskResultWrapper<>
-                    (mData, getKeyResult);
+            mEntryListWrapper = new AsyncTaskResultWrapper<>(mData, getKeyResult);
         }
     }
 
-    private static InputData getInputData(Context context, BytesLoaderState loaderState) {
-        InputData inputData = null;
+    @NonNull
+    private static InputData getInputData(Context context, BytesLoaderState loaderState) throws FileNotFoundException {
+        InputData inputData;
         if (loaderState.mKeyBytes != null) {
             inputData = new InputData(new ByteArrayInputStream(loaderState.mKeyBytes), loaderState.mKeyBytes.length);
         } else if (loaderState.mDataUri != null) {
-            try {
-                InputStream inputStream = context.getContentResolver().openInputStream(loaderState.mDataUri);
-                long length = FileHelper.getFileSize(context, loaderState.mDataUri, -1);
+            InputStream inputStream = context.getContentResolver().openInputStream(loaderState.mDataUri);
+            long length = FileHelper.getFileSize(context, loaderState.mDataUri, -1);
 
-                inputData = new InputData(inputStream, length);
-            } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "FileNotFoundException!", e);
-                return null;
-            }
+            inputData = new InputData(inputStream, length);
+        } else {
+            throw new AssertionError("Loader state must contain bytes or a data URI. This is a bug!");
         }
 
         return inputData;

@@ -1040,16 +1040,16 @@
   </plurals>
   <!--Linked Identity verification-->
   <string name="msg_acc_saved">Account opgeslaan</string>
-  <string name="msg_download_success">Succesvol gedownload!</string>
-  <string name="msg_download_no_valid_keys">Geen geldige sleutels gevonden in bestand/klembord!</string>
+  <string name="msg_get_success">Succesvol gedownload!</string>
+  <string name="msg_get_no_valid_keys">Geen geldige sleutels gevonden in bestand/klembord!</string>
   <string name="msg_download_no_pgp_parts">TODO: meervouden!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">Deel van het geladen bestand is geldig OpenPGP object maar niet een OpenPGP sleutel</item>
     <item quantity="other">Delen van het geladen bestand zijn geldige OpenPGP objecten maar niet OpenPGP sleutels</item>
   </plurals>
-  <string name="msg_download_query_too_short">Zoekopdracht te kort. Gelieve je zoekopdracht te verfijnen!</string>
-  <string name="msg_download_too_many_responses">Zoekopdracht gaf te veel kandidaten. Gelieve je zoekopdracht te verfijnen!</string>
-  <string name="msg_download_query_too_short_or_too_many_responses">Geen of te veel sleutels werden gevonden. Gelieve je zoekopdracht te verfijnen!</string>
+  <string name="msg_get_query_too_short">Zoekopdracht te kort. Gelieve je zoekopdracht te verfijnen!</string>
+  <string name="msg_get_too_many_responses">Zoekopdracht gaf te veel kandidaten. Gelieve je zoekopdracht te verfijnen!</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">Geen of te veel sleutels werden gevonden. Gelieve je zoekopdracht te verfijnen!</string>
   <string name="msg_download_query_failed">Er trad een fout op bij het zoeken naar sleutels.</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">Keybaseverificatie voor %s wordt geprobeerd</string>

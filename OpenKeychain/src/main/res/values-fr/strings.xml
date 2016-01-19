@@ -1300,16 +1300,16 @@
   <string name="msg_data_ok">Traitement des données réussi</string>
   <string name="msg_data_skip_mime">L\'analyse MIME est ignorée</string>
   <string name="msg_acc_saved">Compte enregistré</string>
-  <string name="msg_download_success">Téléchargement réussi !</string>
-  <string name="msg_download_no_valid_keys">Aucune clef valide n\'a été trouvée dans le fichier/presse-papiers |</string>
+  <string name="msg_get_success">Téléchargement réussi !</string>
+  <string name="msg_get_no_valid_keys">Aucune clef valide n\'a été trouvée dans le fichier/presse-papiers |</string>
   <string name="msg_download_no_pgp_parts">À FAIRE : les pluriels !</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">une partie du fichier chargé est un objet OpenPGP valide mais pas une clef OpenPGP</item>
     <item quantity="other">certaines parties du fichier chargé sont des objets OpenPGP valides mais pas des clefs OpenPGP</item>
   </plurals>
-  <string name="msg_download_query_too_short">La requête de recherche est trop courte. Veuillez raffiner votre requête !</string>
-  <string name="msg_download_too_many_responses">La requête de recherche de clef a retourné trop de candidats. Veuillez raffiner votre requête !</string>
-  <string name="msg_download_query_too_short_or_too_many_responses">Soit aucune clef ou trop de clefs ont été trouvées. Veuillez améliorer votre requête !</string>
+  <string name="msg_get_query_too_short">La requête de recherche est trop courte. Veuillez raffiner votre requête !</string>
+  <string name="msg_get_too_many_responses">La requête de recherche de clef a retourné trop de candidats. Veuillez raffiner votre requête !</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">Soit aucune clef ou trop de clefs ont été trouvées. Veuillez améliorer votre requête !</string>
   <string name="msg_download_query_failed">Une erreur est survenue lors de la recherche de clefs.</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">Tentative de vérification « keybase » pour %s</string>

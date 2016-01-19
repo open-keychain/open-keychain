@@ -1227,16 +1227,16 @@
   <string name="msg_data_mime_type">Content-Type: %s</string>
   <string name="msg_data_ok">Los datos se procesaron exitosamente</string>
   <string name="msg_acc_saved">Cuenta guardada</string>
-  <string name="msg_download_success">¡Descargado con éxito!</string>
-  <string name="msg_download_no_valid_keys">¡No se encontraron claves válidas en el fichero/portapapeles!</string>
+  <string name="msg_get_success">¡Descargado con éxito!</string>
+  <string name="msg_get_no_valid_keys">¡No se encontraron claves válidas en el fichero/portapapeles!</string>
   <string name="msg_download_no_pgp_parts">PENDIENTE: ¡plurales!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">parte del archivo cargado es un objeto OpenPGP válido pero no una clave OpenPGP</item>
     <item quantity="other">partes del archivo cargado son objetos OpenPGP válidos pero no claves OpenPGP</item>
   </plurals>
-  <string name="msg_download_query_too_short">Solicitud de búsqueda demasiado corta. ¡Por favor refine su petición!</string>
-  <string name="msg_download_too_many_responses">La solicitud de búsqueda de clave devolvió demasiados candidatos. ¡Por favor refine su petición!</string>
-  <string name="msg_download_query_too_short_or_too_many_responses">O bien no hay claves o se han encontrado demasiadas. ¡Por favor mejore su petición!</string>
+  <string name="msg_get_query_too_short">Solicitud de búsqueda demasiado corta. ¡Por favor refine su petición!</string>
+  <string name="msg_get_too_many_responses">La solicitud de búsqueda de clave devolvió demasiados candidatos. ¡Por favor refine su petición!</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">O bien no hay claves o se han encontrado demasiadas. ¡Por favor mejore su petición!</string>
   <string name="msg_download_query_failed">Ocurrió un error al buscar claves.</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">Intentando la verificación con Keybase para %s</string>

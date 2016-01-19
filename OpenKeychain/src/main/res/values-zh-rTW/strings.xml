@@ -660,8 +660,8 @@
   <string name="msg_del_error_multi_secret">私鑰只能分別刪除！</string>
   <!--Linked Identity verification-->
   <string name="msg_acc_saved">帳戶已儲存</string>
-  <string name="msg_download_success">下載成功！</string>
-  <string name="msg_download_no_valid_keys">在檔案/剪貼簿中找不到有效的金鑰！</string>
+  <string name="msg_get_success">下載成功！</string>
+  <string name="msg_get_no_valid_keys">在檔案/剪貼簿中找不到有效的金鑰！</string>
   <string name="msg_download_query_failed">查詢金鑰的時候發生錯誤。</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->

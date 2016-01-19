@@ -1311,17 +1311,17 @@
   <string name="msg_data_ok">Обрада података је успела</string>
   <string name="msg_data_skip_mime">Прескачем рашчлањивање МИМЕ-а</string>
   <string name="msg_acc_saved">Налог је сачуван</string>
-  <string name="msg_download_success">Успешно преузето!</string>
-  <string name="msg_download_no_valid_keys">Нема исправних кључева у фајлу/клипборду!</string>
+  <string name="msg_get_success">Успешно преузето!</string>
+  <string name="msg_get_no_valid_keys">Нема исправних кључева у фајлу/клипборду!</string>
   <string name="msg_download_no_pgp_parts">УРАДИТИ: множине!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">део учитаног фајла је исправан ОпенПГП објекат али није ОпенПГП кључ</item>
     <item quantity="few">дела учитаног фајла су исправни ОпенПГП објекти али нису ОпенПГП кључеви</item>
     <item quantity="other">делови учитаног фајла су исправни ОпенПГП објекти али нису ОпенПГП кључеви</item>
   </plurals>
-  <string name="msg_download_query_too_short">Упит за претрагу је прекратак. Прецизирајте упит!</string>
-  <string name="msg_download_too_many_responses">Претрага кључева је вратила превише кандидата. Прецизирајте упит!</string>
-  <string name="msg_download_query_too_short_or_too_many_responses">Или није нађен ниједан кључ или их је нађено превише. Побољшајте ваш упит!</string>
+  <string name="msg_get_query_too_short">Упит за претрагу је прекратак. Прецизирајте упит!</string>
+  <string name="msg_get_too_many_responses">Претрага кључева је вратила превише кандидата. Прецизирајте упит!</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">Или није нађен ниједан кључ или их је нађено превише. Побољшајте ваш упит!</string>
   <string name="msg_download_query_failed">Дошло је до грешке приликом претраге кључева.</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">Проверавам %s на keybase.io</string>

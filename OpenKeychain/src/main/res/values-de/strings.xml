@@ -1300,16 +1300,16 @@
   <string name="msg_data_ok">Datenverarbeitung erfolgreich!</string>
   <string name="msg_data_skip_mime">Überspringe MIME-Parsing</string>
   <string name="msg_acc_saved">Benutzerkonto gespeichert</string>
-  <string name="msg_download_success">Erfolgreich heruntergeladen!</string>
-  <string name="msg_download_no_valid_keys">Keine gültigen Schlüssel in der Datei/Zwischenablage gefunden!</string>
+  <string name="msg_get_success">Erfolgreich heruntergeladen!</string>
+  <string name="msg_get_no_valid_keys">Keine gültigen Schlüssel in der Datei/Zwischenablage gefunden!</string>
   <string name="msg_download_no_pgp_parts">NOCH ZU MACHEN: Plurale!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">ein Teil der geladenen Datei ist ein gültiges OpenPGP-Objekt, aber kein OpenPGP-Schlüssel</item>
     <item quantity="other">Teile der geladenen Dateien sind gültige OpenPGP-Objekte, aber keine OpenPGP-Schlüssel</item>
   </plurals>
-  <string name="msg_download_query_too_short">Die Suchanfrage ist zu kurz, bitte die Suchanfrage verfeinern!</string>
-  <string name="msg_download_too_many_responses">Schlüsselsuchanfrage lieferte zu viele Kandidaten, bitte die Suchanfrage verfeinern!</string>
-  <string name="msg_download_query_too_short_or_too_many_responses">Entweder keine oder zu viele Schlüssel wurden gefunden, bitte die Suchanfrage prä­zi­sie­ren!</string>
+  <string name="msg_get_query_too_short">Die Suchanfrage ist zu kurz, bitte die Suchanfrage verfeinern!</string>
+  <string name="msg_get_too_many_responses">Schlüsselsuchanfrage lieferte zu viele Kandidaten, bitte die Suchanfrage verfeinern!</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">Entweder keine oder zu viele Schlüssel wurden gefunden, bitte die Suchanfrage prä­zi­sie­ren!</string>
   <string name="msg_download_query_failed">Beim Suchen der Schlüssel ist ein Fehler aufgetreten.</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">Versuche Keybase.io-Verifikation für %s</string>

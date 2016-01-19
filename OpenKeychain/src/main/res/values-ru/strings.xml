@@ -862,7 +862,7 @@
   <string name="msg_del_error_multi_secret">Секретные ключи можно удалять только по одному!</string>
   <!--Linked Identity verification-->
   <string name="msg_acc_saved">Аккаунт сохранен</string>
-  <string name="msg_download_success">Загрузка завершена!</string>
+  <string name="msg_get_success">Загрузка завершена!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">часть загруженного файла содержит данные OpenPGP, но это не ключ</item>
     <item quantity="few">части загруженного файла содержат данные OpenPGP, но это не ключ</item>

@@ -44,12 +44,13 @@ public class GetKeyResult extends InputPendingResult {
         super(log, requiredInput, cryptoInputParcel);
     }
 
-    public static final int RESULT_ERROR_NO_VALID_KEYS = RESULT_ERROR + 8;
-    public static final int RESULT_ERROR_NO_PGP_PARTS = RESULT_ERROR + 16;
-    public static final int RESULT_ERROR_QUERY_TOO_SHORT = RESULT_ERROR + 32;
-    public static final int RESULT_ERROR_TOO_MANY_RESPONSES = RESULT_ERROR + 64;
-    public static final int RESULT_ERROR_TOO_SHORT_OR_TOO_MANY_RESPONSES = RESULT_ERROR + 128;
-    public static final int RESULT_ERROR_QUERY_FAILED = RESULT_ERROR + 256;
+    public static final int RESULT_ERROR_NO_VALID_KEYS = RESULT_ERROR + (1<<4);
+    public static final int RESULT_ERROR_NO_PGP_PARTS = RESULT_ERROR + (2<<4);
+    public static final int RESULT_ERROR_QUERY_TOO_SHORT = RESULT_ERROR + (3<<4);
+    public static final int RESULT_ERROR_TOO_MANY_RESPONSES = RESULT_ERROR + (4<<4);
+    public static final int RESULT_ERROR_TOO_SHORT_OR_TOO_MANY_RESPONSES = RESULT_ERROR + (5<<4);
+    public static final int RESULT_ERROR_QUERY_FAILED = RESULT_ERROR + (6<<4);
+    public static final int RESULT_ERROR_FILE_NOT_FOUND = RESULT_ERROR + (7<<4);
 
     public GetKeyResult(Parcel source) {
         super(source);

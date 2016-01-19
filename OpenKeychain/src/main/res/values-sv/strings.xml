@@ -830,8 +830,8 @@
   </plurals>
   <!--Linked Identity verification-->
   <string name="msg_acc_saved">Konto sparat</string>
-  <string name="msg_download_success">Hämtning lyckades!</string>
-  <string name="msg_download_no_valid_keys">Inga giltiga nycklar hittades i fil/urklipp!</string>
+  <string name="msg_get_success">Hämtning lyckades!</string>
+  <string name="msg_get_no_valid_keys">Inga giltiga nycklar hittades i fil/urklipp!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">en del av den inlästa filen är ett giltigt OpenPGP-objekt men inte en OpenPGP-nyckel</item>
     <item quantity="other">delar av den inlästa filen är giltiga OpenPGP-objekt men inte OpenPGP-nycklar</item>

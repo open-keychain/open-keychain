@@ -1277,15 +1277,15 @@
   <string name="msg_data_ok">データの処理に成功</string>
   <string name="msg_data_skip_mime">MIME解析をスキップしています</string>
   <string name="msg_acc_saved">アカウント保存</string>
-  <string name="msg_download_success">ダウンロードに成功しました!</string>
-  <string name="msg_download_no_valid_keys">ファイル/クリップボードにて正しい鍵が見付かりません!</string>
+  <string name="msg_get_success">ダウンロードに成功しました!</string>
+  <string name="msg_get_no_valid_keys">ファイル/クリップボードにて正しい鍵が見付かりません!</string>
   <string name="msg_download_no_pgp_parts">TODO: 複数部分!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="other">読み込んだファイルのOpenPGPオブジェクト部分は正しいですが、OpenPGPの鍵ではありません</item>
   </plurals>
-  <string name="msg_download_query_too_short">鍵検索のクエリが短かすぎます。クエリを精密化してください!</string>
-  <string name="msg_download_too_many_responses">鍵検索のクエリが沢山の候補を返しました。クエリを精密化してください!</string>
-  <string name="msg_download_query_too_short_or_too_many_responses">鍵がまったく無いか、多すぎる鍵が見付かりました。クエリを改善してください!</string>
+  <string name="msg_get_query_too_short">鍵検索のクエリが短かすぎます。クエリを精密化してください!</string>
+  <string name="msg_get_too_many_responses">鍵検索のクエリが沢山の候補を返しました。クエリを精密化してください!</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">鍵がまったく無いか、多すぎる鍵が見付かりました。クエリを改善してください!</string>
   <string name="msg_download_query_failed">鍵の検索時にエラーが発生しました。</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">%s のkeybase検証を試行中</string>

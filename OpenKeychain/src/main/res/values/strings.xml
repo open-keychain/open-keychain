@@ -1410,16 +1410,12 @@
 
     <string name="msg_acc_saved">"Account saved"</string>
 
-    <string name="msg_download_success">"Downloaded successfully!"</string>
-    <string name="msg_download_no_valid_keys">"No valid keys found in file/clipboard!"</string>
-    <string name="msg_download_no_pgp_parts">"TODO: plurals!"</string>
-    <plurals name="error_import_non_pgp_part">
-        <item quantity="one">"part of the loaded file is a valid OpenPGP object but not a OpenPGP key"</item>
-        <item quantity="other">"parts of the loaded file are valid OpenPGP objects but not OpenPGP keys"</item>
-    </plurals>
-    <string name="msg_download_query_too_short">"Search query too short. Please refine your query!"</string>
-    <string name="msg_download_too_many_responses">"Key search query returned too many candidates. Please refine your query!"</string>
-    <string name="msg_download_query_too_short_or_too_many_responses">"Either no keys or too many have been found. Please improve your query!"</string>
+    <string name="msg_get_success">"Downloaded successfully!"</string>
+    <string name="msg_get_file_not_found">"Input file not found!"</string>
+    <string name="msg_get_no_valid_keys">"No valid keys found in file/clipboard!"</string>
+    <string name="msg_get_too_many_responses">"Key search query returned too many candidates. Please refine your query!"</string>
+    <string name="msg_get_query_too_short">"Search query too short. Please refine your query!"</string>
+    <string name="msg_get_query_too_short_or_too_many_responses">"Either no keys or too many have been found. Please improve your query!"</string>
 
     <string name="msg_download_query_failed">"An error occurred when searching for keys."</string>
 

@@ -1180,16 +1180,16 @@
   <string name="msg_data_ok">Datu prozesatzea ongi burutu da</string>
   <string name="msg_data_skip_mime">MIME azterketa jauzi egiten</string>
   <string name="msg_acc_saved">Kontua gordeta</string>
-  <string name="msg_download_success">Ongi jeitsi da!</string>
-  <string name="msg_download_no_valid_keys">Ez da baliozko giltzarik aurkitu agiri/gakoan!</string>
+  <string name="msg_get_success">Ongi jeitsi da!</string>
+  <string name="msg_get_no_valid_keys">Ez da baliozko giltzarik aurkitu agiri/gakoan!</string>
   <string name="msg_download_no_pgp_parts">TODO: anitzak!</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">gertatutako agiriaren zati bat baliozko OpenPGP objetua da baina ez OpenPGP giltza</item>
     <item quantity="other">gertatutako agiriaren zati batzuk baliozko OpenPGP objetuak dira baina ez OpenPGP giltzak</item>
   </plurals>
-  <string name="msg_download_query_too_short">Bilaketa eskaera laburregia. Mesedez zehaztu zure eskaera!</string>
-  <string name="msg_download_too_many_responses">Giltza bilaketa eskaerak hautagai gehiegi itzuli ditu. Mesedez zehaztu zure eskaera!</string>
-  <string name="msg_download_query_too_short_or_too_many_responses">Ez dago giltzarik edo gehiegi aurkitu dira. Mesedez hobetu zure eskaera!</string>
+  <string name="msg_get_query_too_short">Bilaketa eskaera laburregia. Mesedez zehaztu zure eskaera!</string>
+  <string name="msg_get_too_many_responses">Giltza bilaketa eskaerak hautagai gehiegi itzuli ditu. Mesedez zehaztu zure eskaera!</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">Ez dago giltzarik edo gehiegi aurkitu dira. Mesedez hobetu zure eskaera!</string>
   <string name="msg_download_query_failed">Akats bat gertatu da giltzak bilatzerakoan.</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">Giltzabase egiaztapen saiakera %s-rentzat</string>

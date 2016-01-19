@@ -221,7 +221,6 @@ public class UncachedKeyRing {
         public boolean hasNext() throws IOException;
         public E next() throws IOException;
     }
-
     public void encodeArmored(OutputStream out, String version) throws IOException {
         ArmoredOutputStream aos = new ArmoredOutputStream(out);
         if (version != null) {
