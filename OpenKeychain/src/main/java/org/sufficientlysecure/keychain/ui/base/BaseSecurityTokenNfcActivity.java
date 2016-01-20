@@ -29,6 +29,7 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.TagLostException;
@@ -36,6 +37,7 @@ import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import nordpol.Apdu;
 import nordpol.android.TagDispatcher;
 import nordpol.android.AndroidCard;
 import nordpol.android.OnDiscoveredTagListener;
@@ -59,6 +61,8 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
+import org.sufficientlysecure.keychain.ui.dialog.FidesmoInstallDialog;
+import org.sufficientlysecure.keychain.ui.dialog.FidesmoPgpInstallDialog;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -70,6 +74,10 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
     public static final int REQUEST_CODE_PIN = 1;
 
     public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";
+
+    // Fidesmo constants
+    private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
+    private static final String FIDESMO_APP_PACKAGE = "com.fidesmo.sec.android";
 
     protected Passphrase mPin;
     protected Passphrase mAdminPin;
@@ -309,6 +317,20 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
                 onNfcError(getString(R.string.security_token_error_unknown));
                 break;
             }
+            // 6A82 app not installed on security token!
+            case 0x6A82: {
+                if (isFidesmoDevice()) {
+                    // Check if the Fidesmo app is installed
+                    if (isAndroidAppInstalled(FIDESMO_APP_PACKAGE)) {
+                        promptFidesmoPgpInstall();
+                    } else {
+                        promptFidesmoAppInstall();
+                    }
+                } else { // Other (possibly) compatible hardware
+                    onNfcError(getString(R.string.security_token_error_pgp_app_not_installed));
+                }
+                break;
+            }
             default: {
                 onNfcError(getString(R.string.security_token_error, e.getMessage()));
                 break;
@@ -372,7 +394,6 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
                 mPin = input.getPassphrase();
                 break;
             }
-
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }
@@ -984,4 +1005,53 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
 
     }
 
+    private boolean isFidesmoDevice() {
+        if (isNfcConnected()) { // Check if we can still talk to the card
+            try {
+                // By trying to select any apps that have the Fidesmo AID prefix we can
+                // see if it is a Fidesmo device or not
+                byte[] mSelectResponse = mIsoCard.transceive(Apdu.select(FIDESMO_APPS_AID_PREFIX));
+                // Compare the status returned by our select with the OK status code
+                return Apdu.hasStatus(mSelectResponse, Apdu.OK_APDU);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Card communication failed!", e);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Ask user if she wants to install PGP onto her Fidesmo device
+      */
+    private void promptFidesmoPgpInstall() {
+        FidesmoPgpInstallDialog mFidesmoPgpInstallDialog = new FidesmoPgpInstallDialog();
+        mFidesmoPgpInstallDialog.show(getSupportFragmentManager(), "mFidesmoPgpInstallDialog");
+    }
+
+    /**
+     * Show a Dialog to the user informing that Fidesmo App must be installed and with option
+     * to launch the Google Play store.
+     */
+    private void promptFidesmoAppInstall() {
+        FidesmoInstallDialog mFidesmoInstallDialog = new FidesmoInstallDialog();
+        mFidesmoInstallDialog.show(getSupportFragmentManager(), "mFidesmoInstallDialog");
+    }
+
+    /**
+     * Use the package manager to detect if an application is installed on the phone
+     * @param uri an URI identifying the application's package
+     * @return 'true' if the app is installed
+     */
+    private boolean isAndroidAppInstalled(String uri) {
+        PackageManager mPackageManager = getPackageManager();
+        boolean mAppInstalled = false;
+        try {
+            mPackageManager.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+            mAppInstalled = true;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(Constants.TAG, "App not installed on Android device");
+            mAppInstalled = false;
+        }
+        return mAppInstalled;
+    }
 }
