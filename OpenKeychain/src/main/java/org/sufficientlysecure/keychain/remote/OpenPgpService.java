@@ -539,13 +539,26 @@ public class OpenPgpService extends Service {
 
                 result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
 
-                if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_KEY_MISSING) {
-                    // If signature is unknown we return an _additional_ PendingIntent
-                    // to retrieve the missing key
-                    result.putExtra(OpenPgpApi.RESULT_INTENT, getKeyserverPendingIntent(data, signatureResult.getKeyId()));
-                } else {
-                    // If signature key is known, return PendingIntent to show key
-                    result.putExtra(OpenPgpApi.RESULT_INTENT, getShowKeyPendingIntent(signatureResult.getKeyId()));
+                switch (signatureResult.getResult()) {
+                    case OpenPgpSignatureResult.RESULT_KEY_MISSING: {
+                        // If signature key is missing we return a PendingIntent to retrieve the key
+                        result.putExtra(OpenPgpApi.RESULT_INTENT, getKeyserverPendingIntent(data, signatureResult.getKeyId()));
+                        break;
+                    }
+                    case OpenPgpSignatureResult.RESULT_VALID_CONFIRMED:
+                    case OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED:
+                    case OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED:
+                    case OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED:
+                    case OpenPgpSignatureResult.RESULT_INVALID_INSECURE: {
+                        // If signature key is known, return PendingIntent to show key
+                        result.putExtra(OpenPgpApi.RESULT_INTENT, getShowKeyPendingIntent(signatureResult.getKeyId()));
+                        break;
+                    }
+                    default:
+                    case OpenPgpSignatureResult.RESULT_NO_SIGNATURE:
+                    case OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE: {
+                        // no key id -> no PendingIntent
+                    }
                 }
 
                 if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 5) {
