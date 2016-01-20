@@ -543,7 +543,11 @@ public class OpenPgpService extends Service {
                     // If signature is unknown we return an _additional_ PendingIntent
                     // to retrieve the missing key
                     result.putExtra(OpenPgpApi.RESULT_INTENT, getKeyserverPendingIntent(data, signatureResult.getKeyId()));
-                } else {
+                }
+                else if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
+                    //no signature, so non additional extra data
+                }
+                else {
                     // If signature key is known, return PendingIntent to show key
                     result.putExtra(OpenPgpApi.RESULT_INTENT, getShowKeyPendingIntent(signatureResult.getKeyId()));
                 }
