@@ -1,7 +1,6 @@
 package org.sufficientlysecure.keychain.service;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -28,6 +27,7 @@ import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
@@ -510,8 +510,12 @@ public class KeyserverSyncAdapterService extends Service {
     }
 
     public static void enableKeyserverSync(Context context) {
-        AccountManager manager = AccountManager.get(context);
-        Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
+        Account account = KeychainApplication.createAccountIfNecessary(context);
+
+        if (account == null) {
+            // account failed to be created for some reason, nothing we can do here
+            return;
+        }
 
         ContentResolver.setIsSyncable(account, Constants.PROVIDER_AUTHORITY, 1);
         ContentResolver.setSyncAutomatically(account, Constants.PROVIDER_AUTHORITY, true);
@@ -524,10 +528,11 @@ public class KeyserverSyncAdapterService extends Service {
     }
 
     private boolean isSyncEnabled() {
-        AccountManager manager = AccountManager.get(this);
-        Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
+        Account account = KeychainApplication.createAccountIfNecessary(this);
 
-        return ContentResolver.getSyncAutomatically(account, Constants.PROVIDER_AUTHORITY);
+        // if account is null, it could not be created for some reason, so sync cannot exist
+        return account != null
+                && ContentResolver.getSyncAutomatically(account, Constants.PROVIDER_AUTHORITY);
     }
 
     private void startServiceWithUpdateAll() {

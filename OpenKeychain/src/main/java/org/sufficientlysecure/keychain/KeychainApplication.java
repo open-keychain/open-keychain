@@ -27,6 +27,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -93,7 +94,7 @@ public class KeychainApplication extends Application {
                 FormattingUtils.getColorFromAttr(getApplicationContext(), R.attr.colorPrimary));
 
         // Add OpenKeychain account to Android to link contacts with keys and keyserver sync
-        createAccountIfNecessary();
+        createAccountIfNecessary(this);
 
         // if first time, enable keyserver and contact sync
         if (Preferences.getPreferences(this).isFirstTime()) {
@@ -116,20 +117,30 @@ public class KeychainApplication extends Application {
         }
     }
 
-    private void createAccountIfNecessary() {
+    /**
+     * @return the OpenKeychain contact/sync account if it exists or was successfully created, null
+     * otherwise
+     */
+    public static @Nullable Account createAccountIfNecessary(Context context) {
         try {
-            AccountManager manager = AccountManager.get(this);
+            AccountManager manager = AccountManager.get(context);
             Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
 
             Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
             if (accounts.length == 0) {
                 if (!manager.addAccountExplicitly(account, null, null)) {
                     Log.d(Constants.TAG, "account already exists, the account is null, or another error occured");
+                    return null;
+                } else {
+                    return account;
                 }
+            } else {
+                return accounts[0];
             }
         } catch (SecurityException e) {
             Log.e(Constants.TAG, "SecurityException when adding the account", e);
-            Toast.makeText(this, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
+            return null;
         }
     }
 
