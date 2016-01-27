@@ -49,6 +49,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import nordpol.android.NfcGuideView;
+
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
  * NFC devices.
@@ -67,6 +69,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     public ViewAnimator vAnimator;
     public TextView vErrorText;
     public Button vErrorTryAgainButton;
+    public NfcGuideView nfcGuideView;
 
     private RequiredInputParcel mRequiredInput;
     private Intent mServiceIntent;
@@ -88,6 +91,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
         super.onCreate(savedInstanceState);
         Log.d(Constants.TAG, "NfcOperationActivity.onCreate");
 
+        nfcGuideView = (NfcGuideView) findViewById(R.id.nfc_guide_view);
+
         // prevent annoying orientation changes while fumbling with the device
         OrientationUtils.lockOrientation(this);
         // prevent close when touching outside of the dialog (happens easily when fumbling with the device)
@@ -101,6 +106,9 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
         vAnimator = (ViewAnimator) findViewById(R.id.view_animator);
         vAnimator.setDisplayedChild(0);
+
+        nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.STARTING_POSITION);
+
         vErrorText = (TextView) findViewById(R.id.security_token_activity_3_error_text);
         vErrorTryAgainButton = (Button) findViewById(R.id.security_token_activity_3_error_try_again);
         vErrorTryAgainButton.setOnClickListener(new View.OnClickListener() {
@@ -110,6 +118,9 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
                 obtainPassphraseIfRequired();
                 vAnimator.setDisplayedChild(0);
+
+                nfcGuideView.setVisibility(View.VISIBLE);
+                nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.STARTING_POSITION);
             }
         });
         Button vCancel = (Button) findViewById(R.id.security_token_activity_0_cancel);
@@ -147,6 +158,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     public void onNfcPreExecute() {
         // start with indeterminate progress
         vAnimator.setDisplayedChild(1);
+        nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.TRANSFERRING);
     }
 
     @Override
@@ -277,6 +289,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
         // show finish
         vAnimator.setDisplayedChild(2);
 
+        nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.DONE);
+
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -307,6 +321,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
         vErrorText.setText(error + "\n\n" + getString(R.string.security_token_nfc_try_again_text));
         vAnimator.setDisplayedChild(3);
+
+        nfcGuideView.setVisibility(View.GONE);
     }
 
     @Override

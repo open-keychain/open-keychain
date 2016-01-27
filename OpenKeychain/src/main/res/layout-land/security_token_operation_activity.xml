@@ -4,15 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="24dp">
 
     <nordpol.android.NfcGuideView
         android:id="@+id/nfc_guide_view"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
-        custom:nfc_device="usb_black"/>
+        custom:nfc_device="card_black"/>
 
-    <include layout="@layout/security_token_operation_activity_toolable_view_animator" />
+    <include
+        layout="@layout/security_token_operation_activity_toolable_view_animator"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
