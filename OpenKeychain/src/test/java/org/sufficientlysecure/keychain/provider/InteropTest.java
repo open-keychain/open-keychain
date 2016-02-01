@@ -30,6 +30,7 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
@@ -37,10 +38,12 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -64,6 +67,7 @@ public class InteropTest {
     @BeforeClass
     public static void setUpOnce() throws Exception {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
+        ShadowLog.stream = System.out;
     }
 
     @Test
@@ -243,21 +247,45 @@ public class InteropTest {
                 KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(verify.getMasterKeyId()) : null;
 
         ProviderHelper helper = new ProviderHelper(RuntimeEnvironment.application) {
-                @Override
-                public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri q)
-                        throws NotFoundException {
-                    Assert.assertEquals(msg + ": query should be for verification key",
-                            q, verifyUri);
-                    return verify;
-                }
-                @Override
-                public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri q)
-                        throws NotFoundException {
-                    Assert.assertEquals(msg + ": query should be for the decryption key",
-                            q, decryptUri);
-                    return decrypt;
-                }
-            };
+
+            @Override
+            public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {
+                Assert.assertEquals(msg + ": query should be for the decryption key", queryUri, decryptUri);
+                return new CachedPublicKeyRing(this, queryUri) {
+                    @Override
+                    public long getMasterKeyId() throws PgpKeyNotFoundException {
+                        return decrypt.getMasterKeyId();
+                    }
+
+                    @Override
+                    public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
+                        return decrypt.getSecretKey(keyId).getSecretKeyTypeSuperExpensive();
+                    }
+                };
+            }
+
+            @Override
+            public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri q)
+                    throws NotFoundException {
+                Assert.assertEquals(msg + ": query should be for verification key", q, verifyUri);
+                return verify;
+            }
+
+            @Override
+            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri q)
+                    throws NotFoundException {
+                Assert.assertEquals(msg + ": query should be for the decryption key", q, decryptUri);
+                return decrypt;
+            }
+
+            @Override
+            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long masterKeyId)
+                    throws NotFoundException {
+                Assert.assertEquals(msg + ": query should be for the decryption key",
+                        masterKeyId, decrypt.getMasterKeyId());
+                return decrypt;
+            }
+        };
 
         return new PgpDecryptVerifyOperation(RuntimeEnvironment.application, helper, null) {
             @Override
