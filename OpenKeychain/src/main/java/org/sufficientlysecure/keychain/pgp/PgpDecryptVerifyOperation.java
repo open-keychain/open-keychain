@@ -610,6 +610,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                 if (secretEncryptionKey.getSecretKeyType() == SecretKeyType.DIVERT_TO_CARD) {
                     passphrase = null;
+                } else if (secretKeyType == SecretKeyType.PASSPHRASE_EMPTY) {
+                    passphrase = new Passphrase("");
                 } else if (cryptoInput.hasPassphrase()) {
                     passphrase = cryptoInput.getPassphrase();
                 } else {

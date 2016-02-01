@@ -22,9 +22,14 @@ import android.os.Parcelable;
 import android.text.Editable;
 import android.widget.EditText;
 
+import org.spongycastle.bcpg.S2K;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.ComparableS2K;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 
 /**
  * Passwords should not be stored as Strings in memory.
@@ -38,6 +43,7 @@ import java.util.Arrays;
  */
 public class Passphrase implements Parcelable {
     private char[] mPassphrase;
+    HashMap<ComparableS2K, byte[]> mCachedSessionKeys;
 
     /**
      * According to http://stackoverflow.com/a/15844273 EditText is not using String internally
@@ -87,8 +93,18 @@ public class Passphrase implements Parcelable {
         return mPassphrase.length;
     }
 
-    public char charAt(int index) {
-        return mPassphrase[index];
+    public byte[] getCachedSessionKeyForAlgorithm(int keyEncryptionAlgorithm, S2K s2k) {
+        if (mCachedSessionKeys == null) {
+            return null;
+        }
+        return mCachedSessionKeys.get(new ComparableS2K(keyEncryptionAlgorithm, s2k));
+    }
+
+    public void addCachedSessionKey(int keyEncryptionAlgorithm, S2K s2k, byte[] sessionKey) {
+        if (mCachedSessionKeys == null) {
+            mCachedSessionKeys = new HashMap<>();
+        }
+        mCachedSessionKeys.put(new ComparableS2K(keyEncryptionAlgorithm, s2k), sessionKey);
     }
 
     /**
@@ -97,6 +113,12 @@ public class Passphrase implements Parcelable {
     public void removeFromMemory() {
         if (mPassphrase != null) {
             Arrays.fill(mPassphrase, ' ');
+        }
+        if (mCachedSessionKeys == null) {
+            return;
+        }
+        for (byte[] cachedSessionKey : mCachedSessionKeys.values()) {
+            Arrays.fill(cachedSessionKey, (byte) 0);
         }
     }
 
@@ -144,10 +166,29 @@ public class Passphrase implements Parcelable {
 
     private Passphrase(Parcel source) {
         mPassphrase = source.createCharArray();
+        int size = source.readInt();
+        if (size == 0) {
+            return;
+        }
+        mCachedSessionKeys = new HashMap<>(size);
+        for (int i = 0; i < size; i++) {
+            ComparableS2K cachedS2K = source.readParcelable(getClass().getClassLoader());
+            byte[] cachedSessionKey = source.createByteArray();
+            mCachedSessionKeys.put(cachedS2K, cachedSessionKey);
+        }
     }
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeCharArray(mPassphrase);
+        if (mCachedSessionKeys == null || mCachedSessionKeys.isEmpty()) {
+            dest.writeInt(0);
+            return;
+        }
+        dest.writeInt(mCachedSessionKeys.size());
+        for (Entry<ComparableS2K,byte[]> entry : mCachedSessionKeys.entrySet()) {
+            dest.writeParcelable(entry.getKey(), 0);
+            dest.writeByteArray(entry.getValue());
+        }
     }
 
     public static final Creator<Passphrase> CREATOR = new Creator<Passphrase>() {
