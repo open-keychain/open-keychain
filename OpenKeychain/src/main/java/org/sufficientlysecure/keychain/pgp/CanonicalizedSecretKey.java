@@ -120,7 +120,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
     }
 
-    public SecretKeyType getSecretKeyType() {
+    // This method can potentially take a LONG time (i.e. seconds), so it should only
+    // ever be called by ProviderHelper to be cached in the database.
+    public SecretKeyType getSecretKeyTypeSuperExpensive() {
         S2K s2k = mSecretKey.getS2K();
         if (s2k != null && s2k.getType() == S2K.GNU_DUMMY_S2K) {
             // divert to card is special

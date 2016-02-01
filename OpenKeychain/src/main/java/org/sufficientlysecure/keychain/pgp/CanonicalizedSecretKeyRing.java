@@ -70,20 +70,6 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
         return new CanonicalizedSecretKey(this, mRing.getSecretKey(id));
     }
 
-    /** Returns the key id which should be used for signing.
-     *
-     * This method returns keys which are actually available (ie. secret available, and not stripped,
-     * revoked, or expired), hence only works on keyrings where a secret key is available!
-     */
-    public long getSecretSignId() throws PgpGeneralException {
-        for(CanonicalizedSecretKey key : secretKeyIterator()) {
-            if (key.canSign() && key.isValid() && key.getSecretKeyType().isUsable()) {
-                return key.getKeyId();
-            }
-        }
-        throw new PgpGeneralException("no valid signing key available");
-    }
-
     public IterableIterator<CanonicalizedSecretKey> secretKeyIterator() {
         final Iterator<PGPSecretKey> it = mRing.getSecretKeys();
         return new IterableIterator<>(new Iterator<CanonicalizedSecretKey>() {
