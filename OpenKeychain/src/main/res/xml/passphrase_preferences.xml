@@ -8,7 +8,7 @@
         android:persistent="true"
         android:title="@string/label_passphrase_cache_subs" />
     <CheckBoxPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:key="useNumKeypadForYubikeyPin"
         android:persistent="true"
         android:title="@string/label_use_num_keypad_for_security_token_pin" />
