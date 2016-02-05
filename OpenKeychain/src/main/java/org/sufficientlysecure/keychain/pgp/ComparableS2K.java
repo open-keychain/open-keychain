@@ -39,10 +39,10 @@ public class ComparableS2K implements Parcelable {
     public int hashCode() {
         if (cachedHashCode == null) {
             cachedHashCode = encryptionAlgorithm;
-            cachedHashCode *= 31 * s2kType;
-            cachedHashCode *= 31 * s2kHashAlgo;
-            cachedHashCode *= (int) (31 * s2kItCount);
-            cachedHashCode *= 31 * Arrays.hashCode(s2kIV);
+            cachedHashCode = 31 * cachedHashCode + s2kType;
+            cachedHashCode = 31 * cachedHashCode + s2kHashAlgo;
+            cachedHashCode = 31 * cachedHashCode + (int) (s2kItCount ^ (s2kItCount >>> 32));
+            cachedHashCode = 31 * cachedHashCode + Arrays.hashCode(s2kIV);
         }
 
         return cachedHashCode;
