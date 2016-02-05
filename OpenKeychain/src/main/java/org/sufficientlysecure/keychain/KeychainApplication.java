@@ -118,8 +118,8 @@ public class KeychainApplication extends Application {
     }
 
     /**
-     * @return the OpenKeychain contact/sync account if it exists or was successfully created, null
-     * otherwise
+     * @return the OpenKeychain contact/keyserver sync account if it exists or was successfully
+     * created, null otherwise
      */
     public static @Nullable Account createAccountIfNecessary(Context context) {
         try {

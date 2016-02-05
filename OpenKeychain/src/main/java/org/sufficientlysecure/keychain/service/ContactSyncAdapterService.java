@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.service;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.AbstractThreadedSyncAdapter;
@@ -35,6 +34,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.SettingsActivity;
 import org.sufficientlysecure.keychain.util.ContactHelper;
@@ -151,10 +151,25 @@ public class ContactSyncAdapterService extends Service {
     }
 
     public static void enableContactsSync(Context context) {
-        AccountManager manager = AccountManager.get(context);
-        Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
+        Account account = KeychainApplication.createAccountIfNecessary(context);
+
+        if (account == null) {
+            // nothing we can do
+            return;
+        }
 
         ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
         ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+    }
+
+    public static void deleteIfSyncDisabled(Context context) {
+        Account account = KeychainApplication.createAccountIfNecessary(context);
+        if (account == null) {
+            return;
+        }
+        // if user has disabled automatic sync, delete linked OpenKeychain contacts
+        if(!ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY)) {
+            new ContactHelper(context).deleteAllContacts();
+        }
     }
 }
