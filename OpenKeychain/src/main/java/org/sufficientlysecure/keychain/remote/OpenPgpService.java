@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -82,12 +83,14 @@ public class OpenPgpService extends Service {
 
     private ApiPermissionHelper mApiPermissionHelper;
     private ProviderHelper mProviderHelper;
+    private ApiDataAccessObject mApiDao;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mApiPermissionHelper = new ApiPermissionHelper(this);
+        mApiPermissionHelper = new ApiPermissionHelper(this, new ApiDataAccessObject(this));
         mProviderHelper = new ProviderHelper(this);
+        mApiDao = new ApiDataAccessObject(this);
     }
 
     /**
@@ -402,11 +405,11 @@ public class OpenPgpService extends Service {
             }
 
             String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-            HashSet<Long> allowedKeyIds = mProviderHelper.getAllowedKeyIdsForApp(
+            HashSet<Long> allowedKeyIds = mApiDao.getAllowedKeyIdsForApp(
                     KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
 
             if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 7) {
-                allowedKeyIds.addAll(mProviderHelper.getAllKeyIdsForApp(
+                allowedKeyIds.addAll(mApiDao.getAllKeyIdsForApp(
                         ApiAccounts.buildBaseUri(currentPkg)));
             }
 
@@ -732,7 +735,7 @@ public class OpenPgpService extends Service {
         }
 
         // check if caller is allowed to access OpenKeychain
-        Intent result = mApiPermissionHelper.isAllowed(data);
+        Intent result = mApiPermissionHelper.isAllowedOrReturnIntent(data);
         if (result != null) {
             return result;
         }

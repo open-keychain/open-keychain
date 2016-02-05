@@ -36,8 +36,8 @@ import android.widget.ListView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.KeySelectableAdapter;
 import org.sufficientlysecure.keychain.ui.widget.FixedListView;
@@ -47,7 +47,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     private static final String ARG_DATA_URI = "uri";
 
     private KeySelectableAdapter mAdapter;
-    private ProviderHelper mProviderHelper;
+    private ApiDataAccessObject mApiDao;
 
     private Uri mDataUri;
 
@@ -69,7 +69,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mProviderHelper = new ProviderHelper(getActivity());
+        mApiDao = new ApiDataAccessObject(getActivity());
     }
 
     @Override
@@ -107,7 +107,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
 
-        Set<Long> checked = mProviderHelper.getAllKeyIdsForApp(mDataUri);
+        Set<Long> checked = mApiDao.getAllKeyIdsForApp(mDataUri);
         mAdapter = new KeySelectableAdapter(getActivity(), null, 0, checked);
         setListAdapter(mAdapter);
         getListView().setOnItemClickListener(mAdapter);
@@ -141,7 +141,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
 
     public void saveAllowedKeys() {
         try {
-            mProviderHelper.saveAllowedKeyIdsForApp(mDataUri, getSelectedMasterKeyIds());
+            mApiDao.saveAllowedKeyIdsForApp(mDataUri, getSelectedMasterKeyIds());
         } catch (RemoteException | OperationApplicationException e) {
             Log.e(Constants.TAG, "Problem saving allowed key ids!", e);
         }

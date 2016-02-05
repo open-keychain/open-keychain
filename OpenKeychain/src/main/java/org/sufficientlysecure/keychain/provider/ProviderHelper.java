@@ -18,6 +18,18 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -29,19 +41,12 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.util.LongSparseArray;
 
-import org.bouncycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
@@ -51,40 +56,28 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
-import org.sufficientlysecure.keychain.remote.AccountSettings;
-import org.sufficientlysecure.keychain.remote.AppSettings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.Utf8Util;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This class contains high level methods for database access. Despite its
@@ -1479,191 +1472,6 @@ public class ProviderHelper {
         values.put(UpdatedKeys.LAST_UPDATED, timeUnit.toSeconds(time));
 
         return mContentResolver.insert(UpdatedKeys.CONTENT_URI, values);
-    }
-
-    public ArrayList<String> getRegisteredApiApps() {
-        Cursor cursor = mContentResolver.query(ApiApps.CONTENT_URI, null, null, null, null);
-
-        ArrayList<String> packageNames = new ArrayList<>();
-        try {
-            if (cursor != null) {
-                int packageNameCol = cursor.getColumnIndex(ApiApps.PACKAGE_NAME);
-                if (cursor.moveToFirst()) {
-                    do {
-                        packageNames.add(cursor.getString(packageNameCol));
-                    } while (cursor.moveToNext());
-                }
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return packageNames;
-    }
-
-    private ContentValues contentValueForApiApps(AppSettings appSettings) {
-        ContentValues values = new ContentValues();
-        values.put(ApiApps.PACKAGE_NAME, appSettings.getPackageName());
-        values.put(ApiApps.PACKAGE_CERTIFICATE, appSettings.getPackageCertificate());
-        return values;
-    }
-
-    private ContentValues contentValueForApiAccounts(AccountSettings accSettings) {
-        ContentValues values = new ContentValues();
-        values.put(KeychainContract.ApiAccounts.ACCOUNT_NAME, accSettings.getAccountName());
-        values.put(KeychainContract.ApiAccounts.KEY_ID, accSettings.getKeyId());
-
-        // DEPRECATED and thus hardcoded
-        values.put(KeychainContract.ApiAccounts.COMPRESSION, CompressionAlgorithmTags.ZLIB);
-        values.put(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM,
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
-        values.put(KeychainContract.ApiAccounts.HASH_ALORITHM,
-                PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT);
-        return values;
-    }
-
-    public void insertApiApp(AppSettings appSettings) {
-        mContentResolver.insert(KeychainContract.ApiApps.CONTENT_URI,
-                contentValueForApiApps(appSettings));
-    }
-
-    public void insertApiAccount(Uri uri, AccountSettings accSettings) {
-        mContentResolver.insert(uri, contentValueForApiAccounts(accSettings));
-    }
-
-    public void updateApiAccount(Uri uri, AccountSettings accSettings) {
-        if (mContentResolver.update(uri, contentValueForApiAccounts(accSettings), null,
-                null) <= 0) {
-            throw new RuntimeException();
-        }
-    }
-
-    /**
-     * Must be an uri pointing to an account
-     */
-    public AppSettings getApiAppSettings(Uri uri) {
-        AppSettings settings = null;
-
-        Cursor cursor = mContentResolver.query(uri, null, null, null, null);
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                settings = new AppSettings();
-                settings.setPackageName(cursor.getString(
-                        cursor.getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
-                settings.setPackageCertificate(cursor.getBlob(
-                        cursor.getColumnIndex(KeychainContract.ApiApps.PACKAGE_CERTIFICATE)));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return settings;
-    }
-
-    public AccountSettings getApiAccountSettings(Uri accountUri) {
-        AccountSettings settings = null;
-
-        Cursor cursor = mContentResolver.query(accountUri, null, null, null, null);
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                settings = new AccountSettings();
-
-                settings.setAccountName(cursor.getString(
-                        cursor.getColumnIndex(KeychainContract.ApiAccounts.ACCOUNT_NAME)));
-                settings.setKeyId(cursor.getLong(
-                        cursor.getColumnIndex(KeychainContract.ApiAccounts.KEY_ID)));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return settings;
-    }
-
-    public Set<Long> getAllKeyIdsForApp(Uri uri) {
-        Set<Long> keyIds = new HashSet<>();
-
-        Cursor cursor = mContentResolver.query(uri, null, null, null, null);
-        try {
-            if (cursor != null) {
-                int keyIdColumn = cursor.getColumnIndex(KeychainContract.ApiAccounts.KEY_ID);
-                while (cursor.moveToNext()) {
-                    keyIds.add(cursor.getLong(keyIdColumn));
-                }
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return keyIds;
-    }
-
-    public HashSet<Long> getAllowedKeyIdsForApp(Uri uri) {
-        HashSet<Long> keyIds = new HashSet<>();
-
-        Cursor cursor = mContentResolver.query(uri, null, null, null, null);
-        try {
-            if (cursor != null) {
-                int keyIdColumn = cursor.getColumnIndex(KeychainContract.ApiAllowedKeys.KEY_ID);
-                while (cursor.moveToNext()) {
-                    keyIds.add(cursor.getLong(keyIdColumn));
-                }
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return keyIds;
-    }
-
-    public void saveAllowedKeyIdsForApp(Uri uri, Set<Long> allowedKeyIds)
-            throws RemoteException, OperationApplicationException {
-        // wipe whole table of allowed keys for this account
-        mContentResolver.delete(uri, null, null);
-
-        // re-insert allowed key ids
-        for (Long keyId : allowedKeyIds) {
-            ContentValues values = new ContentValues();
-            values.put(ApiAllowedKeys.KEY_ID, keyId);
-            mContentResolver.insert(uri, values);
-        }
-    }
-
-    public void addAllowedKeyIdForApp(Uri uri, long allowedKeyId) {
-        ContentValues values = new ContentValues();
-        values.put(ApiAllowedKeys.KEY_ID, allowedKeyId);
-        mContentResolver.insert(uri, values);
-    }
-
-    public byte[] getApiAppCertificate(String packageName) {
-        Uri queryUri = ApiApps.buildByPackageNameUri(packageName);
-
-        String[] projection = new String[]{ApiApps.PACKAGE_CERTIFICATE};
-
-        Cursor cursor = mContentResolver.query(queryUri, projection, null, null, null);
-        try {
-            byte[] signature = null;
-            if (cursor != null && cursor.moveToFirst()) {
-                int signatureCol = 0;
-
-                signature = cursor.getBlob(signatureCol);
-            }
-            return signature;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
     }
 
     public ContentResolver getContentResolver() {

@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -36,9 +37,9 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
 import org.sufficientlysecure.keychain.ui.widget.FixedListView;
 import org.sufficientlysecure.keychain.util.Log;
@@ -49,7 +50,7 @@ public class SelectSignKeyIdListFragment extends ListFragmentWorkaround implemen
     public static final String ARG_DATA = "data";
 
     private SelectKeyCursorAdapter mAdapter;
-    private ProviderHelper mProviderHelper;
+    private ApiDataAccessObject mApiDao;
 
     private Uri mDataUri;
 
@@ -72,7 +73,7 @@ public class SelectSignKeyIdListFragment extends ListFragmentWorkaround implemen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mProviderHelper = new ProviderHelper(getActivity());
+        mApiDao = new ApiDataAccessObject(getActivity());
     }
 
     @Override
@@ -116,7 +117,7 @@ public class SelectSignKeyIdListFragment extends ListFragmentWorkaround implemen
 
                 Uri allowedKeysUri = mDataUri.buildUpon().appendPath(KeychainContract.PATH_ALLOWED_KEYS).build();
                 Log.d(Constants.TAG, "allowedKeysUri: " + allowedKeysUri);
-                mProviderHelper.addAllowedKeyIdForApp(allowedKeysUri, masterKeyId);
+                mApiDao.addAllowedKeyIdForApp(allowedKeysUri, masterKeyId);
 
                 resultData.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, masterKeyId);
 
