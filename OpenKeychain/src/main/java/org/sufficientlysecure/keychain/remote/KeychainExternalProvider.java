@@ -1,7 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
- * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ * Copyright (C) 2016 Vincent Breitmoser <look@my.amazin.horse>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +18,7 @@
 package org.sufficientlysecure.keychain.remote;
 
 
+import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -35,6 +34,9 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
@@ -42,14 +44,18 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
+import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
 import org.sufficientlysecure.keychain.util.Log;
 
 
-public class KeychainExternalProvider extends ContentProvider {
+public class KeychainExternalProvider extends ContentProvider implements SimpleContentResolverInterface {
     private static final int EMAIL_STATUS = 101;
+    private static final int API_APPS = 301;
+    private static final int API_APPS_BY_PACKAGE_NAME = 302;
 
 
-    protected UriMatcher mUriMatcher;
+    private UriMatcher mUriMatcher;
+    private ApiPermissionHelper mApiPermissionHelper;
 
 
     /**
@@ -70,6 +76,9 @@ public class KeychainExternalProvider extends ContentProvider {
          */
         matcher.addURI(authority, KeychainExternalContract.BASE_EMAIL_STATUS, EMAIL_STATUS);
 
+        matcher.addURI(KeychainContract.CONTENT_AUTHORITY, KeychainContract.BASE_API_APPS, API_APPS);
+        matcher.addURI(KeychainContract.CONTENT_AUTHORITY, KeychainContract.BASE_API_APPS + "/*", API_APPS_BY_PACKAGE_NAME);
+
         return matcher;
     }
 
@@ -79,6 +88,7 @@ public class KeychainExternalProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         mUriMatcher = buildUriMatcher();
+        mApiPermissionHelper = new ApiPermissionHelper(getContext(), new ApiDataAccessObject(this));
         return true;
     }
 
@@ -98,6 +108,12 @@ public class KeychainExternalProvider extends ContentProvider {
             case EMAIL_STATUS:
                 return EmailStatus.CONTENT_TYPE;
 
+            case API_APPS:
+                return ApiApps.CONTENT_TYPE;
+
+            case API_APPS_BY_PACKAGE_NAME:
+                return ApiApps.CONTENT_ITEM_TYPE;
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -115,10 +131,15 @@ public class KeychainExternalProvider extends ContentProvider {
 
         int match = mUriMatcher.match(uri);
 
-        String groupBy;
+        String groupBy = null;
 
         switch (match) {
             case EMAIL_STATUS: {
+                boolean callerIsAllowed = mApiPermissionHelper.isAllowedIgnoreErrors();
+                if (!callerIsAllowed) {
+                    throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
+                }
+
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(EmailStatus._ID, "email AS _id");
                 projectionMap.put(EmailStatus.EMAIL_ADDRESS,
@@ -181,6 +202,20 @@ public class KeychainExternalProvider extends ContentProvider {
                     Log.e(Constants.TAG, "Malformed find by email query!");
                     qb.appendWhere(" AND 0");
                 }
+
+                break;
+            }
+
+            case API_APPS: {
+                qb.setTables(Tables.API_APPS);
+
+                break;
+            }
+
+            case API_APPS_BY_PACKAGE_NAME: {
+                qb.setTables(Tables.API_APPS);
+                qb.appendWhere(ApiApps.PACKAGE_NAME + " = ");
+                qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 break;
             }
