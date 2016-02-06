@@ -465,7 +465,7 @@ public class ContactHelper {
      */
     public void writeKeysToContacts() {
         if (Constants.DEBUG_SYNC_REMOVE_CONTACTS) {
-            debugDeleteRawContacts();
+            deleteAllContacts();
         }
 
         writeKeysToMainProfileContact();
@@ -671,7 +671,7 @@ public class ContactHelper {
      *
      * @return number of rows deleted
      */
-    private int debugDeleteRawContacts() {
+    public int deleteAllContacts() {
         // CALLER_IS_SYNCADAPTER allows us to actually wipe the RawContact from the device, otherwise
         // would be just flagged for deletion
         Uri deleteUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon().
