@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.support;
 
-import org.spongycastle.bcpg.ContainedPacket;
+import org.bouncycastle.bcpg.ContainedPacket;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

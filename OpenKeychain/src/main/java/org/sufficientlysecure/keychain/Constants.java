@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain;
 
 import android.os.Environment;
 
-import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
 import java.net.Proxy;

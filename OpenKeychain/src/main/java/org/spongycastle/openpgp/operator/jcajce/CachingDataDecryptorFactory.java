@@ -4,13 +4,13 @@
  * Licensed under the Bouncy Castle License (MIT license). See LICENSE file for details.
  */
 
-package org.spongycastle.openpgp.operator.jcajce;
+package org.bouncycastle.openpgp.operator.jcajce;
 
-import org.spongycastle.jcajce.util.NamedJcaJceHelper;
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPPublicKeyEncryptedData;
-import org.spongycastle.openpgp.operator.PGPDataDecryptor;
-import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
+import org.bouncycastle.jcajce.util.NamedJcaJceHelper;
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPPublicKeyEncryptedData;
+import org.bouncycastle.openpgp.operator.PGPDataDecryptor;
+import org.bouncycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
 
 import java.nio.ByteBuffer;
 import java.util.Map;

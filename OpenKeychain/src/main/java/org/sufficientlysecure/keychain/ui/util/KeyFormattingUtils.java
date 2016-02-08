@@ -32,11 +32,11 @@ import android.widget.ViewAnimator;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpSignatureResult;
-import org.spongycastle.asn1.ASN1ObjectIdentifier;
-import org.spongycastle.asn1.nist.NISTNamedCurves;
-import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
-import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
-import org.spongycastle.util.encoders.Hex;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.nist.NISTNamedCurves;
+import org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;
+import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
+import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;

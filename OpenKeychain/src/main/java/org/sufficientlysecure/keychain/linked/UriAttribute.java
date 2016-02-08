@@ -1,6 +1,6 @@
 package org.sufficientlysecure.keychain.linked;
 
-import org.spongycastle.util.Strings;
+import org.bouncycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;

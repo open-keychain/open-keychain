@@ -76,8 +76,8 @@ We are using the newest [Android Studio](http://developer.android.com/sdk/instal
 Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android. OpenKeychain uses a forked version with some small changes. These changes will been sent to Bouncy Castle, and Spongy Castle will be used again when they have filtered down.
 
 see
-* Fork: https://github.com/openpgp-keychain/spongycastle
-* Spongy Castle: http://rtyley.github.com/spongycastle/
+* Fork: https://github.com/openpgp-keychain/bouncycastle
+* Spongy Castle: http://rtyley.github.com/bouncycastle/
 
 #### Bouncy Castle resources
 

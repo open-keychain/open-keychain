@@ -30,7 +30,7 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
-import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;

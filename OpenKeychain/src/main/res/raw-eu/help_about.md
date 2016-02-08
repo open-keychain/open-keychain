@@ -65,7 +65,7 @@ Baimena: GPLv3+
   * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Diseinua) (Apache Baimena 2 bertsioa)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT Baimena)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT Baimena)
-  * [SpongyCastle](https://rtyley.github.io/spongycastle/) (MIT X11 Baimena)
+  * [SpongyCastle](https://rtyley.github.io/bouncycastle/) (MIT X11 Baimena)
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache Baimena v2)
   * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Apache Baimena v2)
   * [ZXing](https://github.com/zxing/zxing) (Apache Baimena v2)

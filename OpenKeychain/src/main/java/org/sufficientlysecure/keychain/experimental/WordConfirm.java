@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.experimental;
 
 import android.content.Context;
 
-import org.spongycastle.util.Arrays;
+import org.bouncycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;

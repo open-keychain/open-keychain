@@ -41,7 +41,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;

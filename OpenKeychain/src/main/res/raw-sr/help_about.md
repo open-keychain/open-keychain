@@ -65,7 +65,7 @@
   * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Материјал дизајн) (Апачи лиценца в2)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (МИТ лиценца)
   * [Snackbar](https://github.com/nispok/snackbar) (МИТ лиценца)
-  * [SpongyCastle](https://rtyley.github.io/spongycastle/) (МИТ Икс11 лиценца)
+  * [SpongyCastle](https://rtyley.github.io/bouncycastle/) (МИТ Икс11 лиценца)
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Апачи лиценца в2)
   * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Апачи лиценца в2)
   * [ZXing](https://github.com/zxing/zxing) (Апачи лиценца в2)

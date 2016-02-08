@@ -18,8 +18,8 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.PGPSecretKey;
+import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.openpgp.PGPSecretKey;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -29,7 +29,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;

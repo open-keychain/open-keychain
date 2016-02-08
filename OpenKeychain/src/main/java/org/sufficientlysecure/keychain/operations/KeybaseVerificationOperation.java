@@ -28,7 +28,7 @@ import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
 
 import org.json.JSONObject;
-import org.spongycastle.openpgp.PGPUtil;
+import org.bouncycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationResult;
