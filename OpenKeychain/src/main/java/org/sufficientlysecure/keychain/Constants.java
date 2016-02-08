@@ -69,9 +69,7 @@ public final class Constants {
     // used by QR Codes (Guardian Project, Monkeysphere compatiblity)
     public static final String FINGERPRINT_SCHEME = "openpgp4fpr";
 
-    // Not BC due to the use of Spongy Castle for Android
-    public static final String SC = BouncyCastleProvider.PROVIDER_NAME;
-    public static final String BOUNCY_CASTLE_PROVIDER_NAME = SC;
+    public static final String BOUNCY_CASTLE_PROVIDER_NAME = BouncyCastleProvider.PROVIDER_NAME;
 
     // prefix packagename for exported Intents
     // as described in http://developer.android.com/guide/components/intents-filters.html

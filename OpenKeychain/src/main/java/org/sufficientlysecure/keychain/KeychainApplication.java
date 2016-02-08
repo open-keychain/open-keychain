@@ -57,7 +57,7 @@ public class KeychainApplication extends Application {
         super.onCreate();
 
         /*
-         * Sets Bouncy (Spongy) Castle as preferred security provider
+         * Sets Bouncy Castle as preferred security provider
          *
          * insertProviderAt() position starts from 1
          */

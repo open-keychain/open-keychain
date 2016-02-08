@@ -358,7 +358,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
      * <h3>DSA</h3>
      * <p>For DSA algorithm key length must be between 2048 and 3072. Also, it must me dividable by 64.</p>
      *
-     * @return correct key length, according to SpongyCastle specification. Returns <code>-1</code>, if key length is
+     * @return correct key length, according to BouncyCastle specification. Returns <code>-1</code>, if key length is
      * inappropriate.
      */
     private int getProperKeyLength(Algorithm algorithm, int currentKeyLength) {
