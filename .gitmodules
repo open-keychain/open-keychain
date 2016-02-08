@@ -21,3 +21,6 @@
 [submodule "OpenKeychain/src/test/resources/openpgp-interop"]
 	path = OpenKeychain/src/test/resources/openpgp-interop
 	url = https://github.com/google/openpgp-interop
+[submodule "extern/bouncycastle"]
+	path = extern/bouncycastle
+	url = https://github.com/open-keychain/bouncycastle.git
