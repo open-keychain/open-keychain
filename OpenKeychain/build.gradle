@@ -283,7 +283,7 @@ android {
 
 // apply plugin: 'spoon'
 
-task jacocoTestReport(type:JacocoReport, dependsOn: "testDebugUnitTest") {
+task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugUnitTest") {
     group = "Reporting"
     description = "Generate Jacoco coverage reports"
 
