@@ -67,7 +67,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public static void onResumeChecks(Context context) {
         KeyserverSyncAdapterService.cancelUpdates(context);
-        // in case user has disabled sync from settings
+        // in case user has disabled sync from Android account settings
         ContactSyncAdapterService.deleteIfSyncDisabled(context);
     }
 

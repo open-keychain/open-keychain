@@ -129,7 +129,7 @@ public class KeychainApplication extends Application {
             Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
             if (accounts.length == 0) {
                 if (!manager.addAccountExplicitly(account, null, null)) {
-                    Log.d(Constants.TAG, "account already exists, the account is null, or another error occured");
+                    Log.d(Constants.TAG, "error when adding account via addAccountExplicitly");
                     return null;
                 } else {
                     return account;
