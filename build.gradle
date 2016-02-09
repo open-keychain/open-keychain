@@ -36,8 +36,8 @@ subprojects {
     }
 }
 
-// Ignore tests for external spongycastle
-project(':extern:spongycastle') {
+// Ignore tests for external bouncycastle
+project(':extern:bouncycastle') {
     subprojects {
         // Need to re-apply the plugin here otherwise the test property below can't be set.
         apply plugin: 'java'

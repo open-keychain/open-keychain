@@ -5,13 +5,13 @@
  * Licensed under the Bouncy Castle License (MIT license). See LICENSE file for details.
  */
 
-package org.spongycastle.openpgp.operator.jcajce;
+package org.bouncycastle.openpgp.operator.jcajce;
 
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.operator.PGPContentSigner;
-import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
-import org.spongycastle.openpgp.operator.PGPDigestCalculator;
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPPrivateKey;
+import org.bouncycastle.openpgp.operator.PGPContentSigner;
+import org.bouncycastle.openpgp.operator.PGPContentSignerBuilder;
+import org.bouncycastle.openpgp.operator.PGPDigestCalculator;
 
 import java.io.OutputStream;
 import java.nio.ByteBuffer;

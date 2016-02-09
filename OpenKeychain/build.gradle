@@ -19,7 +19,9 @@ dependencies {
     // http://robolectric.org/getting-started/
     // http://www.vogella.com/tutorials/Robolectric/article.html
     testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.0'
+    testCompile ('org.robolectric:robolectric:3.0') {
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk16'
+    }
     testCompile 'org.mockito:mockito-core:1.10.19'
 
     // UI testing with Espresso
@@ -71,9 +73,9 @@ dependencies {
     // libs as submodules
     compile project(':extern:openpgp-api-lib:openpgp-api')
     compile project(':extern:openkeychain-api-lib:openkeychain-intents')
-    compile project(':extern:spongycastle:core')
-    compile project(':extern:spongycastle:pg')
-    compile project(':extern:spongycastle:prov')
+    compile project(':extern:bouncycastle:core')
+    compile project(':extern:bouncycastle:pg')
+    compile project(':extern:bouncycastle:prov')
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:safeslinger-exchange:safeslinger-exchange')
@@ -112,10 +114,10 @@ dependencyVerification {
             'org.apache.james:apache-mime4j-dom:7e6b06ee164a1c21b7e477249ea0b74a18fddce44764e5764085f58dd8c34633',
 //            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:2aedbdd2df12df4879c9af2e2917e6b2f1da6e4209a299be6e5e7fa998eaef95',
             'com.cocosw:bottomsheet:40d2187c9cdaf224acbf876abc138cd9d4a293ef89091982ecf2492c8fcd186b',
-//            'OpenKeychain.extern.spongycastle:core:84bf273bad2208fda941be9f26ece4b588e5a86c1b6bdb1c9f6344b72a343931',
+//            'OpenKeychain.extern.bouncycastle:core:84bf273bad2208fda941be9f26ece4b588e5a86c1b6bdb1c9f6344b72a343931',
 //            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:d025e4ae1ec539663a35c0b904efd84e1a1a72f32f909174c110d65e19e51c28',
-//            'OpenKeychain.extern.spongycastle:pg:ab73a3b9cc495b1b1bda466fccead031c10138fe6bf0f147bcf625c4838b3e59',
-//            'OpenKeychain.extern.spongycastle:prov:eac23e551195c8876fa91d9bc9f735f27a264f1f5fa0d3bc21f141d0013d417b',
+//            'OpenKeychain.extern.bouncycastle:pg:ab73a3b9cc495b1b1bda466fccead031c10138fe6bf0f147bcf625c4838b3e59',
+//            'OpenKeychain.extern.bouncycastle:prov:eac23e551195c8876fa91d9bc9f735f27a264f1f5fa0d3bc21f141d0013d417b',
 //            'OpenKeychain.extern.KeybaseLib:Lib:d6a543fdee0a736a65bedcd225b98c9f8d5c9f5b72a0c2714e5b369019cd0ec6',
 //            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:b0238b99fb237bd7e2721d709930dbc85d21a7f533866899edc829dbe4d5f478',
 //            'OpenKeychain.extern:minidns:51e34ebab23ebd6bdd4cc681024040e5cfd2d713a51a4b209e4fbeaa73e5fe57',

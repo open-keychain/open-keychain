@@ -30,7 +30,7 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
-import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -57,7 +57,7 @@ public class KeychainApplication extends Application {
         super.onCreate();
 
         /*
-         * Sets Bouncy (Spongy) Castle as preferred security provider
+         * Sets Bouncy Castle as preferred security provider
          *
          * insertProviderAt() position starts from 1
          */

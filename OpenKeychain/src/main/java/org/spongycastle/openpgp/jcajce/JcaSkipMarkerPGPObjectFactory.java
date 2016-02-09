@@ -1,10 +1,10 @@
-package org.spongycastle.openpgp.jcajce;
+package org.bouncycastle.openpgp.jcajce;
 
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.spongycastle.openpgp.PGPMarker;
+import org.bouncycastle.openpgp.PGPMarker;
 
 /** This class wraps the regular PGPObjectFactory, changing its behavior to
  * ignore all PGPMarker packets it encounters while reading. These packets
@@ -12,7 +12,7 @@ import org.spongycastle.openpgp.PGPMarker;
  * RFC 4880.
  * 
  * @see https://tools.ietf.org/html/rfc4880#section-5.8
- * @see org.spongycastle.openpgp.PGPMarker
+ * @see org.bouncycastle.openpgp.PGPMarker
  * 
  */
 public class JcaSkipMarkerPGPObjectFactory extends JcaPGPObjectFactory {
