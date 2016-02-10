@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2016 Vincent Breitmoser
+ *
+ * Licensed under the Bouncy Castle License (MIT license). See LICENSE file for details.
+ */
+
 package org.spongycastle.openpgp.operator.jcajce;
 
 
@@ -18,6 +24,9 @@ import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PGPDigestCalculatorProvider;
 
 
+/** This is a builder for a special PBESecretKeyDecryptor which is parametrized by a
+ * fixed session key, which is used in place of the one obtained from a passphrase.
+ */
 public class SessionKeySecretKeyDecryptorBuilder
 {
     private OperatorHelper helper = new OperatorHelper(new DefaultJcaJceHelper());

@@ -38,6 +38,7 @@ import org.spongycastle.openpgp.operator.jcajce.SessionKeySecretKeyDecryptorBuil
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -120,8 +121,13 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
     }
 
-    // This method can potentially take a LONG time (i.e. seconds), so it should only
-    // ever be called by ProviderHelper to be cached in the database.
+    /** This method returns the SecretKeyType for this secret key, testing for an empty
+     * passphrase in the process.
+     *
+     * This method can potentially take a LONG time (i.e. seconds), so it should only
+     * ever be called by {@link ProviderHelper} for the purpose of caching its output
+     * in the database.
+     */
     public SecretKeyType getSecretKeyTypeSuperExpensive() {
         S2K s2k = mSecretKey.getS2K();
         if (s2k != null && s2k.getType() == S2K.GNU_DUMMY_S2K) {
@@ -175,13 +181,13 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             }
 
             byte[] sessionKey;
-            sessionKey = passphrase.getCachedSessionKeyForAlgorithm(keyEncryptionAlgorithm, s2k);
+            sessionKey = passphrase.getCachedSessionKeyForParameters(keyEncryptionAlgorithm, s2k);
             if (sessionKey == null) {
                 PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                         Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.getCharArray());
                 // this operation is EXPENSIVE, so we cache its result in the passed Passphrase object!
                 sessionKey = keyDecryptor.makeKeyFromPassPhrase(keyEncryptionAlgorithm, s2k);
-                passphrase.addCachedSessionKey(keyEncryptionAlgorithm, s2k, sessionKey);
+                passphrase.addCachedSessionKeyForParameters(keyEncryptionAlgorithm, s2k, sessionKey);
             }
 
             PBESecretKeyDecryptor keyDecryptor = new SessionKeySecretKeyDecryptorBuilder()
