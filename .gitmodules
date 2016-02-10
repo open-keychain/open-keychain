@@ -1,7 +1,3 @@
-[submodule "extern/spongycastle"]
-	path = extern/spongycastle
-	url = https://github.com/open-keychain/spongycastle.git
-	ignore = dirty
 [submodule "extern/openpgp-api-lib"]
 	path = extern/openpgp-api-lib
 	url = https://github.com/open-keychain/openpgp-api.git
@@ -25,3 +21,8 @@
 [submodule "OpenKeychain/src/test/resources/openpgp-interop"]
 	path = OpenKeychain/src/test/resources/openpgp-interop
 	url = https://github.com/google/openpgp-interop
+	ignore = dirty
+[submodule "extern/bouncycastle"]
+	path = extern/bouncycastle
+	url = https://github.com/open-keychain/bouncycastle.git
+	ignore = dirty

@@ -19,7 +19,9 @@ dependencies {
     // http://robolectric.org/getting-started/
     // http://www.vogella.com/tutorials/Robolectric/article.html
     testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.0'
+    testCompile ('org.robolectric:robolectric:3.0') {
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk16'
+    }
     testCompile 'org.mockito:mockito-core:1.10.19'
 
     // UI testing with Espresso
@@ -50,12 +52,7 @@ dependencies {
     compile 'com.splitwise:tokenautocomplete:2.0.2@aar'
     compile 'se.emilsjolander:stickylistheaders:2.7.0'
     compile 'org.sufficientlysecure:html-textview:1.3'
-    compile 'com.mikepenz:materialdrawer:4.6.3@aar'
-    compile 'com.mikepenz:materialize:0.5.1'
-    compile 'com.mikepenz:iconics-core:2.5.3@aar'
-    compile 'com.mikepenz:google-material-typeface:2.2.0.1@aar'
-    compile 'com.mikepenz:fontawesome-typeface:4.5.0.1@aar'
-    compile 'com.mikepenz:community-material-typeface:1.3.41.1@aar'
+    compile 'org.sufficientlysecure:donations:2.4'
     compile 'com.nispok:snackbar:2.11.0'
     compile 'com.squareup.okhttp:okhttp:2.7.1'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.7.1'
@@ -64,6 +61,14 @@ dependencies {
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
     compile 'com.cocosw:bottomsheet:1.2.0@aar'
 
+    // Material Drawer
+    compile 'com.mikepenz:materialdrawer:4.6.3@aar'
+    compile 'com.mikepenz:materialize:0.5.1'
+    compile 'com.mikepenz:iconics-core:2.5.3@aar'
+    compile 'com.mikepenz:google-material-typeface:2.2.0.1@aar'
+    compile 'com.mikepenz:fontawesome-typeface:4.5.0.1@aar'
+    compile 'com.mikepenz:community-material-typeface:1.3.41.1@aar'
+
     // Nordpol
     compile 'com.fidesmo:nordpol-android:0.1.15@aar'
     compile 'com.fidesmo:nordpol-core:0.1.15'
@@ -71,9 +76,9 @@ dependencies {
     // libs as submodules
     compile project(':extern:openpgp-api-lib:openpgp-api')
     compile project(':extern:openkeychain-api-lib:openkeychain-intents')
-    compile project(':extern:spongycastle:core')
-    compile project(':extern:spongycastle:pg')
-    compile project(':extern:spongycastle:prov')
+    compile project(':extern:bouncycastle:core')
+    compile project(':extern:bouncycastle:pg')
+    compile project(':extern:bouncycastle:prov')
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:safeslinger-exchange:safeslinger-exchange')
@@ -98,34 +103,34 @@ dependencyVerification {
             'com.splitwise:tokenautocomplete:2fc238424130b42155b5f2e39799a90bbbd13b148850afbe534ab08bb913c7f7',
             'se.emilsjolander:stickylistheaders:a08ca948aa6b220f09d82f16bbbac395f6b78897e9eeac6a9f0b0ba755928eeb',
             'org.sufficientlysecure:html-textview:39048e35894e582adada388e6c00631803283f8defed8e07ad58a5f284f272ee',
+            'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
+            'org.sufficientlysecure:donations:96f8197bab26dfe41900d824f10f8f1914519cd62eedb77bdac5b223eccdf0a6',
+            'com.squareup.okhttp:okhttp-urlconnection:8dce03792fd7b5f089dc4fc0fdcecbbe50ae6cca21cb08a787a3b902a9914111',
+            'com.squareup.okhttp:okhttp:8df336e3e93b22ba8c05da5d94caf968950db845869c7ca16ed682e065135aa8',
+            'org.apache.james:apache-mime4j-dom:7e6b06ee164a1c21b7e477249ea0b74a18fddce44764e5764085f58dd8c34633',
+            'org.apache.james:apache-mime4j-core:4d7434c68f94b81a253c12f28e6bbb4d6239c361d6086a46e22e594bb43ac660',
+            'com.cocosw:bottomsheet:40d2187c9cdaf224acbf876abc138cd9d4a293ef89091982ecf2492c8fcd186b',
+            'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
             'com.mikepenz:materialize:2457dbe0b874a422c0a21bc6716cf5af1d5a8d39387857ff7c20855ab5543bf8',
             'com.mikepenz:materialdrawer:4e2644f454cc2ce48b956536d3339957c3f592adb2e0b6dad72d477da29f7677',
             'com.mikepenz:google-material-typeface:48b2712de87d542e9b050846e9f602238a367f38e2d5e8ea4557c5b12adfcbec',
             'com.mikepenz:iconics-core:d2495547db9d881168b1b502b1934f6a000ed5086c6c6a7114f3bbcbbb7ec306',
             'com.mikepenz:community-material-typeface:990acfcfb892a733d36748fe29176bd61dd5ab34bc8ca1c591200e639d955b99',
             'com.mikepenz:fontawesome-typeface:69cb09934a83bac607e78a29459868d537f766224b4a65a042d1f84c98c7b05d',
-            'com.squareup.okhttp:okhttp:8df336e3e93b22ba8c05da5d94caf968950db845869c7ca16ed682e065135aa8',
-            'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
-            'org.apache.james:apache-mime4j-core:4d7434c68f94b81a253c12f28e6bbb4d6239c361d6086a46e22e594bb43ac660',
-            'com.squareup.okhttp:okhttp-urlconnection:8dce03792fd7b5f089dc4fc0fdcecbbe50ae6cca21cb08a787a3b902a9914111',
-            'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
-            'org.apache.james:apache-mime4j-dom:7e6b06ee164a1c21b7e477249ea0b74a18fddce44764e5764085f58dd8c34633',
-//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:2aedbdd2df12df4879c9af2e2917e6b2f1da6e4209a299be6e5e7fa998eaef95',
-            'com.cocosw:bottomsheet:40d2187c9cdaf224acbf876abc138cd9d4a293ef89091982ecf2492c8fcd186b',
-//            'OpenKeychain.extern.spongycastle:core:84bf273bad2208fda941be9f26ece4b588e5a86c1b6bdb1c9f6344b72a343931',
-//            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:d025e4ae1ec539663a35c0b904efd84e1a1a72f32f909174c110d65e19e51c28',
-//            'OpenKeychain.extern.spongycastle:pg:ab73a3b9cc495b1b1bda466fccead031c10138fe6bf0f147bcf625c4838b3e59',
-//            'OpenKeychain.extern.spongycastle:prov:eac23e551195c8876fa91d9bc9f735f27a264f1f5fa0d3bc21f141d0013d417b',
-//            'OpenKeychain.extern.KeybaseLib:Lib:d6a543fdee0a736a65bedcd225b98c9f8d5c9f5b72a0c2714e5b369019cd0ec6',
-//            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:b0238b99fb237bd7e2721d709930dbc85d21a7f533866899edc829dbe4d5f478',
-//            'OpenKeychain.extern:minidns:51e34ebab23ebd6bdd4cc681024040e5cfd2d713a51a4b209e4fbeaa73e5fe57',
-            'com.android.support:support-annotations:f347a35b9748a4103b39a6714a77e2100f488d623fd6268e259c177b200e9d82',
-            'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
             'com.fidesmo:nordpol-core:fe09e65379f2c7300b669ef7df2bfbde47729dac19edacc26b5ddb44b94ff67d',
-            'com.fidesmo:nordpol-android:012f93c2c78bd5e3b35af3e8a6676c4fac56755abee252dcfdbb8b35df19e3dd'
+            'com.fidesmo:nordpol-android:012f93c2c78bd5e3b35af3e8a6676c4fac56755abee252dcfdbb8b35df19e3dd',
+//            'OpenKeychain.extern.bouncycastle:core:b22dfb37e09fb520683dd0ba089351787560a75b59b60822143f633ec984cab5',
+//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:8a53012b9df6d62174ebdc11e0ab56700501a915930db5c12e32d565f136fc06',
+//            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:9263330c00497b7bb70502160f50c8396228129376f48f4f5656d28360a2edac',
+//            'OpenKeychain.extern.bouncycastle:prov:2d93a52e1b519995b18c0a92a1e59a2773d67d9b466a9cce6af5202a66502577',
+//            'OpenKeychain.extern.bouncycastle:pg:1397025acf36be36d329c0345b136af776be82fe5d6dad70cc06db09d2f02201',
+//            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:989fcc0eba663489a41aa166f6bb39f21271d980faddea5f06ab75339e792d10',
+            'com.android.support:support-annotations:f347a35b9748a4103b39a6714a77e2100f488d623fd6268e259c177b200e9d82',
+//            'OpenKeychain.extern:minidns:109d5851ab351d7628ed62a0ed96b40598952424e56657c17debbeb4a704f0ce',
+//            'OpenKeychain.extern.KeybaseLib:Lib:c5b1567ff781c311240e83f865c4ba76ae435eb00994529b8364371abf0d76de',
+            'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
     ]
 }
-
 
 
 
@@ -201,6 +206,23 @@ android {
         }
     }
 
+    productFlavors {
+        google {
+            buildConfigField "boolean", "DONATIONS_GOOGLE", "true"
+            buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwX9SOQ/EL4u5pvbYmYMagN5DDenuSaMaVs2cVPzqxMaIHp6/9/nGuzj2/CpcB4ASd2vvfLlE9tZRkPmFTULWc4Sp4OR+JenQufZZr7Y8WGPkFyqd+dOxhIqKKLtH1QuqSyhby3gEMlWzydJY3rHXlH2Bpu65Uroawq76nynnELXNlzsCM231XWgj4HA87qxv9hSWLCpu16wKxZIX3d6mwZLZmGF+xYJAzVr291oDYYl+h6BDoIcAfmQFsv5MexNwBFO+TLVrvL0e5qdGHZxwwD1/68VSY8FxAEfM+yq7jovdVSdcXlJQjZrV5TRDdFWrtEB6njGA3YZWXP6B6MMMoQIDAQAB\""
+            buildConfigField "String", "PAYPAL_USER", "null"
+            buildConfigField "String", "PAYPAL_CURRENCY_CODE", "null"
+            buildConfigField "String", "BITCOIN_ADDRESS", "null"
+        }
+        fdroid {
+            buildConfigField "boolean", "DONATIONS_GOOGLE", "false"
+            buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "null"
+            buildConfigField "String", "PAYPAL_USER", "\"dominik@dominikschuermann.de\""
+            buildConfigField "String", "PAYPAL_CURRENCY_CODE", "\"EUR\""
+            buildConfigField "String", "BITCOIN_ADDRESS", "\"1JZfAKTbTU5LJTkDELhPUF4Xa6VstEZgz6\""
+        }
+    }
+
     /*
      * To sign release build, create file gradle.properties in ~/.gradle/ with this content:
      *
@@ -261,7 +283,7 @@ android {
 
 // apply plugin: 'spoon'
 
-task jacocoTestReport(type:JacocoReport, dependsOn: "testDebugUnitTest") {
+task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugUnitTest") {
     group = "Reporting"
     description = "Generate Jacoco coverage reports"
 

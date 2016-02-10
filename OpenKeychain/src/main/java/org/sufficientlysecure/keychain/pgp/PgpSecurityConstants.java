@@ -17,11 +17,11 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.asn1.nist.NISTNamedCurves;
-import org.spongycastle.bcpg.CompressionAlgorithmTags;
-import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
-import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
+import org.bouncycastle.asn1.nist.NISTNamedCurves;
+import org.bouncycastle.bcpg.CompressionAlgorithmTags;
+import org.bouncycastle.bcpg.HashAlgorithmTags;
+import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
+import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 
 import java.util.Arrays;
 import java.util.HashSet;

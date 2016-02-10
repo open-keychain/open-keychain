@@ -65,7 +65,7 @@
   * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design)</a> (Apache 许可证 v2)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT 许可证)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT 许可证)
-  * [SpongyCastle](https://rtyley.github.io/spongycastle/) (MIT X11 License)
+  * [SpongyCastle](https://rtyley.github.io/bouncycastle/) (MIT X11 License)
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache 许可证 v2)
   * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Apache 许可证 v2)
   * [ZXing](https://github.com/zxing/zxing) (Apache 许可证 v2)

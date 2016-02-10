@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.base;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -30,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
@@ -52,7 +54,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        KeyserverSyncAdapterService.cancelUpdates(this);
+        onResumeChecks(this);
 
         if (mThemeChanger.changeTheme()) {
             Intent intent = getIntent();
@@ -61,6 +63,12 @@ public abstract class BaseActivity extends AppCompatActivity {
             startActivity(intent);
             overridePendingTransition(0, 0);
         }
+    }
+
+    public static void onResumeChecks(Context context) {
+        KeyserverSyncAdapterService.cancelUpdates(context);
+        // in case user has disabled sync from Android account settings
+        ContactSyncAdapterService.deleteIfSyncDisabled(context);
     }
 
     protected void initLayout() {

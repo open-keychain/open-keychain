@@ -30,7 +30,7 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
-import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -57,7 +57,7 @@ public class KeychainApplication extends Application {
         super.onCreate();
 
         /*
-         * Sets Bouncy (Spongy) Castle as preferred security provider
+         * Sets Bouncy Castle as preferred security provider
          *
          * insertProviderAt() position starts from 1
          */
@@ -118,8 +118,8 @@ public class KeychainApplication extends Application {
     }
 
     /**
-     * @return the OpenKeychain contact/sync account if it exists or was successfully created, null
-     * otherwise
+     * @return the OpenKeychain contact/keyserver sync account if it exists or was successfully
+     * created, null otherwise
      */
     public static @Nullable Account createAccountIfNecessary(Context context) {
         try {
@@ -129,7 +129,7 @@ public class KeychainApplication extends Application {
             Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
             if (accounts.length == 0) {
                 if (!manager.addAccountExplicitly(account, null, null)) {
-                    Log.d(Constants.TAG, "account already exists, the account is null, or another error occured");
+                    Log.d(Constants.TAG, "error when adding account via addAccountExplicitly");
                     return null;
                 } else {
                     return account;

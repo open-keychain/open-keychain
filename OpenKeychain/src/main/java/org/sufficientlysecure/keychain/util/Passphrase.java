@@ -23,7 +23,7 @@ import android.os.Parcelable;
 import android.text.Editable;
 import android.widget.EditText;
 
-import org.spongycastle.bcpg.S2K;
+import org.bouncycastle.bcpg.S2K;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.ComparableS2K;
 

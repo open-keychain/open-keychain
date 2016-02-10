@@ -65,7 +65,7 @@ Licencia: GPLv3+
   * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Licencia Apache v2)
   * [Librería SafeSlinger Exchange](https://github.com/SafeSlingerProject/exchange-android) (Licencia MIT)
   * [Snackbar](https://github.com/nispok/snackbar) (Licencia MIT)
-  * [SpongyCastle](https://rtyley.github.io/spongycastle/) (MIT X11 License)
+  * [SpongyCastle](https://rtyley.github.io/bouncycastle/) (MIT X11 License)
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Licencia Apache v2)
   * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Licencia Apache v2)
   * [ZXing](https://github.com/zxing/zxing) (Licencia Apache v2)

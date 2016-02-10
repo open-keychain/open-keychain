@@ -22,12 +22,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.util.SparseArray;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
 public class PagerTabStripAdapter extends FragmentPagerAdapter {
     protected final Activity mActivity;
     protected final ArrayList<TabInfo> mTabs = new ArrayList<>();
+    SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
 
     static final class TabInfo {
         public final Class<?> clss;
@@ -71,5 +74,22 @@ public class PagerTabStripAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return mTabs.get(position).title;
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        Fragment fragment = (Fragment) super.instantiateItem(container, position);
+        registeredFragments.put(position, fragment);
+        return fragment;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        registeredFragments.remove(position);
+        super.destroyItem(container, position, object);
+    }
+
+    public Fragment getRegisteredFragment(int position) {
+        return registeredFragments.get(position);
     }
 }

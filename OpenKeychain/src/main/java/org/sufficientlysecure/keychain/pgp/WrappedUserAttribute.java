@@ -21,14 +21,14 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.bcpg.BCPGInputStream;
-import org.spongycastle.bcpg.BCPGOutputStream;
-import org.spongycastle.bcpg.Packet;
-import org.spongycastle.bcpg.UserAttributePacket;
-import org.spongycastle.bcpg.UserAttributeSubpacket;
-import org.spongycastle.bcpg.UserAttributeSubpacketInputStream;
-import org.spongycastle.bcpg.UserAttributeSubpacketTags;
-import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
+import org.bouncycastle.bcpg.BCPGInputStream;
+import org.bouncycastle.bcpg.BCPGOutputStream;
+import org.bouncycastle.bcpg.Packet;
+import org.bouncycastle.bcpg.UserAttributePacket;
+import org.bouncycastle.bcpg.UserAttributeSubpacket;
+import org.bouncycastle.bcpg.UserAttributeSubpacketInputStream;
+import org.bouncycastle.bcpg.UserAttributeSubpacketTags;
+import org.bouncycastle.openpgp.PGPUserAttributeSubpacketVector;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -29,7 +29,7 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.util.LongSparseArray;
 
-import org.spongycastle.bcpg.CompressionAlgorithmTags;
+import org.bouncycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;

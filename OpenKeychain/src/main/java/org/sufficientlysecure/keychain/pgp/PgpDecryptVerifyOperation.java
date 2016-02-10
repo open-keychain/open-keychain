@@ -37,25 +37,25 @@ import android.webkit.MimeTypeMap;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpMetadata;
-import org.spongycastle.bcpg.ArmoredInputStream;
-import org.spongycastle.openpgp.PGPCompressedData;
-import org.spongycastle.openpgp.PGPDataValidationException;
-import org.spongycastle.openpgp.PGPEncryptedData;
-import org.spongycastle.openpgp.PGPEncryptedDataList;
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPKeyValidationException;
-import org.spongycastle.openpgp.PGPLiteralData;
-import org.spongycastle.openpgp.PGPPBEEncryptedData;
-import org.spongycastle.openpgp.PGPPublicKeyEncryptedData;
-import org.spongycastle.openpgp.PGPSignatureList;
-import org.spongycastle.openpgp.PGPUtil;
-import org.spongycastle.openpgp.jcajce.JcaSkipMarkerPGPObjectFactory;
-import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
-import org.spongycastle.openpgp.operator.PGPDigestCalculatorProvider;
-import org.spongycastle.openpgp.operator.jcajce.CachingDataDecryptorFactory;
-import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
-import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
-import org.spongycastle.util.encoders.DecoderException;
+import org.bouncycastle.bcpg.ArmoredInputStream;
+import org.bouncycastle.openpgp.PGPCompressedData;
+import org.bouncycastle.openpgp.PGPDataValidationException;
+import org.bouncycastle.openpgp.PGPEncryptedData;
+import org.bouncycastle.openpgp.PGPEncryptedDataList;
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPKeyValidationException;
+import org.bouncycastle.openpgp.PGPLiteralData;
+import org.bouncycastle.openpgp.PGPPBEEncryptedData;
+import org.bouncycastle.openpgp.PGPPublicKeyEncryptedData;
+import org.bouncycastle.openpgp.PGPSignatureList;
+import org.bouncycastle.openpgp.PGPUtil;
+import org.bouncycastle.openpgp.jcajce.JcaSkipMarkerPGPObjectFactory;
+import org.bouncycastle.openpgp.operator.PBEDataDecryptorFactory;
+import org.bouncycastle.openpgp.operator.PGPDigestCalculatorProvider;
+import org.bouncycastle.openpgp.operator.jcajce.CachingDataDecryptorFactory;
+import org.bouncycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
+import org.bouncycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
+import org.bouncycastle.util.encoders.DecoderException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
@@ -807,7 +807,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
      * as defined in http://tools.ietf.org/html/rfc4880#section-7
      * <p/>
      * The method is heavily based on
-     * pg/src/main/java/org/spongycastle/openpgp/examples/ClearSignedFileProcessor.java
+     * pg/src/main/java/org/bouncycastle/openpgp/examples/ClearSignedFileProcessor.java
      */
     @NonNull
     private DecryptVerifyResult verifyCleartextSignature(

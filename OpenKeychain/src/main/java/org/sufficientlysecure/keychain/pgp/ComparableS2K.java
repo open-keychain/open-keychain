@@ -23,7 +23,7 @@ import java.util.Arrays;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.spongycastle.bcpg.S2K;
+import org.bouncycastle.bcpg.S2K;
 
 
 /** This is an immutable and parcelable class which stores the full s2k parametrization
@@ -37,7 +37,7 @@ import org.spongycastle.bcpg.S2K;
  * length of the specific session key and thus needs to be considered for purposes of
  * session key caching.
  *
- * @see org.spongycastle.bcpg.S2K
+ * @see org.bouncycastle.bcpg.S2K
  */
 public class ComparableS2K implements Parcelable {
 
