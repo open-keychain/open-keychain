@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014-2016 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
+
+import com.github.pinball83.maskededittext.MaskedEditText;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -158,7 +160,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
     public static class PassphraseDialogFragment extends DialogFragment implements TextView.OnEditorActionListener {
         private EditText mPassphraseEditText;
         private TextView mPassphraseText;
-        private EditText[] mBackupCodeEditText;
+        private MaskedEditText mBackupCodeEditText;
 
         private boolean mIsCancelled = false;
         private RequiredInputParcel mRequiredInput;
@@ -185,12 +187,13 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 View view = inflater.inflate(R.layout.passphrase_dialog_backup_code, null);
                 alert.setView(view);
 
-                mBackupCodeEditText = new EditText[4];
-                mBackupCodeEditText[0] = (EditText) view.findViewById(R.id.backup_code_1);
-                mBackupCodeEditText[1] = (EditText) view.findViewById(R.id.backup_code_2);
-                mBackupCodeEditText[2] = (EditText) view.findViewById(R.id.backup_code_3);
-                mBackupCodeEditText[3] = (EditText) view.findViewById(R.id.backup_code_4);
-                setupEditTextFocusNext(mBackupCodeEditText);
+                mBackupCodeEditText = (MaskedEditText) view.findViewById(R.id.backup_code);
+                // NOTE: order of these method calls matter, see setupAutomaticLinebreak()
+                mBackupCodeEditText.setInputType(
+                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                setupAutomaticLinebreak(mBackupCodeEditText);
+                mBackupCodeEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
+                mBackupCodeEditText.setOnEditorActionListener(this);
 
                 AlertDialog dialog = alert.create();
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE,
@@ -324,32 +327,16 @@ public class PassphraseDialogActivity extends FragmentActivity {
             return dialog;
         }
 
-        private static void setupEditTextFocusNext(final EditText[] backupCodes) {
-            for (int i = 0; i < backupCodes.length - 1; i++) {
-
-                final int next = i + 1;
-
-                backupCodes[i].addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        boolean inserting = before < count;
-                        boolean cursorAtEnd = (start + count) == 6;
-
-                        if (inserting && cursorAtEnd) {
-                            backupCodes[next].requestFocus();
-                        }
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                    }
-                });
-
-            }
+        /**
+         * Automatic line break with max 6 lines for smaller displays
+         * <p/>
+         * NOTE: I was not able to get this behaviour using XML!
+         * Looks like the order of these method calls matter, see http://stackoverflow.com/a/11171307
+         */
+        private void setupAutomaticLinebreak(TextView textview) {
+            textview.setSingleLine(true);
+            textview.setMaxLines(6);
+            textview.setHorizontallyScrolling(false);
         }
 
         @Override
@@ -363,17 +350,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 public void onClick(View v) {
 
                     if (mRequiredInput.mType == RequiredInputType.BACKUP_CODE) {
-                        StringBuilder backupCodeInput = new StringBuilder(26);
-                        for (EditText editText : mBackupCodeEditText) {
-                            if (editText.getText().length() < 6) {
-                                return;
-                            }
-                            backupCodeInput.append(editText.getText());
-                            backupCodeInput.append('-');
-                        }
-                        backupCodeInput.deleteCharAt(backupCodeInput.length() - 1);
-
-                        Passphrase passphrase = new Passphrase(backupCodeInput.toString());
+                        Passphrase passphrase =
+                                new Passphrase(mBackupCodeEditText.getText().toString());
                         finishCaching(passphrase);
 
                         return;
