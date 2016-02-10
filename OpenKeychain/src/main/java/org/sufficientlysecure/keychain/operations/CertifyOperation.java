@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
@@ -75,24 +76,22 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
         // Retrieve and unlock secret key
         CanonicalizedSecretKey certificationKey;
+        long masterKeyId = parcel.mMasterKeyId;
         try {
 
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
-            CanonicalizedSecretKeyRing secretKeyRing =
-                    mProviderHelper.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId);
-            log.add(LogType.MSG_CRT_UNLOCK, 1);
-            certificationKey = secretKeyRing.getSecretKey();
 
+            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
             Passphrase passphrase;
 
-            switch (certificationKey.getSecretKeyType()) {
+            switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
                 case PIN:
                 case PATTERN:
                 case PASSPHRASE:
                     passphrase = cryptoInput.getPassphrase();
                     if (passphrase == null) {
                         try {
-                            passphrase = getCachedPassphrase(certificationKey.getKeyId(), certificationKey.getKeyId());
+                            passphrase = getCachedPassphrase(masterKeyId, masterKeyId);
                         } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
                             // treat as a cache miss for error handling purposes
                         }
@@ -100,10 +99,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
                     if (passphrase == null) {
                         return new CertifyResult(log,
-                                RequiredInputParcel.createRequiredSignPassphrase(
-                                        certificationKey.getKeyId(),
-                                        certificationKey.getKeyId(),
-                                        null),
+                                RequiredInputParcel.createRequiredSignPassphrase(masterKeyId, masterKeyId, null),
                                 cryptoInput
                         );
                     }
@@ -123,7 +119,14 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                     return new CertifyResult(CertifyResult.RESULT_ERROR, log);
             }
 
-            if (!certificationKey.unlock(passphrase)) {
+            // Get actual secret key
+            CanonicalizedSecretKeyRing secretKeyRing =
+                    mProviderHelper.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId);
+            certificationKey = secretKeyRing.getSecretKey();
+
+            log.add(LogType.MSG_CRT_UNLOCK, 1);
+            boolean unlockSuccessful = certificationKey.unlock(passphrase);
+            if (!unlockSuccessful) {
                 log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
                 return new CertifyResult(CertifyResult.RESULT_ERROR, log);
             }
@@ -142,8 +145,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
         int certifyOk = 0, certifyError = 0, uploadOk = 0, uploadError = 0;
 
         NfcSignOperationsBuilder allRequiredInput = new NfcSignOperationsBuilder(
-                cryptoInput.getSignatureTime(), certificationKey.getKeyId(),
-                certificationKey.getKeyId());
+                cryptoInput.getSignatureTime(), masterKeyId, masterKeyId);
 
         // Work through all requested certifications
         for (CertifyAction action : parcel.mCertifyActions) {

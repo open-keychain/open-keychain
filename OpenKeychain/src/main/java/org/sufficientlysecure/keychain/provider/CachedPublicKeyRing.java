@@ -74,7 +74,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public long extractOrGetMasterKeyId() throws PgpKeyNotFoundException {
         // try extracting from the uri first
         String firstSegment = mUri.getPathSegments().get(1);
-        if (!firstSegment.equals("find")) try {
+        if (!"find".equals(firstSegment)) try {
             return Long.parseLong(firstSegment);
         } catch (NumberFormatException e) {
             // didn't work? oh well.

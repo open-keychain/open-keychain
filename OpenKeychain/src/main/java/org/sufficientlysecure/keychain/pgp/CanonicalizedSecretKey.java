@@ -18,7 +18,16 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
+import java.nio.ByteBuffer;
+import java.security.PrivateKey;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bouncycastle.bcpg.S2K;
+import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPrivateKey;
 import org.bouncycastle.openpgp.PGPSecretKey;
@@ -33,19 +42,14 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyConverter;
 import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
+import org.bouncycastle.openpgp.operator.jcajce.SessionKeySecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.nio.ByteBuffer;
-import java.security.PrivateKey;
-import java.security.interfaces.RSAPrivateCrtKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -118,7 +122,14 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
     }
 
-    public SecretKeyType getSecretKeyType() {
+    /** This method returns the SecretKeyType for this secret key, testing for an empty
+     * passphrase in the process.
+     *
+     * This method can potentially take a LONG time (i.e. seconds), so it should only
+     * ever be called by {@link ProviderHelper} for the purpose of caching its output
+     * in the database.
+     */
+    public SecretKeyType getSecretKeyTypeSuperExpensive() {
         S2K s2k = mSecretKey.getS2K();
         if (s2k != null && s2k.getType() == S2K.GNU_DUMMY_S2K) {
             // divert to card is special
@@ -145,13 +156,12 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             // Otherwise, it's just a regular ol' passphrase
             return SecretKeyType.PASSPHRASE;
         }
-
     }
 
     /**
      * Returns true on right passphrase
      */
-    public boolean unlock(Passphrase passphrase) throws PgpGeneralException {
+    public boolean unlock(final Passphrase passphrase) throws PgpGeneralException {
         // handle keys on OpenPGP cards like they were unlocked
         S2K s2k = mSecretKey.getS2K();
         if (s2k != null
@@ -163,8 +173,26 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
         // try to extract keys using the passphrase
         try {
-            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                    Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.getCharArray());
+
+            int keyEncryptionAlgorithm = mSecretKey.getKeyEncryptionAlgorithm();
+            if (keyEncryptionAlgorithm == SymmetricKeyAlgorithmTags.NULL) {
+                mPrivateKey = mSecretKey.extractPrivateKey(null);
+                mPrivateKeyState = PRIVATE_KEY_STATE_UNLOCKED;
+                return true;
+            }
+
+            byte[] sessionKey;
+            sessionKey = passphrase.getCachedSessionKeyForParameters(keyEncryptionAlgorithm, s2k);
+            if (sessionKey == null) {
+                PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
+                        Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.getCharArray());
+                // this operation is EXPENSIVE, so we cache its result in the passed Passphrase object!
+                sessionKey = keyDecryptor.makeKeyFromPassPhrase(keyEncryptionAlgorithm, s2k);
+                passphrase.addCachedSessionKeyForParameters(keyEncryptionAlgorithm, s2k, sessionKey);
+            }
+
+            PBESecretKeyDecryptor keyDecryptor = new SessionKeySecretKeyDecryptorBuilder()
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(sessionKey);
             mPrivateKey = mSecretKey.extractPrivateKey(keyDecryptor);
             mPrivateKeyState = PRIVATE_KEY_STATE_UNLOCKED;
         } catch (PGPException e) {

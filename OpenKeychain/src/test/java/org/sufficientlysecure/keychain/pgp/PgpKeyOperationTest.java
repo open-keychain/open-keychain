@@ -1254,7 +1254,7 @@ public class PgpKeyOperationTest {
                 modified.getEncoded(), false, 0);
         Assert.assertEquals("secret key type should be 'pin' after this",
                 SecretKeyType.PIN,
-                secretRing.getSecretKey().getSecretKeyType());
+                secretRing.getSecretKey().getSecretKeyTypeSuperExpensive());
 
         // need to sleep for a sec, so the timestamp changes for notation data
         Thread.sleep(1000);

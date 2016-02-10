@@ -153,7 +153,7 @@ public class ProviderHelperSaveTest {
             Assert.assertEquals("first subkey should be of type sign+certify",
                     KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, (int) key.getKeyUsage());
             Assert.assertEquals("first subkey should be divert-to-card",
-                    SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+                    SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyTypeSuperExpensive());
             Assert.assertTrue("canCertify() should be true", key.canCertify());
             Assert.assertTrue("canSign() should be true", key.canSign());
 
@@ -168,7 +168,7 @@ public class ProviderHelperSaveTest {
             Assert.assertEquals("second subkey should be of type authenticate",
                     KeyFlags.AUTHENTICATION, (int) key.getKeyUsage());
             Assert.assertEquals("second subkey should be divert-to-card",
-                    SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+                    SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyTypeSuperExpensive());
             Assert.assertTrue("canAuthenticate() should be true", key.canAuthenticate());
 
             // cached
@@ -182,7 +182,7 @@ public class ProviderHelperSaveTest {
             Assert.assertEquals("first subkey should be of type encrypt (both types)",
                     KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, (int) key.getKeyUsage());
             Assert.assertEquals("third subkey should be divert-to-card",
-                    SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+                    SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyTypeSuperExpensive());
             Assert.assertTrue("canEncrypt() should be true", key.canEncrypt());
 
             // cached
@@ -237,7 +237,7 @@ public class ProviderHelperSaveTest {
             Assert.assertTrue("master key should have sign flag", ring.getPublicKey().canSign());
             Assert.assertTrue("master key should have encrypt flag", ring.getPublicKey().canEncrypt());
 
-            signId = ring.getSecretSignId();
+            signId = mProviderHelper.getCachedPublicKeyRing(masterKeyId).getSecretSignId();
             Assert.assertNotEquals("encrypt id should not be 0", 0, signId);
             Assert.assertNotEquals("encrypt key should be different from master key", masterKeyId, signId);
         }

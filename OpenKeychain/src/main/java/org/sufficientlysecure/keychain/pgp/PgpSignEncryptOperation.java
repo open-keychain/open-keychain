@@ -166,12 +166,13 @@ public class PgpSignEncryptOperation extends BaseOperation {
             updateProgress(R.string.progress_extracting_signature_key, 0, 100);
 
             try {
-                // fetch the indicated master key id (the one whose name we sign in)
-                CanonicalizedSecretKeyRing signingKeyRing =
-                        mProviderHelper.getCanonicalizedSecretKeyRing(input.getSignatureMasterKeyId());
-
-                // fetch the specific subkey to sign with, or just use the master key if none specified
-                signingKey = signingKeyRing.getSecretKey(input.getSignatureSubKeyId());
+                long signingMasterKeyId = input.getSignatureMasterKeyId();
+                long signingSubKeyId = input.getSignatureSubKeyId();
+                {
+                    CanonicalizedSecretKeyRing signingKeyRing =
+                            mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId);
+                    signingKey = signingKeyRing.getSecretKey(input.getSignatureSubKeyId());
+                }
 
                 // Make sure we are allowed to sign here!
                 if (!signingKey.canSign()) {
@@ -179,7 +180,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                     return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
 
-                switch (signingKey.getSecretKeyType()) {
+                switch (mProviderHelper.getCachedPublicKeyRing(signingMasterKeyId).getSecretKeyType(signingSubKeyId)) {
                     case DIVERT_TO_CARD:
                     case PASSPHRASE_EMPTY: {
                         if (!signingKey.unlock(new Passphrase())) {
@@ -196,14 +197,14 @@ public class PgpSignEncryptOperation extends BaseOperation {
                         Passphrase localPassphrase = cryptoInput.getPassphrase();
                         if (localPassphrase == null) {
                             try {
-                                localPassphrase = getCachedPassphrase(signingKeyRing.getMasterKeyId(), signingKey.getKeyId());
+                                localPassphrase = getCachedPassphrase(signingMasterKeyId, signingKey.getKeyId());
                             } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
                             }
                         }
                         if (localPassphrase == null) {
                             log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
                             return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                                    signingKeyRing.getMasterKeyId(), signingKey.getKeyId(),
+                                    signingMasterKeyId, signingKey.getKeyId(),
                                     cryptoInput.getSignatureTime()), cryptoInput);
                         }
                         if (!signingKey.unlock(localPassphrase)) {

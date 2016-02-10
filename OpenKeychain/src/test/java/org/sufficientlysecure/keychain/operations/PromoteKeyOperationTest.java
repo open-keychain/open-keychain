@@ -145,7 +145,7 @@ public class PromoteKeyOperationTest {
 
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
                 Assert.assertEquals("all subkeys must be divert-to-card",
-                        SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+                        SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyTypeSuperExpensive());
                 Assert.assertArrayEquals("all subkeys must have correct iv",
                         aid, key.getIv());
             }
@@ -176,12 +176,12 @@ public class PromoteKeyOperationTest {
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
                 if (key.getKeyId() == keyId) {
                     Assert.assertEquals("subkey must be divert-to-card",
-                            SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+                            SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyTypeSuperExpensive());
                     Assert.assertArrayEquals("subkey must have correct iv",
                             aid, key.getIv());
                 } else {
                     Assert.assertEquals("some subkeys must be gnu dummy",
-                            SecretKeyType.GNU_DUMMY, key.getSecretKeyType());
+                            SecretKeyType.GNU_DUMMY, key.getSecretKeyTypeSuperExpensive());
                 }
             }
 

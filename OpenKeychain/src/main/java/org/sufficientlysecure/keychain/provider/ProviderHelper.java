@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
@@ -254,8 +255,9 @@ public class ProviderHelper {
                 KeyRings.MASTER_KEY_ID, FIELD_TYPE_INTEGER);
     }
 
-    public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) {
-        return new CachedPublicKeyRing(this, queryUri);
+    public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {
+        long masterKeyId = new CachedPublicKeyRing(this, queryUri).extractOrGetMasterKeyId();
+        return getCachedPublicKeyRing(masterKeyId);
     }
 
     public CachedPublicKeyRing getCachedPublicKeyRing(long id) {
@@ -828,7 +830,7 @@ public class ProviderHelper {
                 mIndent += 1;
                 for (CanonicalizedSecretKey sub : keyRing.secretKeyIterator()) {
                     long id = sub.getKeyId();
-                    SecretKeyType mode = sub.getSecretKeyType();
+                    SecretKeyType mode = sub.getSecretKeyTypeSuperExpensive();
                     values.put(Keys.HAS_SECRET, mode.getNum());
                     int upd = mContentResolver.update(uri, values, Keys.KEY_ID + " = ?",
                             new String[]{Long.toString(id)});
