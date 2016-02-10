@@ -70,8 +70,7 @@ dependencies {
     compile 'com.mikepenz:community-material-typeface:1.3.41.1@aar'
 
     // Nordpol
-    compile 'com.fidesmo:nordpol-android:0.1.15@aar'
-    compile 'com.fidesmo:nordpol-core:0.1.15'
+    compile 'com.fidesmo:nordpol-android:0.1.18'
 
     // libs as submodules
     compile project(':extern:openpgp-api-lib:openpgp-api')
@@ -117,8 +116,8 @@ dependencyVerification {
             'com.mikepenz:iconics-core:d2495547db9d881168b1b502b1934f6a000ed5086c6c6a7114f3bbcbbb7ec306',
             'com.mikepenz:community-material-typeface:990acfcfb892a733d36748fe29176bd61dd5ab34bc8ca1c591200e639d955b99',
             'com.mikepenz:fontawesome-typeface:69cb09934a83bac607e78a29459868d537f766224b4a65a042d1f84c98c7b05d',
-            'com.fidesmo:nordpol-core:fe09e65379f2c7300b669ef7df2bfbde47729dac19edacc26b5ddb44b94ff67d',
-            'com.fidesmo:nordpol-android:012f93c2c78bd5e3b35af3e8a6676c4fac56755abee252dcfdbb8b35df19e3dd',
+            'com.fidesmo:nordpol-core:3de58e850a00bba5b4d3a604d1399bcd89f695ea191ec0b03a57222e18062d15',
+            'com.fidesmo:nordpol-android:56f43fe2b1676817bcb4085926de14a08282ef6729c855c198d81aec62b20d65',
 //            'OpenKeychain.extern.bouncycastle:core:b22dfb37e09fb520683dd0ba089351787560a75b59b60822143f633ec984cab5',
 //            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:8a53012b9df6d62174ebdc11e0ab56700501a915930db5c12e32d565f136fc06',
 //            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:9263330c00497b7bb70502160f50c8396228129376f48f4f5656d28360a2edac',
