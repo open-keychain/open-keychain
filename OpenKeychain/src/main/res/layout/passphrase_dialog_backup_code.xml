@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -27,99 +28,22 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp">
 
-            <!--
-            The most reliable way to correctly size these I found was to put a transparent hint on them.
-             Theoretically, this should be what the android:ems attribute is for - didn't work for me.
-            -->
-            <EditText
-                android:id="@+id/backup_code_1"
+            <com.github.pinball83.maskededittext.MaskedEditText
+                android:id="@+id/backup_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:hint="ABCDEF"
-                android:inputType="textNoSuggestions|textCapCharacters"
-                android:maxLength="6"
-                android:singleLine="true"
-                android:textColorHint="@android:color/transparent"
-                android:textSize="14dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textSize="18dp"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                tools:ignore="HardcodedText,SpUsage" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="-"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                android:typeface="monospace"
-                tools:ignore="HardcodedText,SpUsage" />
-
-            <EditText
-                android:id="@+id/backup_code_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:hint="ABCDEF"
-                android:inputType="textNoSuggestions|textCapCharacters"
-                android:maxLength="6"
-                android:singleLine="true"
-                android:textColorHint="@android:color/transparent"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                android:typeface="monospace"
-                tools:ignore="HardcodedText,SpUsage" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="-"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                android:typeface="monospace"
-                tools:ignore="HardcodedText,SpUsage" />
-
-            <EditText
-                android:id="@+id/backup_code_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:hint="ABCDEF"
-                android:inputType="textNoSuggestions|textCapCharacters"
-                android:maxLength="6"
-                android:singleLine="true"
-                android:textColorHint="@android:color/transparent"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                android:typeface="monospace"
-                tools:ignore="HardcodedText,SpUsage" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="-"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                android:typeface="monospace"
-                tools:ignore="HardcodedText,SpUsage" />
-
-            <EditText
-                android:id="@+id/backup_code_4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:hint="ABCDEF"
-                android:inputType="textNoSuggestions|textCapCharacters"
-                android:maxLength="6"
-                android:singleLine="true"
-                android:textColorHint="@android:color/transparent"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                android:typeface="monospace"
-                tools:ignore="HardcodedText,SpUsage" />
+                app:deleteChar="\u00a0"
+                app:mask="****-****-****-****-****-****"
+                app:maskIconColor="@color/colorPrimary"
+                app:notMaskedSymbol="*"
+                app:replacementChar="\u00a0"
+                tools:ignore="SpUsage" />
 
         </LinearLayout>
     </LinearLayout>

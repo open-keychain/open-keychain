@@ -278,7 +278,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         ArmorHeaders armorHeaders = parseArmorHeaders(in, log, indent);
         String charset = armorHeaders.charset;
         boolean useBackupCode = false;
-        if (armorHeaders.backupVersion != null && armorHeaders.backupVersion == 1) {
+        if (armorHeaders.backupVersion != null && armorHeaders.backupVersion == 2) {
             useBackupCode = true;
         }
 

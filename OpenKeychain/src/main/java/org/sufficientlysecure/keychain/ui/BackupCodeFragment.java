@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2015 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ * Copyright (C) 2016 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +41,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.text.Editable;
-import android.text.TextUtils;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,8 +51,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.github.pinball83.maskededittext.MaskedEditText;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -79,12 +83,20 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     public static final int REQUEST_SAVE = 1;
     public static final String ARG_BACK_STACK = "back_stack";
 
+    // https://github.com/open-keychain/open-keychain/wiki/Backups
+    // excludes 0 and O
+    private static final char[] mBackupCodeAlphabet =
+            new char[]{'1', '2', '3', '4', '5', '6', '7', '8', '9',
+                    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+                    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+
     // argument variables
     private boolean mExportSecret;
     private long[] mMasterKeyIds;
     String mBackupCode;
 
-    private EditText[] mCodeEditText;
+    private MaskedEditText mCodeEditText;
+
     private ToolableViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
     private Integer mBackStackLevel;
 
@@ -96,7 +108,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         BackupCodeFragment frag = new BackupCodeFragment();
 
         Bundle args = new Bundle();
-        args.putString(ARG_BACKUP_CODE, generateRandomCode());
+        args.putString(ARG_BACKUP_CODE, generateRandomBackupCode());
         args.putLongArray(ARG_MASTER_KEY_IDS, masterKeyIds);
         args.putBoolean(ARG_EXPORT_SECRET, exportSecret);
         frag.setArguments(args);
@@ -132,14 +144,11 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         if (Constants.DEBUG && item.getItemId() == R.id.debug_accept_any_log) {
             boolean newCheckedState = !item.isChecked();
             item.setChecked(newCheckedState);
-            if (newCheckedState && TextUtils.isEmpty(mCodeEditText[0].getText())) {
-                mCodeEditText[0].setText("ABCDEF");
-                mCodeEditText[1].setText("GHIJKL");
-                mCodeEditText[2].setText("MNOPQR");
-                mCodeEditText[3].setText("STUVW");
+            mDebugModeAcceptAnyCode = newCheckedState;
+            if (newCheckedState) {
+                mCodeEditText.setText("ABCD-EFGH-IJKL-MNOP-QRST-UVWX");
                 Notify.create(getActivity(), "Actual backup code is all 'A's", Style.WARN).show();
             }
-            mDebugModeAcceptAnyCode = newCheckedState;
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -161,9 +170,11 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 mTitleAnimator.setDisplayedChild(1, animate);
                 mStatusAnimator.setDisplayedChild(1, animate);
                 mCodeFieldsAnimator.setDisplayedChild(1, animate);
-                for (EditText editText : mCodeEditText) {
-                    editText.setText("");
-                }
+                // use non-breaking spaces to enlarge the empty EditText appropriately
+                String empty = "\u00a0\u00a0\u00a0\u00a0-\u00a0\u00a0\u00a0\u00a0" +
+                        "-\u00a0\u00a0\u00a0\u00a0-\u00a0\u00a0\u00a0\u00a0" +
+                        "-\u00a0\u00a0\u00a0\u00a0-\u00a0\u00a0\u00a0\u00a0";
+                mCodeEditText.setText(empty);
 
                 pushBackStackEntry();
 
@@ -177,7 +188,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 hideKeyboard();
 
                 if (animate) {
-                    @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
+                    @ColorInt int black = mCodeEditText.getCurrentTextColor();
                     @ColorInt int red = getResources().getColor(R.color.android_red_dark);
                     animateFlashText(mCodeEditText, black, red, false);
                 }
@@ -192,18 +203,14 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
                 hideKeyboard();
 
-                for (EditText editText : mCodeEditText) {
-                    editText.setEnabled(false);
-                }
+                mCodeEditText.setEnabled(false);
 
                 @ColorInt int green = getResources().getColor(R.color.android_green_dark);
                 if (animate) {
-                    @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
+                    @ColorInt int black = mCodeEditText.getCurrentTextColor();
                     animateFlashText(mCodeEditText, black, green, true);
                 } else {
-                    for (TextView textView : mCodeEditText) {
-                        textView.setTextColor(green);
-                    }
+                    mCodeEditText.setTextColor(green);
                 }
 
                 popBackStackNoAction();
@@ -226,34 +233,22 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         mMasterKeyIds = args.getLongArray(ARG_MASTER_KEY_IDS);
         mExportSecret = args.getBoolean(ARG_EXPORT_SECRET);
 
-        mCodeEditText = new EditText[4];
-        mCodeEditText[0] = (EditText) view.findViewById(R.id.backup_code_1);
-        mCodeEditText[1] = (EditText) view.findViewById(R.id.backup_code_2);
-        mCodeEditText[2] = (EditText) view.findViewById(R.id.backup_code_3);
-        mCodeEditText[3] = (EditText) view.findViewById(R.id.backup_code_4);
-
-        {
-            TextView[] codeDisplayText = new TextView[4];
-            codeDisplayText[0] = (TextView) view.findViewById(R.id.backup_code_display_1);
-            codeDisplayText[1] = (TextView) view.findViewById(R.id.backup_code_display_2);
-            codeDisplayText[2] = (TextView) view.findViewById(R.id.backup_code_display_3);
-            codeDisplayText[3] = (TextView) view.findViewById(R.id.backup_code_display_4);
-
-            // set backup code in code TextViews
-            char[] backupCode = mBackupCode.toCharArray();
-            for (int i = 0; i < codeDisplayText.length; i++) {
-                codeDisplayText[i].setText(backupCode, i * 7, 6);
-            }
-
-            // set background to null in TextViews - this will retain padding from EditText style!
-            for (TextView textView : codeDisplayText) {
-                // noinspection deprecation, setBackground(Drawable) is API level >=16
-                textView.setBackgroundDrawable(null);
-            }
-        }
-
-        setupEditTextFocusNext(mCodeEditText);
+        // NOTE: order of these method calls matter, see setupAutomaticLinebreak()
+        mCodeEditText = (MaskedEditText) view.findViewById(R.id.backup_code_input);
+        mCodeEditText.setInputType(
+                InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+        setupAutomaticLinebreak(mCodeEditText);
+        mCodeEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         setupEditTextSuccessListener(mCodeEditText);
+
+        TextView codeDisplayText = (TextView) view.findViewById(R.id.backup_code_display);
+        setupAutomaticLinebreak(codeDisplayText);
+
+        // set background to null in TextViews - this will retain padding from EditText style!
+        // noinspection deprecation, setBackground(Drawable) is API level >=16
+        codeDisplayText.setBackgroundDrawable(null);
+
+        codeDisplayText.setText(mBackupCode);
 
         mStatusAnimator = (ToolableViewAnimator) view.findViewById(R.id.status_animator);
         mTitleAnimator = (ToolableViewAnimator) view.findViewById(R.id.title_animator);
@@ -331,76 +326,67 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         outState.putInt(ARG_BACK_STACK, mBackStackLevel == null ? -1 : mBackStackLevel);
     }
 
-    private void setupEditTextSuccessListener(final EditText[] backupCodes) {
-        for (EditText backupCode : backupCodes) {
-
-            backupCode.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    if (s.length() > 6) {
-                        throw new AssertionError("max length of each field is 6!");
-                    }
-
-                    boolean inInputState = mCurrentState == BackupCodeState.STATE_INPUT
-                            || mCurrentState == BackupCodeState.STATE_INPUT_ERROR;
-                    boolean partIsComplete = s.length() == 6;
-                    if (!inInputState || !partIsComplete) {
-                        return;
-                    }
-
-                    checkIfCodeIsCorrect();
-                }
-            });
-
-        }
+    /**
+     * Automatic line break with max 6 lines for smaller displays
+     * <p/>
+     * NOTE: I was not able to get this behaviour using XML!
+     * Looks like the order of these method calls matter, see http://stackoverflow.com/a/11171307
+     */
+    private void setupAutomaticLinebreak(TextView textview) {
+        textview.setSingleLine(true);
+        textview.setMaxLines(6);
+        textview.setHorizontallyScrolling(false);
     }
 
-    private void checkIfCodeIsCorrect() {
+    private void setupEditTextSuccessListener(final MaskedEditText backupCode) {
+        backupCode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                boolean inInputState = mCurrentState == BackupCodeState.STATE_INPUT
+                        || mCurrentState == BackupCodeState.STATE_INPUT_ERROR;
+                boolean partIsComplete = (backupCode.getText().toString().indexOf(' ') == -1)
+                        && (backupCode.getText().toString().indexOf('\u00a0') == -1);
+                if (!inInputState || !partIsComplete) {
+                    return;
+                }
+
+                checkIfCodeIsCorrect(backupCode);
+            }
+        });
+    }
+
+    private void checkIfCodeIsCorrect(EditText backupCode) {
 
         if (Constants.DEBUG && mDebugModeAcceptAnyCode) {
             switchState(BackupCodeState.STATE_OK, true);
             return;
         }
 
-        StringBuilder backupCodeInput = new StringBuilder(26);
-        for (EditText editText : mCodeEditText) {
-            if (editText.getText().length() < 6) {
-                return;
-            }
-            backupCodeInput.append(editText.getText());
-            backupCodeInput.append('-');
-        }
-        backupCodeInput.deleteCharAt(backupCodeInput.length() - 1);
-
-        // if they don't match, do nothing
-        if (backupCodeInput.toString().equals(mBackupCode)) {
+        if (backupCode.toString().equals(mBackupCode)) {
             switchState(BackupCodeState.STATE_OK, true);
             return;
         }
 
         switchState(BackupCodeState.STATE_INPUT_ERROR, true);
-
     }
 
     private static void animateFlashText(
-            final TextView[] textViews, int color1, int color2, boolean staySecondColor) {
+            final TextView textView, int color1, int color2, boolean staySecondColor) {
 
         ValueAnimator anim = ValueAnimator.ofObject(new ArgbEvaluator(), color1, color2);
         anim.addUpdateListener(new AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
-                for (TextView textView : textViews) {
-                    textView.setTextColor((Integer) animator.getAnimatedValue());
-                }
+                textView.setTextColor((Integer) animator.getAnimatedValue());
             }
         });
         anim.setRepeatMode(ValueAnimator.REVERSE);
@@ -409,34 +395,6 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         anim.setInterpolator(new AccelerateInterpolator());
         anim.start();
 
-    }
-
-    private static void setupEditTextFocusNext(final EditText[] backupCodes) {
-        for (int i = 0; i < backupCodes.length - 1; i++) {
-
-            final int next = i + 1;
-
-            backupCodes[i].addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    boolean inserting = before < count;
-                    boolean cursorAtEnd = (start + count) == 6;
-
-                    if (inserting && cursorAtEnd) {
-                        backupCodes[next].requestFocus();
-                    }
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
-
-        }
     }
 
     private void pushBackStackEntry() {
@@ -557,7 +515,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     public BackupKeyringParcel createOperationInput() {
         Passphrase passphrase = new Passphrase(mBackupCode);
         if (Constants.DEBUG && mDebugModeAcceptAnyCode) {
-            passphrase = new Passphrase("AAAAAA-AAAAAA-AAAAAA-AAAAAA");
+            passphrase = new Passphrase("AAAA-AAAA-AAAA-AAAA-AAAA-AAAA");
         }
         return new BackupKeyringParcel(passphrase, mMasterKeyIds, mExportSecret, mCachedBackupUri);
     }
@@ -578,22 +536,26 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         mCachedBackupUri = null;
     }
 
+    /**
+     * Generate backup code using format defined in
+     * https://github.com/open-keychain/open-keychain/wiki/Backups
+     */
     @NonNull
-    private static String generateRandomCode() {
+    private static String generateRandomBackupCode() {
 
         Random r = new SecureRandom();
 
-        // simple generation of a 20 character backup code
+        // simple generation of a 24 character backup code
         StringBuilder code = new StringBuilder(28);
         for (int i = 0; i < 24; i++) {
-            if (i == 6 || i == 12 || i == 18) {
+            if (i == 4 || i == 8 || i == 12 || i == 16 || i == 20) {
                 code.append('-');
             }
-            code.append((char) ('A' + r.nextInt(26)));
+
+            code.append(mBackupCodeAlphabet[r.nextInt(mBackupCodeAlphabet.length)]);
         }
 
         return code.toString();
-
     }
 
 
