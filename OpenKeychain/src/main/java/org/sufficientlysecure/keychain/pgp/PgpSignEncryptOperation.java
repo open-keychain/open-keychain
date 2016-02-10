@@ -152,7 +152,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
             }
             // add proprietary header to indicate that this is a key backup
             if (input.isAddBackupHeader()) {
-                armorOut.setHeader("BackupVersion", "1");
+                armorOut.setHeader("BackupVersion", "2");
             }
             out = armorOut;
         } else {
