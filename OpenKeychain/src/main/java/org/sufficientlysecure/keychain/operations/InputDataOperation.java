@@ -23,6 +23,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 
 import android.content.ClipDescription;
@@ -67,10 +74,15 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
  */
 public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
-    final private byte[] buf = new byte[256];
+    private final byte[] buf = new byte[256];
+    private final ByteBuffer bufWrap;
+    private final CharBuffer dummyOutput;
 
     public InputDataOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
+
+        bufWrap = ByteBuffer.wrap(buf);
+        dummyOutput = CharBuffer.allocate(256);
     }
 
     Uri mSignedDataUri;
@@ -326,19 +338,81 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     throw new IOException("Error getting file for writing!");
                 }
 
+                boolean isPossibleTextMimeType = ClipDescription.compareMimeTypes(mimeType, "application/octet-stream")
+                        || ClipDescription.compareMimeTypes(mimeType, "application/x-download")
+                        || ClipDescription.compareMimeTypes(mimeType, "text/*");
+
+                // If this data looks like text, we pipe the incoming data into a charset
+                // decoder, to see if the data is legal for the assumed charset.
+                String charset;
+                boolean charsetIsFaulty;
+                boolean charsetIsGuessed;
+                CharsetDecoder charsetDecoder = null;
+                if (isPossibleTextMimeType) {
+                    charset = bd.getCharset();
+                    // the charset defaults to us-ascii, but we want to default to utf-8
+                    if (charset == null || "us-ascii".equals(charset)) {
+                        charset = "utf-8";
+                        charsetIsGuessed = true;
+                    } else {
+                        charsetIsGuessed = false;
+                    }
+
+                    try {
+                        charsetDecoder = Charset.forName(charset).newDecoder();
+                        charsetDecoder.onMalformedInput(CodingErrorAction.REPORT);
+                        charsetDecoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+                        charsetDecoder.reset();
+                        charsetIsFaulty = false;
+                    } catch (UnsupportedCharsetException e) {
+                        charsetIsFaulty = true;
+                    }
+                } else {
+                    charsetIsFaulty = true;
+                    charsetIsGuessed = false;
+                    charset = null;
+                }
+
                 int totalLength = 0;
                 do {
                     totalLength += len;
                     out.write(buf, 0, len);
+
+                    if (isPossibleTextMimeType && !charsetIsFaulty) {
+                        bufWrap.rewind();
+                        bufWrap.limit(len);
+                        dummyOutput.rewind();
+                        CoderResult result = charsetDecoder.decode(bufWrap, dummyOutput, false);
+                        if (result.isError()) {
+                            charsetIsFaulty = true;
+                        }
+                    }
                 } while ((len = is.read(buf)) > 0);
 
-                log.add(LogType.MSG_DATA_MIME_LENGTH, 3, Long.toString(totalLength));
-
-                String charset = bd.getCharset();
-                // the charset defaults to us-ascii, but we want to default to utf-8
-                if ("us-ascii".equals(charset)) {
-                    charset = "utf-8";
+                if (!charsetIsFaulty) {
+                    bufWrap.rewind();
+                    bufWrap.limit(0);
+                    dummyOutput.rewind();
+                    CoderResult result = charsetDecoder.decode(bufWrap, dummyOutput, true);
+                    if (result.isError()) {
+                        charsetIsFaulty = true;
+                    }
                 }
+
+                if (isPossibleTextMimeType) {
+                    if (charsetIsFaulty && charsetIsGuessed) {
+                        log.add(LogType.MSG_DATA_MIME_CHARSET_UNKNOWN, 3, charset);
+                        charset = null;
+                    } else if (charsetIsFaulty) {
+                        log.add(LogType.MSG_DATA_MIME_CHARSET_FAULTY, 3, charset);
+                    } else if (charsetIsGuessed) {
+                        log.add(LogType.MSG_DATA_MIME_CHARSET_GUESS, 3, charset);
+                    } else {
+                        log.add(LogType.MSG_DATA_MIME_CHARSET, 3, charset);
+                    }
+                }
+
+                log.add(LogType.MSG_DATA_MIME_LENGTH, 3, Long.toString(totalLength));
 
                 OpenPgpMetadata metadata = new OpenPgpMetadata(mFilename, mimeType, 0L, totalLength, charset);
 
