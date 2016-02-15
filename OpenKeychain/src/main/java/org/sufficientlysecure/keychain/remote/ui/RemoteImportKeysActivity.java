@@ -39,7 +39,7 @@ public class RemoteImportKeysActivity extends ImportKeysActivity {
     }
 
     @Override
-    public void handleResult(ImportKeyResult result) {
+    protected void handleResult(ImportKeyResult result) {
         setResult(RESULT_OK, mPendingIntentData);
         finish();
     }

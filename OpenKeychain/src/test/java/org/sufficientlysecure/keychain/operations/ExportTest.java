@@ -254,7 +254,7 @@ public class ExportTest {
         BackupOperation op = new BackupOperation(spyApplication,
                 new ProviderHelper(RuntimeEnvironment.application), null);
 
-        BackupKeyringParcel parcel = new BackupKeyringParcel(null,
+        BackupKeyringParcel parcel = new BackupKeyringParcel(
                 new long[] { mStaticRing1.getMasterKeyId() }, false, fakeOutputUri);
 
         ExportResult result = op.execute(parcel, null);
@@ -313,10 +313,10 @@ public class ExportTest {
             BackupOperation op = new BackupOperation(spyApplication,
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
-            BackupKeyringParcel parcel = new BackupKeyringParcel(passphrase,
+            BackupKeyringParcel parcel = new BackupKeyringParcel(
                     new long[] { mStaticRing1.getMasterKeyId() }, false, fakeOutputUri);
-
-            ExportResult result = op.execute(parcel, null);
+            CryptoInputParcel inputParcel = new CryptoInputParcel(passphrase);
+            ExportResult result = op.execute(parcel, inputParcel);
 
             verify(mockResolver).openOutputStream(fakePipedUri);
             verify(mockResolver).openInputStream(fakePipedUri);

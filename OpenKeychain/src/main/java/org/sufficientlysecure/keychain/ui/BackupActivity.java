@@ -24,6 +24,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.MenuItem;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
 
@@ -49,7 +50,7 @@ public class BackupActivity extends BaseActivity {
             boolean exportSecret = intent.getBooleanExtra(EXTRA_SECRET, false);
             long[] masterKeyIds = intent.getLongArrayExtra(EXTRA_MASTER_KEY_IDS);
 
-            Fragment frag = BackupCodeFragment.newInstance(masterKeyIds, exportSecret);
+            Fragment frag = BackupCodeFragment.newInstance(masterKeyIds, exportSecret, true);
 
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction()
@@ -72,6 +73,13 @@ public class BackupActivity extends BaseActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Overridden in RemoteBackupActivity
+     */
+    public void handleBackupOperation(CryptoInputParcel inputParcel) {
+        // only used for RemoteBackupActivity
     }
 
 }
