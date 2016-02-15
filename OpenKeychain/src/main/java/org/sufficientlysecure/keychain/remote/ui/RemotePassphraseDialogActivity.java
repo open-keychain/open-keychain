@@ -22,9 +22,9 @@ import android.os.Bundle;
 
 import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
+import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 
-public class RemoteSecurityTokenOperationActivity extends SecurityTokenOperationActivity {
+public class RemotePassphraseDialogActivity extends PassphraseDialogActivity {
 
     public static final String EXTRA_DATA = "data";
 
@@ -34,14 +34,11 @@ public class RemoteSecurityTokenOperationActivity extends SecurityTokenOperation
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        Bundle data = intent.getExtras();
-        mPendingIntentData = data.getParcelable(EXTRA_DATA);
+        mPendingIntentData = getIntent().getParcelableExtra(EXTRA_DATA);
     }
 
     @Override
     protected void handleResult(CryptoInputParcel inputParcel) {
-        // save updated cryptoInputParcel in cache
         CryptoInputParcelCacheService.addCryptoInputParcel(this, mPendingIntentData, inputParcel);
         setResult(RESULT_OK, mPendingIntentData);
     }

@@ -71,7 +71,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-    protected CryptoInputParcel mInputParcel;
+    private CryptoInputParcel mInputParcel;
 
     @Override
     protected void initTheme() {
@@ -268,7 +268,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
     @Override
     protected void onNfcPostExecute() {
-        returnResult();
+        handleResult(mInputParcel);
 
         // show finish
         vAnimator.setDisplayedChild(2);
@@ -299,10 +299,10 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
         }.execute();
     }
 
-    protected void returnResult() {
+    protected void handleResult(CryptoInputParcel inputParcel) {
         Intent result = new Intent();
         // send back the CryptoInputParcel we received
-        result.putExtra(RESULT_CRYPTO_INPUT, mInputParcel);
+        result.putExtra(RESULT_CRYPTO_INPUT, inputParcel);
         setResult(RESULT_OK, result);
     }
 

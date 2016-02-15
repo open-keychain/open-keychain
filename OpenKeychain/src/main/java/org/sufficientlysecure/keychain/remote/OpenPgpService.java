@@ -30,13 +30,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
@@ -53,15 +53,14 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.remote.ui.RemoteImportKeysActivity;
+import org.sufficientlysecure.keychain.remote.ui.RemotePassphraseDialogActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSelectPubKeyActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectAllowedKeysActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
-import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -194,7 +193,7 @@ public class OpenPgpService extends Service {
                 // build PendingIntent for Security Token NFC operations
                 Intent intent = new Intent(context, RemoteSecurityTokenOperationActivity.class);
                 // pass params through to activity that it can be returned again later to repeat pgp operation
-                intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_SERVICE_INTENT, data);
+                intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_DATA, data);
                 intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
                 intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, cryptoInput);
                 return PendingIntent.getActivity(context, 0, intent,
@@ -203,11 +202,11 @@ public class OpenPgpService extends Service {
 
             case PASSPHRASE: {
                 // build PendingIntent for Passphrase request
-                Intent intent = new Intent(context, PassphraseDialogActivity.class);
+                Intent intent = new Intent(context, RemotePassphraseDialogActivity.class);
                 // pass params through to activity that it can be returned again later to repeat pgp operation
-                intent.putExtra(PassphraseDialogActivity.EXTRA_SERVICE_INTENT, data);
-                intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                intent.putExtra(PassphraseDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInput);
+                intent.putExtra(RemotePassphraseDialogActivity.EXTRA_DATA, data);
+                intent.putExtra(RemotePassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                intent.putExtra(RemotePassphraseDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInput);
                 return PendingIntent.getActivity(context, 0, intent,
                         PendingIntent.FLAG_CANCEL_CURRENT);
             }
@@ -221,10 +220,10 @@ public class OpenPgpService extends Service {
     private PendingIntent getKeyserverPendingIntent(Intent data, long masterKeyId) {
         // If signature is unknown we return an _additional_ PendingIntent
         // to retrieve the missing key
-        Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
-        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE);
-        intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, masterKeyId);
-        intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
+        Intent intent = new Intent(getBaseContext(), RemoteImportKeysActivity.class);
+        intent.setAction(RemoteImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
+        intent.putExtra(RemoteImportKeysActivity.EXTRA_KEY_ID, masterKeyId);
+        intent.putExtra(RemoteImportKeysActivity.EXTRA_DATA, data);
 
         return PendingIntent.getActivity(getBaseContext(), 0,
                 intent,

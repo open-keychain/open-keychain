@@ -20,11 +20,12 @@ package org.sufficientlysecure.keychain.remote.ui;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
 import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 
-public class RemoteSecurityTokenOperationActivity extends SecurityTokenOperationActivity {
+public class RemoteImportKeysActivity extends ImportKeysActivity {
 
     public static final String EXTRA_DATA = "data";
 
@@ -34,16 +35,13 @@ public class RemoteSecurityTokenOperationActivity extends SecurityTokenOperation
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        Bundle data = intent.getExtras();
-        mPendingIntentData = data.getParcelable(EXTRA_DATA);
+        mPendingIntentData = getIntent().getParcelableExtra(EXTRA_DATA);
     }
 
     @Override
-    protected void handleResult(CryptoInputParcel inputParcel) {
-        // save updated cryptoInputParcel in cache
-        CryptoInputParcelCacheService.addCryptoInputParcel(this, mPendingIntentData, inputParcel);
+    public void handleResult(ImportKeyResult result) {
         setResult(RESULT_OK, mPendingIntentData);
+        finish();
     }
 
 }
