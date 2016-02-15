@@ -18,11 +18,6 @@
 package org.sufficientlysecure.keychain.remote;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -40,10 +35,12 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.remote.ui.RemoteCreateAccountActivity;
-import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;
-import org.sufficientlysecure.keychain.remote.ui.RemoteRegisterActivity;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -75,6 +72,8 @@ public class ApiPermissionHelper {
      * @return null if caller is allowed, or a Bundle with a PendingIntent
      */
     protected Intent isAllowed(Intent data) {
+        ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(mContext, data);
+
         try {
             if (isCallerAllowed()) {
                 return null;
@@ -96,14 +95,7 @@ public class ApiPermissionHelper {
                 }
                 Log.e(Constants.TAG, "Not allowed to use service! return PendingIntent for registration!");
 
-                Intent intent = new Intent(mContext, RemoteRegisterActivity.class);
-                intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_NAME, packageName);
-                intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_SIGNATURE, packageCertificate);
-                intent.putExtra(RemoteRegisterActivity.EXTRA_DATA, data);
-
-                PendingIntent pi = PendingIntent.getActivity(mContext, 0,
-                        intent,
-                        PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent pi = piFactory.register(packageName, packageCertificate);
 
                 // return PendingIntent to be executed by client
                 Intent result = new Intent();
@@ -115,14 +107,7 @@ public class ApiPermissionHelper {
         } catch (WrongPackageCertificateException e) {
             Log.e(Constants.TAG, "wrong signature!", e);
 
-            Intent intent = new Intent(mContext, RemoteErrorActivity.class);
-            intent.putExtra(RemoteErrorActivity.EXTRA_ERROR_MESSAGE,
-                    mContext.getString(R.string.api_error_wrong_signature));
-            intent.putExtra(RemoteErrorActivity.EXTRA_DATA, data);
-
-            PendingIntent pi = PendingIntent.getActivity(mContext, 0,
-                    intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent pi = piFactory.error(mContext.getString(R.string.api_error_wrong_signature));
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -187,20 +172,15 @@ public class ApiPermissionHelper {
     }
 
     /**
-     * Deprecated API
+     * @deprecated
      */
     protected Intent getCreateAccountIntent(Intent data, String accountName) {
         String packageName = getCurrentCallingPackage();
         Log.d(Constants.TAG, "getCreateAccountIntent accountName: " + accountName);
 
-        Intent intent = new Intent(mContext, RemoteCreateAccountActivity.class);
-        intent.putExtra(RemoteCreateAccountActivity.EXTRA_PACKAGE_NAME, packageName);
-        intent.putExtra(RemoteCreateAccountActivity.EXTRA_ACC_NAME, accountName);
-        intent.putExtra(RemoteCreateAccountActivity.EXTRA_DATA, data);
+        ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(mContext, data);
 
-        PendingIntent pi = PendingIntent.getActivity(mContext, 0,
-                intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pi = piFactory.createAccount(packageName, accountName);
 
         // return PendingIntent to be executed by client
         Intent result = new Intent();
