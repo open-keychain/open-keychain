@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.remote;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.ui.RemoteCreateAccountActivity;
@@ -147,9 +148,16 @@ public class ApiPendingIntentFactory {
         // re-attach "data" for pass through. It will be used later to repeat pgp operation
         intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_DATA, mPendingIntentData);
 
-        return PendingIntent.getActivity(mContext, 0,
-                intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //noinspection ResourceType, looks like lint is missing FLAG_IMMUTABLE
+            return PendingIntent.getActivity(mContext, 0,
+                    intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            return PendingIntent.getActivity(mContext, 0,
+                    intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+        }
     }
 
     PendingIntent register(String packageName, byte[] packageCertificate) {
@@ -158,9 +166,17 @@ public class ApiPendingIntentFactory {
         intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_SIGNATURE, packageCertificate);
         intent.putExtra(RemoteRegisterActivity.EXTRA_DATA, mPendingIntentData);
 
-        return PendingIntent.getActivity(mContext, 0,
-                intent,
-                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //noinspection ResourceType, looks like lint is missing FLAG_IMMUTABLE
+            return PendingIntent.getActivity(mContext, 0,
+                    intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
+                            | PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            return PendingIntent.getActivity(mContext, 0,
+                    intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+        }
     }
 
 }
