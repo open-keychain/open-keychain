@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSelectPubKeyActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectAllowedKeysActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
@@ -191,11 +192,11 @@ public class OpenPgpService extends Service {
             case NFC_DECRYPT:
             case NFC_SIGN: {
                 // build PendingIntent for Security Token NFC operations
-                Intent intent = new Intent(context, SecurityTokenOperationActivity.class);
+                Intent intent = new Intent(context, RemoteSecurityTokenOperationActivity.class);
                 // pass params through to activity that it can be returned again later to repeat pgp operation
-                intent.putExtra(SecurityTokenOperationActivity.EXTRA_SERVICE_INTENT, data);
-                intent.putExtra(SecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                intent.putExtra(SecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, cryptoInput);
+                intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_SERVICE_INTENT, data);
+                intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, cryptoInput);
                 return PendingIntent.getActivity(context, 0, intent,
                         PendingIntent.FLAG_CANCEL_CURRENT);
             }
