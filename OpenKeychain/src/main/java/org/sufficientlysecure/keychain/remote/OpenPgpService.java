@@ -53,7 +53,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity;
+import org.sufficientlysecure.keychain.remote.ui.RemoteSelectPubKeyActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectAllowedKeysActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -151,13 +151,12 @@ public class OpenPgpService extends Service {
         if (noUserIdsCheck || missingUserIdsCheck || duplicateUserIdsCheck) {
             // allow the user to verify pub key selection
 
-            Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
-            intent.setAction(RemoteServiceActivity.ACTION_SELECT_PUB_KEYS);
-            intent.putExtra(RemoteServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
-            intent.putExtra(RemoteServiceActivity.EXTRA_NO_USER_IDS_CHECK, noUserIdsCheck);
-            intent.putExtra(RemoteServiceActivity.EXTRA_MISSING_EMAILS, missingEmails);
-            intent.putExtra(RemoteServiceActivity.EXTRA_DUPLICATE_EMAILS, duplicateEmails);
-            intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
+            Intent intent = new Intent(getBaseContext(), RemoteSelectPubKeyActivity.class);
+            intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
+            intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_NO_USER_IDS_CHECK, noUserIdsCheck);
+            intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_MISSING_EMAILS, missingEmails);
+            intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_DUPLICATE_EMAILS, duplicateEmails);
+            intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_DATA, data);
 
             PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
                     intent,

@@ -23,7 +23,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
-public class ExitActivity extends Activity {
+/**
+ * For Guardianproject's PANIC app
+ */
+public class PanicExitActivity extends Activity {
 
     @SuppressLint("NewApi")
     @Override
@@ -40,7 +43,7 @@ public class ExitActivity extends Activity {
     }
 
     public static void exitAndRemoveFromRecentApps(Activity activity) {
-        Intent intent = new Intent(activity, ExitActivity.class);
+        Intent intent = new Intent(activity, PanicExitActivity.class);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS

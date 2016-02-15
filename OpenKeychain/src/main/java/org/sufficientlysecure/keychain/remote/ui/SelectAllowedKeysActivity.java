@@ -33,8 +33,6 @@ public class SelectAllowedKeysActivity extends BaseActivity {
 
     public static final String EXTRA_SERVICE_INTENT = "data";
 
-    private Uri mAppUri;
-
     private AppSettingsAllowedKeysListFragment mAllowedKeysFragment;
 
     Intent mServiceData;
@@ -60,14 +58,14 @@ public class SelectAllowedKeysActivity extends BaseActivity {
 
         Intent intent = getIntent();
         mServiceData = intent.getParcelableExtra(EXTRA_SERVICE_INTENT);
-        mAppUri = intent.getData();
-        if (mAppUri == null) {
+        Uri appUri = intent.getData();
+        if (appUri == null) {
             Log.e(Constants.TAG, "Intent data missing. Should be Uri of app!");
             finish();
             return;
         } else {
-            Log.d(Constants.TAG, "uri: " + mAppUri);
-            loadData(savedInstanceState, mAppUri);
+            Log.d(Constants.TAG, "uri: " + appUri);
+            loadData(savedInstanceState, appUri);
         }
     }
 

@@ -40,7 +40,9 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity;
+import org.sufficientlysecure.keychain.remote.ui.RemoteCreateAccountActivity;
+import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;
+import org.sufficientlysecure.keychain.remote.ui.RemoteRegisterActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
 
@@ -94,11 +96,10 @@ public class ApiPermissionHelper {
                 }
                 Log.e(Constants.TAG, "Not allowed to use service! return PendingIntent for registration!");
 
-                Intent intent = new Intent(mContext, RemoteServiceActivity.class);
-                intent.setAction(RemoteServiceActivity.ACTION_REGISTER);
-                intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_NAME, packageName);
-                intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_SIGNATURE, packageCertificate);
-                intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
+                Intent intent = new Intent(mContext, RemoteRegisterActivity.class);
+                intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_NAME, packageName);
+                intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_SIGNATURE, packageCertificate);
+                intent.putExtra(RemoteRegisterActivity.EXTRA_DATA, data);
 
                 PendingIntent pi = PendingIntent.getActivity(mContext, 0,
                         intent,
@@ -114,11 +115,10 @@ public class ApiPermissionHelper {
         } catch (WrongPackageCertificateException e) {
             Log.e(Constants.TAG, "wrong signature!", e);
 
-            Intent intent = new Intent(mContext, RemoteServiceActivity.class);
-            intent.setAction(RemoteServiceActivity.ACTION_ERROR_MESSAGE);
-            intent.putExtra(RemoteServiceActivity.EXTRA_ERROR_MESSAGE,
+            Intent intent = new Intent(mContext, RemoteErrorActivity.class);
+            intent.putExtra(RemoteErrorActivity.EXTRA_ERROR_MESSAGE,
                     mContext.getString(R.string.api_error_wrong_signature));
-            intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
+            intent.putExtra(RemoteErrorActivity.EXTRA_DATA, data);
 
             PendingIntent pi = PendingIntent.getActivity(mContext, 0,
                     intent,
@@ -193,11 +193,10 @@ public class ApiPermissionHelper {
         String packageName = getCurrentCallingPackage();
         Log.d(Constants.TAG, "getCreateAccountIntent accountName: " + accountName);
 
-        Intent intent = new Intent(mContext, RemoteServiceActivity.class);
-        intent.setAction(RemoteServiceActivity.ACTION_CREATE_ACCOUNT);
-        intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_NAME, packageName);
-        intent.putExtra(RemoteServiceActivity.EXTRA_ACC_NAME, accountName);
-        intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
+        Intent intent = new Intent(mContext, RemoteCreateAccountActivity.class);
+        intent.putExtra(RemoteCreateAccountActivity.EXTRA_PACKAGE_NAME, packageName);
+        intent.putExtra(RemoteCreateAccountActivity.EXTRA_ACC_NAME, accountName);
+        intent.putExtra(RemoteCreateAccountActivity.EXTRA_DATA, data);
 
         PendingIntent pi = PendingIntent.getActivity(mContext, 0,
                 intent,

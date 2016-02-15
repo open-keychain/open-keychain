@@ -25,6 +25,9 @@ import android.os.Bundle;
 
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 
+/**
+ * Responder for Guardianproject's PANIC app
+ */
 public class PanicResponderActivity extends Activity {
 
     public static final String PANIC_TRIGGER_ACTION = "info.guardianproject.panic.action.TRIGGER";
@@ -37,7 +40,7 @@ public class PanicResponderActivity extends Activity {
         Intent intent = getIntent();
         if (intent != null && PANIC_TRIGGER_ACTION.equals(intent.getAction())) {
             PassphraseCacheService.clearCachedPassphrases(this);
-            ExitActivity.exitAndRemoveFromRecentApps(this);
+            PanicExitActivity.exitAndRemoveFromRecentApps(this);
         }
 
         if (Build.VERSION.SDK_INT >= 21) {

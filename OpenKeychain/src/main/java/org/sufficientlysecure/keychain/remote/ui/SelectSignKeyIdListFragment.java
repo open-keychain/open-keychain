@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.ui.widget.FixedListView;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class SelectSignKeyIdListFragment extends ListFragmentWorkaround implements LoaderManager.LoaderCallbacks<Cursor> {
+
     private static final String ARG_DATA_URI = "uri";
     public static final String ARG_DATA = "data";
 
