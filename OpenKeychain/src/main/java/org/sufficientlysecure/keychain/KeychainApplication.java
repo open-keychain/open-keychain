@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2016 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,10 +57,14 @@ public class KeychainApplication extends Application {
         super.onCreate();
 
         /*
-         * Sets Bouncy Castle as preferred security provider
+         * Sets our own Bouncy Castle library as preferred security provider
          *
-         * insertProviderAt() position starts from 1
+         * because Android's default provider config has BC at position 3,
+         * we need to remove it and insert BC again at position 1 (above OpenSSLProvider!)
+         *
+         * (insertProviderAt() position starts from 1)
          */
+        Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
 
         /*
