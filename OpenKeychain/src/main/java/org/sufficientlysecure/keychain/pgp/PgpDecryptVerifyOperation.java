@@ -35,8 +35,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
-import org.openintents.openpgp.OpenPgpDecryptionResult;
-import org.openintents.openpgp.OpenPgpMetadata;
 import org.bouncycastle.bcpg.ArmoredInputStream;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPDataValidationException;
@@ -56,10 +54,13 @@ import org.bouncycastle.openpgp.operator.jcajce.CachingDataDecryptorFactory;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
 import org.bouncycastle.util.encoders.DecoderException;
+import org.openintents.openpgp.OpenPgpDecryptionResult;
+import org.openintents.openpgp.OpenPgpMetadata;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
+import org.sufficientlysecure.keychain.operations.CharsetVerifier;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -377,11 +378,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             originalFilename = "";
         }
         String mimeType = null;
-        boolean looksLikeText;
         if (literalData.getFormat() == PGPLiteralData.TEXT
                 || literalData.getFormat() == PGPLiteralData.UTF8) {
             mimeType = "text/plain";
-            looksLikeText = true;
         } else {
             // try to guess from file ending
             String extension = MimeTypeMap.getFileExtensionFromUrl(originalFilename);
@@ -389,10 +388,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 MimeTypeMap mime = MimeTypeMap.getSingleton();
                 mimeType = mime.getMimeTypeFromExtension(extension);
             }
-            if (mimeType == null) {
-                mimeType = "application/octet-stream";
-            }
-            looksLikeText = false;
+        }
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
         }
 
         if (!"".equals(originalFilename)) {
@@ -440,6 +438,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         int length;
         byte[] buffer = new byte[8192];
         byte[] firstBytes = new byte[48];
+        CharsetVerifier charsetVerifier = new CharsetVerifier(buffer, mimeType, charset);
+
         while ((length = dataIn.read(buffer)) > 0) {
             // Log.d(Constants.TAG, "read bytes: " + length);
             if (out != null) {
@@ -448,6 +448,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
             // update signature buffer if signature is also present
             signatureChecker.updateSignatureData(buffer, 0, length);
+
+            charsetVerifier.write(0, length);
 
             // note down first couple of bytes for "magic bytes" file type detection
             if (alreadyWritten == 0) {
@@ -491,8 +493,15 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1, mimeType);
 
-        metadata = new OpenPgpMetadata(originalFilename, mimeType, literalData.getModificationTime().getTime(),
-                alreadyWritten, charset, looksLikeText);
+        if (charsetVerifier.isDefinitelyBinary()) {
+            metadata = new OpenPgpMetadata(originalFilename, mimeType, literalData.getModificationTime().getTime(),
+                    alreadyWritten);
+        } else {
+            metadata = new OpenPgpMetadata(originalFilename, mimeType, literalData.getModificationTime().getTime(),
+                    alreadyWritten, charsetVerifier.getCharset(), charsetVerifier.isProbablyText());
+        }
+
+        Log.d(Constants.TAG, metadata.toString());
 
         indent -= 1;
 
