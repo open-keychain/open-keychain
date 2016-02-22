@@ -400,6 +400,10 @@ public class ImportKeysActivity extends BaseActivity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Defines how the result of this activity is returned.
+     * Is overwritten in RemoteImportKeysActivity
+     */
     protected void handleResult(ImportKeyResult result) {
         String intentAction = getIntent().getAction();
 

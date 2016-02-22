@@ -55,11 +55,11 @@ public class ApiPendingIntentFactory {
             case NFC_MOVE_KEY_TO_CARD:
             case NFC_DECRYPT:
             case NFC_SIGN: {
-                return nfc(requiredInput, cryptoInput);
+                return createNfcOperationPendingIntent(requiredInput, cryptoInput);
             }
 
             case PASSPHRASE: {
-                return passphrase(requiredInput, cryptoInput);
+                return createPassphrasePendingIntent(requiredInput, cryptoInput);
             }
 
             default:
@@ -67,84 +67,82 @@ public class ApiPendingIntentFactory {
         }
     }
 
-    private PendingIntent nfc(RequiredInputParcel requiredInput, CryptoInputParcel cryptoInput) {
+    private PendingIntent createNfcOperationPendingIntent(RequiredInputParcel requiredInput, CryptoInputParcel cryptoInput) {
         Intent intent = new Intent(mContext, RemoteSecurityTokenOperationActivity.class);
         // pass params through to activity that it can be returned again later to repeat pgp operation
         intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
         intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, cryptoInput);
 
-        return build(intent);
+        return createInternal(intent);
     }
 
-    private PendingIntent passphrase(RequiredInputParcel requiredInput, CryptoInputParcel cryptoInput) {
+    private PendingIntent createPassphrasePendingIntent(RequiredInputParcel requiredInput, CryptoInputParcel cryptoInput) {
         Intent intent = new Intent(mContext, RemotePassphraseDialogActivity.class);
         // pass params through to activity that it can be returned again later to repeat pgp operation
         intent.putExtra(RemotePassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
         intent.putExtra(RemotePassphraseDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInput);
 
-        return build(intent);
+        return createInternal(intent);
     }
 
-    PendingIntent selectPublicKey(long[] keyIdsArray, ArrayList<String> missingEmails,
-                                  ArrayList<String> duplicateEmails, boolean noUserIdsCheck) {
+    PendingIntent createSelectPublicKeyPendingIntent(long[] keyIdsArray, ArrayList<String> missingEmails,
+                                                     ArrayList<String> duplicateEmails, boolean noUserIdsCheck) {
         Intent intent = new Intent(mContext, RemoteSelectPubKeyActivity.class);
         intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
         intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_NO_USER_IDS_CHECK, noUserIdsCheck);
         intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_MISSING_EMAILS, missingEmails);
         intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_DUPLICATE_EMAILS, duplicateEmails);
 
-        return build(intent);
+        return createInternal(intent);
     }
 
-    PendingIntent importFromKeyserver(long masterKeyId) {
+    PendingIntent createImportFromKeyserverPendingIntent(long masterKeyId) {
         Intent intent = new Intent(mContext, RemoteImportKeysActivity.class);
         intent.setAction(RemoteImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
         intent.putExtra(RemoteImportKeysActivity.EXTRA_KEY_ID, masterKeyId);
 
-        return build(intent);
+        return createInternal(intent);
     }
 
-    PendingIntent selectAllowedKeys(String packageName) {
+    PendingIntent createSelectAllowedKeysPendingIntent(String packageName) {
         Intent intent = new Intent(mContext, SelectAllowedKeysActivity.class);
         intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
 
-        return build(intent);
+        return createInternal(intent);
     }
 
-    PendingIntent showKey(long masterKeyId) {
+    PendingIntent createShowKeyPendingIntent(long masterKeyId) {
         Intent intent = new Intent(mContext, ViewKeyActivity.class);
         intent.setData(KeychainContract.KeyRings.buildGenericKeyRingUri(masterKeyId));
 
-        return build(intent);
+        return createInternal(intent);
     }
 
-    PendingIntent selectSignKeyId(String packageName, String preferredUserId) {
+    PendingIntent createSelectSignKeyIdPendingIntent(String packageName, String preferredUserId) {
         Intent intent = new Intent(mContext, SelectSignKeyIdActivity.class);
         intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
         intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
 
-        return build(intent);
+        return createInternal(intent);
     }
 
-    /**
-     * @deprecated
-     */
-    PendingIntent createAccount(String packageName, String accountName) {
+    @Deprecated
+    PendingIntent createAccountCreationPendingIntent(String packageName, String accountName) {
         Intent intent = new Intent(mContext, RemoteCreateAccountActivity.class);
         intent.putExtra(RemoteCreateAccountActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RemoteCreateAccountActivity.EXTRA_ACC_NAME, accountName);
 
-        return build(intent);
+        return createInternal(intent);
     }
 
-    PendingIntent error(String errorMessage) {
+    PendingIntent createErrorPendingIntent(String errorMessage) {
         Intent intent = new Intent(mContext, RemoteErrorActivity.class);
         intent.putExtra(RemoteErrorActivity.EXTRA_ERROR_MESSAGE, errorMessage);
 
-        return build(intent);
+        return createInternal(intent);
     }
 
-    private PendingIntent build(Intent intent) {
+    private PendingIntent createInternal(Intent intent) {
         // re-attach "data" for pass through. It will be used later to repeat pgp operation
         intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_DATA, mPendingIntentData);
 
@@ -160,7 +158,7 @@ public class ApiPendingIntentFactory {
         }
     }
 
-    PendingIntent register(String packageName, byte[] packageCertificate) {
+    PendingIntent createRegisterPendingIntent(String packageName, byte[] packageCertificate) {
         Intent intent = new Intent(mContext, RemoteRegisterActivity.class);
         intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_SIGNATURE, packageCertificate);

@@ -847,6 +847,8 @@
         <activity
             android:name=".remote.ui.RemotePassphraseDialogActivity"
             android:theme="@style/Theme.Keychain.Transparent" />
+        <!-- see SecurityTokenOperationActivity for reasons why
+             allowTaskReparenting, singleTop, and taskAffinity is used  -->
         <activity
             android:name=".remote.ui.RemoteSecurityTokenOperationActivity"
             android:allowTaskReparenting="true"

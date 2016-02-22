@@ -514,6 +514,10 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
     }
 
+    /**
+     * Defines how the result of this activity is returned.
+     * Is overwritten in RemotePassphraseDialogActivity
+     */
     protected void handleResult(CryptoInputParcel inputParcel) {
         // also return passphrase back to activity
         Intent returnIntent = new Intent();

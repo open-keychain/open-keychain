@@ -144,7 +144,7 @@ public class OpenPgpService extends Service {
             // allow the user to verify pub key selection
 
             ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext(), data);
-            PendingIntent pi = piFactory.selectPublicKey(keyIdsArray, missingEmails,
+            PendingIntent pi = piFactory.createSelectPublicKeyPendingIntent(keyIdsArray, missingEmails,
                     duplicateEmails, noUserIdsCheck);
 
             // return PendingIntent to be executed by client
@@ -459,7 +459,7 @@ public class OpenPgpService extends Service {
                     case OpenPgpSignatureResult.RESULT_KEY_MISSING: {
                         // If signature key is missing we return a PendingIntent to retrieve the key
                         result.putExtra(OpenPgpApi.RESULT_INTENT,
-                                piFactory.importFromKeyserver(signatureResult.getKeyId()));
+                                piFactory.createImportFromKeyserverPendingIntent(signatureResult.getKeyId()));
                         break;
                     }
                     case OpenPgpSignatureResult.RESULT_VALID_CONFIRMED:
@@ -468,7 +468,7 @@ public class OpenPgpService extends Service {
                     case OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED:
                     case OpenPgpSignatureResult.RESULT_INVALID_INSECURE: {
                         // If signature key is known, return PendingIntent to show key
-                        result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.showKey(signatureResult.getKeyId()));
+                        result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createShowKeyPendingIntent(signatureResult.getKeyId()));
                         break;
                     }
                     default:
@@ -542,7 +542,7 @@ public class OpenPgpService extends Service {
                     // allow user to select allowed keys
                     Intent result = new Intent();
                     String packageName = mApiPermissionHelper.getCurrentCallingPackage();
-                    result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.selectAllowedKeys(packageName));
+                    result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createSelectAllowedKeysPendingIntent(packageName));
                     result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                     return result;
                 }
@@ -597,14 +597,14 @@ public class OpenPgpService extends Service {
                 }
 
                 // also return PendingIntent that opens the key view activity
-                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.showKey(masterKeyId));
+                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createShowKeyPendingIntent(masterKeyId));
 
                 return result;
             } catch (ProviderHelper.NotFoundException e) {
                 // If keys are not in db we return an additional PendingIntent
                 // to retrieve the missing key
                 Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.importFromKeyserver(masterKeyId));
+                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createImportFromKeyserverPendingIntent(masterKeyId));
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                 return result;
             }
@@ -634,7 +634,7 @@ public class OpenPgpService extends Service {
             String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
 
             ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext(), data);
-            PendingIntent pi = piFactory.selectSignKeyId(currentPkg, preferredUserId);
+            PendingIntent pi = piFactory.createSelectSignKeyIdPendingIntent(currentPkg, preferredUserId);
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -697,7 +697,7 @@ public class OpenPgpService extends Service {
      * - has supported API version
      * - is allowed to call the service (access has been granted)
      *
-     * @return null if everything is okay, or a Bundle with an error/PendingIntent
+     * @return null if everything is okay, or a Bundle with an createErrorPendingIntent/PendingIntent
      */
     private Intent checkRequirements(Intent data) {
         // params Bundle is required!
@@ -760,7 +760,7 @@ public class OpenPgpService extends Service {
         try {
             return executeInternalWithStreams(data, inputStream, outputStream);
         } finally {
-            // always close input and output file descriptors even in error cases
+            // always close input and output file descriptors even in createErrorPendingIntent cases
             if (inputStream != null) {
                 try {
                     inputStream.close();

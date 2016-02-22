@@ -267,7 +267,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     @Override
-    protected void onNfcPostExecute() {
+    protected final void onNfcPostExecute() {
         handleResult(mInputParcel);
 
         // show finish
@@ -299,6 +299,10 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
         }.execute();
     }
 
+    /**
+     * Defines how the result of this activity is returned.
+     * Is overwritten in RemoteSecurityTokenOperationActivity
+     */
     protected void handleResult(CryptoInputParcel inputParcel) {
         Intent result = new Intent();
         // send back the CryptoInputParcel we received

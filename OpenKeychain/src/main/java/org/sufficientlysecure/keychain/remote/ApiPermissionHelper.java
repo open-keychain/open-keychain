@@ -95,7 +95,7 @@ public class ApiPermissionHelper {
                 }
                 Log.e(Constants.TAG, "Not allowed to use service! return PendingIntent for registration!");
 
-                PendingIntent pi = piFactory.register(packageName, packageCertificate);
+                PendingIntent pi = piFactory.createRegisterPendingIntent(packageName, packageCertificate);
 
                 // return PendingIntent to be executed by client
                 Intent result = new Intent();
@@ -107,7 +107,7 @@ public class ApiPermissionHelper {
         } catch (WrongPackageCertificateException e) {
             Log.e(Constants.TAG, "wrong signature!", e);
 
-            PendingIntent pi = piFactory.error(mContext.getString(R.string.api_error_wrong_signature));
+            PendingIntent pi = piFactory.createErrorPendingIntent(mContext.getString(R.string.api_error_wrong_signature));
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -158,10 +158,9 @@ public class ApiPermissionHelper {
     }
 
     /**
-     * DEPRECATED API
-     * <p/>
      * Retrieves AccountSettings from database for the application calling this remote service
      */
+    @Deprecated
     protected AccountSettings getAccSettings(String accountName) {
         String currentPkg = getCurrentCallingPackage();
         Log.d(Constants.TAG, "getAccSettings accountName: " + accountName);
@@ -171,16 +170,14 @@ public class ApiPermissionHelper {
         return mProviderHelper.getApiAccountSettings(uri); // can be null!
     }
 
-    /**
-     * @deprecated
-     */
+    @Deprecated
     protected Intent getCreateAccountIntent(Intent data, String accountName) {
         String packageName = getCurrentCallingPackage();
         Log.d(Constants.TAG, "getCreateAccountIntent accountName: " + accountName);
 
         ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(mContext, data);
 
-        PendingIntent pi = piFactory.createAccount(packageName, accountName);
+        PendingIntent pi = piFactory.createAccountCreationPendingIntent(packageName, accountName);
 
         // return PendingIntent to be executed by client
         Intent result = new Intent();
