@@ -335,7 +335,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 do {
                     totalLength += len;
                     out.write(buf, 0, len);
-                    charsetVerifier.write(0, len);
+                    charsetVerifier.readBytesFromBuffer(0, len);
                 } while ((len = is.read(buf)) > 0);
 
                 log.add(LogType.MSG_DATA_MIME_LENGTH, 3, Long.toString(totalLength));

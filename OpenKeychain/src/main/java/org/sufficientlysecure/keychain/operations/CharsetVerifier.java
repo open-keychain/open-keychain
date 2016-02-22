@@ -12,7 +12,14 @@ import android.content.ClipDescription;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-
+/** This class can be used to guess whether a stream of data is encoded in a given
+ * charset or not.
+ *
+ * An object of this class must be initialized with a byte[] buffer, which should
+ * be filled with data, then processed with {@link #readBytesFromBuffer}. This can
+ * be done any number of times. Once all data has been read, a final status can be
+ * read using the getter methods.
+ */
 public class CharsetVerifier {
 
     private final ByteBuffer bufWrap;
@@ -58,7 +65,7 @@ public class CharsetVerifier {
         charsetDecoder.reset();
     }
 
-    public void write(int pos, int len) {
+    public void readBytesFromBuffer(int pos, int len) {
         if (isFinished) {
             throw new IllegalStateException("cannot write again after reading charset status!");
         }
@@ -111,12 +118,25 @@ public class CharsetVerifier {
         return charset;
     }
 
+    /** Returns true if the data which was read is definitely binary.
+     *
+     * This can happen when either the supplied mimeType indicated a non-ambiguous
+     * binary data type, or if we guessed a charset but got errors while decoding.
+     */
     public boolean isDefinitelyBinary() {
         finishIfNecessary();
         return !isTextMimeType && (!isPossibleTextMimeType || (isGuessed && isFaulty));
     }
 
+    /** Returns true iff the data which was read is probably (or
+     * definitely) text.
+     *
+     * The corner case where isDefinitelyBinary returns false but isProbablyText
+     * returns true is where the charset was provided by the data (so is not
+     * guessed) but is still faulty.
+     */
     public boolean isProbablyText() {
+        finishIfNecessary();
         return isTextMimeType || isPossibleTextMimeType && (!isGuessed || !isFaulty);
     }
 }

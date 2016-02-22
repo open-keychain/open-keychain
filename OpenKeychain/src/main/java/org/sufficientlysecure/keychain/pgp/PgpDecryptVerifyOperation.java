@@ -449,7 +449,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             // update signature buffer if signature is also present
             signatureChecker.updateSignatureData(buffer, 0, length);
 
-            charsetVerifier.write(0, length);
+            charsetVerifier.readBytesFromBuffer(0, length);
 
             // note down first couple of bytes for "magic bytes" file type detection
             if (alreadyWritten == 0) {
