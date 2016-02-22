@@ -85,9 +85,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
     public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
-    // special extra for OpenPgpService
-    public static final String EXTRA_SERVICE_INTENT = "data";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -393,10 +390,10 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 boolean unlockSucceeded = secretKeyToUnlock.unlock(passphrase);
 
                                 // if it didn't take that long, give the user time to appreciate the progress bar
-                                long operationTime = System.currentTimeMillis() -timeBeforeOperation;
+                                long operationTime = System.currentTimeMillis() - timeBeforeOperation;
                                 if (operationTime < 100) {
                                     try {
-                                        Thread.sleep(100 -operationTime);
+                                        Thread.sleep(100 - operationTime);
                                     } catch (InterruptedException e) {
                                         // ignore
                                     }
@@ -467,16 +464,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             // noinspection ConstantConditions, we handle the non-null case in PassphraseDialogActivity.onCreate()
             inputParcel.mPassphrase = passphrase;
 
-            Intent serviceIntent = getArguments().getParcelable(EXTRA_SERVICE_INTENT);
-            if (serviceIntent != null) {
-                CryptoInputParcelCacheService.addCryptoInputParcel(getActivity(), serviceIntent, inputParcel);
-                getActivity().setResult(RESULT_OK, serviceIntent);
-            } else {
-                // also return passphrase back to activity
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra(RESULT_CRYPTO_INPUT, inputParcel);
-                getActivity().setResult(RESULT_OK, returnIntent);
-            }
+            ((PassphraseDialogActivity) getActivity()).handleResult(inputParcel);
 
             dismiss();
             getActivity().finish();
@@ -526,5 +514,15 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
     }
 
+    /**
+     * Defines how the result of this activity is returned.
+     * Is overwritten in RemotePassphraseDialogActivity
+     */
+    protected void handleResult(CryptoInputParcel inputParcel) {
+        // also return passphrase back to activity
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(RESULT_CRYPTO_INPUT, inputParcel);
+        setResult(RESULT_OK, returnIntent);
+    }
 
 }

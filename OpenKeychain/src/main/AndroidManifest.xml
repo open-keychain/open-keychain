@@ -844,6 +844,21 @@
             android:name=".remote.ui.AccountSettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false" />
+        <activity
+            android:name=".remote.ui.RemotePassphraseDialogActivity"
+            android:theme="@style/Theme.Keychain.Transparent" />
+        <!-- see SecurityTokenOperationActivity for reasons why
+             allowTaskReparenting, singleTop, and taskAffinity is used  -->
+        <activity
+            android:name=".remote.ui.RemoteSecurityTokenOperationActivity"
+            android:allowTaskReparenting="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=":Nfc"
+            android:theme="@style/Theme.Keychain.Light.Dialog" />
+        <activity
+            android:name=".remote.ui.RemoteImportKeysActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_import_keys" />
 
         <!-- DEPRECATED service,
              using this service may lead to truncated data being returned to the caller -->

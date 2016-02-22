@@ -231,7 +231,6 @@ public class CreateSecurityTokenImportResetFragment
 
     public void resetCard() {
         Intent intent = new Intent(getActivity(), SecurityTokenOperationActivity.class);
-        intent.putExtra(SecurityTokenOperationActivity.EXTRA_SERVICE_INTENT, (Parcelable[]) null);
         RequiredInputParcel resetP = RequiredInputParcel.createNfcReset();
         intent.putExtra(SecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, resetP);
         intent.putExtra(SecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, new CryptoInputParcel());

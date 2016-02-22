@@ -35,7 +35,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -61,9 +60,6 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
     public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
-    // passthrough for OpenPgpService
-    public static final String EXTRA_SERVICE_INTENT = "data";
-
     public static final String RESULT_CRYPTO_INPUT = "result_data";
 
     public ViewAnimator vAnimator;
@@ -72,7 +68,6 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     public NfcGuideView nfcGuideView;
 
     private RequiredInputParcel mRequiredInput;
-    private Intent mServiceIntent;
 
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -136,7 +131,6 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
         Bundle data = intent.getExtras();
 
         mRequiredInput = data.getParcelable(EXTRA_REQUIRED_INPUT);
-        mServiceIntent = data.getParcelable(EXTRA_SERVICE_INTENT);
 
         obtainPassphraseIfRequired();
     }
@@ -273,18 +267,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     @Override
-    protected void onNfcPostExecute() {
-        if (mServiceIntent != null) {
-            // if we're triggered by OpenPgpService
-            // save updated cryptoInputParcel in cache
-            CryptoInputParcelCacheService.addCryptoInputParcel(this, mServiceIntent, mInputParcel);
-            setResult(RESULT_OK, mServiceIntent);
-        } else {
-            Intent result = new Intent();
-            // send back the CryptoInputParcel we received
-            result.putExtra(RESULT_CRYPTO_INPUT, mInputParcel);
-            setResult(RESULT_OK, result);
-        }
+    protected final void onNfcPostExecute() {
+        handleResult(mInputParcel);
 
         // show finish
         vAnimator.setDisplayedChild(2);
@@ -313,6 +297,17 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                 finish();
             }
         }.execute();
+    }
+
+    /**
+     * Defines how the result of this activity is returned.
+     * Is overwritten in RemoteSecurityTokenOperationActivity
+     */
+    protected void handleResult(CryptoInputParcel inputParcel) {
+        Intent result = new Intent();
+        // send back the CryptoInputParcel we received
+        result.putExtra(RESULT_CRYPTO_INPUT, inputParcel);
+        setResult(RESULT_OK, result);
     }
 
     @Override

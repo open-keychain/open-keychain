@@ -57,8 +57,6 @@ public class ImportKeysActivity extends BaseActivity
             = Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_FACEBOOK";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT =
             Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN_RESULT";
-    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE = Constants.INTENT_PREFIX
-            + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN";
     public static final String ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_FILE_AND_RETURN";
 
@@ -76,10 +74,6 @@ public class ImportKeysActivity extends BaseActivity
     public static final String EXTRA_QUERY = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER_EXTRA_QUERY;
     public static final String EXTRA_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_KEY_ID";
     public static final String EXTRA_FINGERPRINT = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER_EXTRA_FINGERPRINT;
-
-    // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE when used from OpenPgpService
-    public static final String EXTRA_PENDING_INTENT_DATA = "data";
-    private Intent mPendingIntentData;
 
     public static final String TAG_FRAG_LIST = "frag_list";
     public static final String TAG_FRAG_TOP = "frag_top";
@@ -106,11 +100,6 @@ public class ImportKeysActivity extends BaseActivity
                 importSelectedKeys();
             }
         });
-
-        // only used for OpenPgpService
-        if (getIntent().hasExtra(EXTRA_PENDING_INTENT_DATA)) {
-            mPendingIntentData = getIntent().getParcelableExtra(EXTRA_PENDING_INTENT_DATA);
-        }
     }
 
     @Override
@@ -172,7 +161,6 @@ public class ImportKeysActivity extends BaseActivity
                 break;
             }
             case ACTION_IMPORT_KEY_FROM_KEYSERVER:
-            case ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE:
             case ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT: {
 
                 if (extras.containsKey(EXTRA_QUERY) || extras.containsKey(EXTRA_KEY_ID)) {
@@ -412,7 +400,11 @@ public class ImportKeysActivity extends BaseActivity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void handleResult(ImportKeyResult result) {
+    /**
+     * Defines how the result of this activity is returned.
+     * Is overwritten in RemoteImportKeysActivity
+     */
+    protected void handleResult(ImportKeyResult result) {
         String intentAction = getIntent().getAction();
 
         if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(intentAction)
@@ -424,15 +416,10 @@ public class ImportKeysActivity extends BaseActivity
             return;
         }
 
-        if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE.equals(intentAction)) {
-            setResult(RESULT_OK, mPendingIntentData);
-            finish();
-            return;
-        }
-
         result.createNotify(ImportKeysActivity.this)
                 .show((ViewGroup) findViewById(R.id.import_snackbar));
     }
+
     // methods from CryptoOperationHelper.Callback
 
     @Override
