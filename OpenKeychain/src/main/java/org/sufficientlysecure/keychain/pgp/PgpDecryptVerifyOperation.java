@@ -377,9 +377,11 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             originalFilename = "";
         }
         String mimeType = null;
+        boolean looksLikeText;
         if (literalData.getFormat() == PGPLiteralData.TEXT
                 || literalData.getFormat() == PGPLiteralData.UTF8) {
             mimeType = "text/plain";
+            looksLikeText = true;
         } else {
             // try to guess from file ending
             String extension = MimeTypeMap.getFileExtensionFromUrl(originalFilename);
@@ -390,6 +392,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             if (mimeType == null) {
                 mimeType = "application/octet-stream";
             }
+            looksLikeText = false;
         }
 
         if (!"".equals(originalFilename)) {
@@ -414,11 +417,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             }
 
             metadata = new OpenPgpMetadata(
-                    originalFilename,
-                    mimeType,
+                    originalFilename, mimeType,
                     literalData.getModificationTime().getTime(),
-                    originalSize == null ? 0 : originalSize,
-                    charset);
+                    originalSize == null ? 0 : originalSize, charset, false);
 
             log.add(LogType.MSG_DC_OK_META_ONLY, indent);
             DecryptVerifyResult result =
@@ -490,8 +491,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1, mimeType);
 
-        metadata = new OpenPgpMetadata(
-                originalFilename, mimeType, literalData.getModificationTime().getTime(), alreadyWritten, charset);
+        metadata = new OpenPgpMetadata(originalFilename, mimeType, literalData.getModificationTime().getTime(),
+                alreadyWritten, charset, looksLikeText);
 
         indent -= 1;
 
@@ -873,11 +874,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         log.add(LogType.MSG_DC_OK, indent);
 
-        OpenPgpMetadata metadata = new OpenPgpMetadata(
-                "",
-                "text/plain",
-                -1,
-                clearText.length);
+        OpenPgpMetadata metadata = new OpenPgpMetadata("", "text/plain", -1, clearText.length, "utf-8", true);
 
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setSignatureResult(signatureChecker.getSignatureResult());

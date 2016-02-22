@@ -162,6 +162,7 @@ public class InputDataOperationTest {
         OpenPgpMetadata metadata = result.mMetadata.get(0);
         Assert.assertEquals("text/plain", metadata.getMimeType());
         Assert.assertEquals("utf-8", metadata.getCharset());
+        Assert.assertTrue("data should be looksLikeText", metadata.isLooksLikeText());
 
         metadata = result.mMetadata.get(1);
         Assert.assertEquals("text/testvalue", metadata.getMimeType());
@@ -213,6 +214,7 @@ public class InputDataOperationTest {
 
         OpenPgpMetadata metadata = result.mMetadata.get(0);
         Assert.assertEquals("text/plain", metadata.getMimeType());
+        Assert.assertTrue("data should be looksLikeText", metadata.isLooksLikeText());
 
         Assert.assertNull("charset was bad so it should not be set", metadata.getCharset());
         Assert.assertTrue("faulty charset should have been detected",
@@ -234,6 +236,7 @@ public class InputDataOperationTest {
 
         OpenPgpMetadata metadata = result.mMetadata.get(0);
         Assert.assertEquals("text/plain", metadata.getMimeType());
+        Assert.assertTrue("data should be looksLikeText", metadata.isLooksLikeText());
 
         Assert.assertEquals("charset should be set since it was guessed and not faulty",
                 "utf-8", metadata.getCharset());
@@ -256,6 +259,7 @@ public class InputDataOperationTest {
 
         OpenPgpMetadata metadata = result.mMetadata.get(0);
         Assert.assertEquals("application/octet-stream", metadata.getMimeType());
+        Assert.assertTrue("data should be looksLikeText", metadata.isLooksLikeText());
 
         Assert.assertEquals("charset should be set since it was guessed and not faulty",
                 "utf-8", metadata.getCharset());
