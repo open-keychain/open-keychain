@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -471,6 +472,16 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
     }
 
     protected abstract void onVerifyLoaded(boolean hideErrorOverlay);
+
+    public void startDisplayLogActivity() {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        Intent intent = new Intent(activity, LogDisplayActivity.class);
+        intent.putExtra(LogDisplayFragment.EXTRA_RESULT, mDecryptVerifyResult);
+        activity.startActivity(intent);
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
