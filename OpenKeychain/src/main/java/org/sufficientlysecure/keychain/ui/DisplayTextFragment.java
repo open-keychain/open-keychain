@@ -103,7 +103,7 @@ public class DisplayTextFragment extends DecryptFragment {
         Bundle args = getArguments();
 
         String plaintext = args.getString(ARG_PLAINTEXT);
-        DecryptVerifyResult result = args.getParcelable(ARG_DECRYPT_VERIFY_RESULT);
+        DecryptVerifyResult result =  args.getParcelable(ARG_DECRYPT_VERIFY_RESULT);
 
         // display signature result in activity
         mText.setText(plaintext);
@@ -135,6 +135,10 @@ public class DisplayTextFragment extends DecryptFragment {
             }
             case R.id.decrypt_copy: {
                 copyToClipboard(mText.getText().toString());
+                break;
+            }
+            case R.id.decrypt_view_log: {
+                startDisplayLogActivity();
                 break;
             }
             default: {

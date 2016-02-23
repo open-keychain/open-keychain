@@ -591,6 +591,18 @@ public class DecryptListFragment
 
             Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
             chooserIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            if (!share && ClipDescription.compareMimeTypes(metadata.getMimeType(), "text/*")) {
+                LabeledIntent internalIntent = new LabeledIntent(
+                        new Intent(intent)
+                                .setClass(activity, DisplayTextActivity.class)
+                                .putExtra(DisplayTextActivity.EXTRA_RESULT, result.mDecryptVerifyResult)
+                                .putExtra(DisplayTextActivity.EXTRA_METADATA, metadata),
+                        BuildConfig.APPLICATION_ID, R.string.view_internal, R.mipmap.ic_launcher);
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
+                        new Parcelable[] { internalIntent });
+            }
+
             startActivity(chooserIntent);
         }
 

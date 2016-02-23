@@ -35,8 +35,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
-import org.openintents.openpgp.OpenPgpDecryptionResult;
-import org.openintents.openpgp.OpenPgpMetadata;
 import org.bouncycastle.bcpg.ArmoredInputStream;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPDataValidationException;
@@ -56,10 +54,13 @@ import org.bouncycastle.openpgp.operator.jcajce.CachingDataDecryptorFactory;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
 import org.bouncycastle.util.encoders.DecoderException;
+import org.openintents.openpgp.OpenPgpDecryptionResult;
+import org.openintents.openpgp.OpenPgpMetadata;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
+import org.sufficientlysecure.keychain.util.CharsetVerifier;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -387,9 +388,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 MimeTypeMap mime = MimeTypeMap.getSingleton();
                 mimeType = mime.getMimeTypeFromExtension(extension);
             }
-            if (mimeType == null) {
-                mimeType = "application/octet-stream";
-            }
+        }
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
         }
 
         if (!"".equals(originalFilename)) {
@@ -414,11 +415,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             }
 
             metadata = new OpenPgpMetadata(
-                    originalFilename,
-                    mimeType,
+                    originalFilename, mimeType,
                     literalData.getModificationTime().getTime(),
-                    originalSize == null ? 0 : originalSize,
-                    charset);
+                    originalSize == null ? 0 : originalSize, charset);
 
             log.add(LogType.MSG_DC_OK_META_ONLY, indent);
             DecryptVerifyResult result =
@@ -439,6 +438,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         int length;
         byte[] buffer = new byte[8192];
         byte[] firstBytes = new byte[48];
+        CharsetVerifier charsetVerifier = new CharsetVerifier(buffer, mimeType, charset);
+
         while ((length = dataIn.read(buffer)) > 0) {
             // Log.d(Constants.TAG, "read bytes: " + length);
             if (out != null) {
@@ -447,6 +448,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
             // update signature buffer if signature is also present
             signatureChecker.updateSignatureData(buffer, 0, length);
+
+            charsetVerifier.readBytesFromBuffer(0, length);
 
             // note down first couple of bytes for "magic bytes" file type detection
             if (alreadyWritten == 0) {
@@ -480,18 +483,21 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         Log.d(Constants.TAG, "decrypt time taken: " + String.format("%.2f", opTime / 1000.0) + "s");
 
         // special treatment to detect pgp mime types
+        // TODO move into CharsetVerifier? seems like that would be a plausible place for this logic
         if (matchesPrefix(firstBytes, "-----BEGIN PGP PUBLIC KEY BLOCK-----")
                 || matchesPrefix(firstBytes, "-----BEGIN PGP PRIVATE KEY BLOCK-----")) {
             mimeType = Constants.MIME_TYPE_KEYS;
         } else if (matchesPrefix(firstBytes, "-----BEGIN PGP MESSAGE-----")) {
             // this is NOT application/pgp-encrypted, see RFC 3156!
             mimeType = Constants.MIME_TYPE_ENCRYPTED_ALTERNATE;
+        } else {
+            mimeType = charsetVerifier.getGuessedMimeType();
         }
+        metadata = new OpenPgpMetadata(originalFilename, mimeType, literalData.getModificationTime().getTime(),
+                alreadyWritten, charsetVerifier.getCharset());
 
         log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1, mimeType);
-
-        metadata = new OpenPgpMetadata(
-                originalFilename, mimeType, literalData.getModificationTime().getTime(), alreadyWritten, charset);
+        Log.d(Constants.TAG, metadata.toString());
 
         indent -= 1;
 
@@ -873,11 +879,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         log.add(LogType.MSG_DC_OK, indent);
 
-        OpenPgpMetadata metadata = new OpenPgpMetadata(
-                "",
-                "text/plain",
-                -1,
-                clearText.length);
+        OpenPgpMetadata metadata = new OpenPgpMetadata("", "text/plain", -1, clearText.length, "utf-8");
 
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setSignatureResult(signatureChecker.getSignatureResult());
