@@ -27,12 +27,11 @@
             app:cardUseCompatPadding="true"
             app:cardCornerRadius="4dp">
 
-            <org.sufficientlysecure.keychain.ui.widget.AspectRatioImageView
+            <ImageView
                 android:id="@+id/qr_code_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:dominantMeasurement="width"
-                app:aspectRatioEnabled="true" />
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"/>
         </android.support.v7.widget.CardView>
 
     </LinearLayout>
