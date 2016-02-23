@@ -34,13 +34,14 @@ public class CharsetVerifierTest {
         bytes[4] = (byte) 0xc3;
         bytes[5] = (byte) 0x28;
 
-        CharsetVerifier charsetVerifier = new CharsetVerifier(bytes, "text/plain", "utf-8");
+        CharsetVerifier charsetVerifier = new CharsetVerifier(bytes, "text/something", "utf-8");
         charsetVerifier.readBytesFromBuffer(0, bytes.length);
 
         assertFalse("text/plain should not be marked as binary, even if it is", charsetVerifier.isDefinitelyBinary());
         assertTrue("text/plain should be marked as text, even if it isn't valid", charsetVerifier.isProbablyText());
         assertTrue("encoding contained illegal chars, so it should be marked as faulty", charsetVerifier.isCharsetFaulty());
         assertFalse("charset was specified and should not be marked as guessed", charsetVerifier.isCharsetGuessed());
+        assertEquals("mimetype should be preserved", "text/something", charsetVerifier.getGuessedMimeType());
         assertEquals("charset should be utf-8 since it was given explicitly", "utf-8", charsetVerifier.getCharset());
         assertEquals("charset should be utf-8 since it was given explicitly", "utf-8", charsetVerifier.getMaybeFaultyCharset());
     }
@@ -59,6 +60,7 @@ public class CharsetVerifierTest {
         assertTrue("encoding contained illegal chars, so it should be marked as faulty", charsetVerifier.isCharsetFaulty());
         assertTrue("charset was guessed and should be marked as such", charsetVerifier.isCharsetGuessed());
         assertNull("charset should be null since the guess was faulty", charsetVerifier.getCharset());
+        assertEquals("mimetype should be set to text", "text/plain", charsetVerifier.getGuessedMimeType());
         assertEquals("maybe-faulty charset should be utf-8", "utf-8", charsetVerifier.getMaybeFaultyCharset());
     }
 
@@ -73,6 +75,7 @@ public class CharsetVerifierTest {
         assertTrue("application/octet-stream with text content should be probably text", charsetVerifier.isProbablyText());
         assertFalse("detected charset should not be faulty", charsetVerifier.isCharsetFaulty());
         assertTrue("charset was guessed and should be marked as such", charsetVerifier.isCharsetGuessed());
+        assertEquals("mimetype should be set to text", "text/plain", charsetVerifier.getGuessedMimeType());
         assertEquals("guessed charset is utf-8", "utf-8", charsetVerifier.getCharset());
     }
 

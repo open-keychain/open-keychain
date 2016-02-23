@@ -417,7 +417,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             metadata = new OpenPgpMetadata(
                     originalFilename, mimeType,
                     literalData.getModificationTime().getTime(),
-                    originalSize == null ? 0 : originalSize, charset, false);
+                    originalSize == null ? 0 : originalSize, charset);
 
             log.add(LogType.MSG_DC_OK_META_ONLY, indent);
             DecryptVerifyResult result =
@@ -483,24 +483,20 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         Log.d(Constants.TAG, "decrypt time taken: " + String.format("%.2f", opTime / 1000.0) + "s");
 
         // special treatment to detect pgp mime types
+        // TODO move into CharsetVerifier? seems like that would be a plausible place for this logic
         if (matchesPrefix(firstBytes, "-----BEGIN PGP PUBLIC KEY BLOCK-----")
                 || matchesPrefix(firstBytes, "-----BEGIN PGP PRIVATE KEY BLOCK-----")) {
             mimeType = Constants.MIME_TYPE_KEYS;
         } else if (matchesPrefix(firstBytes, "-----BEGIN PGP MESSAGE-----")) {
             // this is NOT application/pgp-encrypted, see RFC 3156!
             mimeType = Constants.MIME_TYPE_ENCRYPTED_ALTERNATE;
+        } else {
+            mimeType = charsetVerifier.getGuessedMimeType();
         }
+        metadata = new OpenPgpMetadata(originalFilename, mimeType, literalData.getModificationTime().getTime(),
+                alreadyWritten, charsetVerifier.getCharset());
 
         log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1, mimeType);
-
-        if (charsetVerifier.isDefinitelyBinary()) {
-            metadata = new OpenPgpMetadata(originalFilename, mimeType, literalData.getModificationTime().getTime(),
-                    alreadyWritten);
-        } else {
-            metadata = new OpenPgpMetadata(originalFilename, mimeType, literalData.getModificationTime().getTime(),
-                    alreadyWritten, charsetVerifier.getCharset(), charsetVerifier.isProbablyText());
-        }
-
         Log.d(Constants.TAG, metadata.toString());
 
         indent -= 1;
@@ -883,7 +879,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         log.add(LogType.MSG_DC_OK, indent);
 
-        OpenPgpMetadata metadata = new OpenPgpMetadata("", "text/plain", -1, clearText.length, "utf-8", true);
+        OpenPgpMetadata metadata = new OpenPgpMetadata("", "text/plain", -1, clearText.length, "utf-8");
 
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setSignatureResult(signatureChecker.getSignatureResult());

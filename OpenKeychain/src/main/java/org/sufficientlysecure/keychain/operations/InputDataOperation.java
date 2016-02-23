@@ -355,8 +355,8 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                         log.add(LogType.MSG_DATA_MIME_CHARSET, 3, charsetVerifier.getCharset());
                     }
 
-                    metadata = new OpenPgpMetadata(mFilename, mimeType, 0L, totalLength,
-                            charsetVerifier.getCharset(), charsetVerifier.isProbablyText());
+                    metadata = new OpenPgpMetadata(mFilename, charsetVerifier.getGuessedMimeType(), 0L, totalLength,
+                            charsetVerifier.getCharset());
                 }
 
                 out.close();

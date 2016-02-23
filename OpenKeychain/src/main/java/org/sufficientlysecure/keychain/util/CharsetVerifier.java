@@ -33,19 +33,21 @@ public class CharsetVerifier {
     private boolean isPossibleTextMimeType;
     private boolean isTextMimeType;
     private String charset;
+    private String mimeType;
 
-    public CharsetVerifier(@NonNull  byte[] buf, String mimeType, @Nullable String charset) {
+    public CharsetVerifier(@NonNull  byte[] buf, @NonNull String mimeType, @Nullable String charset) {
 
-        isPossibleTextMimeType = ClipDescription.compareMimeTypes(mimeType, "application/octet-stream")
-                || ClipDescription.compareMimeTypes(mimeType, "application/x-download")
-                || ClipDescription.compareMimeTypes(mimeType, "text/*");
+        this.mimeType = mimeType;
+        isTextMimeType = ClipDescription.compareMimeTypes(mimeType, "text/*");
+        isPossibleTextMimeType = isTextMimeType
+                || ClipDescription.compareMimeTypes(mimeType, "application/octet-stream")
+                || ClipDescription.compareMimeTypes(mimeType, "application/x-download");
         if (!isPossibleTextMimeType) {
             charsetDecoder = null;
             bufWrap = null;
             dummyOutput = null;
             return;
         }
-        isTextMimeType = ClipDescription.compareMimeTypes(mimeType, "text/*");
 
         bufWrap = ByteBuffer.wrap(buf);
         dummyOutput = CharBuffer.allocate(buf.length);
@@ -94,6 +96,16 @@ public class CharsetVerifier {
         if (result.isError()) {
             isFaulty = true;
         }
+    }
+
+    public String getGuessedMimeType() {
+        if (isTextMimeType) {
+            return mimeType;
+        }
+        if (isProbablyText()) {
+            return "text/plain";
+        }
+        return mimeType;
     }
 
     public boolean isCharsetFaulty() {

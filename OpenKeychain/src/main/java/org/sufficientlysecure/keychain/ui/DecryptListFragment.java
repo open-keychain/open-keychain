@@ -592,7 +592,7 @@ public class DecryptListFragment
             Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
             chooserIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            if (!share && metadata.isLooksLikeText()) {
+            if (!share && ClipDescription.compareMimeTypes(metadata.getMimeType(), "text/*")) {
                 LabeledIntent internalIntent = new LabeledIntent(
                         new Intent(intent)
                                 .setClass(activity, DisplayTextActivity.class)
