@@ -95,7 +95,7 @@
     <string name="btn_add_files">"Add file(s)"</string>
     <string name="btn_share_decrypted_text">"Share"</string>
     <string name="btn_open_with">"Open with…"</string>
-    <string name="btn_copy_decrypted_text">"Copy decrypted text"</string>
+    <string name="btn_copy_decrypted_text">"Copy to clipboard"</string>
     <string name="btn_decrypt_clipboard">"Read from clipboard"</string>
     <string name="btn_decrypt_files">"Select input file"</string>
     <string name="btn_encrypt_files">"Encrypt files"</string>
@@ -1401,6 +1401,10 @@
     <string name="msg_data_mime_filename">"Filename: '%s'"</string>
     <string name="msg_data_mime_from_extension">"Guessing MIME type from extension"</string>
     <string name="msg_data_mime_length">"Content-Length: %s"</string>
+    <string name="msg_data_mime_charset">"Charset is '%s'"</string>
+    <string name="msg_data_mime_charset_faulty">"Charset is '%s', but decoding failed!"</string>
+    <string name="msg_data_mime_charset_guess">"Charset appears to be '%s'"</string>
+    <string name="msg_data_mime_charset_unknown">"Charset is unknown, or data is not text."</string>
     <string name="msg_data_mime">"Parsing MIME data structure"</string>
     <string name="msg_data_mime_ok">"Finished parsing"</string>
     <string name="msg_data_mime_none">"No MIME structure found"</string>

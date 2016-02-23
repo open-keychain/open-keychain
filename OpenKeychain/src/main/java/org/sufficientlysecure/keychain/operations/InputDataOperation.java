@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.util.CharsetVerifier;
 
 
 /** This operation deals with input data, trying to determine its type as it goes.
@@ -67,7 +68,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
  */
 public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
-    final private byte[] buf = new byte[256];
+    private final byte[] buf = new byte[256];
 
     public InputDataOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
@@ -326,21 +327,37 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     throw new IOException("Error getting file for writing!");
                 }
 
+                // If this data looks like text, we pipe the incoming data into a charset
+                // decoder, to see if the data is legal for the assumed charset.
+                String charset = bd.getCharset();
+                CharsetVerifier charsetVerifier = new CharsetVerifier(buf, mimeType, charset);
+
                 int totalLength = 0;
                 do {
                     totalLength += len;
                     out.write(buf, 0, len);
+                    charsetVerifier.readBytesFromBuffer(0, len);
                 } while ((len = is.read(buf)) > 0);
 
                 log.add(LogType.MSG_DATA_MIME_LENGTH, 3, Long.toString(totalLength));
 
-                String charset = bd.getCharset();
-                // the charset defaults to us-ascii, but we want to default to utf-8
-                if ("us-ascii".equals(charset)) {
-                    charset = "utf-8";
-                }
+                OpenPgpMetadata metadata;
+                if (charsetVerifier.isDefinitelyBinary()) {
+                    metadata = new OpenPgpMetadata(mFilename, mimeType, 0L, totalLength);
+                } else {
+                    if (charsetVerifier.isCharsetFaulty() && charsetVerifier.isCharsetGuessed()) {
+                        log.add(LogType.MSG_DATA_MIME_CHARSET_UNKNOWN, 3, charsetVerifier.getMaybeFaultyCharset());
+                    } else if (charsetVerifier.isCharsetFaulty()) {
+                        log.add(LogType.MSG_DATA_MIME_CHARSET_FAULTY, 3, charsetVerifier.getCharset());
+                    } else if (charsetVerifier.isCharsetGuessed()) {
+                        log.add(LogType.MSG_DATA_MIME_CHARSET_GUESS, 3, charsetVerifier.getCharset());
+                    } else {
+                        log.add(LogType.MSG_DATA_MIME_CHARSET, 3, charsetVerifier.getCharset());
+                    }
 
-                OpenPgpMetadata metadata = new OpenPgpMetadata(mFilename, mimeType, 0L, totalLength, charset);
+                    metadata = new OpenPgpMetadata(mFilename, charsetVerifier.getGuessedMimeType(), 0L, totalLength,
+                            charsetVerifier.getCharset());
+                }
 
                 out.close();
                 outputUris.add(uri);

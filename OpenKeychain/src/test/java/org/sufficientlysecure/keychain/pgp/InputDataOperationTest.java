@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.security.Security;
 import java.util.ArrayList;
@@ -30,18 +31,20 @@ import android.content.ContentValues;
 import android.net.Uri;
 
 import junit.framework.Assert;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openintents.openpgp.OpenPgpMetadata;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.InputDataOperation;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
@@ -80,20 +83,20 @@ public class InputDataOperationTest {
     }
 
     @Test
-    public void testMimeDecoding () throws Exception {
+    public void testMimeDecoding() throws Exception {
 
         String mimeMail =
             "Content-Type: multipart/mixed; boundary=\"=-26BafqxfXmhVNMbYdoIi\"\n" +
             "\n" +
             "--=-26BafqxfXmhVNMbYdoIi\n" +
-            "Content-Type: text/plain\n" +
+            "Content-Type: text/plain; charset=utf-8\n" +
             "Content-Transfer-Encoding: quoted-printable\n" +
             "Content-Disposition: attachment; filename=data.txt\n" +
             "\n" +
             "message part 1\n" +
             "\n" +
             "--=-26BafqxfXmhVNMbYdoIi\n" +
-            "Content-Type: text/testvalue\n" +
+            "Content-Type: text/testvalue; charset=iso-8859-1\n" +
             "Content-Description: Dummy content description\n" +
             "\n" +
             "message part 2.1\n" +
@@ -156,7 +159,137 @@ public class InputDataOperationTest {
         Assert.assertEquals("second part must have expected content",
                 "message part 2.1\nmessage part 2.2\n", new String(outStream2.toByteArray()));
 
+        OpenPgpMetadata metadata = result.mMetadata.get(0);
+        Assert.assertEquals("text/plain", metadata.getMimeType());
+        Assert.assertEquals("utf-8", metadata.getCharset());
 
+        metadata = result.mMetadata.get(1);
+        Assert.assertEquals("text/testvalue", metadata.getMimeType());
+        Assert.assertEquals("iso-8859-1", metadata.getCharset());
+    }
+
+    @Test
+    public void testMimeDecodingExplicitFaultyCharset() throws Exception {
+
+        String mimeContent = "Content-Type: text/plain; charset=utf-8\n" +
+                        "\n" +
+                        "message with binary data in it\n";
+
+        byte[] data = mimeContent.getBytes();
+        data[60] = (byte) 0xc3;
+        data[61] = (byte) 0x28;
+
+        InputDataResult result = runSimpleDataInputOperation(data);
+
+        // must be successful, no verification, have two output URIs
+        Assert.assertTrue(result.success());
+        Assert.assertNull(result.mDecryptVerifyResult);
+
+        OpenPgpMetadata metadata = result.mMetadata.get(0);
+        Assert.assertEquals("text/plain", metadata.getMimeType());
+
+        Assert.assertEquals("charset should be set since it was explicitly specified",
+                "utf-8", metadata.getCharset());
+        Assert.assertTrue("faulty charset should have been detected",
+                result.getLog().containsType(LogType.MSG_DATA_MIME_CHARSET_FAULTY));
+    }
+
+    @Test
+    public void testMimeDecodingImplicitFaultyCharset() throws Exception {
+
+        String mimeContent = "Content-Type: text/plain\n" +
+                "\n" +
+                "message with binary data in it\n";
+
+        byte[] data = mimeContent.getBytes();
+        data[45] = (byte) 0xc3;
+        data[46] = (byte) 0x28;
+
+        InputDataResult result = runSimpleDataInputOperation(data);
+
+        // must be successful, no verification, have two output URIs
+        Assert.assertTrue(result.success());
+        Assert.assertNull(result.mDecryptVerifyResult);
+
+        OpenPgpMetadata metadata = result.mMetadata.get(0);
+        Assert.assertEquals("text/plain", metadata.getMimeType());
+
+        Assert.assertNull("charset was bad so it should not be set", metadata.getCharset());
+        Assert.assertTrue("faulty charset should have been detected",
+                result.getLog().containsType(LogType.MSG_DATA_MIME_CHARSET_UNKNOWN));
+    }
+
+    @Test
+    public void testMimeDecodingImplicitGuessedCharset() throws Exception {
+
+        String mimeContent = "Content-Type: text/plain\n" +
+                "\n" +
+                "proper, utf-8 encoded message ☭\n";
+
+        InputDataResult result = runSimpleDataInputOperation(mimeContent.getBytes());
+
+        // must be successful, no verification, have two output URIs
+        Assert.assertTrue(result.success());
+        Assert.assertNull(result.mDecryptVerifyResult);
+
+        OpenPgpMetadata metadata = result.mMetadata.get(0);
+        Assert.assertEquals("text/plain", metadata.getMimeType());
+
+        Assert.assertEquals("charset should be set since it was guessed and not faulty",
+                "utf-8", metadata.getCharset());
+        Assert.assertTrue("charset should have been guessed",
+                result.getLog().containsType(LogType.MSG_DATA_MIME_CHARSET_GUESS));
+    }
+
+    @Test
+    public void testMimeDecodingOctetStreamGuessedCharset() throws Exception {
+
+        String mimeContent = "Content-Type: application/octet-stream\n" +
+                "\n" +
+                "proper, utf-8 encoded message ☭\n";
+
+        InputDataResult result = runSimpleDataInputOperation(mimeContent.getBytes());
+
+        // must be successful, no verification, have two output URIs
+        Assert.assertTrue(result.success());
+        Assert.assertNull(result.mDecryptVerifyResult);
+
+        OpenPgpMetadata metadata = result.mMetadata.get(0);
+        Assert.assertEquals("text/plain", metadata.getMimeType());
+
+        Assert.assertEquals("charset should be set since it was guessed and not faulty",
+                "utf-8", metadata.getCharset());
+        Assert.assertTrue("charset should have been guessed",
+                result.getLog().containsType(LogType.MSG_DATA_MIME_CHARSET_GUESS));
+    }
+
+    private InputDataResult runSimpleDataInputOperation(byte[] mimeContentBytes) throws FileNotFoundException {
+        ByteArrayOutputStream outStream1 = new ByteArrayOutputStream();
+        ByteArrayOutputStream outStream2 = new ByteArrayOutputStream();
+        ContentResolver mockResolver = mock(ContentResolver.class);
+
+        // fake openOutputStream first and second
+        when(mockResolver.openOutputStream(any(Uri.class), eq("w")))
+                .thenReturn(outStream1, outStream2);
+
+        // fake openInputStream
+        Uri fakeInputUri = Uri.parse("content://fake/1");
+        when(mockResolver.openInputStream(fakeInputUri)).thenReturn(
+                new ByteArrayInputStream(mimeContentBytes));
+
+        Uri fakeOutputUri1 = Uri.parse("content://fake/out/1");
+        when(mockResolver.insert(eq(TemporaryFileProvider.CONTENT_URI), any(ContentValues.class)))
+                .thenReturn(fakeOutputUri1);
+
+        // application which returns mockresolver
+        Application spyApplication = spy(RuntimeEnvironment.application);
+        when(spyApplication.getContentResolver()).thenReturn(mockResolver);
+
+        InputDataOperation op = new InputDataOperation(spyApplication,
+                new ProviderHelper(RuntimeEnvironment.application), null);
+
+        InputDataParcel input = new InputDataParcel(fakeInputUri, null);
+        return op.execute(input, new CryptoInputParcel());
     }
 
 }
