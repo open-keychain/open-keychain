@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.operations;
+package org.sufficientlysecure.keychain.util;
 
 
 import java.nio.ByteBuffer;
