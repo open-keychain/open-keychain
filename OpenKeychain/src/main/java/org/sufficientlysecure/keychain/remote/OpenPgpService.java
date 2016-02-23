@@ -674,6 +674,16 @@ public class OpenPgpService extends Service {
         }
     }
 
+    private Intent checkPermissionImpl(@NonNull Intent data) {
+        Intent permissionIntent = mApiPermissionHelper.isAllowedOrReturnIntent(data);
+        if (permissionIntent != null) {
+            return permissionIntent;
+        }
+        Intent result = new Intent();
+        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+        return result;
+    }
+
     private Intent getSignKeyMasterId(Intent data) {
         // NOTE: Accounts are deprecated on API version >= 7
         if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 7) {
@@ -803,6 +813,9 @@ public class OpenPgpService extends Service {
 
         String action = data.getAction();
         switch (action) {
+            case OpenPgpApi.ACTION_CHECK_PERMISSION: {
+                return checkPermissionImpl(data);
+            }
             case OpenPgpApi.ACTION_CLEARTEXT_SIGN: {
                 return signImpl(data, inputStream, outputStream, true);
             }
