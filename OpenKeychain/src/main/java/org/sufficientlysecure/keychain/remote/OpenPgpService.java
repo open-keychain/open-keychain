@@ -143,9 +143,9 @@ public class OpenPgpService extends Service {
         if (noUserIdsCheck || missingUserIdsCheck || duplicateUserIdsCheck) {
             // allow the user to verify pub key selection
 
-            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext(), data);
-            PendingIntent pi = piFactory.createSelectPublicKeyPendingIntent(keyIdsArray, missingEmails,
-                    duplicateEmails, noUserIdsCheck);
+            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
+            PendingIntent pi = piFactory.createSelectPublicKeyPendingIntent(data, keyIdsArray,
+                    missingEmails, duplicateEmails, noUserIdsCheck);
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -226,10 +226,11 @@ public class OpenPgpService extends Service {
             PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
-                ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext(), data);
+                ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
 
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
-                PendingIntent pIntent = piFactory.requiredInputPi(requiredInput, pgpResult.mCryptoInputParcel);
+                PendingIntent pIntent = piFactory.requiredInputPi(data,
+                        requiredInput, pgpResult.mCryptoInputParcel);
 
                 // return PendingIntent to be executed by client
                 Intent result = new Intent();
@@ -363,10 +364,11 @@ public class OpenPgpService extends Service {
             PgpSignEncryptResult pgpResult = op.execute(pseInput, inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
-                ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext(), data);
+                ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
 
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
-                PendingIntent pIntent = piFactory.requiredInputPi(requiredInput, pgpResult.mCryptoInputParcel);
+                PendingIntent pIntent = piFactory.requiredInputPi(data,
+                        requiredInput, pgpResult.mCryptoInputParcel);
 
                 // return PendingIntent to be executed by client
                 Intent result = new Intent();
@@ -436,12 +438,13 @@ public class OpenPgpService extends Service {
 
             DecryptVerifyResult pgpResult = op.execute(input, cryptoInput, inputData, outputStream);
 
-            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext(), data);
+            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
 
             if (pgpResult.isPending()) {
                 // prepare and return PendingIntent to be executed by client
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
-                PendingIntent pIntent = piFactory.requiredInputPi(requiredInput, pgpResult.mCryptoInputParcel);
+                PendingIntent pIntent = piFactory.requiredInputPi(data,
+                        requiredInput, pgpResult.mCryptoInputParcel);
 
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_INTENT, pIntent);
@@ -459,7 +462,8 @@ public class OpenPgpService extends Service {
                     case OpenPgpSignatureResult.RESULT_KEY_MISSING: {
                         // If signature key is missing we return a PendingIntent to retrieve the key
                         result.putExtra(OpenPgpApi.RESULT_INTENT,
-                                piFactory.createImportFromKeyserverPendingIntent(signatureResult.getKeyId()));
+                                piFactory.createImportFromKeyserverPendingIntent(data,
+                                        signatureResult.getKeyId()));
                         break;
                     }
                     case OpenPgpSignatureResult.RESULT_VALID_CONFIRMED:
@@ -468,7 +472,8 @@ public class OpenPgpService extends Service {
                     case OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED:
                     case OpenPgpSignatureResult.RESULT_INVALID_INSECURE: {
                         // If signature key is known, return PendingIntent to show key
-                        result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createShowKeyPendingIntent(signatureResult.getKeyId()));
+                        result.putExtra(OpenPgpApi.RESULT_INTENT,
+                                piFactory.createShowKeyPendingIntent(data, signatureResult.getKeyId()));
                         break;
                     }
                     default:
@@ -542,7 +547,8 @@ public class OpenPgpService extends Service {
                     // allow user to select allowed keys
                     Intent result = new Intent();
                     String packageName = mApiPermissionHelper.getCurrentCallingPackage();
-                    result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createSelectAllowedKeysPendingIntent(packageName));
+                    result.putExtra(OpenPgpApi.RESULT_INTENT,
+                            piFactory.createSelectAllowedKeysPendingIntent(data, packageName));
                     result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                     return result;
                 }
@@ -566,7 +572,7 @@ public class OpenPgpService extends Service {
 
     private Intent getKeyImpl(Intent data, OutputStream outputStream) {
         try {
-            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext(), data);
+            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
 
             long masterKeyId = data.getLongExtra(OpenPgpApi.EXTRA_KEY_ID, 0);
 
@@ -597,14 +603,16 @@ public class OpenPgpService extends Service {
                 }
 
                 // also return PendingIntent that opens the key view activity
-                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createShowKeyPendingIntent(masterKeyId));
+                result.putExtra(OpenPgpApi.RESULT_INTENT,
+                        piFactory.createShowKeyPendingIntent(data, masterKeyId));
 
                 return result;
             } catch (ProviderHelper.NotFoundException e) {
                 // If keys are not in db we return an additional PendingIntent
                 // to retrieve the missing key
                 Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createImportFromKeyserverPendingIntent(masterKeyId));
+                result.putExtra(OpenPgpApi.RESULT_INTENT,
+                        piFactory.createImportFromKeyserverPendingIntent(data, masterKeyId));
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                 return result;
             }
@@ -633,8 +641,8 @@ public class OpenPgpService extends Service {
             String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
             String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
 
-            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext(), data);
-            PendingIntent pi = piFactory.createSelectSignKeyIdPendingIntent(currentPkg, preferredUserId);
+            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
+            PendingIntent pi = piFactory.createSelectSignKeyIdPendingIntent(data, currentPkg, preferredUserId);
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();

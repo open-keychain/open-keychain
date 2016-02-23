@@ -72,7 +72,7 @@ public class ApiPermissionHelper {
      * @return null if caller is allowed, or a Bundle with a PendingIntent
      */
     protected Intent isAllowed(Intent data) {
-        ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(mContext, data);
+        ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(mContext);
 
         try {
             if (isCallerAllowed()) {
@@ -95,7 +95,8 @@ public class ApiPermissionHelper {
                 }
                 Log.e(Constants.TAG, "Not allowed to use service! return PendingIntent for registration!");
 
-                PendingIntent pi = piFactory.createRegisterPendingIntent(packageName, packageCertificate);
+                PendingIntent pi = piFactory.createRegisterPendingIntent(data,
+                        packageName, packageCertificate);
 
                 // return PendingIntent to be executed by client
                 Intent result = new Intent();
@@ -107,7 +108,7 @@ public class ApiPermissionHelper {
         } catch (WrongPackageCertificateException e) {
             Log.e(Constants.TAG, "wrong signature!", e);
 
-            PendingIntent pi = piFactory.createErrorPendingIntent(mContext.getString(R.string.api_error_wrong_signature));
+            PendingIntent pi = piFactory.createErrorPendingIntent(data, mContext.getString(R.string.api_error_wrong_signature));
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -175,9 +176,10 @@ public class ApiPermissionHelper {
         String packageName = getCurrentCallingPackage();
         Log.d(Constants.TAG, "getCreateAccountIntent accountName: " + accountName);
 
-        ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(mContext, data);
+        ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(mContext);
 
-        PendingIntent pi = piFactory.createAccountCreationPendingIntent(packageName, accountName);
+        PendingIntent pi = piFactory.createAccountCreationPendingIntent(data,
+                packageName, accountName);
 
         // return PendingIntent to be executed by client
         Intent result = new Intent();
