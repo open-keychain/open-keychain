@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -227,7 +228,7 @@ public class FlingNestedScrollView extends FrameLayout implements NestedScrollin
     }
 
     private void initScrollView() {
-        this.mScroller = new ScrollerCompat(this.getContext(), (Interpolator)null);
+        this.mScroller = ScrollerCompat.create(this.getContext());
         this.setFocusable(true);
         //noinspection ResourceType
         this.setDescendantFocusability(262144);
