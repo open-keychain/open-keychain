@@ -351,27 +351,28 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
             @Override
             public void afterTextChanged(Editable s) {
+                String currentBackupCode = backupCode.getText().toString();
                 boolean inInputState = mCurrentState == BackupCodeState.STATE_INPUT
                         || mCurrentState == BackupCodeState.STATE_INPUT_ERROR;
-                boolean partIsComplete = (backupCode.getText().toString().indexOf(' ') == -1)
-                        && (backupCode.getText().toString().indexOf('\u00a0') == -1);
+                boolean partIsComplete = (currentBackupCode.indexOf(' ') == -1)
+                        && (currentBackupCode.indexOf('\u00a0') == -1);
                 if (!inInputState || !partIsComplete) {
                     return;
                 }
 
-                checkIfCodeIsCorrect(backupCode);
+                checkIfCodeIsCorrect(currentBackupCode);
             }
         });
     }
 
-    private void checkIfCodeIsCorrect(EditText backupCode) {
+    private void checkIfCodeIsCorrect(String currentBackupCode) {
 
         if (Constants.DEBUG && mDebugModeAcceptAnyCode) {
             switchState(BackupCodeState.STATE_OK, true);
             return;
         }
 
-        if (backupCode.toString().equals(mBackupCode)) {
+        if (currentBackupCode.equals(mBackupCode)) {
             switchState(BackupCodeState.STATE_OK, true);
             return;
         }
