@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2013-2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2016 Vincent Breitmoser <look@my.amazin.horse>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +17,17 @@
  */
 
 package org.sufficientlysecure.keychain.remote;
+
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -41,12 +53,15 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.KeyRing.UserId;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -58,18 +73,9 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-
 public class OpenPgpService extends Service {
 
-    static final String[] EMAIL_SEARCH_PROJECTION = new String[]{
+    static final String[] KEY_SEARCH_PROJECTION = new String[]{
             KeyRings._ID,
             KeyRings.MASTER_KEY_ID,
             KeyRings.IS_EXPIRED,
@@ -77,35 +83,50 @@ public class OpenPgpService extends Service {
     };
 
     // do not pre-select revoked or expired keys
-    static final String EMAIL_SEARCH_WHERE = Tables.KEYS + "." + KeychainContract.KeyRings.IS_REVOKED
+    static final String KEY_SEARCH_WHERE = Tables.KEYS + "." + KeychainContract.KeyRings.IS_REVOKED
             + " = 0 AND " + KeychainContract.KeyRings.IS_EXPIRED + " = 0";
 
     private ApiPermissionHelper mApiPermissionHelper;
     private ProviderHelper mProviderHelper;
+    private ApiDataAccessObject mApiDao;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mApiPermissionHelper = new ApiPermissionHelper(this);
+        mApiPermissionHelper = new ApiPermissionHelper(this, new ApiDataAccessObject(this));
         mProviderHelper = new ProviderHelper(this);
+        mApiDao = new ApiDataAccessObject(this);
     }
 
-    /**
-     * Search database for key ids based on emails.
-     */
-    private Intent returnKeyIdsFromEmails(Intent data, String[] encryptionUserIds) {
+    private static class KeyIdResult {
+        final Intent mRequiredUserInteraction;
+        final HashSet<Long> mKeyIds;
+
+        KeyIdResult(Intent requiredUserInteraction) {
+            mRequiredUserInteraction = requiredUserInteraction;
+            mKeyIds = null;
+        }
+        KeyIdResult(HashSet<Long> keyIds) {
+            mRequiredUserInteraction = null;
+            mKeyIds = keyIds;
+        }
+    }
+
+    private KeyIdResult returnKeyIdsFromEmails(Intent data, String[] encryptionUserIds) {
         boolean noUserIdsCheck = (encryptionUserIds == null || encryptionUserIds.length == 0);
         boolean missingUserIdsCheck = false;
         boolean duplicateUserIdsCheck = false;
 
-        ArrayList<Long> keyIds = new ArrayList<>();
+        HashSet<Long> keyIds = new HashSet<>();
         ArrayList<String> missingEmails = new ArrayList<>();
         ArrayList<String> duplicateEmails = new ArrayList<>();
         if (!noUserIdsCheck) {
-            for (String email : encryptionUserIds) {
+            for (String rawUserId : encryptionUserIds) {
+                UserId userId = KeyRing.splitUserId(rawUserId);
+                String email = userId.email != null ? userId.email : rawUserId;
                 // try to find the key for this specific email
                 Uri uri = KeyRings.buildUnifiedKeyRingsFindByEmailUri(email);
-                Cursor cursor = getContentResolver().query(uri, EMAIL_SEARCH_PROJECTION, EMAIL_SEARCH_WHERE, null, null);
+                Cursor cursor = getContentResolver().query(uri, KEY_SEARCH_PROJECTION, KEY_SEARCH_WHERE, null, null);
                 try {
                     // result should be one entry containing the key id
                     if (cursor != null && cursor.moveToFirst()) {
@@ -134,15 +155,11 @@ public class OpenPgpService extends Service {
             }
         }
 
-        // convert ArrayList<Long> to long[]
-        long[] keyIdsArray = new long[keyIds.size()];
-        for (int i = 0; i < keyIdsArray.length; i++) {
-            keyIdsArray[i] = keyIds.get(i);
-        }
-
         if (noUserIdsCheck || missingUserIdsCheck || duplicateUserIdsCheck) {
             // allow the user to verify pub key selection
 
+            // convert ArrayList<Long> to long[]
+            long[] keyIdsArray = getUnboxedLongArray(keyIds);
             ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
             PendingIntent pi = piFactory.createSelectPublicKeyPendingIntent(data, keyIdsArray,
                     missingEmails, duplicateEmails, noUserIdsCheck);
@@ -151,18 +168,15 @@ public class OpenPgpService extends Service {
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-            return result;
+            return new KeyIdResult(result);
         } else {
             // everything was easy, we have exactly one key for every email
 
-            if (keyIdsArray.length == 0) {
+            if (keyIds.isEmpty()) {
                 Log.e(Constants.TAG, "keyIdsArray.length == 0, should never happen!");
             }
 
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_KEY_IDS, keyIdsArray);
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-            return result;
+            return new KeyIdResult(keyIds);
         }
     }
 
@@ -277,20 +291,31 @@ public class OpenPgpService extends Service {
                 compressionId = PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED;
             }
 
-            // first try to get key ids from non-ambiguous key id extra
-            long[] keyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
-            if (keyIds == null) {
-                // get key ids based on given user ids
-                String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
-                // give params through to activity...
-                Intent result = returnKeyIdsFromEmails(data, userIds);
+            long[] keyIds;
+            {
+                HashSet<Long> encryptKeyIds = new HashSet<>();
 
-                if (result.getIntExtra(OpenPgpApi.RESULT_CODE, 0) == OpenPgpApi.RESULT_CODE_SUCCESS) {
-                    keyIds = result.getLongArrayExtra(OpenPgpApi.RESULT_KEY_IDS);
-                } else {
-                    // if not success -> result contains a PendingIntent for user interaction
-                    return result;
+                // get key ids based on given user ids
+                if (data.hasExtra(OpenPgpApi.EXTRA_USER_IDS)) {
+                    String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
+                    data.removeExtra(OpenPgpApi.EXTRA_USER_IDS);
+                    // give params through to activity...
+                    KeyIdResult result = returnKeyIdsFromEmails(data, userIds);
+
+                    if (result.mRequiredUserInteraction != null) {
+                        return result.mRequiredUserInteraction;
+                    }
+                    encryptKeyIds.addAll(result.mKeyIds);
                 }
+
+                // add key ids from non-ambiguous key id extra
+                if (data.hasExtra(OpenPgpApi.EXTRA_KEY_IDS)) {
+                    for (long keyId : data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS)) {
+                        encryptKeyIds.add(keyId);
+                    }
+                }
+
+                keyIds = getUnboxedLongArray(encryptKeyIds);
             }
 
             // TODO this is not correct!
@@ -402,11 +427,11 @@ public class OpenPgpService extends Service {
             }
 
             String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-            HashSet<Long> allowedKeyIds = mProviderHelper.getAllowedKeyIdsForApp(
+            HashSet<Long> allowedKeyIds = mApiDao.getAllowedKeyIdsForApp(
                     KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
 
             if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 7) {
-                allowedKeyIds.addAll(mProviderHelper.getAllKeyIdsForApp(
+                allowedKeyIds.addAll(mApiDao.getAllKeyIdsForApp(
                         ApiAccounts.buildBaseUri(currentPkg)));
             }
 
@@ -666,8 +691,43 @@ public class OpenPgpService extends Service {
         } else {
             // get key ids based on given user ids
             String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
-            return returnKeyIdsFromEmails(data, userIds);
+            data.removeExtra(OpenPgpApi.EXTRA_USER_IDS);
+            KeyIdResult keyResult = returnKeyIdsFromEmails(data, userIds);
+            if (keyResult.mRequiredUserInteraction != null) {
+                return keyResult.mRequiredUserInteraction;
+            }
+
+            if (keyResult.mKeyIds == null) {
+                throw new AssertionError("one of requiredUserInteraction and keyIds must be non-null, this is a bug!");
+            }
+
+            long[] keyIds = getUnboxedLongArray(keyResult.mKeyIds);
+
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+            resultIntent.putExtra(OpenPgpApi.RESULT_KEY_IDS, keyIds);
+            return resultIntent;
         }
+    }
+
+    @NonNull
+    private static long[] getUnboxedLongArray(@NonNull Collection<Long> arrayList) {
+        long[] result = new long[arrayList.size()];
+        int i = 0;
+        for (Long e : arrayList) {
+            result[i++] = e;
+        }
+        return result;
+    }
+
+    private Intent checkPermissionImpl(@NonNull Intent data) {
+        Intent permissionIntent = mApiPermissionHelper.isAllowedOrReturnIntent(data);
+        if (permissionIntent != null) {
+            return permissionIntent;
+        }
+        Intent result = new Intent();
+        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+        return result;
     }
 
     private Intent getSignKeyMasterId(Intent data) {
@@ -732,7 +792,7 @@ public class OpenPgpService extends Service {
         }
 
         // check if caller is allowed to access OpenKeychain
-        Intent result = mApiPermissionHelper.isAllowed(data);
+        Intent result = mApiPermissionHelper.isAllowedOrReturnIntent(data);
         if (result != null) {
             return result;
         }
@@ -799,6 +859,9 @@ public class OpenPgpService extends Service {
 
         String action = data.getAction();
         switch (action) {
+            case OpenPgpApi.ACTION_CHECK_PERMISSION: {
+                return checkPermissionImpl(data);
+            }
             case OpenPgpApi.ACTION_CLEARTEXT_SIGN: {
                 return signImpl(data, inputStream, outputStream, true);
             }

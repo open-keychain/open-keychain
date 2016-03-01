@@ -33,8 +33,8 @@ import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -49,13 +49,13 @@ import java.util.Arrays;
 public class ApiPermissionHelper {
 
     private final Context mContext;
-    private final ProviderHelper mProviderHelper;
+    private final ApiDataAccessObject mApiDao;
     private PackageManager mPackageManager;
 
-    public ApiPermissionHelper(Context context) {
+    public ApiPermissionHelper(Context context, ApiDataAccessObject apiDao) {
         mContext = context;
         mPackageManager = context.getPackageManager();
-        mProviderHelper = new ProviderHelper(context);
+        mApiDao = apiDao;
     }
 
     public static class WrongPackageCertificateException extends Exception {
@@ -66,14 +66,24 @@ public class ApiPermissionHelper {
         }
     }
 
+    /** Returns true iff the caller is allowed, or false on any type of problem.
+     * This method should only be used in cases where error handling is dealt with separately.
+     */
+    protected boolean isAllowedIgnoreErrors() {
+        try {
+            return isCallerAllowed();
+        } catch (WrongPackageCertificateException e) {
+            return false;
+        }
+    }
+
     /**
      * Checks if caller is allowed to access the API
      *
      * @return null if caller is allowed, or a Bundle with a PendingIntent
      */
-    protected Intent isAllowed(Intent data) {
+    protected Intent isAllowedOrReturnIntent(Intent data) {
         ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(mContext);
-
         try {
             if (isCallerAllowed()) {
                 return null;
@@ -168,7 +178,7 @@ public class ApiPermissionHelper {
 
         Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(currentPkg, accountName);
 
-        return mProviderHelper.getApiAccountSettings(uri); // can be null!
+        return mApiDao.getApiAccountSettings(uri); // can be null!
     }
 
     @Deprecated
@@ -224,7 +234,7 @@ public class ApiPermissionHelper {
     private boolean isPackageAllowed(String packageName) throws WrongPackageCertificateException {
         Log.d(Constants.TAG, "isPackageAllowed packageName: " + packageName);
 
-        ArrayList<String> allowedPkgs = mProviderHelper.getRegisteredApiApps();
+        ArrayList<String> allowedPkgs = mApiDao.getRegisteredApiApps();
         Log.d(Constants.TAG, "allowed: " + allowedPkgs);
 
         // check if package is allowed to use our service
@@ -239,7 +249,7 @@ public class ApiPermissionHelper {
                 throw new WrongPackageCertificateException(e.getMessage());
             }
 
-            byte[] storedCert = mProviderHelper.getApiAppCertificate(packageName);
+            byte[] storedCert = mApiDao.getApiAppCertificate(packageName);
             if (Arrays.equals(currentCert, storedCert)) {
                 Log.d(Constants.TAG,
                         "Package certificate is correct! (equals certificate from database)");

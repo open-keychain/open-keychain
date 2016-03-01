@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,8 +26,8 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -56,7 +57,7 @@ public class RemoteCreateAccountActivity extends BaseActivity {
         final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
         final String accName = extras.getString(EXTRA_ACC_NAME);
 
-        final ProviderHelper providerHelper = new ProviderHelper(this);
+        final ApiDataAccessObject apiDao = new ApiDataAccessObject(this);
 
         mAccSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_account_settings_fragment);
@@ -65,7 +66,7 @@ public class RemoteCreateAccountActivity extends BaseActivity {
 
         // update existing?
         Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(packageName, accName);
-        AccountSettings settings = providerHelper.getApiAccountSettings(uri);
+        AccountSettings settings = apiDao.getApiAccountSettings(uri);
         if (settings == null) {
             // create new account
             settings = new AccountSettings(accName);
@@ -94,11 +95,11 @@ public class RemoteCreateAccountActivity extends BaseActivity {
                             if (mUpdateExistingAccount) {
                                 Uri baseUri = KeychainContract.ApiAccounts.buildBaseUri(packageName);
                                 Uri accountUri = baseUri.buildUpon().appendEncodedPath(accName).build();
-                                providerHelper.updateApiAccount(
+                                apiDao.updateApiAccount(
                                         accountUri,
                                         mAccSettingsFragment.getAccSettings());
                             } else {
-                                providerHelper.insertApiAccount(
+                                apiDao.insertApiAccount(
                                         KeychainContract.ApiAccounts.buildBaseUri(packageName),
                                         mAccSettingsFragment.getAccSettings());
                             }

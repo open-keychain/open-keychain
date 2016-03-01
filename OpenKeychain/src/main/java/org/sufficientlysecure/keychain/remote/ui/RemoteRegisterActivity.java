@@ -17,13 +17,14 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.util.Log;
@@ -52,7 +53,7 @@ public class RemoteRegisterActivity extends BaseActivity {
         final byte[] packageSignature = extras.getByteArray(EXTRA_PACKAGE_SIGNATURE);
         Log.d(Constants.TAG, "ACTION_REGISTER packageName: " + packageName);
 
-        final ProviderHelper providerHelper = new ProviderHelper(this);
+        final ApiDataAccessObject apiDao = new ApiDataAccessObject(this);
 
         mAppSettingsHeaderFragment = (AppSettingsHeaderFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_app_settings_fragment);
@@ -67,8 +68,7 @@ public class RemoteRegisterActivity extends BaseActivity {
                     @Override
                     public void onClick(View v) {
                         // Allow
-
-                        providerHelper.insertApiApp(mAppSettingsHeaderFragment.getAppSettings());
+                        apiDao.insertApiApp(mAppSettingsHeaderFragment.getAppSettings());
 
                         // give data through for new service call
                         Intent resultData = extras.getParcelable(EXTRA_DATA);

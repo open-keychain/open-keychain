@@ -37,8 +37,8 @@ import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.dialog.AdvancedAppSettingsDialogFragment;
@@ -182,7 +182,7 @@ public class AppSettingsActivity extends BaseActivity {
     }
 
     private void loadData(Bundle savedInstanceState, Uri appUri) {
-        mAppSettings = new ProviderHelper(this).getApiAppSettings(appUri);
+        mAppSettings = new ApiDataAccessObject(this).getApiAppSettings(appUri);
 
         // get application name and icon from package manager
         String appName;
