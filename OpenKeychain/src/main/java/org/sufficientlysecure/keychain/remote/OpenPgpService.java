@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -74,6 +75,9 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class OpenPgpService extends Service {
+
+    public static final List<Integer> SUPPORTED_VERSIONS =
+            Collections.unmodifiableList(Arrays.asList(3, 4, 5, 6, 7, 8, 9, 10, 11));
 
     static final String[] KEY_SEARCH_PROJECTION = new String[]{
             KeyRings._ID,
@@ -779,13 +783,12 @@ public class OpenPgpService extends Service {
 
         // version code is required and needs to correspond to version code of service!
         // History of versions in openpgp-api's CHANGELOG.md
-        List<Integer> supportedVersions = Arrays.asList(3, 4, 5, 6, 7, 8, 9, 10);
-        if (!supportedVersions.contains(data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1))) {
+        if (!SUPPORTED_VERSIONS.contains(data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1))) {
             Intent result = new Intent();
             OpenPgpError error = new OpenPgpError
                     (OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!\n"
                             + "used API version: " + data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) + "\n"
-                            + "supported API versions: " + supportedVersions);
+                            + "supported API versions: " + SUPPORTED_VERSIONS);
             result.putExtra(OpenPgpApi.RESULT_ERROR, error);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
