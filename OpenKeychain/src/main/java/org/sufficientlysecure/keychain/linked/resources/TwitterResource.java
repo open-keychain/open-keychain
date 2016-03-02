@@ -92,7 +92,7 @@ public class TwitterResource extends LinkedTokenResource {
 
 
         try {
-            String response = getResponseBody(httpGet, headers,ConnectionMethod.GET);
+            String response = getResponseBody(httpGet, headers,ConnectionMethod.GET, CERT_PINS, context);
             JSONObject obj = new JSONObject(response);
             JSONObject user = obj.getJSONObject("user");
             if (!mHandle.equalsIgnoreCase(user.getString("screen_name"))) {
