@@ -79,6 +79,8 @@ import org.sufficientlysecure.keychain.R;
  */
 public class FileHelper {
 
+    private static final String defaultSavePath="/sdcard/OpenKeychain/";
+
     private static Boolean hasOpenDocumentIntent;
 
     @TargetApi(VERSION_CODES.KITKAT)
@@ -95,7 +97,23 @@ public class FileHelper {
         // Note: This is not documented, but works: Show the Internal Storage menu item in the drawer!
         intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
         intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
-        fragment.startActivityForResult(intent, requestCode);
+
+        try {
+            fragment.startActivityForResult(intent, requestCode);
+        } catch (ActivityNotFoundException e) {
+            // On a device that does not support save file dialog.
+            //Will be using a default save location.
+            String savePath=defaultSavePath+suggestedName;
+
+            // Note: Faking an intent return,do not want to mess rest of code for rare occurrence.
+            Intent fakeIntent = new Intent();
+            fakeIntent.setData(Uri.parse("file://" + savePath));
+            fragment.onActivityResult(0x00007007, -1, fakeIntent);
+
+            Toast.makeText(fragment.getActivity(), R.string.saving_file_to_default,
+                    Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     public static void openDocument(Fragment fragment, Uri last, String mimeType, boolean multiple, int requestCode) {
