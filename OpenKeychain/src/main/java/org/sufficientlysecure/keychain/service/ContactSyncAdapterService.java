@@ -143,6 +143,13 @@ public class ContactSyncAdapterService extends Service {
     }
 
     public static void requestContactsSync() {
+        // if user has disabled automatic sync, do nothing
+        if (!ContentResolver.getSyncAutomatically(
+                new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE),
+                ContactsContract.AUTHORITY)) {
+            return;
+        }
+        
         Bundle extras = new Bundle();
         // no need to wait, do it immediately
         extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
