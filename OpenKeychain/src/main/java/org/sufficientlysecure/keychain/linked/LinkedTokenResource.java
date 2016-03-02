@@ -245,7 +245,8 @@ public abstract class LinkedTokenResource extends LinkedResource {
         return getResponseBody(connection);
     }
 
-    public static String getResponseBody( URL request, Map<String,String> headerParams, ConnectionMethod method , String[] pins, Context context)
+    public static String getResponseBody( URL request, Map<String,String> headerParams,
+                                          ConnectionMethod method , String[] pins, Context context)
             throws IOException, HttpStatusException {
         HttpsURLConnection connection = createConnection(request, method,pins,context);
         for (Map.Entry<String, String> entry : headerParams.entrySet()) {
@@ -261,14 +262,16 @@ public abstract class LinkedTokenResource extends LinkedResource {
         return connection;
     }
 
-    private static HttpsURLConnection createConnection(URL request, ConnectionMethod method, String[] pins, Context context) throws IOException {
+    private static HttpsURLConnection createConnection(URL request, ConnectionMethod method,
+                                                       String[] pins, Context context) throws IOException {
         HttpsURLConnection connection = PinningHelper.getPinnedHttpsURLConnection(context,pins,request);
         connection.setRequestMethod(method.name());
         connection.setRequestProperty("User-Agent", "Open Keychain");
         return connection;
     }
 
-    public static String getResponseBody(URL request, Map<String,String> headerParams, ConnectionMethod method, String content)
+    public static String getResponseBody(URL request, Map<String,String> headerParams,
+                                         ConnectionMethod method, String content)
             throws IOException, HttpStatusException {
         HttpsURLConnection connection = createConnection(request, method);
         for (Map.Entry<String, String> entry : headerParams.entrySet()) {

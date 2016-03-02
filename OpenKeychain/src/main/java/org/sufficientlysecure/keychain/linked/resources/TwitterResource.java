@@ -220,7 +220,10 @@ public class TwitterResource extends LinkedTokenResource {
         Map<String,String> headers = new HashMap<>();
         headers.put("Authorization", "Basic " + base64Encoded);
         headers.put("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-        JSONObject rawAuthorization = new JSONObject(getResponseBody(httpPost,headers,ConnectionMethod.POST,"grant_type=client_credentials"));
+        JSONObject rawAuthorization = new JSONObject(getResponseBody(httpPost,
+                headers,
+                ConnectionMethod.POST,
+                "grant_type=client_credentials"));
 
 
         // Applications should verify that the value associated with the
