@@ -131,8 +131,11 @@ public class ImportKeysActivity extends BaseActivity
         if (Intent.ACTION_VIEW.equals(action)) {
             if (FacebookKeyserver.isFacebookHost(dataUri)) {
                 action = ACTION_IMPORT_KEY_FROM_FACEBOOK;
-            } else if ("http".equals(scheme) || "https".equals(scheme)) {
+            } else if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
                 action = ACTION_SEARCH_KEYSERVER_FROM_URL;
+            } else if ("openpgp4fpr".equalsIgnoreCase(scheme)) {
+                action = ACTION_IMPORT_KEY_FROM_KEYSERVER;
+                extras.putString(EXTRA_FINGERPRINT, dataUri.getSchemeSpecificPart());
             } else {
                 // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
                 // delegate action to ACTION_IMPORT_KEY
