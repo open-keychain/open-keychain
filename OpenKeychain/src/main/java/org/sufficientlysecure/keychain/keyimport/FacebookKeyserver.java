@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.keyimport;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -37,7 +38,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.io.IOException;
 import java.net.Proxy;
 
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -190,8 +190,11 @@ public class FacebookKeyserver extends Keyserver {
         return uri.getPathSegments().get(0);
     }
 
-    public static boolean isFacebookHost(Uri uri) {
+    public static boolean isFacebookHost(@Nullable Uri uri) {
+        if (uri == null) {
+            return false;
+        }
         String host = uri.getHost();
-        return host.equalsIgnoreCase(FB_HOST) || host.equalsIgnoreCase(FB_HOST_WWW);
+        return FB_HOST.equalsIgnoreCase(host) || FB_HOST_WWW.equalsIgnoreCase(host);
     }
 }
