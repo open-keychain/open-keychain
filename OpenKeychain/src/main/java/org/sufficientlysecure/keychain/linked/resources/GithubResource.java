@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 
-import org.apache.http.client.methods.HttpGet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,10 +19,8 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.net.URL;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,8 +52,8 @@ public class GithubResource extends LinkedTokenResource {
         log.add(LogType.MSG_LV_FETCH, indent, mSubUri.toString());
         indent += 1;
 
-        HttpGet httpGet = new HttpGet("https://api.github.com/gists/" + mGistId);
-        String response = getResponseBody(context, httpGet);
+        URL httpGet = new URL("https://api.github.com/gists/" + mGistId);
+        String response = getResponseBody(httpGet,ConnectionMethod.GET);
 
         JSONObject obj = new JSONObject(response);
 
@@ -94,12 +91,13 @@ public class GithubResource extends LinkedTokenResource {
         try {
 
             JSONArray array; {
-                HttpGet httpGet =
-                        new HttpGet("https://api.github.com/users/" + screenName + "/gists");
-                httpGet.setHeader("Content-Type", "application/json");
-                httpGet.setHeader("User-Agent", "OpenKeychain");
+                URL httpGet = new URL("https://api.github.com/users/" + screenName + "/gists");
+                Map<String,String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("User-Agent", "OpenKeychain");
 
-                String response = getResponseBody(context, httpGet);
+                String response = getResponseBody(httpGet,headers,ConnectionMethod.GET);
+
                 array = new JSONArray(response);
             }
 
@@ -116,10 +114,11 @@ public class GithubResource extends LinkedTokenResource {
                         continue;
                     }
                     String id = obj.getString("id");
-                    HttpGet httpGet = new HttpGet("https://api.github.com/gists/" + id);
-                    httpGet.setHeader("User-Agent", "OpenKeychain");
+                    URL httpGet = new URL("https://api.github.com/gists/" + id);
+                    Map<String,String> headers = new HashMap<>();
+                    headers.put("User-Agent", "OpenKeychain");
 
-                    JSONObject gistObj = new JSONObject(getResponseBody(context, httpGet));
+                    JSONObject gistObj = new JSONObject(getResponseBody(httpGet, headers,ConnectionMethod.GET));
                     JSONObject gistFiles = gistObj.getJSONObject("files");
                     Iterator<String> gistIt = gistFiles.keys();
                     if (!gistIt.hasNext()) {
