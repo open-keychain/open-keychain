@@ -9,9 +9,6 @@ import android.util.Log;
 
 import com.textuality.keybase.lib.JWalk;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,8 +21,10 @@ import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,18 +83,16 @@ public class TwitterResource extends LinkedTokenResource {
             return null;
         }
 
-        HttpGet httpGet =
-                new HttpGet("https://api.twitter.com/1.1/statuses/show.json"
-                        + "?id=" + mTweetId
-                        + "&include_entities=false");
+        URL httpGet = new URL("https://api.twitter.com/1.1/statuses/show.json"
+                + "?id=" + mTweetId
+                + "&include_entities=false");
+        Map<String,String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + authToken);
+        headers.put("Content-Type", "application/json");
 
-        // construct a normal HTTPS request and include an Authorization
-        // header with the value of Bearer <>
-        httpGet.setHeader("Authorization", "Bearer " + authToken);
-        httpGet.setHeader("Content-Type", "application/json");
 
         try {
-            String response = getResponseBody(context, httpGet, CERT_PINS);
+            String response = getResponseBody(httpGet, headers,ConnectionMethod.GET, CERT_PINS, context);
             JSONObject obj = new JSONObject(response);
             JSONObject user = obj.getJSONObject("user");
             if (!mHandle.equalsIgnoreCase(user.getString("screen_name"))) {
@@ -157,21 +154,23 @@ public class TwitterResource extends LinkedTokenResource {
             return null;
         }
 
-        HttpGet httpGet =
-                new HttpGet("https://api.twitter.com/1.1/statuses/user_timeline.json"
-                        + "?screen_name=" + screenName
-                        + "&count=15"
-                        + "&include_rts=false"
-                        + "&trim_user=true"
-                        + "&exclude_replies=true");
-
-        // construct a normal HTTPS request and include an Authorization
-        // header with the value of Bearer <>
-        httpGet.setHeader("Authorization", "Bearer " + authToken);
-        httpGet.setHeader("Content-Type", "application/json");
-
         try {
-            String response = getResponseBody(context, httpGet, CERT_PINS);
+            URL httpGet =
+                    new URL("https://api.twitter.com/1.1/statuses/user_timeline.json"
+                            + "?screen_name=" + screenName
+                            + "&count=15"
+                            + "&include_rts=false"
+                            + "&trim_user=true"
+                            + "&exclude_replies=true");
+
+            // construct a normal HTTPS request and include an Authorization
+            // header with the value of Bearer <>
+            Map<String,String> headers = new HashMap<>();
+            headers.put("Authorization", "Bearer " + authToken);
+            headers.put("Content-Type", "application/json");
+
+
+            String response = getResponseBody(httpGet, headers, ConnectionMethod.POST, CERT_PINS, context);
             JSONArray array = new JSONArray(response);
 
             for (int i = 0; i < array.length(); i++) {
@@ -217,11 +216,15 @@ public class TwitterResource extends LinkedTokenResource {
                     + "Fq1bmqSAQAz5MI2cIHKOuo3cPoRAQI1OyqmIVFJS6LHMXq2g6MRLkIj") + "==";
 
         // Step 2: Obtain a bearer token
-        HttpPost httpPost = new HttpPost("https://api.twitter.com/oauth2/token");
-        httpPost.setHeader("Authorization", "Basic " + base64Encoded);
-        httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-        httpPost.setEntity(new StringEntity("grant_type=client_credentials"));
-        JSONObject rawAuthorization = new JSONObject(getResponseBody(context, httpPost, CERT_PINS));
+        URL httpPost = new URL("https://api.twitter.com/oauth2/token");
+        Map<String,String> headers = new HashMap<>();
+        headers.put("Authorization", "Basic " + base64Encoded);
+        headers.put("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+        JSONObject rawAuthorization = new JSONObject(getResponseBody(httpPost,
+                headers,
+                ConnectionMethod.POST,
+                "grant_type=client_credentials"));
+
 
         // Applications should verify that the value associated with the
         // token_type key of the returned object is bearer

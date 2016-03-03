@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 
-import org.apache.http.client.methods.HttpGet;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -15,6 +14,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,8 +38,8 @@ public class GenericHttpsResource extends LinkedTokenResource {
             throws HttpStatusException, IOException {
 
         log.add(LogType.MSG_LV_FETCH, indent, mSubUri.toString());
-        HttpGet httpGet = new HttpGet(mSubUri);
-        return getResponseBody(context, httpGet);
+        URL httpGet = new URL(mSubUri.toString());
+        return getResponseBody(httpGet,ConnectionMethod.GET);
 
     }
 

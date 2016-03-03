@@ -2,12 +2,6 @@ package org.sufficientlysecure.keychain.linked;
 
 import android.content.Context;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
 import org.json.JSONException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
@@ -20,14 +14,15 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.thoughtcrime.ssl.pinning.util.PinningHelper;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
+import javax.net.ssl.HttpsURLConnection;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -48,6 +43,8 @@ public abstract class LinkedTokenResource extends LinkedResource {
         mParams = params;
         mSubUri = uri;
     }
+
+    public enum ConnectionMethod{POST,GET}
 
     @SuppressWarnings("unused")
     public URI getSubUri () {
@@ -233,37 +230,76 @@ public abstract class LinkedTokenResource extends LinkedResource {
 
     }
 
-    @SuppressWarnings("deprecation") // HttpRequestBase is deprecated
-    public static String getResponseBody(Context context, HttpRequestBase request)
+    public static String getResponseBody( URL request, ConnectionMethod method)
             throws IOException, HttpStatusException {
-        return getResponseBody(context, request, null);
+        HttpsURLConnection connection = createConnection(request, method);
+        return getResponseBody(connection);
     }
 
-    @SuppressWarnings("deprecation") // HttpRequestBase is deprecated
-    public static String getResponseBody(Context context, HttpRequestBase request, String[] pins)
-        throws IOException, HttpStatusException {
-        StringBuilder sb = new StringBuilder();
-
-        request.setHeader("User-Agent", "Open Keychain");
-
-
-        HttpClient httpClient;
-        if (pins == null) {
-            httpClient = new DefaultHttpClient(new BasicHttpParams());
-        } else {
-            httpClient = PinningHelper.getPinnedHttpClient(context, pins);
+    public static String getResponseBody( URL request, Map<String,String> headerParams, ConnectionMethod method)
+            throws IOException, HttpStatusException {
+        HttpsURLConnection connection = createConnection(request, method);
+        for (Map.Entry<String, String> entry : headerParams.entrySet()) {
+            connection.setRequestProperty(entry.getKey(), entry.getValue());
         }
+        return getResponseBody(connection);
+    }
 
-        HttpResponse response = httpClient.execute(request);
-        int statusCode = response.getStatusLine().getStatusCode();
-        String reason = response.getStatusLine().getReasonPhrase();
+    public static String getResponseBody( URL request, Map<String,String> headerParams,
+                                          ConnectionMethod method , String[] pins, Context context)
+            throws IOException, HttpStatusException {
+        HttpsURLConnection connection = createConnection(request, method,pins,context);
+        for (Map.Entry<String, String> entry : headerParams.entrySet()) {
+            connection.setRequestProperty(entry.getKey(), entry.getValue());
+        }
+        return getResponseBody(connection);
+    }
+
+    private static HttpsURLConnection createConnection(URL request, ConnectionMethod method) throws IOException {
+        HttpsURLConnection connection = (HttpsURLConnection) request.openConnection();
+        connection.setRequestMethod(method.name());
+        connection.setRequestProperty("User-Agent", "Open Keychain");
+        return connection;
+    }
+
+    private static HttpsURLConnection createConnection(URL request, ConnectionMethod method,
+                                                       String[] pins, Context context) throws IOException {
+        HttpsURLConnection connection = PinningHelper.getPinnedHttpsURLConnection(context,pins,request);
+        connection.setRequestMethod(method.name());
+        connection.setRequestProperty("User-Agent", "Open Keychain");
+        return connection;
+    }
+
+    public static String getResponseBody(URL request, Map<String,String> headerParams,
+                                         ConnectionMethod method, String content)
+            throws IOException, HttpStatusException {
+        HttpsURLConnection connection = createConnection(request, method);
+        for (Map.Entry<String, String> entry : headerParams.entrySet()) {
+            connection.setRequestProperty(entry.getKey(), entry.getValue());
+        }
+        OutputStream os = connection.getOutputStream();
+        BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(os, "UTF-8"));
+        writer.write(content);
+        writer.flush();
+        writer.close();
+        os.close();
+        return getResponseBody(connection);
+    }
+
+
+    public static String getResponseBody(HttpsURLConnection connection)
+            throws IOException, HttpStatusException {
+        Log.d(Constants.TAG,"Connection to: "+connection.getURL());
+        StringBuilder sb = new StringBuilder();
+        connection.connect();
+        int statusCode = connection.getResponseCode();
+        String reason = connection.getResponseMessage();
 
         if (statusCode != 200) {
             throw new HttpStatusException(statusCode, reason);
         }
-
-        HttpEntity entity = response.getEntity();
-        InputStream inputStream = entity.getContent();
+        InputStream inputStream = connection.getInputStream();
 
         BufferedReader bReader = new BufferedReader(
                 new InputStreamReader(inputStream, "UTF-8"), 8);
