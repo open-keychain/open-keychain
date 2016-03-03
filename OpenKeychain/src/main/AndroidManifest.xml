@@ -5,11 +5,6 @@
     android:installLocation="auto">
 
     <!--
-        General remarks
-        ===============
-        - Last APG 1 version was 10900 (1.0.9 beta 00)
-        - Keychain starting with versionCode 20000!
-
         Association of file types to Keychain
         =====================================
         General remarks about file ending conventions:
