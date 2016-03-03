@@ -1733,6 +1733,7 @@
     <string name="help_donation_paypal_item">OpenKeychain Donation</string>
     <string-array name="help_donation_google_catalog_values">
         <item>1 EUR</item>
+        <item>2 EUR</item>
         <item>3 EUR</item>
         <item>5 EUR</item>
         <item>10 EUR</item>
