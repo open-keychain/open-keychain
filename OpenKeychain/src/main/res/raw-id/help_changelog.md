@@ -1,10 +1,17 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 3.9
+
+  * Detection and handling of text data
+  * Performance improvements
+  * UI improvements for Security Token handling
+
+
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Perubahan design pengeditan kunci
+  * Pilih waktu mengingat kata sandi secara individu
+  * Import kunci Facebook
 
 
 ## 3.7
@@ -17,68 +24,68 @@
 
   * Backup yang terenkripsi
   * Perbaikan keamanan berdasarkan audit keamanan eksternal
-  * YubiKey NEO key creation wizard
+  * Pengaturan pembuatan kunci YubiKey NEO
   * Dukungan basic internal MIME
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
-  * API: Version 9
+  * Sinkronisasi kunci otomatis
+  * Fitur eksperimental: hubungkan kunci ke akun Github dan Twitter
+  * Fitur experimental: konfirmasi kunci menggunakan frasa
+  * Fitur eksperimental: tema gelap
+  * API: Versi 9
 
 
 ## 3.5
 
-  * Key revocation on key deletion
-  * Improved checks for insecure cryptography
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  * Pencabutan kunci saat penghapusan
+  * Pembaharuan pengecekan untuk kriptografi yang tidak aman
+  * Perbaikan: Jangan tutup OpenKeychain setelah pengaturan pertama selesai
+  * API: Versi 8
 
 
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
-  * Better YubiKey error handling
+  * Unduh kunci secara anonim melalui Tor
+  * Dukungan proxy
+  * Penanganan error YubiKey yang lebih baik
 
 
 ## 3.3
 
-  * New decryption screen
-  * Decryption of multiple files at once
-  * Better handling of YubiKey errors
+  * Layar dekripsi yang baru
+  * Dekripsi banyak file dalam satu kali
+  * Penanganan error YubiKey yang lebih baik
 
 
 ## 3.2
 
-  * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
+  * Versi pertama dengan dukungan penuh YubiKey dari antarmuka pengguna: Edit kunci, hubungkan YubiKey dengan kunci,...
   * Material design
-  * Integration of QR Code Scanning (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
-  * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
-  * Method to update all keys at once
+  * Intregrasi pemindai kode QR (Izin baru dibutuhkan)
+  * Pengaturan pembuatan kunci yang lebih baik
+  * Perbaikan kehilangan kontak setelah sinkronasi
+  * Membutuhkan Android 4
+  * Design baru layar kunci
+  * Meringkas preferensi kripto, pilihan sandi aman yang lebih baik
+  * API: Tandatangan terpisah, pilihan bebas kunci tandatangan,...
+  * Perbaikan: Beberapa kunci valid ditunjukan sebagai expired atau dicabut
+  * Tidak menerima tandatangan dari kunci tambahan yang expired atau dicabut
+  * Dukungan Keybase.io di pilihan lanjutan
+  * Cara untuk memperbaharui semua kunci sekaligus
 
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * Perbaikan export kunci ke file (beres)
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * Perbaikan export kunci ke file (sebagian)
+  * Perbaikan crash di Android 2.3
 
 
 ## 3.1
 
-  * Fix crash on Android 5
+  * Perbaikan crash di Android 5
   * New certify screen
   * Secure Exchange directly from key list (SafeSlinger library)
   * New QR Code program flow

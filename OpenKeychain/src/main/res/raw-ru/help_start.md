@@ -1,6 +1,6 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
-## Как мне активировать OpenKeychain в K-9 Mail?
+Как мне активировать OpenKeychain в K-9 Mail?
 Для использования OpenKeychain с K-9 Mail, необходимо выполнить следующие шаги:
   1. Откройте K-9 Mail и долгим нажатием выберите учетную запись, с которой будет использоваться OpenKeychain.
   2. Выберите "Настройки учетной записи" и опуститесь в самый конец меню до пункта "Шифрование".

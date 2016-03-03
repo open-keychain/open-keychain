@@ -1,5 +1,12 @@
 [//]: # (NOTA: ¡Por favor ponga cada frase en su propia línea, Transifex pone cada línea en su propio campo de traducción!)
 
+## 3.9
+
+  * Detection and handling of text data
+  * Performance improvements
+  * UI improvements for Security Token handling
+
+
 ## 3.8
 
   * Redesigned key editing

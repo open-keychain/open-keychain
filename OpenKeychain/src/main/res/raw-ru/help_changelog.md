@@ -1,10 +1,17 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 3.9
+
+  * Detection and handling of text data
+  * Performance improvements
+  * UI improvements for Security Token handling
+
+
 ## 3.8
 
   * Redesigned key editing
   * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Импорт ключа с Facebook
 
 
 ## 3.7
@@ -15,21 +22,21 @@
 
 ## 3.6
 
-  * Encrypted backups
+  * Зашифрованные резервные копии
   * Security fixes based on external security audit
   * YubiKey NEO key creation wizard
   * Basic internal MIME support
-  * Automatic key synchronization
+  * Автоматическая синхронизация ключа
   * Experimental feature: link keys to Github, Twitter accounts
   * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
+  * Экспериментальная функция: тёмная тема
   * API: Version 9
 
 
 ## 3.5
 
   * Key revocation on key deletion
-  * Improved checks for insecure cryptography
+  * Улучшенная проверка небезопасной криптографии
   * Fix: Don't close OpenKeychain after first time wizard succeeds
   * API: Version 8
 

@@ -1,6 +1,6 @@
 [main]
 host = https://www.transifex.com
-lang_map = he: iw, zh_TW: zh-rTW, es_MX: es-rMX
+lang_map = he: iw, zh_TW: zh-rTW, es_MX: es-rMX, pt_BR: pt-rBR
 
 [open-keychain.strings]
 file_filter = OpenKeychain/src/main/res/values-<lang>/strings.xml

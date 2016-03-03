@@ -88,7 +88,7 @@
   <string name="btn_add_files">ファイルの追加</string>
   <string name="btn_share_decrypted_text">共有</string>
   <string name="btn_open_with">...で開く</string>
-  <string name="btn_copy_decrypted_text">復号化したテキストのコピー</string>
+  <string name="btn_copy_decrypted_text">クリップボードへコピー</string>
   <string name="btn_decrypt_clipboard">クリップボードから読み取り</string>
   <string name="btn_decrypt_files">入力ファイルの選択</string>
   <string name="btn_encrypt_files">ファイルの暗号化</string>
@@ -451,6 +451,7 @@
   <string name="help_tab_changelog">Changelog</string>
   <string name="help_tab_about">これについて</string>
   <string name="help_about_version">バージョン:</string>
+  <string name="help_tab_donations">寄付</string>
   <!--Import-->
   <string name="import_tab_keyserver">鍵サーバ</string>
   <string name="import_tab_cloud">鍵の検索</string>
@@ -1269,6 +1270,10 @@
   <string name="msg_data_mime_filename">ファイル名: \'%s\'</string>
   <string name="msg_data_mime_from_extension">拡張子からMIME種別を推測しています</string>
   <string name="msg_data_mime_length">コンテンツ長: %s</string>
+  <string name="msg_data_mime_charset">キャラクタセットは \'%s\' です</string>
+  <string name="msg_data_mime_charset_faulty">キャラクタセットは \'%s\' ですが、でコードに失敗しました!</string>
+  <string name="msg_data_mime_charset_guess">キャラクタセットは \'%s\' のようです</string>
+  <string name="msg_data_mime_charset_unknown">キャラクタセットが不明か、データはテキストではありません。</string>
   <string name="msg_data_mime">MIMEデータ構造の解析中</string>
   <string name="msg_data_mime_ok">解析完了</string>
   <string name="msg_data_mime_none">MIME構造が見つかりません</string>
@@ -1278,14 +1283,11 @@
   <string name="msg_data_skip_mime">MIME解析をスキップしています</string>
   <string name="msg_acc_saved">アカウント保存</string>
   <string name="msg_get_success">ダウンロードに成功しました!</string>
+  <string name="msg_get_file_not_found">入力ファイルが見付かりません!</string>
   <string name="msg_get_no_valid_keys">ファイル/クリップボードにて正しい鍵が見付かりません!</string>
-  <string name="msg_download_no_pgp_parts">TODO: 複数部分!</string>
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="other">読み込んだファイルのOpenPGPオブジェクト部分は正しいですが、OpenPGPの鍵ではありません</item>
-  </plurals>
-  <string name="msg_get_query_too_short">鍵検索のクエリが短かすぎます。クエリを精密化してください!</string>
-  <string name="msg_get_too_many_responses">鍵検索のクエリが沢山の候補を返しました。クエリを精密化してください!</string>
-  <string name="msg_get_query_too_short_or_too_many_responses">鍵がまったく無いか、多すぎる鍵が見付かりました。クエリを改善してください!</string>
+  <string name="msg_get_too_many_responses">鍵検索のクエリが沢山の候補を返しました; クエリを精緻化してください</string>
+  <string name="msg_get_query_too_short">鍵検索のクエリが短かすぎます。クエリを精緻化してください!</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">鍵が無いか、見付かった鍵が多すぎます。クエリを改善してください!</string>
   <string name="msg_download_query_failed">鍵の検索時にエラーが発生しました。</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">%s のkeybase検証を試行中</string>
@@ -1566,4 +1568,22 @@
   <string name="settings_cache_ttl_at_least_one">少なくとも項目を1つ選択する必要があります!</string>
   <string name="settings_cache_ttl_max_three">3つ以上の項目を選択することはできません!</string>
   <string name="remember">記憶する</string>
+  <string name="security_token_error_pgp_app_not_installed">セキュリティトークンでPGPアプリが見つかりません</string>
+  <string name="prompt_fidesmo_pgp_install_title">PGPをインストールしますか?</string>
+  <string name="prompt_fidesmo_pgp_install_message">お使いのFidesmoデバイスには利用できるPGPアプリがありません。</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">インストール</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">キャンセル</string>
+  <string name="prompt_fidesmo_app_install_title">Fidesmoをインストールしますか?</string>
+  <string name="prompt_fidesmo_app_install_message">PGPをインストールするにはFidesmo Androidアプリが必要です。</string>
+  <string name="prompt_fidesmo_app_install_button_positive">インストール</string>
+  <string name="prompt_fidesmo_app_install_button_negative">キャンセル</string>
+  <string name="help_donation_paypal_item">OpenKeychain の寄付</string>
+  <string-array name="help_donation_google_catalog_values">
+    <item>1 ユーロ</item>
+    <item>3 ユーロ</item>
+    <item>5 ユーロ</item>
+    <item>10 ユーロ</item>
+    <item>50 ユーロ</item>
+    <item>100 ユーロ</item>
+  </string-array>
 </resources>

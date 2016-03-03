@@ -84,7 +84,6 @@
   <string name="btn_add_files">파일(들) 추가</string>
   <string name="btn_share_decrypted_text">공유</string>
   <string name="btn_open_with">다음으로 열기</string>
-  <string name="btn_copy_decrypted_text">복호화 된 텍스트 복사</string>
   <string name="btn_decrypt_clipboard">클립보드에서 읽기</string>
   <string name="btn_decrypt_files">입력 파일 선택</string>
   <string name="btn_encrypt_files">파일들 암호화</string>

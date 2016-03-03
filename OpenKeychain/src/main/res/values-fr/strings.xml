@@ -88,7 +88,7 @@
   <string name="btn_add_files">Ajouter un/des fichier(s)</string>
   <string name="btn_share_decrypted_text">Partager</string>
   <string name="btn_open_with">Ouvrir avec...</string>
-  <string name="btn_copy_decrypted_text">Copier le texte déchiffré</string>
+  <string name="btn_copy_decrypted_text">Copier vers le presse-papiers</string>
   <string name="btn_decrypt_clipboard">Lire du presse-papiers</string>
   <string name="btn_decrypt_files">Choisir le fichier d\'entrée</string>
   <string name="btn_encrypt_files">Chiffrer des fichiers</string>
@@ -147,7 +147,7 @@
   <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
   <string name="label_hash_algorithm">Algorithme de hachage</string>
   <string name="label_symmetric">Chiffrer avec un mot de passe</string>
-  <string name="label_passphrase_cache_ttl">Personnaliser les choix « Se souvenir »</string>
+  <string name="label_passphrase_cache_ttl">Personnaliser les choix « Mémorisation »</string>
   <string name="label_passphrase_cache_subs">Mémoriser les mots de passe par sous-clefs</string>
   <string name="label_message_compression">Compression de texte</string>
   <string name="label_file_compression">Compression des fichiers</string>
@@ -451,6 +451,7 @@
   <string name="help_tab_changelog">Journal des changements</string>
   <string name="help_tab_about">À propos de l\'appli</string>
   <string name="help_about_version">Version :</string>
+  <string name="help_tab_donations">Faire un don</string>
   <!--Import-->
   <string name="import_tab_keyserver">Serveur de clefs</string>
   <string name="import_tab_cloud">Recherche de clefs</string>
@@ -1292,6 +1293,10 @@
   <string name="msg_data_mime_filename">Nom de fichier : « %s »</string>
   <string name="msg_data_mime_from_extension">Le type MIME est deviné à partir de l\'extension</string>
   <string name="msg_data_mime_length">Longueur du contenu : %s</string>
+  <string name="msg_data_mime_charset">Le jeu de caractères est « %s »</string>
+  <string name="msg_data_mime_charset_faulty">Le jeu de caractères est « %s » mais le décodage a échoué !</string>
+  <string name="msg_data_mime_charset_guess">Le jeu de caractères semble être « %s »</string>
+  <string name="msg_data_mime_charset_unknown">Le jeu de caractères est inconnu ou les données ne sont pas du texte.</string>
   <string name="msg_data_mime">Analyse de la structure des données MIME</string>
   <string name="msg_data_mime_ok">Fin de l\'analyse</string>
   <string name="msg_data_mime_none">Aucune structure MIME trouvée</string>
@@ -1301,15 +1306,11 @@
   <string name="msg_data_skip_mime">L\'analyse MIME est ignorée</string>
   <string name="msg_acc_saved">Compte enregistré</string>
   <string name="msg_get_success">Téléchargement réussi !</string>
-  <string name="msg_get_no_valid_keys">Aucune clef valide n\'a été trouvée dans le fichier/presse-papiers |</string>
-  <string name="msg_download_no_pgp_parts">À FAIRE : les pluriels !</string>
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="one">une partie du fichier chargé est un objet OpenPGP valide mais pas une clef OpenPGP</item>
-    <item quantity="other">certaines parties du fichier chargé sont des objets OpenPGP valides mais pas des clefs OpenPGP</item>
-  </plurals>
-  <string name="msg_get_query_too_short">La requête de recherche est trop courte. Veuillez raffiner votre requête !</string>
-  <string name="msg_get_too_many_responses">La requête de recherche de clef a retourné trop de candidats. Veuillez raffiner votre requête !</string>
-  <string name="msg_get_query_too_short_or_too_many_responses">Soit aucune clef ou trop de clefs ont été trouvées. Veuillez améliorer votre requête !</string>
+  <string name="msg_get_file_not_found">Fichier d\'entrée introuvable !</string>
+  <string name="msg_get_no_valid_keys">Aucune clef valide n\'a été trouvée dans le fichier/presse-papiers !</string>
+  <string name="msg_get_too_many_responses">La requête de recherche de clef a retourné trop de candidats. Veuillez la préciser !</string>
+  <string name="msg_get_query_too_short">La requête de recherche est trop courte. Veuillez la préciser !</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">Soit aucune clef n\'a été trouvée, ou trop de clefs. Veuillez améliorer votre requête !</string>
   <string name="msg_download_query_failed">Une erreur est survenue lors de la recherche de clefs.</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">Tentative de vérification « keybase » pour %s</string>
@@ -1581,7 +1582,7 @@
   <string name="title_edit_identities">Modifier les identités</string>
   <string name="title_edit_subkeys">Modifier les sous-clefs</string>
   <string name="btn_search_for_query">Rechercher\n« %s »</string>
-  <string name="cache_ttl_lock_screen">jusqu\'à ce que l\'écran soit éteint</string>
+  <string name="cache_ttl_lock_screen">jusqu\'à l\'extinction de l\'écran</string>
   <string name="cache_ttl_ten_minutes">pendant dix minutes</string>
   <string name="cache_ttl_thirty_minutes">pendant trente minutes</string>
   <string name="cache_ttl_one_hour">pendant une heure</string>
@@ -1593,4 +1594,22 @@
   <string name="settings_cache_ttl_at_least_one">Vous devez choisir au moins un élément !</string>
   <string name="settings_cache_ttl_max_three">Vous ne pouvez pas choisir plus de trois éléments !</string>
   <string name="remember">Mémorisation</string>
+  <string name="security_token_error_pgp_app_not_installed">Aucune appli PGP n\'a été trouvée sur le jeton de sécurité</string>
+  <string name="prompt_fidesmo_pgp_install_title">Installer PGP ?</string>
+  <string name="prompt_fidesmo_pgp_install_message">Il n\'y avait aucune appli PGP disponible sur votre appareil Fidesmo.</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">Installer</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Annuler</string>
+  <string name="prompt_fidesmo_app_install_title">Installer Fidesmo ?</string>
+  <string name="prompt_fidesmo_app_install_message">Pour installer PGP, il vous faut l\'appli Fidesmo pour Android.</string>
+  <string name="prompt_fidesmo_app_install_button_positive">Installer</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Annuler</string>
+  <string name="help_donation_paypal_item">Don à OpenKeychain</string>
+  <string-array name="help_donation_google_catalog_values">
+    <item>1 EUR</item>
+    <item>3 EUR</item>
+    <item>5 EUR</item>
+    <item>10 EUR</item>
+    <item>50 EUR</item>
+    <item>100 EUR</item>
+  </string-array>
 </resources>

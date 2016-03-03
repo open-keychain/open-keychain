@@ -72,7 +72,6 @@
   <string name="btn_view_cert_key">Mostra chiave di certificazione</string>
   <string name="btn_create_key">Crea chiave</string>
   <string name="btn_add_files">Aggiungi file(s)</string>
-  <string name="btn_copy_decrypted_text">Copia testo decifrato</string>
   <string name="btn_decrypt_clipboard">Leggi dagli appunti</string>
   <string name="btn_decrypt_files">Seleziona input file</string>
   <string name="btn_encrypt_files">Codifica file</string>
@@ -696,11 +695,6 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_del_error_empty">Niente da cancellare!</string>
   <!--Linked Identity verification-->
   <string name="msg_acc_saved">Account salvato</string>
-  <string name="msg_download_no_pgp_parts">DA FARE: plurali!</string>
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="one">parte del file caricato e\' un oggetto OpenPGP valido, ma non una chave OpenPGP</item>
-    <item quantity="other">parti del file caricato sono oggetti OpenPGP validi, ma non chavi OpenPGP</item>
-  </plurals>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->

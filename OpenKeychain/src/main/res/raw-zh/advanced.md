@@ -1,9 +1,9 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
-Advanced screen allows you to
-* share key in non-recommended ways
-* edit identities
-* edit subkeys
-* examine certificates in detail
+您可以在高级选项界面进行以下操作
+以其他方式分享密钥（不推荐）
+编辑身份
+编辑子密钥
+查看证书详情
 
-Only proceed if you know what you are doing!
+在进行这些操作前，请确认您了解具体操作可能带来的危险后果！

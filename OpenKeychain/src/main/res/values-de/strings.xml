@@ -13,7 +13,7 @@
   <string name="title_preferences">Einstellungen</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">OpenPGP-Schlüsselserver</string>
-  <string name="title_cache_ttl_preference">Merkdauer von Passwörtern</string>
+  <string name="title_cache_ttl_preference">Zwischenspeicherdauer für Passwörter</string>
   <string name="title_change_passphrase">Passwort ändern</string>
   <string name="title_share_fingerprint_with">Teile Fingerabdruck über…</string>
   <string name="title_share_key">Teile Schlüssel über...</string>
@@ -88,7 +88,7 @@
   <string name="btn_add_files">Datei(en) hinzufügen</string>
   <string name="btn_share_decrypted_text">Teilen</string>
   <string name="btn_open_with">Öffnen mit…</string>
-  <string name="btn_copy_decrypted_text">Entschlüsselten Text kopieren</string>
+  <string name="btn_copy_decrypted_text">In die Zwischenablage kopieren</string>
   <string name="btn_decrypt_clipboard">Aus Zwischenablage lesen</string>
   <string name="btn_decrypt_files">Datei auswählen</string>
   <string name="btn_encrypt_files">Dateien verschlüsseln</string>
@@ -147,7 +147,7 @@
   <string name="label_encryption_algorithm">Verschlüsselungsalgorithmus</string>
   <string name="label_hash_algorithm">Hash-Algorithmus</string>
   <string name="label_symmetric">Mit Passwort verschlüsseln</string>
-  <string name="label_passphrase_cache_ttl">Merkdauer von Passwörtern</string>
+  <string name="label_passphrase_cache_ttl">Zwischenspeicherdauer für Passwörter</string>
   <string name="label_passphrase_cache_subs">Passwort pro Unterschlüssel merken</string>
   <string name="label_message_compression">Textkomprimierung</string>
   <string name="label_file_compression">Dateikomprimierung</string>
@@ -451,6 +451,7 @@
   <string name="help_tab_changelog">Changelog</string>
   <string name="help_tab_about">Über</string>
   <string name="help_about_version">Version:</string>
+  <string name="help_tab_donations">Spende</string>
   <!--Import-->
   <string name="import_tab_keyserver">Schlüsselserver</string>
   <string name="import_tab_cloud">Schlüsselsuche</string>
@@ -981,6 +982,7 @@
   <string name="msg_mf_error_sig">Signaturfehler!</string>
   <string name="msg_mf_error_sub_stripped">Gekürzter Unterschlüssel %s kann nicht verändert werden!</string>
   <string name="msg_mf_error_subkey_missing">Versuch mit fehlendem Unterschlüssel %s zu arbeiten!</string>
+  <string name="msg_mf_error_conflicting_nfc_commands">Kann Schlüssel nicht auf Smartcard verschieben wenn im gleichen Vorgang die Kartensignatur erstellt wird.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">Smartcard unterstützt nur einen Slot pro Schlüsseltyp.</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">Ungeeignete Schlüsselattribute für Schlüssel auf Smartcard.</string>
   <string name="msg_mf_master">Hauptbeglaubigungen werden verändert</string>
@@ -1292,6 +1294,10 @@
   <string name="msg_data_mime_filename">Dateiname: \'%s\'</string>
   <string name="msg_data_mime_from_extension">Versuche MIME-Typ aus Dateiendung zu ermitteln</string>
   <string name="msg_data_mime_length">Content-Länge: %s</string>
+  <string name="msg_data_mime_charset">Zeichensatz ist \'%s\'</string>
+  <string name="msg_data_mime_charset_faulty">Zeichensatz ist \'%s\', aber Decodieren ist fehlgeschlagen.</string>
+  <string name="msg_data_mime_charset_guess">Zeichensatz scheint \'%s\' zu sein</string>
+  <string name="msg_data_mime_charset_unknown">Zeichensatz unbekannt, oder Daten sind kein Text.</string>
   <string name="msg_data_mime">Verarbeite MIME Daten Struktur</string>
   <string name="msg_data_mime_ok">Parsen beendet</string>
   <string name="msg_data_mime_none">Keine MIME-Struktur gefunden</string>
@@ -1301,15 +1307,11 @@
   <string name="msg_data_skip_mime">Überspringe MIME-Parsing</string>
   <string name="msg_acc_saved">Benutzerkonto gespeichert</string>
   <string name="msg_get_success">Erfolgreich heruntergeladen!</string>
-  <string name="msg_get_no_valid_keys">Keine gültigen Schlüssel in der Datei/Zwischenablage gefunden!</string>
-  <string name="msg_download_no_pgp_parts">NOCH ZU MACHEN: Plurale!</string>
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="one">ein Teil der geladenen Datei ist ein gültiges OpenPGP-Objekt, aber kein OpenPGP-Schlüssel</item>
-    <item quantity="other">Teile der geladenen Dateien sind gültige OpenPGP-Objekte, aber keine OpenPGP-Schlüssel</item>
-  </plurals>
-  <string name="msg_get_query_too_short">Die Suchanfrage ist zu kurz, bitte die Suchanfrage verfeinern!</string>
-  <string name="msg_get_too_many_responses">Schlüsselsuchanfrage lieferte zu viele Kandidaten, bitte die Suchanfrage verfeinern!</string>
-  <string name="msg_get_query_too_short_or_too_many_responses">Entweder keine oder zu viele Schlüssel wurden gefunden, bitte die Suchanfrage prä­zi­sie­ren!</string>
+  <string name="msg_get_file_not_found">Datei nicht gefunden!</string>
+  <string name="msg_get_no_valid_keys">Keine gültigen Schlüssel in Datei/Zwischenablage gefunden!</string>
+  <string name="msg_get_too_many_responses">Die Schlüsselanfrage liefert zu viele Ergebnisse. Bitte präzisiere deine Suchanfrage!</string>
+  <string name="msg_get_query_too_short">Suchanfrage zu kurz. Bitte ändere deine Anfrage!</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">Keine oder zu viele Schlüssel wurden gefunden. Bitte präzisiere deine Anfrage!</string>
   <string name="msg_download_query_failed">Beim Suchen der Schlüssel ist ein Fehler aufgetreten.</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">Versuche Keybase.io-Verifikation für %s</string>
@@ -1344,6 +1346,7 @@
   <string name="first_time_security_token">Verwende Smartcard</string>
   <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, ...)</string>
   <string name="first_time_skip">Setup überspringen</string>
+  <string name="first_time_blank_security_token">Diese leere Smartcard mit OpenKeychain verwenden?\n\nBitte entferne die Smartcard jetzt. Du wirst aufgefordert, wenn sie erneut benötigt wird!</string>
   <string name="first_time_blank_security_token_yes">Diese Smartcard verwenden</string>
   <string name="backup_text">Backups, die deine eigenen Schlüssel beinhalten, dürfen unter keinen Umständen an anderen Personen gegeben werden.</string>
   <string name="backup_all">Alle Schlüssel + deine eigenen Schlüssel</string>
@@ -1451,6 +1454,7 @@
   <string name="security_token_error_chaining_error">Smartcard erwartete das letzte Kommando in einer Kette.</string>
   <string name="security_token_error_header">Smartcard meldete ungültige %s Byte.</string>
   <string name="security_token_error_tag_lost">Smartcard wurde zu früh abgenommen. Halte die Smartcard an die Rückseite bis der Vorgang beendet ist.</string>
+  <string name="security_token_error_iso_dep_not_supported">Smartcard unterstützt ISO-DEP (ISO 14443-4) nicht</string>
   <string name="security_token_error_try_again">Erneut versuchen</string>
   <string name="btn_delete_original">Originaldatei löschen</string>
   <string name="snack_encrypt_filenames_on">Dateinamen <b>sind</b> verschlüsselt.</string>
@@ -1548,8 +1552,8 @@
   <string name="linked_progress_update_key">Aktualisiere Schlüssel...</string>
   <string name="linked_button_start">Mit Github-Konto verknüpfen</string>
   <string name="linked_error_auth_failed">Authentifizierung fehlgeschlagen!</string>
-  <string name="linked_error_timeout">Zeitüberschreitung bei Verbindungsaufbau</string>
-  <string name="linked_error_network">Netzwerk Fehler!</string>
+  <string name="linked_error_timeout">Zeitüberschreitung beim Verbindungsaufbau!</string>
+  <string name="linked_error_network">Netzwerkfehler!</string>
   <string name="linked_error_http">Kommunikationsfehler: %s</string>
   <string name="linked_webview_title_github">GitHub Authentifizierung</string>
   <string name="linked_gist_description">Verknüpfte OpenKeychain-Identität</string>
@@ -1579,13 +1583,34 @@
   <string name="title_edit_identities">Identitäten bearbeiten</string>
   <string name="title_edit_subkeys">Unterschlüssel bearbeiten</string>
   <string name="btn_search_for_query">Suche nach\n\'%s\'</string>
-  <string name="cache_ttl_lock_screen">bis Bildschirm abschaltet</string>
+  <string name="cache_ttl_lock_screen">bis Bildschirm abgeschalten</string>
+  <string name="cache_ttl_ten_minutes">für 10 Minuten</string>
+  <string name="cache_ttl_thirty_minutes">für 30 Minuten</string>
   <string name="cache_ttl_one_hour">für eine Stunde</string>
   <string name="cache_ttl_three_hours">für drei Stunden</string>
   <string name="cache_ttl_one_day">für einen Tag</string>
   <string name="cache_ttl_three_days">für drei Tage</string>
-  <string name="settings_cache_select_three">Wähle bis zu drei</string>
-  <string name="settings_cache_ttl_at_least_one">Mindestens eine Option muss gewählt werden</string>
-  <string name="settings_cache_ttl_max_three">Höchstens 3 Optionen können gewählt werden</string>
+  <string name="cache_ttl_forever">für immer</string>
+  <string name="settings_cache_select_three">Wähle bis zu drei.</string>
+  <string name="settings_cache_ttl_at_least_one">Mindestens eine Option muss gewählt werden!</string>
+  <string name="settings_cache_ttl_max_three">Höchstens 3 Optionen können gewählt werden!</string>
   <string name="remember">Merken</string>
+  <string name="security_token_error_pgp_app_not_installed">Keine PGP-Anwendung auf Smartcard gefunden</string>
+  <string name="prompt_fidesmo_pgp_install_title">PGP installieren?</string>
+  <string name="prompt_fidesmo_pgp_install_message">Keine PGP-Anwendung verfügbar auf diesem Fidesmo-Gerät.</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">Installieren</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Abbrechen</string>
+  <string name="prompt_fidesmo_app_install_title">Fidesmo installieren?</string>
+  <string name="prompt_fidesmo_app_install_message">Fidesmo Android App wird benötigt um PGP zu installieren.</string>
+  <string name="prompt_fidesmo_app_install_button_positive">Installieren</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Abbrechen</string>
+  <string name="help_donation_paypal_item">OpenKeychain Spende</string>
+  <string-array name="help_donation_google_catalog_values">
+    <item>1 EUR</item>
+    <item>3 EUR</item>
+    <item>5 EUR</item>
+    <item>10 EUR</item>
+    <item>50 EUR</item>
+    <item>100 EUR</item>
+  </string-array>
 </resources>

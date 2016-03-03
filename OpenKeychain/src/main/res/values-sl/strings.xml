@@ -742,12 +742,6 @@
   <string name="msg_crt_warn_not_found">Ključ ni bil najden!</string>
   <string name="msg_crt_warn_cert_failed">Generacija potrdila ni uspela!</string>
   <!--Linked Identity verification-->
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="one">Del naložene datoteke je veljavnen objekt OpenPGP a ni ključ.</item>
-    <item quantity="two">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
-    <item quantity="few">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
-    <item quantity="other">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
-  </plurals>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->

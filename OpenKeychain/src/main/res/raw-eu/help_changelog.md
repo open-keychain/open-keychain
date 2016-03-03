@@ -1,10 +1,17 @@
 [//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
 
+## 3.9
+
+  * Detection and handling of text data
+  * Performance improvements
+  * UI improvements for Security Token handling
+
+
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Giltza edizio berdiseinatua
+  * Hautatu ordua banaka sarhitzak idazterakoan
+  * Facebook giltza inportazioa
 
 
 ## 3.7

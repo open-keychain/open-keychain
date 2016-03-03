@@ -81,7 +81,6 @@
   <string name="btn_add_files">Agregar archivo(s)</string>
   <string name="btn_share_decrypted_text">Compartir</string>
   <string name="btn_open_with">Abrir con...</string>
-  <string name="btn_copy_decrypted_text">Copiar texto descifrado</string>
   <string name="btn_decrypt_clipboard">Leer desde el portapapeles</string>
   <string name="btn_decrypt_files">Elegir archivo de entrada</string>
   <string name="btn_encrypt_files">Cifrar archivos</string>

@@ -62,7 +62,6 @@
   <string name="btn_match">اثر انگشت‌ها مطابقت دارد</string>
   <string name="btn_create_key">ساخت کلید</string>
   <string name="btn_add_files">اضافه کردن فایل(ها)</string>
-  <string name="btn_copy_decrypted_text">کپی متن رمزگشایی شده</string>
   <string name="btn_decrypt_clipboard">خواندن از متن کپی‌شده</string>
   <string name="btn_decrypt_files">انتخاب فایل ورودی</string>
   <string name="btn_encrypt_files">رمزگذاری فایلها</string>

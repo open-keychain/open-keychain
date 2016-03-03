@@ -1,10 +1,17 @@
-[//]: # (备注: 请把每个句子保持在它自己的一行里，Transifex会把每一行放到他应该的位置！)
+[//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
+
+## 3.9
+
+  * Detection and handling of text data
+  * Performance improvements
+  * UI improvements for Security Token handling
+
 
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
-  * Facebook key import
+  * 重新设计了密钥编辑操作
+  * 键入密码时单独选择记忆时间
+  * 导入 Facebook 密钥
 
 
 ## 3.7
