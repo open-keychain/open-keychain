@@ -7,11 +7,11 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.util.Log;
 
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.textuality.keybase.lib.JWalk;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -84,18 +84,19 @@ public class TwitterResource extends LinkedTokenResource {
             return null;
         }
 
-        HttpGet httpGet =
-                new HttpGet("https://api.twitter.com/1.1/statuses/show.json"
-                        + "?id=" + mTweetId
-                        + "&include_entities=false");
-
         // construct a normal HTTPS request and include an Authorization
         // header with the value of Bearer <>
-        httpGet.setHeader("Authorization", "Bearer " + authToken);
-        httpGet.setHeader("Content-Type", "application/json");
+        Request request = new Request.Builder()
+                .url("https://api.twitter.com/1.1/statuses/show.json"
+                        + "?id=" + mTweetId
+                        + "&include_entities=false")
+                .addHeader("Authorization", "Bearer " + authToken)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "OpenKeychain")
+                .build();
 
         try {
-            String response = getResponseBody(context, httpGet, CERT_PINS);
+            String response = getResponseBody(request, CERT_PINS);
             JSONObject obj = new JSONObject(response);
             JSONObject user = obj.getJSONObject("user");
             if (!mHandle.equalsIgnoreCase(user.getString("screen_name"))) {
@@ -157,21 +158,20 @@ public class TwitterResource extends LinkedTokenResource {
             return null;
         }
 
-        HttpGet httpGet =
-                new HttpGet("https://api.twitter.com/1.1/statuses/user_timeline.json"
+        Request request = new Request.Builder()
+                .url("https://api.twitter.com/1.1/statuses/user_timeline.json"
                         + "?screen_name=" + screenName
                         + "&count=15"
                         + "&include_rts=false"
                         + "&trim_user=true"
-                        + "&exclude_replies=true");
-
-        // construct a normal HTTPS request and include an Authorization
-        // header with the value of Bearer <>
-        httpGet.setHeader("Authorization", "Bearer " + authToken);
-        httpGet.setHeader("Content-Type", "application/json");
+                        + "&exclude_replies=true")
+                .addHeader("Authorization", "Bearer " + authToken)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "OpenKeychain")
+                .build();
 
         try {
-            String response = getResponseBody(context, httpGet, CERT_PINS);
+            String response = getResponseBody(request, CERT_PINS);
             JSONArray array = new JSONArray(response);
 
             for (int i = 0; i < array.length(); i++) {
@@ -216,12 +216,20 @@ public class TwitterResource extends LinkedTokenResource {
         String base64Encoded = rot13("D293FQqanH0jH29KIaWJER5DomqSGRE2Ewc1LJACn3cbD1c"
                     + "Fq1bmqSAQAz5MI2cIHKOuo3cPoRAQI1OyqmIVFJS6LHMXq2g6MRLkIj") + "==";
 
+        RequestBody requestBody = RequestBody.create(
+                MediaType.parse("application/x-www-form-urlencoded;charset=UTF-8"),
+                "grant_type=client_credentials");
+
         // Step 2: Obtain a bearer token
-        HttpPost httpPost = new HttpPost("https://api.twitter.com/oauth2/token");
-        httpPost.setHeader("Authorization", "Basic " + base64Encoded);
-        httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-        httpPost.setEntity(new StringEntity("grant_type=client_credentials"));
-        JSONObject rawAuthorization = new JSONObject(getResponseBody(context, httpPost, CERT_PINS));
+        Request request = new Request.Builder()
+                .url("https://api.twitter.com/oauth2/token")
+                .addHeader("Authorization", "Basic " + base64Encoded)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
+                .addHeader("User-Agent", "OpenKeychain")
+                .post(requestBody)
+                .build();
+
+        JSONObject rawAuthorization = new JSONObject(getResponseBody(request, CERT_PINS));
 
         // Applications should verify that the value associated with the
         // token_type key of the returned object is bearer
