@@ -134,6 +134,8 @@ public final class Constants {
             public static final String TYPE_HTTP = "proxyHttp";
             public static final String TYPE_SOCKS = "proxySocks";
         }
+
+        public static final String BACKUP_REMINDERS = "backupReminders";
     }
 
     /**

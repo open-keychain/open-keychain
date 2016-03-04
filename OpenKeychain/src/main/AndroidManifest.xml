@@ -99,6 +99,8 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
+        <!-- Receiver for backup reminder notification alarm -->
+        <receiver android:name=".receiver.BackupNotificationAlarmReceiver"/>
         <!-- singleTop for NFC dispatch, see SecurityTokenOperationActivity -->
         <activity
             android:name=".ui.MainActivity"

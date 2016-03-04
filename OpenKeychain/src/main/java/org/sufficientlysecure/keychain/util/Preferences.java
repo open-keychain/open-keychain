@@ -28,6 +28,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
@@ -43,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
@@ -461,6 +463,42 @@ public class Preferences {
 
     public boolean getExperimentalEnableKeybase() {
         return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_KEYBASE, false);
+    }
+
+    // store comma separated masterKeyIds of all keys for which notification reminder is required
+    public void setBackupReminder(long masterKeyId) {
+        String reminders = mSharedPreferences.getString(Pref.BACKUP_REMINDERS, null);
+        reminders = (reminders == null) ? Long.toString(masterKeyId)
+                                        : reminders + "," + Long.toString(masterKeyId);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(Pref.BACKUP_REMINDERS, reminders);
+        editor.apply();
+    }
+
+    public void removeBackupReminder(long masterKeyId) {
+        String reminders = mSharedPreferences.getString(Pref.BACKUP_REMINDERS, null);
+        if (reminders != null) {
+            List<String> masterKeyIds = new ArrayList<>(Arrays.asList(reminders.split(",")));
+            masterKeyIds.remove(Long.toString(masterKeyId));
+            reminders = TextUtils.join(",", masterKeyIds);
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            if (reminders.equals("")) {
+                editor.remove(Pref.BACKUP_REMINDERS);
+            } else {
+                editor.putString(Pref.BACKUP_REMINDERS, reminders);
+            }
+            editor.apply();
+        }
+    }
+
+    public String getBackupReminders() {
+        return mSharedPreferences.getString(Pref.BACKUP_REMINDERS, null);
+    }
+
+    public void removeAllBackupReminders() {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.remove(Pref.BACKUP_REMINDERS);
+        editor.apply();
     }
 
     public void upgradePreferences(Context context) {
