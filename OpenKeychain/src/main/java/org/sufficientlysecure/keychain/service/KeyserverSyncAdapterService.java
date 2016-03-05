@@ -16,6 +16,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,6 +37,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.receiver.NetworkReceiver;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -74,6 +77,14 @@ public class KeyserverSyncAdapterService extends Service {
     private static final String ACTION_CANCEL = "cancel";
 
     private AtomicBoolean mCancelled = new AtomicBoolean(false);
+    Context context;
+
+    //zero argument constructor
+    public KeyserverSyncAdapterService(){}
+
+    public KeyserverSyncAdapterService(Context context){
+        this.context=context;
+    }
 
     @Override
     public int onStartCommand(final Intent intent, int flags, final int startId) {
@@ -177,15 +188,33 @@ public class KeyserverSyncAdapterService extends Service {
         public void onPerformSync(Account account, Bundle extras, String authority,
                                   ContentProviderClient provider, SyncResult syncResult) {
             Log.d(Constants.TAG, "Performing a keyserver sync!");
+            Preferences prefs = Preferences.getPreferences(getContext());
 
+            // for a wifi-ONLY sync
+            if(prefs.getWifiOnlySync()){
+
+                ConnectivityManager connMgr = (ConnectivityManager)
+                        getSystemService(Context.CONNECTIVITY_SERVICE);
+                @SuppressWarnings("deprecation") // our min is API 15, deprecated only in 23
+                        NetworkInfo networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                boolean isWifiConn = networkInfo.isConnected();
+
+                // if Wi-Fi connection doesn't exist then receiver is enabled
+                if(!isWifiConn){
+                    new NetworkReceiver().setWifiReceiverComponent(true, getContext());
+                    postponeSync();
+                    return;
+                }
+            }
+            Log.d(Constants.TAG, "Performing a keyserver sync!");
             PowerManager pm = (PowerManager) KeyserverSyncAdapterService.this
                     .getSystemService(Context.POWER_SERVICE);
             @SuppressWarnings("deprecation") // our min is API 15, deprecated only in 20
                     boolean isScreenOn = pm.isScreenOn();
-
             if (!isScreenOn) {
                 startServiceWithUpdateAll();
-            } else {
+            }
+            else {
                 postponeSync();
             }
         }
@@ -510,6 +539,7 @@ public class KeyserverSyncAdapterService extends Service {
     }
 
     public static void enableKeyserverSync(Context context) {
+        Preferences.getPreferences(context).setAllowSync(true);
         Account account = KeychainApplication.createAccountIfNecessary(context);
 
         if (account == null) {
