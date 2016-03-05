@@ -119,8 +119,9 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
             // inform the storage provider about the mime type for this uri
             if (decryptResult.getDecryptionMetadata() != null) {
-                TemporaryFileProvider.setMimeType(mContext, currentInputUri,
-                        decryptResult.getDecryptionMetadata().getMimeType());
+                OpenPgpMetadata meta = decryptResult.getDecryptionMetadata();
+                TemporaryFileProvider.setName(mContext, currentInputUri, meta.getFilename());
+                TemporaryFileProvider.setMimeType(mContext, currentInputUri, meta.getMimeType());
             }
 
         } else {
