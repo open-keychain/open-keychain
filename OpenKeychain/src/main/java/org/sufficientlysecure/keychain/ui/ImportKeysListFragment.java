@@ -330,8 +330,15 @@ public class ImportKeysListFragment extends ListFragment implements
     }
 
     public void loadNew(LoaderState loaderState) {
-
         mLoaderState = loaderState;
+
+        if (mLoaderState instanceof BytesLoaderState) {
+            BytesLoaderState ls = (BytesLoaderState) mLoaderState;
+
+            if ( ! checkAndRequestReadPermission(ls.mDataUri)) {
+                return;
+            }
+        }
 
         restartLoaders();
     }
