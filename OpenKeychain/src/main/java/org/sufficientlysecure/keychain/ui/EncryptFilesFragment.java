@@ -247,10 +247,10 @@ public class EncryptFilesFragment
             try {
                 mFilesAdapter.add(inputUri);
             } catch (IOException e) {
+                String fileName = FileHelper.getFilename(getActivity(), inputUri);
                 Notify.create(getActivity(),
-                        getActivity().getString(R.string.error_file_added_already, FileHelper.getFilename(getActivity(), inputUri)),
+                        getActivity().getString(R.string.error_file_added_already, fileName),
                         Notify.Style.ERROR).show(this);
-                return;
             }
 
             // remove from pending input uris
