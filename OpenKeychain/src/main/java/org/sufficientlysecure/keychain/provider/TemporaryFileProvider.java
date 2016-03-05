@@ -99,6 +99,12 @@ public class TemporaryFileProvider extends ContentProvider {
         return context.getContentResolver().insert(CONTENT_URI, contentValues);
     }
 
+    public static int setName(Context context, Uri uri, String name) {
+        ContentValues values = new ContentValues();
+        values.put(TemporaryFileColumns.COLUMN_NAME, name);
+        return context.getContentResolver().update(uri, values, null, null);
+    }
+
     public static int setMimeType(Context context, Uri uri, String mimetype) {
         ContentValues values = new ContentValues();
         values.put(TemporaryFileColumns.COLUMN_TYPE, mimetype);
@@ -283,8 +289,11 @@ public class TemporaryFileProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        if (values.size() != 1 || !values.containsKey(TemporaryFileColumns.COLUMN_TYPE)) {
-            throw new UnsupportedOperationException("Update supported only for type field!");
+        if (values.size() != 1) {
+            throw new UnsupportedOperationException("Update supported only for one field at a time!");
+        }
+        if (!values.containsKey(TemporaryFileColumns.COLUMN_NAME) && !values.containsKey(TemporaryFileColumns.COLUMN_TYPE)) {
+            throw new UnsupportedOperationException("Update supported only for name and type field!");
         }
         if (selection != null || selectionArgs != null) {
             throw new UnsupportedOperationException("Update supported only for plain uri!");
