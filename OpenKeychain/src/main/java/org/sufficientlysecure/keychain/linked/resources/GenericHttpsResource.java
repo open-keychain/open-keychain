@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 
-import org.apache.http.client.methods.HttpGet;
+import com.squareup.okhttp.Request;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -32,14 +32,16 @@ public class GenericHttpsResource extends LinkedTokenResource {
                 token, "0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprint).substring(24));
     }
 
-    @SuppressWarnings("deprecation") // HttpGet is deprecated
     @Override
     protected String fetchResource (Context context, OperationLog log, int indent)
             throws HttpStatusException, IOException {
 
         log.add(LogType.MSG_LV_FETCH, indent, mSubUri.toString());
-        HttpGet httpGet = new HttpGet(mSubUri);
-        return getResponseBody(context, httpGet);
+        Request request = new Request.Builder()
+                .url(mSubUri.toURL())
+                .addHeader("User-Agent", "OpenKeychain")
+                .build();
+        return getResponseBody(request);
 
     }
 

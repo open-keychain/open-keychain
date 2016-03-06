@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 
-import org.apache.http.client.methods.HttpGet;
+import com.squareup.okhttp.Request;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,7 +47,7 @@ public class GithubResource extends LinkedTokenResource {
         return String.format(context.getResources().getString(R.string.linked_id_github_text), token);
     }
 
-    @SuppressWarnings("deprecation") // HttpGet is deprecated
+
     @Override
     protected String fetchResource (Context context, OperationLog log, int indent)
             throws HttpStatusException, IOException, JSONException {
@@ -55,8 +55,11 @@ public class GithubResource extends LinkedTokenResource {
         log.add(LogType.MSG_LV_FETCH, indent, mSubUri.toString());
         indent += 1;
 
-        HttpGet httpGet = new HttpGet("https://api.github.com/gists/" + mGistId);
-        String response = getResponseBody(context, httpGet);
+        Request request = new Request.Builder()
+                .url("https://api.github.com/gists/" + mGistId)
+                .addHeader("User-Agent", "OpenKeychain")
+                .build();
+        String response = getResponseBody(request);
 
         JSONObject obj = new JSONObject(response);
 
@@ -79,7 +82,7 @@ public class GithubResource extends LinkedTokenResource {
 
     }
 
-    @Deprecated // not used for now, but could be used to pick up earlier posted gist if already present?
+
     @SuppressWarnings({ "deprecation", "unused" })
     public static GithubResource searchInGithubStream(
             Context context, String screenName, String needle, OperationLog log) {
@@ -94,12 +97,12 @@ public class GithubResource extends LinkedTokenResource {
         try {
 
             JSONArray array; {
-                HttpGet httpGet =
-                        new HttpGet("https://api.github.com/users/" + screenName + "/gists");
-                httpGet.setHeader("Content-Type", "application/json");
-                httpGet.setHeader("User-Agent", "OpenKeychain");
-
-                String response = getResponseBody(context, httpGet);
+                Request request = new Request.Builder()
+                        .url("https://api.github.com/users/" + screenName + "/gists")
+                        .addHeader("Content-Type", "application/json")
+                        .addHeader("User-Agent", "OpenKeychain")
+                        .build();
+                String response = getResponseBody(request);
                 array = new JSONArray(response);
             }
 
@@ -116,10 +119,13 @@ public class GithubResource extends LinkedTokenResource {
                         continue;
                     }
                     String id = obj.getString("id");
-                    HttpGet httpGet = new HttpGet("https://api.github.com/gists/" + id);
-                    httpGet.setHeader("User-Agent", "OpenKeychain");
 
-                    JSONObject gistObj = new JSONObject(getResponseBody(context, httpGet));
+                    Request request = new Request.Builder()
+                            .url("https://api.github.com/gists/" + id)
+                            .addHeader("User-Agent", "OpenKeychain")
+                            .build();
+
+                    JSONObject gistObj = new JSONObject(getResponseBody(request));
                     JSONObject gistFiles = gistObj.getJSONObject("files");
                     Iterator<String> gistIt = gistFiles.keys();
                     if (!gistIt.hasNext()) {
