@@ -18,7 +18,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-
 import java.util.List;
 
 import android.Manifest;
@@ -405,7 +404,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * This fragment shows the keyserver/contacts sync preferences
+     * This fragment shows the keyserver/wifi-only-sync/contacts sync preferences
      */
     public static class SyncPrefsFragment extends PresetPreferenceFragment {
 
@@ -436,6 +435,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     account,
                     ContactsContract.AUTHORITY
             );
+
+            SwitchPreference pref = (SwitchPreference) findPreference(Constants.Pref.SYNC_WIFI);
+            pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Preferences prefs = Preferences.getPreferences(getContext());
+                    prefs.setWifiOnlySync((Boolean) newValue);
+
+                    return true;
+                }
+            });
         }
 
         private void initializeSyncCheckBox(final SwitchPreference syncCheckBox,
