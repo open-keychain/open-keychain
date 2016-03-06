@@ -115,6 +115,9 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + UserPacketsColumns.MASTER_KEY_ID + " INTEGER, "
                 + UserPacketsColumns.TYPE + " INT, "
                 + UserPacketsColumns.USER_ID + " TEXT, "
+                + UserPacketsColumns.NAME + " TEXT, "
+                + UserPacketsColumns.EMAIL + " TEXT, "
+                + UserPacketsColumns.COMMENT + " TEXT, "
                 + UserPacketsColumns.ATTRIBUTE_DATA + " BLOB, "
 
                 + UserPacketsColumns.IS_PRIMARY + " INTEGER, "
