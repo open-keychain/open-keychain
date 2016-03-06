@@ -694,7 +694,6 @@ public class OpenPgpService extends Service {
         } else {
             // get key ids based on given user ids
             String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
-            data.removeExtra(OpenPgpApi.EXTRA_USER_IDS);
             KeyIdResult keyResult = returnKeyIdsFromEmails(data, userIds);
             if (keyResult.mRequiredUserInteraction != null) {
                 return keyResult.mRequiredUserInteraction;
