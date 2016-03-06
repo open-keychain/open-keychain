@@ -141,8 +141,6 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
-    // TODO: remove org.apache dependencies in LinkedTokenResource etc.
-    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         minSdkVersion 15

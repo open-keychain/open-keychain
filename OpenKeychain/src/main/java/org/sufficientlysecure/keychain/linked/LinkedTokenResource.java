@@ -2,12 +2,10 @@ package org.sufficientlysecure.keychain.linked;
 
 import android.content.Context;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
+import com.squareup.okhttp.CertificatePinner;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import org.json.JSONException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
@@ -18,12 +16,8 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
-import org.thoughtcrime.ssl.pinning.util.PinningHelper;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.HashMap;
@@ -233,46 +227,35 @@ public abstract class LinkedTokenResource extends LinkedResource {
 
     }
 
-    @SuppressWarnings("deprecation") // HttpRequestBase is deprecated
-    public static String getResponseBody(Context context, HttpRequestBase request)
-            throws IOException, HttpStatusException {
-        return getResponseBody(context, request, null);
+
+    private static CertificatePinner getCertificatePinner(String hostname, String[] pins){
+        CertificatePinner.Builder builder = new CertificatePinner.Builder();
+        for(String pin : pins){
+            builder.add(hostname,pin);
+        }
+        return builder.build();
     }
 
-    @SuppressWarnings("deprecation") // HttpRequestBase is deprecated
-    public static String getResponseBody(Context context, HttpRequestBase request, String[] pins)
-        throws IOException, HttpStatusException {
-        StringBuilder sb = new StringBuilder();
+    public static String getResponseBody(Request request, String... pins)
+            throws IOException, HttpStatusException {
 
-        request.setHeader("User-Agent", "Open Keychain");
-
-
-        HttpClient httpClient;
-        if (pins == null) {
-            httpClient = new DefaultHttpClient(new BasicHttpParams());
-        } else {
-            httpClient = PinningHelper.getPinnedHttpClient(context, pins);
+        Log.d("Connection to: "+request.url().getHost(),"");
+        OkHttpClient client = new OkHttpClient();
+        if(pins !=null){
+            client.setCertificatePinner(getCertificatePinner(request.url().getHost(),pins));
         }
 
-        HttpResponse response = httpClient.execute(request);
-        int statusCode = response.getStatusLine().getStatusCode();
-        String reason = response.getStatusLine().getReasonPhrase();
+        Response response = client.newCall(request).execute();
+
+
+        int statusCode = response.code();
+        String reason = response.message();
 
         if (statusCode != 200) {
             throw new HttpStatusException(statusCode, reason);
         }
 
-        HttpEntity entity = response.getEntity();
-        InputStream inputStream = entity.getContent();
-
-        BufferedReader bReader = new BufferedReader(
-                new InputStreamReader(inputStream, "UTF-8"), 8);
-        String line;
-        while ((line = bReader.readLine()) != null) {
-            sb.append(line);
-        }
-
-        return sb.toString();
+        return response.body().string();
     }
 
     public static class HttpStatusException extends Throwable {
