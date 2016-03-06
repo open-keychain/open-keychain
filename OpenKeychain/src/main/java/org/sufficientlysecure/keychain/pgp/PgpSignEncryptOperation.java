@@ -470,7 +470,13 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 InputStream in = new BufferedInputStream(inputData.getInputStream());
 
                 if (enableCompression) {
-                    compressGen = new PGPCompressedDataGenerator(input.getCompressionAlgorithm());
+                    // Use preferred compression algo
+                    int algo = input.getCompressionAlgorithm();
+                    if (algo == PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT) {
+                        algo = PgpSecurityConstants.DEFAULT_COMPRESSION_ALGORITHM;
+                    }
+
+                    compressGen = new PGPCompressedDataGenerator(algo);
                     bcpgOut = new BCPGOutputStream(compressGen.open(out));
                 } else {
                     bcpgOut = new BCPGOutputStream(out);
