@@ -424,6 +424,28 @@ public class Preferences {
         };
     }
 
+    // sync preferences
+
+    public void setWifiOnlySync(Boolean sync){
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.ENABLE_WIFI_SYNC_ONLY, sync);
+        editor.commit();
+    }
+
+    public boolean getWifiOnlySync() {
+        return mSharedPreferences.getBoolean(Pref.ENABLE_WIFI_SYNC_ONLY, false);
+    }
+
+    public void setAllowSync(Boolean sync){
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.ENABLE_ALLOW_SYNC, sync);
+        editor.commit();
+    }
+
+    public boolean getAllowSync() {
+        return mSharedPreferences.getBoolean(Pref.ENABLE_ALLOW_SYNC, true);
+    }
+
     // experimental prefs
 
     public boolean getExperimentalEnableWordConfirm() {

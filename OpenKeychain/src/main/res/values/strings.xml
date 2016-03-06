@@ -201,6 +201,7 @@
     <string name="label_sync_settings_keyserver_title">"Automatic key updates"</string>
     <string name="label_sync_settings_keyserver_summary_on">"Every three days, keys are updated from the preferred keyserver"</string>
     <string name="label_sync_settings_keyserver_summary_off">"Keys are not automatically updated"</string>
+    <string name="label_sync_settings_wifi_title">"Sync only on Wi-Fi"</string>
     <string name="label_sync_settings_contacts_title">"Link keys to contacts"</string>
     <string name="label_sync_settings_contacts_summary_on">"Link keys to contacts based on names and email addresses. This happens completely offline on your device."</string>
     <string name="label_sync_settings_contacts_summary_off">"New keys will not be linked to contacts"</string>
