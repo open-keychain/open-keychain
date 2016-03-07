@@ -22,8 +22,9 @@
             android:id="@+id/textView"
             android:layout_weight="1" />
 
-        <org.sufficientlysecure.keychain.ui.widget.FixedListView
-            android:id="@+id/view_key_user_ids"
+        <fragment
+            android:id="@+id/multi_user_ids_fragment"
+            android:name="org.sufficientlysecure.keychain.ui.MultiUserIdsFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
