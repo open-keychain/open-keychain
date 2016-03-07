@@ -39,11 +39,17 @@ import java.util.ArrayList;
 public class MultiUserIdsAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
     private final ArrayList<Boolean> mCheckStates;
+    private boolean checkboxVisibility = true;
 
     public MultiUserIdsAdapter(Context context, Cursor c, int flags, ArrayList<Boolean> preselectStates) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
         mCheckStates = preselectStates == null ? new ArrayList<Boolean>() : preselectStates;
+    }
+
+    public MultiUserIdsAdapter(Context context, Cursor c, int flags, ArrayList<Boolean> preselectStates, boolean checkboxVisibility) {
+        this(context,c,flags,preselectStates);
+        this.checkboxVisibility = checkboxVisibility;
     }
 
     @Override
@@ -138,6 +144,7 @@ public class MultiUserIdsAdapter extends CursorAdapter {
             }
         });
         vCheckBox.setClickable(false);
+        vCheckBox.setVisibility(checkboxVisibility?View.VISIBLE:View.GONE);
 
         View vUidBody = view.findViewById(R.id.user_id_body);
         vUidBody.setClickable(true);

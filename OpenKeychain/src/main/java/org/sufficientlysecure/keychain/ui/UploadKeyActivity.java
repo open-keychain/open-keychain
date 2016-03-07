@@ -31,10 +31,7 @@ import android.widget.Spinner;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -53,7 +50,6 @@ public class UploadKeyActivity extends BaseActivity
 
     // CryptoOperationHelper.Callback vars
     private String mKeyserver;
-    private long mMasterKeyId;
     private CryptoOperationHelper<UploadKeyringParcel, UploadResult> mUploadOpHelper;
 
     @Override
@@ -62,6 +58,10 @@ public class UploadKeyActivity extends BaseActivity
 
         mUploadButton = findViewById(R.id.upload_key_action_upload);
         mKeyServerSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
+
+        MultiUserIdsFragment mMultiUserIdsFragment = (MultiUserIdsFragment)
+                getSupportFragmentManager().findFragmentById(R.id.multi_user_ids_fragment);
+        mMultiUserIdsFragment.setCheckboxVisibility(false);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
@@ -85,15 +85,6 @@ public class UploadKeyActivity extends BaseActivity
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
             Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
-            finish();
-            return;
-        }
-
-        try {
-            mMasterKeyId = new ProviderHelper(this).getCachedPublicKeyRing(
-                    KeyRings.buildUnifiedKeyRingUri(mDataUri)).getMasterKeyId();
-        } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "Intent data pointed to bad key!");
             finish();
             return;
         }
@@ -136,7 +127,9 @@ public class UploadKeyActivity extends BaseActivity
 
     @Override
     public UploadKeyringParcel createOperationInput() {
-        return new UploadKeyringParcel(mKeyserver, mMasterKeyId);
+        long[] masterKeyIds = getIntent().getLongArrayExtra(MultiUserIdsFragment.EXTRA_KEY_IDS);
+
+        return new UploadKeyringParcel(mKeyserver, masterKeyIds[0]);
     }
 
     @Override

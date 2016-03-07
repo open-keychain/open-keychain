@@ -74,13 +74,14 @@ public class CertifyKeyFragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             // preselect certify key id if given
             long certifyKeyId = getActivity().getIntent()
                     .getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
             if (certifyKeyId != Constants.key.none) {
                 try {
-                    CachedPublicKeyRing key = (new ProviderHelper(getActivity())).getCachedPublicKeyRing(certifyKeyId);
+                    CachedPublicKeyRing key = (new ProviderHelper(getActivity()))
+                            .getCachedPublicKeyRing(certifyKeyId);
                     if (key.canCertify()) {
                         mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
                     }
@@ -88,7 +89,6 @@ public class CertifyKeyFragment
                     Log.e(Constants.TAG, "certify certify check failed", e);
                 }
             }
-
         }
 
         OperationResult result = getActivity().getIntent().getParcelableExtra(CertifyKeyActivity.EXTRA_RESULT);

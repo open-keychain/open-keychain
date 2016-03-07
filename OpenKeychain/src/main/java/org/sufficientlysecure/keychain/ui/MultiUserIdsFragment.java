@@ -26,12 +26,10 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
-/**
- * Created by durgeshchoudhary on 07/03/16.
- */
 public class MultiUserIdsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
     public static final String ARG_CHECK_STATES = "check_states";
     public static final String EXTRA_KEY_IDS = "extra_key_ids";
+    private boolean checkboxVisibility = true;
 
     ListView mUserIds;
     private MultiUserIdsAdapter mUserIdsAdapter;
@@ -78,7 +76,7 @@ public class MultiUserIdsFragment extends Fragment implements LoaderManager.Load
             checkedStates = (ArrayList<Boolean>) savedInstanceState.getSerializable(ARG_CHECK_STATES);
         }
 
-        mUserIdsAdapter = new MultiUserIdsAdapter(getActivity(), null, 0, checkedStates);
+        mUserIdsAdapter = new MultiUserIdsAdapter(getActivity(), null, 0, checkedStates, checkboxVisibility);
         mUserIds.setAdapter(mUserIdsAdapter);
         mUserIds.setDividerHeight(0);
 
@@ -95,6 +93,10 @@ public class MultiUserIdsFragment extends Fragment implements LoaderManager.Load
     }
 
     public ArrayList<CertifyActionsParcel.CertifyAction> getSelectedCertifyActions() {
+        if (!checkboxVisibility) {
+            throw new AssertionError("Item selection not allowed");
+        }
+
         return mUserIdsAdapter.getSelectedCertifyActions();
     }
 
@@ -213,5 +215,9 @@ public class MultiUserIdsFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mUserIdsAdapter.swapCursor(null);
+    }
+
+    public void setCheckboxVisibility(boolean checkboxVisibility) {
+        this.checkboxVisibility = checkboxVisibility;
     }
 }
