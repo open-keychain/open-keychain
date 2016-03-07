@@ -54,7 +54,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 14;
+    private static final int DATABASE_VERSION = 15;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -309,7 +309,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                         + UserPacketsColumns.USER_ID + ", " + UserPacketsColumns.MASTER_KEY_ID + ");");
                 db.execSQL("CREATE INDEX verified_certs ON certs ("
                         + CertsColumns.VERIFIED + ", " + CertsColumns.MASTER_KEY_ID + ");");
-
+            case 15:
+                db.execSQL("ALTER TABLE user_packets ADD COLUMN name TEXT");
+                db.execSQL("ALTER TABLE user_packets ADD COLUMN email TEXT");
+                db.execSQL("ALTER TABLE user_packets ADD COLUMN comment TEXT");
         }
 
         // always do consolidate after upgrade
