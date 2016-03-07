@@ -426,9 +426,9 @@ public class Preferences {
 
     // sync preferences
 
-    public void setWifiOnlySync(Boolean sync){
+    public void setWifiOnlySync(Boolean isSyncEnabled){
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Pref.ENABLE_WIFI_SYNC_ONLY, sync);
+        editor.putBoolean(Pref.ENABLE_WIFI_SYNC_ONLY, isSyncEnabled;
         editor.commit();
     }
 
@@ -436,9 +436,9 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.ENABLE_WIFI_SYNC_ONLY, false);
     }
 
-    public void setAllowSync(Boolean sync){
+    public void setAllowSync(Boolean isSyncEnabled){
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Pref.ENABLE_ALLOW_SYNC, sync);
+        editor.putBoolean(Pref.ENABLE_ALLOW_SYNC, isSyncEnabled);
         editor.commit();
     }
 
