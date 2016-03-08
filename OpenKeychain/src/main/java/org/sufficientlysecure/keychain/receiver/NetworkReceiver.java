@@ -3,6 +3,7 @@ package org.sufficientlysecure.keychain.receiver;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -12,6 +13,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class NetworkReceiver extends BroadcastReceiver {
+    private static final String ACTION_UPDATE_ALL = "update_all";
 
     Context context;
     public NetworkReceiver(){}
@@ -27,7 +29,8 @@ public class NetworkReceiver extends BroadcastReceiver {
 
             // broadcaster receiver disabled
             setWifiReceiverComponent(false, context);
-            //KeyserverSyncAdapterService.enableKeyserverSync(context);
+            Intent serviceIntent = new Intent(context, KeyserverSyncAdapterService.class);
+            serviceIntent.setAction(ACTION_UPDATE_ALL);
         }
     }
 
