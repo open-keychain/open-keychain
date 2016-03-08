@@ -955,7 +955,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         }
 
         if (!mPw3Validated) {
-            nfcVerifyPIN(0x83); // (Verify PW1 with mode 82 for decryption)
+            nfcVerifyPIN(0x83); // (Verify PW3 with mode 83)
         }
 
         String generateKeyApdu = "0047800002" + String.format("%02x", slot) + "0000";
