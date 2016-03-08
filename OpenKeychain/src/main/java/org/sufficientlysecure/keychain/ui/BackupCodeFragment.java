@@ -170,11 +170,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 mTitleAnimator.setDisplayedChild(1, animate);
                 mStatusAnimator.setDisplayedChild(1, animate);
                 mCodeFieldsAnimator.setDisplayedChild(1, animate);
-                // use non-breaking spaces to enlarge the empty EditText appropriately
-                String empty = "\u00a0\u00a0\u00a0\u00a0-\u00a0\u00a0\u00a0\u00a0" +
-                        "-\u00a0\u00a0\u00a0\u00a0-\u00a0\u00a0\u00a0\u00a0" +
-                        "-\u00a0\u00a0\u00a0\u00a0-\u00a0\u00a0\u00a0\u00a0";
-                mCodeEditText.setText(empty);
+                mCodeEditText.setText("    -    -    -    -    -    ");
 
                 pushBackStackEntry();
 
@@ -354,8 +350,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 String currentBackupCode = backupCode.getText().toString();
                 boolean inInputState = mCurrentState == BackupCodeState.STATE_INPUT
                         || mCurrentState == BackupCodeState.STATE_INPUT_ERROR;
-                boolean partIsComplete = (currentBackupCode.indexOf(' ') == -1)
-                        && (currentBackupCode.indexOf('\u00a0') == -1);
+                boolean partIsComplete = (currentBackupCode.indexOf(' ') == -1);
                 if (!inInputState || !partIsComplete) {
                     return;
                 }
