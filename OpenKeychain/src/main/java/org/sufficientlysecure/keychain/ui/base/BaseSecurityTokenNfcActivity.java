@@ -26,14 +26,11 @@ import java.nio.ByteBuffer;
 import java.security.interfaces.RSAPrivateCrtKey;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.TagLostException;
-import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -319,7 +316,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
             }
             // 6A82 app not installed on security token!
             case 0x6A82: {
-                if (isFidesmoDevice()) {
+                if (isFidesmoToken()) {
                     // Check if the Fidesmo app is installed
                     if (isAndroidAppInstalled(FIDESMO_APP_PACKAGE)) {
                         promptFidesmoPgpInstall();
@@ -530,18 +527,18 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
 
     public String nfcGetUserId() throws IOException {
         String info = "00CA006500";
-        return nfcGetHolderName(nfcCommunicate(info));
+        return getHolderName(nfcCommunicate(info));
     }
 
     /**
-     * Calls to calculate the signature and returns the MPI value
+     * Call COMPUTE DIGITAL SIGNATURE command and returns the MPI value
      *
      * @param hash the hash for signing
      * @return a big integer representing the MPI for the given hash
      */
     public byte[] nfcCalculateSignature(byte[] hash, int hashAlgo) throws IOException {
         if (!mPw1ValidatedForSignature) {
-            nfcVerifyPIN(0x81); // (Verify PW1 with mode 81 for signing)
+            nfcVerifyPin(0x81); // (Verify PW1 with mode 81 for signing)
         }
 
         // dsi, including Lc
@@ -634,14 +631,14 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
     }
 
     /**
-     * Calls to calculate the signature and returns the MPI value
+     * Call DECIPHER command
      *
      * @param encryptedSessionKey the encoded session key
      * @return the decoded session key
      */
     public byte[] nfcDecryptSessionKey(byte[] encryptedSessionKey) throws IOException {
         if (!mPw1ValidatedForDecrypt) {
-            nfcVerifyPIN(0x82); // (Verify PW1 with mode 82 for decryption)
+            nfcVerifyPin(0x82); // (Verify PW1 with mode 82 for decryption)
         }
 
         String firstApdu = "102a8086fe";
@@ -657,10 +654,10 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
             two[i] = encryptedSessionKey[i + one.length + 1];
         }
 
-        String first = nfcCommunicate(firstApdu + getHex(one));
+        nfcCommunicate(firstApdu + getHex(one));
         String second = nfcCommunicate(secondApdu + getHex(two) + le);
 
-        String decryptedSessionKey = nfcGetDataField(second);
+        String decryptedSessionKey = getDataField(second);
 
         return Hex.decode(decryptedSessionKey);
     }
@@ -670,7 +667,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
      * @param mode For PW1, this is 0x81 for signing, 0x82 for everything else.
      *             For PW3 (Admin PIN), mode is 0x83.
      */
-    public void nfcVerifyPIN(int mode) throws IOException {
+    public void nfcVerifyPin(int mode) throws IOException {
         if (mPin != null || mode == 0x83) {
 
             byte[] pin;
@@ -683,7 +680,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
             // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
             // See specification, page 51
             String accepted = "9000";
-            String response = tryPin(mode, pin); // login
+            String response = nfcTryPin(mode, pin); // login
             if (!response.equals(accepted)) {
                 throw new CardException("Bad PIN!", parseCardStatus(response));
             }
@@ -698,13 +695,18 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         }
     }
 
-    public void nfcResetCard() throws IOException {
+    /**
+     * Resets security token, which deletes all keys and data objects.
+     * This works by entering a wrong PIN and then Admin PIN 4 times respectively.
+     * Afterwards, the token is reactivated.
+     */
+    public void nfcReset() throws IOException {
         String accepted = "9000";
 
         // try wrong PIN 4 times until counter goes to C0
         byte[] pin = "XXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
-            String response = tryPin(0x81, pin);
+            String response = nfcTryPin(0x81, pin);
             if (response.equals(accepted)) { // Should NOT accept!
                 throw new CardException("Should never happen, XXXXXX has been accepted!", parseCardStatus(response));
             }
@@ -713,7 +715,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         // try wrong Admin PIN 4 times until counter goes to C0
         byte[] adminPin = "XXXXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
-            String response = tryPin(0x83, adminPin);
+            String response = nfcTryPin(0x83, adminPin);
             if (response.equals(accepted)) { // Should NOT accept!
                 throw new CardException("Should never happen, XXXXXXXX has been accepted", parseCardStatus(response));
             }
@@ -730,7 +732,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
 
     }
 
-    private String tryPin(int mode, byte[] pin) throws IOException {
+    private String nfcTryPin(int mode, byte[] pin) throws IOException {
         // Command APDU for VERIFY command (page 32)
         String login =
                 "00" // CLA
@@ -749,7 +751,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
      * @param pw For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
      * @param newPin The new PW1 or PW3.
      */
-    public void nfcModifyPIN(int pw, byte[] newPin) throws IOException {
+    public void nfcModifyPin(int pw, byte[] newPin) throws IOException {
         final int MAX_PW1_LENGTH_INDEX = 1;
         final int MAX_PW3_LENGTH_INDEX = 3;
 
@@ -802,10 +804,10 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         }
         if (dataObject == 0x0101 || dataObject == 0x0103) {
             if (!mPw1ValidatedForDecrypt) {
-                nfcVerifyPIN(0x82); // (Verify PW1 for non-signing operations)
+                nfcVerifyPin(0x82); // (Verify PW1 for non-signing operations)
             }
         } else if (!mPw3Validated) {
-            nfcVerifyPIN(0x83); // (Verify PW3)
+            nfcVerifyPin(0x83); // (Verify PW3)
         }
 
         String putDataApdu = "00" // CLA
@@ -854,7 +856,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         }
 
         if (!mPw3Validated) {
-            nfcVerifyPIN(0x83); // (Verify PW3 with mode 83)
+            nfcVerifyPin(0x83); // (Verify PW3 with mode 83)
         }
 
         byte[] header= Hex.decode(
@@ -947,13 +949,13 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
      * @return the public key data objects, in TLV format. For RSA this will be the public modulus
      * (0x81) and exponent (0x82). These may come out of order; proper TLV parsing is required.
      */
-    public byte[] nfcGenerateOnCardKey(int slot) throws IOException {
+    public byte[] nfcGenerateKey(int slot) throws IOException {
         if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
             throw new IOException("Invalid key slot");
         }
 
         if (!mPw3Validated) {
-            nfcVerifyPIN(0x83); // (Verify PW3 with mode 83)
+            nfcVerifyPin(0x83); // (Verify PW3 with mode 83)
         }
 
         String generateKeyApdu = "0047800002" + String.format("%02x", slot) + "0000";
@@ -966,11 +968,18 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
             throw new IOException("On-card key generation failed");
         }
 
-        String publicKeyData = nfcGetDataField(first) + nfcGetDataField(second);
+        String publicKeyData = getDataField(first) + getDataField(second);
 
         Log.d(Constants.TAG, "Public Key Data Objects: " + publicKeyData);
 
         return Hex.decode(publicKeyData);
+    }
+
+    /**
+     * Transceive data via NFC encoded as Hex
+     */
+    public String nfcCommunicate(String apdu) throws IOException {
+        return getHex(mIsoCard.transceive(Hex.decode(apdu)));
     }
 
     /**
@@ -991,7 +1000,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         }
     }
 
-    public String nfcGetHolderName(String name) {
+    public String getHolderName(String name) {
         try {
             String slength;
             int ilength;
@@ -1011,12 +1020,8 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         }
     }
 
-    private String nfcGetDataField(String output) {
+    private String getDataField(String output) {
         return output.substring(0, output.length() - 4);
-    }
-
-    public String nfcCommunicate(String apdu) throws IOException {
-        return getHex(mIsoCard.transceive(Hex.decode(apdu)));
     }
 
     public static String getHex(byte[] raw) {
@@ -1045,7 +1050,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
 
     }
 
-    private boolean isFidesmoDevice() {
+    private boolean isFidesmoToken() {
         if (isNfcConnected()) { // Check if we can still talk to the card
             try {
                 // By trying to select any apps that have the Fidesmo AID prefix we can
@@ -1061,11 +1066,11 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
     }
 
     /**
-     * Ask user if she wants to install PGP onto her Fidesmo device
+     * Ask user if she wants to install PGP onto her Fidesmo token
       */
     private void promptFidesmoPgpInstall() {
-        FidesmoPgpInstallDialog mFidesmoPgpInstallDialog = new FidesmoPgpInstallDialog();
-        mFidesmoPgpInstallDialog.show(getSupportFragmentManager(), "mFidesmoPgpInstallDialog");
+        FidesmoPgpInstallDialog fidesmoPgpInstallDialog = new FidesmoPgpInstallDialog();
+        fidesmoPgpInstallDialog.show(getSupportFragmentManager(), "fidesmoPgpInstallDialog");
     }
 
     /**
@@ -1073,8 +1078,8 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
      * to launch the Google Play store.
      */
     private void promptFidesmoAppInstall() {
-        FidesmoInstallDialog mFidesmoInstallDialog = new FidesmoInstallDialog();
-        mFidesmoInstallDialog.show(getSupportFragmentManager(), "mFidesmoInstallDialog");
+        FidesmoInstallDialog fidesmoInstallDialog = new FidesmoInstallDialog();
+        fidesmoInstallDialog.show(getSupportFragmentManager(), "fidesmoInstallDialog");
     }
 
     /**
@@ -1084,7 +1089,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
      */
     private boolean isAndroidAppInstalled(String uri) {
         PackageManager mPackageManager = getPackageManager();
-        boolean mAppInstalled = false;
+        boolean mAppInstalled;
         try {
             mPackageManager.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             mAppInstalled = true;

@@ -249,13 +249,13 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                 }
 
                 // change PINs afterwards
-                nfcModifyPIN(0x81, newPin);
-                nfcModifyPIN(0x83, newAdminPin);
+                nfcModifyPin(0x81, newPin);
+                nfcModifyPin(0x83, newAdminPin);
 
                 break;
             }
             case NFC_RESET_CARD: {
-                nfcResetCard();
+                nfcReset();
 
                 break;
             }
