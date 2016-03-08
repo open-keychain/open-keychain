@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
@@ -230,9 +231,8 @@ public class EncryptTextFragment
         }
 
         // fill values for this action
-        SignEncryptParcel data = new SignEncryptParcel();
+        PgpSignEncryptData data = new PgpSignEncryptData();
 
-        data.setBytes(mMessage.getBytes());
         data.setCleartextSignature(true);
 
         if (mUseCompression) {
@@ -283,7 +283,11 @@ public class EncryptTextFragment
             }
             data.setSymmetricPassphrase(passphrase);
         }
-        return data;
+
+        SignEncryptParcel parcel = new SignEncryptParcel(data);
+        parcel.setBytes(mMessage.getBytes());
+
+        return parcel;
     }
 
     private void copyToClipboard(SignEncryptResult result) {

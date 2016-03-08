@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -151,10 +152,11 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
             PgpSignEncryptOperation pseOp = new PgpSignEncryptOperation(mContext, mProviderHelper, mProgressable, mCancelled);
 
-            PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel();
-            inputParcel.setSymmetricPassphrase(cryptoInput.getPassphrase());
-            inputParcel.setEnableAsciiArmorOutput(true);
-            inputParcel.setAddBackupHeader(true);
+            PgpSignEncryptData data = new PgpSignEncryptData();
+            data.setSymmetricPassphrase(cryptoInput.getPassphrase());
+            data.setEnableAsciiArmorOutput(true);
+            data.setAddBackupHeader(true);
+            PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(data);
 
             InputStream inStream = mContext.getContentResolver().openInputStream(plainUri);
 

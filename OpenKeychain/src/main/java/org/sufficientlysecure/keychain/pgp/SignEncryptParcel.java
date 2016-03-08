@@ -20,41 +20,43 @@ package org.sufficientlysecure.keychain.pgp;
 
 import android.net.Uri;
 import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/** This parcel stores the input of one or more PgpSignEncrypt operations.
+/**
+ * This parcel stores the input of one or more PgpSignEncrypt operations.
  * All operations will use the same general paramters, differing only in
  * input and output. Each input/output set depends on the paramters:
- *
+ * <p/>
  * - Each input uri is individually encrypted/signed
  * - If a byte array is supplied, it is treated as an input before uris are processed
  * - The number of output uris must match the number of input uris, plus one more
- *   if there is a byte array present.
+ * if there is a byte array present.
  * - Once the output uris are empty, there must be exactly one input (uri xor bytes)
- *   left, which will be returned in a byte array as part of the result parcel.
- *
+ * left, which will be returned in a byte array as part of the result parcel.
  */
-public class SignEncryptParcel extends PgpSignEncryptInputParcel {
+public class SignEncryptParcel implements Parcelable {
+
+    private PgpSignEncryptData data;
 
     public ArrayList<Uri> mInputUris = new ArrayList<>();
     public ArrayList<Uri> mOutputUris = new ArrayList<>();
     public byte[] mBytes;
 
-    public SignEncryptParcel() {
-        super();
+    public SignEncryptParcel(PgpSignEncryptData data) {
+        this.data = data;
     }
 
     public SignEncryptParcel(Parcel src) {
-        super(src);
-
         mInputUris = src.createTypedArrayList(Uri.CREATOR);
         mOutputUris = src.createTypedArrayList(Uri.CREATOR);
         mBytes = src.createByteArray();
 
+        data = src.readParcelable(getClass().getClassLoader());
     }
 
     public boolean isIncomplete() {
@@ -85,17 +87,25 @@ public class SignEncryptParcel extends PgpSignEncryptInputParcel {
         mOutputUris.addAll(outputUris);
     }
 
+    public void setData(PgpSignEncryptData data) {
+        this.data = data;
+    }
+
+    public PgpSignEncryptData getData() {
+        return data;
+    }
+
     @Override
     public int describeContents() {
         return 0;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-
         dest.writeTypedList(mInputUris);
         dest.writeTypedList(mOutputUris);
         dest.writeByteArray(mBytes);
+
+        dest.writeParcelable(data, 0);
     }
 
     public static final Creator<SignEncryptParcel> CREATOR = new Creator<SignEncryptParcel>() {
