@@ -84,11 +84,9 @@
             android:textSize="18dp"
             android:textStyle="bold"
             android:typeface="monospace"
-            app:deleteChar="\u00a0"
             app:mask="****-****-****-****-****-****"
             app:maskIconColor="@color/colorPrimary"
             app:notMaskedSymbol="*"
-            app:replacementChar="\u00a0"
             tools:ignore="SpUsage" />
 
     </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
