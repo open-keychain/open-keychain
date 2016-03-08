@@ -76,6 +76,8 @@
 
     <!-- other group (for free) -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
@@ -89,6 +91,18 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Keychain.Light">
+        <!-- broadcast receiver for Wi-Fi Connection -->
+        <receiver
+            android:name=".receiver.NetworkReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGE"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.net.wifi.STATE_CHANGE"/>
+            </intent-filter>
+        </receiver>
         <!-- singleTop for NFC dispatch, see SecurityTokenOperationActivity -->
         <activity
             android:name=".ui.MainActivity"
