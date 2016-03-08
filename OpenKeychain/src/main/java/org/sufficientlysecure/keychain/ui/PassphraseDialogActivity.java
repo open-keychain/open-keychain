@@ -192,6 +192,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 mBackupCodeEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
                 mBackupCodeEditText.setOnEditorActionListener(this);
 
+                openKeyboard(mBackupCodeEditText);
+
                 AlertDialog dialog = alert.create();
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE,
                         activity.getString(R.string.btn_unlock), (DialogInterface.OnClickListener) null);
@@ -281,28 +283,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             mPassphraseText.setText(message);
             mPassphraseEditText.setHint(hint);
 
-            // Hack to open keyboard.
-            // This is the only method that I found to work across all Android versions
-            // http://turbomanage.wordpress.com/2012/05/02/show-soft-keyboard-automatically-when-edittext-receives-focus/
-            // Notes: * onCreateView can't be used because we want to add buttons to the dialog
-            //        * opening in onActivityCreated does not work on Android 4.4
-            mPassphraseEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    mPassphraseEditText.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (getActivity() == null || mPassphraseEditText == null) {
-                                return;
-                            }
-                            InputMethodManager imm = (InputMethodManager) getActivity()
-                                    .getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.showSoftInput(mPassphraseEditText, InputMethodManager.SHOW_IMPLICIT);
-                        }
-                    });
-                }
-            });
-            mPassphraseEditText.requestFocus();
+            openKeyboard(mPassphraseEditText);
 
             mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
             mPassphraseEditText.setOnEditorActionListener(this);
@@ -322,6 +303,34 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     activity.getString(R.string.btn_unlock), (DialogInterface.OnClickListener) null);
 
             return dialog;
+        }
+
+        /**
+         * Hack to open keyboard.
+         *
+         * This is the only method that I found to work across all Android versions
+         * http://turbomanage.wordpress.com/2012/05/02/show-soft-keyboard-automatically-when-edittext-receives-focus/
+         * Notes: * onCreateView can't be used because we want to add buttons to the dialog
+         *        * opening in onActivityCreated does not work on Android 4.4
+         */
+        private void openKeyboard(final TextView textView) {
+            textView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    textView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (getActivity() == null || textView == null) {
+                                return;
+                            }
+                            InputMethodManager imm = (InputMethodManager) getActivity()
+                                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.showSoftInput(textView, InputMethodManager.SHOW_IMPLICIT);
+                        }
+                    });
+                }
+            });
+            textView.requestFocus();
         }
 
         /**
