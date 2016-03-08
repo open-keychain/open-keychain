@@ -198,7 +198,6 @@ public class KeyserverSyncAdapterService extends Service {
                 // if Wi-Fi connection doesn't exist then receiver is enabled
                 if(!isWifiConn){
                     new NetworkReceiver().setWifiReceiverComponent(true, getContext());
-                    //postponeSync();
                     return;
                 }
             }
