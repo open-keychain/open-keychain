@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="CardViewHeader">
         <item name="android:drawableBottom">?attr/cardViewHeaderDrawable</item>
@@ -36,6 +36,11 @@
 
     <style name="MaterialFlatButton" parent="@style/Widget.AppCompat.Button.Borderless">
         <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+
+    <!-- constrain size of backup code input for smaller devices -->
+    <style name="BackupCodeTextStyle">
+        <item name="android:textSize" tools:ignore="SpUsage">14dp</item>
     </style>
 
 </resources>

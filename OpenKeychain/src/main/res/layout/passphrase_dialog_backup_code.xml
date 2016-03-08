@@ -30,12 +30,12 @@
 
             <com.github.pinball83.maskededittext.MaskedEditText
                 android:id="@+id/backup_code"
+                style="@style/BackupCodeTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:textSize="14dp"
                 android:textStyle="bold"
                 android:typeface="monospace"
                 app:mask="****-****-****-****-****-****"
