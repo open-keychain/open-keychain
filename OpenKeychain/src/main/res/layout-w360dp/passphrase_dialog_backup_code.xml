@@ -35,7 +35,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:textSize="18dp"
+                android:textSize="16dp"
                 android:textStyle="bold"
                 android:typeface="monospace"
                 app:mask="****-****-****-****-****-****"
