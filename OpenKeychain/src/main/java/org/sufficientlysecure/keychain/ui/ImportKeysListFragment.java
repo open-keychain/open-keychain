@@ -335,7 +335,7 @@ public class ImportKeysListFragment extends ListFragment implements
         if (mLoaderState instanceof BytesLoaderState) {
             BytesLoaderState ls = (BytesLoaderState) mLoaderState;
 
-            if ( ! checkAndRequestReadPermission(ls.mDataUri)) {
+            if ( ls.mDataUri != null && ! checkAndRequestReadPermission(ls.mDataUri)) {
                 return;
             }
         }
