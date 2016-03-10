@@ -103,20 +103,20 @@ public class OpenPgpService extends Service {
     }
 
     private static class KeyIdResult {
-        final Intent mRequiredUserInteraction;
+        final Intent mResultIntent;
         final HashSet<Long> mKeyIds;
 
-        KeyIdResult(Intent requiredUserInteraction) {
-            mRequiredUserInteraction = requiredUserInteraction;
+        KeyIdResult(Intent resultIntent) {
+            mResultIntent = resultIntent;
             mKeyIds = null;
         }
         KeyIdResult(HashSet<Long> keyIds) {
-            mRequiredUserInteraction = null;
+            mResultIntent = null;
             mKeyIds = keyIds;
         }
     }
 
-    private KeyIdResult returnKeyIdsFromEmails(Intent data, String[] encryptionUserIds) {
+    private KeyIdResult returnKeyIdsFromEmails(Intent data, String[] encryptionUserIds, boolean isOpportunistic) {
         boolean noUserIdsCheck = (encryptionUserIds == null || encryptionUserIds.length == 0);
         boolean missingUserIdsCheck = false;
         boolean duplicateUserIdsCheck = false;
@@ -159,9 +159,15 @@ public class OpenPgpService extends Service {
             }
         }
 
-        if (noUserIdsCheck || missingUserIdsCheck || duplicateUserIdsCheck) {
-            // allow the user to verify pub key selection
+        if (isOpportunistic && (noUserIdsCheck || missingUserIdsCheck)) {
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.RESULT_ERROR,
+                    new OpenPgpError(OpenPgpError.OPPORTUNISTIC_MISSING_KEYS, "missing keys in opportunistic mode"));
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+            return new KeyIdResult(result);
+        }
 
+        if (noUserIdsCheck || missingUserIdsCheck || duplicateUserIdsCheck) {
             // convert ArrayList<Long> to long[]
             long[] keyIdsArray = getUnboxedLongArray(keyIds);
             ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
@@ -173,15 +179,14 @@ public class OpenPgpService extends Service {
             result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
             return new KeyIdResult(result);
-        } else {
-            // everything was easy, we have exactly one key for every email
-
-            if (keyIds.isEmpty()) {
-                Log.e(Constants.TAG, "keyIdsArray.length == 0, should never happen!");
-            }
-
-            return new KeyIdResult(keyIds);
         }
+
+        // everything was easy, we have exactly one key for every email
+        if (keyIds.isEmpty()) {
+            Log.e(Constants.TAG, "keyIdsArray.length == 0, should never happen!");
+        }
+
+        return new KeyIdResult(keyIds);
     }
 
     private Intent signImpl(Intent data, InputStream inputStream,
@@ -302,11 +307,12 @@ public class OpenPgpService extends Service {
                 // get key ids based on given user ids
                 if (data.hasExtra(OpenPgpApi.EXTRA_USER_IDS)) {
                     String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
+                    boolean isOpportunistic = data.getBooleanExtra(OpenPgpApi.EXTRA_OPPORTUNISTIC_ENCRYPTION, false);
                     // give params through to activity...
-                    KeyIdResult result = returnKeyIdsFromEmails(data, userIds);
+                    KeyIdResult result = returnKeyIdsFromEmails(data, userIds, isOpportunistic);
 
-                    if (result.mRequiredUserInteraction != null) {
-                        return result.mRequiredUserInteraction;
+                    if (result.mResultIntent != null) {
+                        return result.mResultIntent;
                     }
                     encryptKeyIds.addAll(result.mKeyIds);
                 }
@@ -694,9 +700,9 @@ public class OpenPgpService extends Service {
         } else {
             // get key ids based on given user ids
             String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
-            KeyIdResult keyResult = returnKeyIdsFromEmails(data, userIds);
-            if (keyResult.mRequiredUserInteraction != null) {
-                return keyResult.mRequiredUserInteraction;
+            KeyIdResult keyResult = returnKeyIdsFromEmails(data, userIds, false);
+            if (keyResult.mResultIntent != null) {
+                return keyResult.mResultIntent;
             }
 
             if (keyResult.mKeyIds == null) {
