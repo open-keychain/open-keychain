@@ -436,18 +436,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     account,
                     ContactsContract.AUTHORITY
             );
-
-            SwitchPreference pref = (SwitchPreference) findPreference(Constants.Pref.ENABLE_WIFI_SYNC_ONLY);
-            pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Preferences prefs = Preferences.getPreferences(getContext());
-                    prefs.setWifiOnlySync((Boolean) newValue);
-
-                    return true;
-                }
-            });
         }
 
         private void initializeSyncCheckBox(final SwitchPreference syncCheckBox,
