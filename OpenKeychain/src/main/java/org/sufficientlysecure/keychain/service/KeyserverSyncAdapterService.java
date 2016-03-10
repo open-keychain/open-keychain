@@ -530,8 +530,7 @@ public class KeyserverSyncAdapterService extends Service {
         return builder.build();
     }
 
-    public static void enableKeyserverSync(Context context) {
-        //Preferences.getPreferences(context).setAllowSync(true);
+    public static void enableKeyserverSync(Context context) {]
         Account account = KeychainApplication.createAccountIfNecessary(context);
 
         if (account == null) {
