@@ -308,6 +308,9 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.ALGORITHM, Tables.KEYS + "." + Keys.ALGORITHM);
                 projectionMap.put(KeyRings.FINGERPRINT, Tables.KEYS + "." + Keys.FINGERPRINT);
                 projectionMap.put(KeyRings.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID);
+                projectionMap.put(KeyRings.NAME, Tables.USER_PACKETS + "." + UserPackets.NAME);
+                projectionMap.put(KeyRings.EMAIL, Tables.USER_PACKETS + "." + UserPackets.EMAIL);
+                projectionMap.put(KeyRings.COMMENT, Tables.USER_PACKETS + "." + UserPackets.COMMENT);
                 projectionMap.put(KeyRings.HAS_DUPLICATE_USER_ID,
                         "(EXISTS (SELECT * FROM " + Tables.USER_PACKETS + " AS dups"
                                 + " WHERE dups." + UserPackets.MASTER_KEY_ID

@@ -19,17 +19,6 @@
 package org.sufficientlysecure.keychain.provider;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -78,6 +67,17 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.Utf8Util;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class contains high level methods for database access. Despite its
@@ -452,11 +452,13 @@ public class ProviderHelper {
             mIndent += 1;
             for (byte[] rawUserId : masterKey.getUnorderedRawUserIds()) {
                 String userId = Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId);
-
                 UserPacketItem item = new UserPacketItem();
                 uids.add(item);
+                KeyRing.UserId splitUserId =  KeyRing.splitUserId(userId);
                 item.userId = userId;
-
+                item.name = splitUserId.name;
+                item.email = splitUserId.email;
+                item.comment = splitUserId.comment;
                 int unknownCerts = 0;
 
                 log(LogType.MSG_IP_UID_PROCESSING, userId);
@@ -746,6 +748,9 @@ public class ProviderHelper {
     private static class UserPacketItem implements Comparable<UserPacketItem> {
         Integer type;
         String userId;
+        String name;
+        String email;
+        String comment;
         byte[] attributeData;
         boolean isPrimary = false;
         WrappedSignature selfCert;
@@ -1437,6 +1442,9 @@ public class ProviderHelper {
         values.put(UserPackets.MASTER_KEY_ID, masterKeyId);
         values.put(UserPackets.TYPE, item.type);
         values.put(UserPackets.USER_ID, item.userId);
+        values.put(UserPackets.NAME, item.name);
+        values.put(UserPackets.EMAIL, item.email);
+        values.put(UserPackets.COMMENT, item.comment);
         values.put(UserPackets.ATTRIBUTE_DATA, item.attributeData);
         values.put(UserPackets.IS_PRIMARY, item.isPrimary);
         values.put(UserPackets.IS_REVOKED, item.selfRevocation != null);
