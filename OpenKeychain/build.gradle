@@ -43,20 +43,20 @@ dependencies {
 
     // JCenter etc.
     compile 'com.eftimoff:android-patternview:1.0.5@aar'
-    compile 'com.journeyapps:zxing-android-embedded:3.1.0@aar'
+    compile 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
     compile 'com.google.zxing:core:3.2.1'
     compile 'com.jpardogo.materialtabstrip:library:1.1.0'
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
-    compile 'com.splitwise:tokenautocomplete:2.0.2@aar'
+    compile 'com.splitwise:tokenautocomplete:2.0.5@aar'
     compile 'com.github.pinball83:masked-edittext:1.0.3'
     compile 'se.emilsjolander:stickylistheaders:2.7.0'
     compile 'org.sufficientlysecure:html-textview:1.3'
     compile 'org.sufficientlysecure:donations:2.4'
     compile 'com.nispok:snackbar:2.11.0'
-    compile 'com.squareup.okhttp:okhttp:2.7.1'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.7.1'
+    compile 'com.squareup.okhttp:okhttp:2.7.5'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.7.5'
     compile 'org.apache.james:apache-mime4j-core:0.7.2'
     compile 'org.apache.james:apache-mime4j-dom:0.7.2'
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
@@ -94,21 +94,21 @@ dependencyVerification {
             'com.android.support:recyclerview-v7:81aad9ff4104a20d8d5cda49dbbe0f2925e7dcd607a689374db843c6f2eca20a',
             'com.android.support:cardview-v7:b2c2c070a78fbf7683ab4d84b23f9eecf2af3848f126775d048ae62238b55aed',
             'com.eftimoff:android-patternview:594dde382fb9a445ef0c92d614f6f127727ce699f124de8167929e10f298bf8b',
-            'com.journeyapps:zxing-android-embedded:90840a4457e68962fdfb74f691c6a736be7596291001045241901f1f0e6db2ac',
+            'com.journeyapps:zxing-android-embedded:afe4cd51d95ba0fd3a4bfe08c5a160bd32602aa174d511600ac824b6de4c79f1',
             'com.google.zxing:core:b4d82452e7a6bf6ec2698904b332431717ed8f9a850224f295aec89de80f2259',
             'com.jpardogo.materialtabstrip:library:24d19232b319f8c73e25793432357919a7ed972186f57a3b2c9093ea74ad8311',
             'com.getbase:floatingactionbutton:3edefa511aac4d90794c7b0496aca59cff2eee1e32679247b4f85acbeee05240',
             'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
             'org.ocpsoft.prettytime:prettytime:ef7098d973ae78b57d1a22dc37d3b8a771bf030301300e24055d676b6cdc5e75',
-            'com.splitwise:tokenautocomplete:2fc238424130b42155b5f2e39799a90bbbd13b148850afbe534ab08bb913c7f7',
+            'com.splitwise:tokenautocomplete:f86b8cd80e8fa1336f47d86b8ce862e1a40bdc8e206ac38c56c8e41a3d05a331',
             'com.github.pinball83:masked-edittext:b1913d86482c7066ebb7831696773ac131865dc441cf8a3fc41d3b7d5691724e',
             'se.emilsjolander:stickylistheaders:a08ca948aa6b220f09d82f16bbbac395f6b78897e9eeac6a9f0b0ba755928eeb',
             'org.sufficientlysecure:donations:96f8197bab26dfe41900d824f10f8f1914519cd62eedb77bdac5b223eccdf0a6',
             'org.sufficientlysecure:html-textview:39048e35894e582adada388e6c00631803283f8defed8e07ad58a5f284f272ee',
-            'com.squareup.okhttp:okhttp:8df336e3e93b22ba8c05da5d94caf968950db845869c7ca16ed682e065135aa8',
+            'com.squareup.okhttp:okhttp:88ac9fd1bb51f82bcc664cc1eb9c225c90dc4389d660231b4cc737bebfe7d0aa',
             'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
             'org.apache.james:apache-mime4j-core:4d7434c68f94b81a253c12f28e6bbb4d6239c361d6086a46e22e594bb43ac660',
-            'com.squareup.okhttp:okhttp-urlconnection:8dce03792fd7b5f089dc4fc0fdcecbbe50ae6cca21cb08a787a3b902a9914111',
+            'com.squareup.okhttp:okhttp-urlconnection:6ae7c527abd2253e7c499ded790174f8f37d9676add63d9e23a76f3ba0588c07',
             'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
             'org.apache.james:apache-mime4j-dom:7e6b06ee164a1c21b7e477249ea0b74a18fddce44764e5764085f58dd8c34633',
             'com.mikepenz:materialdrawer:4e2644f454cc2ce48b956536d3339957c3f592adb2e0b6dad72d477da29f7677',
@@ -119,15 +119,15 @@ dependencyVerification {
             'com.mikepenz:google-material-typeface:48b2712de87d542e9b050846e9f602238a367f38e2d5e8ea4557c5b12adfcbec',
             'com.fidesmo:nordpol-android:56f43fe2b1676817bcb4085926de14a08282ef6729c855c198d81aec62b20d65',
             'com.mikepenz:community-material-typeface:990acfcfb892a733d36748fe29176bd61dd5ab34bc8ca1c591200e639d955b99',
-//            'OpenKeychain.extern.bouncycastle:core:b22dfb37e09fb520683dd0ba089351787560a75b59b60822143f633ec984cab5',
-//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:fbd9a53022747bdc3c5b0926c6f9cbcbee19e766dd96f090a4310dc65026b393',
-//            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:9263330c00497b7bb70502160f50c8396228129376f48f4f5656d28360a2edac',
-//            'OpenKeychain.extern.bouncycastle:prov:2d93a52e1b519995b18c0a92a1e59a2773d67d9b466a9cce6af5202a66502577',
-//            'OpenKeychain.extern.bouncycastle:pg:1397025acf36be36d329c0345b136af776be82fe5d6dad70cc06db09d2f02201',
-//            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:989fcc0eba663489a41aa166f6bb39f21271d980faddea5f06ab75339e792d10',
+//            'OpenKeychain.extern.bouncycastle:core:5321ccaae5c49cd681d6cc222252d8fc4fe033978a3c79ae63f842e701bb5197',
+//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:e7121ea04a39bdc62e56db30e273de3c53c1e3baf21416cfeb551e6652bef639',
+//            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:bd88737b61c0efa8cf9fc2cf3da2e2b827c77e4c0b5342b7a665bcc58daca17f',
+//            'OpenKeychain.extern.bouncycastle:prov:7fe09ee4fc9e7653f430f1fa30eacb2ef594f4cc3f1b27edcce17da27af7af10',
+//            'OpenKeychain.extern.bouncycastle:pg:1efe7abff1d94630064606f1a1c8b55e41a57953d3792524b2a07bc9821b3802',
+//            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:202943c4c9affdf52ee85840b0ff65ceea12b7c3f4e5f1e378e906815769613e',
             'com.android.support:support-annotations:7f21659b084da073b77b6f7fe7ab250c4f23346238d4efdbbbb937e017ae4693',
-//            'OpenKeychain.extern:minidns:109d5851ab351d7628ed62a0ed96b40598952424e56657c17debbeb4a704f0ce',
-//            'OpenKeychain.extern.KeybaseLib:Lib:c5b1567ff781c311240e83f865c4ba76ae435eb00994529b8364371abf0d76de',
+//            'OpenKeychain.extern:minidns:c026deb65796d29d347ee6a0d61daf4e8cd97e714eb540386dc0764bddf96cd3',
+//            'OpenKeychain.extern.KeybaseLib:Lib:83be9cc36fd6807dbec5b4ba7e3c2c1287a70e43bbe564abf20d096299848b73',
             'com.android.support:animated-vector-drawable:4d8366192dedc8ca9e6ff62e9be9ba6145166554d61befc9df312e8328836f55',
             'com.android.support:support-vector-drawable:0f43fc47b0d2797c4e1851aba61ab87a4fd33323348c2bd022821aaac052a266',
             'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
