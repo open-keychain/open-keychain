@@ -70,7 +70,7 @@ public class KeyserverSyncAdapterService extends Service {
 
 
     private static final String ACTION_IGNORE_TOR = "ignore_tor";
-    private static final String ACTION_UPDATE_ALL = "update_all";
+    public static final String ACTION_UPDATE_ALL = "update_all";
     private static final String ACTION_SYNC_NOW = "sync_now";
     private static final String ACTION_DISMISS_NOTIFICATION = "cancel_sync";
     private static final String ACTION_START_ORBOT = "start_orbot";
