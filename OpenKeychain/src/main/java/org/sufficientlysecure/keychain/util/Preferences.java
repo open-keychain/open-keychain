@@ -426,12 +426,6 @@ public class Preferences {
 
     // sync preferences
 
-    public void setWifiOnlySync(Boolean isSyncEnabled){
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Pref.ENABLE_WIFI_SYNC_ONLY, isSyncEnabled);
-        editor.commit();
-    }
-
     public boolean getWifiOnlySync() {
         return mSharedPreferences.getBoolean(Pref.ENABLE_WIFI_SYNC_ONLY, false);
     }
