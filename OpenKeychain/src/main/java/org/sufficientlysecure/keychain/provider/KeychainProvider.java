@@ -316,8 +316,8 @@ public class KeychainProvider extends ContentProvider {
                                 + " WHERE dups." + UserPackets.MASTER_KEY_ID
                                     + " != " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " AND dups." + UserPackets.RANK + " = 0"
-                                + " AND dups." + UserPackets.USER_ID
-                                    + " = "+ Tables.USER_PACKETS + "." + UserPackets.USER_ID
+                                + " AND dups." + UserPackets.NAME + " = "+ Tables.USER_PACKETS + "." + UserPackets.NAME
+                                + " AND dups." + UserPackets.EMAIL + " = "+ Tables.USER_PACKETS + "." + UserPackets.EMAIL
                                 + ")) AS " + KeyRings.HAS_DUPLICATE_USER_ID);
                 projectionMap.put(KeyRings.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
                 projectionMap.put(KeyRings.PUBKEY_DATA,
