@@ -416,11 +416,18 @@ public class ImportKeysActivity extends BaseActivity
             intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
             setResult(RESULT_OK, intent);
             finish();
-            return;
-        }
+        } else if (result.isOkNew() || result.isOkUpdated()) {
+            // User has successfully imported a key, hide first time dialog
+            Preferences.getPreferences(this).setFirstTime(false);
 
-        result.createNotify(ImportKeysActivity.this)
-                .show((ViewGroup) findViewById(R.id.import_snackbar));
+            // Close activities opened for importing keys and go to the list of keys
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        } else {
+            result.createNotify(ImportKeysActivity.this)
+                    .show((ViewGroup) findViewById(R.id.import_snackbar));
+        }
     }
 
     // methods from CryptoOperationHelper.Callback
