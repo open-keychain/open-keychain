@@ -79,9 +79,6 @@ public class KeyserverSyncAdapterService extends Service {
     private AtomicBoolean mCancelled = new AtomicBoolean(false);
     Context context;
 
-    //zero argument constructor
-    public KeyserverSyncAdapterService(){}
-
     @Override
     public int onStartCommand(final Intent intent, int flags, final int startId) {
         if (intent == null || intent.getAction() == null) {
