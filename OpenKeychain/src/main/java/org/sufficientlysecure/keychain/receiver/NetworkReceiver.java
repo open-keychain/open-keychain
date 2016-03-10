@@ -13,10 +13,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class NetworkReceiver extends BroadcastReceiver {
-    private static final String ACTION_UPDATE_ALL = "update_all";
-
-    Context context;
-    public NetworkReceiver(){}
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -30,7 +26,7 @@ public class NetworkReceiver extends BroadcastReceiver {
             // broadcaster receiver disabled
             setWifiReceiverComponent(false, context);
             Intent serviceIntent = new Intent(context, KeyserverSyncAdapterService.class);
-            serviceIntent.setAction(ACTION_UPDATE_ALL);
+            serviceIntent.setAction(KeyserverSyncAdapterService.ACTION_UPDATE_ALL);
         }
     }
 
