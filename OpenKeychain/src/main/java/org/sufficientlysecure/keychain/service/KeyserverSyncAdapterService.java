@@ -77,7 +77,6 @@ public class KeyserverSyncAdapterService extends Service {
     private static final String ACTION_CANCEL = "cancel";
 
     private AtomicBoolean mCancelled = new AtomicBoolean(false);
-    Context context;
 
     @Override
     public int onStartCommand(final Intent intent, int flags, final int startId) {
@@ -530,7 +529,7 @@ public class KeyserverSyncAdapterService extends Service {
         return builder.build();
     }
 
-    public static void enableKeyserverSync(Context context) {]
+    public static void enableKeyserverSync(Context context) {
         Account account = KeychainApplication.createAccountIfNecessary(context);
 
         if (account == null) {

@@ -3,13 +3,13 @@ package org.sufficientlysecure.keychain.receiver;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class NetworkReceiver extends BroadcastReceiver {
@@ -27,6 +27,7 @@ public class NetworkReceiver extends BroadcastReceiver {
             setWifiReceiverComponent(false, context);
             Intent serviceIntent = new Intent(context, KeyserverSyncAdapterService.class);
             serviceIntent.setAction(KeyserverSyncAdapterService.ACTION_UPDATE_ALL);
+            context.startService(serviceIntent);
         }
     }
 
