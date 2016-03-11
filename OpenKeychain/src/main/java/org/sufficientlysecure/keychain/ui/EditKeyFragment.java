@@ -562,15 +562,8 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
     }
 
     private void addSubkey() {
-        boolean willBeMasterKey;
-        if (mSubkeysAdapter != null) {
-            willBeMasterKey = mSubkeysAdapter.getCount() == 0 && mSubkeysAddedAdapter.getCount() == 0;
-        } else {
-            willBeMasterKey = mSubkeysAddedAdapter.getCount() == 0;
-        }
-
         AddSubkeyDialogFragment addSubkeyDialogFragment =
-                AddSubkeyDialogFragment.newInstance(willBeMasterKey);
+                AddSubkeyDialogFragment.newInstance(false);
         addSubkeyDialogFragment
                 .setOnAlgorithmSelectedListener(
                         new AddSubkeyDialogFragment.OnAlgorithmSelectedListener() {
