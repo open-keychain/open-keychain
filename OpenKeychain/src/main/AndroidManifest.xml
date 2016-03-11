@@ -94,7 +94,7 @@
         <!-- broadcast receiver for Wi-Fi Connection -->
         <receiver
             android:name=".receiver.NetworkReceiver"
-            android:enabled="true"
+            android:enabled="false"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGE"/>
