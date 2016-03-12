@@ -43,6 +43,7 @@ import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -236,6 +237,30 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         setupAutomaticLinebreak(mCodeEditText);
         mCodeEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         setupEditTextSuccessListener(mCodeEditText);
+
+        // prevent selection action mode, partially circumventing text selection bug
+        mCodeEditText.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+
+            }
+        });
+
 
         TextView codeDisplayText = (TextView) view.findViewById(R.id.backup_code_display);
         setupAutomaticLinebreak(codeDisplayText);
