@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 
-import com.squareup.okhttp.Request;
+import okhttp3.Request;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;

@@ -19,8 +19,8 @@ package org.sufficientlysecure.keychain.util;
 
 import android.content.res.AssetManager;
 
-import com.squareup.okhttp.OkHttpClient;
 
+import okhttp3.OkHttpClient;
 import org.sufficientlysecure.keychain.Constants;
 
 import java.io.ByteArrayInputStream;
@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 public class TlsHelper {
@@ -80,30 +81,30 @@ public class TlsHelper {
      * @throws TlsHelperException
      * @throws IOException
      */
-    public static boolean usePinnedCertificateIfAvailable(OkHttpClient client, URL url) throws TlsHelperException, IOException {
+    public static SSLSocketFactory getPinnedSslSocketFactory(URL url) throws TlsHelperException, IOException {
         if (url.getProtocol().equals("https")) {
             // use certificate PIN from assets if we have one
             for (String host : sPinnedCertificates.keySet()) {
                 if (url.getHost().endsWith(host)) {
-                    pinCertificate(sPinnedCertificates.get(host), client);
-                    return true;
+                    return pinCertificate(sPinnedCertificates.get(host));
+                    //return true;
                 }
             }
         }
-        return false;
+        return null;
     }
 
     /**
-     * Modifies the client to accept only requests with a given certificate. Applies to all URLs requested by the
-     * client.
-     * Therefore a client that is pinned this way should be used to only make requests to URLs with passed certificate.
+     * Modifies the builder to accept only requests with a given certificate. Applies to all URLs requested by the
+     * builder.
+     * Therefore a builder that is pinned this way should be used to only make requests to URLs with passed certificate.
      *
      * @param certificate certificate to pin
-     * @param client      OkHttpClient to enforce pinning on
+     * @param builder      OkHttpBuilder to enforce pinning on
      * @throws TlsHelperException
      * @throws IOException
      */
-    private static void pinCertificate(byte[] certificate, OkHttpClient client)
+    private static SSLSocketFactory pinCertificate(byte[] certificate)
             throws TlsHelperException, IOException {
         // We don't use OkHttp's CertificatePinner since it can not be used to pin self-signed
         // certificate if such certificate is not accepted by TrustManager.
@@ -130,7 +131,8 @@ public class TlsHelper {
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, tmf.getTrustManagers(), null);
 
-            client.setSslSocketFactory(context.getSocketFactory());
+            return context.getSocketFactory();
+            //builder.sslSocketFactory(context.getSocketFactory());
         } catch (CertificateException | KeyStoreException | KeyManagementException | NoSuchAlgorithmException e) {
             throw new TlsHelperException(e);
         }

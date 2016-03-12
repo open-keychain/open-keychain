@@ -7,11 +7,11 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.util.Log;
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
 import com.textuality.keybase.lib.JWalk;
 
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -55,8 +55,8 @@ dependencies {
     compile 'org.sufficientlysecure:html-textview:1.3'
     compile 'org.sufficientlysecure:donations:2.4'
     compile 'com.nispok:snackbar:2.11.0'
-    compile 'com.squareup.okhttp:okhttp:2.7.5'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.7.5'
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.2.0'
     compile 'org.apache.james:apache-mime4j-core:0.7.2'
     compile 'org.apache.james:apache-mime4j-dom:0.7.2'
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
@@ -105,10 +105,10 @@ dependencyVerification {
             'se.emilsjolander:stickylistheaders:a08ca948aa6b220f09d82f16bbbac395f6b78897e9eeac6a9f0b0ba755928eeb',
             'org.sufficientlysecure:donations:96f8197bab26dfe41900d824f10f8f1914519cd62eedb77bdac5b223eccdf0a6',
             'org.sufficientlysecure:html-textview:39048e35894e582adada388e6c00631803283f8defed8e07ad58a5f284f272ee',
-            'com.squareup.okhttp:okhttp:88ac9fd1bb51f82bcc664cc1eb9c225c90dc4389d660231b4cc737bebfe7d0aa',
+            'com.squareup.okhttp3:okhttp:a41cdb7b024c56436a21e38f00b4d12e3b7e01451ffe6c4f545acba805bba03b',
+            'com.squareup.okhttp3:okhttp-urlconnection:7d6598a6665c166e2d4b78956a96056b9be7de192b3c923ccf4695d08e580833',
             'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
             'org.apache.james:apache-mime4j-core:4d7434c68f94b81a253c12f28e6bbb4d6239c361d6086a46e22e594bb43ac660',
-            'com.squareup.okhttp:okhttp-urlconnection:6ae7c527abd2253e7c499ded790174f8f37d9676add63d9e23a76f3ba0588c07',
             'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
             'org.apache.james:apache-mime4j-dom:7e6b06ee164a1c21b7e477249ea0b74a18fddce44764e5764085f58dd8c34633',
             'com.mikepenz:materialdrawer:4e2644f454cc2ce48b956536d3339957c3f592adb2e0b6dad72d477da29f7677',

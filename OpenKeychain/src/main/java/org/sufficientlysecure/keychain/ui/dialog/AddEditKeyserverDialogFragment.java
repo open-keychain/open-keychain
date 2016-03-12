@@ -50,14 +50,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
@@ -354,14 +353,10 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
 
                     Log.d("Converted URL", newKeyserver.toString());
 
-                    OkHttpClient client = HkpKeyserver.getClient(newKeyserver.toURL(), proxy);
-
-                    // don't follow any redirects
-                    client.setFollowRedirects(false);
-                    client.setFollowSslRedirects(false);
+                    OkHttpClient client = OkHttpClientFactory.getPinnedClient(newKeyserver.toURL(), proxy);
 
                     if (onlyTrustedKeyserver
-                            && !TlsHelper.usePinnedCertificateIfAvailable(client, newKeyserver.toURL())) {
+                            && TlsHelper.getPinnedSslSocketFactory(newKeyserver.toURL())==null) {
                         Log.w(Constants.TAG, "No pinned certificate for this host in OpenKeychain's assets.");
                         reason = FailureReason.NO_PINNED_CERTIFICATE;
                         return reason;

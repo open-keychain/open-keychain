@@ -17,55 +17,36 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkUrlFactory;
+
 import com.textuality.keybase.lib.KeybaseUrlConnectionClient;
 
+import okhttp3.OkHttpClient;
 import org.sufficientlysecure.keychain.Constants;
 
 import java.io.IOException;
 import java.net.Proxy;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Wrapper for Keybase Lib
  */
 public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
 
-    private OkUrlFactory generateUrlFactory() {
-        OkHttpClient client = new OkHttpClient();
-        return new OkUrlFactory(client);
-    }
 
     @Override
-    public URLConnection openConnection(URL url, Proxy proxy, boolean isKeybase) throws IOException {
-        OkUrlFactory factory = generateUrlFactory();
-        if (proxy != null) {
-            factory.client().setProxy(proxy);
-            factory.client().setConnectTimeout(30000, TimeUnit.MILLISECONDS);
-            factory.client().setReadTimeout(40000, TimeUnit.MILLISECONDS);
-        } else {
-            factory.client().setConnectTimeout(5000, TimeUnit.MILLISECONDS);
-            factory.client().setReadTimeout(25000, TimeUnit.MILLISECONDS);
-        }
-
-        factory.client().setFollowSslRedirects(false);
-
-        // forced the usage of api.keybase.io pinned certificate
-        if (isKeybase) {
-            try {
-                if (!TlsHelper.usePinnedCertificateIfAvailable(factory.client(), url)) {
-                    throw new IOException("no pinned certificate found for URL!");
-                }
-            } catch (TlsHelper.TlsHelperException e) {
-                Log.e(Constants.TAG, "TlsHelper failed", e);
-                throw new IOException("TlsHelper failed");
+    public OkHttpClient getClient(URL url, Proxy proxy, boolean pin) throws IOException {
+        try {
+            if(pin) {
+                return OkHttpClientFactory.getPinnedClient(url, proxy);
+            }else{
+                return OkHttpClientFactory.getClient( proxy);
             }
+        } catch (IOException e) {
+            throw new IOException("no pinned certificate found for URL!");
+        } catch (TlsHelper.TlsHelperException e) {
+            Log.e(Constants.TAG, "TlsHelper failed", e);
+            throw new IOException("TlsHelper failed");
         }
-
-        return factory.open(url);
     }
 
     @Override
