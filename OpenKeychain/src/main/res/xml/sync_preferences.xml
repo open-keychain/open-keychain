@@ -6,6 +6,7 @@
     <SwitchPreference
         android:key="enableWifiSyncOnly"
         android:persistent="true"
+        android:dependency="syncKeyserver"
         android:title="@string/label_sync_settings_wifi_title"/>
     <SwitchPreference
         android:key="syncContacts"
