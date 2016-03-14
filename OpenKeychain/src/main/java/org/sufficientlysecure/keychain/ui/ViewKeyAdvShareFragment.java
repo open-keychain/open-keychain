@@ -238,7 +238,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
             // let user choose application
             Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.setType("text/plain");
+            sendIntent.setType(Constants.MIME_TYPE_KEYS);
 
             // NOTE: Don't use Intent.EXTRA_TEXT to send the key
             // better send it via a Uri!
