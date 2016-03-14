@@ -19,19 +19,6 @@
 package org.sufficientlysecure.keychain.util;
 
 
-import java.io.Serializable;
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -44,6 +31,19 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
+
+import java.io.Serializable;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Singleton Implementation of a Preference Helper
@@ -422,6 +422,12 @@ public class Preferences {
                 return new CloudSearchPrefs[size];
             }
         };
+    }
+
+    // sync preferences
+
+    public boolean getWifiOnlySync() {
+        return mSharedPreferences.getBoolean(Pref.ENABLE_WIFI_SYNC_ONLY, false);
     }
 
     // experimental prefs

@@ -118,6 +118,7 @@ public final class Constants {
         // keyserver sync settings
         public static final String SYNC_CONTACTS = "syncContacts";
         public static final String SYNC_KEYSERVER = "syncKeyserver";
+        public static final String ENABLE_WIFI_SYNC_ONLY = "enableWifiSyncOnly";
         // other settings
         public static final String EXPERIMENTAL_ENABLE_WORD_CONFIRM = "experimentalEnableWordConfirm";
         public static final String EXPERIMENTAL_ENABLE_LINKED_IDENTITIES = "experimentalEnableLinkedIdentities";
