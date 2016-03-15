@@ -72,6 +72,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.PassphraseChangeParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -376,6 +377,16 @@ public class PgpKeyOperation {
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
+        if (passphraseParcel.mValidSubkeyId == null) {
+            PGPSecretKey nonDummy = firstNonDummySecretKeyID(sKR);
+            if(nonDummy== null) {
+                log.add(OperationResult.LogType.MSG_MF_ERROR_ALL_KEYS_STRIPPED, 0);
+                return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+            } else {
+                passphraseParcel.mValidSubkeyId = nonDummy.getKeyID();
+            }
+        }
+
         if (!cryptoInput.hasPassphrase()) {
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
 
@@ -403,6 +414,18 @@ public class PgpKeyOperation {
             log.add(LogType.MSG_MF_SUCCESS, indent);
             return new PgpEditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
         }
+    }
+
+    private static PGPSecretKey firstNonDummySecretKeyID(PGPSecretKeyRing secRing) {
+        Iterator<PGPSecretKey> secretKeyIterator = secRing.getSecretKeys();
+
+        while(secretKeyIterator.hasNext()) {
+            PGPSecretKey secretKey = secretKeyIterator.next();
+            if(!isDummy(secretKey)){
+                return secretKey;
+            }
+        }
+        return null;
     }
 
     /** This method introduces a list of modifications specified by a SaveKeyringParcel to a
@@ -1296,6 +1319,12 @@ public class PgpKeyOperation {
                 sKey = PGPSecretKey.copyWithNewPassword(sKey, keyDecryptor, keyEncryptorNew);
                 ok = true;
             } catch (PGPException e) {
+
+                // if this is the master key, error!
+                if (sKey.getKeyID() == masterPublicKey.getKeyID() && !isDummy(sKey)) {
+                    log.add(LogType.MSG_MF_ERROR_PASSPHRASE_MASTER, indent+1);
+                    return null;
+                }
 
                 // being in here means decrypt failed, likely due to a bad passphrase try
                 // again with an empty passphrase, maybe we can salvage this

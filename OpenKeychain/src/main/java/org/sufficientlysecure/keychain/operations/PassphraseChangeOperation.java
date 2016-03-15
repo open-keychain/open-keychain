@@ -63,15 +63,6 @@ public class PassphraseChangeOperation extends BaseOperation<PassphraseChangePar
 
                     CanonicalizedSecretKeyRing secRing =
                             mProviderHelper.getCanonicalizedSecretKeyRing(passphraseParcel.mMasterKeyId);
-                    CachedPublicKeyRing cachedRing =
-                            mProviderHelper.getCachedPublicKeyRing(passphraseParcel.mMasterKeyId);
-
-                    passphraseParcel.mValidSubkeyId = getFirstValidKeyId(secRing, cachedRing);
-
-                    if(passphraseParcel.mValidSubkeyId == null) {
-                        log.add(OperationResult.LogType.MSG_MF_ERROR_ALL_KEYS_STRIPPED, 0);
-                        return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
-                    }
 
                     modifyResult = keyOperations.modifyKeyRingPassword(secRing, cryptoInput, passphraseParcel);
 
@@ -119,23 +110,4 @@ public class PassphraseChangeOperation extends BaseOperation<PassphraseChangePar
 
     }
 
-    private static Long getFirstValidKeyId (CanonicalizedSecretKeyRing secRing, CachedPublicKeyRing cachedRing) {
-
-        Iterator<CanonicalizedSecretKey> secretKeyIterator = secRing.secretKeyIterator().iterator();
-
-        while(secretKeyIterator.hasNext()) {
-            try {
-                long keyId = secretKeyIterator.next().getKeyId();
-                CanonicalizedSecretKey.SecretKeyType keyType = cachedRing.getSecretKeyType(keyId);
-                if( keyType == CanonicalizedSecretKey.SecretKeyType.PASSPHRASE
-                        || keyType == CanonicalizedSecretKey.SecretKeyType.PASSPHRASE_EMPTY) {
-                    return keyId;
-                }
-            } catch (ProviderHelper.NotFoundException e) {
-                ;
-            }
-        }
-
-        return null;
-    }
 }
