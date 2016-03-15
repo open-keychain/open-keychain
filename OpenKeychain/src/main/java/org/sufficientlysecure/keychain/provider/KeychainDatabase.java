@@ -279,37 +279,35 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE user_ids ADD COLUMN type INTEGER");
                 db.execSQL("ALTER TABLE user_ids ADD COLUMN attribute_data BLOB");
             case 7:
-                // consolidate
-            case 8:
                 // new table for allowed key ids in API
                 try {
                     db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
                 } catch (Exception e) {
                     // never mind, the column probably already existed
                 }
-            case 9:
+            case 8:
                 // tbale name for user_ids changed to user_packets
                 db.execSQL("DROP TABLE IF EXISTS certs");
                 db.execSQL("DROP TABLE IF EXISTS user_ids");
                 db.execSQL(CREATE_USER_PACKETS);
                 db.execSQL(CREATE_CERTS);
-            case 10:
+            case 9:
                 // do nothing here, just consolidate
-            case 11:
+            case 10:
                 // fix problems in database, see #1402 for details
                 // https://github.com/open-keychain/open-keychain/issues/1402
                 db.execSQL("DELETE FROM api_accounts WHERE key_id BETWEEN 0 AND 3");
-            case 12:
+            case 11:
                 db.execSQL(CREATE_UPDATE_KEYS);
-            case 13:
+            case 12:
                 // do nothing here, just consolidate
-            case 14:
+            case 13:
                 db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
                 db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
                         + UserPacketsColumns.USER_ID + ", " + UserPacketsColumns.MASTER_KEY_ID + ");");
                 db.execSQL("CREATE INDEX verified_certs ON certs ("
                         + CertsColumns.VERIFIED + ", " + CertsColumns.MASTER_KEY_ID + ");");
-            case 15:
+            case 14:
                 db.execSQL("ALTER TABLE user_packets ADD COLUMN name TEXT");
                 db.execSQL("ALTER TABLE user_packets ADD COLUMN email TEXT");
                 db.execSQL("ALTER TABLE user_packets ADD COLUMN comment TEXT");
