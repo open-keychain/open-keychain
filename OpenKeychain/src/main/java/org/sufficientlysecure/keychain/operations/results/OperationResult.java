@@ -539,6 +539,7 @@ public abstract class OperationResult implements Parcelable {
         // secret key modify
         MSG_MF (LogLevel.START, R.string.msg_mr),
         MSG_MF_DIVERT (LogLevel.DEBUG, R.string.msg_mf_divert),
+        MSG_MF_ERROR_ALL_KEYS_STRIPPED (LogLevel.ERROR, R.string.msg_mf_error_all_keys_stripped),
         MSG_MF_ERROR_DIVERT_NEWSUB (LogLevel.ERROR, R.string.msg_mf_error_divert_newsub),
         MSG_MF_ERROR_DIVERT_SERIAL (LogLevel.ERROR, R.string.msg_mf_error_divert_serial),
         MSG_MF_ERROR_ENCODE (LogLevel.ERROR, R.string.msg_mf_error_encode),
@@ -552,6 +553,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_NOOP (LogLevel.ERROR, R.string.msg_mf_error_noop),
         MSG_MF_ERROR_NULL_EXPIRY (LogLevel.ERROR, R.string.msg_mf_error_null_expiry),
         MSG_MF_ERROR_PASSPHRASE_MASTER(LogLevel.ERROR, R.string.msg_mf_error_passphrase_master),
+        MSG_MF_ERROR_PASSPHRASES_UNCHANGED(LogLevel.ERROR, R.string.msg_mf_error_passphrases_unchanged),
         MSG_MF_ERROR_PAST_EXPIRY(LogLevel.ERROR, R.string.msg_mf_error_past_expiry),
         MSG_MF_ERROR_PGP (LogLevel.ERROR, R.string.msg_mf_error_pgp),
         MSG_MF_ERROR_RESTRICTED(LogLevel.ERROR, R.string.msg_mf_error_restricted),

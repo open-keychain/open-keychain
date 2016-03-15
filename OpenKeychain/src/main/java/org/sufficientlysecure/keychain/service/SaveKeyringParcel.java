@@ -344,54 +344,6 @@ public class SaveKeyringParcel implements Parcelable {
         // BRAINPOOL_P256, BRAINPOOL_P384, BRAINPOOL_P512
     }
 
-    /** This subclass contains information on how the passphrase should be changed.
-     *
-     * If no changes are to be made, this class should NOT be used!
-     *
-     * At this point, there must be *exactly one* non-null value here, which specifies the type
-     * of unlocking mechanism to use.
-     *
-     */
-    public static class ChangeUnlockParcel implements Parcelable {
 
-        // The new passphrase to use
-        public final Passphrase mNewPassphrase;
-
-        public ChangeUnlockParcel(Passphrase newPassphrase) {
-            if (newPassphrase == null) {
-                throw new AssertionError("newPassphrase must be non-null. THIS IS A BUG!");
-            }
-            mNewPassphrase = newPassphrase;
-        }
-
-        public ChangeUnlockParcel(Parcel source) {
-            mNewPassphrase = source.readParcelable(Passphrase.class.getClassLoader());
-        }
-
-        @Override
-        public void writeToParcel(Parcel destination, int flags) {
-            destination.writeParcelable(mNewPassphrase, flags);
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        public static final Creator<ChangeUnlockParcel> CREATOR = new Creator<ChangeUnlockParcel>() {
-            public ChangeUnlockParcel createFromParcel(final Parcel source) {
-                return new ChangeUnlockParcel(source);
-            }
-
-            public ChangeUnlockParcel[] newArray(final int size) {
-                return new ChangeUnlockParcel[size];
-            }
-        };
-
-        public String toString() {
-            return "passphrase (" + mNewPassphrase + ")";
-        }
-
-    }
 
 }
