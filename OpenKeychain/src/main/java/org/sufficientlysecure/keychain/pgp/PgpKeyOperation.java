@@ -72,7 +72,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.PassphraseChangeParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -349,9 +348,9 @@ public class PgpKeyOperation {
     }
 
 
-    public PgpEditKeyResult modifyKeyRingPassword(CanonicalizedSecretKeyRing wsKR,
-                                                  CryptoInputParcel cryptoInput,
-                                                  PassphraseChangeParcel passphraseParcel) {
+    public PgpEditKeyResult modifyKeyRingPassphrase(CanonicalizedSecretKeyRing wsKR,
+                                                    CryptoInputParcel cryptoInput,
+                                                    PassphraseChangeParcel passphraseParcel) {
 
         OperationLog log = new OperationLog();
         int indent = 0;
@@ -1274,6 +1273,9 @@ public class PgpKeyOperation {
 
     }
 
+
+
+
     /** This method returns true iff the provided keyring has a local direct key signature
      * with notation data.
      */
@@ -1306,7 +1308,7 @@ public class PgpKeyOperation {
                 PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
                 PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(newPassphrase.getCharArray());
-        int keysModified = 0;
+        boolean keysModified = false;
 
         for (PGPSecretKey sKey : new IterableIterator<>(sKR.getSecretKeys())) {
             log.add(LogType.MSG_MF_PASSPHRASE_KEY, indent,
@@ -1321,6 +1323,7 @@ public class PgpKeyOperation {
             } catch (PGPException e) {
 
                 // if this is the master key, error!
+                // skipped when changing key passphrase
                 if (sKey.getKeyID() == masterPublicKey.getKeyID() && !isDummy(sKey)) {
                     log.add(LogType.MSG_MF_ERROR_PASSPHRASE_MASTER, indent+1);
                     return null;
@@ -1348,10 +1351,11 @@ public class PgpKeyOperation {
             }
 
             sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
-            keysModified++;
+            keysModified = true;
         }
 
-        if(keysModified == 0) {
+        if(!keysModified) {
+            // no passphrase is changed
             log.add(LogType.MSG_MF_ERROR_PASSPHRASES_UNCHANGED, indent+1);
             return null;
         }

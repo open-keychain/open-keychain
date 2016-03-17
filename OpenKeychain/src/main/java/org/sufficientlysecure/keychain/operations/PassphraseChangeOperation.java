@@ -8,24 +8,17 @@ import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseChangeParcel;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
-import java.util.Iterator;
 
-/**
- * Created by alex on 3/14/16.
- */
 public class PassphraseChangeOperation extends BaseOperation<PassphraseChangeParcel> {
 
 
@@ -33,14 +26,6 @@ public class PassphraseChangeOperation extends BaseOperation<PassphraseChangePar
         super(context, providerHelper, progressable);
     }
 
-    /**
-     * Finds the first unstripped key & uses that for passphrase verification.
-     * Might bring in complications
-     *
-     * @param passphraseParcel  primary input to the operation
-     * @param cryptoInput input that changes if user interaction is required
-     * @return the result of the operation
-     */
     @NonNull
     public OperationResult execute(PassphraseChangeParcel passphraseParcel, CryptoInputParcel cryptoInput) {
         OperationResult.OperationLog log = new OperationResult.OperationLog();
@@ -55,7 +40,7 @@ public class PassphraseChangeOperation extends BaseOperation<PassphraseChangePar
         PgpEditKeyResult modifyResult;
         {
             PgpKeyOperation keyOperations =
-                    new PgpKeyOperation(new ProgressScaler(mProgressable, 0, 70, 100), mCancelled);
+                    new PgpKeyOperation(new ProgressScaler(mProgressable, 0, 70, 100));
 
             try {
                     log.add(OperationResult.LogType.MSG_ED_FETCHING, 1,
@@ -63,10 +48,10 @@ public class PassphraseChangeOperation extends BaseOperation<PassphraseChangePar
 
                     CanonicalizedSecretKeyRing secRing =
                             mProviderHelper.getCanonicalizedSecretKeyRing(passphraseParcel.mMasterKeyId);
-
-                    modifyResult = keyOperations.modifyKeyRingPassword(secRing, cryptoInput, passphraseParcel);
+                    modifyResult = keyOperations.modifyKeyRingPassphrase(secRing, cryptoInput, passphraseParcel);
 
                     if (modifyResult.isPending()) {
+                        // obtain original passphrase from user
                         log.add(modifyResult, 1);
                         return new EditKeyResult(log, modifyResult);
                     }
@@ -77,12 +62,6 @@ public class PassphraseChangeOperation extends BaseOperation<PassphraseChangePar
         }
 
         log.add(modifyResult, 1);
-
-        // Check if the action was cancelled
-        if (checkCancelled()) {
-            log.add(OperationResult.LogType.MSG_OPERATION_CANCELLED, 0);
-            return new EditKeyResult(PgpEditKeyResult.RESULT_CANCELLED, log, null);
-        }
 
         if (!modifyResult.success()) {
             // error is already logged by modification
