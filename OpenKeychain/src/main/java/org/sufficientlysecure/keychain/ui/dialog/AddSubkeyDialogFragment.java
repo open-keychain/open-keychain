@@ -108,7 +108,12 @@ public class AddSubkeyDialogFragment extends DialogFragment {
 
         View view = mInflater.inflate(R.layout.add_subkey_dialog, null);
         dialog.setView(view);
-        dialog.setTitle(R.string.title_add_subkey);
+        if(mWillBeMasterKey) {
+            dialog.setTitle(R.string.title_edit_key);
+        } else {
+            dialog.setTitle(R.string.title_add_subkey);
+        }
+
 
         mNoExpiryCheckBox = (CheckBox) view.findViewById(R.id.add_subkey_no_expiry);
         mExpiryRow = (TableRow) view.findViewById(R.id.add_subkey_expiry_row);
