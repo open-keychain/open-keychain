@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <include
+        android:id="@+id/toolbar_include"
+        layout="@layout/toolbar_standalone" />
+
+    <!--
+        fitsSystemWindows and layout_marginTop from
+        https://medium.com/@ngdelamo/using-drawerlayout-the-material-way-i-716bba2b5705
+    -->
+    <LinearLayout
+        android:layout_below="@id/toolbar_include"
+        android:fitsSystemWindows="true"
+        android:layout_marginTop="@dimen/minus_statusbar_height"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/notify_area" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/import_keys_top_layout"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <FrameLayout
+                android:id="@+id/import_keys_top_container"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:orientation="vertical" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/import_keys_list_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:layout_weight="1" />
+
+        <RelativeLayout
+            android:id="@+id/import_footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/import_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider" />
+
+            <RelativeLayout
+                android:id="@+id/import_snackbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/import_import" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>

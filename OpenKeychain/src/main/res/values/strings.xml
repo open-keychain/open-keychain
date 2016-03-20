@@ -1740,4 +1740,6 @@
         <item>50 EUR</item>
         <item>100 EUR</item>
     </string-array>
+    <string name="title_activity_redirect_key">RedirectKeyActivity</string>
+    <string name="action_settings">Settings</string>
 </resources>
