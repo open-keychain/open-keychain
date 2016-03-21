@@ -18,12 +18,15 @@
 package org.sufficientlysecure.keychain.util;
 
 public class Choice <E> {
+
     private String mName;
     private E mId;
+    private String mDescription;
 
-    public Choice(E id, String name) {
+    public Choice(E id, String name, String description) {
         mId = id;
         mName = name;
+        mDescription = description;
     }
 
     public E getId() {
@@ -32,6 +35,10 @@ public class Choice <E> {
 
     public String getName() {
         return mName;
+    }
+
+    public String getDescription() {
+        return mDescription;
     }
 
     @Override
