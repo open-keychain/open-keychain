@@ -206,7 +206,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
                                 data = keyServer.get(entry.mKeyIdHex).getBytes();
                             }
-                            key = UncachedKeyRing.decodeFromData(data);
+                            key = UncachedKeyRing.decodeFromData(data, entry.mExpectedFingerprint, entry.mKeyIdHex);
                             if (key != null) {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
                             } else {

@@ -19,6 +19,8 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
+import android.text.TextUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -163,6 +165,50 @@ public class UncachedKeyRing {
         }
 
         return ring;
+
+    }
+
+    public static UncachedKeyRing decodeFromData(
+            byte[] data, String expectedFingerprint, String expectedKeyId)
+            throws PgpGeneralException, IOException {
+
+        IteratorWithIOThrow<UncachedKeyRing> parsed = fromStream(new ByteArrayInputStream(data));
+
+        if ( ! parsed.hasNext()) {
+            throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
+        }
+
+        UncachedKeyRing ringToAccept = null;
+
+        while (parsed.hasNext()) {
+            UncachedKeyRing ring = parsed.next();
+            Iterator<UncachedPublicKey> publicKeys = ring.getPublicKeys();
+
+            while (publicKeys.hasNext()) {
+                UncachedPublicKey publicKey = publicKeys.next();
+
+                boolean publicKeyMatches = (
+                        KeyFormattingUtils.convertFingerprintToHex(publicKey.getFingerprint())
+                                .equalsIgnoreCase(expectedFingerprint)
+                        || TextUtils.equals(Long.toString(publicKey.getKeyId()), expectedKeyId));
+                if (publicKeyMatches) {
+                    if (publicKey.isMasterKey()) {
+                        //master key matches expectedFingerprint, return this ring immediately
+                        return ring;
+                    } else if (ringToAccept == null) {
+                        //one of the subkeys matches expectedFingerprint
+                        //this ring is potentially the desired ring
+                        ringToAccept = ring;
+                    }
+                }
+            }
+        }
+
+        if (ringToAccept == null) {
+            throw new PgpGeneralException("A key with the expected fingerprint/key ID was not found!");
+        } else {
+            return ringToAccept;
+        }
 
     }
 
