@@ -442,7 +442,7 @@ public class OrbotHelper {
 
     /**
      * will attempt a silent start, which if disabled will fallback to the
-     * {@link #requestStartTor(Context) requestShowOrbotStart} method, which returns the
+     * {@link #requestShowOrbotStart(Activity) requestShowOrbotStart} method, which returns the
      * result in {@link Activity#onActivityResult(int requestCode, int resultCode, Intent data)}
      * with a {@code requestCode} of {@code START_TOR_RESULT}, which will have to be implemented by
      * activities wishing to respond to a change in Orbot state.
@@ -459,7 +459,7 @@ public class OrbotHelper {
 
             @Override
             protected void onSilentStartDisabled() {
-                requestStartTor(activity);
+                requestShowOrbotStart(activity);
             }
         }.startOrbotAndListen(activity, showProgress);
     }
