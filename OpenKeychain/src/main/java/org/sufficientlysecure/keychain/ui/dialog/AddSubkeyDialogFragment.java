@@ -108,7 +108,12 @@ public class AddSubkeyDialogFragment extends DialogFragment {
 
         View view = mInflater.inflate(R.layout.add_subkey_dialog, null);
         dialog.setView(view);
-        dialog.setTitle(R.string.title_add_subkey);
+        if(mWillBeMasterKey) {
+            dialog.setTitle(R.string.title_edit_key);
+        } else {
+            dialog.setTitle(R.string.title_add_subkey);
+        }
+
 
         mNoExpiryCheckBox = (CheckBox) view.findViewById(R.id.add_subkey_no_expiry);
         mExpiryRow = (TableRow) view.findViewById(R.id.add_subkey_expiry_row);
@@ -144,9 +149,9 @@ public class AddSubkeyDialogFragment extends DialogFragment {
 
         {
             ArrayList<Choice<Algorithm>> choices = new ArrayList<>();
-            choices.add(new Choice<>(Algorithm.DSA, getResources().getString(
-                    R.string.dsa)));
             if (!mWillBeMasterKey) {
+                choices.add(new Choice<>(Algorithm.DSA, getResources().getString(
+                        R.string.dsa)));
                 choices.add(new Choice<>(Algorithm.ELGAMAL, getResources().getString(
                         R.string.elgamal)));
             }
@@ -154,8 +159,11 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     R.string.rsa)));
             choices.add(new Choice<>(Algorithm.ECDSA, getResources().getString(
                     R.string.ecdsa)));
-            choices.add(new Choice<>(Algorithm.ECDH, getResources().getString(
-                    R.string.ecdh)));
+            if(!mWillBeMasterKey) {
+                choices.add(new Choice<>(Algorithm.ECDH, getResources().getString(
+                        R.string.ecdh)));
+            }
+
             ArrayAdapter<Choice<Algorithm>> adapter = new ArrayAdapter<>(context,
                     android.R.layout.simple_spinner_item, choices);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -437,16 +445,13 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 mFlagSign.setEnabled(true);
                 mFlagEncrypt.setEnabled(true);
                 mFlagAuthenticate.setEnabled(true);
+                mFlagCertify.setEnabled(false);
 
                 if (mWillBeMasterKey) {
-                    mFlagCertify.setEnabled(true);
-
                     mFlagCertify.setChecked(true);
                     mFlagSign.setChecked(false);
                     mFlagEncrypt.setChecked(false);
                 } else {
-                    mFlagCertify.setEnabled(false);
-
                     mFlagCertify.setChecked(false);
                     mFlagSign.setChecked(true);
                     mFlagEncrypt.setChecked(true);
@@ -493,7 +498,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 mCurveRow.setVisibility(View.VISIBLE);
                 mCustomKeyInfoTextView.setText("");
                 // allowed flags:
-                mFlagCertify.setEnabled(mWillBeMasterKey);
+                mFlagCertify.setEnabled(false);
                 mFlagCertify.setChecked(mWillBeMasterKey);
                 mFlagSign.setEnabled(true);
                 mFlagSign.setChecked(!mWillBeMasterKey);

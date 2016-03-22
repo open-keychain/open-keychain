@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v4.app.FragmentActivity;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ import android.widget.TextView;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.Calendar;
@@ -61,6 +63,7 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         public ImageView vEncryptIcon;
         public ImageView vAuthenticateIcon;
         public ImageButton vDelete;
+        public ImageView vEdit;
         // also hold a reference to the model item
         public SaveKeyringParcel.SubkeyAdd mModel;
     }
@@ -77,13 +80,10 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
             holder.vSignIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_sign);
             holder.vEncryptIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_encrypt);
             holder.vAuthenticateIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_authenticate);
-
             holder.vDelete = (ImageButton) convertView.findViewById(R.id.subkey_item_delete_button);
-            holder.vDelete.setVisibility(View.VISIBLE); // always visible
+            holder.vEdit = (ImageView) convertView.findViewById(R.id.subkey_item_edit_image);
 
             // not used:
-            ImageView vEdit = (ImageView) convertView.findViewById(R.id.subkey_item_edit_image);
-            vEdit.setVisibility(View.GONE);
             ImageView vStatus = (ImageView) convertView.findViewById(R.id.subkey_item_status);
             vStatus.setVisibility(View.GONE);
 
@@ -94,6 +94,29 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
                 public void onClick(View v) {
                     // remove reference model item from adapter (data and notify about change)
                     SubkeysAddedAdapter.this.remove(holder.mModel);
+                }
+            });
+
+            holder.vEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AddSubkeyDialogFragment addSubkeyDialogFragment =
+                            AddSubkeyDialogFragment.newInstance(true);
+                    addSubkeyDialogFragment
+                            .setOnAlgorithmSelectedListener(
+                                    new AddSubkeyDialogFragment.OnAlgorithmSelectedListener() {
+                                        @Override
+                                        public void onAlgorithmSelected(SaveKeyringParcel.SubkeyAdd newSubkey) {
+                                            // calculate manually as the provided position variable
+                                            // is not always accurate
+                                            int pos = SubkeysAddedAdapter.this.getPosition(holder.mModel);
+                                            SubkeysAddedAdapter.this.remove(holder.mModel);
+                                            SubkeysAddedAdapter.this.insert(newSubkey, pos);
+                                        }
+                                    }
+                            );
+                    addSubkeyDialogFragment.show(((FragmentActivity)mActivity)
+                            .getSupportFragmentManager(), "addSubkeyDialog");
                 }
             });
 
@@ -113,8 +136,12 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         boolean isMasterKey = mNewKeyring && position == 0;
         if (isMasterKey) {
             holder.vKeyId.setTypeface(null, Typeface.BOLD);
+            holder.vEdit.setVisibility(View.VISIBLE);
+            holder.vDelete.setVisibility(View.GONE);
         } else {
             holder.vKeyId.setTypeface(null, Typeface.NORMAL);
+            holder.vEdit.setVisibility(View.GONE);
+            holder.vDelete.setVisibility(View.VISIBLE);
         }
 
         holder.vKeyId.setText(R.string.edit_key_new_subkey);

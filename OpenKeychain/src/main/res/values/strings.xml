@@ -14,6 +14,7 @@
     <string name="title_decrypt">"Decrypt"</string>
     <string name="title_add_subkey">"Add subkey"</string>
     <string name="title_edit_key">"Edit Key"</string>
+    <string name="title_edit_masterkey">Edit master key</string>
     <string name="title_linked_create">"Create a Linked Identity"</string>
     <string name="title_preferences">"Settings"</string>
     <string name="title_api_registered_apps">"Apps"</string>
