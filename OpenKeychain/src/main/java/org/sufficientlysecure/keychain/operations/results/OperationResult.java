@@ -566,8 +566,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_BAD_SECURITY_TOKEN_SIZE(LogLevel.ERROR, R.string.edit_key_error_bad_security_token_size),
         MSG_MF_ERROR_BAD_SECURITY_TOKEN_STRIPPED(LogLevel.ERROR, R.string.edit_key_error_bad_security_token_stripped),
         MSG_MF_MASTER (LogLevel.DEBUG, R.string.msg_mf_master),
-        MSG_MF_NOTATION_PIN (LogLevel.DEBUG, R.string.msg_mf_notation_pin),
-        MSG_MF_NOTATION_EMPTY (LogLevel.DEBUG, R.string.msg_mf_notation_empty),
         MSG_MF_PASSPHRASE (LogLevel.INFO, R.string.msg_mf_passphrase),
         MSG_MF_PIN (LogLevel.INFO, R.string.msg_mf_pin),
         MSG_MF_ADMIN_PIN (LogLevel.INFO, R.string.msg_mf_admin_pin),

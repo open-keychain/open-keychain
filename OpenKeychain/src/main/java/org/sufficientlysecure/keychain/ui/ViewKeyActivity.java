@@ -469,8 +469,7 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
 
                     // use new passphrase!
                     mSaveKeyringParcel.mNewUnlock = new SaveKeyringParcel.ChangeUnlockParcel(
-                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
-                            null
+                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
                     );
 
                     mEditOpHelper.cryptoOperation();

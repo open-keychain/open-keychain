@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
+import android.support.annotation.VisibleForTesting;
+
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.bcpg.SignatureSubpacketTags;
@@ -42,15 +44,22 @@ import org.bouncycastle.bcpg.UserAttributeSubpacketTags;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.openpgp.PGPKeyRing;
 import org.bouncycastle.openpgp.PGPObjectFactory;
+import org.bouncycastle.openpgp.PGPPrivateKey;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.bouncycastle.openpgp.PGPSecretKey;
 import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSignature;
+import org.bouncycastle.openpgp.PGPSignatureGenerator;
 import org.bouncycastle.openpgp.PGPSignatureList;
+import org.bouncycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.bouncycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.bouncycastle.openpgp.PGPUtil;
+import org.bouncycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.bouncycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
+import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
+import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -1308,6 +1317,39 @@ public class UncachedKeyRing {
                 || algorithm == PGPPublicKey.ELGAMAL_ENCRYPT
                 || algorithm == PGPPublicKey.ELGAMAL_GENERAL
                 || algorithm == PGPPublicKey.ECDH;
+    }
+
+    // ONLY TO BE USED FOR TESTING!!
+    @VisibleForTesting
+    public static UncachedKeyRing forTestingOnlyAddDummyLocalSignature(
+            UncachedKeyRing uncachedKeyRing, String passphrase) throws Exception {
+        PGPSecretKeyRing sKR = (PGPSecretKeyRing) uncachedKeyRing.mRing;
+
+        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
+                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
+        PGPPrivateKey masterPrivateKey = sKR.getSecretKey().extractPrivateKey(keyDecryptor);
+        PGPPublicKey masterPublicKey = uncachedKeyRing.mRing.getPublicKey();
+
+        // add packet with "pin" notation data
+        PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                masterPrivateKey.getPublicKeyPacket().getAlgorithm(),
+                PgpSecurityConstants.SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO)
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+        { // set subpackets
+            PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
+            hashedPacketsGen.setExportable(false, false);
+            hashedPacketsGen.setNotationData(false, true, "dummynotationdata", "some data");
+            sGen.setHashedSubpackets(hashedPacketsGen.generate());
+        }
+        sGen.init(PGPSignature.DIRECT_KEY, masterPrivateKey);
+        PGPSignature emptySig = sGen.generateCertification(masterPublicKey);
+
+        masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, emptySig);
+        sKR = PGPSecretKeyRing.insertSecretKey(sKR,
+                PGPSecretKey.replacePublicKey(sKR.getSecretKey(), masterPublicKey));
+
+        return new UncachedKeyRing(sKR);
     }
 
 }
