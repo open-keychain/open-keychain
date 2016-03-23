@@ -333,14 +333,6 @@ public class KeyAdapter extends CursorAdapter {
                 return mUserId.email;
             }
         }
-
-        // TODO: workaround for bug in TokenAutoComplete,
-        // see https://github.com/open-keychain/open-keychain/issues/1636
-        @Override
-        public String toString() {
-            return " ";
-        }
-
     }
 
     public static String[] getProjectionWith(String[] projection) {
