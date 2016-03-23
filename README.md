@@ -44,7 +44,7 @@ Development mailinglist at https://lists.riseup.net/www/subscribe/openkeychain
 3. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 4. Open the Android SDK Manager (shell command: ``android``).
 Expand the Tools directory and select "Android SDK Build-tools (Version 23.0.1)".
-Expand the Extras directory and install "Android Support Repository"
+Expand the Extras directory and install "Android Support Library", as well as "Local Maven repository for Support Libraries"
 Select SDK Platform for API levels 21, 22, and 23.
 5. Export ANDROID_HOME pointing to your Android SDK
 6. Execute ``./gradlew assembleFdroidDebug``
