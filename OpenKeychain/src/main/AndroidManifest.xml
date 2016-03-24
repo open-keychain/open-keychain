@@ -719,7 +719,7 @@
             android:name=".ui.RedirectImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_activity_redirect_key"
-            android:theme="@android:style/Theme.Translucent">
+            android:theme="@style/Theme.Keychain.Transparent">
 
             <!-- VIEW with fingerprint scheme:
                       Handle URIs with fingerprints when scanning directly from Barcode Scanner -->

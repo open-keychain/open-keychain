@@ -28,7 +28,6 @@ public class RedirectImportKeysActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.redirect_import_keys_activity);
 
