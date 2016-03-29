@@ -32,6 +32,7 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
@@ -923,6 +924,7 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
                                     }
 
                                     mPhoto.setImageBitmap(photo);
+                                    mPhoto.setColorFilter(Color.argb(30, 120, 166, 69));
                                     mPhotoLayout.setVisibility(View.VISIBLE);
                                 }
                             };
