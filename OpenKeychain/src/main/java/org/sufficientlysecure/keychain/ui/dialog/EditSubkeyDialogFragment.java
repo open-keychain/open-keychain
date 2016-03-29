@@ -75,7 +75,22 @@ public class EditSubkeyDialogFragment extends DialogFragment {
                         sendMessageToHandler(MESSAGE_REVOKE, null);
                         break;
                     case 2:
-                        sendMessageToHandler(MESSAGE_STRIP, null);
+                        CustomAlertDialogBuilder stripAlertDialog = new CustomAlertDialogBuilder(getActivity());
+                        stripAlertDialog.setTitle(getResources().getString(R.string.title_alert_strip)).
+                        setMessage(R.string.alert_strip).setCancelable(true);
+                        stripAlertDialog.setPositiveButton(R.string.strip, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                sendMessageToHandler(MESSAGE_STRIP, null);
+                            }
+                        });
+                        stripAlertDialog.setNegativeButton(R.string.btn_do_not_save, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dismiss();
+                            }
+                        });
+                        stripAlertDialog.show();
                         break;
                     case 3:
                         sendMessageToHandler(MESSAGE_MOVE_KEY_TO_CARD, null);
