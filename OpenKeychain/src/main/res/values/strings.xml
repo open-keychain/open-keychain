@@ -40,7 +40,7 @@
     <string name="title_advanced_key_info">"Advanced"</string>
     <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
     <string name="title_manage_my_keys">"Manage my keys"</string>
-    <string name="title_alert_strip">"Strip this Subkey"</string>
+    <string name="title_alert_strip">"Strip this subkey"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
@@ -334,7 +334,7 @@
     <string name="public_key_deletetion_confirmation">"Delete key '%s'?"</string>
     <string name="also_export_secret_keys">"Also export secret keys"</string>
     <string name="reinstall_openkeychain">"You encountered a known bug with Android. Please reinstall OpenKeychain if you want to link your contacts with keys."</string>
-    <string name="alert_strip">"Stripping this Subkey will render it useless."</string>
+    <string name="alert_strip">"Stripping this subkey will render it useless."</string>
 
     <string name="key_exported">"Successfully exported 1 key."</string>
     <string name="keys_exported">"Successfully exported %d keys."</string>
