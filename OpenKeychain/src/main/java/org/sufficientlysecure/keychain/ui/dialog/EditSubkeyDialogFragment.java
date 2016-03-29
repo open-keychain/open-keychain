@@ -36,6 +36,10 @@ public class EditSubkeyDialogFragment extends DialogFragment {
     public static final int MESSAGE_REVOKE = 2;
     public static final int MESSAGE_STRIP = 3;
     public static final int MESSAGE_MOVE_KEY_TO_CARD = 4;
+    public static final int SUBKEY_MENU_CHANGE_EXPIRY = 0;
+    public static final int SUBKEY_MENU_REVOKE_SUBKEY = 1;
+    public static final int SUBKEY_MENU_STRIP_SUBKEY = 2;
+    public static final int SUBKEY_MENU_MOVE_TO_SECURITY_TOKEN = 3;
 
     private Messenger mMessenger;
 
@@ -68,16 +72,16 @@ public class EditSubkeyDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
-                    case 0:
+                    case SUBKEY_MENU_CHANGE_EXPIRY:
                         sendMessageToHandler(MESSAGE_CHANGE_EXPIRY, null);
                         break;
-                    case 1:
+                    case SUBKEY_MENU_REVOKE_SUBKEY:
                         sendMessageToHandler(MESSAGE_REVOKE, null);
                         break;
-                    case 2:
+                    case SUBKEY_MENU_STRIP_SUBKEY:
                         showAlertDialog();
                         break;
-                    case 3:
+                    case SUBKEY_MENU_MOVE_TO_SECURITY_TOKEN:
                         sendMessageToHandler(MESSAGE_MOVE_KEY_TO_CARD, null);
                         break;
                     default:
@@ -98,7 +102,7 @@ public class EditSubkeyDialogFragment extends DialogFragment {
     private void showAlertDialog() {
         CustomAlertDialogBuilder stripAlertDialog = new CustomAlertDialogBuilder(getActivity());
         stripAlertDialog.setTitle(getResources().getString(R.string.title_alert_strip)).
-        setMessage(R.string.alert_strip).setCancelable(true);
+                setMessage(R.string.alert_strip).setCancelable(true);
         stripAlertDialog.setPositiveButton(R.string.strip, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
