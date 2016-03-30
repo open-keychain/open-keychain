@@ -254,6 +254,11 @@ public class KeyListFragment extends LoaderFragment
                 String keysSelected = getResources().getQuantityString(
                         R.plurals.key_list_selected_keys, count, count);
                 mode.setTitle(keysSelected);
+                if (mAdapter.isAnyRevokedKeySelected()) {
+                    mode.getMenu().getItem(0).setVisible(false);
+                } else {
+                    mode.getMenu().getItem(0).setVisible(true);
+                }
             }
 
         });
@@ -942,6 +947,15 @@ public class KeyListFragment extends LoaderFragment
                 ids[i++] = getMasterKeyId(pos);
             }
             return ids;
+        }
+
+        public boolean isAnyRevokedKeySelected() {
+            for (int pos : mSelection.keySet()) {
+                if (getItem(pos).mIsRevoked) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void removeSelection(int position) {
