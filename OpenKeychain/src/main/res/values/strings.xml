@@ -334,7 +334,7 @@
     <string name="public_key_deletetion_confirmation">"Delete key '%s'?"</string>
     <string name="also_export_secret_keys">"Also export secret keys"</string>
     <string name="reinstall_openkeychain">"You encountered a known bug with Android. Please reinstall OpenKeychain if you want to link your contacts with keys."</string>
-    <string name="alert_strip">"Stripping this subkey will render it useless."</string>
+    <string name="alert_strip">"Stripping this subkey will make it unusable on this device!"</string>
 
     <string name="key_exported">"Successfully exported 1 key."</string>
     <string name="keys_exported">"Successfully exported %d keys."</string>
