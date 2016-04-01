@@ -101,7 +101,7 @@ public class EditSubkeyDialogFragment extends DialogFragment {
 
     private void showAlertDialog() {
         CustomAlertDialogBuilder stripAlertDialog = new CustomAlertDialogBuilder(getActivity());
-        stripAlertDialog.setTitle(getResources().getString(R.string.title_alert_strip)).
+        stripAlertDialog.setTitle(R.string.title_alert_strip).
                 setMessage(R.string.alert_strip).setCancelable(true);
         stripAlertDialog.setPositiveButton(R.string.strip, new DialogInterface.OnClickListener() {
             @Override
