@@ -41,6 +41,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.ActionMode;
@@ -53,10 +54,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.TextView;
-
-import com.github.pinball83.maskededittext.MaskedEditText;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -64,6 +62,7 @@ import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.util.NoSelectionMaskedEditText;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -96,7 +95,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     private long[] mMasterKeyIds;
     String mBackupCode;
 
-    private MaskedEditText mCodeEditText;
+    private NoSelectionMaskedEditText mCodeEditText;
 
     private ToolableViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
     private Integer mBackStackLevel;
@@ -231,12 +230,12 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         mExportSecret = args.getBoolean(ARG_EXPORT_SECRET);
 
         // NOTE: order of these method calls matter, see setupAutomaticLinebreak()
-        mCodeEditText = (MaskedEditText) view.findViewById(R.id.backup_code_input);
+        mCodeEditText = (NoSelectionMaskedEditText) view.findViewById(R.id.backup_code_input);
         mCodeEditText.setInputType(
                 InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
         setupAutomaticLinebreak(mCodeEditText);
         mCodeEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        setupEditTextSuccessListener(mCodeEditText);
+        setupEditTextListener(mCodeEditText);
 
         // prevent selection action mode, partially circumventing text selection bug
         mCodeEditText.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
@@ -359,11 +358,16 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         textview.setHorizontallyScrolling(false);
     }
 
-    private void setupEditTextSuccessListener(final MaskedEditText backupCode) {
+    private void setupEditTextListener(final NoSelectionMaskedEditText backupCode) {
         backupCode.addTextChangedListener(new TextWatcher() {
+            private String before;
+            private boolean massDelete = false;
+            private boolean processing = false;
+            private int cursorPosition = -1;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                catchMassDelete(s, start, count);
             }
 
             @Override
@@ -372,15 +376,50 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
             @Override
             public void afterTextChanged(Editable s) {
+                preventMassDelete(s);
                 String currentBackupCode = backupCode.getText().toString();
+
                 boolean inInputState = mCurrentState == BackupCodeState.STATE_INPUT
                         || mCurrentState == BackupCodeState.STATE_INPUT_ERROR;
-                boolean partIsComplete = (currentBackupCode.indexOf(' ') == -1);
+                boolean partIsComplete = (currentBackupCode.length() > 0)
+                                        && (currentBackupCode.indexOf(' ') == -1);
+
                 if (!inInputState || !partIsComplete) {
                     return;
                 }
 
                 checkIfCodeIsCorrect(currentBackupCode);
+            }
+
+            private void catchMassDelete(CharSequence s, int deleteStart, int deleteCount) {
+                if(!processing) {
+                    // catch mass-delete if present
+                    massDelete = (deleteCount > 1);
+                    before = s.toString();
+                    cursorPosition = deleteStart + deleteCount;
+                } else {
+                    // currently processing mass-delete, stop capturing
+                    massDelete = false;
+                }
+            }
+
+            private void preventMassDelete(Editable s) {
+                if(massDelete) {
+                    // TextWatcher catches editable being edited
+                    // catchMassDelete is set to ignore those operations
+
+                    // InputFilters are removed temporarily to reduce complications
+                    processing = true;
+                    InputFilter[] oldFilters = s.getFilters();
+                    s.setFilters(new InputFilter[0]);
+                    s.clear();
+                    s.append(before);
+                    s.setFilters(oldFilters);
+                    processing = false;
+
+                    // emulate single delete behavior by deleting single char
+                    s.delete(cursorPosition - 1, cursorPosition);
+                }
             }
         });
     }

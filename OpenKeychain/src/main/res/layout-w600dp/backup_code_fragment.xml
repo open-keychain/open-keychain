@@ -74,7 +74,7 @@
             tools:ignore="SpUsage"
             tools:text="AAAA-AAAA-AAAA-AAAA-AAAA-AAAA" />
 
-        <com.github.pinball83.maskededittext.MaskedEditText
+        <org.sufficientlysecure.keychain.ui.util.NoSelectionMaskedEditText
             android:id="@+id/backup_code_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
