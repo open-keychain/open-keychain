@@ -43,6 +43,11 @@
         android:name="android.hardware.screen.portrait"
         android:required="false" />
 
+    <!-- For OTG tokens -->
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="false" />
+
     <!-- TemporaryStorageProvider should be writable by OpenKeychain only, thus signature-level permission -->
     <permission
         android:name="${applicationId}.WRITE_TEMPORARY_STORAGE"

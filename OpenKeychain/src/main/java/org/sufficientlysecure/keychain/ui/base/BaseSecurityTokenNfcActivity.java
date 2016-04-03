@@ -20,42 +20,32 @@
 
 package org.sufficientlysecure.keychain.ui.base;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.security.interfaces.RSAPrivateCrtKey;
-
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.TagLostException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import nordpol.Apdu;
-import nordpol.IsoCard;
-import nordpol.android.TagDispatcher;
-import nordpol.android.AndroidCard;
-import nordpol.android.OnDiscoveredTagListener;
-
-import org.bouncycastle.bcpg.HashAlgorithmTags;
-import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.javacard.BaseJavacardDevice;
 import org.sufficientlysecure.keychain.javacard.JavacardDevice;
 import org.sufficientlysecure.keychain.javacard.NfcTransport;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.javacard.OnDiscoveredUsbDeviceListener;
+import org.sufficientlysecure.keychain.javacard.UsbConnectionManager;
+import org.sufficientlysecure.keychain.javacard.UsbTransport;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService.KeyNotFoundException;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
@@ -66,27 +56,27 @@ import org.sufficientlysecure.keychain.ui.dialog.FidesmoPgpInstallDialog;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implements OnDiscoveredTagListener {
+import java.io.IOException;
+
+import nordpol.IsoCard;
+import nordpol.android.AndroidCard;
+import nordpol.android.OnDiscoveredTagListener;
+import nordpol.android.TagDispatcher;
+
+public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
+        implements OnDiscoveredTagListener, OnDiscoveredUsbDeviceListener {
     public static final int REQUEST_CODE_PIN = 1;
 
     public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";
 
     private static final String FIDESMO_APP_PACKAGE = "com.fidesmo.sec.android";
 
-    //protected Passphrase mPin;
-    //protected Passphrase mAdminPin;
-    //protected boolean mPw1ValidForMultipleSignatures;
-    //protected boolean mPw1ValidatedForSignature;
-    //protected boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
-    //protected boolean mPw3Validated;
-
     public JavacardDevice mJavacardDevice;
     protected TagDispatcher mTagDispatcher;
-//    private IsoCard mIsoCard;
+    protected UsbConnectionManager mUsbDispatcher;
     private boolean mTagHandlingEnabled;
 
     private byte[] mNfcFingerprints;
@@ -185,6 +175,43 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         }.execute();
     }
 
+
+    public void usbDeviceDiscovered(final UsbDevice device) {
+        // Actual NFC operations are executed in doInBackground to not block the UI thread
+        if(!mTagHandlingEnabled)
+            return;
+        new AsyncTask<Void, Void, IOException>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                onNfcPreExecute();
+            }
+
+            @Override
+            protected IOException doInBackground(Void... params) {
+                try {
+                    handleUsbDevice(device);
+                } catch (IOException e) {
+                    return e;
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(IOException exception) {
+                super.onPostExecute(exception);
+
+                if (exception != null) {
+                    handleNfcError(exception);
+                    return;
+                }
+
+                onNfcPostExecute();
+            }
+        }.execute();
+    }
+
     protected void pauseTagHandling() {
         mTagHandlingEnabled = false;
     }
@@ -198,6 +225,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         super.onCreate(savedInstanceState);
 
         mTagDispatcher = TagDispatcher.get(this, this, false, false, true, false);
+        mUsbDispatcher = new UsbConnectionManager(this, this);
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
@@ -228,7 +256,9 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
      */
     @Override
     public void onNewIntent(final Intent intent) {
-        mTagDispatcher.interceptIntent(intent);
+        if (!mTagDispatcher.interceptIntent(intent)) {
+            mUsbDispatcher.interceptIntent(intent);
+        }
     }
 
     private void handleNfcError(IOException e) {
@@ -346,6 +376,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         Log.d(Constants.TAG, "BaseNfcActivity.onPause");
 
         mTagDispatcher.disableExclusiveNfc();
+        mUsbDispatcher.stopListeningForDevices();
     }
 
     /**
@@ -356,6 +387,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         super.onResume();
         Log.d(Constants.TAG, "BaseNfcActivity.onResume");
         mTagDispatcher.enableExclusiveNfc();
+        mUsbDispatcher.startListeningForDevices();
     }
 
     protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput) {
@@ -372,7 +404,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
                     RequiredInputParcel.createRequiredPassphrase(requiredInput));
             startActivityForResult(intent, REQUEST_CODE_PIN);
-        } catch (KeyNotFoundException e) {
+        } catch (PassphraseCacheService.KeyNotFoundException e) {
             throw new AssertionError(
                     "tried to find passphrase for non-existing key. this is a programming error!");
         }
@@ -420,6 +452,14 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         }
 
         mJavacardDevice = new BaseJavacardDevice(new NfcTransport(isoCard));
+        mJavacardDevice.connectToDevice();
+
+        doNfcInBackground();
+    }
+
+    protected void handleUsbDevice(UsbDevice device) throws IOException {
+        UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
+        mJavacardDevice = new BaseJavacardDevice(new UsbTransport(device, usbManager));
         mJavacardDevice.connectToDevice();
 
         doNfcInBackground();
