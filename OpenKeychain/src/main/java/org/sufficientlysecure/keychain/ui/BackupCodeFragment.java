@@ -392,20 +392,21 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
             }
 
             private void catchMassDelete(CharSequence s, int deleteStart, int deleteCount) {
-                if(processing) {
-                    // currently processing mass-delete
-                    massDelete = false;
-                } else {
+                if(!processing) {
                     // catch mass-delete if present
                     massDelete = (deleteCount > 1);
                     before = s.toString();
                     cursorPosition = deleteStart + deleteCount;
+                } else {
+                    // currently processing mass-delete, stop capturing
+                    massDelete = false;
                 }
             }
 
             private void preventMassDelete(Editable s) {
                 if(massDelete) {
-                    // TextWatcher catches editable being cleared and appended
+                    // TextWatcher catches editable being edited
+                    // catchMassDelete is set to ignore those operations
 
                     // InputFilters are removed temporarily to reduce complications
                     processing = true;

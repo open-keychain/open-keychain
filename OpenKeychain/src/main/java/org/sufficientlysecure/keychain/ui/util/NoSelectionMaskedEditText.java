@@ -48,11 +48,11 @@ public class NoSelectionMaskedEditText extends MaskedEditText {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int prevSelectionPosition = this.getSelectionStart();
+        int positionBeforeSelection = this.getSelectionStart();
 
         boolean result = super.onTouchEvent(event);
         if(isDoubleTap(event)) {
-            this.setSelection(prevSelectionPosition);
+            this.setSelection(positionBeforeSelection);
         }
 
         mLastTouchTime = SystemClock.uptimeMillis();
