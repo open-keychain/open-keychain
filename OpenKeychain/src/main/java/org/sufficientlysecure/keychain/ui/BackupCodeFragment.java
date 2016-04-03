@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
@@ -41,6 +43,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.ActionMode;
@@ -261,6 +264,10 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
             }
         });
 
+        ArrayList<InputFilter> filters = new ArrayList<>();
+        filters.addAll(Arrays.asList(mCodeEditText.getFilters()));
+        filters.add(new InputFilter.AllCaps());
+        mCodeEditText.setFilters(filters.toArray(new InputFilter[filters.size()]));
 
         TextView codeDisplayText = (TextView) view.findViewById(R.id.backup_code_display);
         setupAutomaticLinebreak(codeDisplayText);
