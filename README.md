@@ -74,7 +74,7 @@ We are using the newest [Android Studio](http://developer.android.com/sdk/instal
 OpenKeychain uses a forked version with some small changes. These changes will been sent to Bouncy Castle.
 
 see
-* Fork: https://github.com/openpgp-keychain/bouncycastle
+* Fork: https://github.com/open-keychain/bouncycastle
 
 #### Bouncy Castle resources
 
