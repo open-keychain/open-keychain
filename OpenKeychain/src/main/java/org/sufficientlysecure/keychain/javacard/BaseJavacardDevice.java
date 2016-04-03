@@ -15,7 +15,12 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.interfaces.RSAPrivateCrtKey;
 
+import nordpol.Apdu;
+
 public class BaseJavacardDevice implements JavacardDevice {
+    // Fidesmo constants
+    private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
+
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private final Transport mTransport;
 
@@ -68,9 +73,9 @@ public class BaseJavacardDevice implements JavacardDevice {
                     keyType.toString()));
         }
 
-        nfcPutKey(keyType.getmSlot(), secretKey, passphrase);
-        nfcPutData(keyType.getmFingerprintObjectId(), secretKey.getFingerprint());
-        nfcPutData(keyType.getTimestampObjectId(), timestampBytes);
+        putKey(keyType.getmSlot(), secretKey, passphrase);
+        putData(keyType.getmFingerprintObjectId(), secretKey.getFingerprint());
+        putData(keyType.getTimestampObjectId(), timestampBytes);
     }
 
     public boolean containsKey(KeyType keyType) throws IOException {
@@ -78,9 +83,10 @@ public class BaseJavacardDevice implements JavacardDevice {
     }
 
     public boolean keyMatchesFingerPrint(KeyType keyType, byte[] fingerprint) throws IOException {
-        return java.util.Arrays.equals(nfcGetFingerprint(keyType.getIdx()), fingerprint);
+        return java.util.Arrays.equals(getMasterKeyFingerprint(keyType.getIdx()), fingerprint);
     }
 
+    // METHOD UPDATED OK
     public void connectToDevice() throws IOException {
         // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
         // See specification, page 51
@@ -127,53 +133,61 @@ public class BaseJavacardDevice implements JavacardDevice {
 
     /**
      * Modifies the user's PW1 or PW3. Before sending, the new PIN will be validated for
-     * conformance to the card's requirements for key length.
+     * conformance to the token's requirements for key length.
      *
-     * @param pinType For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
-     * @param newPin  The new PW1 or PW3.
+     * @param pw     For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
+     * @param newPin The new PW1 or PW3.
      */
-    public void nfcModifyPIN(PinType pinType, byte[] newPin) throws IOException {
+    // METHOD UPDATED[OK]
+    public void modifyPin(int pw, byte[] newPin) throws IOException {
         final int MAX_PW1_LENGTH_INDEX = 1;
         final int MAX_PW3_LENGTH_INDEX = 3;
 
         byte[] pwStatusBytes = nfcGetPwStatusBytes();
-        byte[] oldPin;
 
-        if (pinType == PinType.BASIC) {
+        if (pw == 0x81) {
             if (newPin.length < 6 || newPin.length > pwStatusBytes[MAX_PW1_LENGTH_INDEX]) {
                 throw new IOException("Invalid PIN length");
             }
-            oldPin = mPin.toStringUnsafe().getBytes();
-        } else {
+        } else if (pw == 0x83) {
             if (newPin.length < 8 || newPin.length > pwStatusBytes[MAX_PW3_LENGTH_INDEX]) {
                 throw new IOException("Invalid PIN length");
             }
-            oldPin = mAdminPin.toStringUnsafe().getBytes();
+        } else {
+            throw new IOException("Invalid PW index for modify PIN operation");
+        }
+
+        byte[] pin;
+        if (pw == 0x83) {
+            pin = mAdminPin.toStringUnsafe().getBytes();
+        } else {
+            pin = mPin.toStringUnsafe().getBytes();
         }
 
         // Command APDU for CHANGE REFERENCE DATA command (page 32)
         String changeReferenceDataApdu = "00" // CLA
                 + "24" // INS
                 + "00" // P1
-                + String.format("%02x", pinType.getmMode()) // P2
-                + String.format("%02x", oldPin.length + newPin.length) // Lc
-                + getHex(oldPin)
+                + String.format("%02x", pw) // P2
+                + String.format("%02x", pin.length + newPin.length) // Lc
+                + getHex(pin)
                 + getHex(newPin);
         String response = nfcCommunicate(changeReferenceDataApdu); // change PIN
         if (!response.equals("9000")) {
-            throw new PinException("Failed to change PIN", parseCardStatus(response));
+            throw new CardException("Failed to change PIN", parseCardStatus(response));
         }
     }
 
     /**
-     * Calls to calculate the signature and returns the MPI value
+     * Call DECIPHER command
      *
      * @param encryptedSessionKey the encoded session key
      * @return the decoded session key
      */
+    // METHOD UPDATED [OK]
     public byte[] decryptSessionKey(byte[] encryptedSessionKey) throws IOException {
         if (!mPw1ValidatedForDecrypt) {
-            nfcVerifyPIN(0x82); // (Verify PW1 with mode 82 for decryption)
+            nfcVerifyPin(0x82); // (Verify PW1 with mode 82 for decryption)
         }
 
         String firstApdu = "102a8086fe";
@@ -189,12 +203,10 @@ public class BaseJavacardDevice implements JavacardDevice {
             two[i] = encryptedSessionKey[i + one.length + 1];
         }
 
-        String first = nfcCommunicate(firstApdu + getHex(one));
+        nfcCommunicate(firstApdu + getHex(one));
         String second = nfcCommunicate(secondApdu + getHex(two) + le);
 
-        String decryptedSessionKey = nfcGetDataField(second);
-
-        Log.d(Constants.TAG, "decryptedSessionKey: " + decryptedSessionKey);
+        String decryptedSessionKey = getDataField(second);
 
         return Hex.decode(decryptedSessionKey);
     }
@@ -205,7 +217,8 @@ public class BaseJavacardDevice implements JavacardDevice {
      * @param mode For PW1, this is 0x81 for signing, 0x82 for everything else.
      *             For PW3 (Admin PIN), mode is 0x83.
      */
-    public void nfcVerifyPIN(int mode) throws IOException {
+    // METHOD UPDATED [OK]
+    public void nfcVerifyPin(int mode) throws IOException {
         if (mPin != null || mode == 0x83) {
 
             byte[] pin;
@@ -218,18 +231,9 @@ public class BaseJavacardDevice implements JavacardDevice {
             // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
             // See specification, page 51
             String accepted = "9000";
-
-            // Command APDU for VERIFY command (page 32)
-            String login =
-                    "00" // CLA
-                            + "20" // INS
-                            + "00" // P1
-                            + String.format("%02x", mode) // P2
-                            + String.format("%02x", pin.length) // Lc
-                            + Hex.toHexString(pin);
-            String response = nfcCommunicate(login); // login
+            String response = nfcTryPin(mode, pin); // login
             if (!response.equals(accepted)) {
-                throw new PinException("Bad PIN!", parseCardStatus(response));
+                throw new CardException("Bad PIN!", parseCardStatus(response));
             }
 
             if (mode == 0x81) {
@@ -243,23 +247,24 @@ public class BaseJavacardDevice implements JavacardDevice {
     }
 
     /**
-     * Stores a data object on the card. Automatically validates the proper PIN for the operation.
+     * Stores a data object on the token. Automatically validates the proper PIN for the operation.
      * Supported for all data objects < 255 bytes in length. Only the cardholder certificate
      * (0x7F21) can exceed this length.
      *
      * @param dataObject The data object to be stored.
      * @param data       The data to store in the object
      */
-    public void nfcPutData(int dataObject, byte[] data) throws IOException {
+    // METHOD UPDATED [OK]
+    public void putData(int dataObject, byte[] data) throws IOException {
         if (data.length > 254) {
             throw new IOException("Cannot PUT DATA with length > 254");
         }
         if (dataObject == 0x0101 || dataObject == 0x0103) {
             if (!mPw1ValidatedForDecrypt) {
-                nfcVerifyPIN(0x82); // (Verify PW1 for non-signing operations)
+                nfcVerifyPin(0x82); // (Verify PW1 for non-signing operations)
             }
         } else if (!mPw3Validated) {
-            nfcVerifyPIN(0x83); // (Verify PW3)
+            nfcVerifyPin(0x83); // (Verify PW3)
         }
 
         String putDataApdu = "00" // CLA
@@ -275,15 +280,17 @@ public class BaseJavacardDevice implements JavacardDevice {
         }
     }
 
+
     /**
-     * Puts a key on the card in the given slot.
+     * Puts a key on the token in the given slot.
      *
-     * @param slot The slot on the card where the key should be stored:
+     * @param slot The slot on the token where the key should be stored:
      *             0xB6: Signature Key
      *             0xB8: Decipherment Key
      *             0xA4: Authentication Key
      */
-    public void nfcPutKey(int slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
+    // METHOD UPDATED [OK]
+    public void putKey(int slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
             throws IOException {
         if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
             throw new IOException("Invalid key slot");
@@ -299,16 +306,16 @@ public class BaseJavacardDevice implements JavacardDevice {
 
         // Shouldn't happen; the UI should block the user from getting an incompatible key this far.
         if (crtSecretKey.getModulus().bitLength() > 2048) {
-            throw new IOException("Key too large to export to smart card.");
+            throw new IOException("Key too large to export to Security Token.");
         }
 
         // Should happen only rarely; all GnuPG keys since 2006 use public exponent 65537.
         if (!crtSecretKey.getPublicExponent().equals(new BigInteger("65537"))) {
-            throw new IOException("Invalid public exponent for smart card key.");
+            throw new IOException("Invalid public exponent for smart Security Token.");
         }
 
         if (!mPw3Validated) {
-            nfcVerifyPIN(0x83); // (Verify PW3 with mode 83)
+            nfcVerifyPin(0x83); // (Verify PW3 with mode 83)
         }
 
         byte[] header = Hex.decode(
@@ -360,7 +367,7 @@ public class BaseJavacardDevice implements JavacardDevice {
         String putKeyCommand = "10DB3FFF";
         String lastPutKeyCommand = "00DB3FFF";
 
-        // Now we're ready to communicate with the card.
+        // Now we're ready to communicate with the token.
         offset = 0;
         String response;
         while (offset < dataToSend.length) {
@@ -379,13 +386,14 @@ public class BaseJavacardDevice implements JavacardDevice {
             }
 
             if (!response.endsWith("9000")) {
-                throw new CardException("Key export to card failed", parseCardStatus(response));
+                throw new CardException("Key export to Security Token failed", parseCardStatus(response));
             }
         }
 
         // Clear array with secret data before we return.
         Arrays.fill(dataToSend, (byte) 0);
     }
+
 
     /**
      * Return the key id from application specific data stored on tag, or null
@@ -395,7 +403,7 @@ public class BaseJavacardDevice implements JavacardDevice {
      * @return The long key id of the requested key, or null if not found.
      */
     public Long nfcGetKeyId(int idx) throws IOException {
-        byte[] fp = nfcGetFingerprint(idx);
+        byte[] fp = getMasterKeyFingerprint(idx);
         if (fp == null) {
             return null;
         }
@@ -412,12 +420,13 @@ public class BaseJavacardDevice implements JavacardDevice {
      *
      * @return The fingerprints of all subkeys in a contiguous byte array.
      */
+    // METHOD UPDATED [OK]
     public byte[] getFingerprints() throws IOException {
         String data = "00CA006E00";
         byte[] buf = mTransport.sendAndReceive(Hex.decode(data));
 
         Iso7816TLV tlv = Iso7816TLV.readSingle(buf, true);
-        Log.d(Constants.TAG, "nfc tlv data:\n" + tlv.prettyPrint());
+        Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlv.prettyPrint());
 
         Iso7816TLV fptlv = Iso7816TLV.findRecursive(tlv, 0xc5);
         if (fptlv == null) {
@@ -427,53 +436,38 @@ public class BaseJavacardDevice implements JavacardDevice {
     }
 
     /**
-     * Return the PW Status Bytes from the card. This is a simple DO; no TLV decoding needed.
+     * Return the PW Status Bytes from the token. This is a simple DO; no TLV decoding needed.
      *
      * @return Seven bytes in fixed format, plus 0x9000 status word at the end.
      */
+    // METHOD UPDATED [OK]
     public byte[] nfcGetPwStatusBytes() throws IOException {
         String data = "00CA00C400";
         return mTransport.sendAndReceive(Hex.decode(data));
     }
 
-    /**
-     * Return the fingerprint from application specific data stored on tag, or
-     * null if it doesn't exist.
-     *
-     * @param idx Index of the key to return the fingerprint from.
-     * @return The fingerprint of the requested key, or null if not found.
-     */
-    public byte[] nfcGetFingerprint(int idx) throws IOException {
-        byte[] data = getFingerprints();
-
-        // return the master key fingerprint
-        ByteBuffer fpbuf = ByteBuffer.wrap(data);
-        byte[] fp = new byte[20];
-        fpbuf.position(idx * 20);
-        fpbuf.get(fp, 0, 20);
-
-        return fp;
-    }
-
+    // METHOD UPDATED [OK]
     public byte[] getAid() throws IOException {
         String info = "00CA004F00";
         return mTransport.sendAndReceive(Hex.decode(info));
     }
 
+    // METHOD UPDATED [OK]
     public String getUserId() throws IOException {
         String info = "00CA006500";
         return nfcGetHolderName(nfcCommunicate(info));
     }
 
     /**
-     * Calls to calculate the signature and returns the MPI value
+     * Call COMPUTE DIGITAL SIGNATURE command and returns the MPI value
      *
      * @param hash the hash for signing
      * @return a big integer representing the MPI for the given hash
      */
-    public byte[] nfcCalculateSignature(byte[] hash, int hashAlgo) throws IOException {
+    // METHOD UPDATED [OK]
+    public byte[] calculateSignature(byte[] hash, int hashAlgo) throws IOException {
         if (!mPw1ValidatedForSignature) {
-            nfcVerifyPIN(0x81); // (Verify PW1 with mode 81 for signing)
+            nfcVerifyPin(0x81); // (Verify PW1 with mode 81 for signing)
         }
 
         // dsi, including Lc
@@ -580,6 +574,10 @@ public class BaseJavacardDevice implements JavacardDevice {
         return output.substring(0, output.length() - 4);
     }
 
+    /**
+     * Transceive data via NFC encoded as Hex
+     */
+    // METHOD UPDATED [OK]
     public String nfcCommunicate(String apdu) throws IOException, TransportIoException {
         return getHex(mTransport.sendAndReceive(Hex.decode(apdu)));
     }
@@ -587,4 +585,141 @@ public class BaseJavacardDevice implements JavacardDevice {
     public boolean isConnected() {
         return mTransport.isConnected();
     }
+
+    // NEW METHOD [OK]
+    public boolean isFidesmoToken() {
+        if (isConnected()) { // Check if we can still talk to the card
+            try {
+                // By trying to select any apps that have the Fidesmo AID prefix we can
+                // see if it is a Fidesmo device or not
+                byte[] mSelectResponse = mTransport.sendAndReceive(Apdu.select(FIDESMO_APPS_AID_PREFIX));
+                // Compare the status returned by our select with the OK status code
+                return Apdu.hasStatus(mSelectResponse, Apdu.OK_APDU);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Card communication failed!", e);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Generates a key on the card in the given slot. If the slot is 0xB6 (the signature key),
+     * this command also has the effect of resetting the digital signature counter.
+     * NOTE: This does not set the key fingerprint data object! After calling this command, you
+     * must construct a public key packet using the returned public key data objects, compute the
+     * key fingerprint, and store it on the card using: putData(0xC8, key.getFingerprint())
+     *
+     * @param slot The slot on the card where the key should be generated:
+     *             0xB6: Signature Key
+     *             0xB8: Decipherment Key
+     *             0xA4: Authentication Key
+     * @return the public key data objects, in TLV format. For RSA this will be the public modulus
+     * (0x81) and exponent (0x82). These may come out of order; proper TLV parsing is required.
+     */
+    // NEW METHOD [OK]
+    public byte[] nfcGenerateKey(int slot) throws IOException {
+        if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
+            throw new IOException("Invalid key slot");
+        }
+
+        if (!mPw3Validated) {
+            nfcVerifyPin(0x83); // (Verify PW3 with mode 83)
+        }
+
+        String generateKeyApdu = "0047800002" + String.format("%02x", slot) + "0000";
+        String getResponseApdu = "00C00000";
+
+        String first = nfcCommunicate(generateKeyApdu);
+        String second = nfcCommunicate(getResponseApdu);
+
+        if (!second.endsWith("9000")) {
+            throw new IOException("On-card key generation failed");
+        }
+
+        String publicKeyData = getDataField(first) + getDataField(second);
+
+        Log.d(Constants.TAG, "Public Key Data Objects: " + publicKeyData);
+
+        return Hex.decode(publicKeyData);
+    }
+
+    // NEW METHOD [OK][OK]
+    private String getDataField(String output) {
+        return output.substring(0, output.length() - 4);
+    }
+
+    // NEW METHOD [OK]
+    private String nfcTryPin(int mode, byte[] pin) throws IOException {
+        // Command APDU for VERIFY command (page 32)
+        String login =
+                "00" // CLA
+                        + "20" // INS
+                        + "00" // P1
+                        + String.format("%02x", mode) // P2
+                        + String.format("%02x", pin.length) // Lc
+                        + Hex.toHexString(pin);
+
+        return nfcCommunicate(login);
+    }
+
+    /**
+     * Resets security token, which deletes all keys and data objects.
+     * This works by entering a wrong PIN and then Admin PIN 4 times respectively.
+     * Afterwards, the token is reactivated.
+     */
+    // NEW METHOD [OK]
+    public void resetAndWipeToken() throws IOException {
+        String accepted = "9000";
+
+        // try wrong PIN 4 times until counter goes to C0
+        byte[] pin = "XXXXXX".getBytes();
+        for (int i = 0; i <= 4; i++) {
+            String response = nfcTryPin(0x81, pin);
+            if (response.equals(accepted)) { // Should NOT accept!
+                throw new CardException("Should never happen, XXXXXX has been accepted!", parseCardStatus(response));
+            }
+        }
+
+        // try wrong Admin PIN 4 times until counter goes to C0
+        byte[] adminPin = "XXXXXXXX".getBytes();
+        for (int i = 0; i <= 4; i++) {
+            String response = nfcTryPin(0x83, adminPin);
+            if (response.equals(accepted)) { // Should NOT accept!
+                throw new CardException("Should never happen, XXXXXXXX has been accepted", parseCardStatus(response));
+            }
+        }
+
+        // reactivate token!
+        String reactivate1 = "00" + "e6" + "00" + "00";
+        String reactivate2 = "00" + "44" + "00" + "00";
+        String response1 = nfcCommunicate(reactivate1);
+        String response2 = nfcCommunicate(reactivate2);
+        if (!response1.equals(accepted) || !response2.equals(accepted)) {
+            throw new CardException("Reactivating failed!", parseCardStatus(response1));
+        }
+
+    }
+
+    /**
+     * Return the fingerprint from application specific data stored on tag, or
+     * null if it doesn't exist.
+     *
+     * @param idx Index of the key to return the fingerprint from.
+     * @return The fingerprint of the requested key, or null if not found.
+     */
+    public byte[] getMasterKeyFingerprint(int idx) throws IOException {
+        byte[] data = getFingerprints();
+        if (data == null) {
+            return null;
+        }
+
+        // return the master key fingerprint
+        ByteBuffer fpbuf = ByteBuffer.wrap(data);
+        byte[] fp = new byte[20];
+        fpbuf.position(idx * 20);
+        fpbuf.get(fp, 0, 20);
+
+        return fp;
+    }
+
 }

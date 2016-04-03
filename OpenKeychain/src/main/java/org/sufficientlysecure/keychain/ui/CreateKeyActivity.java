@@ -149,9 +149,9 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
             return;
         }
 
-        mScannedFingerprints = nfcGetFingerprints();
-        mNfcAid = nfcGetAid();
-        mNfcUserId = nfcGetUserId();
+        mScannedFingerprints = mJavacardDevice.getFingerprints();
+        mNfcAid = mJavacardDevice.getAid();
+        mNfcUserId = mJavacardDevice.getUserId();
     }
 
     @Override

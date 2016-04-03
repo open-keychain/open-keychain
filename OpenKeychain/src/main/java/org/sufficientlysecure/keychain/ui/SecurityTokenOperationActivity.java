@@ -162,7 +162,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
             case NFC_DECRYPT: {
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
-                    byte[] decryptedSessionKey = nfcDecryptSessionKey(encryptedSessionKey);
+                    byte[] decryptedSessionKey = mJavacardDevice.decryptSessionKey(encryptedSessionKey);
                     mInputParcel.addCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
                 break;
@@ -173,15 +173,15 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
-                    byte[] signedHash = nfcCalculateSignature(hash, algo);
+                    byte[] signedHash = mJavacardDevice.calculateSignature(hash, algo);
                     mInputParcel.addCryptoData(hash, signedHash);
                 }
                 break;
             }
             case NFC_MOVE_KEY_TO_CARD: {
                 // TODO: assume PIN and Admin PIN to be default for this operation
-                mPin = new Passphrase("123456");
-                mAdminPin = new Passphrase("12345678");
+                mJavacardDevice.setPin(new Passphrase("123456"));
+                mJavacardDevice.setAdminPin(new Passphrase("12345678"));
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
@@ -206,7 +206,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                     long keyGenerationTimestampMillis = key.getCreationTime().getTime();
                     long keyGenerationTimestamp = keyGenerationTimestampMillis / 1000;
                     byte[] timestampBytes = ByteBuffer.allocate(4).putInt((int) keyGenerationTimestamp).array();
-                    byte[] tokenSerialNumber = Arrays.copyOf(nfcGetAid(), 16);
+                    byte[] tokenSerialNumber = Arrays.copyOf(mJavacardDevice.getAid(), 16);
 
                     Passphrase passphrase;
                     try {
@@ -218,25 +218,25 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
                     if (key.canSign() || key.canCertify()) {
                         if (shouldPutKey(key.getFingerprint(), 0)) {
-                            nfcPutKey(0xB6, key, passphrase);
-                            nfcPutData(0xCE, timestampBytes);
-                            nfcPutData(0xC7, key.getFingerprint());
+                            mJavacardDevice.putKey(0xB6, key, passphrase);
+                            mJavacardDevice.putData(0xCE, timestampBytes);
+                            mJavacardDevice.putData(0xC7, key.getFingerprint());
                         } else {
                             throw new IOException("Key slot occupied; token must be reset to put new signature key.");
                         }
                     } else if (key.canEncrypt()) {
                         if (shouldPutKey(key.getFingerprint(), 1)) {
-                            nfcPutKey(0xB8, key, passphrase);
-                            nfcPutData(0xCF, timestampBytes);
-                            nfcPutData(0xC8, key.getFingerprint());
+                            mJavacardDevice.putKey(0xB8, key, passphrase);
+                            mJavacardDevice.putData(0xCF, timestampBytes);
+                            mJavacardDevice.putData(0xC8, key.getFingerprint());
                         } else {
                             throw new IOException("Key slot occupied; token must be reset to put new decryption key.");
                         }
                     } else if (key.canAuthenticate()) {
                         if (shouldPutKey(key.getFingerprint(), 2)) {
-                            nfcPutKey(0xA4, key, passphrase);
-                            nfcPutData(0xD0, timestampBytes);
-                            nfcPutData(0xC9, key.getFingerprint());
+                            mJavacardDevice.putKey(0xA4, key, passphrase);
+                            mJavacardDevice.putData(0xD0, timestampBytes);
+                            mJavacardDevice.putData(0xC9, key.getFingerprint());
                         } else {
                             throw new IOException("Key slot occupied; token must be reset to put new authentication key.");
                         }
@@ -249,13 +249,13 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                 }
 
                 // change PINs afterwards
-                nfcModifyPin(0x81, newPin);
-                nfcModifyPin(0x83, newAdminPin);
+                mJavacardDevice.modifyPin(0x81, newPin);
+                mJavacardDevice.modifyPin(0x83, newAdminPin);
 
                 break;
             }
             case NFC_RESET_CARD: {
-                nfcReset();
+                mJavacardDevice.resetAndWipeToken();
 
                 break;
             }
@@ -330,7 +330,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
-        byte[] tokenFingerprint = nfcGetMasterKeyFingerprint(idx);
+        byte[] tokenFingerprint = mJavacardDevice.getMasterKeyFingerprint(idx);
 
         // Note: special case: This should not happen, but happens with
         // https://github.com/FluffyKaon/OpenPGP-Card, thus for now assume true

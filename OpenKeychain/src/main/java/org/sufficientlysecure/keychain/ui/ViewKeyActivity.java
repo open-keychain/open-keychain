@@ -649,9 +649,9 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
     @Override
     protected void doNfcInBackground() throws IOException {
 
-        mNfcFingerprints = nfcGetFingerprints();
-        mNfcUserId = nfcGetUserId();
-        mNfcAid = nfcGetAid();
+        mNfcFingerprints = mJavacardDevice.getFingerprints();
+        mNfcUserId = mJavacardDevice.getUserId();
+        mNfcAid = mJavacardDevice.getAid();
     }
 
     @Override

@@ -1,23 +1,23 @@
 package org.sufficientlysecure.keychain.javacard;
 
-import android.nfc.tech.IsoDep;
-
 import java.io.IOException;
 
-public class NfcTransport implements Transport  {
+import nordpol.IsoCard;
+
+public class NfcTransport implements Transport {
     // timeout is set to 100 seconds to avoid cancellation during calculation
     private static final int TIMEOUT = 100 * 1000;
-    private final IsoDep mIsoDep;
+    private final IsoCard mIsoCard;
 
-    public NfcTransport(final IsoDep isoDep) throws IOException {
-        this.mIsoDep = isoDep;
-        mIsoDep.setTimeout(TIMEOUT);
-        mIsoDep.connect();
+    public NfcTransport(final IsoCard isoDep) throws IOException {
+        this.mIsoCard = isoDep;
+        mIsoCard.setTimeout(TIMEOUT);
+        mIsoCard.connect();
     }
 
     @Override
     public byte[] sendAndReceive(final byte[] data) throws TransportIoException, IOException {
-        return mIsoDep.transceive(data);
+        return mIsoCard.transceive(data);
     }
 
     @Override
@@ -26,6 +26,6 @@ public class NfcTransport implements Transport  {
 
     @Override
     public boolean isConnected() {
-        return mIsoDep.isConnected();
+        return mIsoCard.isConnected();
     }
 }

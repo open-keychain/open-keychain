@@ -35,16 +35,19 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import nordpol.Apdu;
+import nordpol.IsoCard;
 import nordpol.android.TagDispatcher;
 import nordpol.android.AndroidCard;
 import nordpol.android.OnDiscoveredTagListener;
-import nordpol.IsoCard;
 
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.javacard.BaseJavacardDevice;
+import org.sufficientlysecure.keychain.javacard.JavacardDevice;
+import org.sufficientlysecure.keychain.javacard.NfcTransport;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -72,21 +75,19 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
 
     public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";
 
-    // Fidesmo constants
-    private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
     private static final String FIDESMO_APP_PACKAGE = "com.fidesmo.sec.android";
 
-    protected Passphrase mPin;
-    protected Passphrase mAdminPin;
-    protected boolean mPw1ValidForMultipleSignatures;
-    protected boolean mPw1ValidatedForSignature;
-    protected boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
-    protected boolean mPw3Validated;
-    protected TagDispatcher mTagDispatcher;
-    private IsoCard mIsoCard;
-    private boolean mTagHandlingEnabled;
+    //protected Passphrase mPin;
+    //protected Passphrase mAdminPin;
+    //protected boolean mPw1ValidForMultipleSignatures;
+    //protected boolean mPw1ValidatedForSignature;
+    //protected boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
+    //protected boolean mPw3Validated;
 
-    private static final int TIMEOUT = 100000;
+    public JavacardDevice mJavacardDevice;
+    protected TagDispatcher mTagDispatcher;
+//    private IsoCard mIsoCard;
+    private boolean mTagHandlingEnabled;
 
     private byte[] mNfcFingerprints;
     private String mNfcUserId;
@@ -102,9 +103,9 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
      * Override to implement NFC operations (background thread)
      */
     protected void doNfcInBackground() throws IOException {
-        mNfcFingerprints = nfcGetFingerprints();
-        mNfcUserId = nfcGetUserId();
-        mNfcAid = nfcGetAid();
+        mNfcFingerprints = mJavacardDevice.getFingerprints();
+        mNfcUserId = mJavacardDevice.getUserId();
+        mNfcAid = mJavacardDevice.getAid();
     }
 
     /**
@@ -316,7 +317,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
             }
             // 6A82 app not installed on security token!
             case 0x6A82: {
-                if (isFidesmoToken()) {
+                if (mJavacardDevice.isFidesmoToken()) {
                     // Check if the Fidesmo app is installed
                     if (isAndroidAppInstalled(FIDESMO_APP_PACKAGE)) {
                         promptFidesmoPgpInstall();
@@ -363,7 +364,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
             Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
                     requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
             if (passphrase != null) {
-                mPin = passphrase;
+                mJavacardDevice.setPin(passphrase);
                 return;
             }
 
@@ -388,7 +389,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
                     return;
                 }
                 CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                mPin = input.getPassphrase();
+                mJavacardDevice.setPin(input.getPassphrase());
                 break;
             }
             default:
@@ -413,573 +414,19 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
     protected void handleTagDiscovered(Tag tag) throws IOException {
 
         // Connect to the detected tag, setting a couple of settings
-        mIsoCard = AndroidCard.get(tag);
-        if (mIsoCard == null) {
+        IsoCard isoCard = AndroidCard.get(tag);
+        if (isoCard == null) {
             throw new IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
         }
-        mIsoCard.setTimeout(TIMEOUT); // timeout is set to 100 seconds to avoid cancellation during calculation
-        mIsoCard.connect();
 
-        // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
-        // See specification, page 51
-        String accepted = "9000";
-
-        // Command APDU (page 51) for SELECT FILE command (page 29)
-        String opening =
-                "00" // CLA
-                        + "A4" // INS
-                        + "04" // P1
-                        + "00" // P2
-                        + "06" // Lc (number of bytes)
-                        + "D27600012401" // Data (6 bytes)
-                        + "00"; // Le
-        String response = nfcCommunicate(opening);  // activate connection
-        if ( ! response.endsWith(accepted) ) {
-            throw new CardException("Initialization failed!", parseCardStatus(response));
-        }
-
-        byte[] pwStatusBytes = nfcGetPwStatusBytes();
-        mPw1ValidForMultipleSignatures = (pwStatusBytes[0] == 1);
-        mPw1ValidatedForSignature = false;
-        mPw1ValidatedForDecrypt = false;
-        mPw3Validated = false;
+        mJavacardDevice = new BaseJavacardDevice(new NfcTransport(isoCard));
+        mJavacardDevice.connectToDevice();
 
         doNfcInBackground();
-
     }
 
     public boolean isNfcConnected() {
-        return mIsoCard.isConnected();
-    }
-
-    /** Return the key id from application specific data stored on tag, or null
-     * if it doesn't exist.
-     *
-     * @param idx Index of the key to return the fingerprint from.
-     * @return The long key id of the requested key, or null if not found.
-     */
-    public Long nfcGetKeyId(int idx) throws IOException {
-        byte[] fp = nfcGetMasterKeyFingerprint(idx);
-        if (fp == null) {
-            return null;
-        }
-        ByteBuffer buf = ByteBuffer.wrap(fp);
-        // skip first 12 bytes of the fingerprint
-        buf.position(12);
-        // the last eight bytes are the key id (big endian, which is default order in ByteBuffer)
-        return buf.getLong();
-    }
-
-    /** Return fingerprints of all keys from application specific data stored
-     * on tag, or null if data not available.
-     *
-     * @return The fingerprints of all subkeys in a contiguous byte array.
-     */
-    public byte[] nfcGetFingerprints() throws IOException {
-        String data = "00CA006E00";
-        byte[] buf = mIsoCard.transceive(Hex.decode(data));
-
-        Iso7816TLV tlv = Iso7816TLV.readSingle(buf, true);
-        Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlv.prettyPrint());
-
-        Iso7816TLV fptlv = Iso7816TLV.findRecursive(tlv, 0xc5);
-        if (fptlv == null) {
-            return null;
-        }
-
-        return fptlv.mV;
-    }
-
-    /** Return the PW Status Bytes from the token. This is a simple DO; no TLV decoding needed.
-     *
-     * @return Seven bytes in fixed format, plus 0x9000 status word at the end.
-     */
-    public byte[] nfcGetPwStatusBytes() throws IOException {
-        String data = "00CA00C400";
-        return mIsoCard.transceive(Hex.decode(data));
-    }
-
-    /** Return the fingerprint from application specific data stored on tag, or
-     * null if it doesn't exist.
-     *
-     * @param idx Index of the key to return the fingerprint from.
-     * @return The fingerprint of the requested key, or null if not found.
-     */
-    public byte[] nfcGetMasterKeyFingerprint(int idx) throws IOException {
-        byte[] data = nfcGetFingerprints();
-        if (data == null) {
-            return null;
-        }
-
-        // return the master key fingerprint
-        ByteBuffer fpbuf = ByteBuffer.wrap(data);
-        byte[] fp = new byte[20];
-        fpbuf.position(idx * 20);
-        fpbuf.get(fp, 0, 20);
-
-        return fp;
-    }
-
-    public byte[] nfcGetAid() throws IOException {
-        String info = "00CA004F00";
-        return mIsoCard.transceive(Hex.decode(info));
-    }
-
-    public String nfcGetUserId() throws IOException {
-        String info = "00CA006500";
-        return getHolderName(nfcCommunicate(info));
-    }
-
-    /**
-     * Call COMPUTE DIGITAL SIGNATURE command and returns the MPI value
-     *
-     * @param hash the hash for signing
-     * @return a big integer representing the MPI for the given hash
-     */
-    public byte[] nfcCalculateSignature(byte[] hash, int hashAlgo) throws IOException {
-        if (!mPw1ValidatedForSignature) {
-            nfcVerifyPin(0x81); // (Verify PW1 with mode 81 for signing)
-        }
-
-        // dsi, including Lc
-        String dsi;
-
-        Log.i(Constants.TAG, "Hash: " + hashAlgo);
-        switch (hashAlgo) {
-            case HashAlgorithmTags.SHA1:
-                if (hash.length != 20) {
-                    throw new IOException("Bad hash length (" + hash.length + ", expected 10!");
-                }
-                dsi = "23" // Lc
-                        + "3021" // Tag/Length of Sequence, the 0x21 includes all following 33 bytes
-                        + "3009" // Tag/Length of Sequence, the 0x09 are the following header bytes
-                        + "0605" + "2B0E03021A" // OID of SHA1
-                        + "0500" // TLV coding of ZERO
-                        + "0414" + getHex(hash); // 0x14 are 20 hash bytes
-                break;
-            case HashAlgorithmTags.RIPEMD160:
-                if (hash.length != 20) {
-                    throw new IOException("Bad hash length (" + hash.length + ", expected 20!");
-                }
-                dsi = "233021300906052B2403020105000414" + getHex(hash);
-                break;
-            case HashAlgorithmTags.SHA224:
-                if (hash.length != 28) {
-                    throw new IOException("Bad hash length (" + hash.length + ", expected 28!");
-                }
-                dsi = "2F302D300D06096086480165030402040500041C" + getHex(hash);
-                break;
-            case HashAlgorithmTags.SHA256:
-                if (hash.length != 32) {
-                    throw new IOException("Bad hash length (" + hash.length + ", expected 32!");
-                }
-                dsi = "333031300D060960864801650304020105000420" + getHex(hash);
-                break;
-            case HashAlgorithmTags.SHA384:
-                if (hash.length != 48) {
-                    throw new IOException("Bad hash length (" + hash.length + ", expected 48!");
-                }
-                dsi = "433041300D060960864801650304020205000430" + getHex(hash);
-                break;
-            case HashAlgorithmTags.SHA512:
-                if (hash.length != 64) {
-                    throw new IOException("Bad hash length (" + hash.length + ", expected 64!");
-                }
-                dsi = "533051300D060960864801650304020305000440" + getHex(hash);
-                break;
-            default:
-                throw new IOException("Not supported hash algo!");
-        }
-
-        // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
-        String apdu  =
-                "002A9E9A" // CLA, INS, P1, P2
-                        + dsi // digital signature input
-                        + "00"; // Le
-
-        String response = nfcCommunicate(apdu);
-
-        // split up response into signature and status
-        String status = response.substring(response.length()-4);
-        String signature = response.substring(0, response.length() - 4);
-
-        // while we are getting 0x61 status codes, retrieve more data
-        while (status.substring(0, 2).equals("61")) {
-            Log.d(Constants.TAG, "requesting more data, status " + status);
-            // Send GET RESPONSE command
-            response = nfcCommunicate("00C00000" + status.substring(2));
-            status = response.substring(response.length()-4);
-            signature += response.substring(0, response.length()-4);
-        }
-
-        Log.d(Constants.TAG, "final response:" + status);
-
-        if (!mPw1ValidForMultipleSignatures) {
-            mPw1ValidatedForSignature = false;
-        }
-
-        if ( ! "9000".equals(status)) {
-            throw new CardException("Bad NFC response code: " + status, parseCardStatus(response));
-        }
-
-        // Make sure the signature we received is actually the expected number of bytes long!
-        if (signature.length() != 256 && signature.length() != 512) {
-            throw new IOException("Bad signature length! Expected 128 or 256 bytes, got " + signature.length() / 2);
-        }
-
-        return Hex.decode(signature);
-    }
-
-    /**
-     * Call DECIPHER command
-     *
-     * @param encryptedSessionKey the encoded session key
-     * @return the decoded session key
-     */
-    public byte[] nfcDecryptSessionKey(byte[] encryptedSessionKey) throws IOException {
-        if (!mPw1ValidatedForDecrypt) {
-            nfcVerifyPin(0x82); // (Verify PW1 with mode 82 for decryption)
-        }
-
-        String firstApdu = "102a8086fe";
-        String secondApdu = "002a808603";
-        String le = "00";
-
-        byte[] one = new byte[254];
-        // leave out first byte:
-        System.arraycopy(encryptedSessionKey, 1, one, 0, one.length);
-
-        byte[] two = new byte[encryptedSessionKey.length - 1 - one.length];
-        for (int i = 0; i < two.length; i++) {
-            two[i] = encryptedSessionKey[i + one.length + 1];
-        }
-
-        nfcCommunicate(firstApdu + getHex(one));
-        String second = nfcCommunicate(secondApdu + getHex(two) + le);
-
-        String decryptedSessionKey = getDataField(second);
-
-        return Hex.decode(decryptedSessionKey);
-    }
-
-    /** Verifies the user's PW1 or PW3 with the appropriate mode.
-     *
-     * @param mode For PW1, this is 0x81 for signing, 0x82 for everything else.
-     *             For PW3 (Admin PIN), mode is 0x83.
-     */
-    public void nfcVerifyPin(int mode) throws IOException {
-        if (mPin != null || mode == 0x83) {
-
-            byte[] pin;
-            if (mode == 0x83) {
-                pin = mAdminPin.toStringUnsafe().getBytes();
-            } else {
-                pin = mPin.toStringUnsafe().getBytes();
-            }
-
-            // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
-            // See specification, page 51
-            String accepted = "9000";
-            String response = nfcTryPin(mode, pin); // login
-            if (!response.equals(accepted)) {
-                throw new CardException("Bad PIN!", parseCardStatus(response));
-            }
-
-            if (mode == 0x81) {
-                mPw1ValidatedForSignature = true;
-            } else if (mode == 0x82) {
-                mPw1ValidatedForDecrypt = true;
-            } else if (mode == 0x83) {
-                mPw3Validated = true;
-            }
-        }
-    }
-
-    /**
-     * Resets security token, which deletes all keys and data objects.
-     * This works by entering a wrong PIN and then Admin PIN 4 times respectively.
-     * Afterwards, the token is reactivated.
-     */
-    public void nfcReset() throws IOException {
-        String accepted = "9000";
-
-        // try wrong PIN 4 times until counter goes to C0
-        byte[] pin = "XXXXXX".getBytes();
-        for (int i = 0; i <= 4; i++) {
-            String response = nfcTryPin(0x81, pin);
-            if (response.equals(accepted)) { // Should NOT accept!
-                throw new CardException("Should never happen, XXXXXX has been accepted!", parseCardStatus(response));
-            }
-        }
-
-        // try wrong Admin PIN 4 times until counter goes to C0
-        byte[] adminPin = "XXXXXXXX".getBytes();
-        for (int i = 0; i <= 4; i++) {
-            String response = nfcTryPin(0x83, adminPin);
-            if (response.equals(accepted)) { // Should NOT accept!
-                throw new CardException("Should never happen, XXXXXXXX has been accepted", parseCardStatus(response));
-            }
-        }
-
-        // reactivate token!
-        String reactivate1 = "00" + "e6" + "00" + "00";
-        String reactivate2 = "00" + "44" + "00" + "00";
-        String response1 = nfcCommunicate(reactivate1);
-        String response2 = nfcCommunicate(reactivate2);
-        if (!response1.equals(accepted) || !response2.equals(accepted)) {
-            throw new CardException("Reactivating failed!", parseCardStatus(response1));
-        }
-
-    }
-
-    private String nfcTryPin(int mode, byte[] pin) throws IOException {
-        // Command APDU for VERIFY command (page 32)
-        String login =
-                "00" // CLA
-                        + "20" // INS
-                        + "00" // P1
-                        + String.format("%02x", mode) // P2
-                        + String.format("%02x", pin.length) // Lc
-                        + Hex.toHexString(pin);
-
-        return nfcCommunicate(login);
-    }
-
-    /** Modifies the user's PW1 or PW3. Before sending, the new PIN will be validated for
-     *  conformance to the token's requirements for key length.
-     *
-     * @param pw For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
-     * @param newPin The new PW1 or PW3.
-     */
-    public void nfcModifyPin(int pw, byte[] newPin) throws IOException {
-        final int MAX_PW1_LENGTH_INDEX = 1;
-        final int MAX_PW3_LENGTH_INDEX = 3;
-
-        byte[] pwStatusBytes = nfcGetPwStatusBytes();
-
-        if (pw == 0x81) {
-            if (newPin.length < 6 || newPin.length > pwStatusBytes[MAX_PW1_LENGTH_INDEX]) {
-                throw new IOException("Invalid PIN length");
-            }
-        } else if (pw == 0x83) {
-            if (newPin.length < 8 || newPin.length > pwStatusBytes[MAX_PW3_LENGTH_INDEX]) {
-                throw new IOException("Invalid PIN length");
-            }
-        } else {
-            throw new IOException("Invalid PW index for modify PIN operation");
-        }
-
-        byte[] pin;
-        if (pw == 0x83) {
-            pin = mAdminPin.toStringUnsafe().getBytes();
-        } else {
-            pin = mPin.toStringUnsafe().getBytes();
-        }
-
-        // Command APDU for CHANGE REFERENCE DATA command (page 32)
-        String changeReferenceDataApdu = "00" // CLA
-                + "24" // INS
-                + "00" // P1
-                + String.format("%02x", pw) // P2
-                + String.format("%02x", pin.length + newPin.length) // Lc
-                + getHex(pin)
-                + getHex(newPin);
-        String response = nfcCommunicate(changeReferenceDataApdu); // change PIN
-        if (!response.equals("9000")) {
-            throw new CardException("Failed to change PIN", parseCardStatus(response));
-        }
-    }
-
-    /**
-     * Stores a data object on the token. Automatically validates the proper PIN for the operation.
-     * Supported for all data objects < 255 bytes in length. Only the cardholder certificate
-     * (0x7F21) can exceed this length.
-     *
-     * @param dataObject The data object to be stored.
-     * @param data The data to store in the object
-     */
-    public void nfcPutData(int dataObject, byte[] data) throws IOException {
-        if (data.length > 254) {
-            throw new IOException("Cannot PUT DATA with length > 254");
-        }
-        if (dataObject == 0x0101 || dataObject == 0x0103) {
-            if (!mPw1ValidatedForDecrypt) {
-                nfcVerifyPin(0x82); // (Verify PW1 for non-signing operations)
-            }
-        } else if (!mPw3Validated) {
-            nfcVerifyPin(0x83); // (Verify PW3)
-        }
-
-        String putDataApdu = "00" // CLA
-                + "DA" // INS
-                + String.format("%02x", (dataObject & 0xFF00) >> 8) // P1
-                + String.format("%02x", dataObject & 0xFF) // P2
-                + String.format("%02x", data.length) // Lc
-                + getHex(data);
-
-        String response = nfcCommunicate(putDataApdu); // put data
-        if (!response.equals("9000")) {
-            throw new CardException("Failed to put data.", parseCardStatus(response));
-        }
-    }
-
-    /**
-     * Puts a key on the token in the given slot.
-     *
-     * @param slot The slot on the token where the key should be stored:
-     *             0xB6: Signature Key
-     *             0xB8: Decipherment Key
-     *             0xA4: Authentication Key
-     */
-    public void nfcPutKey(int slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
-            throws IOException {
-        if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
-            throw new IOException("Invalid key slot");
-        }
-
-        RSAPrivateCrtKey crtSecretKey;
-        try {
-            secretKey.unlock(passphrase);
-            crtSecretKey = secretKey.getCrtSecretKey();
-        } catch (PgpGeneralException e) {
-            throw new IOException(e.getMessage());
-        }
-
-        // Shouldn't happen; the UI should block the user from getting an incompatible key this far.
-        if (crtSecretKey.getModulus().bitLength() > 2048) {
-            throw new IOException("Key too large to export to Security Token.");
-        }
-
-        // Should happen only rarely; all GnuPG keys since 2006 use public exponent 65537.
-        if (!crtSecretKey.getPublicExponent().equals(new BigInteger("65537"))) {
-            throw new IOException("Invalid public exponent for smart Security Token.");
-        }
-
-        if (!mPw3Validated) {
-            nfcVerifyPin(0x83); // (Verify PW3 with mode 83)
-        }
-
-        byte[] header= Hex.decode(
-                "4D82" + "03A2"      // Extended header list 4D82, length of 930 bytes. (page 23)
-                + String.format("%02x", slot) + "00" // CRT to indicate targeted key, no length
-                + "7F48" + "15"      // Private key template 0x7F48, length 21 (decimal, 0x15 hex)
-                + "9103"             // Public modulus, length 3
-                + "928180"           // Prime P, length 128
-                + "938180"           // Prime Q, length 128
-                + "948180"           // Coefficient (1/q mod p), length 128
-                + "958180"           // Prime exponent P (d mod (p - 1)), length 128
-                + "968180"           // Prime exponent Q (d mod (1 - 1)), length 128
-                + "97820100"         // Modulus, length 256, last item in private key template
-                + "5F48" + "820383");// DO 5F48; 899 bytes of concatenated key data will follow
-        byte[] dataToSend = new byte[934];
-        byte[] currentKeyObject;
-        int offset = 0;
-
-        System.arraycopy(header, 0, dataToSend, offset, header.length);
-        offset += header.length;
-        currentKeyObject = crtSecretKey.getPublicExponent().toByteArray();
-        System.arraycopy(currentKeyObject, 0, dataToSend, offset, 3);
-        offset += 3;
-        // NOTE: For a 2048-bit key, these lengths are fixed. However, bigint includes a leading 0
-        // in the array to represent sign, so we take care to set the offset to 1 if necessary.
-        currentKeyObject = crtSecretKey.getPrimeP().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte)0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getPrimeQ().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte)0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getCrtCoefficient().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte)0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getPrimeExponentP().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte)0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getPrimeExponentQ().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte)0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getModulus().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 256, dataToSend, offset, 256);
-
-        String putKeyCommand = "10DB3FFF";
-        String lastPutKeyCommand = "00DB3FFF";
-
-        // Now we're ready to communicate with the token.
-        offset = 0;
-        String response;
-        while(offset < dataToSend.length) {
-            int dataRemaining = dataToSend.length - offset;
-            if (dataRemaining > 254) {
-                response = nfcCommunicate(
-                        putKeyCommand + "FE" + Hex.toHexString(dataToSend, offset, 254)
-                );
-                offset += 254;
-            } else {
-                int length = dataToSend.length - offset;
-                response = nfcCommunicate(
-                        lastPutKeyCommand + String.format("%02x", length)
-                        + Hex.toHexString(dataToSend, offset, length));
-                offset += length;
-            }
-
-            if (!response.endsWith("9000")) {
-                throw new CardException("Key export to Security Token failed", parseCardStatus(response));
-            }
-        }
-
-        // Clear array with secret data before we return.
-        Arrays.fill(dataToSend, (byte) 0);
-    }
-
-    /**
-     * Generates a key on the card in the given slot. If the slot is 0xB6 (the signature key),
-     * this command also has the effect of resetting the digital signature counter.
-     * NOTE: This does not set the key fingerprint data object! After calling this command, you
-     * must construct a public key packet using the returned public key data objects, compute the
-     * key fingerprint, and store it on the card using: nfcPutData(0xC8, key.getFingerprint())
-     *
-     * @param slot The slot on the card where the key should be generated:
-     *             0xB6: Signature Key
-     *             0xB8: Decipherment Key
-     *             0xA4: Authentication Key
-     * @return the public key data objects, in TLV format. For RSA this will be the public modulus
-     * (0x81) and exponent (0x82). These may come out of order; proper TLV parsing is required.
-     */
-    public byte[] nfcGenerateKey(int slot) throws IOException {
-        if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
-            throw new IOException("Invalid key slot");
-        }
-
-        if (!mPw3Validated) {
-            nfcVerifyPin(0x83); // (Verify PW3 with mode 83)
-        }
-
-        String generateKeyApdu = "0047800002" + String.format("%02x", slot) + "0000";
-        String getResponseApdu = "00C00000";
-
-        String first = nfcCommunicate(generateKeyApdu);
-        String second = nfcCommunicate(getResponseApdu);
-
-        if (!second.endsWith("9000")) {
-            throw new IOException("On-card key generation failed");
-        }
-
-        String publicKeyData = getDataField(first) + getDataField(second);
-
-        Log.d(Constants.TAG, "Public Key Data Objects: " + publicKeyData);
-
-        return Hex.decode(publicKeyData);
-    }
-
-    /**
-     * Transceive data via NFC encoded as Hex
-     */
-    public String nfcCommunicate(String apdu) throws IOException {
-        return getHex(mIsoCard.transceive(Hex.decode(apdu)));
+        return mJavacardDevice.isConnected();
     }
 
     /**
@@ -1020,10 +467,6 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
         }
     }
 
-    private String getDataField(String output) {
-        return output.substring(0, output.length() - 4);
-    }
-
     public static String getHex(byte[] raw) {
         return new String(Hex.encode(raw));
     }
@@ -1048,21 +491,6 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity implemen
             return mResponseCode;
         }
 
-    }
-
-    private boolean isFidesmoToken() {
-        if (isNfcConnected()) { // Check if we can still talk to the card
-            try {
-                // By trying to select any apps that have the Fidesmo AID prefix we can
-                // see if it is a Fidesmo device or not
-                byte[] mSelectResponse = mIsoCard.transceive(Apdu.select(FIDESMO_APPS_AID_PREFIX));
-                // Compare the status returned by our select with the OK status code
-                return Apdu.hasStatus(mSelectResponse, Apdu.OK_APDU);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Card communication failed!", e);
-            }
-        }
-        return false;
     }
 
     /**
