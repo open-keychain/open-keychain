@@ -22,7 +22,7 @@ public class BaseJavacardDevice implements JavacardDevice {
     private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
 
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    private final Transport mTransport;
+    private Transport mTransport;
 
     private Passphrase mPin;
     private Passphrase mAdminPin;
@@ -32,8 +32,7 @@ public class BaseJavacardDevice implements JavacardDevice {
     private boolean mPw3Validated;
     private boolean mTagHandlingEnabled;
 
-    public BaseJavacardDevice(final Transport mTransport) {
-        this.mTransport = mTransport;
+    public BaseJavacardDevice() {
     }
 
     private static String getHex(byte[] raw) {
@@ -528,6 +527,9 @@ public class BaseJavacardDevice implements JavacardDevice {
 
         String response = nfcCommunicate(apdu);
 
+        if (response.length() < 4) {
+            throw new CardException("Bad response", (short) 0);
+        }
         // split up response into signature and status
         String status = response.substring(response.length() - 4);
         String signature = response.substring(0, response.length() - 4);
@@ -722,4 +724,9 @@ public class BaseJavacardDevice implements JavacardDevice {
         return fp;
     }
 
+    @Override
+    public void setTransport(Transport mTransport) {
+        this.mTransport = mTransport;
+
+    }
 }

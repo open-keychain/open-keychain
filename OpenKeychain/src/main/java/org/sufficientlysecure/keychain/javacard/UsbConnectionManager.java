@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.os.Handler;
+import android.os.Looper;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
@@ -17,16 +19,51 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UsbConnectionManager {
     private static final String LOG_TAG = UsbConnectionManager.class.getName();
     private static final String ACTION_USB_PERMISSION = Constants.PACKAGE_NAME + ".USB_PERMITSSION";
-
-    private Activity mActivity;
-    private OnDiscoveredUsbDeviceListener mListener;
     private final Semaphore mRunning = new Semaphore(1);
     private final Set<UsbDevice> mProcessedDevices = Collections.newSetFromMap(new ConcurrentHashMap<UsbDevice, Boolean>());
+    private final AtomicBoolean mStopped = new AtomicBoolean(false);
+    private Activity mActivity;
+    private final Thread mWatchThread = new Thread() {
+        @Override
+        public void run() {
+            final UsbManager usbManager = (UsbManager) mActivity.getSystemService(Context.USB_SERVICE);
 
+            while (!mStopped.get()) {
+                try {
+                    mRunning.acquire();
+                } catch (InterruptedException e) {
+                }
+                mRunning.release();
+                if (mStopped.get()) return;
+
+                //
+                final UsbDevice device = getDevice(usbManager);
+                if (device != null && !mProcessedDevices.contains(device)) {
+                    mProcessedDevices.add(device);
+
+                    final Intent intent = new Intent(ACTION_USB_PERMISSION);
+
+                    IntentFilter filter = new IntentFilter();
+                    filter.addAction(ACTION_USB_PERMISSION);
+                    mActivity.registerReceiver(mUsbReceiver, filter);
+
+                    Log.d(LOG_TAG, "Requesting permission for " + device.getDeviceName());
+                    usbManager.requestPermission(device, PendingIntent.getBroadcast(mActivity, 0, intent, 0));
+                }
+
+                try {
+                    sleep(1000);
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }
+    };
+    private OnDiscoveredUsbDeviceListener mListener;
     /**
      * Receives broadcast when a supported USB device is attached, detached or
      * when a permission to communicate to the device has been granted.
@@ -49,44 +86,23 @@ public class UsbConnectionManager {
             }
         }
     };
-
-    private final Thread mWatchThread = new Thread() {
-        @Override
-        public void run() {
-            final UsbManager usbManager = (UsbManager) mActivity.getSystemService(Context.USB_SERVICE);
-
-            while (true) {
-                mRunning.acquireUninterruptibly();
-                mRunning.release();
-
-                //
-
-                final UsbDevice device = getDevice(usbManager);
-                if (device != null && !mProcessedDevices.contains(device)) {
-                    mProcessedDevices.add(device);
-
-                    final Intent intent = new Intent(ACTION_USB_PERMISSION);
-
-                    IntentFilter filter = new IntentFilter();
-                    filter.addAction(ACTION_USB_PERMISSION);
-                    mActivity.registerReceiver(mUsbReceiver, filter);
-
-                    usbManager.requestPermission(device, PendingIntent.getBroadcast(mActivity, 0, intent, 0));
-                }
-
-                try {
-                    sleep(1000);
-                } catch (InterruptedException ignored) {
-                }
-            }
-        }
-    };
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     public UsbConnectionManager(final Activity activity, final OnDiscoveredUsbDeviceListener listener) {
         this.mActivity = activity;
         this.mListener = listener;
         mRunning.acquireUninterruptibly();
         mWatchThread.start();
+    }
+
+    private static UsbDevice getDevice(UsbManager manager) {
+        HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+        for (UsbDevice device : deviceList.values()) {
+            if (device.getVendorId() == 0x1050 && device.getProductId() == 0x0112) {
+                return device;
+            }
+        }
+        return null;
     }
 
     public void startListeningForDevices() {
@@ -100,7 +116,7 @@ public class UsbConnectionManager {
     public void interceptIntent(final Intent intent) {
         if (intent == null || intent.getAction() == null) return;
         switch (intent.getAction()) {
-            case UsbManager.ACTION_USB_DEVICE_ATTACHED: {
+            /*case UsbManager.ACTION_USB_DEVICE_ATTACHED: {
                 final UsbManager usbManager = (UsbManager) mActivity.getSystemService(Context.USB_SERVICE);
                 final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 Intent usbI = new Intent(mActivity, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -109,7 +125,7 @@ public class UsbConnectionManager {
                 PendingIntent pi = PendingIntent.getActivity(mActivity, 0, usbI, PendingIntent.FLAG_CANCEL_CURRENT);
                 usbManager.requestPermission(device, pi);
                 break;
-            }
+            }*/
             case ACTION_USB_PERMISSION: {
                 UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (device != null)
@@ -121,15 +137,11 @@ public class UsbConnectionManager {
         }
     }
 
-    private static UsbDevice getDevice(UsbManager manager) {
-        HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-        for (UsbDevice device : deviceList.values()) {
-            Log.d(LOG_TAG, device.getDeviceName() + " " + device.getDeviceId());
-            if (device.getVendorId() == 0x1050 && device.getProductId() == 0x0112) {
-                Log.d(LOG_TAG, device.getDeviceName() + " OK");
-                return device;
-            }
+    public void onDestroy() {
+        mStopped.set(true);
+        try {
+            mActivity.unregisterReceiver(mUsbReceiver);
+        } catch (IllegalArgumentException ignore) {
         }
-        return null;
     }
 }

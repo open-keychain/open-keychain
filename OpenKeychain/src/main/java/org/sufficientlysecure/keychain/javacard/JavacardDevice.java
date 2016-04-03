@@ -100,4 +100,6 @@ public interface JavacardDevice {
      * @param data       The data to store in the object
      */
     void putData(int dataObject, byte[] data) throws IOException;
+
+    void setTransport(Transport mTransport);
 }

@@ -74,7 +74,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
     private static final String FIDESMO_APP_PACKAGE = "com.fidesmo.sec.android";
 
-    public JavacardDevice mJavacardDevice;
+    public JavacardDevice mJavacardDevice = new BaseJavacardDevice();
     protected TagDispatcher mTagDispatcher;
     protected UsbConnectionManager mUsbDispatcher;
     private boolean mTagHandlingEnabled;
@@ -451,7 +451,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
             throw new IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
         }
 
-        mJavacardDevice = new BaseJavacardDevice(new NfcTransport(isoCard));
+        mJavacardDevice.setTransport(new NfcTransport(isoCard));
         mJavacardDevice.connectToDevice();
 
         doNfcInBackground();
@@ -459,7 +459,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
     protected void handleUsbDevice(UsbDevice device) throws IOException {
         UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
-        mJavacardDevice = new BaseJavacardDevice(new UsbTransport(device, usbManager));
+        mJavacardDevice.setTransport(new UsbTransport(device, usbManager));
         mJavacardDevice.connectToDevice();
 
         doNfcInBackground();
@@ -566,5 +566,11 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
             mAppInstalled = false;
         }
         return mAppInstalled;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mUsbDispatcher.onDestroy();
     }
 }
