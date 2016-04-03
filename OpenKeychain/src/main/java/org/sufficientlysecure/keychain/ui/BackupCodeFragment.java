@@ -393,10 +393,10 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
             private void catchMassDelete(CharSequence s, int deleteStart, int deleteCount) {
                 if(processing) {
-                    // currently processing multi-delete
+                    // currently processing mass-delete
                     massDelete = false;
                 } else {
-                    // catch multi-delete if present
+                    // catch mass-delete if present
                     massDelete = (deleteCount > 1);
                     before = s.toString();
                     cursorPosition = deleteStart + deleteCount;
