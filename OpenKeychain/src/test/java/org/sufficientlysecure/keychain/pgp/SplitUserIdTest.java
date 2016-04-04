@@ -28,7 +28,7 @@ import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
-public class KeyRingTest {
+public class SplitUserIdTest {
 
     @Test
     public void splitCompleteUserIdShouldReturnAll3Components() throws Exception {
@@ -49,9 +49,40 @@ public class KeyRingTest {
     @Test
     public void splitUserIdWithAllButEmailShouldReturnNameAndComment() throws Exception {
         KeyRing.UserId info = KeyRing.splitUserId("Max Mustermann (this is a comment)");
-        Assert.assertEquals(info.name, "Max Mustermann");
-        Assert.assertEquals(info.comment, "this is a comment");
+        Assert.assertEquals("Max Mustermann", info.name);
+        Assert.assertEquals("this is a comment", info.comment);
         Assert.assertNull(info.email);
     }
 
+    @Test
+    public void splitUserIdWithCommentAndEmailShouldReturnCommentAndEmail() throws Exception {
+        KeyRing.UserId info = KeyRing.splitUserId(" (this is a comment) <max@example.com>");
+        Assert.assertNull(info.name);
+        Assert.assertEquals("this is a comment", info.comment);
+        Assert.assertEquals("max@example.com", info.email);
+    }
+
+    @Test
+    public void splitUserIdWithEmailShouldReturnEmail() throws Exception {
+        KeyRing.UserId info = KeyRing.splitUserId("max@example.com");
+        Assert.assertNull(info.name);
+        Assert.assertNull(info.comment);
+        Assert.assertEquals("max@example.com", info.email);
+    }
+
+    @Test
+    public void splitUserIdWithNameShouldReturnName() throws Exception {
+        KeyRing.UserId info = KeyRing.splitUserId("Max Mustermann");
+        Assert.assertEquals("Max Mustermann", info.name);
+        Assert.assertNull(info.comment);
+        Assert.assertNull(info.email);
+    }
+
+    @Test
+    public void splitUserIdWithCommentShouldReturnComment() throws Exception {
+        KeyRing.UserId info = KeyRing.splitUserId(" (this is a comment)");
+        Assert.assertNull(info.name);
+        Assert.assertEquals("this is a comment", info.comment);
+        Assert.assertNull(info.email);
+    }
 }
