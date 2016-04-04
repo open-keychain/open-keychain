@@ -336,8 +336,7 @@ public class OpenPgpService extends Service {
                     .setVersionHeader(null)
                     .setCompressionAlgorithm(compressionId)
                     .setSymmetricEncryptionAlgorithm(PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT)
-                    .setEncryptionMasterKeyIds(keyIds)
-                    .setFailOnMissingEncryptionKeyIds(true);
+                    .setEncryptionMasterKeyIds(keyIds);
 
             if (sign) {
 
