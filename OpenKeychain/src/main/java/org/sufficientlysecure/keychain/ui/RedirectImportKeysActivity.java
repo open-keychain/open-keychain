@@ -34,13 +34,8 @@ public class RedirectImportKeysActivity extends BaseActivity {
         startScanActivity();
     }
 
-    @Override
-    protected void initLayout() {
-
-    }
-
     private void startScanActivity() {
-        final Intent intent = new Intent(this, org.sufficientlysecure.keychain.ui.ImportKeysActivity.class);
+        final Intent intent = new Intent(this, QrCodeCaptureActivity.class);
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.redirect_import_key_title)
