@@ -31,10 +31,10 @@ public class RedirectImportKeysActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.redirect_import_keys_activity);
 
-        startScanActivity();
+        startQrCodeCaptureActivity();
     }
 
-    private void startScanActivity() {
+    private void startQrCodeCaptureActivity() {
         final Intent intent = new Intent(this, QrCodeCaptureActivity.class);
 
         new AlertDialog.Builder(this)
