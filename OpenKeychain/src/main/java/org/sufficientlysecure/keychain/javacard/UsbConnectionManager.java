@@ -80,13 +80,14 @@ public class UsbConnectionManager {
                         false);
                 Log.d(LOG_TAG, "ACTION_USB_PERMISSION: " + permission + " Device: " + deviceName);
 
-                interceptIntent(intent);
+                if (permission) {
+                    interceptIntent(intent);
+                }
 
                 context.unregisterReceiver(mUsbReceiver);
             }
         }
     };
-    private Handler handler = new Handler(Looper.getMainLooper());
 
     public UsbConnectionManager(final Activity activity, final OnDiscoveredUsbDeviceListener listener) {
         this.mActivity = activity;
@@ -98,7 +99,7 @@ public class UsbConnectionManager {
     private static UsbDevice getDevice(UsbManager manager) {
         HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
         for (UsbDevice device : deviceList.values()) {
-            if (device.getVendorId() == 0x1050 && device.getProductId() == 0x0112) {
+            if (device.getVendorId() == 0x1050 && (device.getProductId() == 0x0112 || device.getProductId() == 0x0115)) {
                 return device;
             }
         }
@@ -139,9 +140,11 @@ public class UsbConnectionManager {
 
     public void onDestroy() {
         mStopped.set(true);
+        mRunning.release();
         try {
             mActivity.unregisterReceiver(mUsbReceiver);
         } catch (IllegalArgumentException ignore) {
         }
+        mActivity = null;
     }
 }

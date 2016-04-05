@@ -393,26 +393,6 @@ public class BaseJavacardDevice implements JavacardDevice {
         Arrays.fill(dataToSend, (byte) 0);
     }
 
-
-    /**
-     * Return the key id from application specific data stored on tag, or null
-     * if it doesn't exist.
-     *
-     * @param idx Index of the key to return the fingerprint from.
-     * @return The long key id of the requested key, or null if not found.
-     */
-    public Long nfcGetKeyId(int idx) throws IOException {
-        byte[] fp = getMasterKeyFingerprint(idx);
-        if (fp == null) {
-            return null;
-        }
-        ByteBuffer buf = ByteBuffer.wrap(fp);
-        // skip first 12 bytes of the fingerprint
-        buf.position(12);
-        // the last eight bytes are the key id (big endian, which is default order in ByteBuffer)
-        return buf.getLong();
-    }
-
     /**
      * Return fingerprints of all keys from application specific data stored
      * on tag, or null if data not available.

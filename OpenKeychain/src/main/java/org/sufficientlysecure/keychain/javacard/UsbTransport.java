@@ -11,10 +11,14 @@ import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import org.bouncycastle.util.Arrays;
+import org.bouncycastle.util.encoders.Hex;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class UsbTransport implements Transport {
     private static final int CLASS_SMARTCARD = 11;
-    private static final int TIMEOUT = 1000; // 1 s
+    private static final int TIMEOUT = 20 * 1000; // 2 s
 
     private final UsbManager mUsbManager;
     private final UsbDevice mUsbDevice;
@@ -22,7 +26,7 @@ public class UsbTransport implements Transport {
     private final UsbEndpoint mBulkIn;
     private final UsbEndpoint mBulkOut;
     private final UsbDeviceConnection mConnection;
-    private byte counter = 0;
+    private byte mCounter = 0;
 
     public UsbTransport(final UsbDevice usbDevice, final UsbManager usbManager) throws TransportIoException {
         mUsbDevice = usbDevice;
@@ -40,17 +44,60 @@ public class UsbTransport implements Transport {
         mConnection.claimInterface(mUsbInterface, true);
         // check result
 
+        powerOn();
+
+        setTimings();
+    }
+
+    private void setTimings()  throws TransportIoException {
+        byte[] data = {
+                0x6C,
+                0x00, 0x00, 0x00, 0x00,
+                0x00,
+                mCounter++,
+                0x00, 0x00, 0x00
+        };
+        sendRaw(data);
+        data = receive();
+
+        data[0] = 0x61;
+        data[1] = 0x04;
+        data[2] = data[3] = data[4] = 0x00;
+        data[5] = 0x00;
+        data[6] = mCounter++;
+        data[7] = 0x00;
+        data[8] = data[9] = 0x00;
+
+        data[13] = 1;
+
+        sendRaw(data);
+        receive();
+    }
+
+    private void powerOff() throws TransportIoException {
+        final byte[] iccPowerOff = {
+                0x63,
+                0x00, 0x00, 0x00, 0x00,
+                0x00,
+                mCounter++,
+                0x00,
+                0x00, 0x00
+        };
+        sendRaw(iccPowerOff);
+        receive();
+    }
+
+    void powerOn() throws TransportIoException {
         final byte[] iccPowerOn = {
                 0x62,
                 0x00, 0x00, 0x00, 0x00,
                 0x00,
-                counter++,
-                0x03,
+                mCounter++,
+                0x00,
                 0x00, 0x00
         };
         sendRaw(iccPowerOn);
-        receiveRaw();
-        // Check result
+        receive();
     }
 
     /**
@@ -101,27 +148,58 @@ public class UsbTransport implements Transport {
     }
 
     @Override
-    public byte[] sendAndReceive(final byte[] data) throws TransportIoException {
+    public byte[] sendAndReceive(byte[] data) throws TransportIoException {
         send(data);
-        return receive();
+        byte[] bytes;
+        do {
+            bytes = receive();
+        } while (isXfrBlockNotReady(bytes));
+
+        checkXfrBlockResult(bytes);
+        return Arrays.copyOfRange(bytes, 10, bytes.length);
     }
 
-    public void send(final byte[] d) throws TransportIoException {
+    public void send(byte[] d) throws TransportIoException {
         int l = d.length;
         byte[] data = Arrays.concatenate(new byte[]{
                         0x6f,
                         (byte) l, (byte) (l >> 8), (byte) (l >> 16), (byte) (l >> 24),
                         0x00,
-                        counter++,
-                        0x01,
+                        mCounter++,
+                        0x00,
                         0x00, 0x00},
                 d);
-        sendRaw(data);
+
+        int send = 0;
+        while (send < data.length) {
+            final int len = Math.min(mBulkIn.getMaxPacketSize(), data.length - send);
+            sendRaw(Arrays.copyOfRange(data, send, send + len));
+            send += len;
+        }
     }
 
     public byte[] receive() throws TransportIoException {
-        final byte[] bytes = receiveRaw();
-        return Arrays.copyOfRange(bytes, 10, bytes.length);
+        byte[] buffer = new byte[mBulkIn.getMaxPacketSize()];
+        byte[] result = null;
+        int readBytes = 0, totalBytes = 0;
+
+        do {
+            int res = mConnection.bulkTransfer(mBulkIn, buffer, buffer.length, TIMEOUT);
+            if (res < 0) {
+                throw new TransportIoException("USB error, failed to receive response " + res);
+            }
+            if (result == null) {
+                if (res < 10) {
+                    throw new TransportIoException("USB error, failed to receive ccid header");
+                }
+                totalBytes = ByteBuffer.wrap(buffer, 1, 4).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get() + 10;
+                result = new byte[totalBytes];
+            }
+            System.arraycopy(buffer, 0, result, readBytes, res);
+            readBytes += res;
+        } while (readBytes < totalBytes);
+
+        return result;
     }
 
     private void sendRaw(final byte[] data) throws TransportIoException {
@@ -131,14 +209,18 @@ public class UsbTransport implements Transport {
         }
     }
 
-    private byte[] receiveRaw() throws TransportIoException {
-        byte[] buffer = new byte[1024];
+    private byte getStatus(byte[] bytes) {
+        return (byte) ((bytes[7] >> 6) & 0x03);
+    }
 
-        int res = mConnection.bulkTransfer(mBulkIn, buffer, buffer.length, TIMEOUT);
-        if (res < 0) {
-            throw new TransportIoException("USB error, failed to receive response " + res);
+    private void checkXfrBlockResult(byte[] bytes) throws TransportIoException {
+        final byte status = getStatus(bytes);
+        if (status != 0) {
+            throw new TransportIoException("CCID error, status " + status + " error code: " + Hex.toHexString(bytes, 8, 1));
         }
+    }
 
-        return Arrays.copyOfRange(buffer, 0, res);
+    private boolean isXfrBlockNotReady(byte[] bytes) {
+        return getStatus(bytes) == 2;
     }
 }
