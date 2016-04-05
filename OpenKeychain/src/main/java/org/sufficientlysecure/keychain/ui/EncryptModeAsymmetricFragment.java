@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ViewAnimator;
 
 import com.tokenautocomplete.TokenCompleteTextView;
@@ -106,6 +107,14 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                 if (vEncryptionIcon.getDisplayedChild() != child) {
                     vEncryptionIcon.setDisplayedChild(child);
                 }
+            }
+        });
+
+        ImageView addRecipientImgView = (ImageView) view.findViewById(R.id.add_recipient);
+        addRecipientImgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEncryptKeyView.showAllKeys();
             }
         });
 

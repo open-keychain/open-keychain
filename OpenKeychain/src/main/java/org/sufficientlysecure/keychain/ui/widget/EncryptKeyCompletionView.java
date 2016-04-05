@@ -171,4 +171,22 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
         mLoaderManager.restartLoader(0, args, this);
     }
 
+    @Override
+    public boolean enoughToFilter() {
+        return true;
+    }
+
+    public void showAllKeys(){
+        Bundle args = new Bundle();
+        args.putString(ARG_QUERY, "");
+        mLoaderManager.restartLoader(0, args, this);
+        super.showDropDown();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        this.setDropDownWidth(this.getLeft()+this.getRight());
+        this.setDropDownHorizontalOffset(-this.getLeft());
+    }
 }
