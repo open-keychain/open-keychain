@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v4.app.FragmentActivity;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ import android.widget.TextView;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.Calendar;
@@ -65,10 +67,11 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         public SaveKeyringParcel.SubkeyAdd mModel;
     }
 
+
     public View getView(final int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             // Not recycled, inflate a new view
-            convertView = mInflater.inflate(R.layout.view_key_adv_subkey_item, null);
+            convertView = mInflater.inflate(R.layout.view_key_adv_subkey_item, parent, false);
             final ViewHolder holder = new ViewHolder();
             holder.vKeyId = (TextView) convertView.findViewById(R.id.subkey_item_key_id);
             holder.vKeyDetails = (TextView) convertView.findViewById(R.id.subkey_item_details);
@@ -88,16 +91,8 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
             vStatus.setVisibility(View.GONE);
 
             convertView.setTag(holder);
-
-            holder.vDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // remove reference model item from adapter (data and notify about change)
-                    SubkeysAddedAdapter.this.remove(holder.mModel);
-                }
-            });
-
         }
+
         final ViewHolder holder = (ViewHolder) convertView.getTag();
 
         // save reference to model item
@@ -113,8 +108,41 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         boolean isMasterKey = mNewKeyring && position == 0;
         if (isMasterKey) {
             holder.vKeyId.setTypeface(null, Typeface.BOLD);
+            holder.vDelete.setImageResource(R.drawable.ic_change_grey_24dp);
+            holder.vDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // swapping out the old master key with newly set master key
+                    AddSubkeyDialogFragment addSubkeyDialogFragment =
+                            AddSubkeyDialogFragment.newInstance(true);
+                    addSubkeyDialogFragment
+                            .setOnAlgorithmSelectedListener(
+                                    new AddSubkeyDialogFragment.OnAlgorithmSelectedListener() {
+                                        @Override
+                                        public void onAlgorithmSelected(SaveKeyringParcel.SubkeyAdd newSubkey) {
+                                            // calculate manually as the provided position variable
+                                            // is not always accurate
+                                            int pos = SubkeysAddedAdapter.this.getPosition(holder.mModel);
+                                            SubkeysAddedAdapter.this.remove(holder.mModel);
+                                            SubkeysAddedAdapter.this.insert(newSubkey, pos);
+                                        }
+                                    }
+                            );
+                    addSubkeyDialogFragment.show(
+                            ((FragmentActivity)mActivity).getSupportFragmentManager()
+                            , "addSubkeyDialog");
+                }
+            });
         } else {
             holder.vKeyId.setTypeface(null, Typeface.NORMAL);
+            holder.vDelete.setImageResource(R.drawable.ic_close_grey_24dp);
+            holder.vDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // remove reference model item from adapter (data and notify about change)
+                    SubkeysAddedAdapter.this.remove(holder.mModel);
+                }
+            });
         }
 
         holder.vKeyId.setText(R.string.edit_key_new_subkey);

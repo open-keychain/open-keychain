@@ -312,12 +312,14 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.EMAIL, Tables.USER_PACKETS + "." + UserPackets.EMAIL);
                 projectionMap.put(KeyRings.COMMENT, Tables.USER_PACKETS + "." + UserPackets.COMMENT);
                 projectionMap.put(KeyRings.HAS_DUPLICATE_USER_ID,
-                        "(EXISTS (SELECT * FROM " + Tables.USER_PACKETS + " AS dups"
+                            "(EXISTS (SELECT * FROM " + Tables.USER_PACKETS + " AS dups"
                                 + " WHERE dups." + UserPackets.MASTER_KEY_ID
                                     + " != " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " AND dups." + UserPackets.RANK + " = 0"
-                                + " AND dups." + UserPackets.USER_ID
-                                    + " = "+ Tables.USER_PACKETS + "." + UserPackets.USER_ID
+                                + " AND dups." + UserPackets.NAME
+                                    + " = " + Tables.USER_PACKETS + "." + UserPackets.NAME + " COLLATE NOCASE"
+                                + " AND dups." + UserPackets.EMAIL
+                                    + " = " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " COLLATE NOCASE"
                                 + ")) AS " + KeyRings.HAS_DUPLICATE_USER_ID);
                 projectionMap.put(KeyRings.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
                 projectionMap.put(KeyRings.PUBKEY_DATA,

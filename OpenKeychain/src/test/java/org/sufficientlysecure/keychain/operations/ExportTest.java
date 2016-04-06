@@ -31,6 +31,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.net.Uri;
 
+import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,8 +42,6 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.bcpg.sig.KeyFlags;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -124,13 +124,14 @@ public class ExportTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snails");
-            parcel.mNewUnlock = new ChangeUnlockParcel(null, new Passphrase("1234"));
+            parcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase("1234"));
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
             mStaticRing2 = result.getRing();
+            mStaticRing2 = UncachedKeyRing.forTestingOnlyAddDummyLocalSignature(mStaticRing2, "1234");
         }
 
     }

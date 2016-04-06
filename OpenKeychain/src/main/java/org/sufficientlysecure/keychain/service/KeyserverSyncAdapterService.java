@@ -11,11 +11,14 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.PeriodicSync;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,6 +38,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.receiver.NetworkReceiver;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -68,7 +72,7 @@ public class KeyserverSyncAdapterService extends Service {
 
     private static final String ACTION_IGNORE_TOR = "ignore_tor";
     private static final String ACTION_UPDATE_ALL = "update_all";
-    private static final String ACTION_SYNC_NOW = "sync_now";
+    public static final String ACTION_SYNC_NOW = "sync_now";
     private static final String ACTION_DISMISS_NOTIFICATION = "cancel_sync";
     private static final String ACTION_START_ORBOT = "start_orbot";
     private static final String ACTION_CANCEL = "cancel";
@@ -176,8 +180,25 @@ public class KeyserverSyncAdapterService extends Service {
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority,
                                   ContentProviderClient provider, SyncResult syncResult) {
-            Log.d(Constants.TAG, "Performing a keyserver sync!");
 
+            Preferences prefs = Preferences.getPreferences(getContext());
+
+            // for a wifi-ONLY sync
+            if (prefs.getWifiOnlySync()) {
+
+                ConnectivityManager connMgr = (ConnectivityManager)
+                        getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                boolean isNotOnWifi = !(networkInfo.getType() == ConnectivityManager.TYPE_WIFI);
+                boolean isNotConnected = !(networkInfo.isConnected());
+
+                // if Wi-Fi connection doesn't exist then receiver is enabled
+                if (isNotOnWifi && isNotConnected) {
+                    new NetworkReceiver().setWifiReceiverComponent(true, getContext());
+                    return;
+                }
+            }
+            Log.d(Constants.TAG, "Performing a keyserver sync!");
             PowerManager pm = (PowerManager) KeyserverSyncAdapterService.this
                     .getSystemService(Context.POWER_SERVICE);
             @SuppressWarnings("deprecation") // our min is API 15, deprecated only in 20
@@ -509,6 +530,10 @@ public class KeyserverSyncAdapterService extends Service {
         return builder.build();
     }
 
+    /**
+     * creates a new sync if one does not exist, or updates an existing sync if the sync interval
+     * has changed.
+     */
     public static void enableKeyserverSync(Context context) {
         Account account = KeychainApplication.createAccountIfNecessary(context);
 
@@ -519,12 +544,26 @@ public class KeyserverSyncAdapterService extends Service {
 
         ContentResolver.setIsSyncable(account, Constants.PROVIDER_AUTHORITY, 1);
         ContentResolver.setSyncAutomatically(account, Constants.PROVIDER_AUTHORITY, true);
-        ContentResolver.addPeriodicSync(
-                account,
-                Constants.PROVIDER_AUTHORITY,
-                new Bundle(),
-                SYNC_INTERVAL
-        );
+
+        boolean intervalChanged = false;
+        boolean syncExists = Preferences.getKeyserverSyncEnabled(context);
+
+        if (syncExists) {
+            long oldInterval = ContentResolver.getPeriodicSyncs(
+                    account, Constants.PROVIDER_AUTHORITY).get(0).period;
+            if (oldInterval != SYNC_INTERVAL) {
+                intervalChanged = true;
+            }
+        }
+
+        if (!syncExists || intervalChanged) {
+            ContentResolver.addPeriodicSync(
+                    account,
+                    Constants.PROVIDER_AUTHORITY,
+                    new Bundle(),
+                    SYNC_INTERVAL
+            );
+        }
     }
 
     private boolean isSyncEnabled() {

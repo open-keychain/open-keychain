@@ -278,17 +278,17 @@ public class CreateKeyFinalFragment extends Fragment {
                     2048, null, KeyFlags.AUTHENTICATION, 0L));
 
             // use empty passphrase
-            saveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase(), null);
+            saveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase());
         } else {
             saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    4096, null, KeyFlags.CERTIFY_OTHER, 0L));
+                    3072, null, KeyFlags.CERTIFY_OTHER, 0L));
             saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    4096, null, KeyFlags.SIGN_DATA, 0L));
+                    3072, null, KeyFlags.SIGN_DATA, 0L));
             saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+                    3072, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
 
             saveKeyringParcel.mNewUnlock = createKeyActivity.mPassphrase != null
-                    ? new ChangeUnlockParcel(createKeyActivity.mPassphrase, null)
+                    ? new ChangeUnlockParcel(createKeyActivity.mPassphrase)
                     : null;
         }
         String userId = KeyRing.createUserId(

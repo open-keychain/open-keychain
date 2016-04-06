@@ -339,8 +339,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
 
                     // cache new returned passphrase!
                     mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(
-                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
-                            null
+                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
                     );
                 }
             }
@@ -562,15 +561,9 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
     }
 
     private void addSubkey() {
-        boolean willBeMasterKey;
-        if (mSubkeysAdapter != null) {
-            willBeMasterKey = mSubkeysAdapter.getCount() == 0 && mSubkeysAddedAdapter.getCount() == 0;
-        } else {
-            willBeMasterKey = mSubkeysAddedAdapter.getCount() == 0;
-        }
-
+        // new subkey will never be a masterkey, as masterkey cannot be removed
         AddSubkeyDialogFragment addSubkeyDialogFragment =
-                AddSubkeyDialogFragment.newInstance(willBeMasterKey);
+                AddSubkeyDialogFragment.newInstance(false);
         addSubkeyDialogFragment
                 .setOnAlgorithmSelectedListener(
                         new AddSubkeyDialogFragment.OnAlgorithmSelectedListener() {

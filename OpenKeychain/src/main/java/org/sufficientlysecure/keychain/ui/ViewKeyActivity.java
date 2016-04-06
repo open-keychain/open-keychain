@@ -32,6 +32,8 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
@@ -469,8 +471,7 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
 
                     // use new passphrase!
                     mSaveKeyringParcel.mNewUnlock = new SaveKeyringParcel.ChangeUnlockParcel(
-                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
-                            null
+                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
                     );
 
                     mEditOpHelper.cryptoOperation();
@@ -924,6 +925,7 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
                                     }
 
                                     mPhoto.setImageBitmap(photo);
+                                    mPhoto.setColorFilter(getResources().getColor(R.color.toolbar_photo_tint), PorterDuff.Mode.SRC_ATOP);
                                     mPhotoLayout.setVisibility(View.VISIBLE);
                                 }
                             };

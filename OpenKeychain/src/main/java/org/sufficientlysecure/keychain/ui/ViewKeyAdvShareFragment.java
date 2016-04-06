@@ -238,7 +238,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
             // let user choose application
             Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.setType("text/plain");
+            sendIntent.setType(Constants.MIME_TYPE_KEYS);
 
             // NOTE: Don't use Intent.EXTRA_TEXT to send the key
             // better send it via a Uri!
@@ -455,8 +455,19 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     }
 
     private void uploadToKeyserver() {
+        long keyId;
+        try {
+            keyId = new ProviderHelper(getActivity())
+                    .getCachedPublicKeyRing(mDataUri)
+                    .extractOrGetMasterKeyId();
+        } catch (PgpKeyNotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+            Notify.create(getActivity(), "key not found", Style.ERROR).show();
+            return;
+        }
         Intent uploadIntent = new Intent(getActivity(), UploadKeyActivity.class);
         uploadIntent.setData(mDataUri);
+        uploadIntent.putExtra(MultiUserIdsFragment.EXTRA_KEY_IDS, new long[]{keyId});
         startActivityForResult(uploadIntent, 0);
     }
 

@@ -13,147 +13,68 @@
         android:paddingRight="24dp"
         android:stretchColumns="1">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="4dp"
-            android:text="@string/key_creation_el_gamal_info" />
-
         <TableRow>
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="@string/label_algorithm" />
+                android:paddingRight="10dp"
+                android:text="@string/label_key_type" />
 
-            <Spinner
-                android:id="@+id/add_subkey_algorithm"
+            <!-- custom spinner for fixing focus on first item in list at all times -->
+            <org.sufficientlysecure.keychain.ui.util.spinner.FocusFirstItemSpinner
+                android:id="@+id/add_subkey_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="4dp" />
-        </TableRow>
-
-        <TableRow android:id="@+id/add_subkey_row_size">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/label_key_size" />
-
-            <Spinner
-                android:id="@+id/add_subkey_size"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right"
+                android:dropDownWidth="wrap_content"
                 android:padding="4dp" />
         </TableRow>
 
         <TableRow
-            android:id="@+id/add_subkey_row_curve"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/label_ecc_curve"/>
-
-            <Spinner
-                android:id="@+id/add_subkey_curve"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:padding="4dp"/>
-        </TableRow>
-
-        <TextView
-            android:id="@+id/add_subkey_custom_key_size_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/key_size_custom_info"
-            android:visibility="gone" />
-
-        <EditText
-            android:id="@+id/add_subkey_custom_key_size_input"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="number"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/add_subkey_custom_key_size_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" />
-
-        <TableRow>
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/label_usage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingRight="10dip"
+                android:layout_gravity="center_vertical|top"
+                android:paddingRight="10dp"
                 android:text="@string/label_usage" />
 
+            <RadioGroup
+                android:id="@+id/add_subkey_usage_group"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
 
-            <CheckBox
-                android:id="@+id/add_subkey_flag_certify"
-                android:enabled="false"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/flag_certify" />
+                <RadioButton
+                    android:id="@+id/add_subkey_usage_none"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:text="@string/usage_none" />
+
+                <RadioButton
+                    android:id="@+id/add_subkey_usage_sign"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/usage_sign" />
+
+                <RadioButton
+                    android:id="@+id/add_subkey_usage_encrypt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/usage_encrypt" />
+
+                <RadioButton
+                    android:id="@+id/add_subkey_usage_sign_and_encrypt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/usage_sign_and_encrypt" />
+            </RadioGroup>
         </TableRow>
 
-        <TableRow>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingRight="10dip" />
-
-            <CheckBox
-                android:id="@+id/add_subkey_flag_sign"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/flag_sign" />
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingRight="10dip" />
-
-            <CheckBox
-                android:id="@+id/add_subkey_flag_encrypt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/flag_encrypt" />
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingRight="10dip" />
-
-            <CheckBox
-                android:id="@+id/add_subkey_flag_authenticate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/flag_authenticate" />
-        </TableRow>
 
         <TableRow
             android:layout_marginTop="8dp"
@@ -164,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:paddingRight="10dip"
+                android:paddingRight="10dp"
                 android:text="@string/label_expiry" />
 
             <CheckBox

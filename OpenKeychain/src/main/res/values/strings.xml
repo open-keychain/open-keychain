@@ -13,6 +13,7 @@
     <string name="title_encrypt_files">"Encrypt"</string>
     <string name="title_decrypt">"Decrypt"</string>
     <string name="title_add_subkey">"Add subkey"</string>
+    <string name="title_change_master_key">Change master key</string>
     <string name="title_edit_key">"Edit Key"</string>
     <string name="title_linked_create">"Create a Linked Identity"</string>
     <string name="title_preferences">"Settings"</string>
@@ -40,6 +41,7 @@
     <string name="title_advanced_key_info">"Advanced"</string>
     <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
     <string name="title_manage_my_keys">"Manage my keys"</string>
+    <string name="title_alert_strip">"Strip this subkey"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
@@ -165,6 +167,7 @@
     <string name="label_keyservers">"Select OpenPGP keyservers"</string>
     <string name="label_key_id">"Key ID"</string>
     <string name="label_key_created">"Key created %s"</string>
+    <string name="label_key_type">"Type"</string>
     <string name="label_creation">"Creation"</string>
     <string name="label_expiry">"Expiry"</string>
     <string name="label_usage">"Usage"</string>
@@ -201,6 +204,7 @@
     <string name="label_sync_settings_keyserver_title">"Automatic key updates"</string>
     <string name="label_sync_settings_keyserver_summary_on">"Every three days, keys are updated from the preferred keyserver"</string>
     <string name="label_sync_settings_keyserver_summary_off">"Keys are not automatically updated"</string>
+    <string name="label_sync_settings_wifi_title">"Sync only on Wi-Fi"</string>
     <string name="label_sync_settings_contacts_title">"Link keys to contacts"</string>
     <string name="label_sync_settings_contacts_summary_on">"Link keys to contacts based on names and email addresses. This happens completely offline on your device."</string>
     <string name="label_sync_settings_contacts_summary_off">"New keys will not be linked to contacts"</string>
@@ -281,22 +285,26 @@
     <string name="choice_8hours">"8 hours"</string>
     <string name="choice_forever">"forever"</string>
     <string name="choice_select_cert">"Select a Key"</string>
-    <string name="dsa">"DSA"</string>
-    <string name="elgamal">"ElGamal"</string>
-    <string name="rsa">"RSA"</string>
-    <string name="ecdh">"ECDH"</string>
-    <string name="ecdsa">"ECDSA"</string>
     <string name="filemanager_title_open">"Open…"</string>
+    <string name="rsa_2048">"RSA 2048"</string>
+    <string name="rsa_2048_description_html">"smaller filesize, considered secure until 2030"</string>
+    <string name="rsa_3072">"RSA 3072"</string>
+    <string name="rsa_3072_description_html">"recommended, considered secure until 2040"</string>
+    <string name="rsa_4096">"RSA 4096"</string>
+    <string name="rsa_4096_description_html">"larger file size, considered secure until 2040+"</string>
+    <string name="ecc_p256">"ECC P-256"</string>
+    <string name="ecc_p256_description_html">"very tiny filesize, considered secure until 2040 &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
+    <string name="ecc_p521">"ECC P-521"</string>
+    <string name="ecc_p521_description_html">"tiny filesize, considered secure until 2040+ &lt;br/> &lt;u>experimental and not supported by all implementations"&lt;/u></string>
+    <string name="usage_none">"None (subkey binding only)"</string>
+    <string name="usage_sign">"Sign"</string>
+    <string name="usage_encrypt">"Encrypt"</string>
+    <string name="usage_sign_and_encrypt">"Sign &amp; Encrypt"</string>
     <string name="error">"Error"</string>
     <string name="error_message">"Error: %s"</string>
     <string name="theme_dark">"Dark"</string>
     <string name="theme_light">"Light"</string>
-
-    <!-- key flags -->
-    <string name="flag_certify">"Certify"</string>
-    <string name="flag_sign">"Sign"</string>
-    <string name="flag_encrypt">"Encrypt"</string>
-    <string name="flag_authenticate">"Authenticate"</string>
+    <string name="strip">"Strip it"</string>
 
     <!-- sentences -->
     <string name="wrong_passphrase">"Wrong password."</string>
@@ -331,6 +339,7 @@
     <string name="public_key_deletetion_confirmation">"Delete key '%s'?"</string>
     <string name="also_export_secret_keys">"Also export secret keys"</string>
     <string name="reinstall_openkeychain">"You encountered a known bug with Android. Please reinstall OpenKeychain if you want to link your contacts with keys."</string>
+    <string name="alert_strip">"Stripping this subkey will make it unusable on this device!"</string>
 
     <string name="key_exported">"Successfully exported 1 key."</string>
     <string name="keys_exported">"Successfully exported %d keys."</string>
@@ -746,7 +755,7 @@
         <item>"Move Subkey to Security Token"</item>
     </string-array>
     <string name="edit_key_new_subkey">"new subkey"</string>
-    <string name="edit_key_select_flag">"Please select at least one flag!"</string>
+    <string name="edit_key_select_usage">"Please select key usage!"</string>
     <string name="edit_key_error_add_identity">"Add at least one identity!"</string>
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
     <string name="edit_key_error_bad_security_token_algo">"Algorithm not supported by Security Token!"</string>
