@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.javacard;
+package org.sufficientlysecure.keychain.smartcard;
 
 public enum PinType {
     BASIC(0x81),

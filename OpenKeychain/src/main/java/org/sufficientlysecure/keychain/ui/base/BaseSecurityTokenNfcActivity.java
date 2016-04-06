@@ -21,7 +21,6 @@
 package org.sufficientlysecure.keychain.ui.base;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.usb.UsbDevice;
@@ -35,12 +34,6 @@ import android.os.Bundle;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.javacard.BaseJavacardDevice;
-import org.sufficientlysecure.keychain.javacard.JavacardDevice;
-import org.sufficientlysecure.keychain.javacard.NfcTransport;
-import org.sufficientlysecure.keychain.javacard.OnDiscoveredUsbDeviceListener;
-import org.sufficientlysecure.keychain.javacard.UsbConnectionManager;
-import org.sufficientlysecure.keychain.javacard.UsbTransport;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -48,6 +41,11 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.smartcard.SmartcardDevice;
+import org.sufficientlysecure.keychain.smartcard.NfcTransport;
+import org.sufficientlysecure.keychain.smartcard.OnDiscoveredUsbDeviceListener;
+import org.sufficientlysecure.keychain.smartcard.UsbConnectionManager;
+import org.sufficientlysecure.keychain.smartcard.UsbTransport;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
@@ -74,7 +72,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
     private static final String FIDESMO_APP_PACKAGE = "com.fidesmo.sec.android";
 
-    public JavacardDevice mJavacardDevice = new BaseJavacardDevice();
+    public SmartcardDevice mSmartcardDevice = new SmartcardDevice();
     protected TagDispatcher mTagDispatcher;
     protected UsbConnectionManager mUsbDispatcher;
     private boolean mTagHandlingEnabled;
@@ -93,9 +91,9 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
      * Override to implement NFC operations (background thread)
      */
     protected void doNfcInBackground() throws IOException {
-        mNfcFingerprints = mJavacardDevice.getFingerprints();
-        mNfcUserId = mJavacardDevice.getUserId();
-        mNfcAid = mJavacardDevice.getAid();
+        mNfcFingerprints = mSmartcardDevice.getFingerprints();
+        mNfcUserId = mSmartcardDevice.getUserId();
+        mNfcAid = mSmartcardDevice.getAid();
     }
 
     /**
@@ -141,7 +139,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
     public void tagDiscovered(final Tag tag) {
         // Actual NFC operations are executed in doInBackground to not block the UI thread
-        if(!mTagHandlingEnabled)
+        if (!mTagHandlingEnabled)
             return;
         new AsyncTask<Void, Void, IOException>() {
             @Override
@@ -178,7 +176,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
     public void usbDeviceDiscovered(final UsbDevice device) {
         // Actual NFC operations are executed in doInBackground to not block the UI thread
-        if(!mTagHandlingEnabled)
+        if (!mTagHandlingEnabled)
             return;
         new AsyncTask<Void, Void, IOException>() {
             @Override
@@ -347,7 +345,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
             }
             // 6A82 app not installed on security token!
             case 0x6A82: {
-                if (mJavacardDevice.isFidesmoToken()) {
+                if (mSmartcardDevice.isFidesmoToken()) {
                     // Check if the Fidesmo app is installed
                     if (isAndroidAppInstalled(FIDESMO_APP_PACKAGE)) {
                         promptFidesmoPgpInstall();
@@ -396,7 +394,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
             Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
                     requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
             if (passphrase != null) {
-                mJavacardDevice.setPin(passphrase);
+                mSmartcardDevice.setPin(passphrase);
                 return;
             }
 
@@ -421,7 +419,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
                     return;
                 }
                 CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                mJavacardDevice.setPin(input.getPassphrase());
+                mSmartcardDevice.setPin(input.getPassphrase());
                 break;
             }
             default:
@@ -429,19 +427,19 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         }
     }
 
-    /** Handle NFC communication and return a result.
-     *
+    /**
+     * Handle NFC communication and return a result.
+     * <p/>
      * This method is called by onNewIntent above upon discovery of an NFC tag.
      * It handles initialization and login to the application, subsequently
      * calls either nfcCalculateSignature() or nfcDecryptSessionKey(), then
      * finishes the activity with an appropriate result.
-     *
+     * <p/>
      * On general communication, see also
      * http://www.cardwerk.com/smartcards/smartcard_standard_ISO7816-4_annex-a.aspx
-     *
+     * <p/>
      * References to pages are generally related to the OpenPGP Application
      * on ISO SmartCard Systems specification.
-     *
      */
     protected void handleTagDiscovered(Tag tag) throws IOException {
 
@@ -451,22 +449,22 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
             throw new IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
         }
 
-        mJavacardDevice.setTransport(new NfcTransport(isoCard));
-        mJavacardDevice.connectToDevice();
+        mSmartcardDevice.setTransport(new NfcTransport(isoCard));
+        mSmartcardDevice.connectToDevice();
 
         doNfcInBackground();
     }
 
     protected void handleUsbDevice(UsbDevice device) throws IOException {
         UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
-        mJavacardDevice.setTransport(new UsbTransport(device, usbManager));
-        mJavacardDevice.connectToDevice();
+        mSmartcardDevice.setTransport(new UsbTransport(device, usbManager));
+        mSmartcardDevice.connectToDevice();
 
         doNfcInBackground();
     }
 
     public boolean isNfcConnected() {
-        return mJavacardDevice.isConnected();
+        return mSmartcardDevice.isConnected();
     }
 
     /**
@@ -535,7 +533,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
     /**
      * Ask user if she wants to install PGP onto her Fidesmo token
-      */
+     */
     private void promptFidesmoPgpInstall() {
         FidesmoPgpInstallDialog fidesmoPgpInstallDialog = new FidesmoPgpInstallDialog();
         fidesmoPgpInstallDialog.show(getSupportFragmentManager(), "fidesmoPgpInstallDialog");
@@ -552,6 +550,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
     /**
      * Use the package manager to detect if an application is installed on the phone
+     *
      * @param uri an URI identifying the application's package
      * @return 'true' if the app is installed
      */

@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.javacard;
+package org.sufficientlysecure.keychain.smartcard;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.os.Handler;
-import android.os.Looper;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;

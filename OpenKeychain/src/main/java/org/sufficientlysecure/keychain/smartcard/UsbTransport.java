@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.javacard;
+package org.sufficientlysecure.keychain.smartcard;
 
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;

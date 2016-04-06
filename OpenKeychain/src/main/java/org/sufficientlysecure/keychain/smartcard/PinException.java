@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.javacard;
+package org.sufficientlysecure.keychain.smartcard;
 
 public class PinException extends CardException {
     public PinException(final String detailMessage, final short responseCode) {

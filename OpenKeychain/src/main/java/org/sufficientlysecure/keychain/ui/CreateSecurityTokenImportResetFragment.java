@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -250,9 +249,9 @@ public class CreateSecurityTokenImportResetFragment
     @Override
     public void doNfcInBackground() throws IOException {
 
-        mTokenFingerprints = mCreateKeyActivity.mJavacardDevice.getFingerprints();
-        mTokenAid = mCreateKeyActivity.mJavacardDevice.getAid();
-        mTokenUserId = mCreateKeyActivity.mJavacardDevice.getUserId();
+        mTokenFingerprints = mCreateKeyActivity.mSmartcardDevice.getFingerprints();
+        mTokenAid = mCreateKeyActivity.mSmartcardDevice.getAid();
+        mTokenUserId = mCreateKeyActivity.mSmartcardDevice.getUserId();
 
         byte[] fp = new byte[20];
         ByteBuffer.wrap(fp).put(mTokenFingerprints, 0, 20);
