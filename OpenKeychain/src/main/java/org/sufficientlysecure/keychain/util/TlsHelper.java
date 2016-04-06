@@ -44,12 +44,6 @@ import javax.net.ssl.TrustManagerFactory;
 
 public class TlsHelper {
 
-    public static class TlsHelperException extends Exception {
-        public TlsHelperException(Exception e) {
-            super(e);
-        }
-    }
-
     private static Map<String, byte[]> sPinnedCertificates = new HashMap<>();
 
     /**
@@ -87,7 +81,6 @@ public class TlsHelper {
             for (String host : sPinnedCertificates.keySet()) {
                 if (url.getHost().endsWith(host)) {
                     return pinCertificate(sPinnedCertificates.get(host));
-                    //return true;
                 }
             }
         }
@@ -135,6 +128,12 @@ public class TlsHelper {
             //builder.sslSocketFactory(context.getSocketFactory());
         } catch (CertificateException | KeyStoreException | KeyManagementException | NoSuchAlgorithmException e) {
             throw new TlsHelperException(e);
+        }
+    }
+
+    public static class TlsHelperException extends Exception {
+        public TlsHelperException(Exception e) {
+            super(e);
         }
     }
 
