@@ -274,12 +274,16 @@ public class KeyFormattingUtils {
     /**
      * Convert key id from hex string to long
      * @param keyIdHex - 64 bit hex string representation of keyId, including "0x" prefix
-     * @return keyId as long
+     * @return keyId as Long
      */
     public static Long convertKeyIdHexToLong(String keyIdHex) {
-        if (keyIdHex == null) { return null;}
+        if (keyIdHex == null) {
+            return null;
+        }
 
-        //we can't convert directly from hex
+        //we can't convert directly to a long from hex encoded using two's complement
+        //see http://stackoverflow.com/questions/1410168/how-to-parse-negative-long-in-hex-in-java
+
         long upper = convertKeyIdHexToLong32bit(keyIdHex.substring(2, 10));
         long lower = convertKeyIdHexToLong32bit(keyIdHex.substring(10));
         return new Long(upper << 32 | lower);

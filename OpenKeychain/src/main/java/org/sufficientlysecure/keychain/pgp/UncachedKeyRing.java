@@ -193,7 +193,9 @@ public class UncachedKeyRing {
 
                 boolean publicKeyMatches = ( fingerprintMatches || keyIdMatches );
 
-                if ( ! publicKeyMatches) { continue; }
+                if ( ! publicKeyMatches) {
+                    continue;
+                }
 
                 if (publicKey.isMasterKey()) {
                     //master key matches expectedFingerprint or expectedKeyID, return this ring immediately
