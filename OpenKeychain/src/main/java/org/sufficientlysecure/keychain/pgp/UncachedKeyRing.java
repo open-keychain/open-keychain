@@ -19,8 +19,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import android.text.TextUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
