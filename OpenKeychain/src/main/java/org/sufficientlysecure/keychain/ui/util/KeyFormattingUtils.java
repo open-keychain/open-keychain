@@ -271,6 +271,25 @@ public class KeyFormattingUtils {
         return hexString;
     }
 
+    /**
+     * Convert key id from hex string to long
+     * @param keyIdHex - 64 bit hex string representation of keyId, including "0x" prefix
+     * @return keyId as long
+     */
+    public static Long convertKeyIdHexToLong(String keyIdHex) {
+        if (keyIdHex == null) { return null;}
+
+        //we can't convert directly from hex
+        long upper = convertKeyIdHexToLong32bit(keyIdHex.substring(2, 10));
+        long lower = convertKeyIdHexToLong32bit(keyIdHex.substring(10));
+        return new Long(upper << 32 | lower);
+
+    }
+
+    private static long convertKeyIdHexToLong32bit(String keyIdHexNoPrefix) {
+        return Long.parseLong(keyIdHexNoPrefix, 16);
+    }
+
     public static long convertFingerprintToKeyId(byte[] fingerprint) {
         return ByteBuffer.wrap(fingerprint, 12, 8).getLong();
     }

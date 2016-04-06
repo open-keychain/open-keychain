@@ -165,10 +165,9 @@ public class UncachedKeyRing {
         }
 
         return ring;
-
     }
 
-    public static UncachedKeyRing decodeFromData(
+    public static UncachedKeyRing decodeFromDataFindExpected(
             byte[] data, String expectedFingerprint, String expectedKeyId)
             throws PgpGeneralException, IOException {
 
@@ -177,6 +176,8 @@ public class UncachedKeyRing {
         if ( ! parsed.hasNext()) {
             throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
         }
+
+        Long expectedKeyIdLong = KeyFormattingUtils.convertKeyIdHexToLong(expectedKeyId);
 
         UncachedKeyRing ringToAccept = null;
 
@@ -187,19 +188,22 @@ public class UncachedKeyRing {
             while (publicKeys.hasNext()) {
                 UncachedPublicKey publicKey = publicKeys.next();
 
-                boolean publicKeyMatches = (
-                        KeyFormattingUtils.convertFingerprintToHex(publicKey.getFingerprint())
-                                .equalsIgnoreCase(expectedFingerprint)
-                        || TextUtils.equals(Long.toString(publicKey.getKeyId()), expectedKeyId));
-                if (publicKeyMatches) {
-                    if (publicKey.isMasterKey()) {
-                        //master key matches expectedFingerprint, return this ring immediately
-                        return ring;
-                    } else if (ringToAccept == null) {
-                        //one of the subkeys matches expectedFingerprint
-                        //this ring is potentially the desired ring
-                        ringToAccept = ring;
-                    }
+                boolean fingerprintMatches = KeyFormattingUtils.convertFingerprintToHex(publicKey.getFingerprint())
+                        .equalsIgnoreCase(expectedFingerprint);
+                boolean keyIdMatches = (expectedKeyIdLong != null
+                        && expectedKeyIdLong.longValue() == publicKey.getKeyId());
+
+                boolean publicKeyMatches = ( fingerprintMatches || keyIdMatches );
+
+                if ( ! publicKeyMatches) { continue; }
+
+                if (publicKey.isMasterKey()) {
+                    //master key matches expectedFingerprint or expectedKeyID, return this ring immediately
+                    return ring;
+                } else if (ringToAccept == null) {
+                    //one of the subkeys matches expectedFingerprint or expectedKeyId
+                    //this ring is potentially the desired ring
+                    ringToAccept = ring;
                 }
             }
         }

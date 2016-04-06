@@ -176,7 +176,12 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
                 // If there is already byte data, use that
                 if (entry.mBytes != null) {
-                    key = UncachedKeyRing.decodeFromData(entry.mBytes);
+                    if (entry.mExpectedFingerprint == null && entry.mKeyIdHex == null) {
+                        key = UncachedKeyRing.decodeFromData(entry.mBytes);
+                    } else {
+                        key = UncachedKeyRing.decodeFromDataFindExpected(entry.mBytes,
+                                entry.mExpectedFingerprint, entry.mKeyIdHex);
+                    }
                 }
                 // Otherwise, we need to fetch the data from a server first
                 else {
@@ -206,7 +211,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
                                 data = keyServer.get(entry.mKeyIdHex).getBytes();
                             }
-                            key = UncachedKeyRing.decodeFromData(data, entry.mExpectedFingerprint, entry.mKeyIdHex);
+                            key = UncachedKeyRing.decodeFromDataFindExpected(data,
+                                    entry.mExpectedFingerprint, entry.mKeyIdHex);
                             if (key != null) {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
                             } else {
@@ -228,7 +234,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         try {
                             log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.mKeybaseName);
                             byte[] data = keybaseServer.get(entry.mKeybaseName).getBytes();
-                            UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
+                            UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromDataFindExpected(data,
+                                    entry.mExpectedFingerprint, entry.mKeyIdHex);
 
                             if (keybaseKey != null) {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
@@ -266,7 +273,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         try {
                             log.add(LogType.MSG_IMPORT_FETCH_FACEBOOK, 2, entry.mFbUsername);
                             byte[] data = facebookServer.get(entry.mFbUsername).getBytes();
-                            UncachedKeyRing facebookKey = UncachedKeyRing.decodeFromData(data);
+                            UncachedKeyRing facebookKey = UncachedKeyRing.decodeFromDataFindExpected(data,
+                                    entry.mExpectedFingerprint, entry.mKeyIdHex);
 
                             if (facebookKey != null) {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
