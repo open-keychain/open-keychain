@@ -17,13 +17,18 @@ public class OkHttpClientFactory {
 
     public static OkHttpClient getSimpleClient(){
         if(client == null){
-            client =  new OkHttpClient.Builder().build();
+            client =  new OkHttpClient.Builder()
+                    .connectTimeout(30000, TimeUnit.MILLISECONDS)
+                    .readTimeout(45000, TimeUnit.MILLISECONDS)
+                    .build();
         }
         return client;
     }
 
     public static OkHttpClient getPinnedSimpleClient(CertificatePinner pinner){
         return new OkHttpClient.Builder()
+                .connectTimeout(30000, TimeUnit.MILLISECONDS)
+                .readTimeout(45000, TimeUnit.MILLISECONDS)
                 .certificatePinner(pinner)
                 .build();
     }
