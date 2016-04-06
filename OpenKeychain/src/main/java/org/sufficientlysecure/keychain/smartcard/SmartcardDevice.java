@@ -78,7 +78,7 @@ public class SmartcardDevice {
     }
 
     public boolean containsKey(KeyType keyType) throws IOException {
-        return keyMatchesFingerPrint(keyType, BLANK_FINGERPRINT);
+        return !keyMatchesFingerPrint(keyType, BLANK_FINGERPRINT);
     }
 
     public boolean keyMatchesFingerPrint(KeyType keyType, byte[] fingerprint) throws IOException {

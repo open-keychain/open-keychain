@@ -254,9 +254,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
      */
     @Override
     public void onNewIntent(final Intent intent) {
-        if (!mTagDispatcher.interceptIntent(intent)) {
-            mUsbDispatcher.interceptIntent(intent);
-        }
+        mTagDispatcher.interceptIntent(intent);
     }
 
     private void handleNfcError(IOException e) {
@@ -374,7 +372,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         Log.d(Constants.TAG, "BaseNfcActivity.onPause");
 
         mTagDispatcher.disableExclusiveNfc();
-        mUsbDispatcher.stopListeningForDevices();
+//        mUsbDispatcher.stopListeningForDevices();
     }
 
     /**
@@ -385,7 +383,6 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         super.onResume();
         Log.d(Constants.TAG, "BaseNfcActivity.onResume");
         mTagDispatcher.enableExclusiveNfc();
-        mUsbDispatcher.startListeningForDevices();
     }
 
     protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput) {
@@ -568,8 +565,14 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mUsbDispatcher.onDestroy();
+    protected void onStop() {
+        super.onStop();
+        mUsbDispatcher.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mUsbDispatcher.onStart();
     }
 }
