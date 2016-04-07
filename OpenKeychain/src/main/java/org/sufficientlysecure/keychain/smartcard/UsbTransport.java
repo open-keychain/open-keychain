@@ -12,6 +12,8 @@ import android.util.Pair;
 
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -45,33 +47,7 @@ public class UsbTransport implements Transport {
         // check result
 
         powerOn();
-
-        setTimings();
-    }
-
-    private void setTimings()  throws TransportIoException {
-        byte[] data = {
-                0x6C,
-                0x00, 0x00, 0x00, 0x00,
-                0x00,
-                mCounter++,
-                0x00, 0x00, 0x00
-        };
-        sendRaw(data);
-        data = receive();
-
-        data[0] = 0x61;
-        data[1] = 0x04;
-        data[2] = data[3] = data[4] = 0x00;
-        data[5] = 0x00;
-        data[6] = mCounter++;
-        data[7] = 0x00;
-        data[8] = data[9] = 0x00;
-
-        data[13] = 1;
-
-        sendRaw(data);
-        receive();
+        Log.d(Constants.TAG, "Usb transport connected");
     }
 
     private void powerOff() throws TransportIoException {
@@ -145,6 +121,11 @@ public class UsbTransport implements Transport {
     public boolean isConnected() {
         // TODO: redo
         return mUsbManager.getDeviceList().containsValue(mUsbDevice);
+    }
+
+    @Override
+    public boolean allowPersistentConnection() {
+        return true;
     }
 
     @Override
@@ -222,5 +203,9 @@ public class UsbTransport implements Transport {
 
     private boolean isXfrBlockNotReady(byte[] bytes) {
         return getStatus(bytes) == 2;
+    }
+
+    public UsbDevice getUsbDevice() {
+        return mUsbDevice;
     }
 }

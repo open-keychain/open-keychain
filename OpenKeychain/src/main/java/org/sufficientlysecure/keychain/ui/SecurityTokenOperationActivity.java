@@ -140,6 +140,32 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
         if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD
                 && mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_RESET_CARD) {
             obtainSecurityTokenPin(mRequiredInput);
+            checkPinAvailability();
+        } else {
+            // No need for pin, rescan USB devices
+            mUsbDispatcher.rescanDevices();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (REQUEST_CODE_PIN == requestCode) {
+            checkPinAvailability();
+        }
+    }
+
+    private void checkPinAvailability() {
+        try {
+            Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
+                    mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
+            if (passphrase != null) {
+                // Rescan USB devices
+                mUsbDispatcher.rescanDevices();
+            }
+        } catch (PassphraseCacheService.KeyNotFoundException e) {
+            throw new AssertionError(
+                    "tried to find passphrase for non-existing key. this is a programming error!");
         }
     }
 
@@ -275,28 +301,33 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
         nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.DONE);
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                // check all 200ms if Security Token has been taken away
-                while (true) {
-                    if (isNfcConnected()) {
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException ignored) {
+        if (mSmartcardDevice.allowPersistentConnection()) {
+            // Just close
+            finish();
+        } else {
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    // check all 200ms if Security Token has been taken away
+                    while (true) {
+                        if (isNfcConnected()) {
+                            try {
+                                Thread.sleep(200);
+                            } catch (InterruptedException ignored) {
+                            }
+                        } else {
+                            return null;
                         }
-                    } else {
-                        return null;
                     }
                 }
-            }
 
-            @Override
-            protected void onPostExecute(Void result) {
-                super.onPostExecute(result);
-                finish();
-            }
-        }.execute();
+                @Override
+                protected void onPostExecute(Void result) {
+                    super.onPostExecute(result);
+                    finish();
+                }
+            }.execute();
+        }
     }
 
     /**

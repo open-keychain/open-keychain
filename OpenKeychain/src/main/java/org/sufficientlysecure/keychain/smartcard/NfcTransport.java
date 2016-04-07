@@ -28,4 +28,9 @@ public class NfcTransport implements Transport {
     public boolean isConnected() {
         return mIsoCard.isConnected();
     }
+
+    @Override
+    public boolean allowPersistentConnection() {
+        return false;
+    }
 }

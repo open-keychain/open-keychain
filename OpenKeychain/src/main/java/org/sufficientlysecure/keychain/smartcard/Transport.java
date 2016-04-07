@@ -8,4 +8,6 @@ public interface Transport {
     void release();
 
     boolean isConnected();
+
+    boolean allowPersistentConnection();
 }

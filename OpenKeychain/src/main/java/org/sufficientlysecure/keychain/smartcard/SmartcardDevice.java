@@ -32,7 +32,32 @@ public class SmartcardDevice {
     private boolean mPw3Validated;
     private boolean mTagHandlingEnabled;
 
-    public SmartcardDevice() {
+    protected SmartcardDevice() {
+    }
+
+    public static SmartcardDevice getInstance() {
+        return LazyHolder.mSmartcardDevice;
+    }
+
+    // METHOD UPDATED [OK]
+    private String getHolderName(String name) {
+        try {
+            String slength;
+            int ilength;
+            name = name.substring(6);
+            slength = name.substring(0, 2);
+            ilength = Integer.parseInt(slength, 16) * 2;
+            name = name.substring(2, ilength + 2);
+            name = (new String(Hex.decode(name))).replace('<', ' ');
+            return name;
+        } catch (IndexOutOfBoundsException e) {
+            // try-catch for https://github.com/FluffyKaon/OpenPGP-Card
+            // Note: This should not happen, but happens with
+            // https://github.com/FluffyKaon/OpenPGP-Card, thus return an empty string for now!
+
+            Log.e(Constants.TAG, "Couldn't get holder name, returning empty string!", e);
+            return "";
+        }
     }
 
     private static String getHex(byte[] raw) {
@@ -541,15 +566,8 @@ public class SmartcardDevice {
         return Hex.decode(signature);
     }
 
-    private String getHolderName(String name) {
-        String slength;
-        int ilength;
-        name = name.substring(6);
-        slength = name.substring(0, 2);
-        ilength = Integer.parseInt(slength, 16) * 2;
-        name = name.substring(2, ilength + 2);
-        name = (new String(Hex.decode(name))).replace('<', ' ');
-        return (name);
+    public boolean isConnected() {
+        return mTransport != null && mTransport.isConnected();
     }
 
     /**
@@ -560,8 +578,8 @@ public class SmartcardDevice {
         return getHex(mTransport.sendAndReceive(Hex.decode(apdu)));
     }
 
-    public boolean isConnected() {
-        return mTransport.isConnected();
+    public Transport getTransport() {
+        return mTransport;
     }
 
     // NEW METHOD [OK]
@@ -702,6 +720,13 @@ public class SmartcardDevice {
 
     public void setTransport(Transport mTransport) {
         this.mTransport = mTransport;
+    }
 
+    public boolean allowPersistentConnection() {
+        return mTransport != null && mTransport.allowPersistentConnection();
+    }
+
+    private static class LazyHolder {
+        private static final SmartcardDevice mSmartcardDevice = new SmartcardDevice();
     }
 }

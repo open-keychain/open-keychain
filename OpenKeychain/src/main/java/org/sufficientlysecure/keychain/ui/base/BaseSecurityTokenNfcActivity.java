@@ -31,7 +31,6 @@ import android.nfc.TagLostException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -41,9 +40,9 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.smartcard.SmartcardDevice;
 import org.sufficientlysecure.keychain.smartcard.NfcTransport;
 import org.sufficientlysecure.keychain.smartcard.OnDiscoveredUsbDeviceListener;
+import org.sufficientlysecure.keychain.smartcard.SmartcardDevice;
 import org.sufficientlysecure.keychain.smartcard.UsbConnectionManager;
 import org.sufficientlysecure.keychain.smartcard.UsbTransport;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
@@ -72,7 +71,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
     private static final String FIDESMO_APP_PACKAGE = "com.fidesmo.sec.android";
 
-    public SmartcardDevice mSmartcardDevice = new SmartcardDevice();
+    protected SmartcardDevice mSmartcardDevice = SmartcardDevice.getInstance();
     protected TagDispatcher mTagDispatcher;
     protected UsbConnectionManager mUsbDispatcher;
     private boolean mTagHandlingEnabled;
@@ -175,7 +174,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
 
     public void usbDeviceDiscovered(final UsbDevice device) {
-        // Actual NFC operations are executed in doInBackground to not block the UI thread
+        // Actual USB operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled)
             return;
         new AsyncTask<Void, Void, IOException>() {
@@ -372,7 +371,6 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         Log.d(Constants.TAG, "BaseNfcActivity.onPause");
 
         mTagDispatcher.disableExclusiveNfc();
-//        mUsbDispatcher.stopListeningForDevices();
     }
 
     /**
@@ -453,57 +451,20 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     }
 
     protected void handleUsbDevice(UsbDevice device) throws IOException {
-        UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
-        mSmartcardDevice.setTransport(new UsbTransport(device, usbManager));
-        mSmartcardDevice.connectToDevice();
+        // Don't reconnect if device was already connected
+        if (!mSmartcardDevice.isConnected()
+                || !(mSmartcardDevice.getTransport() instanceof UsbTransport)
+                || !((UsbTransport) mSmartcardDevice.getTransport()).getUsbDevice().equals(device)) {
+            UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
 
+            mSmartcardDevice.setTransport(new UsbTransport(device, usbManager));
+            mSmartcardDevice.connectToDevice();
+        }
         doNfcInBackground();
     }
 
     public boolean isNfcConnected() {
         return mSmartcardDevice.isConnected();
-    }
-
-    /**
-     * Parses out the status word from a JavaCard response string.
-     *
-     * @param response A hex string with the response from the token
-     * @return A short indicating the SW1/SW2, or 0 if a status could not be determined.
-     */
-    short parseCardStatus(String response) {
-        if (response.length() < 4) {
-            return 0; // invalid input
-        }
-
-        try {
-            return Short.parseShort(response.substring(response.length() - 4), 16);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
-    public String getHolderName(String name) {
-        try {
-            String slength;
-            int ilength;
-            name = name.substring(6);
-            slength = name.substring(0, 2);
-            ilength = Integer.parseInt(slength, 16) * 2;
-            name = name.substring(2, ilength + 2);
-            name = (new String(Hex.decode(name))).replace('<', ' ');
-            return name;
-        } catch (IndexOutOfBoundsException e) {
-            // try-catch for https://github.com/FluffyKaon/OpenPGP-Card
-            // Note: This should not happen, but happens with
-            // https://github.com/FluffyKaon/OpenPGP-Card, thus return an empty string for now!
-
-            Log.e(Constants.TAG, "Couldn't get holder name, returning empty string!", e);
-            return "";
-        }
-    }
-
-    public static String getHex(byte[] raw) {
-        return new String(Hex.encode(raw));
     }
 
     public class IsoDepNotSupportedException extends IOException {
@@ -574,5 +535,9 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     protected void onStart() {
         super.onStart();
         mUsbDispatcher.onStart();
+    }
+
+    public SmartcardDevice getSmartcardDevice() {
+        return mSmartcardDevice;
     }
 }
