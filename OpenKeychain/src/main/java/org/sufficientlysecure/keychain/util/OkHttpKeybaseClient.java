@@ -22,6 +22,8 @@ import com.textuality.keybase.lib.KeybaseUrlConnectionClient;
 
 import okhttp3.OkHttpClient;
 import okhttp3.OkUrlFactory;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.sufficientlysecure.keychain.Constants;
 
 import java.io.IOException;
@@ -34,16 +36,12 @@ import java.net.URLConnection;
  */
 public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
 
-    private OkUrlFactory generateUrlFactory() {
-        OkHttpClient client = new OkHttpClient();
-        return new OkUrlFactory(client);
-    }
+
 
     @Override
-    public URLConnection openConnection(URL url, Proxy proxy, boolean isKeybase) throws IOException {
-        OkHttpClient client = OkHttpClientFactory.getSimpleClient();
+    public Response getUrlResponse(URL url, Proxy proxy, boolean isKeybase) throws IOException {
+        OkHttpClient client = null;
 
-        OkUrlFactory factory = generateUrlFactory();
         try {
             if (isKeybase && proxy != null) {
                 client = OkHttpClientFactory.getPinnedClient(url, proxy);
@@ -56,9 +54,11 @@ public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
             Log.e(Constants.TAG, "TlsHelper failed", e);
             throw new IOException("TlsHelper failed");
         }
-        factory.setClient(client);
 
-        return factory.open(url);
+        Request request = new Request.Builder()
+                .url(url).build();
+        okhttp3.Response okResponse = client.newCall(request).execute();
+        return new Response(okResponse.body().byteStream(),okResponse.code(),okResponse.message(), okResponse.headers().toMultimap());
     }
 
     @Override

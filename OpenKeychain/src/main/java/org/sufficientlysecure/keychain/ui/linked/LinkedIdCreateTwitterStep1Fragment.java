@@ -119,7 +119,7 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
     private static Boolean checkHandle(String handle) {
         try {
             HttpURLConnection nection =
-                    (HttpURLConnection) new URL("https://twitter.com/" + handle).openConnection();
+                    (HttpURLConnection) new URL("https://twitter.com/" + handle).getUrlResponse();
             nection.setRequestMethod("HEAD");
             nection.setRequestProperty("User-Agent", "OpenKeychain");
             return nection.getResponseCode() == 200;
