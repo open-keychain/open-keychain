@@ -142,8 +142,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
             obtainSecurityTokenPin(mRequiredInput);
             checkPinAvailability();
         } else {
-            // No need for pin, rescan USB devices
-            mUsbDispatcher.rescanDevices();
+            checkDeviceConnection();
         }
     }
 
@@ -160,8 +159,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
             Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
                     mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
             if (passphrase != null) {
-                // Rescan USB devices
-                mUsbDispatcher.rescanDevices();
+                checkDeviceConnection();
             }
         } catch (PassphraseCacheService.KeyNotFoundException e) {
             throw new AssertionError(
@@ -175,7 +173,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     @Override
-    public void onNfcPreExecute() {
+    public void onSmartcardPreExecute() {
         // start with indeterminate progress
         vAnimator.setDisplayedChild(1);
         nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.TRANSFERRING);
@@ -293,7 +291,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     @Override
-    protected final void onNfcPostExecute() {
+    protected final void onSmartcardPostExecute() {
         handleResult(mInputParcel);
 
         // show finish
@@ -301,7 +299,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
         nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.DONE);
 
-        if (mSmartcardDevice.allowPersistentConnection()) {
+        if (mSmartcardDevice.isPersistentConnectionAllowed()) {
             // Just close
             finish();
         } else {

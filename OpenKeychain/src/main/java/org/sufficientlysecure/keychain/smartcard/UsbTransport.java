@@ -15,6 +15,7 @@ import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -24,30 +25,15 @@ public class UsbTransport implements Transport {
 
     private final UsbManager mUsbManager;
     private final UsbDevice mUsbDevice;
-    private final UsbInterface mUsbInterface;
-    private final UsbEndpoint mBulkIn;
-    private final UsbEndpoint mBulkOut;
-    private final UsbDeviceConnection mConnection;
+    private UsbInterface mUsbInterface;
+    private UsbEndpoint mBulkIn;
+    private UsbEndpoint mBulkOut;
+    private UsbDeviceConnection mConnection;
     private byte mCounter = 0;
 
-    public UsbTransport(final UsbDevice usbDevice, final UsbManager usbManager) throws TransportIoException {
+    public UsbTransport(final UsbDevice usbDevice, final UsbManager usbManager) {
         mUsbDevice = usbDevice;
         mUsbManager = usbManager;
-
-        mUsbInterface = getSmartCardInterface(mUsbDevice);
-        // throw if mUsbInterface == null
-        final Pair<UsbEndpoint, UsbEndpoint> ioEndpoints = getIoEndpoints(mUsbInterface);
-        mBulkIn = ioEndpoints.first;
-        mBulkOut = ioEndpoints.second;
-        // throw if any endpoint is null
-
-        mConnection = mUsbManager.openDevice(mUsbDevice);
-        // throw if connection is null
-        mConnection.claimInterface(mUsbInterface, true);
-        // check result
-
-        powerOn();
-        Log.d(Constants.TAG, "Usb transport connected");
     }
 
     private void powerOff() throws TransportIoException {
@@ -120,12 +106,30 @@ public class UsbTransport implements Transport {
     @Override
     public boolean isConnected() {
         // TODO: redo
-        return mUsbManager.getDeviceList().containsValue(mUsbDevice);
+        return mConnection != null && mUsbManager.getDeviceList().containsValue(mUsbDevice);
     }
 
     @Override
     public boolean allowPersistentConnection() {
         return true;
+    }
+
+    @Override
+    public void connect() throws IOException {
+        mUsbInterface = getSmartCardInterface(mUsbDevice);
+        // throw if mUsbInterface == null
+        final Pair<UsbEndpoint, UsbEndpoint> ioEndpoints = getIoEndpoints(mUsbInterface);
+        mBulkIn = ioEndpoints.first;
+        mBulkOut = ioEndpoints.second;
+        // throw if any endpoint is null
+
+        mConnection = mUsbManager.openDevice(mUsbDevice);
+        // throw if connection is null
+        mConnection.claimInterface(mUsbInterface, true);
+        // check result
+
+        powerOn();
+        Log.d(Constants.TAG, "Usb transport connected");
     }
 
     @Override
@@ -207,5 +211,20 @@ public class UsbTransport implements Transport {
 
     public UsbDevice getUsbDevice() {
         return mUsbDevice;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final UsbTransport that = (UsbTransport) o;
+
+        return mUsbDevice != null ? mUsbDevice.equals(that.mUsbDevice) : that.mUsbDevice == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return mUsbDevice != null ? mUsbDevice.hashCode() : 0;
     }
 }

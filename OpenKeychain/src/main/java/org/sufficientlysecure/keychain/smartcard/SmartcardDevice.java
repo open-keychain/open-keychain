@@ -112,6 +112,8 @@ public class SmartcardDevice {
 
     // METHOD UPDATED OK
     public void connectToDevice() throws IOException {
+        mTransport.connect();
+
         // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
         // See specification, page 51
         String accepted = "9000";
@@ -722,7 +724,7 @@ public class SmartcardDevice {
         this.mTransport = mTransport;
     }
 
-    public boolean allowPersistentConnection() {
+    public boolean isPersistentConnectionAllowed() {
         return mTransport != null && mTransport.allowPersistentConnection();
     }
 

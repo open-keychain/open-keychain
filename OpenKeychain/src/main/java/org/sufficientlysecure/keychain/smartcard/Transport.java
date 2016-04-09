@@ -10,4 +10,6 @@ public interface Transport {
     boolean isConnected();
 
     boolean allowPersistentConnection();
+
+    void connect() throws IOException;
 }

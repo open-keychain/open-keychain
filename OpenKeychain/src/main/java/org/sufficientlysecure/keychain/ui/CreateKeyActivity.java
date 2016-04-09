@@ -155,7 +155,7 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
     }
 
     @Override
-    protected void onNfcPostExecute() {
+    protected void onSmartcardPostExecute() {
         if (mCurrentFragment instanceof NfcListenerFragment) {
             ((NfcListenerFragment) mCurrentFragment).onNfcPostExecute();
             return;

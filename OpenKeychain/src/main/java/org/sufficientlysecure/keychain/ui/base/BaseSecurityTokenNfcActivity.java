@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.smartcard.NfcTransport;
 import org.sufficientlysecure.keychain.smartcard.OnDiscoveredUsbDeviceListener;
 import org.sufficientlysecure.keychain.smartcard.SmartcardDevice;
+import org.sufficientlysecure.keychain.smartcard.Transport;
 import org.sufficientlysecure.keychain.smartcard.UsbConnectionManager;
 import org.sufficientlysecure.keychain.smartcard.UsbTransport;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
@@ -83,7 +84,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     /**
      * Override to change UI before NFC handling (UI thread)
      */
-    protected void onNfcPreExecute() {
+    protected void onSmartcardPreExecute() {
     }
 
     /**
@@ -98,7 +99,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     /**
      * Override to handle result of NFC operations (UI thread)
      */
-    protected void onNfcPostExecute() {
+    protected void onSmartcardPostExecute() {
 
         final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
 
@@ -140,54 +141,34 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         // Actual NFC operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled)
             return;
-        new AsyncTask<Void, Void, IOException>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                onNfcPreExecute();
-            }
 
-            @Override
-            protected IOException doInBackground(Void... params) {
-                try {
-                    handleTagDiscovered(tag);
-                } catch (IOException e) {
-                    return e;
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(IOException exception) {
-                super.onPostExecute(exception);
-
-                if (exception != null) {
-                    handleNfcError(exception);
-                    return;
-                }
-
-                onNfcPostExecute();
-            }
-        }.execute();
+        smartcardDiscovered(new NfcTransport(tag));
     }
-
 
     public void usbDeviceDiscovered(final UsbDevice device) {
         // Actual USB operations are executed in doInBackground to not block the UI thread
+        if (!mTagHandlingEnabled)
+            return;
+
+        UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
+        smartcardDiscovered(new UsbTransport(device, usbManager));
+    }
+
+    public void smartcardDiscovered(final Transport transport) {
+        // Actual Smartcard operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled)
             return;
         new AsyncTask<Void, Void, IOException>() {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                onNfcPreExecute();
+                onSmartcardPreExecute();
             }
 
             @Override
             protected IOException doInBackground(Void... params) {
                 try {
-                    handleUsbDevice(device);
+                    handleSmartcard(transport);
                 } catch (IOException e) {
                     return e;
                 }
@@ -200,11 +181,11 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
                 super.onPostExecute(exception);
 
                 if (exception != null) {
-                    handleNfcError(exception);
+                    handleSmartcardError(exception);
                     return;
                 }
 
-                onNfcPostExecute();
+                onSmartcardPostExecute();
             }
         }.execute();
     }
@@ -256,7 +237,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         mTagDispatcher.interceptIntent(intent);
     }
 
-    private void handleNfcError(IOException e) {
+    private void handleSmartcardError(IOException e) {
 
         if (e instanceof TagLostException) {
             onNfcError(getString(R.string.security_token_error_tag_lost));
@@ -422,42 +403,11 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         }
     }
 
-    /**
-     * Handle NFC communication and return a result.
-     * <p/>
-     * This method is called by onNewIntent above upon discovery of an NFC tag.
-     * It handles initialization and login to the application, subsequently
-     * calls either nfcCalculateSignature() or nfcDecryptSessionKey(), then
-     * finishes the activity with an appropriate result.
-     * <p/>
-     * On general communication, see also
-     * http://www.cardwerk.com/smartcards/smartcard_standard_ISO7816-4_annex-a.aspx
-     * <p/>
-     * References to pages are generally related to the OpenPGP Application
-     * on ISO SmartCard Systems specification.
-     */
-    protected void handleTagDiscovered(Tag tag) throws IOException {
-
-        // Connect to the detected tag, setting a couple of settings
-        IsoCard isoCard = AndroidCard.get(tag);
-        if (isoCard == null) {
-            throw new IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
-        }
-
-        mSmartcardDevice.setTransport(new NfcTransport(isoCard));
-        mSmartcardDevice.connectToDevice();
-
-        doNfcInBackground();
-    }
-
-    protected void handleUsbDevice(UsbDevice device) throws IOException {
+    protected void handleSmartcard(Transport transport) throws IOException {
         // Don't reconnect if device was already connected
-        if (!mSmartcardDevice.isConnected()
-                || !(mSmartcardDevice.getTransport() instanceof UsbTransport)
-                || !((UsbTransport) mSmartcardDevice.getTransport()).getUsbDevice().equals(device)) {
-            UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
-
-            mSmartcardDevice.setTransport(new UsbTransport(device, usbManager));
+        if (!(mSmartcardDevice.isConnected()
+                && mSmartcardDevice.getTransport().equals(transport))) {
+            mSmartcardDevice.setTransport(transport);
             mSmartcardDevice.connectToDevice();
         }
         doNfcInBackground();
@@ -467,7 +417,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         return mSmartcardDevice.isConnected();
     }
 
-    public class IsoDepNotSupportedException extends IOException {
+    public static class IsoDepNotSupportedException extends IOException {
 
         public IsoDepNotSupportedException(String detailMessage) {
             super(detailMessage);
@@ -539,5 +489,11 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
     public SmartcardDevice getSmartcardDevice() {
         return mSmartcardDevice;
+    }
+
+    protected void checkDeviceConnection() {
+        if (mSmartcardDevice.isConnected() && mSmartcardDevice.isPersistentConnectionAllowed()) {
+            this.smartcardDiscovered(mSmartcardDevice.getTransport());
+        }
     }
 }

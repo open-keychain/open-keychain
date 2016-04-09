@@ -51,12 +51,4 @@ public class UsbConnectionManager {
     public void onStop() {
         mActivity.unregisterReceiver(mUsbReceiver);
     }
-
-    public void rescanDevices() {
-        final SmartcardDevice smartcardDevice = SmartcardDevice.getInstance();
-        if (smartcardDevice.isConnected()
-                && (smartcardDevice.getTransport() instanceof UsbTransport)) {
-            mListener.usbDeviceDiscovered(((UsbTransport) smartcardDevice.getTransport()).getUsbDevice());
-        }
-    }
 }

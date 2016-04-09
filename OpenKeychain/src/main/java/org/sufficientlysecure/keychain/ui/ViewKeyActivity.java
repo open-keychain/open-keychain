@@ -655,7 +655,7 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
     }
 
     @Override
-    protected void onNfcPostExecute() {
+    protected void onSmartcardPostExecute() {
 
         long tokenId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
 
