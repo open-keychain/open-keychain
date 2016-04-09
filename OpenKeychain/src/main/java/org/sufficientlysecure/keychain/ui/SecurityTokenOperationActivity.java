@@ -137,8 +137,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
     private void obtainPassphraseIfRequired() {
         // obtain passphrase for this subkey
-        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD
-                && mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_RESET_CARD) {
+        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.SMARTCARD_MOVE_KEY_TO_CARD
+                && mRequiredInput.mType != RequiredInputParcel.RequiredInputType.SMARTCARD_RESET_CARD) {
             obtainSecurityTokenPin(mRequiredInput);
             checkPinAvailability();
         } else {
@@ -180,10 +180,10 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     @Override
-    protected void doNfcInBackground() throws IOException {
+    protected void doSmartcardInBackground() throws IOException {
 
         switch (mRequiredInput.mType) {
-            case NFC_DECRYPT: {
+            case SMARTCARD_DECRYPT: {
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
                     byte[] decryptedSessionKey = mSmartcardDevice.decryptSessionKey(encryptedSessionKey);
@@ -191,7 +191,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                 }
                 break;
             }
-            case NFC_SIGN: {
+            case SMARTCARD_SIGN: {
                 mInputParcel.addSignatureTime(mRequiredInput.mSignatureTime);
 
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
@@ -202,7 +202,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                 }
                 break;
             }
-            case NFC_MOVE_KEY_TO_CARD: {
+            case SMARTCARD_MOVE_KEY_TO_CARD: {
                 // TODO: assume PIN and Admin PIN to be default for this operation
                 mSmartcardDevice.setPin(new Passphrase("123456"));
                 mSmartcardDevice.setAdminPin(new Passphrase("12345678"));
@@ -278,7 +278,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
                 break;
             }
-            case NFC_RESET_CARD: {
+            case SMARTCARD_RESET_CARD: {
                 mSmartcardDevice.resetAndWipeToken();
 
                 break;
@@ -308,7 +308,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                 protected Void doInBackground(Void... params) {
                     // check all 200ms if Security Token has been taken away
                     while (true) {
-                        if (isNfcConnected()) {
+                        if (isSmartcardConnected()) {
                             try {
                                 Thread.sleep(200);
                             } catch (InterruptedException ignored) {
@@ -340,7 +340,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     @Override
-    protected void onNfcError(String error) {
+    protected void onSmartcardError(String error) {
         pauseTagHandling();
 
         vErrorText.setText(error + "\n\n" + getString(R.string.security_token_nfc_try_again_text));
@@ -350,8 +350,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     @Override
-    public void onNfcPinError(String error) {
-        onNfcError(error);
+    public void onSmartcardPinError(String error) {
+        onSmartcardError(error);
 
         // clear (invalid) passphrase
         PassphraseCacheService.clearCachedPassphrase(

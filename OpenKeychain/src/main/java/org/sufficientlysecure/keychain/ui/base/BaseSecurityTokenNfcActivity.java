@@ -59,8 +59,6 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.IOException;
 
-import nordpol.IsoCard;
-import nordpol.android.AndroidCard;
 import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
 
@@ -77,9 +75,9 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     protected UsbConnectionManager mUsbDispatcher;
     private boolean mTagHandlingEnabled;
 
-    private byte[] mNfcFingerprints;
-    private String mNfcUserId;
-    private byte[] mNfcAid;
+    private byte[] mSmartcardFingerprints;
+    private String mSmartcardUserId;
+    private byte[] mSmartcardAid;
 
     /**
      * Override to change UI before NFC handling (UI thread)
@@ -90,10 +88,10 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     /**
      * Override to implement NFC operations (background thread)
      */
-    protected void doNfcInBackground() throws IOException {
-        mNfcFingerprints = mSmartcardDevice.getFingerprints();
-        mNfcUserId = mSmartcardDevice.getUserId();
-        mNfcAid = mSmartcardDevice.getAid();
+    protected void doSmartcardInBackground() throws IOException {
+        mSmartcardFingerprints = mSmartcardDevice.getFingerprints();
+        mSmartcardUserId = mSmartcardDevice.getUserId();
+        mSmartcardAid = mSmartcardDevice.getAid();
     }
 
     /**
@@ -101,7 +99,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
      */
     protected void onSmartcardPostExecute() {
 
-        final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
+        final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mSmartcardFingerprints);
 
         try {
             CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(
@@ -110,15 +108,15 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
             Intent intent = new Intent(this, ViewKeyActivity.class);
             intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mNfcAid);
-            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mNfcUserId);
-            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mNfcFingerprints);
+            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSmartcardAid);
+            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSmartcardUserId);
+            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mSmartcardFingerprints);
             startActivity(intent);
         } catch (PgpKeyNotFoundException e) {
             Intent intent = new Intent(this, CreateKeyActivity.class);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_AID, mNfcAid);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_AID, mSmartcardAid);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_USER_ID, mSmartcardUserId);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_FINGERPRINTS, mSmartcardFingerprints);
             startActivity(intent);
         }
     }
@@ -126,15 +124,15 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     /**
      * Override to use something different than Notify (UI thread)
      */
-    protected void onNfcError(String error) {
+    protected void onSmartcardError(String error) {
         Notify.create(this, error, Style.WARN).show();
     }
 
     /**
      * Override to do something when PIN is wrong, e.g., clear passphrases (UI thread)
      */
-    protected void onNfcPinError(String error) {
-        onNfcError(error);
+    protected void onSmartcardPinError(String error) {
+        onSmartcardError(error);
     }
 
     public void tagDiscovered(final Tag tag) {
@@ -240,12 +238,12 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     private void handleSmartcardError(IOException e) {
 
         if (e instanceof TagLostException) {
-            onNfcError(getString(R.string.security_token_error_tag_lost));
+            onSmartcardError(getString(R.string.security_token_error_tag_lost));
             return;
         }
 
         if (e instanceof IsoDepNotSupportedException) {
-            onNfcError(getString(R.string.security_token_error_iso_dep_not_supported));
+            onSmartcardError(getString(R.string.security_token_error_iso_dep_not_supported));
             return;
         }
 
@@ -260,7 +258,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         if ((status & (short) 0xFFF0) == 0x63C0) {
             int tries = status & 0x000F;
             // hook to do something different when PIN is wrong
-            onNfcPinError(getResources().getQuantityString(R.plurals.security_token_error_pin, tries, tries));
+            onSmartcardPinError(getResources().getQuantityString(R.plurals.security_token_error_pin, tries, tries));
             return;
         }
 
@@ -269,56 +267,56 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
             // These errors should not occur in everyday use; if they are returned, it means we
             // made a mistake sending data to the token, or the token is misbehaving.
             case 0x6A80: {
-                onNfcError(getString(R.string.security_token_error_bad_data));
+                onSmartcardError(getString(R.string.security_token_error_bad_data));
                 break;
             }
             case 0x6883: {
-                onNfcError(getString(R.string.security_token_error_chaining_error));
+                onSmartcardError(getString(R.string.security_token_error_chaining_error));
                 break;
             }
             case 0x6B00: {
-                onNfcError(getString(R.string.security_token_error_header, "P1/P2"));
+                onSmartcardError(getString(R.string.security_token_error_header, "P1/P2"));
                 break;
             }
             case 0x6D00: {
-                onNfcError(getString(R.string.security_token_error_header, "INS"));
+                onSmartcardError(getString(R.string.security_token_error_header, "INS"));
                 break;
             }
             case 0x6E00: {
-                onNfcError(getString(R.string.security_token_error_header, "CLA"));
+                onSmartcardError(getString(R.string.security_token_error_header, "CLA"));
                 break;
             }
             // These error conditions are more likely to be experienced by an end user.
             case 0x6285: {
-                onNfcError(getString(R.string.security_token_error_terminated));
+                onSmartcardError(getString(R.string.security_token_error_terminated));
                 break;
             }
             case 0x6700: {
-                onNfcPinError(getString(R.string.security_token_error_wrong_length));
+                onSmartcardPinError(getString(R.string.security_token_error_wrong_length));
                 break;
             }
             case 0x6982: {
-                onNfcError(getString(R.string.security_token_error_security_not_satisfied));
+                onSmartcardError(getString(R.string.security_token_error_security_not_satisfied));
                 break;
             }
             case 0x6983: {
-                onNfcError(getString(R.string.security_token_error_authentication_blocked));
+                onSmartcardError(getString(R.string.security_token_error_authentication_blocked));
                 break;
             }
             case 0x6985: {
-                onNfcError(getString(R.string.security_token_error_conditions_not_satisfied));
+                onSmartcardError(getString(R.string.security_token_error_conditions_not_satisfied));
                 break;
             }
             // 6A88 is "Not Found" in the spec, but Yubikey also returns 6A83 for this in some cases.
             case 0x6A88:
             case 0x6A83: {
-                onNfcError(getString(R.string.security_token_error_data_not_found));
+                onSmartcardError(getString(R.string.security_token_error_data_not_found));
                 break;
             }
             // 6F00 is a JavaCard proprietary status code, SW_UNKNOWN, and usually represents an
             // unhandled exception on the security token.
             case 0x6F00: {
-                onNfcError(getString(R.string.security_token_error_unknown));
+                onSmartcardError(getString(R.string.security_token_error_unknown));
                 break;
             }
             // 6A82 app not installed on security token!
@@ -331,12 +329,12 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
                         promptFidesmoAppInstall();
                     }
                 } else { // Other (possibly) compatible hardware
-                    onNfcError(getString(R.string.security_token_error_pgp_app_not_installed));
+                    onSmartcardError(getString(R.string.security_token_error_pgp_app_not_installed));
                 }
                 break;
             }
             default: {
-                onNfcError(getString(R.string.security_token_error, e.getMessage()));
+                onSmartcardError(getString(R.string.security_token_error, e.getMessage()));
                 break;
             }
         }
@@ -410,10 +408,10 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
             mSmartcardDevice.setTransport(transport);
             mSmartcardDevice.connectToDevice();
         }
-        doNfcInBackground();
+        doSmartcardInBackground();
     }
 
-    public boolean isNfcConnected() {
+    public boolean isSmartcardConnected() {
         return mSmartcardDevice.isConnected();
     }
 
@@ -491,6 +489,10 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         return mSmartcardDevice;
     }
 
+    /**
+     * Run smartcard routines if last used token is connected and supports
+     * persistent connections
+     */
     protected void checkDeviceConnection() {
         if (mSmartcardDevice.isConnected() && mSmartcardDevice.isPersistentConnectionAllowed()) {
             this.smartcardDiscovered(mSmartcardDevice.getTransport());

@@ -50,9 +50,9 @@ public class ApiPendingIntentFactory {
                                   CryptoInputParcel cryptoInput) {
 
         switch (requiredInput.mType) {
-            case NFC_MOVE_KEY_TO_CARD:
-            case NFC_DECRYPT:
-            case NFC_SIGN: {
+            case SMARTCARD_MOVE_KEY_TO_CARD:
+            case SMARTCARD_DECRYPT:
+            case SMARTCARD_SIGN: {
                 return createNfcOperationPendingIntent(data, requiredInput, cryptoInput);
             }
 

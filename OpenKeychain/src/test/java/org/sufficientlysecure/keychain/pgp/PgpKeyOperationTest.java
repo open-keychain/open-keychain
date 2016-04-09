@@ -45,7 +45,6 @@ import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
@@ -877,7 +876,7 @@ public class PgpKeyOperationTest {
 
         long keyId = KeyringTestingHelper.getSubkeyId(ringSecurityToken, 1);
 
-        { // moveKeyToSecurityToken should return a pending NFC_MOVE_KEY_TO_CARD result when presented with the RSA-2048
+        { // moveKeyToSecurityToken should return a pending SMARTCARD_MOVE_KEY_TO_CARD result when presented with the RSA-2048
           // key, and then make key divert-to-card when it gets a serial in the cryptoInputParcel.
             parcelSecurityToken.reset();
             parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
@@ -887,8 +886,8 @@ public class PgpKeyOperationTest {
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcelSecurityToken);
             Assert.assertTrue("moveKeyToSecurityToken operation should be pending", result.isPending());
-            Assert.assertEquals("required input should be RequiredInputType.NFC_MOVE_KEY_TO_CARD",
-                    result.getRequiredInputParcel().mType, RequiredInputType.NFC_MOVE_KEY_TO_CARD);
+            Assert.assertEquals("required input should be RequiredInputType.SMARTCARD_MOVE_KEY_TO_CARD",
+                    result.getRequiredInputParcel().mType, RequiredInputType.SMARTCARD_MOVE_KEY_TO_CARD);
 
             // Create a cryptoInputParcel that matches what the SecurityTokenOperationActivity would return.
             byte[] keyIdBytes = new byte[8];
@@ -921,8 +920,8 @@ public class PgpKeyOperationTest {
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcelSecurityToken);
             Assert.assertTrue("moveKeyToSecurityToken operation should be pending", result.isPending());
-            Assert.assertEquals("required input should be RequiredInputType.NFC_SIGN",
-                    RequiredInputType.NFC_SIGN, result.getRequiredInputParcel().mType);
+            Assert.assertEquals("required input should be RequiredInputType.SMARTCARD_SIGN",
+                    RequiredInputType.SMARTCARD_SIGN, result.getRequiredInputParcel().mType);
         }
 
     }

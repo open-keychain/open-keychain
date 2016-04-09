@@ -143,7 +143,7 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
     }
 
     @Override
-    protected void doNfcInBackground() throws IOException {
+    protected void doSmartcardInBackground() throws IOException {
         if (mCurrentFragment instanceof NfcListenerFragment) {
             ((NfcListenerFragment) mCurrentFragment).doNfcInBackground();
             return;
