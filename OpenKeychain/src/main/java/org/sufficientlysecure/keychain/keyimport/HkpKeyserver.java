@@ -18,16 +18,18 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.io.IOException;
@@ -42,7 +44,6 @@ import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -199,43 +200,12 @@ public class HkpKeyserver extends Keyserver {
         return mSecure ? "https://" : "http://";
     }
 
-    /**
-     * returns a client with pinned certificate if necessary
-     *
-     * @param url   url to be queried by client
-     * @param proxy proxy to be used by client
-     * @return client with a pinned certificate if necessary
-     */
-    public static OkHttpClient getClient(URL url, Proxy proxy) throws IOException {
-        OkHttpClient client = new OkHttpClient();
-
-        try {
-            TlsHelper.usePinnedCertificateIfAvailable(client, url);
-        } catch (TlsHelper.TlsHelperException e) {
-            Log.w(Constants.TAG, e);
-        }
-
-        // don't follow any redirects
-        client.setFollowRedirects(false);
-        client.setFollowSslRedirects(false);
-
-        if (proxy != null) {
-            client.setProxy(proxy);
-            client.setConnectTimeout(30000, TimeUnit.MILLISECONDS);
-        } else {
-            client.setProxy(Proxy.NO_PROXY);
-            client.setConnectTimeout(5000, TimeUnit.MILLISECONDS);
-        }
-        client.setReadTimeout(45000, TimeUnit.MILLISECONDS);
-
-        return client;
-    }
 
     private String query(String request, @NonNull Proxy proxy) throws QueryFailedException, HttpError {
         try {
             URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
             Log.d(Constants.TAG, "hkp keyserver query: " + url + " Proxy: " + proxy);
-            OkHttpClient client = getClient(url, proxy);
+            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy);
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
 
             String responseBody = response.body().string(); // contains body both in case of success or failure
@@ -249,6 +219,9 @@ public class HkpKeyserver extends Keyserver {
             Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
             throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!" +
                     (proxy == Proxy.NO_PROXY ? "" : " Using proxy " + proxy));
+        } catch (TlsHelper.TlsHelperException e) {
+            Log.e(Constants.TAG, "Exception in pinning certs", e);
+            throw new QueryFailedException("Exception in pinning certs");
         }
     }
 
@@ -413,6 +386,7 @@ public class HkpKeyserver extends Keyserver {
             Log.d(Constants.TAG, "hkp keyserver add: " + url);
             Log.d(Constants.TAG, "params: " + params);
 
+
             RequestBody body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), params);
 
             Request request = new Request.Builder()
@@ -422,7 +396,7 @@ public class HkpKeyserver extends Keyserver {
                     .post(body)
                     .build();
 
-            Response response = getClient(url, mProxy).newCall(request).execute();
+            Response response = OkHttpClientFactory.getClientPinnedIfAvailable(url, mProxy).newCall(request).execute();
 
             Log.d(Constants.TAG, "response code: " + response.code());
             Log.d(Constants.TAG, "answer: " + response.body().string());
@@ -433,6 +407,9 @@ public class HkpKeyserver extends Keyserver {
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
+            throw new AddKeyException();
+        } catch (TlsHelper.TlsHelperException e) {
+            Log.e(Constants.TAG, "Exception in pinning certs", e);
             throw new AddKeyException();
         }
     }

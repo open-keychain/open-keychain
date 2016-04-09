@@ -17,55 +17,42 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkUrlFactory;
+
 import com.textuality.keybase.lib.KeybaseUrlConnectionClient;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 import org.sufficientlysecure.keychain.Constants;
 
 import java.io.IOException;
 import java.net.Proxy;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Wrapper for Keybase Lib
  */
 public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
 
-    private OkUrlFactory generateUrlFactory() {
-        OkHttpClient client = new OkHttpClient();
-        return new OkUrlFactory(client);
-    }
-
     @Override
-    public URLConnection openConnection(URL url, Proxy proxy, boolean isKeybase) throws IOException {
-        OkUrlFactory factory = generateUrlFactory();
-        if (proxy != null) {
-            factory.client().setProxy(proxy);
-            factory.client().setConnectTimeout(30000, TimeUnit.MILLISECONDS);
-            factory.client().setReadTimeout(40000, TimeUnit.MILLISECONDS);
-        } else {
-            factory.client().setConnectTimeout(5000, TimeUnit.MILLISECONDS);
-            factory.client().setReadTimeout(25000, TimeUnit.MILLISECONDS);
-        }
+    public Response getUrlResponse(URL url, Proxy proxy, boolean isKeybase) throws IOException {
+        OkHttpClient client = null;
 
-        factory.client().setFollowSslRedirects(false);
-
-        // forced the usage of api.keybase.io pinned certificate
-        if (isKeybase) {
-            try {
-                if (!TlsHelper.usePinnedCertificateIfAvailable(factory.client(), url)) {
-                    throw new IOException("no pinned certificate found for URL!");
-                }
-            } catch (TlsHelper.TlsHelperException e) {
-                Log.e(Constants.TAG, "TlsHelper failed", e);
-                throw new IOException("TlsHelper failed");
+        try {
+            if (proxy != null) {
+                client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy);
+            } else {
+                client = OkHttpClientFactory.getSimpleClient();
             }
+        } catch (TlsHelper.TlsHelperException e) {
+            Log.e(Constants.TAG, "TlsHelper failed", e);
+            throw new IOException("TlsHelper failed");
         }
 
-        return factory.open(url);
+        Request request = new Request.Builder()
+                .url(url).build();
+        okhttp3.Response okResponse = client.newCall(request).execute();
+        return new Response(okResponse.body().byteStream(), okResponse.code(), okResponse.message(), okResponse.headers().toMultimap());
     }
 
     @Override

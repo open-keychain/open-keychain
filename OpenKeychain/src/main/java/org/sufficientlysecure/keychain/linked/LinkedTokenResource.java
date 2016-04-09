@@ -2,10 +2,10 @@ package org.sufficientlysecure.keychain.linked;
 
 import android.content.Context;
 
-import com.squareup.okhttp.CertificatePinner;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import okhttp3.CertificatePinner;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.json.JSONException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
@@ -16,6 +16,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -236,13 +237,16 @@ public abstract class LinkedTokenResource extends LinkedResource {
         return builder.build();
     }
 
+
     public static String getResponseBody(Request request, String... pins)
             throws IOException, HttpStatusException {
 
-        Log.d("Connection to: "+request.url().getHost(),"");
-        OkHttpClient client = new OkHttpClient();
-        if(pins !=null){
-            client.setCertificatePinner(getCertificatePinner(request.url().getHost(),pins));
+        Log.d("Connection to: " + request.url().url().getHost(), "");
+        OkHttpClient client;
+        if (pins != null) {
+            client = OkHttpClientFactory.getSimpleClientPinned(getCertificatePinner(request.url().url().getHost(), pins));
+        } else {
+            client = OkHttpClientFactory.getSimpleClient();
         }
 
         Response response = client.newCall(request).execute();
