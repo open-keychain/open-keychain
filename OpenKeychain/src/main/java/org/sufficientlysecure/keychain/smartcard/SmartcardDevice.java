@@ -17,6 +17,11 @@ import java.security.interfaces.RSAPrivateCrtKey;
 
 import nordpol.Apdu;
 
+/**
+ * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
+ * NFC devices.
+ * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
+ */
 public class SmartcardDevice {
     // Fidesmo constants
     private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
@@ -30,13 +35,16 @@ public class SmartcardDevice {
     private boolean mPw1ValidatedForSignature;
     private boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
     private boolean mPw3Validated;
-    private boolean mTagHandlingEnabled;
 
     protected SmartcardDevice() {
     }
 
     public static SmartcardDevice getInstance() {
         return LazyHolder.mSmartcardDevice;
+    }
+
+    private static String getHex(byte[] raw) {
+        return new String(Hex.encode(raw));
     }
 
     private String getHolderName(String name) {
@@ -59,10 +67,6 @@ public class SmartcardDevice {
         }
     }
 
-    private static String getHex(byte[] raw) {
-        return new String(Hex.encode(raw));
-    }
-
     public Passphrase getPin() {
         return mPin;
     }
@@ -79,7 +83,6 @@ public class SmartcardDevice {
         this.mAdminPin = adminPin;
     }
 
-    // NEW MY METHOD
     public void changeKey(CanonicalizedSecretKey secretKey, Passphrase passphrase) throws IOException {
         long keyGenerationTimestamp = secretKey.getCreationTime().getTime() / 1000;
         byte[] timestampBytes = ByteBuffer.allocate(4).putInt((int) keyGenerationTimestamp).array();
@@ -90,8 +93,9 @@ public class SmartcardDevice {
         }
 
         // Slot is empty, or contains this key already. PUT KEY operation is safe
-        boolean canPutKey = !containsKey(keyType)
+        boolean canPutKey = isSlotEmpty(keyType)
                 || keyMatchesFingerPrint(keyType, secretKey.getFingerprint());
+
         if (!canPutKey) {
             throw new IOException(String.format("Key slot occupied; card must be reset to put new %s key.",
                     keyType.toString()));
@@ -102,8 +106,12 @@ public class SmartcardDevice {
         putData(keyType.getTimestampObjectId(), timestampBytes);
     }
 
-    private boolean containsKey(KeyType keyType) throws IOException {
-        return !keyMatchesFingerPrint(keyType, BLANK_FINGERPRINT);
+    private boolean isSlotEmpty(KeyType keyType) throws IOException {
+        // Note: special case: This should not happen, but happens with
+        // https://github.com/FluffyKaon/OpenPGP-Card, thus for now assume true
+        if (getMasterKeyFingerprint(keyType.getIdx()) == null) return true;
+
+        return keyMatchesFingerPrint(keyType, BLANK_FINGERPRINT);
     }
 
     public boolean keyMatchesFingerPrint(KeyType keyType, byte[] fingerprint) throws IOException {
@@ -248,7 +256,6 @@ public class SmartcardDevice {
      * @param mode For PW1, this is 0x81 for signing, 0x82 for everything else.
      *             For PW3 (Admin PIN), mode is 0x83.
      */
-    // METHOD UPDATED [OK]
     private void verifyPin(int mode) throws IOException {
         if (mPin != null || mode == 0x83) {
 
@@ -285,7 +292,7 @@ public class SmartcardDevice {
      * @param dataObject The data object to be stored.
      * @param data       The data to store in the object
      */
-    public void putData(int dataObject, byte[] data) throws IOException {
+    private void putData(int dataObject, byte[] data) throws IOException {
         if (data.length > 254) {
             throw new IOException("Cannot PUT DATA with length > 254");
         }
@@ -319,7 +326,7 @@ public class SmartcardDevice {
      *             0xB8: Decipherment Key
      *             0xA4: Authentication Key
      */
-    public void putKey(int slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
+    private void putKey(int slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
             throws IOException {
         if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
             throw new IOException("Invalid key slot");
@@ -577,6 +584,10 @@ public class SmartcardDevice {
         return mTransport;
     }
 
+    public void setTransport(Transport mTransport) {
+        this.mTransport = mTransport;
+    }
+
     public boolean isFidesmoToken() {
         if (isConnected()) { // Check if we can still talk to the card
             try {
@@ -636,7 +647,6 @@ public class SmartcardDevice {
         return output.substring(0, output.length() - 4);
     }
 
-    // NEW METHOD [OK]
     private String tryPin(int mode, byte[] pin) throws IOException {
         // Command APDU for VERIFY command (page 32)
         String login =
@@ -707,10 +717,6 @@ public class SmartcardDevice {
         fpbuf.get(fp, 0, 20);
 
         return fp;
-    }
-
-    public void setTransport(Transport mTransport) {
-        this.mTransport = mTransport;
     }
 
     public boolean isPersistentConnectionAllowed() {

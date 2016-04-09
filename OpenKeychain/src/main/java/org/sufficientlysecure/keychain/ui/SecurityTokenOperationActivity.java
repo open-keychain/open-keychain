@@ -69,8 +69,6 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
     private RequiredInputParcel mRequiredInput;
 
-    private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
     private CryptoInputParcel mInputParcel;
 
     @Override
@@ -226,10 +224,6 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                     long subkeyId = buf.getLong();
 
                     CanonicalizedSecretKey key = secretKeyRing.getSecretKey(subkeyId);
-
-                    long keyGenerationTimestampMillis = key.getCreationTime().getTime();
-                    long keyGenerationTimestamp = keyGenerationTimestampMillis / 1000;
-                    byte[] timestampBytes = ByteBuffer.allocate(4).putInt((int) keyGenerationTimestamp).array();
                     byte[] tokenSerialNumber = Arrays.copyOf(mSmartcardDevice.getAid(), 16);
 
                     Passphrase passphrase;
@@ -240,33 +234,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                         throw new IOException("Unable to get cached passphrase!");
                     }
 
-                    if (key.canSign() || key.canCertify()) {
-                        if (shouldPutKey(key.getFingerprint(), 0)) {
-                            mSmartcardDevice.putKey(0xB6, key, passphrase);
-                            mSmartcardDevice.putData(0xCE, timestampBytes);
-                            mSmartcardDevice.putData(0xC7, key.getFingerprint());
-                        } else {
-                            throw new IOException("Key slot occupied; token must be reset to put new signature key.");
-                        }
-                    } else if (key.canEncrypt()) {
-                        if (shouldPutKey(key.getFingerprint(), 1)) {
-                            mSmartcardDevice.putKey(0xB8, key, passphrase);
-                            mSmartcardDevice.putData(0xCF, timestampBytes);
-                            mSmartcardDevice.putData(0xC8, key.getFingerprint());
-                        } else {
-                            throw new IOException("Key slot occupied; token must be reset to put new decryption key.");
-                        }
-                    } else if (key.canAuthenticate()) {
-                        if (shouldPutKey(key.getFingerprint(), 2)) {
-                            mSmartcardDevice.putKey(0xA4, key, passphrase);
-                            mSmartcardDevice.putData(0xD0, timestampBytes);
-                            mSmartcardDevice.putData(0xC9, key.getFingerprint());
-                        } else {
-                            throw new IOException("Key slot occupied; token must be reset to put new authentication key.");
-                        }
-                    } else {
-                        throw new IOException("Inappropriate key flags for Security Token key.");
-                    }
+                    mSmartcardDevice.changeKey(key, passphrase);
 
                     // TODO: Is this really used anywhere?
                     mInputParcel.addCryptoData(subkeyBytes, tokenSerialNumber);
@@ -357,24 +325,4 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
         PassphraseCacheService.clearCachedPassphrase(
                 this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
     }
-
-    private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
-        byte[] tokenFingerprint = mSmartcardDevice.getMasterKeyFingerprint(idx);
-
-        // Note: special case: This should not happen, but happens with
-        // https://github.com/FluffyKaon/OpenPGP-Card, thus for now assume true
-        if (tokenFingerprint == null) {
-            return true;
-        }
-
-        // Slot is empty, or contains this key already. PUT KEY operation is safe
-        if (Arrays.equals(tokenFingerprint, BLANK_FINGERPRINT) ||
-                Arrays.equals(tokenFingerprint, fingerprint)) {
-            return true;
-        }
-
-        // Slot already contains a different key; don't overwrite it.
-        return false;
-    }
-
 }
