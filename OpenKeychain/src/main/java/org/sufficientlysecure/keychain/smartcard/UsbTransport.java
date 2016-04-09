@@ -50,7 +50,7 @@ public class UsbTransport implements Transport {
      * @throws UsbTransportException
      */
     private void iccPowerSet(boolean on) throws UsbTransportException {
-        final byte[] iccPowerOn = {
+        final byte[] iccPowerCommand = {
                 (byte) (on ? 0x62 : 0x63),
                 0x00, 0x00, 0x00, 0x00,
                 0x00,
@@ -58,8 +58,13 @@ public class UsbTransport implements Transport {
                 0x00,
                 0x00, 0x00
         };
-        sendRaw(iccPowerOn);
-        receive();
+
+        sendRaw(iccPowerCommand);
+        byte[] bytes;
+        do {
+            bytes = receive();
+        } while (isDataBlockNotReady(bytes));
+        checkDataBlockResponse(receive());
     }
 
     /**
@@ -174,19 +179,25 @@ public class UsbTransport implements Transport {
      */
     @Override
     public byte[] transceive(byte[] data) throws UsbTransportException {
-        send(data);
+        sendXfrBlock(data);
         byte[] bytes;
         do {
             bytes = receive();
-        } while (isXfrBlockNotReady(bytes));
+        } while (isDataBlockNotReady(bytes));
 
-        checkXfrBlockResult(bytes);
+        checkDataBlockResponse(bytes);
         // Discard header
         return Arrays.copyOfRange(bytes, 10, bytes.length);
     }
 
-    private void send(byte[] d) throws UsbTransportException {
-        int l = d.length;
+    /**
+     * Transmits XfrBlock
+     * 6.1.4 PC_to_RDR_XfrBlock
+     * @param payload payload to transmit
+     * @throws UsbTransportException
+     */
+    private void sendXfrBlock(byte[] payload) throws UsbTransportException {
+        int l = payload.length;
         byte[] data = Arrays.concatenate(new byte[]{
                         0x6f,
                         (byte) l, (byte) (l >> 8), (byte) (l >> 16), (byte) (l >> 24),
@@ -194,7 +205,7 @@ public class UsbTransport implements Transport {
                         mCounter++,
                         0x00,
                         0x00, 0x00},
-                d);
+                payload);
 
         int send = 0;
         while (send < data.length) {
@@ -239,14 +250,14 @@ public class UsbTransport implements Transport {
         return (byte) ((bytes[7] >> 6) & 0x03);
     }
 
-    private void checkXfrBlockResult(byte[] bytes) throws UsbTransportException {
+    private void checkDataBlockResponse(byte[] bytes) throws UsbTransportException {
         final byte status = getStatus(bytes);
         if (status != 0) {
             throw new UsbTransportException("USB-CCID error: status " + status + " error code: " + Hex.toHexString(bytes, 8, 1));
         }
     }
 
-    private boolean isXfrBlockNotReady(byte[] bytes) {
+    private boolean isDataBlockNotReady(byte[] bytes) {
         return getStatus(bytes) == 2;
     }
 
