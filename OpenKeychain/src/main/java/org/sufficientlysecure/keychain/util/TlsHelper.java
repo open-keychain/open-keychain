@@ -86,9 +86,10 @@ public class TlsHelper {
     }
 
     /**
-     * Modifies the builder to accept only requests with a given certificate. Applies to all URLs requested by the
-     * builder.
-     * Therefore a builder that is pinned this way should be used to only make requests to URLs with passed certificate.
+     * Modifies the builder to accept only requests with a given certificate.
+     * Applies to all URLs requested by the builder.
+     * Therefore a builder that is pinned this way should be used to only make requests
+     * to URLs with passed certificate.
      *
      * @param certificate certificate to pin
      * @throws TlsHelperException

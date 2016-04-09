@@ -38,7 +38,7 @@ public class OkHttpClientFactory {
         return client;
     }
 
-    public static OkHttpClient getPinnedSimpleClient(CertificatePinner pinner) {
+    public static OkHttpClient getSimpleClientPinned(CertificatePinner pinner) {
         return new OkHttpClient.Builder()
                 .connectTimeout(5000, TimeUnit.MILLISECONDS)
                 .readTimeout(25000, TimeUnit.MILLISECONDS)
@@ -46,32 +46,31 @@ public class OkHttpClientFactory {
                 .build();
     }
 
-    public static OkHttpClient getPinnedClient(URL url, Proxy proxy) throws IOException, TlsHelper.TlsHelperException {
+    public static OkHttpClient getClientPinnedIfAvailable(URL url, Proxy proxy) throws IOException,
+            TlsHelper.TlsHelperException {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
-        return new OkHttpClient.Builder()
-                // don't follow any redirects for keyservers, as discussed in the security audit
-                .followRedirects(false)
-                .followSslRedirects(false)
-                .proxy(proxy)
-                        // higher timeouts for Tor
-                .connectTimeout(30000, TimeUnit.MILLISECONDS)
-                .readTimeout(45000, TimeUnit.MILLISECONDS)
-                        // use pinned cert with SocketFactory
-                .sslSocketFactory(TlsHelper.getPinnedSslSocketFactory(url))
-                .build();
-    }
+        // don't follow any redirects for keyservers, as discussed in the security audit
+        builder.followRedirects(false)
+                .followSslRedirects(false);
 
-    public static OkHttpClient getClient(Proxy proxy) throws IOException, TlsHelper.TlsHelperException {
+        if (proxy != null) {
+            // set proxy and higher timeouts for Tor
+            builder.proxy(proxy);
+            builder.connectTimeout(30000, TimeUnit.MILLISECONDS)
+                    .readTimeout(45000, TimeUnit.MILLISECONDS);
+        } else {
+            builder.connectTimeout(5000, TimeUnit.MILLISECONDS)
+                    .readTimeout(25000, TimeUnit.MILLISECONDS);
+        }
 
-        return new OkHttpClient.Builder()
-                // don't follow any redirects for keyservers, as discussed in the security audit
-                .followRedirects(false)
-                .followSslRedirects(false)
-                .proxy(proxy)
-                        // higher timeouts for Tor
-                .connectTimeout(30000, TimeUnit.MILLISECONDS)
-                .readTimeout(45000, TimeUnit.MILLISECONDS)
-                .build();
+        // If a pinned cert is available, use it!
+        // NOTE: this fails gracefully back to "no pinning" if no cert is available.
+        if (url != null && TlsHelper.getPinnedSslSocketFactory(url) != null) {
+            builder.sslSocketFactory(TlsHelper.getPinnedSslSocketFactory(url));
+        }
+
+        return builder.build();
     }
 
 }

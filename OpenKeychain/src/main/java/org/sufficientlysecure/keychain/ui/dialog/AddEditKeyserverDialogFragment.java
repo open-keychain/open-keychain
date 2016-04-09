@@ -353,14 +353,14 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
 
                     Log.d("Converted URL", newKeyserver.toString());
 
-                    OkHttpClient client = OkHttpClientFactory.getPinnedClient(newKeyserver.toURL(), proxy);
-
                     if (onlyTrustedKeyserver
                             && TlsHelper.getPinnedSslSocketFactory(newKeyserver.toURL()) == null) {
                         Log.w(Constants.TAG, "No pinned certificate for this host in OpenKeychain's assets.");
                         reason = FailureReason.NO_PINNED_CERTIFICATE;
                         return reason;
                     }
+
+                    OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(newKeyserver.toURL(), proxy);
 
                     client.newCall(new Request.Builder().url(newKeyserver.toURL()).build()).execute();
                 } catch (TlsHelper.TlsHelperException e) {

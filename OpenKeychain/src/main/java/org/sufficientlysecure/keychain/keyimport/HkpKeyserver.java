@@ -205,7 +205,7 @@ public class HkpKeyserver extends Keyserver {
         try {
             URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
             Log.d(Constants.TAG, "hkp keyserver query: " + url + " Proxy: " + proxy);
-            OkHttpClient client = OkHttpClientFactory.getPinnedClient(url, proxy);
+            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy);
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
 
             String responseBody = response.body().string(); // contains body both in case of success or failure
@@ -396,7 +396,7 @@ public class HkpKeyserver extends Keyserver {
                     .post(body)
                     .build();
 
-            Response response = OkHttpClientFactory.getPinnedClient(url, mProxy).newCall(request).execute();
+            Response response = OkHttpClientFactory.getClientPinnedIfAvailable(url, mProxy).newCall(request).execute();
 
             Log.d(Constants.TAG, "response code: " + response.code());
             Log.d(Constants.TAG, "answer: " + response.body().string());

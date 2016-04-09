@@ -21,16 +21,13 @@ package org.sufficientlysecure.keychain.util;
 import com.textuality.keybase.lib.KeybaseUrlConnectionClient;
 
 import okhttp3.OkHttpClient;
-import okhttp3.OkUrlFactory;
 import okhttp3.Request;
-import okhttp3.Response;
 
 import org.sufficientlysecure.keychain.Constants;
 
 import java.io.IOException;
 import java.net.Proxy;
 import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * Wrapper for Keybase Lib
@@ -42,10 +39,8 @@ public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
         OkHttpClient client = null;
 
         try {
-            if (isKeybase && proxy != null) {
-                client = OkHttpClientFactory.getPinnedClient(url, proxy);
-            } else if (proxy != null) {
-                client = OkHttpClientFactory.getClient(proxy);
+            if (proxy != null) {
+                client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy);
             } else {
                 client = OkHttpClientFactory.getSimpleClient();
             }

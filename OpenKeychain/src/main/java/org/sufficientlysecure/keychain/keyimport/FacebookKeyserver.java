@@ -106,9 +106,9 @@ public class FacebookKeyserver extends Keyserver {
             String request = String.format(FB_KEY_URL_FORMAT, fbUsername);
             Log.d(Constants.TAG, "fetching from Facebook with: " + request + " proxy: " + mProxy);
 
-            OkHttpClient client = OkHttpClientFactory.getClient(mProxy);
-
             URL url = new URL(request);
+
+            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, mProxy);
 
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
 

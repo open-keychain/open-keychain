@@ -244,7 +244,7 @@ public abstract class LinkedTokenResource extends LinkedResource {
         Log.d("Connection to: " + request.url().url().getHost(), "");
         OkHttpClient client;
         if (pins != null) {
-            client = OkHttpClientFactory.getPinnedSimpleClient(getCertificatePinner(request.url().url().getHost(), pins));
+            client = OkHttpClientFactory.getSimpleClientPinned(getCertificatePinner(request.url().url().getHost(), pins));
         } else {
             client = OkHttpClientFactory.getSimpleClient();
         }
