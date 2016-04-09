@@ -19,13 +19,23 @@ public class NfcTransport implements Transport {
         this.mTag = tag;
     }
 
+    /**
+     * Transmit and receive data
+     * @param data data to transmit
+     * @return received data
+     * @throws IOException
+     */
     @Override
-    public byte[] sendAndReceive(final byte[] data) throws TransportIoException, IOException {
+    public byte[] transceive(final byte[] data) throws IOException {
         return mIsoCard.transceive(data);
     }
 
+    /**
+     * Disconnect and release connection
+     */
     @Override
     public void release() {
+        // Not supported
     }
 
     @Override
@@ -33,13 +43,18 @@ public class NfcTransport implements Transport {
         return mIsoCard != null && mIsoCard.isConnected();
     }
 
+    /**
+     * Check if Transport supports persistent connections e.g connections which can
+     * handle multiple operations in one session
+     * @return true if transport supports persistent connections
+     */
     @Override
-    public boolean allowPersistentConnection() {
+    public boolean isPersistentConnectionAllowed() {
         return false;
     }
 
     /**
-     * Handle NFC communication and return a result.
+     * Connect to NFC device.
      * <p/>
      * On general communication, see also
      * http://www.cardwerk.com/smartcards/smartcard_standard_ISO7816-4_annex-a.aspx

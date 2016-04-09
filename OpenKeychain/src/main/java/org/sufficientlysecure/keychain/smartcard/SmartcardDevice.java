@@ -39,7 +39,6 @@ public class SmartcardDevice {
         return LazyHolder.mSmartcardDevice;
     }
 
-    // METHOD UPDATED [OK]
     private String getHolderName(String name) {
         try {
             String slength;
@@ -80,6 +79,7 @@ public class SmartcardDevice {
         this.mAdminPin = adminPin;
     }
 
+    // NEW MY METHOD
     public void changeKey(CanonicalizedSecretKey secretKey, Passphrase passphrase) throws IOException {
         long keyGenerationTimestamp = secretKey.getCreationTime().getTime() / 1000;
         byte[] timestampBytes = ByteBuffer.allocate(4).putInt((int) keyGenerationTimestamp).array();
@@ -102,7 +102,7 @@ public class SmartcardDevice {
         putData(keyType.getTimestampObjectId(), timestampBytes);
     }
 
-    public boolean containsKey(KeyType keyType) throws IOException {
+    private boolean containsKey(KeyType keyType) throws IOException {
         return !keyMatchesFingerPrint(keyType, BLANK_FINGERPRINT);
     }
 
@@ -110,9 +110,16 @@ public class SmartcardDevice {
         return java.util.Arrays.equals(getMasterKeyFingerprint(keyType.getIdx()), fingerprint);
     }
 
-    // METHOD UPDATED OK
+    /**
+     * Connect to device and select pgp applet
+     *
+     * @throws IOException
+     */
     public void connectToDevice() throws IOException {
+        // Connect on transport layer
         mTransport.connect();
+
+        // Connect on smartcard layer
 
         // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
         // See specification, page 51
@@ -164,7 +171,6 @@ public class SmartcardDevice {
      * @param pw     For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
      * @param newPin The new PW1 or PW3.
      */
-    // METHOD UPDATED[OK]
     public void modifyPin(int pw, byte[] newPin) throws IOException {
         final int MAX_PW1_LENGTH_INDEX = 1;
         final int MAX_PW3_LENGTH_INDEX = 3;
@@ -210,7 +216,6 @@ public class SmartcardDevice {
      * @param encryptedSessionKey the encoded session key
      * @return the decoded session key
      */
-    // METHOD UPDATED [OK]
     public byte[] decryptSessionKey(byte[] encryptedSessionKey) throws IOException {
         if (!mPw1ValidatedForDecrypt) {
             verifyPin(0x82); // (Verify PW1 with mode 82 for decryption)
@@ -280,7 +285,6 @@ public class SmartcardDevice {
      * @param dataObject The data object to be stored.
      * @param data       The data to store in the object
      */
-    // METHOD UPDATED [OK]
     public void putData(int dataObject, byte[] data) throws IOException {
         if (data.length > 254) {
             throw new IOException("Cannot PUT DATA with length > 254");
@@ -315,7 +319,6 @@ public class SmartcardDevice {
      *             0xB8: Decipherment Key
      *             0xA4: Authentication Key
      */
-    // METHOD UPDATED [OK]
     public void putKey(int slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
             throws IOException {
         if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
@@ -426,10 +429,9 @@ public class SmartcardDevice {
      *
      * @return The fingerprints of all subkeys in a contiguous byte array.
      */
-    // METHOD UPDATED [OK]
     public byte[] getFingerprints() throws IOException {
         String data = "00CA006E00";
-        byte[] buf = mTransport.sendAndReceive(Hex.decode(data));
+        byte[] buf = mTransport.transceive(Hex.decode(data));
 
         Iso7816TLV tlv = Iso7816TLV.readSingle(buf, true);
         Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlv.prettyPrint());
@@ -446,19 +448,16 @@ public class SmartcardDevice {
      *
      * @return Seven bytes in fixed format, plus 0x9000 status word at the end.
      */
-    // METHOD UPDATED [OK]
     private byte[] getPwStatusBytes() throws IOException {
         String data = "00CA00C400";
-        return mTransport.sendAndReceive(Hex.decode(data));
+        return mTransport.transceive(Hex.decode(data));
     }
 
-    // METHOD UPDATED [OK]
     public byte[] getAid() throws IOException {
         String info = "00CA004F00";
-        return mTransport.sendAndReceive(Hex.decode(info));
+        return mTransport.transceive(Hex.decode(info));
     }
 
-    // METHOD UPDATED [OK]
     public String getUserId() throws IOException {
         String info = "00CA006500";
         return getHolderName(communicate(info));
@@ -470,7 +469,6 @@ public class SmartcardDevice {
      * @param hash the hash for signing
      * @return a big integer representing the MPI for the given hash
      */
-    // METHOD UPDATED [OK]
     public byte[] calculateSignature(byte[] hash, int hashAlgo) throws IOException {
         if (!mPw1ValidatedForSignature) {
             verifyPin(0x81); // (Verify PW1 with mode 81 for signing)
@@ -568,29 +566,23 @@ public class SmartcardDevice {
         return Hex.decode(signature);
     }
 
-    public boolean isConnected() {
-        return mTransport != null && mTransport.isConnected();
-    }
-
     /**
      * Transceive data via NFC encoded as Hex
      */
-    // METHOD UPDATED [OK]
-    private String communicate(String apdu) throws IOException, TransportIoException {
-        return getHex(mTransport.sendAndReceive(Hex.decode(apdu)));
+    private String communicate(String apdu) throws IOException {
+        return getHex(mTransport.transceive(Hex.decode(apdu)));
     }
 
     public Transport getTransport() {
         return mTransport;
     }
 
-    // NEW METHOD [OK]
     public boolean isFidesmoToken() {
         if (isConnected()) { // Check if we can still talk to the card
             try {
                 // By trying to select any apps that have the Fidesmo AID prefix we can
                 // see if it is a Fidesmo device or not
-                byte[] mSelectResponse = mTransport.sendAndReceive(Apdu.select(FIDESMO_APPS_AID_PREFIX));
+                byte[] mSelectResponse = mTransport.transceive(Apdu.select(FIDESMO_APPS_AID_PREFIX));
                 // Compare the status returned by our select with the OK status code
                 return Apdu.hasStatus(mSelectResponse, Apdu.OK_APDU);
             } catch (IOException e) {
@@ -614,7 +606,6 @@ public class SmartcardDevice {
      * @return the public key data objects, in TLV format. For RSA this will be the public modulus
      * (0x81) and exponent (0x82). These may come out of order; proper TLV parsing is required.
      */
-    // NEW METHOD [OK]
     public byte[] generateKey(int slot) throws IOException {
         if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
             throw new IOException("Invalid key slot");
@@ -641,7 +632,6 @@ public class SmartcardDevice {
         return Hex.decode(publicKeyData);
     }
 
-    // NEW METHOD [OK][OK]
     private String getDataField(String output) {
         return output.substring(0, output.length() - 4);
     }
@@ -665,7 +655,6 @@ public class SmartcardDevice {
      * This works by entering a wrong PIN and then Admin PIN 4 times respectively.
      * Afterwards, the token is reactivated.
      */
-    // NEW METHOD [OK]
     public void resetAndWipeToken() throws IOException {
         String accepted = "9000";
 
@@ -725,7 +714,11 @@ public class SmartcardDevice {
     }
 
     public boolean isPersistentConnectionAllowed() {
-        return mTransport != null && mTransport.allowPersistentConnection();
+        return mTransport != null && mTransport.isPersistentConnectionAllowed();
+    }
+
+    public boolean isConnected() {
+        return mTransport != null && mTransport.isConnected();
     }
 
     private static class LazyHolder {

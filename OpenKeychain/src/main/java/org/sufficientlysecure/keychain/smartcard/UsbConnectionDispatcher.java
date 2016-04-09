@@ -12,7 +12,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.UsbEventReceiverActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class UsbConnectionManager {
+public class UsbConnectionDispatcher {
     private Activity mActivity;
 
     private OnDiscoveredUsbDeviceListener mListener;
@@ -36,7 +36,7 @@ public class UsbConnectionManager {
         }
     };
 
-    public UsbConnectionManager(final Activity activity, final OnDiscoveredUsbDeviceListener listener) {
+    public UsbConnectionDispatcher(final Activity activity, final OnDiscoveredUsbDeviceListener listener) {
         this.mActivity = activity;
         this.mListener = listener;
     }

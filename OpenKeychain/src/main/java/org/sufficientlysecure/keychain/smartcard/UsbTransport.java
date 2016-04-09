@@ -19,9 +19,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+/**
+ * Based on USB CCID Specification rev. 1.1
+ * http://www.usb.org/developers/docs/devclass_docs/DWG_Smart-Card_CCID_Rev110.pdf
+ * Implements small subset of these features
+ */
 public class UsbTransport implements Transport {
-    private static final int CLASS_SMARTCARD = 11;
-    private static final int TIMEOUT = 20 * 1000; // 2 s
+    private static final int USB_CLASS_SMARTCARD = 11;
+    private static final int TIMEOUT = 20 * 1000; // 20s
 
     private final UsbManager mUsbManager;
     private final UsbDevice mUsbDevice;
@@ -29,29 +34,24 @@ public class UsbTransport implements Transport {
     private UsbEndpoint mBulkIn;
     private UsbEndpoint mBulkOut;
     private UsbDeviceConnection mConnection;
-    private byte mCounter = 0;
+    private byte mCounter;
 
-    public UsbTransport(final UsbDevice usbDevice, final UsbManager usbManager) {
+    public UsbTransport(UsbDevice usbDevice, UsbManager usbManager) {
         mUsbDevice = usbDevice;
         mUsbManager = usbManager;
     }
 
-    private void powerOff() throws TransportIoException {
-        final byte[] iccPowerOff = {
-                0x63,
-                0x00, 0x00, 0x00, 0x00,
-                0x00,
-                mCounter++,
-                0x00,
-                0x00, 0x00
-        };
-        sendRaw(iccPowerOff);
-        receive();
-    }
 
-    void powerOn() throws TransportIoException {
+    /**
+     * Manage ICC power, Yubikey requires to power on ICC
+     * Spec: 6.1.1 PC_to_RDR_IccPowerOn; 6.1.2 PC_to_RDR_IccPowerOff
+     *
+     * @param on true to turn ICC on, false to turn it off
+     * @throws UsbTransportException
+     */
+    private void iccPowerSet(boolean on) throws UsbTransportException {
         final byte[] iccPowerOn = {
-                0x62,
+                (byte) (on ? 0x62 : 0x63),
                 0x00, 0x00, 0x00, 0x00,
                 0x00,
                 mCounter++,
@@ -63,22 +63,28 @@ public class UsbTransport implements Transport {
     }
 
     /**
-     * Get first class 11 (Chip/Smartcard) interface for the device
+     * Get first class 11 (Chip/Smartcard) interface of the device
      *
      * @param device {@link UsbDevice} which will be searched
      * @return {@link UsbInterface} of smartcard or null if it doesn't exist
      */
     @Nullable
-    private static UsbInterface getSmartCardInterface(final UsbDevice device) {
+    private static UsbInterface getSmartCardInterface(UsbDevice device) {
         for (int i = 0; i < device.getInterfaceCount(); i++) {
-            final UsbInterface anInterface = device.getInterface(i);
-            if (anInterface.getInterfaceClass() == CLASS_SMARTCARD) {
+            UsbInterface anInterface = device.getInterface(i);
+            if (anInterface.getInterfaceClass() == USB_CLASS_SMARTCARD) {
                 return anInterface;
             }
         }
         return null;
     }
 
+    /**
+     * Get device's bulk-in and bulk-out endpoints
+     *
+     * @param usbInterface usb device interface
+     * @return pair of builk-in and bulk-out endpoints respectively
+     */
     @NonNull
     private static Pair<UsbEndpoint, UsbEndpoint> getIoEndpoints(final UsbInterface usbInterface) {
         UsbEndpoint bulkIn = null, bulkOut = null;
@@ -97,43 +103,77 @@ public class UsbTransport implements Transport {
         return new Pair<>(bulkIn, bulkOut);
     }
 
+    /**
+     * Release interface and disconnect
+     */
     @Override
     public void release() {
         mConnection.releaseInterface(mUsbInterface);
         mConnection.close();
+        mConnection = null;
     }
 
+    /**
+     * Check if device is was connected to and still is connected
+     * @return true if device is connected
+     */
     @Override
     public boolean isConnected() {
-        // TODO: redo
         return mConnection != null && mUsbManager.getDeviceList().containsValue(mUsbDevice);
     }
 
+    /**
+     * Check if Transport supports persistent connections e.g connections which can
+     * handle multiple operations in one session
+     * @return true if transport supports persistent connections
+     */
     @Override
-    public boolean allowPersistentConnection() {
+    public boolean isPersistentConnectionAllowed() {
         return true;
     }
 
+    /**
+     * Connect to OTG device
+     * @throws IOException
+     */
     @Override
     public void connect() throws IOException {
+        mCounter = 0;
         mUsbInterface = getSmartCardInterface(mUsbDevice);
-        // throw if mUsbInterface == null
+        if (mUsbInterface == null) {
+            // Shouldn't happen as we whitelist only class 11 devices
+            throw new UsbTransportException("USB error: device doesn't have class 11 interface");
+        }
+
         final Pair<UsbEndpoint, UsbEndpoint> ioEndpoints = getIoEndpoints(mUsbInterface);
         mBulkIn = ioEndpoints.first;
         mBulkOut = ioEndpoints.second;
-        // throw if any endpoint is null
+
+        if (mBulkIn == null || mBulkOut == null) {
+            throw new UsbTransportException("USB error: invalid class 11 interface");
+        }
 
         mConnection = mUsbManager.openDevice(mUsbDevice);
-        // throw if connection is null
-        mConnection.claimInterface(mUsbInterface, true);
-        // check result
+        if (mConnection == null) {
+            throw new UsbTransportException("USB error: failed to connect to device");
+        }
 
-        powerOn();
+        if (!mConnection.claimInterface(mUsbInterface, true)) {
+            throw new UsbTransportException("USB error: failed to claim interface");
+        }
+
+        iccPowerSet(true);
         Log.d(Constants.TAG, "Usb transport connected");
     }
 
+    /**
+     * Transmit and receive data
+     * @param data data to transmit
+     * @return received data
+     * @throws UsbTransportException
+     */
     @Override
-    public byte[] sendAndReceive(byte[] data) throws TransportIoException {
+    public byte[] transceive(byte[] data) throws UsbTransportException {
         send(data);
         byte[] bytes;
         do {
@@ -141,10 +181,11 @@ public class UsbTransport implements Transport {
         } while (isXfrBlockNotReady(bytes));
 
         checkXfrBlockResult(bytes);
+        // Discard header
         return Arrays.copyOfRange(bytes, 10, bytes.length);
     }
 
-    public void send(byte[] d) throws TransportIoException {
+    private void send(byte[] d) throws UsbTransportException {
         int l = d.length;
         byte[] data = Arrays.concatenate(new byte[]{
                         0x6f,
@@ -163,7 +204,7 @@ public class UsbTransport implements Transport {
         }
     }
 
-    public byte[] receive() throws TransportIoException {
+    private byte[] receive() throws UsbTransportException {
         byte[] buffer = new byte[mBulkIn.getMaxPacketSize()];
         byte[] result = null;
         int readBytes = 0, totalBytes = 0;
@@ -171,11 +212,11 @@ public class UsbTransport implements Transport {
         do {
             int res = mConnection.bulkTransfer(mBulkIn, buffer, buffer.length, TIMEOUT);
             if (res < 0) {
-                throw new TransportIoException("USB error, failed to receive response " + res);
+                throw new UsbTransportException("USB error: failed to receive response " + res);
             }
             if (result == null) {
                 if (res < 10) {
-                    throw new TransportIoException("USB error, failed to receive ccid header");
+                    throw new UsbTransportException("USB-CCID error: failed to receive CCID header");
                 }
                 totalBytes = ByteBuffer.wrap(buffer, 1, 4).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get() + 10;
                 result = new byte[totalBytes];
@@ -187,10 +228,10 @@ public class UsbTransport implements Transport {
         return result;
     }
 
-    private void sendRaw(final byte[] data) throws TransportIoException {
+    private void sendRaw(final byte[] data) throws UsbTransportException {
         final int tr1 = mConnection.bulkTransfer(mBulkOut, data, data.length, TIMEOUT);
         if (tr1 != data.length) {
-            throw new TransportIoException("USB error, failed to send data " + tr1);
+            throw new UsbTransportException("USB error: failed to transmit data " + tr1);
         }
     }
 
@@ -198,19 +239,15 @@ public class UsbTransport implements Transport {
         return (byte) ((bytes[7] >> 6) & 0x03);
     }
 
-    private void checkXfrBlockResult(byte[] bytes) throws TransportIoException {
+    private void checkXfrBlockResult(byte[] bytes) throws UsbTransportException {
         final byte status = getStatus(bytes);
         if (status != 0) {
-            throw new TransportIoException("CCID error, status " + status + " error code: " + Hex.toHexString(bytes, 8, 1));
+            throw new UsbTransportException("USB-CCID error: status " + status + " error code: " + Hex.toHexString(bytes, 8, 1));
         }
     }
 
     private boolean isXfrBlockNotReady(byte[] bytes) {
         return getStatus(bytes) == 2;
-    }
-
-    public UsbDevice getUsbDevice() {
-        return mUsbDevice;
     }
 
     @Override

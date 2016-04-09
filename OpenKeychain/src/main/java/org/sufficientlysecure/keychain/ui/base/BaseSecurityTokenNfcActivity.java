@@ -40,11 +40,12 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.smartcard.CardException;
 import org.sufficientlysecure.keychain.smartcard.NfcTransport;
 import org.sufficientlysecure.keychain.smartcard.OnDiscoveredUsbDeviceListener;
 import org.sufficientlysecure.keychain.smartcard.SmartcardDevice;
 import org.sufficientlysecure.keychain.smartcard.Transport;
-import org.sufficientlysecure.keychain.smartcard.UsbConnectionManager;
+import org.sufficientlysecure.keychain.smartcard.UsbConnectionDispatcher;
 import org.sufficientlysecure.keychain.smartcard.UsbTransport;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
@@ -72,7 +73,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
     protected SmartcardDevice mSmartcardDevice = SmartcardDevice.getInstance();
     protected TagDispatcher mTagDispatcher;
-    protected UsbConnectionManager mUsbDispatcher;
+    protected UsbConnectionDispatcher mUsbDispatcher;
     private boolean mTagHandlingEnabled;
 
     private byte[] mSmartcardFingerprints;
@@ -201,7 +202,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         super.onCreate(savedInstanceState);
 
         mTagDispatcher = TagDispatcher.get(this, this, false, false, true, false);
-        mUsbDispatcher = new UsbConnectionManager(this, this);
+        mUsbDispatcher = new UsbConnectionDispatcher(this, this);
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
@@ -419,20 +420,6 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
         public IsoDepNotSupportedException(String detailMessage) {
             super(detailMessage);
-        }
-
-    }
-
-    public class CardException extends IOException {
-        private short mResponseCode;
-
-        public CardException(String detailMessage, short responseCode) {
-            super(detailMessage);
-            mResponseCode = responseCode;
-        }
-
-        public short getResponseCode() {
-            return mResponseCode;
         }
 
     }
