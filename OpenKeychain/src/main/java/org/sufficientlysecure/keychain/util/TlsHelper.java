@@ -19,8 +19,6 @@ package org.sufficientlysecure.keychain.util;
 
 import android.content.res.AssetManager;
 
-
-import okhttp3.OkHttpClient;
 import org.sufficientlysecure.keychain.Constants;
 
 import java.io.ByteArrayInputStream;
@@ -93,7 +91,6 @@ public class TlsHelper {
      * Therefore a builder that is pinned this way should be used to only make requests to URLs with passed certificate.
      *
      * @param certificate certificate to pin
-     * @param builder      OkHttpBuilder to enforce pinning on
      * @throws TlsHelperException
      * @throws IOException
      */
@@ -125,7 +122,6 @@ public class TlsHelper {
             context.init(null, tmf.getTrustManagers(), null);
 
             return context.getSocketFactory();
-            //builder.sslSocketFactory(context.getSocketFactory());
         } catch (CertificateException | KeyStoreException | KeyManagementException | NoSuchAlgorithmException e) {
             throw new TlsHelperException(e);
         }

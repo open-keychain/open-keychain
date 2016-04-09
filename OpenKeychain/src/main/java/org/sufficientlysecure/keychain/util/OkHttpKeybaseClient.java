@@ -24,6 +24,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.OkUrlFactory;
 import okhttp3.Request;
 import okhttp3.Response;
+
 import org.sufficientlysecure.keychain.Constants;
 
 import java.io.IOException;
@@ -35,8 +36,6 @@ import java.net.URLConnection;
  * Wrapper for Keybase Lib
  */
 public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
-
-
 
     @Override
     public Response getUrlResponse(URL url, Proxy proxy, boolean isKeybase) throws IOException {
@@ -58,7 +57,7 @@ public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
         Request request = new Request.Builder()
                 .url(url).build();
         okhttp3.Response okResponse = client.newCall(request).execute();
-        return new Response(okResponse.body().byteStream(),okResponse.code(),okResponse.message(), okResponse.headers().toMultimap());
+        return new Response(okResponse.body().byteStream(), okResponse.code(), okResponse.message(), okResponse.headers().toMultimap());
     }
 
     @Override

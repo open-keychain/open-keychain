@@ -356,7 +356,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                     OkHttpClient client = OkHttpClientFactory.getPinnedClient(newKeyserver.toURL(), proxy);
 
                     if (onlyTrustedKeyserver
-                            && TlsHelper.getPinnedSslSocketFactory(newKeyserver.toURL())==null) {
+                            && TlsHelper.getPinnedSslSocketFactory(newKeyserver.toURL()) == null) {
                         Log.w(Constants.TAG, "No pinned certificate for this host in OpenKeychain's assets.");
                         reason = FailureReason.NO_PINNED_CERTIFICATE;
                         return reason;

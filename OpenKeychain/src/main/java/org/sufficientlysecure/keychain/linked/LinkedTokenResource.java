@@ -241,11 +241,11 @@ public abstract class LinkedTokenResource extends LinkedResource {
     public static String getResponseBody(Request request, String... pins)
             throws IOException, HttpStatusException {
 
-        Log.d("Connection to: "+request.url().url().getHost(),"");
+        Log.d("Connection to: " + request.url().url().getHost(), "");
         OkHttpClient client;
-        if(pins !=null){
-            client = OkHttpClientFactory.getPinnedSimpleClient(getCertificatePinner(request.url().url().getHost(),pins));
-        }else{
+        if (pins != null) {
+            client = OkHttpClientFactory.getPinnedSimpleClient(getCertificatePinner(request.url().url().getHost(), pins));
+        } else {
             client = OkHttpClientFactory.getSimpleClient();
         }
 
