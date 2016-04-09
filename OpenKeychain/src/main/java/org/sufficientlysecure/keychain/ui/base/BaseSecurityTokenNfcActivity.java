@@ -42,10 +42,9 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.smartcard.CardException;
 import org.sufficientlysecure.keychain.smartcard.NfcTransport;
-import org.sufficientlysecure.keychain.smartcard.OnDiscoveredUsbDeviceListener;
 import org.sufficientlysecure.keychain.smartcard.SmartcardDevice;
 import org.sufficientlysecure.keychain.smartcard.Transport;
-import org.sufficientlysecure.keychain.smartcard.UsbConnectionDispatcher;
+import org.sufficientlysecure.keychain.util.UsbConnectionDispatcher;
 import org.sufficientlysecure.keychain.smartcard.UsbTransport;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
@@ -64,7 +63,7 @@ import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
 
 public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
-        implements OnDiscoveredTagListener, OnDiscoveredUsbDeviceListener {
+        implements OnDiscoveredTagListener, UsbConnectionDispatcher.OnDiscoveredUsbDeviceListener {
     public static final int REQUEST_CODE_PIN = 1;
 
     public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";

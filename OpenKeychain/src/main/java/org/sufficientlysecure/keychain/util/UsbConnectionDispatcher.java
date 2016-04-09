@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.smartcard;
+package org.sufficientlysecure.keychain.util;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -50,5 +50,9 @@ public class UsbConnectionDispatcher {
 
     public void onStop() {
         mActivity.unregisterReceiver(mUsbReceiver);
+    }
+
+    public interface OnDiscoveredUsbDeviceListener {
+        void usbDeviceDiscovered(UsbDevice usbDevice);
     }
 }
