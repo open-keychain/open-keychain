@@ -130,9 +130,13 @@ public class UsbTransport implements Transport {
      */
     @Override
     public void release() {
-        mConnection.releaseInterface(mUsbInterface);
-        mConnection.close();
-        mConnection = null;
+        if (mConnection != null) {
+            mConnection.releaseInterface(mUsbInterface);
+            mConnection.close();
+            mConnection = null;
+        }
+
+        Log.d(Constants.TAG, "Usb transport disconnected");
     }
 
     /**
@@ -291,5 +295,9 @@ public class UsbTransport implements Transport {
     @Override
     public int hashCode() {
         return mUsbDevice != null ? mUsbDevice.hashCode() : 0;
+    }
+
+    public UsbDevice getUsbDevice() {
+        return mUsbDevice;
     }
 }

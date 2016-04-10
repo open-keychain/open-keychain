@@ -24,7 +24,6 @@ package org.sufficientlysecure.keychain.ui.base;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -144,13 +143,12 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         smartcardDiscovered(new NfcTransport(tag));
     }
 
-    public void usbDeviceDiscovered(final UsbDevice device) {
+    public void usbDeviceDiscovered(final UsbTransport transport) {
         // Actual USB operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled)
             return;
 
-        UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
-        smartcardDiscovered(new UsbTransport(device, usbManager));
+        smartcardDiscovered(transport);
     }
 
     public void smartcardDiscovered(final Transport transport) {
@@ -481,8 +479,6 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
      * persistent connections
      */
     protected void checkDeviceConnection() {
-        if (mSmartcardDevice.isConnected() && mSmartcardDevice.isPersistentConnectionAllowed()) {
-            this.smartcardDiscovered(mSmartcardDevice.getTransport());
-        }
+        mUsbDispatcher.rescanDevices();
     }
 }

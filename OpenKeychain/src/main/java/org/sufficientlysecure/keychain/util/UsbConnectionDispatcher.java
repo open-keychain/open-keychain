@@ -26,13 +26,15 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.smartcard.UsbTransport;
 import org.sufficientlysecure.keychain.ui.UsbEventReceiverActivity;
-import org.sufficientlysecure.keychain.util.Log;
 
 public class UsbConnectionDispatcher {
     private Activity mActivity;
 
     private OnDiscoveredUsbDeviceListener mListener;
+    private UsbTransport mLastUsedUsbTransport;
+    private UsbManager mUsbManager;
     /**
      * Receives broadcast when a supported USB device get permission.
      */
@@ -41,13 +43,27 @@ public class UsbConnectionDispatcher {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            if (UsbEventReceiverActivity.ACTION_USB_PERMISSION.equals(action)) {
-                UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED,
-                        false);
-                if (permission) {
-                    Log.d(Constants.TAG, "Got permission for " + usbDevice.getDeviceName());
-                    mListener.usbDeviceDiscovered(usbDevice);
+            switch (action) {
+                case UsbEventReceiverActivity.ACTION_USB_PERMISSION: {
+                    UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED,
+                            false);
+                    if (permission) {
+                        Log.d(Constants.TAG, "Got permission for " + usbDevice.getDeviceName());
+
+                        mLastUsedUsbTransport = new UsbTransport(usbDevice, mUsbManager);
+                        mListener.usbDeviceDiscovered(mLastUsedUsbTransport);
+                    }
+                    break;
+                }
+                case UsbManager.ACTION_USB_DEVICE_DETACHED: {
+                    UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+
+                    if (mLastUsedUsbTransport != null && mLastUsedUsbTransport.getUsbDevice().equals(usbDevice)) {
+                        mLastUsedUsbTransport.release();
+                        mLastUsedUsbTransport = null;
+                    }
+                    break;
                 }
             }
         }
@@ -56,11 +72,13 @@ public class UsbConnectionDispatcher {
     public UsbConnectionDispatcher(final Activity activity, final OnDiscoveredUsbDeviceListener listener) {
         this.mActivity = activity;
         this.mListener = listener;
+        this.mUsbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
     }
 
     public void onStart() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(UsbEventReceiverActivity.ACTION_USB_PERMISSION);
+        intentFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 
         mActivity.registerReceiver(mUsbReceiver, intentFilter);
     }
@@ -69,7 +87,24 @@ public class UsbConnectionDispatcher {
         mActivity.unregisterReceiver(mUsbReceiver);
     }
 
+    /**
+     * Rescans devices and triggers {@link OnDiscoveredUsbDeviceListener}
+     */
+    public void rescanDevices() {
+        // Note: we don't check devices VID/PID because
+        // we check for permisssion instead.
+        // We should have permission only for matching devices
+        for (UsbDevice device : mUsbManager.getDeviceList().values()) {
+            if (mUsbManager.hasPermission(device)) {
+                if (mListener != null) {
+                    mListener.usbDeviceDiscovered(new UsbTransport(device, mUsbManager));
+                }
+                break;
+            }
+        }
+    }
+
     public interface OnDiscoveredUsbDeviceListener {
-        void usbDeviceDiscovered(UsbDevice usbDevice);
+        void usbDeviceDiscovered(UsbTransport usbTransport);
     }
 }
