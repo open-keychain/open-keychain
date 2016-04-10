@@ -81,7 +81,7 @@ public class UsbTransport implements Transport {
         do {
             bytes = receive();
         } while (isDataBlockNotReady(bytes));
-        checkDataBlockResponse(receive());
+        checkDataBlockResponse(bytes);
     }
 
     /**
