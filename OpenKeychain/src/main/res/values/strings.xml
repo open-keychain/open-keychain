@@ -1553,7 +1553,7 @@
     <string name="snack_security_token_import">"Import"</string>
     <string name="button_bind_key">"Bind Key"</string>
     <string name="security_token_serial_no">"Serial No: %s"</string>
-    <string name="security_token_key_holder">"Key holder: "</string>
+    <string name="security_token_key_holder">"Key holder: %s"</string>
     <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
     <string name="security_token_status_bound">"Security Token matches and is bound to key"</string>
     <string name="security_token_status_unbound">"Security Token matches, can be bound to key"</string>
