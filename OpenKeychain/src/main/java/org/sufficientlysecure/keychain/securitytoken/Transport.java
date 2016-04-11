@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.smartcard;
+package org.sufficientlysecure.keychain.securitytoken;
 
 import java.io.IOException;
 

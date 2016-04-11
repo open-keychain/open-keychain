@@ -47,9 +47,9 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
     public static final String EXTRA_SECURITY_TOKEN_PIN = "yubi_key_pin";
     public static final String EXTRA_SECURITY_TOKEN_ADMIN_PIN = "yubi_key_admin_pin";
 
-    public static final String EXTRA_NFC_USER_ID = "nfc_user_id";
-    public static final String EXTRA_NFC_AID = "nfc_aid";
-    public static final String EXTRA_NFC_FINGERPRINTS = "nfc_fingerprints";
+    public static final String EXTRA_SECURITY_TOKEN_USER_ID = "nfc_user_id";
+    public static final String EXTRA_SECURITY_TOKEN_AID = "nfc_aid";
+    public static final String EXTRA_SECURITY_FINGERPRINTS = "nfc_fingerprints";
 
     public static final String FRAGMENT_TAG = "currentFragment";
 
@@ -66,8 +66,8 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
 
 
     byte[] mScannedFingerprints;
-    byte[] mNfcAid;
-    String mNfcUserId;
+    byte[] mSecurityTokenAid;
+    String mSecurityTokenUserId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,10 +107,10 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
             mFirstTime = intent.getBooleanExtra(EXTRA_FIRST_TIME, false);
             mCreateSecurityToken = intent.getBooleanExtra(EXTRA_CREATE_SECURITY_TOKEN, false);
 
-            if (intent.hasExtra(EXTRA_NFC_FINGERPRINTS)) {
-                byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_NFC_FINGERPRINTS);
-                String nfcUserId = intent.getStringExtra(EXTRA_NFC_USER_ID);
-                byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
+            if (intent.hasExtra(EXTRA_SECURITY_FINGERPRINTS)) {
+                byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_SECURITY_FINGERPRINTS);
+                String nfcUserId = intent.getStringExtra(EXTRA_SECURITY_TOKEN_USER_ID);
+                byte[] nfcAid = intent.getByteArrayExtra(EXTRA_SECURITY_TOKEN_AID);
 
                 if (containsKeys(nfcFingerprints)) {
                     Fragment frag = CreateSecurityTokenImportResetFragment.newInstance(
@@ -143,19 +143,19 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
     }
 
     @Override
-    protected void doSmartcardInBackground() throws IOException {
+    protected void doSecurityTokenInBackground() throws IOException {
         if (mCurrentFragment instanceof NfcListenerFragment) {
             ((NfcListenerFragment) mCurrentFragment).doNfcInBackground();
             return;
         }
 
-        mScannedFingerprints = mSmartcardDevice.getFingerprints();
-        mNfcAid = mSmartcardDevice.getAid();
-        mNfcUserId = mSmartcardDevice.getUserId();
+        mScannedFingerprints = mSecurityTokenHelper.getFingerprints();
+        mSecurityTokenAid = mSecurityTokenHelper.getAid();
+        mSecurityTokenUserId = mSecurityTokenHelper.getUserId();
     }
 
     @Override
-    protected void onSmartcardPostExecute() {
+    protected void onSecurityTokenPostExecute() {
         if (mCurrentFragment instanceof NfcListenerFragment) {
             ((NfcListenerFragment) mCurrentFragment).onNfcPostExecute();
             return;
@@ -169,15 +169,15 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
 
                 Intent intent = new Intent(this, ViewKeyActivity.class);
                 intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-                intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mNfcAid);
-                intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mNfcUserId);
+                intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
+                intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
                 intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mScannedFingerprints);
                 startActivity(intent);
                 finish();
 
             } catch (PgpKeyNotFoundException e) {
                 Fragment frag = CreateSecurityTokenImportResetFragment.newInstance(
-                        mScannedFingerprints, mNfcAid, mNfcUserId);
+                        mScannedFingerprints, mSecurityTokenAid, mSecurityTokenUserId);
                 loadFragment(frag, FragAction.TO_RIGHT);
             }
         } else {

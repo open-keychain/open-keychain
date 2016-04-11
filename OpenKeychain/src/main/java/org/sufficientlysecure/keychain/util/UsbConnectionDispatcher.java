@@ -26,7 +26,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.smartcard.UsbTransport;
+import org.sufficientlysecure.keychain.securitytoken.UsbTransport;
 import org.sufficientlysecure.keychain.ui.UsbEventReceiverActivity;
 
 public class UsbConnectionDispatcher {

@@ -20,7 +20,7 @@
  */
 
 
-package org.sufficientlysecure.keychain.smartcard;
+package org.sufficientlysecure.keychain.securitytoken;
 
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.util.Arrays;
@@ -41,10 +41,10 @@ import nordpol.Apdu;
 
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
- * NFC devices.
+ * devices.
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
-public class SmartcardDevice {
+public class SecurityTokenHelper {
     // Fidesmo constants
     private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
 
@@ -58,11 +58,11 @@ public class SmartcardDevice {
     private boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
     private boolean mPw3Validated;
 
-    protected SmartcardDevice() {
+    protected SecurityTokenHelper() {
     }
 
-    public static SmartcardDevice getInstance() {
-        return LazyHolder.mSmartcardDevice;
+    public static SecurityTokenHelper getInstance() {
+        return LazyHolder.SECURITY_TOKEN_HELPER;
     }
 
     private static String getHex(byte[] raw) {
@@ -750,6 +750,6 @@ public class SmartcardDevice {
     }
 
     private static class LazyHolder {
-        private static final SmartcardDevice mSmartcardDevice = new SmartcardDevice();
+        private static final SecurityTokenHelper SECURITY_TOKEN_HELPER = new SecurityTokenHelper();
     }
 }

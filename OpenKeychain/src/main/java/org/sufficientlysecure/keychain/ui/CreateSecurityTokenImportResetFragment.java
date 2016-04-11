@@ -249,9 +249,9 @@ public class CreateSecurityTokenImportResetFragment
     @Override
     public void doNfcInBackground() throws IOException {
 
-        mTokenFingerprints = mCreateKeyActivity.getSmartcardDevice().getFingerprints();
-        mTokenAid = mCreateKeyActivity.getSmartcardDevice().getAid();
-        mTokenUserId = mCreateKeyActivity.getSmartcardDevice().getUserId();
+        mTokenFingerprints = mCreateKeyActivity.getSecurityTokenHelper().getFingerprints();
+        mTokenAid = mCreateKeyActivity.getSecurityTokenHelper().getAid();
+        mTokenUserId = mCreateKeyActivity.getSecurityTokenHelper().getUserId();
 
         byte[] fp = new byte[20];
         ByteBuffer.wrap(fp).put(mTokenFingerprints, 0, 20);

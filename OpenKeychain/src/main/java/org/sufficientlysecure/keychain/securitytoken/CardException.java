@@ -15,23 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.smartcard;
+package org.sufficientlysecure.keychain.securitytoken;
 
 import java.io.IOException;
 
-public class UsbTransportException extends IOException {
-    public UsbTransportException() {
-    }
+public class CardException extends IOException {
+    private short mResponseCode;
 
-    public UsbTransportException(final String detailMessage) {
+    public CardException(String detailMessage, short responseCode) {
         super(detailMessage);
+        mResponseCode = responseCode;
     }
 
-    public UsbTransportException(final String message, final Throwable cause) {
-        super(message, cause);
+    public short getResponseCode() {
+        return mResponseCode;
     }
 
-    public UsbTransportException(final Throwable cause) {
-        super(cause);
-    }
 }
