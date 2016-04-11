@@ -168,7 +168,7 @@ public class UsbTransport implements Transport {
         mUsbInterface = getSmartCardInterface(mUsbDevice);
         if (mUsbInterface == null) {
             // Shouldn't happen as we whitelist only class 11 devices
-            throw new UsbTransportException("USB error: device doesn't have class 11 interface");
+            throw new UsbTransportException("USB error - device doesn't have class 11 interface");
         }
 
         final Pair<UsbEndpoint, UsbEndpoint> ioEndpoints = getIoEndpoints(mUsbInterface);
@@ -176,16 +176,16 @@ public class UsbTransport implements Transport {
         mBulkOut = ioEndpoints.second;
 
         if (mBulkIn == null || mBulkOut == null) {
-            throw new UsbTransportException("USB error: invalid class 11 interface");
+            throw new UsbTransportException("USB error - invalid class 11 interface");
         }
 
         mConnection = mUsbManager.openDevice(mUsbDevice);
         if (mConnection == null) {
-            throw new UsbTransportException("USB error: failed to connect to device");
+            throw new UsbTransportException("USB error - failed to connect to device");
         }
 
         if (!mConnection.claimInterface(mUsbInterface, true)) {
-            throw new UsbTransportException("USB error: failed to claim interface");
+            throw new UsbTransportException("USB error - failed to claim interface");
         }
 
         iccPowerSet(true);
@@ -244,11 +244,11 @@ public class UsbTransport implements Transport {
         do {
             int res = mConnection.bulkTransfer(mBulkIn, buffer, buffer.length, TIMEOUT);
             if (res < 0) {
-                throw new UsbTransportException("USB error: failed to receive response " + res);
+                throw new UsbTransportException("USB error - failed to receive response " + res);
             }
             if (result == null) {
                 if (res < 10) {
-                    throw new UsbTransportException("USB-CCID error: failed to receive CCID header");
+                    throw new UsbTransportException("USB-CCID error - failed to receive CCID header");
                 }
                 totalBytes = ByteBuffer.wrap(buffer, 1, 4).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get() + 10;
                 result = new byte[totalBytes];
@@ -263,7 +263,7 @@ public class UsbTransport implements Transport {
     private void sendRaw(final byte[] data) throws UsbTransportException {
         final int tr1 = mConnection.bulkTransfer(mBulkOut, data, data.length, TIMEOUT);
         if (tr1 != data.length) {
-            throw new UsbTransportException("USB error: failed to transmit data " + tr1);
+            throw new UsbTransportException("USB error - failed to transmit data " + tr1);
         }
     }
 
@@ -274,7 +274,7 @@ public class UsbTransport implements Transport {
     private void checkDataBlockResponse(byte[] bytes) throws UsbTransportException {
         final byte status = getStatus(bytes);
         if (status != 0) {
-            throw new UsbTransportException("USB-CCID error: status " + status + " error code: " + Hex.toHexString(bytes, 8, 1));
+            throw new UsbTransportException("USB-CCID error - status " + status + " error code: " + Hex.toHexString(bytes, 8, 1));
         }
     }
 
