@@ -46,8 +46,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
-import com.github.pinball83.maskededittext.MaskedEditText;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -60,7 +58,6 @@ import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
-import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -157,7 +154,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
     public static class PassphraseDialogFragment extends DialogFragment implements TextView.OnEditorActionListener {
         private EditText mPassphraseEditText;
         private TextView mPassphraseText;
-        private MaskedEditText mBackupCodeEditText;
+        private EditText[] mBackupCodeEditText;
 
         private boolean mIsCancelled = false;
         private RequiredInputParcel mRequiredInput;
@@ -184,15 +181,15 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 View view = inflater.inflate(R.layout.passphrase_dialog_backup_code, null);
                 alert.setView(view);
 
-                mBackupCodeEditText = (MaskedEditText) view.findViewById(R.id.backup_code);
-                // NOTE: order of these method calls matter, see setupAutomaticLinebreak()
-                mBackupCodeEditText.setInputType(
-                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-                setupAutomaticLinebreak(mBackupCodeEditText);
-                mBackupCodeEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
-                mBackupCodeEditText.setOnEditorActionListener(this);
+                mBackupCodeEditText = new EditText[6];
+                mBackupCodeEditText[0] = (EditText) view.findViewById(R.id.backup_code_1);
+                mBackupCodeEditText[1] = (EditText) view.findViewById(R.id.backup_code_2);
+                mBackupCodeEditText[2] = (EditText) view.findViewById(R.id.backup_code_3);
+                mBackupCodeEditText[3] = (EditText) view.findViewById(R.id.backup_code_4);
+                mBackupCodeEditText[4] = (EditText) view.findViewById(R.id.backup_code_5);
+                mBackupCodeEditText[5] = (EditText) view.findViewById(R.id.backup_code_6);
 
-                openKeyboard(mBackupCodeEditText);
+                setupEditTextFocusNext(mBackupCodeEditText);
 
                 AlertDialog dialog = alert.create();
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE,
@@ -307,11 +304,11 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         /**
          * Hack to open keyboard.
-         *
          * This is the only method that I found to work across all Android versions
          * http://turbomanage.wordpress.com/2012/05/02/show-soft-keyboard-automatically-when-edittext-receives-focus/
-         * Notes: * onCreateView can't be used because we want to add buttons to the dialog
-         *        * opening in onActivityCreated does not work on Android 4.4
+         * Notes:
+         * * onCreateView can't be used because we want to add buttons to the dialog
+         * * opening in onActivityCreated does not work on Android 4.4
          */
         private void openKeyboard(final TextView textView) {
             textView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -333,17 +330,34 @@ public class PassphraseDialogActivity extends FragmentActivity {
             textView.requestFocus();
         }
 
-        /**
-         * Automatic line break with max 6 lines for smaller displays
-         * <p/>
-         * NOTE: I was not able to get this behaviour using XML!
-         * Looks like the order of these method calls matter, see http://stackoverflow.com/a/11171307
-         */
-        private void setupAutomaticLinebreak(TextView textview) {
-            textview.setSingleLine(true);
-            textview.setMaxLines(6);
-            textview.setHorizontallyScrolling(false);
+        private static void setupEditTextFocusNext(final EditText[] backupCodes) {
+            for (int i = 0; i < backupCodes.length - 1; i++) {
+
+                final int next = i + 1;
+
+                backupCodes[i].addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        boolean inserting = before < count;
+                        boolean cursorAtEnd = (start + count) == 4;
+
+                        if (inserting && cursorAtEnd) {
+                            backupCodes[next].requestFocus();
+                        }
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                    }
+                });
+
+            }
         }
+
 
         @Override
         public void onStart() {
@@ -356,8 +370,17 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 public void onClick(View v) {
 
                     if (mRequiredInput.mType == RequiredInputType.BACKUP_CODE) {
-                        Passphrase passphrase =
-                                new Passphrase(mBackupCodeEditText.getText().toString());
+                        StringBuilder backupCodeInput = new StringBuilder(26);
+                        for (EditText editText : mBackupCodeEditText) {
+                            if (editText.getText().length() < 4) {
+                                return;
+                            }
+                            backupCodeInput.append(editText.getText());
+                            backupCodeInput.append('-');
+                        }
+                        backupCodeInput.deleteCharAt(backupCodeInput.length() - 1);
+
+                        Passphrase passphrase = new Passphrase(backupCodeInput.toString());
                         finishCaching(passphrase);
 
                         return;
