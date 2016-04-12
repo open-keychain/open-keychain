@@ -79,7 +79,7 @@ dependencies {
     compile project(':extern:bouncycastle:pg')
     compile project(':extern:bouncycastle:prov')
     compile project(':extern:minidns')
-    compile project(':extern:KeybaseLib:Lib')
+    compile project(':KeybaseLib')
     compile project(':safeslinger-exchange')
 }
 
