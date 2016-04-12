@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:2.0.0'
         classpath files('gradle-witness.jar')
         // bintray dependency to satisfy dependency of openpgp-api lib
         classpath 'com.novoda:bintray-release:0.2.7'
@@ -27,7 +27,7 @@ allprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.5'
+    gradleVersion = '2.12'
 }
 
 subprojects {

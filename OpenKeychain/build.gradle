@@ -73,14 +73,14 @@ dependencies {
     compile 'com.fidesmo:nordpol-android:0.1.18'
 
     // libs as submodules
-    compile project(':extern:openpgp-api-lib:openpgp-api')
-    compile project(':extern:openkeychain-api-lib:openkeychain-intents')
+    compile project(':openpgp-api-lib')
+    compile project(':openkeychain-api-lib')
     compile project(':extern:bouncycastle:core')
     compile project(':extern:bouncycastle:pg')
     compile project(':extern:bouncycastle:prov')
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
-    compile project(':extern:safeslinger-exchange:safeslinger-exchange')
+    compile project(':safeslinger-exchange')
 }
 
 // Output of ./gradlew -q calculateChecksums
