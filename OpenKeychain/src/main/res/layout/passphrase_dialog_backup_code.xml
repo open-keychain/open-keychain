@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -26,22 +25,168 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
 
-            <com.github.pinball83.maskededittext.MaskedEditText
-                android:id="@+id/backup_code"
-                style="@style/BackupCodeTextStyle"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:textStyle="bold"
-                android:typeface="monospace"
-                app:mask="****-****-****-****-****-****"
-                app:maskIconColor="@color/colorPrimary"
-                app:notMaskedSymbol="*"
-                tools:ignore="SpUsage" />
+                android:layout_gravity="right"
+                android:orientation="horizontal">
+
+                <!--
+                The most reliable way to correctly size these I found was to put a transparent hint on them.
+                 Theoretically, this should be what the android:ems attribute is for - didn't work for me.
+                -->
+                <EditText
+                    android:id="@+id/backup_code_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="4"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <EditText
+                    android:id="@+id/backup_code_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="4"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <EditText
+                    android:id="@+id/backup_code_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="4"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <EditText
+                    android:id="@+id/backup_code_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="4"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <EditText
+                    android:id="@+id/backup_code_5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="4"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <EditText
+                    android:id="@+id/backup_code_6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="4"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>

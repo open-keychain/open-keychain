@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -57,37 +56,330 @@
         android:outAnimation="@anim/fade_out"
         custom:initialView="1">
 
-        <TextView
-            android:id="@+id/backup_code_display"
-            style="@android:style/Widget.EditText"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:clickable="false"
-            android:focusable="false"
-            android:singleLine="true"
-            android:textSize="18dp"
-            android:textStyle="bold"
-            android:typeface="monospace"
-            tools:ignore="SpUsage"
-            tools:text="AAAA-AAAA-AAAA-AAAA-AAAA-AAAA" />
+            android:orientation="vertical">
 
-        <com.github.pinball83.maskededittext.MaskedEditText
-            android:id="@+id/backup_code_input"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/backup_code_display_1"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="SpUsage"
+                    tools:text="ABCD" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:id="@+id/backup_code_display_2"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="SpUsage"
+                    tools:text="EFGH" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:id="@+id/backup_code_display_3"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="SpUsage"
+                    tools:text="IJKL" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:id="@+id/backup_code_display_4"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:singleLine="true"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="SpUsage"
+                    tools:text="MNOP" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:id="@+id/backup_code_display_5"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:singleLine="true"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="SpUsage"
+                    tools:text="QRST" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:id="@+id/backup_code_display_6"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:singleLine="true"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="SpUsage"
+                    tools:text="UVWX" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:textSize="18dp"
-            android:textStyle="bold"
-            android:typeface="monospace"
-            app:mask="****-****-****-****-****-****"
-            app:maskIconColor="@color/colorPrimary"
-            app:notMaskedSymbol="*"
-            tools:ignore="SpUsage" />
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:orientation="horizontal">
+
+                <!--
+                The most reliable way to correctly size these I found was to put a transparent hint on them.
+                 Theoretically, this should be what the android:ems attribute is for - didn't work for me.
+                -->
+                <EditText
+                    android:id="@+id/backup_code_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="4"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <EditText
+                    android:id="@+id/backup_code_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="6"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <EditText
+                    android:id="@+id/backup_code_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="6"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <EditText
+                    android:id="@+id/backup_code_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="6"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <EditText
+                    android:id="@+id/backup_code_5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="6"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="-"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <EditText
+                    android:id="@+id/backup_code_6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="ABCD"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:maxLength="6"
+                    android:singleLine="true"
+                    android:textColorHint="@android:color/transparent"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:typeface="monospace"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+            </LinearLayout>
+        </LinearLayout>
 
     </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
