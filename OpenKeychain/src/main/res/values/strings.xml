@@ -1457,6 +1457,11 @@
     <string name="passp_cache_notif_clear">"Clear Passwords"</string>
     <string name="passp_cache_notif_pwd">"Password"</string>
 
+    <!-- Backup notification reminder -->
+    <string name="backup_reminder_notif_touch_to_backup">"Touch to backup your key."</string>
+    <string name="backup_reminder_notif_title">"Backup your key."</string>
+    <string name="backup_reminder_notif_backup_now">"Backup Now."</string>
+
     <!-- Keyserver sync -->
     <string name="keyserver_sync_orbot_notif_title">"Sync From Servers requires Orbot"</string>
     <string name="keyserver_sync_orbot_notif_msg">"Tap to start orbot"</string>

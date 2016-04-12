@@ -53,7 +53,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.github.pinball83.maskededittext.MaskedEditText;
@@ -63,6 +62,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
+import org.sufficientlysecure.keychain.util.BackupNotificationUtil;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
@@ -211,6 +211,12 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 }
 
                 popBackStackNoAction();
+
+                if (mMasterKeyIds == null) {
+                    BackupNotificationUtil.removeAllBackupReminders(getContext());
+                } else {
+                    BackupNotificationUtil.removeBackupReminder(getContext(), mMasterKeyIds[0]);
+                }
 
                 break;
             }

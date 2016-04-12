@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.util.BackupNotificationUtil;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
@@ -327,6 +328,11 @@ public class CreateKeyFinalFragment extends Fragment {
 
             @Override
             public void onCryptoOperationSuccess(EditKeyResult result) {
+
+                if (result != null && getContext() != null) {
+                    BackupNotificationUtil.setBackupReminder(getContext(), result.mMasterKeyId,
+                            mNameEdit.getText().toString(), mEmailEdit.getText().toString());
+                }
 
                 if (createSecurityToken) {
                     moveToCard(result);
