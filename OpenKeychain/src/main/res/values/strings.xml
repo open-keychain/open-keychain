@@ -367,6 +367,7 @@
     <string name="error_file_delete_failed">"have not been deleted. Delete them manually!"</string>
     <string name="error_file_added_already">%s has already been added.</string>
     <string name="error_file_not_found">"file not found"</string>
+    <string name="error_bad_data">"Bad data!"</string>
     <string name="error_no_secret_key_found">"no suitable secret key found"</string>
     <string name="error_external_storage_not_ready">"external storage not ready"</string>
     <string name="error_key_size_minimum512bit">"key size must be at least 512bit"</string>
