@@ -44,8 +44,18 @@
             android:minHeight="56dip"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical" />
+
+        <ImageButton
+            android:id="@+id/cloud_import_server_search"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:src="@drawable/ic_search_grey_24dp"
+            android:layout_gravity="center_vertical"
+            android:background="?android:selectableItemBackground" />
 
     </LinearLayout>
 

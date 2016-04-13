@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +52,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
     private KeySpinner mSignKeySpinner;
     private EncryptKeyCompletionView mEncryptKeyView;
+    private String mQuery;
 
     public static final String ARG_SINGATURE_KEY_ID = "signature_key_id";
     public static final String ARG_ENCRYPTION_KEY_IDS = "encryption_key_ids";
@@ -106,6 +109,25 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                 if (vEncryptionIcon.getDisplayedChild() != child) {
                     vEncryptionIcon.setDisplayedChild(child);
                 }
+            }
+        });
+
+        // link to search
+        View searchButton = view.findViewById(R.id.cloud_import_server_search);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity activity = getActivity();
+                if (activity == null) {
+                    return;
+                }
+
+                mQuery = mEncryptKeyView.getText().toString();
+
+                Intent searchIntent = new Intent(activity, ImportKeysActivity.class);
+                searchIntent.putExtra(ImportKeysActivity.EXTRA_QUERY, mQuery);
+                searchIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
+                startActivity(searchIntent);
             }
         });
 
