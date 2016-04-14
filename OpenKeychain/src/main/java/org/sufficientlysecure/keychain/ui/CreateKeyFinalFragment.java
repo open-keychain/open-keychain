@@ -57,6 +57,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 public class CreateKeyFinalFragment extends Fragment {
 
@@ -80,6 +81,10 @@ public class CreateKeyFinalFragment extends Fragment {
     private EditKeyResult mQueuedSaveKeyResult;
     private OperationResult mQueuedFinishResult;
     private EditKeyResult mQueuedDisplayResult;
+
+    // NOTE: Do not use more complicated pattern like defined in android.util.Patterns.EMAIL_ADDRESS
+    // EMAIL_ADDRESS fails for mails with umlauts for example
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\S]+@[\\S]+\\.[a-z]+$");
 
     public static CreateKeyFinalFragment newInstance() {
         CreateKeyFinalFragment frag = new CreateKeyFinalFragment();
@@ -106,7 +111,11 @@ public class CreateKeyFinalFragment extends Fragment {
         CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
 
         // set values
-        mNameEdit.setText(createKeyActivity.mName);
+        if (createKeyActivity.mName != null) {
+            mNameEdit.setText(createKeyActivity.mName);
+        } else {
+            mNameEdit.setText(getString(R.string.user_id_no_name));
+        }
         if (createKeyActivity.mAdditionalEmails != null && createKeyActivity.mAdditionalEmails.size() > 0) {
             String emailText = createKeyActivity.mEmail + ", ";
             Iterator<?> it = createKeyActivity.mAdditionalEmails.iterator();
@@ -121,6 +130,8 @@ public class CreateKeyFinalFragment extends Fragment {
         } else {
             mEmailEdit.setText(createKeyActivity.mEmail);
         }
+
+        checkEmailValidity();
 
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -307,6 +318,31 @@ public class CreateKeyFinalFragment extends Fragment {
         }
 
         return saveKeyringParcel;
+    }
+
+    private void checkEmailValidity() {
+        CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
+
+        boolean emailsValid = true;
+        if (!EMAIL_PATTERN.matcher(createKeyActivity.mEmail).matches()) {
+            emailsValid = false;
+        }
+        if (createKeyActivity.mAdditionalEmails != null && createKeyActivity.mAdditionalEmails.size() > 0) {
+            for (Iterator<?> it = createKeyActivity.mAdditionalEmails.iterator(); it.hasNext(); ) {
+                if (!EMAIL_PATTERN.matcher(it.next().toString()).matches()) {
+                    emailsValid = false;
+                }
+            }
+        }
+        if (!emailsValid) {
+            mEmailEdit.setError(getString(R.string.create_key_final_email_valid_warning));
+            mEmailEdit.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mNameEdit.requestFocus(); // Workaround to remove focus from email
+                }
+            });
+        }
     }
 
     private void createKey() {

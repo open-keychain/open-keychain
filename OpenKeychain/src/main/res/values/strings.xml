@@ -768,6 +768,7 @@
     <string name="create_key_passphrases_not_equal">"Passwords do not match"</string>
     <string name="create_key_final_text">"You entered the following identity:"</string>
     <string name="create_key_final_robot_text">"Creating a key may take a while, have a cup of coffee in the meantime…"</string>
+    <string name="create_key_final_email_valid_warning">"Many applications work better when provided with keys only containing valid email addresses"</string>
     <string name="create_key_rsa">"(3 subkeys, RSA, 4096 bit)"</string>
     <string name="create_key_custom">"(custom key configuration)"</string>
     <string name="create_key_name_text">"Choose a name associated with this key. This can be a full name, e.g., 'John Doe', or a nickname, e.g., 'Johnny'."</string>
@@ -778,7 +779,7 @@
     <string name="create_key_add_email">"Add email address"</string>
     <string name="create_key_add_email_text">"Additional email addresses are also associated to this key and can be used for secure communication."</string>
     <string name="create_key_email_already_exists_text">"Email address has already been added"</string>
-    <string name="create_key_email_invalid_email">"Email address format is invalid"</string>
+    <string name="create_key_email_empty_email">"Email address can not be empty"</string>
     <string name="create_key_yubi_key_pin_text">"Please choose a PIN with 6 numbers."</string>
     <string name="create_key_yubi_key_admin_pin_text">"Please write down the Admin PIN and store it in a safe place (required when you used a wrong PIN 3 times)."</string>
     <string name="create_key_yubi_key_pin">"PIN"</string>
