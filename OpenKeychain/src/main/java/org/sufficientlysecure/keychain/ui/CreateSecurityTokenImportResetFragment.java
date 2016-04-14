@@ -42,7 +42,7 @@ import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
-import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
+import org.sufficientlysecure.keychain.ui.CreateKeyActivity.SecurityTokenListenerFragment;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -50,7 +50,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 public class CreateSecurityTokenImportResetFragment
         extends QueueingCryptoOperationFragment<ImportKeyringParcel, ImportKeyResult>
-        implements NfcListenerFragment {
+        implements SecurityTokenListenerFragment {
 
     private static final int REQUEST_CODE_RESET = 0x00005001;
 
@@ -247,7 +247,7 @@ public class CreateSecurityTokenImportResetFragment
     }
 
     @Override
-    public void doNfcInBackground() throws IOException {
+    public void doSecurityTokenInBackground() throws IOException {
 
         mTokenFingerprints = mCreateKeyActivity.getSecurityTokenHelper().getFingerprints();
         mTokenAid = mCreateKeyActivity.getSecurityTokenHelper().getAid();
@@ -259,7 +259,7 @@ public class CreateSecurityTokenImportResetFragment
     }
 
     @Override
-    public void onNfcPostExecute() {
+    public void onSecurityTokenPostExecute() {
 
         setData();
 

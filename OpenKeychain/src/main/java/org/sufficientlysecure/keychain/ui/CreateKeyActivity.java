@@ -144,8 +144,8 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
 
     @Override
     protected void doSecurityTokenInBackground() throws IOException {
-        if (mCurrentFragment instanceof NfcListenerFragment) {
-            ((NfcListenerFragment) mCurrentFragment).doNfcInBackground();
+        if (mCurrentFragment instanceof SecurityTokenListenerFragment) {
+            ((SecurityTokenListenerFragment) mCurrentFragment).doSecurityTokenInBackground();
             return;
         }
 
@@ -156,9 +156,14 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
 
     @Override
     protected void onSecurityTokenPostExecute() {
-        if (mCurrentFragment instanceof NfcListenerFragment) {
-            ((NfcListenerFragment) mCurrentFragment).onNfcPostExecute();
+        if (mCurrentFragment instanceof SecurityTokenListenerFragment) {
+            ((SecurityTokenListenerFragment) mCurrentFragment).onSecurityTokenPostExecute();
             return;
+        }
+
+        // We don't want get back to wait activity mainly because it looks weird with otg token
+        if (mCurrentFragment instanceof CreateSecurityTokenWaitFragment) {
+            getSupportFragmentManager().popBackStackImmediate();
         }
 
         if (containsKeys(mScannedFingerprints)) {
@@ -255,9 +260,9 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
 
     }
 
-    interface NfcListenerFragment {
-        void doNfcInBackground() throws IOException;
-        void onNfcPostExecute();
+    interface SecurityTokenListenerFragment {
+        void doSecurityTokenInBackground() throws IOException;
+        void onSecurityTokenPostExecute();
     }
 
     @Override
