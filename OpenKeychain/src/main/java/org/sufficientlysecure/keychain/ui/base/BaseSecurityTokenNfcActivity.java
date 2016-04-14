@@ -155,7 +155,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     }
 
     public void securityTokenDiscovered(final Transport transport) {
-        // Actual Smartcard operations are executed in doInBackground to not block the UI thread
+        // Actual Security Token operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled)
             return;
         new AsyncTask<Void, Void, IOException>() {
@@ -168,7 +168,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
             @Override
             protected IOException doInBackground(Void... params) {
                 try {
-                    handleSmartcard(transport);
+                    handleSecurityToken(transport);
                 } catch (IOException e) {
                     return e;
                 }
@@ -181,7 +181,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
                 super.onPostExecute(exception);
 
                 if (exception != null) {
-                    handleSmartcardError(exception);
+                    handleSecurityTokenError(exception);
                     return;
                 }
 
@@ -237,7 +237,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         mTagDispatcher.interceptIntent(intent);
     }
 
-    private void handleSmartcardError(IOException e) {
+    private void handleSecurityTokenError(IOException e) {
 
         if (e instanceof TagLostException) {
             onSecurityTokenError(getString(R.string.security_token_error_tag_lost));
@@ -403,7 +403,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         }
     }
 
-    protected void handleSmartcard(Transport transport) throws IOException {
+    protected void handleSecurityToken(Transport transport) throws IOException {
         // Don't reconnect if device was already connected
         if (!(mSecurityTokenHelper.isPersistentConnectionAllowed()
                 && mSecurityTokenHelper.isConnected()
@@ -414,7 +414,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         doSecurityTokenInBackground();
     }
 
-    public boolean isSmartcardConnected() {
+    public boolean isSecurityTokenConnected() {
         return mSecurityTokenHelper.isConnected();
     }
 
@@ -479,7 +479,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     }
 
     /**
-     * Run smartcard routines if last used token is connected and supports
+     * Run Security Token routines if last used token is connected and supports
      * persistent connections
      */
     public void checkDeviceConnection() {
