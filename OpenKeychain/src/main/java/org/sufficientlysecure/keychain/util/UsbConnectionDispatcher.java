@@ -33,7 +33,6 @@ public class UsbConnectionDispatcher {
     private Activity mActivity;
 
     private OnDiscoveredUsbDeviceListener mListener;
-    private UsbTransport mLastUsedUsbTransport;
     private UsbManager mUsbManager;
     /**
      * Receives broadcast when a supported USB device get permission.
@@ -45,23 +44,12 @@ public class UsbConnectionDispatcher {
 
             switch (action) {
                 case UsbEventReceiverActivity.ACTION_USB_PERMISSION: {
-                    UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    android.hardware.usb.UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED,
                             false);
                     if (permission) {
                         Log.d(Constants.TAG, "Got permission for " + usbDevice.getDeviceName());
-
-                        mLastUsedUsbTransport = new UsbTransport(usbDevice, mUsbManager);
-                        mListener.usbDeviceDiscovered(mLastUsedUsbTransport);
-                    }
-                    break;
-                }
-                case UsbManager.ACTION_USB_DEVICE_DETACHED: {
-                    UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-
-                    if (mLastUsedUsbTransport != null && mLastUsedUsbTransport.getUsbDevice().equals(usbDevice)) {
-                        mLastUsedUsbTransport.release();
-                        mLastUsedUsbTransport = null;
+                        mListener.usbDeviceDiscovered(usbDevice);
                     }
                     break;
                 }
@@ -78,7 +66,6 @@ public class UsbConnectionDispatcher {
     public void onStart() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(UsbEventReceiverActivity.ACTION_USB_PERMISSION);
-        intentFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 
         mActivity.registerReceiver(mUsbReceiver, intentFilter);
     }
@@ -97,7 +84,7 @@ public class UsbConnectionDispatcher {
         for (UsbDevice device : mUsbManager.getDeviceList().values()) {
             if (mUsbManager.hasPermission(device)) {
                 if (mListener != null) {
-                    mListener.usbDeviceDiscovered(new UsbTransport(device, mUsbManager));
+                    mListener.usbDeviceDiscovered(device);
                 }
                 break;
             }
@@ -105,6 +92,6 @@ public class UsbConnectionDispatcher {
     }
 
     public interface OnDiscoveredUsbDeviceListener {
-        void usbDeviceDiscovered(UsbTransport usbTransport);
+        void usbDeviceDiscovered(UsbDevice usbDevice);
     }
 }

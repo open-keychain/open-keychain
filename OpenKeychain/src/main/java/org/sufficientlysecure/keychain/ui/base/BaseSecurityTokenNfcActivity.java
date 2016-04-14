@@ -22,8 +22,11 @@
 package org.sufficientlysecure.keychain.ui.base;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.TagLostException;
@@ -142,12 +145,13 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         securityTokenDiscovered(new NfcTransport(tag));
     }
 
-    public void usbDeviceDiscovered(final UsbTransport transport) {
+    public void usbDeviceDiscovered(final UsbDevice usbDevice) {
         // Actual USB operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled)
             return;
 
-        securityTokenDiscovered(transport);
+        UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        securityTokenDiscovered(new UsbTransport(usbDevice, usbManager));
     }
 
     public void securityTokenDiscovered(final Transport transport) {
@@ -401,7 +405,8 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
 
     protected void handleSmartcard(Transport transport) throws IOException {
         // Don't reconnect if device was already connected
-        if (!(mSecurityTokenHelper.isConnected()
+        if (!(mSecurityTokenHelper.isPersistentConnectionAllowed()
+                && mSecurityTokenHelper.isConnected()
                 && mSecurityTokenHelper.getTransport().equals(transport))) {
             mSecurityTokenHelper.setTransport(transport);
             mSecurityTokenHelper.connectToDevice();
@@ -477,7 +482,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
      * Run smartcard routines if last used token is connected and supports
      * persistent connections
      */
-    protected void checkDeviceConnection() {
+    public void checkDeviceConnection() {
         mUsbDispatcher.rescanDevices();
     }
 }

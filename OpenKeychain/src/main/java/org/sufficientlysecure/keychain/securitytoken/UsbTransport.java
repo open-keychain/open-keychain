@@ -66,7 +66,7 @@ public class UsbTransport implements Transport {
      * @param on true to turn ICC on, false to turn it off
      * @throws UsbTransportException
      */
-    private void iccPowerSet(boolean on) throws UsbTransportException {
+    private void setIccPower(boolean on) throws UsbTransportException {
         final byte[] iccPowerCommand = {
                 (byte) (on ? 0x62 : 0x63),
                 0x00, 0x00, 0x00, 0x00,
@@ -145,7 +145,8 @@ public class UsbTransport implements Transport {
      */
     @Override
     public boolean isConnected() {
-        return mConnection != null && mUsbManager.getDeviceList().containsValue(mUsbDevice);
+        return mConnection != null && mUsbManager.getDeviceList().containsValue(mUsbDevice) &&
+                mConnection.getSerial() != null;
     }
 
     /**
@@ -188,7 +189,7 @@ public class UsbTransport implements Transport {
             throw new UsbTransportException("USB error - failed to claim interface");
         }
 
-        iccPowerSet(true);
+        setIccPower(true);
         Log.d(Constants.TAG, "Usb transport connected");
     }
 
