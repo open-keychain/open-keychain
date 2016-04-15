@@ -78,8 +78,8 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcKeyToCardOperationsBuilder;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenKeyToCardOperationsBuilder;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
@@ -496,10 +496,10 @@ public class PgpKeyOperation {
                                      OperationLog log,
                                      int indent) {
 
-        NfcSignOperationsBuilder nfcSignOps = new NfcSignOperationsBuilder(
+        SecurityTokenSignOperationsBuilder nfcSignOps = new SecurityTokenSignOperationsBuilder(
                 cryptoInput.getSignatureTime(), masterSecretKey.getKeyID(),
                 masterSecretKey.getKeyID());
-        NfcKeyToCardOperationsBuilder nfcKeyToCardOps = new NfcKeyToCardOperationsBuilder(
+        SecurityTokenKeyToCardOperationsBuilder nfcKeyToCardOps = new SecurityTokenKeyToCardOperationsBuilder(
                 masterSecretKey.getKeyID());
 
         progress(R.string.progress_modify, 0);
@@ -1277,7 +1277,7 @@ public class PgpKeyOperation {
             PGPPublicKey masterPublicKey,
             int flags, long expiry,
             CryptoInputParcel cryptoInput,
-            NfcSignOperationsBuilder nfcSignOps,
+            SecurityTokenSignOperationsBuilder nfcSignOps,
             int indent, OperationLog log)
             throws PGPException, IOException, SignatureException {
 
