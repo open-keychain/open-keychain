@@ -3,6 +3,7 @@
  * Copyright (C) 2015 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  * Copyright (C) 2013-2014 Signe Rüsch
  * Copyright (C) 2013-2014 Philipp Jakubeit
+ * Copyright (C) 2016 Nikita Mikhailov <nikita.s.mikhailov@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,8 +69,6 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     public NfcGuideView nfcGuideView;
 
     private RequiredInputParcel mRequiredInput;
-
-    private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     private CryptoInputParcel mInputParcel;
 
@@ -137,9 +136,33 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
     private void obtainPassphraseIfRequired() {
         // obtain passphrase for this subkey
-        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD
-                && mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_RESET_CARD) {
+        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.SECURITY_TOKEN_MOVE_KEY_TO_CARD
+                && mRequiredInput.mType != RequiredInputParcel.RequiredInputType.SECURITY_TOKEN_RESET_CARD) {
             obtainSecurityTokenPin(mRequiredInput);
+            checkPinAvailability();
+        } else {
+            checkDeviceConnection();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (REQUEST_CODE_PIN == requestCode) {
+            checkPinAvailability();
+        }
+    }
+
+    private void checkPinAvailability() {
+        try {
+            Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
+                    mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
+            if (passphrase != null) {
+                checkDeviceConnection();
+            }
+        } catch (PassphraseCacheService.KeyNotFoundException e) {
+            throw new AssertionError(
+                    "tried to find passphrase for non-existing key. this is a programming error!");
         }
     }
 
@@ -149,39 +172,39 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     @Override
-    public void onNfcPreExecute() {
+    public void onSecurityTokenPreExecute() {
         // start with indeterminate progress
         vAnimator.setDisplayedChild(1);
         nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.TRANSFERRING);
     }
 
     @Override
-    protected void doNfcInBackground() throws IOException {
+    protected void doSecurityTokenInBackground() throws IOException {
 
         switch (mRequiredInput.mType) {
-            case NFC_DECRYPT: {
+            case SECURITY_TOKEN_DECRYPT: {
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
-                    byte[] decryptedSessionKey = nfcDecryptSessionKey(encryptedSessionKey);
+                    byte[] decryptedSessionKey = mSecurityTokenHelper.decryptSessionKey(encryptedSessionKey);
                     mInputParcel.addCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
                 break;
             }
-            case NFC_SIGN: {
+            case SECURITY_TOKEN_SIGN: {
                 mInputParcel.addSignatureTime(mRequiredInput.mSignatureTime);
 
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
-                    byte[] signedHash = nfcCalculateSignature(hash, algo);
+                    byte[] signedHash = mSecurityTokenHelper.calculateSignature(hash, algo);
                     mInputParcel.addCryptoData(hash, signedHash);
                 }
                 break;
             }
-            case NFC_MOVE_KEY_TO_CARD: {
+            case SECURITY_TOKEN_MOVE_KEY_TO_CARD: {
                 // TODO: assume PIN and Admin PIN to be default for this operation
-                mPin = new Passphrase("123456");
-                mAdminPin = new Passphrase("12345678");
+                mSecurityTokenHelper.setPin(new Passphrase("123456"));
+                mSecurityTokenHelper.setAdminPin(new Passphrase("12345678"));
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
@@ -202,11 +225,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                     long subkeyId = buf.getLong();
 
                     CanonicalizedSecretKey key = secretKeyRing.getSecretKey(subkeyId);
-
-                    long keyGenerationTimestampMillis = key.getCreationTime().getTime();
-                    long keyGenerationTimestamp = keyGenerationTimestampMillis / 1000;
-                    byte[] timestampBytes = ByteBuffer.allocate(4).putInt((int) keyGenerationTimestamp).array();
-                    byte[] tokenSerialNumber = Arrays.copyOf(nfcGetAid(), 16);
+                    byte[] tokenSerialNumber = Arrays.copyOf(mSecurityTokenHelper.getAid(), 16);
 
                     Passphrase passphrase;
                     try {
@@ -216,46 +235,20 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                         throw new IOException("Unable to get cached passphrase!");
                     }
 
-                    if (key.canSign() || key.canCertify()) {
-                        if (shouldPutKey(key.getFingerprint(), 0)) {
-                            nfcPutKey(0xB6, key, passphrase);
-                            nfcPutData(0xCE, timestampBytes);
-                            nfcPutData(0xC7, key.getFingerprint());
-                        } else {
-                            throw new IOException("Key slot occupied; token must be reset to put new signature key.");
-                        }
-                    } else if (key.canEncrypt()) {
-                        if (shouldPutKey(key.getFingerprint(), 1)) {
-                            nfcPutKey(0xB8, key, passphrase);
-                            nfcPutData(0xCF, timestampBytes);
-                            nfcPutData(0xC8, key.getFingerprint());
-                        } else {
-                            throw new IOException("Key slot occupied; token must be reset to put new decryption key.");
-                        }
-                    } else if (key.canAuthenticate()) {
-                        if (shouldPutKey(key.getFingerprint(), 2)) {
-                            nfcPutKey(0xA4, key, passphrase);
-                            nfcPutData(0xD0, timestampBytes);
-                            nfcPutData(0xC9, key.getFingerprint());
-                        } else {
-                            throw new IOException("Key slot occupied; token must be reset to put new authentication key.");
-                        }
-                    } else {
-                        throw new IOException("Inappropriate key flags for Security Token key.");
-                    }
+                    mSecurityTokenHelper.changeKey(key, passphrase);
 
                     // TODO: Is this really used anywhere?
                     mInputParcel.addCryptoData(subkeyBytes, tokenSerialNumber);
                 }
 
                 // change PINs afterwards
-                nfcModifyPin(0x81, newPin);
-                nfcModifyPin(0x83, newAdminPin);
+                mSecurityTokenHelper.modifyPin(0x81, newPin);
+                mSecurityTokenHelper.modifyPin(0x83, newAdminPin);
 
                 break;
             }
-            case NFC_RESET_CARD: {
-                nfcReset();
+            case SECURITY_TOKEN_RESET_CARD: {
+                mSecurityTokenHelper.resetAndWipeToken();
 
                 break;
             }
@@ -267,7 +260,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     @Override
-    protected final void onNfcPostExecute() {
+    protected final void onSecurityTokenPostExecute() {
         handleResult(mInputParcel);
 
         // show finish
@@ -275,28 +268,33 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
         nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.DONE);
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                // check all 200ms if Security Token has been taken away
-                while (true) {
-                    if (isNfcConnected()) {
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException ignored) {
+        if (mSecurityTokenHelper.isPersistentConnectionAllowed()) {
+            // Just close
+            finish();
+        } else {
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    // check all 200ms if Security Token has been taken away
+                    while (true) {
+                        if (isSecurityTokenConnected()) {
+                            try {
+                                Thread.sleep(200);
+                            } catch (InterruptedException ignored) {
+                            }
+                        } else {
+                            return null;
                         }
-                    } else {
-                        return null;
                     }
                 }
-            }
 
-            @Override
-            protected void onPostExecute(Void result) {
-                super.onPostExecute(result);
-                finish();
-            }
-        }.execute();
+                @Override
+                protected void onPostExecute(Void result) {
+                    super.onPostExecute(result);
+                    finish();
+                }
+            }.execute();
+        }
     }
 
     /**
@@ -311,7 +309,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     @Override
-    protected void onNfcError(String error) {
+    protected void onSecurityTokenError(String error) {
         pauseTagHandling();
 
         vErrorText.setText(error + "\n\n" + getString(R.string.security_token_nfc_try_again_text));
@@ -321,31 +319,11 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
     }
 
     @Override
-    public void onNfcPinError(String error) {
-        onNfcError(error);
+    public void onSecurityTokenPinError(String error) {
+        onSecurityTokenError(error);
 
         // clear (invalid) passphrase
         PassphraseCacheService.clearCachedPassphrase(
                 this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
     }
-
-    private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
-        byte[] tokenFingerprint = nfcGetMasterKeyFingerprint(idx);
-
-        // Note: special case: This should not happen, but happens with
-        // https://github.com/FluffyKaon/OpenPGP-Card, thus for now assume true
-        if (tokenFingerprint == null) {
-            return true;
-        }
-
-        // Slot is empty, or contains this key already. PUT KEY operation is safe
-        if (Arrays.equals(tokenFingerprint, BLANK_FINGERPRINT) ||
-                Arrays.equals(tokenFingerprint, fingerprint)) {
-            return true;
-        }
-
-        // Slot already contains a different key; don't overwrite it.
-        return false;
-    }
-
 }

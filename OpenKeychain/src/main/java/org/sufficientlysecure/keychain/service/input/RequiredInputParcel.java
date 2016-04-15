@@ -14,8 +14,8 @@ import java.util.Date;
 public class RequiredInputParcel implements Parcelable {
 
     public enum RequiredInputType {
-        PASSPHRASE, PASSPHRASE_SYMMETRIC, BACKUP_CODE, NFC_SIGN, NFC_DECRYPT,
-        NFC_MOVE_KEY_TO_CARD, NFC_RESET_CARD, ENABLE_ORBOT, UPLOAD_FAIL_RETRY,
+        PASSPHRASE, PASSPHRASE_SYMMETRIC, BACKUP_CODE, SECURITY_TOKEN_SIGN, SECURITY_TOKEN_DECRYPT,
+        SECURITY_TOKEN_MOVE_KEY_TO_CARD, SECURITY_TOKEN_RESET_CARD, ENABLE_ORBOT, UPLOAD_FAIL_RETRY,
     }
 
     public Date mSignatureTime;
@@ -92,19 +92,19 @@ public class RequiredInputParcel implements Parcelable {
     public static RequiredInputParcel createNfcSignOperation(
             long masterKeyId, long subKeyId,
             byte[] inputHash, int signAlgo, Date signatureTime) {
-        return new RequiredInputParcel(RequiredInputType.NFC_SIGN,
+        return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_SIGN,
                 new byte[][] { inputHash }, new int[] { signAlgo },
                 signatureTime, masterKeyId, subKeyId);
     }
 
     public static RequiredInputParcel createNfcDecryptOperation(
             long masterKeyId, long subKeyId, byte[] encryptedSessionKey) {
-        return new RequiredInputParcel(RequiredInputType.NFC_DECRYPT,
+        return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_DECRYPT,
                 new byte[][] { encryptedSessionKey }, null, null, masterKeyId, subKeyId);
     }
 
     public static RequiredInputParcel createNfcReset() {
-        return new RequiredInputParcel(RequiredInputType.NFC_RESET_CARD,
+        return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_RESET_CARD,
                 null, null, null, null, null);
     }
 
@@ -209,7 +209,7 @@ public class RequiredInputParcel implements Parcelable {
                 signAlgos[i] = mSignAlgos.get(i);
             }
 
-            return new RequiredInputParcel(RequiredInputType.NFC_SIGN,
+            return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_SIGN,
                     inputHashes, signAlgos, mSignatureTime, mMasterKeyId, mSubKeyId);
         }
 
@@ -222,7 +222,7 @@ public class RequiredInputParcel implements Parcelable {
             if (!mSignatureTime.equals(input.mSignatureTime)) {
                 throw new AssertionError("input times must match, this is a programming error!");
             }
-            if (input.mType != RequiredInputType.NFC_SIGN) {
+            if (input.mType != RequiredInputType.SECURITY_TOKEN_SIGN) {
                 throw new AssertionError("operation types must match, this is a progrmming error!");
             }
 
@@ -264,7 +264,7 @@ public class RequiredInputParcel implements Parcelable {
             ByteBuffer buf = ByteBuffer.wrap(mSubkeysToExport.get(0));
 
             // We need to pass in a subkey here...
-            return new RequiredInputParcel(RequiredInputType.NFC_MOVE_KEY_TO_CARD,
+            return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_MOVE_KEY_TO_CARD,
                     inputData, null, null, mMasterKeyId, buf.getLong());
         }
 
@@ -287,7 +287,7 @@ public class RequiredInputParcel implements Parcelable {
             if (!mMasterKeyId.equals(input.mMasterKeyId)) {
                 throw new AssertionError("Master keys must match, this is a programming error!");
             }
-            if (input.mType != RequiredInputType.NFC_MOVE_KEY_TO_CARD) {
+            if (input.mType != RequiredInputType.SECURITY_TOKEN_MOVE_KEY_TO_CARD) {
                 throw new AssertionError("Operation types must match, this is a programming error!");
             }
 

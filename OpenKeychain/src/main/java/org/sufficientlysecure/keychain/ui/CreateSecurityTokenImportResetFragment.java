@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +42,7 @@ import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
-import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
+import org.sufficientlysecure.keychain.ui.CreateKeyActivity.SecurityTokenListenerFragment;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -51,7 +50,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 public class CreateSecurityTokenImportResetFragment
         extends QueueingCryptoOperationFragment<ImportKeyringParcel, ImportKeyResult>
-        implements NfcListenerFragment {
+        implements SecurityTokenListenerFragment {
 
     private static final int REQUEST_CODE_RESET = 0x00005001;
 
@@ -248,11 +247,11 @@ public class CreateSecurityTokenImportResetFragment
     }
 
     @Override
-    public void doNfcInBackground() throws IOException {
+    public void doSecurityTokenInBackground() throws IOException {
 
-        mTokenFingerprints = mCreateKeyActivity.nfcGetFingerprints();
-        mTokenAid = mCreateKeyActivity.nfcGetAid();
-        mTokenUserId = mCreateKeyActivity.nfcGetUserId();
+        mTokenFingerprints = mCreateKeyActivity.getSecurityTokenHelper().getFingerprints();
+        mTokenAid = mCreateKeyActivity.getSecurityTokenHelper().getAid();
+        mTokenUserId = mCreateKeyActivity.getSecurityTokenHelper().getUserId();
 
         byte[] fp = new byte[20];
         ByteBuffer.wrap(fp).put(mTokenFingerprints, 0, 20);
@@ -260,7 +259,7 @@ public class CreateSecurityTokenImportResetFragment
     }
 
     @Override
-    public void onNfcPostExecute() {
+    public void onSecurityTokenPostExecute() {
 
         setData();
 

@@ -130,9 +130,9 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
         switch (requiredInput.mType) {
             // always use CryptoOperationHelper.startActivityForResult!
-            case NFC_MOVE_KEY_TO_CARD:
-            case NFC_DECRYPT:
-            case NFC_SIGN: {
+            case SECURITY_TOKEN_MOVE_KEY_TO_CARD:
+            case SECURITY_TOKEN_DECRYPT:
+            case SECURITY_TOKEN_SIGN: {
                 Intent intent = new Intent(activity, SecurityTokenOperationActivity.class);
                 intent.putExtra(SecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
                 intent.putExtra(SecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);

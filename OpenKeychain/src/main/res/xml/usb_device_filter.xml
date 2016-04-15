@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    Based on https://github.com/Yubico/yubikey-personalization/blob/master/ykcore/ykdef.h
+    Note that values are decimal.
+-->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Yubikey NEO OTP + CCID-->
+    <usb-device class="11" vendor-id="4176" product-id="273"/>
+    <!-- Yubikey NEO CCID-->
+    <usb-device class="11" vendor-id="4176" product-id="274"/>
+    <!-- Yubikey NEO U2F + CCID-->
+    <usb-device class="11" vendor-id="4176" product-id="277"/>
+    <!-- Yubikey NEO OTP + U2F + CCID-->
+    <usb-device class="11" vendor-id="4176" product-id="278"/>
+
+
+    <!-- Yubikey 4 CCID-->
+    <usb-device class="11" vendor-id="4176" product-id="1028"/>
+    <!-- Yubikey 4 OTP + CCID-->
+    <usb-device class="11" vendor-id="4176" product-id="1029"/>
+    <!-- Yubikey 4 U2F + CCID-->
+    <usb-device class="11" vendor-id="4176" product-id="1030"/>
+    <!-- Yubikey 4 OTP + U2F + CCID-->
+    <usb-device class="11" vendor-id="4176" product-id="1031"/>
+
+</resources>

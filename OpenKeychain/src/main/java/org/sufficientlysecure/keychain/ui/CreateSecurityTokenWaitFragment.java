@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,12 +27,22 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
+import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenNfcActivity;
 
 
 public class CreateSecurityTokenWaitFragment extends Fragment {
 
     CreateKeyActivity mCreateKeyActivity;
     View mBackButton;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (this.getActivity() instanceof BaseSecurityTokenNfcActivity) {
+            ((BaseSecurityTokenNfcActivity) this.getActivity()).checkDeviceConnection();
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

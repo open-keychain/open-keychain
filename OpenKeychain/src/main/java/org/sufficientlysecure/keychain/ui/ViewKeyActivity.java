@@ -32,7 +32,6 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
@@ -172,9 +171,9 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
     private byte[] mFingerprint;
     private String mFingerprintString;
 
-    private byte[] mNfcFingerprints;
-    private String mNfcUserId;
-    private byte[] mNfcAid;
+    private byte[] mSecurityTokenFingerprints;
+    private String mSecurityTokenUserId;
+    private byte[] mSecurityTokenAid;
 
     @SuppressLint("InflateParams")
     @Override
@@ -647,17 +646,17 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
     }
 
     @Override
-    protected void doNfcInBackground() throws IOException {
+    protected void doSecurityTokenInBackground() throws IOException {
 
-        mNfcFingerprints = nfcGetFingerprints();
-        mNfcUserId = nfcGetUserId();
-        mNfcAid = nfcGetAid();
+        mSecurityTokenFingerprints = mSecurityTokenHelper.getFingerprints();
+        mSecurityTokenUserId = mSecurityTokenHelper.getUserId();
+        mSecurityTokenAid = mSecurityTokenHelper.getAid();
     }
 
     @Override
-    protected void onNfcPostExecute() {
+    protected void onSecurityTokenPostExecute() {
 
-        long tokenId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
+        long tokenId = KeyFormattingUtils.getKeyIdFromFingerprint(mSecurityTokenFingerprints);
 
         try {
 
@@ -668,7 +667,7 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
 
             // if the master key of that key matches this one, just show the token dialog
             if (KeyFormattingUtils.convertFingerprintToHex(candidateFp).equals(mFingerprintString)) {
-                showSecurityTokenFragment(mNfcFingerprints, mNfcUserId, mNfcAid);
+                showSecurityTokenFragment(mSecurityTokenFingerprints, mSecurityTokenUserId, mSecurityTokenAid);
                 return;
             }
 
@@ -681,9 +680,9 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
                             Intent intent = new Intent(
                                     ViewKeyActivity.this, ViewKeyActivity.class);
                             intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mNfcAid);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mNfcUserId);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mNfcFingerprints);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mSecurityTokenFingerprints);
                             startActivity(intent);
                             finish();
                         }
@@ -696,9 +695,9 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
                         public void onAction() {
                             Intent intent = new Intent(
                                     ViewKeyActivity.this, CreateKeyActivity.class);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mNfcAid);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mNfcUserId);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mNfcFingerprints);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mSecurityTokenFingerprints);
                             startActivity(intent);
                             finish();
                         }

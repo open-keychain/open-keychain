@@ -43,6 +43,11 @@
         android:name="android.hardware.screen.portrait"
         android:required="false" />
 
+    <!-- For OTG tokens -->
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="false" />
+
     <!-- TemporaryStorageProvider should be writable by OpenKeychain only, thus signature-level permission -->
     <permission
         android:name="${applicationId}.WRITE_TEMPORARY_STORAGE"
@@ -871,6 +876,24 @@
             android:name=".remote.ui.RemoteImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_import_keys" />
+
+        <!-- Usb interceptor activity -->
+        <activity
+            android:name=".ui.UsbEventReceiverActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Keychain.Transparent"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity="com.example.taskAffinityUsbEventReceiver"
+            android:process=":UsbEventReceiverActivityProcess"
+            android:exported="false">
+
+            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                       android:resource="@xml/usb_device_filter" />
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+        </activity>
 
         <!-- DEPRECATED service,
              using this service may lead to truncated data being returned to the caller -->
