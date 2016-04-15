@@ -131,13 +131,13 @@ public class SecurityTokenHelper {
     private boolean isSlotEmpty(KeyType keyType) throws IOException {
         // Note: special case: This should not happen, but happens with
         // https://github.com/FluffyKaon/OpenPGP-Card, thus for now assume true
-        if (getMasterKeyFingerprint(keyType.getIdx()) == null) return true;
+        if (getMasterKeyFingerprint(keyType) == null) return true;
 
         return keyMatchesFingerPrint(keyType, BLANK_FINGERPRINT);
     }
 
     public boolean keyMatchesFingerPrint(KeyType keyType, byte[] fingerprint) throws IOException {
-        return java.util.Arrays.equals(getMasterKeyFingerprint(keyType.getIdx()), fingerprint);
+        return java.util.Arrays.equals(getMasterKeyFingerprint(keyType), fingerprint);
     }
 
     /**
@@ -723,10 +723,10 @@ public class SecurityTokenHelper {
      * Return the fingerprint from application specific data stored on tag, or
      * null if it doesn't exist.
      *
-     * @param idx Index of the key to return the fingerprint from.
+     * @param keyType key.operatio type
      * @return The fingerprint of the requested key, or null if not found.
      */
-    public byte[] getMasterKeyFingerprint(int idx) throws IOException {
+    public byte[] getMasterKeyFingerprint(KeyType keyType) throws IOException {
         byte[] data = getFingerprints();
         if (data == null) {
             return null;
@@ -735,7 +735,7 @@ public class SecurityTokenHelper {
         // return the master key fingerprint
         ByteBuffer fpbuf = ByteBuffer.wrap(data);
         byte[] fp = new byte[20];
-        fpbuf.position(idx * 20);
+        fpbuf.position(keyType.getIdx() * 20);
         fpbuf.get(fp, 0, 20);
 
         return fp;

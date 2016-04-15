@@ -380,6 +380,7 @@
     <string name="error_integrity_check_failed">"integrity check failed! Data has been modified!"</string>
     <string name="error_wrong_passphrase">"wrong password"</string>
     <string name="error_could_not_extract_private_key">"could not extract private key"</string>
+    <string name="error_wrong_security_token">"this security token doesn't contain required key"</string>
 
     <!-- errors without preceeding Error: -->
     <string name="error_jelly_bean_needed">"You need Android 4.1 to use Android's NFC Beam feature!"</string>
