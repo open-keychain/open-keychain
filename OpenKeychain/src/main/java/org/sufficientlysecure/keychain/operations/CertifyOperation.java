@@ -47,7 +47,7 @@ import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -144,7 +144,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
         int certifyOk = 0, certifyError = 0, uploadOk = 0, uploadError = 0;
 
-        NfcSignOperationsBuilder allRequiredInput = new NfcSignOperationsBuilder(
+        SecurityTokenSignOperationsBuilder allRequiredInput = new SecurityTokenSignOperationsBuilder(
                 cryptoInput.getSignatureTime(), masterKeyId, masterKeyId);
 
         // Work through all requested certifications

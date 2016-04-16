@@ -89,7 +89,7 @@ public class RequiredInputParcel implements Parcelable {
         return new RequiredInputParcel(RequiredInputType.ENABLE_ORBOT, null, null, null, 0L, 0L);
     }
 
-    public static RequiredInputParcel createNfcSignOperation(
+    public static RequiredInputParcel createSecurityTokenSignOperation(
             long masterKeyId, long subKeyId,
             byte[] inputHash, int signAlgo, Date signatureTime) {
         return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_SIGN,
@@ -97,13 +97,13 @@ public class RequiredInputParcel implements Parcelable {
                 signatureTime, masterKeyId, subKeyId);
     }
 
-    public static RequiredInputParcel createNfcDecryptOperation(
+    public static RequiredInputParcel createSecurityTokenDecryptOperation(
             long masterKeyId, long subKeyId, byte[] encryptedSessionKey) {
         return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_DECRYPT,
                 new byte[][] { encryptedSessionKey }, null, null, masterKeyId, subKeyId);
     }
 
-    public static RequiredInputParcel createNfcReset() {
+    public static RequiredInputParcel createSecurityTokenReset() {
         return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_RESET_CARD,
                 null, null, null, null, null);
     }
@@ -188,14 +188,14 @@ public class RequiredInputParcel implements Parcelable {
         }
     };
 
-    public static class NfcSignOperationsBuilder {
+    public static class SecurityTokenSignOperationsBuilder {
         Date mSignatureTime;
         ArrayList<Integer> mSignAlgos = new ArrayList<>();
         ArrayList<byte[]> mInputHashes = new ArrayList<>();
         long mMasterKeyId;
         long mSubKeyId;
 
-        public NfcSignOperationsBuilder(Date signatureTime, long masterKeyId, long subKeyId) {
+        public SecurityTokenSignOperationsBuilder(Date signatureTime, long masterKeyId, long subKeyId) {
             mSignatureTime = signatureTime;
             mMasterKeyId = masterKeyId;
             mSubKeyId = subKeyId;
@@ -238,13 +238,13 @@ public class RequiredInputParcel implements Parcelable {
 
     }
 
-    public static class NfcKeyToCardOperationsBuilder {
+    public static class SecurityTokenKeyToCardOperationsBuilder {
         ArrayList<byte[]> mSubkeysToExport = new ArrayList<>();
         Long mMasterKeyId;
         byte[] mPin;
         byte[] mAdminPin;
 
-        public NfcKeyToCardOperationsBuilder(Long masterKeyId) {
+        public SecurityTokenKeyToCardOperationsBuilder(Long masterKeyId) {
             mMasterKeyId = masterKeyId;
         }
 

@@ -53,7 +53,7 @@ public class ApiPendingIntentFactory {
             case SECURITY_TOKEN_MOVE_KEY_TO_CARD:
             case SECURITY_TOKEN_DECRYPT:
             case SECURITY_TOKEN_SIGN: {
-                return createNfcOperationPendingIntent(data, requiredInput, cryptoInput);
+                return createSecurityTokenOperationPendingIntent(data, requiredInput, cryptoInput);
             }
 
             case PASSPHRASE: {
@@ -65,7 +65,7 @@ public class ApiPendingIntentFactory {
         }
     }
 
-    private PendingIntent createNfcOperationPendingIntent(Intent data, RequiredInputParcel requiredInput, CryptoInputParcel cryptoInput) {
+    private PendingIntent createSecurityTokenOperationPendingIntent(Intent data, RequiredInputParcel requiredInput, CryptoInputParcel cryptoInput) {
         Intent intent = new Intent(mContext, RemoteSecurityTokenOperationActivity.class);
         // pass params through to activity that it can be returned again later to repeat pgp operation
         intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
