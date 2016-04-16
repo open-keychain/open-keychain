@@ -186,9 +186,9 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
         switch (mRequiredInput.mType) {
             case SECURITY_TOKEN_DECRYPT: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        mSecurityTokenHelper.getMasterKeyFingerprint(KeyType.SIGN));
+                        mSecurityTokenHelper.getKeyFingerprint(KeyType.ENCRYPT));
 
-                if (tokenKeyId != mRequiredInput.getMasterKeyId()) {
+                if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
@@ -201,9 +201,9 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
             }
             case SECURITY_TOKEN_SIGN: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        mSecurityTokenHelper.getMasterKeyFingerprint(KeyType.SIGN));
+                        mSecurityTokenHelper.getKeyFingerprint(KeyType.SIGN));
 
-                if (tokenKeyId != mRequiredInput.getMasterKeyId()) {
+                if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
