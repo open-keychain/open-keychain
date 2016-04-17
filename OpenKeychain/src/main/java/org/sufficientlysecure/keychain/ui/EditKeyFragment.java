@@ -128,7 +128,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.edit_key_fragment, null);
+        View view = inflater.inflate(R.layout.edit_key_fragment, superContainer, false);
 
         mUserIdsList = (ListView) view.findViewById(R.id.edit_key_user_ids);
         mSubkeysList = (ListView) view.findViewById(R.id.edit_key_keys);
