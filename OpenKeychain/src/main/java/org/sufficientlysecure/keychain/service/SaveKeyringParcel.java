@@ -49,8 +49,6 @@ public class SaveKeyringParcel implements Parcelable {
     // the key fingerprint, for safety. MUST be null for a new key.
     public byte[] mFingerprint;
 
-    public ChangeUnlockParcel mNewUnlock;
-
     public ArrayList<String> mAddUserIds;
     public ArrayList<WrappedUserAttribute> mAddUserAttribute;
     public ArrayList<SubkeyAdd> mAddSubKeys;
@@ -69,6 +67,9 @@ public class SaveKeyringParcel implements Parcelable {
     private boolean mUpload;
     private boolean mUploadAtomic;
     private String mKeyserver;
+
+    // private because we have to set other details like key id
+    private ChangeUnlockParcel mNewUnlock;
 
     public SaveKeyringParcel() {
         reset();
@@ -100,6 +101,14 @@ public class SaveKeyringParcel implements Parcelable {
         mUpload = upload;
         mUploadAtomic = uploadAtomic;
         mKeyserver = keysever;
+    }
+
+    public void setNewUnlock(Passphrase passphrase) {
+        mNewUnlock = new ChangeUnlockParcel(mMasterKeyId, mFingerprint, passphrase);
+    }
+
+    public ChangeUnlockParcel getChangeUnlockParcel() {
+        return mNewUnlock;
     }
 
     public boolean isUpload() {

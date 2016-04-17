@@ -83,8 +83,6 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.service.PassphraseChangeParcel;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -132,8 +130,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private String mKeyserver;
     private ArrayList<ParcelableKeyRing> mKeyList;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
-    private CryptoOperationHelper<PassphraseChangeParcel, EditKeyResult> mEditOpHelper;
-    private PassphraseChangeParcel mPassphraseChangeParcel;
+    private CryptoOperationHelper<ChangeUnlockParcel, EditKeyResult> mEditOpHelper;
+    private ChangeUnlockParcel mChangeUnlockParcel;
 
     private TextView mStatusText;
     private ImageView mStatusImage;
@@ -431,13 +429,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     }
 
     private void changePassword() {
-        mPassphraseChangeParcel = new PassphraseChangeParcel(mMasterKeyId, mFingerprint);
-
-        CryptoOperationHelper.Callback<PassphraseChangeParcel, EditKeyResult> editKeyCallback
-                = new CryptoOperationHelper.Callback<PassphraseChangeParcel, EditKeyResult>() {
+        CryptoOperationHelper.Callback<ChangeUnlockParcel, EditKeyResult> editKeyCallback
+                = new CryptoOperationHelper.Callback<ChangeUnlockParcel, EditKeyResult>() {
             @Override
-            public PassphraseChangeParcel createOperationInput() {
-                return mPassphraseChangeParcel;
+            public ChangeUnlockParcel createOperationInput() {
+                return mChangeUnlockParcel;
             }
 
             @Override
@@ -470,8 +466,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
                     Bundle data = message.getData();
 
-                    // use new passphrase!
-                    mPassphraseChangeParcel.mNewUnlock = new ChangeUnlockParcel(
+                    mChangeUnlockParcel = new ChangeUnlockParcel(
+                            mMasterKeyId,
+                            mFingerprint,
                             (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
                     );
 

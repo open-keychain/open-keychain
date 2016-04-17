@@ -13,25 +13,24 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.PassphraseChangeParcel;
+import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 
-public class PassphraseChangeOperation extends BaseOperation<PassphraseChangeParcel> {
+public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
 
-
-    public PassphraseChangeOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
+    public ChangeUnlockOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
     }
 
     @NonNull
-    public OperationResult execute(PassphraseChangeParcel passphraseParcel, CryptoInputParcel cryptoInput) {
+    public OperationResult execute(ChangeUnlockParcel unlockParcel, CryptoInputParcel cryptoInput) {
         OperationResult.OperationLog log = new OperationResult.OperationLog();
         log.add(OperationResult.LogType.MSG_ED, 0);
 
-        if (passphraseParcel == null || passphraseParcel.mMasterKeyId == null) {
+        if (unlockParcel == null || unlockParcel.mMasterKeyId == null) {
             log.add(OperationResult.LogType.MSG_ED_ERROR_NO_PARCEL, 1);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
@@ -44,11 +43,11 @@ public class PassphraseChangeOperation extends BaseOperation<PassphraseChangePar
 
             try {
                     log.add(OperationResult.LogType.MSG_ED_FETCHING, 1,
-                            KeyFormattingUtils.convertKeyIdToHex(passphraseParcel.mMasterKeyId));
+                            KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
 
                     CanonicalizedSecretKeyRing secRing =
-                            mProviderHelper.getCanonicalizedSecretKeyRing(passphraseParcel.mMasterKeyId);
-                    modifyResult = keyOperations.modifyKeyRingPassphrase(secRing, cryptoInput, passphraseParcel);
+                            mProviderHelper.getCanonicalizedSecretKeyRing(unlockParcel.mMasterKeyId);
+                    modifyResult = keyOperations.modifyKeyRingPassphrase(secRing, cryptoInput, unlockParcel);
 
                     if (modifyResult.isPending()) {
                         // obtain original passphrase from user
