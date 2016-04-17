@@ -1315,7 +1315,7 @@ public class PgpKeyOperation {
                 ok = true;
             } catch (PGPException e) {
 
-                // if this is the master key, error!
+                // if the master key failed && it's not stripped, error!
                 if (sKey.getKeyID() == masterPublicKey.getKeyID() && !isDummy(sKey)) {
                     log.add(LogType.MSG_MF_ERROR_PASSPHRASE_MASTER, indent+1);
                     return null;
@@ -1347,7 +1347,7 @@ public class PgpKeyOperation {
         }
 
         if(!keysModified) {
-            // no passphrase is changed
+            // no passphrase was changed
             log.add(LogType.MSG_MF_ERROR_PASSPHRASES_UNCHANGED, indent+1);
             return null;
         }
