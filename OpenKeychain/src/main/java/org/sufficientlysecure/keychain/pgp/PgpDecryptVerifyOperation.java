@@ -769,7 +769,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     && !decryptorFactory.hasCachedSessionData(encryptedDataAsymmetric)) {
 
                 log.add(LogType.MSG_DC_PENDING_NFC, indent + 1);
-                return result.with(new DecryptVerifyResult(log, RequiredInputParcel.createNfcDecryptOperation(
+                return result.with(new DecryptVerifyResult(log, RequiredInputParcel.createSecurityTokenDecryptOperation(
                         decryptionKey.getRing().getMasterKeyId(),
                         decryptionKey.getKeyId(), encryptedDataAsymmetric.getSessionKey()[0]
                 ), cryptoInput));

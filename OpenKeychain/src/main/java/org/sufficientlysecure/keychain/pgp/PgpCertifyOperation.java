@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -76,7 +76,7 @@ public class PgpCertifyOperation {
         // get the master subkey (which we certify for)
         PGPPublicKey publicKey = publicRing.getPublicKey().getPublicKey();
 
-        NfcSignOperationsBuilder requiredInput = new NfcSignOperationsBuilder(creationTimestamp,
+        SecurityTokenSignOperationsBuilder requiredInput = new SecurityTokenSignOperationsBuilder(creationTimestamp,
                 publicKey.getKeyID(), publicKey.getKeyID());
 
         try {

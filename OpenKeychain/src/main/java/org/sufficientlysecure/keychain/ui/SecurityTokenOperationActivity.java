@@ -36,10 +36,12 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.securitytoken.KeyType;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenNfcActivity;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.OrientationUtils;
@@ -183,6 +185,13 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
 
         switch (mRequiredInput.mType) {
             case SECURITY_TOKEN_DECRYPT: {
+                long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
+                        mSecurityTokenHelper.getKeyFingerprint(KeyType.ENCRYPT));
+
+                if (tokenKeyId != mRequiredInput.getSubKeyId()) {
+                    throw new IOException(getString(R.string.error_wrong_security_token));
+                }
+
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
                     byte[] decryptedSessionKey = mSecurityTokenHelper.decryptSessionKey(encryptedSessionKey);
@@ -191,6 +200,13 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity
                 break;
             }
             case SECURITY_TOKEN_SIGN: {
+                long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
+                        mSecurityTokenHelper.getKeyFingerprint(KeyType.SIGN));
+
+                if (tokenKeyId != mRequiredInput.getSubKeyId()) {
+                    throw new IOException(getString(R.string.error_wrong_security_token));
+                }
+
                 mInputParcel.addSignatureTime(mRequiredInput.mSignatureTime);
 
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
