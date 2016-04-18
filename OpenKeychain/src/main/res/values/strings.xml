@@ -576,7 +576,7 @@
         <item quantity="other">"Successfully deleted %1$d keys%2$s."</item>
     </plurals>
     <plurals name="delete_fail">
-        <item quantity="one">"Error deleting one key%2$s."</item>
+        <item quantity="one">"Error deleting one key."</item>
         <item quantity="other">"Error deleting %1$d keys."</item>
     </plurals>
     <string name="delete_nothing">"Nothing to delete."</string>
