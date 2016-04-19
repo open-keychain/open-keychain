@@ -33,6 +33,10 @@ public class ChangeUnlockParcel implements Parcelable {
     // The new passphrase to use
     public final Passphrase mNewPassphrase;
 
+    public ChangeUnlockParcel(Passphrase newPassphrase) {
+        mNewPassphrase = newPassphrase;
+    }
+
     public ChangeUnlockParcel(Long masterKeyId, byte[] fingerprint, Passphrase newPassphrase) {
         if (newPassphrase == null) {
             throw new AssertionError("newPassphrase must be non-null. THIS IS A BUG!");

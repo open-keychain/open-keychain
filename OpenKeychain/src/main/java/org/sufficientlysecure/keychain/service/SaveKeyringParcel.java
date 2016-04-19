@@ -103,11 +103,15 @@ public class SaveKeyringParcel implements Parcelable {
         mKeyserver = keysever;
     }
 
-    public void setNewUnlock(Passphrase passphrase) {
-        mNewUnlock = new ChangeUnlockParcel(mMasterKeyId, mFingerprint, passphrase);
+    public void setNewUnlock(ChangeUnlockParcel parcel) {
+        mNewUnlock = parcel;
     }
 
     public ChangeUnlockParcel getChangeUnlockParcel() {
+        if(mNewUnlock != null) {
+            mNewUnlock.mMasterKeyId = mMasterKeyId;
+            mNewUnlock.mFingerprint = mFingerprint;
+        }
         return mNewUnlock;
     }
 
