@@ -186,7 +186,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        this.setDropDownWidth(this.getLeft()+this.getRight());
-        this.setDropDownHorizontalOffset(-this.getLeft());
+        // increase width to include add button
+        this.setDropDownWidth(this.getRight());
     }
 }
