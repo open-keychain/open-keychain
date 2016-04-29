@@ -456,12 +456,12 @@ public class KeychainProvider extends ContentProvider {
                             if (i != 0) {
                                 emailWhere += " OR ";
                             }
-                            emailWhere += "tmp." + UserPackets.USER_ID + " LIKE ";
-                            // match '*<email>', so it has to be at the *end* of the user id
                             if (match == KEY_RINGS_FIND_BY_EMAIL) {
-                                emailWhere += DatabaseUtils.sqlEscapeString("%<" + chunks[i] + ">");
+                                emailWhere += "tmp." + UserPackets.EMAIL + " LIKE "
+                                        + DatabaseUtils.sqlEscapeString(chunks[i]);
                             } else {
-                                emailWhere += DatabaseUtils.sqlEscapeString("%" + chunks[i] + "%");
+                                emailWhere += "tmp." + UserPackets.USER_ID + " LIKE "
+                                        + DatabaseUtils.sqlEscapeString("%" + chunks[i] + "%");
                             }
                             gotCondition = true;
                         }

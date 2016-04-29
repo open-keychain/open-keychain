@@ -61,6 +61,8 @@ public abstract class KeyRing {
 
     private static final Pattern USER_ID_PATTERN = Pattern.compile("^(.*?)(?: \\((.*)\\))?(?: <(.*)>)?$");
 
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^.*@.*\\..*$");
+
     /**
      * Splits userId string into naming part, email part, and comment part
      * <p/>
@@ -71,7 +73,14 @@ public abstract class KeyRing {
         if (!TextUtils.isEmpty(userId)) {
             final Matcher matcher = USER_ID_PATTERN.matcher(userId);
             if (matcher.matches()) {
-                return new UserId(matcher.group(1), matcher.group(3), matcher.group(2));
+                String name = matcher.group(1).isEmpty() ? null : matcher.group(1);
+                String comment = matcher.group(2);
+                String email = matcher.group(3);
+                if (comment == null && email == null && name != null && EMAIL_PATTERN.matcher(name).matches()) {
+                    email = name;
+                    name = null;
+                }
+                return new UserId(name, email, comment);
             }
         }
         return new UserId(null, null, null);
