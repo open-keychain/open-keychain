@@ -729,6 +729,8 @@ public class EncryptFilesFragment
                     // make sure this is correct at this point
                     mAfterEncryptAction = AfterEncryptAction.SAVE;
                     cryptoOperation(new CryptoInputParcel(new Date()));
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    onCryptoOperationCancelled();
                 }
                 return;
             }
