@@ -95,10 +95,14 @@ public abstract class KeyRing {
             userIdBuilder.append(userId.comment);
         }
         if (!TextUtils.isEmpty(userId.comment)) {
-            userIdBuilder.append(" (" + userId.comment + ")");
+            userIdBuilder.append(" (");
+            userIdBuilder.append(userId.comment);
+            userIdBuilder.append(")");
         }
         if (!TextUtils.isEmpty(userId.email)) {
-            userIdBuilder.append(" <" + userId.email + ">");
+            userIdBuilder.append(" <");
+            userIdBuilder.append(userId.email);
+            userIdBuilder.append(">");
         }
         return userIdBuilder.length() == 0 ? null : userIdBuilder.toString();
     }
