@@ -55,7 +55,9 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URLEncoder;
 import java.util.StringTokenizer;
 
@@ -65,9 +67,68 @@ import java.util.StringTokenizer;
 public class TorServiceUtils {
 
     private final static String TAG = "TorUtils";
-
+    // various console cmds
+    public final static String SHELL_CMD_CHMOD = "chmod";
+    public final static String SHELL_CMD_KILL = "kill -9";
+    public final static String SHELL_CMD_RM = "rm";
     public final static String SHELL_CMD_PS = "ps";
     public final static String SHELL_CMD_PIDOF = "pidof";
+
+    public final static String CHMOD_EXE_VALUE = "700";
+
+    public static boolean isRootPossible() {
+
+        StringBuilder log = new StringBuilder();
+
+        try {
+
+            // Check if Superuser.apk exists
+            File fileSU = new File("/system/app/Superuser.apk");
+            if (fileSU.exists())
+                return true;
+
+            fileSU = new File("/system/app/superuser.apk");
+            if (fileSU.exists())
+                return true;
+
+            fileSU = new File("/system/bin/su");
+            if (fileSU.exists()) {
+                String[] cmd = {
+                        "su"
+                };
+                int exitCode = doShellCommand(cmd, log, false, true);
+                if (exitCode != 0)
+                    return false;
+                else
+                    return true;
+            }
+
+            // Check for 'su' binary
+            String[] cmd = {
+                    "which su"
+            };
+            int exitCode = doShellCommand(cmd, log, false, true);
+
+            if (exitCode == 0) {
+                android.util.Log.d(TAG, "root exists, but not sure about permissions");
+                return true;
+
+            }
+
+        } catch (IOException e) {
+            // this means that there is no root to be had (normally) so we won't
+            // log anything
+            android.util.Log.e(TAG, "Error checking for root access", e);
+
+        } catch (Exception e) {
+            android.util.Log.e(TAG, "Error checking for root access", e);
+            // this means that there is no root to be had (normally)
+        }
+
+        android.util.Log.e(TAG, "Could not acquire root permissions");
+
+        return false;
+    }
 
     public static int findProcessId(Context context) {
         String dataPath = context.getFilesDir().getParentFile().getParentFile().getAbsolutePath();
@@ -151,6 +212,59 @@ public class TorServiceUtils {
         }
 
         return procId;
+
+    }
+
+    public static int doShellCommand(String[] cmds, StringBuilder log, boolean runAsRoot,
+                                     boolean waitFor) throws Exception {
+
+        Process proc = null;
+        int exitCode = -1;
+
+        if (runAsRoot)
+            proc = Runtime.getRuntime().exec("su");
+        else
+            proc = Runtime.getRuntime().exec("sh");
+
+        OutputStreamWriter out = new OutputStreamWriter(proc.getOutputStream());
+
+        for (int i = 0; i < cmds.length; i++) {
+            // TorService.logMessage("executing shell cmd: " + cmds[i] +
+            // "; runAsRoot=" + runAsRoot + ";waitFor=" + waitFor);
+
+            out.write(cmds[i]);
+            out.write("\n");
+        }
+
+        out.flush();
+        out.write("exit\n");
+        out.flush();
+
+        if (waitFor) {
+
+            final char buf[] = new char[10];
+
+            // Consume the "stdout"
+            InputStreamReader reader = new InputStreamReader(proc.getInputStream());
+            int read = 0;
+            while ((read = reader.read(buf)) != -1) {
+                if (log != null)
+                    log.append(buf, 0, read);
+            }
+
+            // Consume the "stderr"
+            reader = new InputStreamReader(proc.getErrorStream());
+            read = 0;
+            while ((read = reader.read(buf)) != -1) {
+                if (log != null)
+                    log.append(buf, 0, read);
+            }
+
+            exitCode = proc.waitFor();
+
+        }
+
+        return exitCode;
 
     }
 }

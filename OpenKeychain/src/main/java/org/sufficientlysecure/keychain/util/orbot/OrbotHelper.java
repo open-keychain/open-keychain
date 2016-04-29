@@ -74,10 +74,13 @@ import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 /**
  * This class is taken from the NetCipher library: https://github.com/guardianproject/NetCipher/
+ * Updated 22.03.16 by Litun
  */
 public class OrbotHelper {
 
@@ -138,16 +141,52 @@ public class OrbotHelper {
     public final static String STATUS_STARTS_DISABLED = "STARTS_DISABLED";
 
     public final static String ACTION_START_TOR = "org.torproject.android.START_TOR";
+    public final static String ACTION_REQUEST_HS = "org.torproject.android.REQUEST_HS_PORT";
     /**
      * request code used to start tor
      */
     public final static int START_TOR_RESULT = 0x9234;
+    public final static int HS_REQUEST_CODE = 9999;
 
     private final static String FDROID_PACKAGE_NAME = "org.fdroid.fdroid";
     private final static String PLAY_PACKAGE_NAME = "com.android.vending";
 
     private OrbotHelper() {
         // only static utility methods, do not instantiate
+    }
+
+    /**
+     * Test whether a {@link URL} is a Tor Hidden Service host name, also known
+     * as an ".onion address".
+     *
+     * @return whether the host name is a Tor .onion address
+     */
+    public static boolean isOnionAddress(URL url) {
+        return url.getHost().endsWith(".onion");
+    }
+
+    /**
+     * Test whether a URL {@link String} is a Tor Hidden Service host name, also known
+     * as an ".onion address".
+     *
+     * @return whether the host name is a Tor .onion address
+     */
+    public static boolean isOnionAddress(String urlString) {
+        try {
+            return isOnionAddress(new URL(urlString));
+        } catch (MalformedURLException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Test whether a {@link Uri} is a Tor Hidden Service host name, also known
+     * as an ".onion address".
+     *
+     * @return whether the host name is a Tor .onion address
+     */
+    public static boolean isOnionAddress(Uri uri) {
+        return uri.getHost().endsWith(".onion");
     }
 
     public static boolean isOrbotRunning(Context context) {
@@ -170,16 +209,69 @@ public class OrbotHelper {
         }
     }
 
+    public static void requestHiddenServiceOnPort(Activity activity, int port) {
+        Intent intent = new Intent(ACTION_REQUEST_HS);
+        intent.setPackage(ORBOT_PACKAGE_NAME);
+        intent.putExtra("hs_port", port);
+
+        activity.startActivityForResult(intent, HS_REQUEST_CODE);
+    }
+
+    /**
+     * First, checks whether Orbot is installed. If Orbot is installed, then a
+     * broadcast {@link Intent} is sent to request Orbot to start
+     * transparently in the background. When Orbot receives this {@code
+     * Intent}, it will immediately reply to the app that called this method
+     * with an {@link #ACTION_STATUS} {@code Intent} that is broadcast to the
+     * {@code packageName} of the provided {@link Context} (i.e.  {@link
+     * Context#getPackageName()}.
+     *
+     * @param context the app {@link Context} will receive the reply
+     * @return whether the start request was sent to Orbot
+     */
+    public static boolean requestStartTor(Context context) {
+        if (OrbotHelper.isOrbotInstalled(context)) {
+            android.util.Log.i("OrbotHelper", "requestStartTor " + context.getPackageName());
+            Intent intent = getOrbotStartIntent(context);
+            context.sendBroadcast(intent);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets an {@link Intent} for starting Orbot.  Orbot will reply with the
+     * current status to the {@code packageName} of the app in the provided
+     * {@link Context} (i.e.  {@link Context#getPackageName()}.
+     */
+    public static Intent getOrbotStartIntent(Context context) {
+        Intent intent = new Intent(ACTION_START);
+        intent.setPackage(ORBOT_PACKAGE_NAME);
+        intent.putExtra(EXTRA_PACKAGE_NAME, context.getPackageName());
+        return intent;
+    }
+
+    /**
+     * Gets a barebones {@link Intent} for starting Orbot.  This is deprecated
+     * in favor of {@link #getOrbotStartIntent(Context)}.
+     */
+    @Deprecated
+    public static Intent getOrbotStartIntent() {
+        Intent intent = new Intent(ACTION_START);
+        intent.setPackage(ORBOT_PACKAGE_NAME);
+        return intent;
+    }
+
     /**
      * First, checks whether Orbot is installed, then checks whether Orbot is
      * running. If Orbot is installed and not running, then an {@link Intent} is
      * sent to request Orbot to start, which will show the main Orbot screen.
      * The result will be returned in
      * {@link Activity#onActivityResult(int requestCode, int resultCode, Intent data)}
-     * with a {@code requestCode} of {@code START_TOR_RESULT}
+     * with a {@code requestCode} of {@link #START_TOR_RESULT}
      *
-     * @param activity the {@link Activity} that gets the
-     *                 {@code START_TOR_RESULT} result
+     * @param activity the {@link Activity} that gets the result of the
+     *            {@code START_TOR_RESULT} request
      * @return whether the start request was sent to Orbot
      */
     public static boolean requestShowOrbotStart(Activity activity) {
@@ -197,35 +289,6 @@ public class OrbotHelper {
         Intent intent = new Intent(ACTION_START_TOR);
         intent.setPackage(ORBOT_PACKAGE_NAME);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return intent;
-    }
-
-    /**
-     * First, checks whether Orbot is installed. If Orbot is installed, then a
-     * broadcast {@link Intent} is sent to request Orbot to start transparently
-     * in the background. When Orbot receives this {@code Intent}, it will
-     * immediately reply to this all with its status via an
-     * {@link #ACTION_STATUS} {@code Intent} that is broadcast to the
-     * {@code packageName} of the provided {@link Context} (i.e.
-     * {@link Context#getPackageName()}.
-     *
-     * @param context the app {@link Context} will receive the reply
-     * @return whether the start request was sent to Orbot
-     */
-    public static boolean requestStartTor(Context context) {
-        if (OrbotHelper.isOrbotInstalled(context)) {
-            Log.i("OrbotHelper", "requestStartTor " + context.getPackageName());
-            Intent intent = getOrbotStartIntent();
-            intent.putExtra(EXTRA_PACKAGE_NAME, context.getPackageName());
-            context.sendBroadcast(intent);
-            return true;
-        }
-        return false;
-    }
-
-    public static Intent getOrbotStartIntent() {
-        Intent intent = new Intent(ACTION_START);
-        intent.setPackage(ORBOT_PACKAGE_NAME);
         return intent;
     }
 
