@@ -726,6 +726,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.RedirectImportKeysActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_activity_redirect_key"
+            android:theme="@style/Theme.Keychain.Transparent">
+
             <!-- VIEW with fingerprint scheme:
                       Handle URIs with fingerprints when scanning directly from Barcode Scanner -->
             <intent-filter android:label="@string/intent_import_key">
@@ -741,11 +751,9 @@
                 <data android:scheme="OpenPGP4Fpr" />
                 <data android:scheme="OpenPGP4fpr" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
         </activity>
+
+
         <activity
             android:name=".ui.LogDisplayActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"

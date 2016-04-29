@@ -1752,4 +1752,9 @@
         <item>50 EUR</item>
         <item>100 EUR</item>
     </string-array>
+    <string name="redirect_import_key_title">"Import key attempt"</string>
+    <string name="redirect_import_key_message">"You scanned a fingerprint with another app, please scan with Openkeychain directly to be safe"</string>
+    <string name="redirect_import_key_yes">"Scan again"</string>
+    <string name="redirect_import_key_no">"Close"</string>
+    <string name="title_activity_redirect_key">"Key import redirection"</string>
 </resources>
