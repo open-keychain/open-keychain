@@ -6,14 +6,15 @@
 
 package org.bouncycastle.openpgp.operator.jcajce;
 
+
+import java.nio.ByteBuffer;
+import java.util.Map;
+
 import org.bouncycastle.jcajce.util.NamedJcaJceHelper;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKeyEncryptedData;
 import org.bouncycastle.openpgp.operator.PGPDataDecryptor;
 import org.bouncycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
-
-import java.nio.ByteBuffer;
-import java.util.Map;
 
 public class CachingDataDecryptorFactory implements PublicKeyDataDecryptorFactory
 {
@@ -57,6 +58,10 @@ public class CachingDataDecryptorFactory implements PublicKeyDataDecryptorFactor
         ByteBuffer bi = ByteBuffer.wrap(secKeyData[0]);  // encoded MPI
         if (mSessionKeyCache.containsKey(bi)) {
             return mSessionKeyCache.get(bi);
+        }
+
+        if (mWrappedDecryptor == null) {
+            throw new IllegalStateException("tried to decrypt without wrapped decryptor, this is a bug!");
         }
 
         byte[] sessionData = mWrappedDecryptor.recoverSessionData(keyAlgorithm, secKeyData);

@@ -35,6 +35,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
@@ -452,6 +453,14 @@ public class OpenPgpService extends Service {
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                 cryptoInput.mPassphrase =
                         new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+            }
+            if (data.hasExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT_WRAPPER)) {
+                Bundle wrapperBundle = data.getBundleExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT_WRAPPER);
+                wrapperBundle.setClassLoader(getClassLoader());
+                OpenPgpDecryptionResult decryptionResult = wrapperBundle.getParcelable(OpenPgpApi.EXTRA_DECRYPTION_RESULT);
+                if (decryptionResult != null && decryptionResult.hasDecryptedSessionKey()) {
+                    cryptoInput.addCryptoData(decryptionResult.sessionKey, decryptionResult.decryptedSessionKey);
+                }
             }
 
             byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
