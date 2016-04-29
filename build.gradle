@@ -12,11 +12,10 @@ buildscript {
         // bintray dependency to satisfy dependency of openpgp-api lib
         classpath 'com.novoda:bintray-release:0.2.7'
 
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
-        // classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.0.2'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
 
-        // allows to check for lib updates with "gradle dependencyUpdates -Drevision=release"
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.11.3'
+        // allows to check for lib updates with "./gradlew dependencyUpdates -Drevision=release"
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
     }
 }
 

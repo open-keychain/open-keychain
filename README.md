@@ -110,6 +110,9 @@ ext {
 ```
 * Change SDK and Build Tools in git submodules "openkeychain-api-lib" and "openpgp-api-lib" manually. They should also build on their own without the ext variables.
 
+#### Update library
+* You can check for library updates with ``./gradlew dependencyUpdates -Drevision=release
+
 #### Add new library
 * You can add the library as a Maven dependency or as a git submodule (if patches are required) in the "extern" folder.
 * You can get all transitive dependencies with ``./gradlew -q dependencies OpenKeychain:dependencies``

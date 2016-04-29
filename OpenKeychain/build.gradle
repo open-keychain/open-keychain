@@ -15,35 +15,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:23.3.0'
     compile 'com.android.support:support-annotations:23.3.0'
 
-    // Unit tests in the local JVM with Robolectric
-    // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
-    // http://robolectric.org/getting-started/
-    // http://www.vogella.com/tutorials/Robolectric/article.html
-    testCompile 'junit:junit:4.12'
-    testCompile ('org.robolectric:robolectric:3.0') {
-        exclude group: 'org.bouncycastle', module: 'bcprov-jdk16'
-    }
-    testCompile 'org.mockito:mockito-core:1.10.19'
-
-    // UI testing with Espresso
-    androidTestCompile 'com.android.support.test:runner:0.4.1'
-    androidTestCompile 'com.android.support.test:rules:0.4.1'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.1'
-    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2.1') {
-        exclude group: 'com.android.support', module: 'appcompat'
-        exclude group: 'com.android.support', module: 'support-v4'
-        exclude module: 'recyclerview-v7'
-    }
-
-    // Temporary workaround for bug: https://code.google.com/p/android-test-kit/issues/detail?id=136
-    // from https://github.com/googlesamples/android-testing/blob/master/build.gradle#L21
-    configurations.all {
-        resolutionStrategy.force 'com.android.support:support-annotations:23.3.0'
-    }
-
     // JCenter etc.
-//    compile 'com.eftimoff:android-patternview:1.0.5@aar'
     compile 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
     compile 'com.google.zxing:core:3.2.1'
     compile 'com.jpardogo.materialtabstrip:library:1.1.0'
@@ -52,7 +24,7 @@ dependencies {
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     compile 'com.splitwise:tokenautocomplete:2.0.7@aar'
     compile 'se.emilsjolander:stickylistheaders:2.7.0'
-    compile 'org.sufficientlysecure:html-textview:1.3'
+    compile 'org.sufficientlysecure:html-textview:1.5'
     compile 'org.sufficientlysecure:donations:2.4'
     compile 'com.nispok:snackbar:2.11.0'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
@@ -83,6 +55,33 @@ dependencies {
     compile project(':extern:minidns')
     compile project(':KeybaseLib')
     compile project(':safeslinger-exchange')
+
+    // Unit tests in the local JVM with Robolectric
+    // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
+    // http://robolectric.org/getting-started/
+    // http://www.vogella.com/tutorials/Robolectric/article.html
+    testCompile 'junit:junit:4.12'
+    testCompile ('org.robolectric:robolectric:3.0') {
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk16'
+    }
+    testCompile 'org.mockito:mockito-core:1.10.19'
+
+    // UI testing with Espresso
+    // Force usage of support libs in the test app, since they are internally used by the runner module.
+    // https://github.com/googlesamples/android-testing/blob/master/ui/espresso/BasicSample/app/build.gradle#L28
+    androidTestCompile 'com.android.support:support-annotations:23.3.0'
+    androidTestCompile 'com.android.support:appcompat-v7:23.3.0'
+    androidTestCompile 'com.android.support:design:23.3.0'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
+    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'recyclerview-v7'
+    }
+
 }
 
 // Output of ./gradlew -q calculateChecksums
@@ -94,6 +93,7 @@ dependencyVerification {
             'com.android.support:design:1023c9d1ca3ecae3e0c54b7678cd275032fe5720bbb4f58e3c8b2f2a595d0051',
             'com.android.support:recyclerview-v7:32b98ca177d9352b19a92af80ff9a3c3589b50232b6722d2bce5514abe90be51',
             'com.android.support:cardview-v7:2f592da4dd1db85dab99653474dd139135aa3ca7596dfdbcfef714e0339b603a',
+            'com.android.support:support-annotations:e9e076f3ea4fb144387c6054a6f69a2f6150ad4b1907897aaf55d6e8f4b8b91e',
             'com.journeyapps:zxing-android-embedded:afe4cd51d95ba0fd3a4bfe08c5a160bd32602aa174d511600ac824b6de4c79f1',
             'com.google.zxing:core:b4d82452e7a6bf6ec2698904b332431717ed8f9a850224f295aec89de80f2259',
             'com.jpardogo.materialtabstrip:library:24d19232b319f8c73e25793432357919a7ed972186f57a3b2c9093ea74ad8311',
@@ -102,7 +102,7 @@ dependencyVerification {
             'org.ocpsoft.prettytime:prettytime:ef7098d973ae78b57d1a22dc37d3b8a771bf030301300e24055d676b6cdc5e75',
             'com.splitwise:tokenautocomplete:f56239588390f103b270b7c12361d99b06313a5a0410dc7f66e241ac4baf9baa',
             'se.emilsjolander:stickylistheaders:a08ca948aa6b220f09d82f16bbbac395f6b78897e9eeac6a9f0b0ba755928eeb',
-            'org.sufficientlysecure:html-textview:39048e35894e582adada388e6c00631803283f8defed8e07ad58a5f284f272ee',
+            'org.sufficientlysecure:html-textview:b3799eea5f440b32bdec18360e4ce66f6f77814c8df9d382718506a7da0de961',
             'org.sufficientlysecure:donations:96f8197bab26dfe41900d824f10f8f1914519cd62eedb77bdac5b223eccdf0a6',
             'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
             'com.squareup.okhttp3:okhttp:a41cdb7b024c56436a21e38f00b4d12e3b7e01451ffe6c4f545acba805bba03b',
@@ -119,15 +119,14 @@ dependencyVerification {
             'com.mikepenz:fontawesome-typeface:033cf3460d8074bd37a1fefc2ff4eac8f2e3db835ec78bf386d46710e4d0827c',
             'com.mikepenz:community-material-typeface:382e8446fc08fe03cb1e0f91ee329ffd514c113ad22f8389b88424ac71ed5fbb',
             'com.fidesmo:nordpol-android:56f43fe2b1676817bcb4085926de14a08282ef6729c855c198d81aec62b20d65',
-//            'OpenKeychain:openpgp-api-lib:9c1e335b0b8514d42c4a7890744b21efa08ae165e929f501ed66636d2832fb8f',
-//            'OpenKeychain:openkeychain-api-lib:4d156f16a632f5dd8ad738673071925d4ee2cc989fe09a319f26378e88cdcc8d',
-//            'OpenKeychain.extern.bouncycastle:core:28fc8340043831526155a977ba89ec7a4479c6a0fb1647d31662aaafe8cdbd1f',
-//            'OpenKeychain.extern.bouncycastle:pg:9e17c5ee912595bd71874ad749174e80947d4095f0466d8500146410499f6fa6',
-//            'OpenKeychain.extern.bouncycastle:prov:9fcb4ab4893393b3e9c8192f8fb051c1b6a07b9c98101a0906ea0ffd375bd947',
-//            'OpenKeychain.extern:minidns:6521f38b9e2f1a8268b1d5f32a6ad4e4b51883b554a3751aada4895d8722f179',
-//            'OpenKeychain:KeybaseLib:98f06449917485019b00c60e0b3224122e36f639b6cd99842a79736f79cddafc',
-//            'OpenKeychain:safeslinger-exchange:4b6e9a5dfb2a33bc80b663ee934c8c270e13cea72e3c6da2d230b0918743bf94',
-            'com.android.support:support-annotations:e9e076f3ea4fb144387c6054a6f69a2f6150ad4b1907897aaf55d6e8f4b8b91e',
+//            'OpenKeychain:openpgp-api-lib:e4f456b77f80886eb2094bd643c8c8c9cf0eb3e8ef919706d7e92da6fc3c5517',
+//            'OpenKeychain:openkeychain-api-lib:cddb2953fc3ec2876923f01acbe91e136eaad1c327450a4fab21274b0edf73d9',
+//            'OpenKeychain.extern.bouncycastle:core:d4574e14e78d78b8b0b30b37089f82901a8fb46679915e034fe5d15cc5431c6a',
+//            'OpenKeychain.extern.bouncycastle:pg:064250718891c89d3bfa1e9bdef68bbf1cd2adb83532707754390b42643f2156',
+//            'OpenKeychain.extern.bouncycastle:prov:6933802a03ffd53c084415550db834a59540327434a061af39442e00002611f8',
+//            'OpenKeychain.extern:minidns:357901cf1b93f74f9729f6e3a1dfa5f148d627bf23423c8597ab82be84b3dc9d',
+//            'OpenKeychain:KeybaseLib:cbba456bf50083cde99f9c460fcbd812dbcd7d9e1a5c1df0ee9e080a85802aa8',
+//            'OpenKeychain:safeslinger-exchange:422efcad6868e32ce1446d18f08d728d266a30725fdc09a71f1b78c133bfc051',
             'com.android.support:support-vector-drawable:a4feae56880e385e147dfed3f73593ce61164ec49bb401f34de9a77a17c68a44',
             'com.android.support:animated-vector-drawable:ddf1f9dc18d38b21b01c21842d4bdf57613ea86398ede8f914f29b5770f4c32b',
             'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
