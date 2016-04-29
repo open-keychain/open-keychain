@@ -30,6 +30,7 @@
   <string name="title_help">Hjälp</string>
   <string name="title_log_display">Logg</string>
   <string name="title_exchange_keys">Utbyt nycklar</string>
+  <string name="title_advanced_key_info">Avancerad</string>
   <string name="title_delete_secret_key">Radera DIN nyckel \'%s\'?</string>
   <string name="title_manage_my_keys">Hantera mina nycklar</string>
   <!--section-->
@@ -41,13 +42,16 @@
   <string name="section_keys">Undernycklar</string>
   <string name="section_cloud_search">Nyckelsökning</string>
   <string name="section_cloud_search_summary">Nyckelserver, keybase.io</string>
+  <string name="section_passphrase_cache">Lösenord och pin-koder</string>
   <string name="section_proxy_settings_summary">Tor, proxyinställningar</string>
   <string name="section_gui">Gränssnitt</string>
+  <string name="section_experimental_features">Experimentella funktioner</string>
   <string name="section_certify">Bekräfta</string>
   <string name="section_actions">Åtgärder</string>
   <string name="section_share_key">Nyckel</string>
   <string name="section_key_server">Nyckelserver</string>
   <string name="section_fingerprint">Fingeravtryck</string>
+  <string name="section_phrases">Uttryck</string>
   <string name="section_encrypt">Kryptera</string>
   <string name="section_decrypt">Dekryptera / Verifiera</string>
   <string name="section_current_expiry">Aktuellt utgångsdatum</string>
@@ -68,12 +72,18 @@
   <string name="btn_back">Föregående</string>
   <string name="btn_no">Nej</string>
   <string name="btn_match">Fingeravtrycken matchar</string>
+  <string name="btn_match_phrases">Uttryck matchar</string>
   <string name="btn_share_encrypted_signed">Kryptera/signera och dela text</string>
   <string name="btn_copy_encrypted_signed">Kryptera/signera och kopiera text</string>
+  <string name="btn_paste_encrypted_signed">Kryptera/signera och klistra in text</string>
   <string name="btn_view_cert_key">Visa nyckel för certifiering</string>
   <string name="btn_create_key">Skapa nyckel</string>
   <string name="btn_add_files">Lägg till fil(er)</string>
+  <string name="btn_share_decrypted_text">Dela</string>
+  <string name="btn_open_with">Öppna med...</string>
+  <string name="btn_copy_decrypted_text">Kopiera till urklipp</string>
   <string name="btn_decrypt_clipboard">Läs från urklipp</string>
+  <string name="btn_decrypt_files">Välj inmatningsfil</string>
   <string name="btn_encrypt_files">Kryptera filer</string>
   <string name="btn_encrypt_text">Kryptera text</string>
   <string name="btn_add_email">Lägg till extra e-postadress</string>
@@ -81,7 +91,10 @@
   <string name="btn_add_keyserver">Lägg till</string>
   <string name="btn_save_default">Spara som standard</string>
   <string name="btn_saved">Sparad!</string>
+  <string name="btn_not_matching">Inga matchningar</string>
   <!--Content Description-->
+  <string name="cd_encrypt_files">Kryptera filer</string>
+  <string name="cd_encrypt_text">Kryptera text</string>
   <!--menu-->
   <string name="menu_preferences">Inställningar</string>
   <string name="menu_help">Hjälp</string>
@@ -94,6 +107,7 @@
   <string name="menu_select_all">Markera alla</string>
   <string name="menu_export_all_keys">Exportera alla nycklar</string>
   <string name="menu_update_all_keys">Uppdatera alla nycklar</string>
+  <string name="menu_advanced">Avancerad</string>
   <string name="menu_keyserver_add">Lägg till</string>
   <!--label-->
   <string name="label_message">Text</string>
@@ -184,29 +198,24 @@
   <string name="choice_4hours">4 timmar</string>
   <string name="choice_8hours">8 timmar</string>
   <string name="choice_forever">för alltid</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
+  <string name="choice_select_cert">Välj en nyckel</string>
   <string name="filemanager_title_open">Öppna…</string>
   <string name="error">Fel</string>
   <string name="error_message">Fel: %s</string>
-  <!--key flags-->
-  <string name="flag_certify">Certifiera</string>
-  <string name="flag_sign">Signera</string>
-  <string name="flag_encrypt">Kryptera</string>
-  <string name="flag_authenticate">Autentisera</string>
+  <string name="theme_dark">Mörk</string>
+  <string name="theme_light">Ljus</string>
   <!--sentences-->
   <string name="wrong_passphrase">Fel lösenord.</string>
   <string name="no_filemanager_installed">Ingen kompatibel filhanterare är installerad.</string>
   <string name="passphrases_do_not_match">Lösenorden stämde inte överens.</string>
   <string name="passphrase_must_not_be_empty">Var god ange ett lösenord.</string>
+  <string name="passphrase_for_symmetric_encryption">Skriv lösenord</string>
   <string name="passphrase_for">Ange lösenord för \'%s\'</string>
   <string name="pin_for">Ange PIN för \'%s\'</string>
   <string name="file_delete_confirmation_title">Radera orginalfiler?</string>
   <string name="file_delete_confirmation">Följande filer kommer raderas:%s</string>
   <string name="file_delete_successful">%1$d av %2$d filer har raderats.%3$s</string>
+  <string name="no_file_selected">Inga valda filer.</string>
   <string name="encrypt_sign_successful">Signerades och/eller krypterades.</string>
   <string name="encrypt_sign_clipboard_successful">Signerades och/eller krypterades till urklipp.</string>
   <string name="select_encryption_key">Välj åtminstone en krypteringsnyckel.</string>
@@ -353,6 +362,7 @@
   <string name="help_tab_changelog">Ändringslogg</string>
   <string name="help_tab_about">Om</string>
   <string name="help_about_version">Version:</string>
+  <string name="help_tab_donations">Donera</string>
   <!--Import-->
   <string name="import_tab_keyserver">Nyckelserver</string>
   <string name="import_tab_cloud">Nyckelsökning</string>
@@ -432,6 +442,7 @@
   <string name="api_settings_delete_account">Radera konto</string>
   <string name="api_settings_package_name">Paketnamn</string>
   <string name="api_settings_accounts">Konton (gamla API:t)</string>
+  <string name="api_settings_advanced">Avancerad</string>
   <string name="api_settings_allowed_keys">Tillåtna nycklar</string>
   <string name="api_settings_settings">Inställningar</string>
   <string name="api_settings_key">Kontonyckel:</string>
@@ -514,7 +525,6 @@
   <string name="edit_key_edit_user_id_revoked">Den här identiteten har återkallats. Detta kan inte göras ogjort.</string>
   <string name="edit_key_edit_subkey_title">Välj en åtgärd!</string>
   <string name="edit_key_new_subkey">ny undernyckel</string>
-  <string name="edit_key_select_flag">Välj åtminstone en flagga!</string>
   <string name="edit_key_error_add_identity">Lägg till åtminstone en identitet!</string>
   <string name="edit_key_error_add_subkey">Lägg till åtminstone en undernyckel!</string>
   <!--Create key-->
@@ -532,6 +542,7 @@
   <string name="create_key_add_email">Lägg till e-postadress</string>
   <string name="create_key_email_already_exists_text">E-postadress har redan lagts till</string>
   <string name="create_key_email_invalid_email">Formatet på e-postadressen är ogiltigt</string>
+  <string name="create_key_yubi_key_pin">PIN</string>
   <!--View key-->
   <string name="view_key_revoked">Återkallad: Nyckeln bör inte användas längre!</string>
   <string name="view_key_expired">Utgånget: Kontakten behöver utöka nyckelns giltighetstid!</string>
@@ -780,6 +791,10 @@
   <string name="msg_dc_unlocking">Låser upp privat nyckel</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl_clear_meta_file">Filnamn: %s</string>
+  <string name="msg_vl_clear_meta_mime">MIME-typ: %s</string>
+  <string name="msg_vl_clear_meta_size">Filstorlek: %s</string>
+  <string name="msg_vl_error_integrity_check">Fel vid integritetskontroll!</string>
+  <string name="msg_vl_ok">Ok</string>
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se_success">Signering/kryptering lyckades!</string>
   <!--Messages for PgpSignEncrypt operation-->
@@ -863,6 +878,7 @@
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">Skriv lösenord</string>
   <string name="passphrase_again">Igen</string>
   <string name="lockpattern">Låsmönster</string>
   <string name="lockpatternNFC">NFC + Låsmönster</string>
@@ -883,4 +899,18 @@
   <string name="linked_title_twitter">Twitter</string>
   <string name="linked_button_verify">Verifiera</string>
   <string name="linked_text_confirming">Bekräftar…</string>
+  <string name="share_log_dialog_share_button">Dela</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">Installera</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Avbryt</string>
+  <string name="prompt_fidesmo_app_install_button_positive">Installera</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Avbryt</string>
+  <string-array name="help_donation_google_catalog_values">
+    <item>1 EUR</item>
+    <item>2 EUR</item>
+    <item>3 EUR</item>
+    <item>5 EUR</item>
+    <item>10 EUR</item>
+    <item>50 EUR</item>
+    <item>100 EUR</item>
+  </string-array>
 </resources>

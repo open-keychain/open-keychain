@@ -2,9 +2,9 @@
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * テキストデータの検出と処理
+  * パフォーマンスの改善
+  * セキュリティトークンを処理する UI の改善
 
 
 ## 3.8

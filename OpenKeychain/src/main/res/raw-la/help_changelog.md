@@ -1,4 +1,4 @@
-[//]: # (NOTA: Si prega di mettere ogni frase in una propria linea, Transifex mette ogni riga nel proprio campo di traduzione!)
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 ## 3.9
 
@@ -17,7 +17,7 @@
 ## 3.7
 
   * Improved Android 6 support (permissions, integration into text selection)
-  * API: Versione 10
+  * API: Version 10
 
 
 ## 3.6
@@ -30,7 +30,7 @@
   * Experimental feature: link keys to Github, Twitter accounts
   * Experimental feature: key confirmation via phrases
   * Experimental feature: dark theme
-  * API: Versione 9
+  * API: Version 9
 
 
 ## 3.5
@@ -38,7 +38,7 @@
   * Key revocation on key deletion
   * Improved checks for insecure cryptography
   * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Versione 8
+  * API: Version 8
 
 
 ## 3.4
@@ -62,7 +62,7 @@
   * Integration of QR Code Scanning (New permissions required)
   * Improved key creation wizard
   * Fix missing contacts after sync
-  * Richiede Android 4
+  * Requires Android 4
   * Redesigned key screen
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...
@@ -85,7 +85,7 @@
 
 ## 3.1
 
-  * Corretto crash su Android 5
+  * Fix crash on Android 5
   * New certify screen
   * Secure Exchange directly from key list (SafeSlinger library)
   * New QR Code program flow
@@ -166,7 +166,7 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
 
 ## 2.6.1
 
-  * Correzione di bug di regressione
+  * Some fixes for regression bugs
 
 
 ## 2.6
@@ -242,7 +242,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 2.1
 
-  * Correzione di molti bug
+  * Lots of bug fixes
   * New API for developers
   * PRNG bug fix by Google
 
@@ -263,8 +263,8 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * App2sd
   * More choices for passphrase cache: 1, 2, 4, 8, hours
   * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Correzione di bug
-  * Ottimizzazioni
+  * Bugfixes
+  * Optimizations
 
 
 ## 1.0.7
@@ -281,7 +281,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Stream encryption/decryption (gallery, etc.)
   * New options (language, force v3 signatures)
   * Interface changes
-  * Correzione di bug
+  * Bugfixes
 
 
 ## 1.0.5
@@ -320,7 +320,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * K-9 Mail integration, APG supporting beta build of K-9 Mail
   * Support of more file managers (including ASTRO)
-  * Traduzione in Sloveno
+  * Slovenian translation
   * New database, much faster, less memory usage
   * Defined Intents and content provider for other apps
-  * Correzione di bug
+  * Bugfixes

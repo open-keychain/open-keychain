@@ -1,9 +1,9 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (NOTA: coloque cada frase em sua própria linha, Transifex coloca cada linha em seu próprio campo de tradução!)
 
-Advanced screen allows you to
-* share key in non-recommended ways
-* edit identities
-* edit subkeys
-* examine certificates in detail
+Configuração avançada de tela permite que você
+compartilhar a chave de formas não recomendadas
+* editar identidades
+* editar sub-chaves
+* examine certificados em detalhes
 
-Only proceed if you know what you are doing!
+Só prossiga se você sabe o que está fazendo!

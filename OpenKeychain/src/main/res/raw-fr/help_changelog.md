@@ -2,9 +2,9 @@
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Détection et gestion de données texte
+  * Améliorations des performances
+  * Améliorations de l'IG pour la gestion des jetons de sécurité
 
 
 ## 3.8

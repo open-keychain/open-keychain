@@ -139,19 +139,9 @@
   <string name="choice_4hours">4 ure</string>
   <string name="choice_8hours">8 ur</string>
   <string name="choice_forever">za vedno</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Odpri...</string>
   <string name="error">Napaka</string>
   <string name="error_message">Napaka: %s</string>
-  <!--key flags-->
-  <string name="flag_certify">Overi</string>
-  <string name="flag_sign">Podpiši</string>
-  <string name="flag_encrypt">Šifriraj</string>
-  <string name="flag_authenticate">Preveri avtentičnost</string>
   <!--sentences-->
   <string name="no_filemanager_installed">Nimate nameščenega združljivega upravljalnika datotek.</string>
   <string name="pin_for">Vnesite PIN kodo za \'%s\'</string>
@@ -473,7 +463,6 @@
   <string name="edit_key_edit_user_id_revoked">Identiteta je bila preklicana. Ta poteza ne more biti razveljavljena.</string>
   <string name="edit_key_edit_subkey_title">Izberite dejanje!</string>
   <string name="edit_key_new_subkey">nov podključ</string>
-  <string name="edit_key_select_flag">Izberite vsaj eno oznako!</string>
   <string name="edit_key_error_add_identity">Dodajte vsaj eno identiteto!</string>
   <string name="edit_key_error_add_subkey">Dodajte vsaj en podključ!</string>
   <!--Create key-->

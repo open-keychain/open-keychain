@@ -1,9 +1,9 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (NOTER: Vennligst putt hver setning på sin egen linje, Transifex putter hver linje i sitt eget oversettelsesfelt!)
 
-Advanced screen allows you to
-* share key in non-recommended ways
-* edit identities
-* edit subkeys
-* examine certificates in detail
+Avansert-skjermen lar deg
+* dele nøkler på uanbefalte måter
+* slette identiteter
+* rediger undernøkler
+* undersøk sertifikatdetaljer
 
-Only proceed if you know what you are doing!
+Fortsett kun hvis du vet hva du gjør!

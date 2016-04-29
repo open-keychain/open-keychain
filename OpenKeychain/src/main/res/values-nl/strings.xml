@@ -185,19 +185,9 @@
   <string name="choice_4hours">4 uur</string>
   <string name="choice_8hours">8 uur</string>
   <string name="choice_forever">voor altijd</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Openen…</string>
   <string name="error">Fout</string>
   <string name="error_message">Fout: %s</string>
-  <!--key flags-->
-  <string name="flag_certify">Certificeer</string>
-  <string name="flag_sign">Ondertekenen</string>
-  <string name="flag_encrypt">Versleutelen</string>
-  <string name="flag_authenticate">Legitimeren</string>
   <!--sentences-->
   <string name="wrong_passphrase">Wachtwoord verkeerd.</string>
   <string name="no_filemanager_installed">Geen compatibele bestandsbeheerder geïnstalleerd.</string>
@@ -528,7 +518,6 @@
   <string name="edit_key_edit_user_id_revoked">Deze identiteit is ingetrokken. Dit kan niet ongedaan gemaakt worden.</string>
   <string name="edit_key_edit_subkey_title">Selecteer een actie!</string>
   <string name="edit_key_new_subkey">nieuwe subsleutel</string>
-  <string name="edit_key_select_flag">Gelieve minstens een vlag te selecteren!</string>
   <string name="edit_key_error_add_identity">Voeg minstens een identiteit toe!</string>
   <string name="edit_key_error_add_subkey">Voeg minstens een subsleutel toe!</string>
   <!--Create key-->

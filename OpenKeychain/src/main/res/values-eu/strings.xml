@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">Enkriptatu</string>
   <string name="title_decrypt">Dekriptatu</string>
   <string name="title_add_subkey">Gehitu azpigiltza</string>
+  <string name="title_change_master_key">Aldatu giltza maisua</string>
   <string name="title_edit_key">Editatu Giltza</string>
   <string name="title_linked_create">Sortu Loturatutako Nortasuna</string>
   <string name="title_preferences">Ezarpenak</string>
@@ -154,6 +155,7 @@
   <string name="label_keyservers">Hautatu OpenPGP giltza-zerbitzariak</string>
   <string name="label_key_id">Giltza ID-a</string>
   <string name="label_key_created">Giltza sortuta %s</string>
+  <string name="label_key_type">Mota</string>
   <string name="label_creation">Sortzea</string>
   <string name="label_expiry">Epemuga</string>
   <string name="label_usage">Erabilpena</string>
@@ -187,6 +189,7 @@
   <string name="label_sync_settings_keyserver_title">Berezgaitasunez eguneratu giltzak</string>
   <string name="label_sync_settings_keyserver_summary_on">Hiru egunetik behin, giltzak hobetsitako giltza-zerbitzaritik eguneratzen dira</string>
   <string name="label_sync_settings_keyserver_summary_off">Giltzak ez dira berezgaitasunez eguneratzen</string>
+  <string name="label_sync_settings_wifi_title">Aldiberetu Wi-Fi moduan bakarrik</string>
   <string name="label_sync_settings_contacts_title">Lotu giltzak harremanekin</string>
   <string name="label_sync_settings_contacts_summary_on">Lotu giltzak harremanekin izen eta post@ helbideetan ohinarrituz. Hau erabat lineaz-kanpo gertatzen da zure gailuan.</string>
   <string name="label_sync_settings_contacts_summary_off">Giltza berriak ez dira harremanekin lotuko</string>
@@ -254,21 +257,22 @@
   <string name="choice_8hours">8 ordu</string>
   <string name="choice_forever">betirako</string>
   <string name="choice_select_cert">Hautatu Giltza bat</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Ireki...</string>
+  <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_2048_description_html">agiri neurri txikiagoa, segurutzat hartzen da 2030 arte</string>
+  <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_3072_description_html">gomendatua, segurutzat hartzen da 2040 arte</string>
+  <string name="rsa_4096">RSA 4096</string>
+  <string name="rsa_4096_description_html">agiri neurria handiagoa, segurutzat hartzen da 2040+ arte</string>
+  <string name="ecc_p256">ECC P-256</string>
+  <string name="ecc_p521">ECC P-521</string>
+  <string name="usage_sign">Sinatu</string>
+  <string name="usage_encrypt">Enkriptatu</string>
+  <string name="usage_sign_and_encrypt">Sinatu eta Enkriptatu</string>
   <string name="error">Akatsa</string>
   <string name="error_message">Akatsa: %s</string>
   <string name="theme_dark">Iluna</string>
   <string name="theme_light">Argia</string>
-  <!--key flags-->
-  <string name="flag_certify">Egiaztatu</string>
-  <string name="flag_sign">Sinatu</string>
-  <string name="flag_encrypt">Enkriptatu</string>
-  <string name="flag_authenticate">Egiaztatu</string>
   <!--sentences-->
   <string name="wrong_passphrase">Sarhitz okerra.</string>
   <string name="no_filemanager_installed">Ez dago agiri kudeatzaile bateragarririk ezarrita.</string>
@@ -321,6 +325,7 @@
   <string name="error_file_delete_failed">ez da ezabatu. Ezabatu ezazu eskuz!</string>
   <string name="error_file_added_already">%s jadanik gehitu da.</string>
   <string name="error_file_not_found">agiria ez da aurkitu</string>
+  <string name="error_bad_data">Datu okerrak!</string>
   <string name="error_no_secret_key_found">ez da giltza sekretu erabilgarririk aurkitu</string>
   <string name="error_external_storage_not_ready">kanpoko biltegia ez dago gertu</string>
   <string name="error_key_size_minimum512bit">giltzaren neurria gutxienez 512bitekoa izan behar da</string>
@@ -669,7 +674,7 @@
     <item>Mugitu Azpigiltza Segurtasun Lekukora</item>
   </string-array>
   <string name="edit_key_new_subkey">azpigiltza berria</string>
-  <string name="edit_key_select_flag">Mesedez hautatu gutxienez ikur bat!</string>
+  <string name="edit_key_select_usage">Mesedez hautatu giltza erabilpena!</string>
   <string name="edit_key_error_add_identity">Gehitu nortasun bat gutxienez!</string>
   <string name="edit_key_error_add_subkey">Gehitu azpigiltza bat gutxienez!</string>
   <string name="edit_key_error_bad_security_token_algo">Algoritmoa ez dago Segurtasun Lekukoak sostengatua!</string>
@@ -892,6 +897,7 @@
   <string name="msg_cr_error_no_user_id">Giltza-uztaiak gutxienez erabiltzaile ID batekin sortu behar dira!</string>
   <string name="msg_cr_error_no_certify">Maisu giltzak egiaztagiri ikurra izan behar du!</string>
   <string name="msg_cr_error_null_expiry">Epemuga ezin daiteke giltza sortzea baino \'lehenago\' izan. Hau programazio akats bat da, mesedez agiritu akats jakinarazpen bat!</string>
+  <string name="msg_cr_error_keysize_2048">Giltza neurria 2048 edo handiagoa izan behar da!</string>
   <string name="msg_cr_error_no_curve">Ez da giltzaren neurria adierazi! Hau programazio akats bat da, mesedez agiritu akats jakinarazpen bat!</string>
   <string name="msg_cr_error_internal_pgp">Barneko OpenPGP akatsa!</string>
   <string name="msg_cr_error_unknown_algo">Algoritmo ezezaguna hautatu da! Hau programazio akats bat da, mesedez agiritu akats jakinarazpen bat!</string>
@@ -1199,6 +1205,7 @@
   <string name="msg_data_mime_bad">Ezin da MIME datu bezala aztertu</string>
   <string name="msg_data_mime_filename">Agirizena: \'%s\'</string>
   <string name="msg_data_mime_length">Edukia-Luzera: %s</string>
+  <string name="msg_data_mime_charset">Hizkikodea \'%s\' da</string>
   <string name="msg_data_mime_charset_unknown">Hizkikodea ezezaguna da, edo datua ez da idazkia.</string>
   <string name="msg_data_mime">MIME datu egitura aztertzen</string>
   <string name="msg_data_mime_ok">Azterketa amaituta</string>
@@ -1495,6 +1502,7 @@
   <string name="help_donation_paypal_item">OpenKeychain Dirulaguntza</string>
   <string-array name="help_donation_google_catalog_values">
     <item>1 EUR</item>
+    <item>2 EUR</item>
     <item>3 EUR</item>
     <item>5 EUR</item>
     <item>10 EUR</item>

@@ -119,19 +119,9 @@
   <string name="choice_4hours">4 godziny</string>
   <string name="choice_8hours">8 godzin</string>
   <string name="choice_forever">na zawsze</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Otwórz...</string>
   <string name="error">Błąd</string>
   <string name="error_message">Błąd: %s</string>
-  <!--key flags-->
-  <string name="flag_certify">Certyfikuj</string>
-  <string name="flag_sign">Podpisuj</string>
-  <string name="flag_encrypt">Szyfruj</string>
-  <string name="flag_authenticate">Uwierzytelniaj</string>
   <!--sentences-->
   <string name="no_filemanager_installed">Nie zainstalowano żadnego kompatybilnego menadżera plików.</string>
   <string name="pin_for">Wpisz PIN dla \'%s\'</string>
@@ -401,7 +391,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="edit_key_edit_user_id_revoked">Ta tożsamość została unieważniona. Tego już nie można cofnąć.</string>
   <string name="edit_key_edit_subkey_title">Wybierz zadanie!</string>
   <string name="edit_key_new_subkey">nowy pod-klucz</string>
-  <string name="edit_key_select_flag">Prosimy o wybranie przynajmniej jeden flagi!</string>
   <string name="edit_key_error_add_identity">Dodaj przynajmniej jedną tożsamość!</string>
   <string name="edit_key_error_add_subkey">Dodaj przynajmniej jeden pod-klucz!</string>
   <!--Create key-->

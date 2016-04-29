@@ -142,10 +142,6 @@
   <!--InstallDialogFragment strings-->
   <!--StartOrbotDialogFragment strings-->
   <!--choice-->
-  <!--key flags-->
-  <string name="flag_sign">امضاء کردن</string>
-  <string name="flag_encrypt">رمزگذاری</string>
-  <string name="flag_authenticate">تصدیق کردن</string>
   <!--sentences-->
   <string name="wrong_passphrase">رمزعبور اشتباه است.</string>
   <string name="no_filemanager_installed">برنامهٔ مدیریتِ فایل سازگاری نصب نیست.</string>
@@ -252,7 +248,6 @@
   <string name="edit_key_edit_user_id_revoked">این هویت لغو شده‌است. انصراف از این عمل شدنی نیست.</string>
   <string name="edit_key_edit_subkey_title">یک عمل را انتخاب کنید!</string>
   <string name="edit_key_new_subkey">زیرکلیدِ جدید</string>
-  <string name="edit_key_select_flag">لطفاً حداقل یک پرچم انتخاب کنید!</string>
   <string name="edit_key_error_add_identity">حداقل یک هویت اصافه کنید!</string>
   <string name="edit_key_error_add_subkey">حداقل یک زیر‌کلید اضافه کنید</string>
   <!--Create key-->

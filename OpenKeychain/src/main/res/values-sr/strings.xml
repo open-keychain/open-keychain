@@ -13,6 +13,7 @@
   <string name="title_preferences">Поставке</string>
   <string name="title_api_registered_apps">Апликације</string>
   <string name="title_key_server_preference">ОпенПГП сервери кључева</string>
+  <string name="title_cache_ttl_preference">Прилагођавање избора „памћења“</string>
   <string name="title_change_passphrase">Измена лозинке</string>
   <string name="title_share_fingerprint_with">Подели отисак помоћу…</string>
   <string name="title_share_key">Подели кључ помоћу…</string>
@@ -86,6 +87,7 @@
   <string name="btn_add_files">Додај фајл(ове)</string>
   <string name="btn_share_decrypted_text">Дели</string>
   <string name="btn_open_with">Отвори помоћу…</string>
+  <string name="btn_copy_decrypted_text">Копирај на клипборд</string>
   <string name="btn_decrypt_clipboard">Учитај са клипборда</string>
   <string name="btn_decrypt_files">Изабери фајл</string>
   <string name="btn_encrypt_files">Шифруј фајлове</string>
@@ -143,6 +145,7 @@
   <string name="label_encryption_algorithm">Алгоритам шифровања</string>
   <string name="label_hash_algorithm">Алгоритам хеша</string>
   <string name="label_symmetric">Шифровање са лозинком</string>
+  <string name="label_passphrase_cache_ttl">Прилагодите изборе „памћења“</string>
   <string name="label_passphrase_cache_subs">Памти лозинке по поткључу</string>
   <string name="label_message_compression">Компресија текста</string>
   <string name="label_file_compression">Компресија фајла</string>
@@ -251,21 +254,14 @@
   <string name="choice_8hours">8 сати</string>
   <string name="choice_forever">заувек</string>
   <string name="choice_select_cert">Изаберите кључ</string>
-  <string name="dsa">ДСА</string>
-  <string name="elgamal">Елгамал</string>
-  <string name="rsa">РСА</string>
-  <string name="ecdh">ЕЦДХ</string>
-  <string name="ecdsa">ЕЦДСА</string>
   <string name="filemanager_title_open">Отвори…</string>
+  <string name="rsa_2048">РСА 2048</string>
+  <string name="rsa_3072">РСА 3072</string>
+  <string name="rsa_4096">РСА 4096</string>
   <string name="error">Грешка</string>
   <string name="error_message">Грешка: %s</string>
   <string name="theme_dark">Тамна</string>
   <string name="theme_light">Светла</string>
-  <!--key flags-->
-  <string name="flag_certify">Овера</string>
-  <string name="flag_sign">Потпис</string>
-  <string name="flag_encrypt">Шифровање</string>
-  <string name="flag_authenticate">Аутентификовање</string>
   <!--sentences-->
   <string name="wrong_passphrase">Погрешна лозинка.</string>
   <string name="no_filemanager_installed">Нема подесног менаџера фајлова.</string>
@@ -683,7 +679,6 @@
     <item>Премести поткључ у безбедносни токен</item>
   </string-array>
   <string name="edit_key_new_subkey">нови поткључ</string>
-  <string name="edit_key_select_flag">Изаберите бар једну заставицу!</string>
   <string name="edit_key_error_add_identity">Додајте бар један идентитет!</string>
   <string name="edit_key_error_add_subkey">Додајте бар један поткључ!</string>
   <!--Create key-->
@@ -1271,6 +1266,7 @@
   <string name="msg_lv_fp_error">Отисак се не поклапа!</string>
   <string name="msg_lv_error_twitter_auth">Грешка добављања аутентификацијског токена за Твитер!</string>
   <string name="msg_lv_error_twitter_response">Неочекивани одзив Твитер АПИ-ја!</string>
+  <string name="msg_lv_error_github_not_found">Гист не садржи поклапајуће фајлове!</string>
   <string name="msg_lv_fetch">Добављам УРИ „%s“</string>
   <string name="msg_lv_fetch_redir">Пратим преусмерење на „%s“</string>
   <string name="msg_lv_fetch_ok">Успешно добављено (ХТТП %s)</string>
@@ -1427,7 +1423,6 @@
   <string name="snack_security_token_import">Увези</string>
   <string name="button_bind_key">Повежи кључ</string>
   <string name="security_token_serial_no">Серијски број: %s</string>
-  <string name="security_token_key_holder">Држач кључа: </string>
   <string name="security_token_key_holder_not_set"><![CDATA[Држач кључа: <није постављено>]]></string>
   <string name="btn_import">Увези</string>
   <string name="btn_reset">Ресетуј</string>
@@ -1536,6 +1531,8 @@
   <string name="linked_error_network">Грешка мреже!</string>
   <string name="linked_error_http">Грешка комуникације: %s</string>
   <string name="linked_webview_title_github">Гитхаб овлашћење</string>
+  <string name="linked_gist_description">Повезани идентитет Отвореног кључарника</string>
+  <string name="linked_empty">Повежите ваш кључ са Гитхабом, Твитером или осталим сајтовима!</string>
   <string name="snack_btn_overwrite">Пребриши</string>
   <string name="backup_code_explanation">Резерва ће бити обезбеђена кôдом за резерву. Запишите га пре него што наставите даље!</string>
   <string name="backup_code_enter">Унесите кôд за резерву:</string>
@@ -1583,6 +1580,7 @@
   <string name="help_donation_paypal_item">Донација Отвореном кључарнику</string>
   <string-array name="help_donation_google_catalog_values">
     <item>1 евро</item>
+    <item>2 евра</item>
     <item>3 евра</item>
     <item>5 евра</item>
     <item>10 евра</item>

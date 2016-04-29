@@ -1,17 +1,17 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (NOTA: coloque cada frase em sua própria linha, Transifex coloca cada linha em seu próprio campo de tradução!)
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Detecção e tratamento de dados de texto
+  * Melhorias de desempenho
+  * UI melhorias para o manuseio do Token de Segurança
 
 
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Edição de chave reestruturada
+  * Escolher individualmente lembretes quando digitar senhas
+  * Importar chave para o Facebook
 
 
 ## 3.7

@@ -1,25 +1,25 @@
-[//]: # (NOTA: coloque cada frase em sua própria linha, Transifex coloca cada linha em seu próprio campo de tradução!)
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) é uma implementação OpenPGP para Android.
+[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 
-Licença: GPLv3+
+License: GPLv3+
 
-[//]: # (NOTA: Ordem alfabética)
+[//]: # (NOTE: Alphabetic ordering)
 
-## Desenvolvedores principais
-  * Dominik Schürmann (Mantenedor)
+## Main Developers
+  * Dominik Schürmann (Maintainer)
   * Vincent Breitmoser
 
-## Principais Colaboradores
+## Top Contributors
   * Adithya Abraham Philip
   * Ash Hughes
   * 'mar-v-in'
-  * 'Thialfihar' (APG desenvolvedor)
+  * 'Thialfihar' (APG developer)
   * Tim Bray
 
-## Colaboradores Ocasionais
+## Occasional Contributors
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov
@@ -51,9 +51,9 @@ Licença: GPLv3+
   * Sreeram Boyapati
   * 'steelman'
 
-[//]: # (NOTA: Ordem alfabética)
+[//]: # (NOTE: Alphabetic ordering)
 
-## Bicliotecas
+## Libraries
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache License v2)
   * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Apache License v2)

@@ -19,7 +19,7 @@
   * 'Thialfihar' (APG 开发者)
   * Tim Bray
 
-##临时贡献者
+## 临时贡献者
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov

@@ -37,7 +37,7 @@
   <string name="title_manage_my_keys">管理我的密钥</string>
   <!--section-->
   <string name="section_user_ids">用户名</string>
-  <string name="section_security_token">安全凭证</string>
+  <string name="section_security_token">安全令牌</string>
   <string name="section_linked_system_contact">关联系统联系人</string>
   <string name="section_keybase_proofs">Keybase.io 证书</string>
   <string name="section_should_you_trust">信任此密钥？</string>
@@ -187,6 +187,7 @@
   <string name="label_sync_settings_keyserver_title">自动更新密钥</string>
   <string name="label_sync_settings_keyserver_summary_on">每三天，自动从密钥服务器更新</string>
   <string name="label_sync_settings_keyserver_summary_off">不自动更新密钥</string>
+  <string name="label_sync_settings_wifi_title">仅在Wi-Fi环境同步</string>
   <string name="label_sync_settings_contacts_title">关联联系方式</string>
   <string name="label_sync_settings_contacts_summary_on">根据名字和 email 地址将密钥关联到联系人。这是本地操作，不需要联网。</string>
   <string name="label_sync_settings_contacts_summary_off">新密钥将不关联到联系方式</string>
@@ -252,21 +253,11 @@
   <string name="choice_8hours">8小时</string>
   <string name="choice_forever">永远</string>
   <string name="choice_select_cert">选择一个密钥</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">打开...</string>
   <string name="error">错误</string>
   <string name="error_message">错误：%s</string>
   <string name="theme_dark">深色主题</string>
   <string name="theme_light">亮色主题</string>
-  <!--key flags-->
-  <string name="flag_certify">验证</string>
-  <string name="flag_sign">签名</string>
-  <string name="flag_encrypt">加密</string>
-  <string name="flag_authenticate">认证</string>
   <!--sentences-->
   <string name="wrong_passphrase">密码错误</string>
   <string name="no_filemanager_installed">安装了不匹配的文件管理器</string>
@@ -406,15 +397,15 @@
   <string name="progress_generating_signature">产生签名中...</string>
   <string name="progress_verifying_signature">正在验证签名...</string>
   <string name="progress_signing">正在签名...</string>
-  <string name="progress_certifying">确认中...</string>
+  <string name="progress_certifying">正在确认...</string>
   <string name="progress_reading_data">正在读取数据</string>
   <string name="progress_finding_key">正在查找密钥</string>
-  <string name="progress_decompressing_data">解压缩中...</string>
+  <string name="progress_decompressing_data">正在解压缩...</string>
   <string name="progress_verifying_integrity">验证完整性...</string>
   <string name="progress_deleting_securely">安全地删除 \'%s\'…</string>
-  <string name="progress_deleting">删除密钥中...</string>
+  <string name="progress_deleting">正在删除密钥...</string>
   <string name="progress_con_saving">合并：正在保存到缓存......</string>
-  <string name="progress_con_reimport">合并：重新导入中......</string>
+  <string name="progress_con_reimport">合并：正在重新导入......</string>
   <string name="progress_verifying_keyserver_connection">验证连接中...</string>
   <string name="progress_starting_orbot">启动Orbot...</string>
   <!--action strings-->
@@ -660,7 +651,6 @@
     <item>把子密钥转移到安全令牌</item>
   </string-array>
   <string name="edit_key_new_subkey">新建子密钥</string>
-  <string name="edit_key_select_flag">至少选择一个标志！</string>
   <string name="edit_key_error_add_identity">至少要有一个用户标识！</string>
   <string name="edit_key_error_add_subkey">至少要有一个子密钥！</string>
   <string name="edit_key_error_bad_security_token_algo">安全令牌不支持该算法</string>
@@ -721,6 +711,7 @@
   <!--certs-->
   <string name="cert_default">默认</string>
   <string name="cert_none">无</string>
+  <string name="cert_casual">随意</string>
   <string name="cert_positive">正面的</string>
   <string name="cert_revoke">已吊销</string>
   <string name="cert_verify_ok">正常</string>
@@ -796,20 +787,30 @@
   <string name="msg_ip_uid_cert_old">证书比前一个更老，跳过</string>
   <string name="msg_ip_uid_cert_new">证书是最近的，代替前一个</string>
   <string name="msg_ip_uid_cert_good">%1$s 发现良好的证书</string>
+  <string name="msg_ip_uid_reorder">正在重新排序用户ID</string>
+  <string name="msg_ip_uid_processing">正在处理用户ID %s</string>
+  <string name="msg_ip_uid_revoked">用户ID已吊销</string>
+  <string name="msg_ip_uat_processing_image">正在处理图像类型的用户属性</string>
+  <string name="msg_ip_uat_processing_unknown">正在处理未知类型的用户属性</string>
   <string name="msg_ip_uat_cert_bad">发现损坏的证书！</string>
   <string name="msg_ip_uat_cert_error">证书处理错误</string>
   <string name="msg_ip_uat_cert_nonrevoke">已有一个未吊销的证书，跳过</string>
   <string name="msg_ip_uat_cert_old">证书比前一个更老，跳过</string>
   <string name="msg_ip_uat_cert_new">证书是最近的，代替前一个</string>
   <string name="msg_ip_uat_cert_good">%1$s 发现良好的证书</string>
+  <string name="msg_ip_uat_classifying">对用户属性进行分类</string>
+  <string name="msg_ip_uat_revoked">用户属性已撤销</string>
   <string name="msg_is_bad_type_public">试图把公钥导入为私钥，这是一个漏洞，请报告错误！</string>
   <!--Import Secret log entries-->
+  <string name="msg_is">导入密钥 %s</string>
   <string name="msg_is_db_exception">数据库错误！</string>
+  <string name="msg_is_error_io_exc">密钥环编码时出错！</string>
   <string name="msg_is_merge_public">正在合并导入的数据到现有的公钥钥匙环</string>
   <string name="msg_is_merge_secret">正在合并已导入的数据到现有的私有钥匙环</string>
   <string name="msg_is_success_identical">钥匙环不包含任何新的数据，无动作</string>
   <string name="msg_is_success">成功导入私密钥匙环</string>
   <!--Keyring Canonicalization log entries-->
+  <string name="msg_kc_error_master_algo">该主密钥使用了一个未知算法（%s）！</string>
   <string name="msg_kc_master">正在处理主密钥</string>
   <string name="msg_kc_master_bad_type">正在移除未知类型 (%s) 的主密钥</string>
   <string name="msg_kc_master_bad_local">正在移除标记为\'local\'的主密钥</string>
@@ -817,12 +818,20 @@
   <string name="msg_kc_master_bad">正在移除损坏的主密钥证书</string>
   <string name="msg_kc_master_local">正在移除标记为\'local\'的主密钥</string>
   <string name="msg_kc_sub">正在处理子密钥 %s</string>
+  <string name="msg_kc_uat_unknown">正在处理未知类型的用户属性</string>
   <!--Keyring merging log entries-->
+  <string name="msg_mg_unchanged">无物可合并</string>
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <string name="msg_mf_passphrase_key">用新密码重新加密子密钥%s</string>
+  <string name="msg_mf_subkey_new_id">新建子密钥ID：%s</string>
+  <string name="msg_mf_uat_add_unknown">正在添加未知类型的用户属性</string>
+  <string name="msg_mf_unlock_error">密钥环解锁时出错！</string>
+  <string name="msg_mf_unlock">正在解锁密钥环</string>
   <!--Consolidate-->
   <string name="msg_con_db_clear">正在清空数据库</string>
   <string name="msg_con_success">成功整理数据库</string>
+  <string name="msg_con_error_db">打开数据库时出错！</string>
   <string name="msg_con_error_public">重新导入公共密钥时出错</string>
   <string name="msg_con_error_secret">重新导入私有密钥时出错</string>
   <!--Edit Key (higher level than modify)-->
@@ -832,19 +841,27 @@
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_not_found">未找到密钥</string>
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_clear_meta_size">文件大小：%s</string>
+  <string name="msg_dc_clear_meta_size_unknown">文件大小未知</string>
   <string name="msg_dc">正在开始解密操作...</string>
   <string name="msg_dc_unlocking">正在解密私钥</string>
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_clear_meta_size">文件大小：%s</string>
   <string name="msg_vl_ok">正常</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_crt_error_nothing">没有密钥被签名</string>
   <string name="msg_crt">正在为密钥环签名...</string>
   <string name="msg_crt_saving">保存密钥环中....</string>
+  <string name="msg_crt_unlock">正在解锁主密钥</string>
   <string name="msg_crt_warn_not_found">未找到密钥</string>
   <string name="msg_backup_error_db">数据库错误！</string>
   <string name="msg_upload_error_not_found">未找到密钥</string>
+  <string name="msg_del_error_empty">无物可删！</string>
+  <string name="msg_del_error_multi_secret">密钥只能逐个删除！</string>
+  <string name="msg_revoke_error_empty">无物可撤销！</string>
   <!--Linked Identity verification-->
+  <string name="msg_data">正在输入数据</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_error_key_mismatch">证明内容与该密钥指纹不匹配</string>
   <string name="msg_keybase_error_dns_fail">取回 DNS 的 TXT 记录失败</string>
@@ -863,9 +880,12 @@
   <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
+  <string name="title_unlock_method">选择一个解锁方法</string>
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">输入密码</string>
+  <string name="unlock_method">解锁方法</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="unlocked">已解锁</string>
   <string name="nfc_settings">设置</string>
   <string name="snack_compression_on">压缩 <b>启用</b>.</string>
   <string name="snack_compression_off">压缩 <b>禁用</b>.</string>

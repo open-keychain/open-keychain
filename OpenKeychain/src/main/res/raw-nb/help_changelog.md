@@ -3,73 +3,73 @@
 ## 3.9
 
   * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Ytelsesforbedringer
+  * Brukergrensesnittforbedringer for behandling av sikkerhetssymboler
 
 
 ## 3.8
 
-  * Redesigned key editing
+  * Re-designet nøkkelredigering
   * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Nøkkelimport fra Facebook
 
 
 ## 3.7
 
-  * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * Forbedret Android 6 støtte (tillatelser, ingegrering i tekstfeltet)
+  * API: Versjon 10
 
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
+  * Krypterte sikkerhetskopier
+  * Sikkerhetsutbedringer basert på eksterne sikkerhetsgjennomganger
   * YubiKey NEO key creation wizard
-  * Basic internal MIME support
+  * Grunnleggende intern MIME-støtte
   * Automatic key synchronization
   * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
-  * API: Version 9
+  * Eksperimentell funksjon: nøkkelbekreftelse via fraser
+  * Eksperimentell funksjon: mørk drakt
+  * API: Versjon 9
 
 
 ## 3.5
 
   * Key revocation on key deletion
-  * Improved checks for insecure cryptography
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  * Forbedret sjekking av usikker kryptografi
+  * Fix: Ikke lukke OpenKeychain etter at førstegangsveiviseren fullføres
+  * API: Versjon 8
 
 
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
+  * Anonym nøkkel-nedlasting over Tor
+  * Mellomtjener-støtte
   * Better YubiKey error handling
 
 
 ## 3.3
 
-  * New decryption screen
-  * Decryption of multiple files at once
-  * Better handling of YubiKey errors
+  * Ny dekrypteringsoversikt
+  * Dekryptering av flere filer samtidig
+  * Bedre håndtering av YubiKey-feil
 
 
 ## 3.2
 
   * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
   * Material design
-  * Integration of QR Code Scanning (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
-  * Redesigned key screen
+  * Integrasjon av QR-kodeskanning (Nye tilganger kreves)
+  * Forbedret veiviser for nøkkelopprettelse
+  * Fikser manglende kontakter etter synkronisering
+  * Krever Android 4
+  * Re-designet nøkkel-oversikt
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...
   * Fix: Some valid keys were shown revoked or expired
   * Don't accept signatures by expired or revoked subkeys
   * Keybase.io support in advanced view
-  * Method to update all keys at once
+  * Metode for å oppdatere alle nøklene på én gang
 
 
 ## 3.1.2
@@ -80,7 +80,7 @@
 ## 3.1.1
 
   * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * Fikser kræsj på Android 2.3
 
 
 ## 3.1
@@ -230,7 +230,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Bug fixes for importing of keys
   * Key cross-certification (thanks to Ash Hughes)
   * Handle UTF-8 passwords properly (thanks to Ash Hughes)
-  * First version with new languages (thanks to the contributors on Transifex)
+  * Første versjon med de nye språkene (takket være bidragsytere på Transifex)
   * Sharing of keys via QR Codes fixed and improved
   * Package signature verification for API
 
@@ -286,7 +286,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.5
 
-  * German and Italian translation
+  * Tysk og Italiensk oversettelse ved
   * Much smaller package, due to reduced BC sources
   * New preferences GUI
   * Layout adjustment for localization
@@ -320,7 +320,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * K-9 Mail integration, APG supporting beta build of K-9 Mail
   * Support of more file managers (including ASTRO)
-  * Slovenian translation
+  * Slovensk oversettelse ved
   * New database, much faster, less memory usage
   * Defined Intents and content provider for other apps
   * Bugfixes

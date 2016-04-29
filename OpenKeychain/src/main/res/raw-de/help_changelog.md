@@ -2,9 +2,9 @@
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Erkennung und Bearbeitung von Textdaten
+  * Performanceverbesserungen
+  * Verbesserung der Benutzeroberfläche zur Handhabung von Smartcards
 
 
 ## 3.8

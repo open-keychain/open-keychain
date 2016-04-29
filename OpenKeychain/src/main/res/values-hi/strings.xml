@@ -27,8 +27,6 @@
   <!--InstallDialogFragment strings-->
   <!--StartOrbotDialogFragment strings-->
   <!--choice-->
-  <!--key flags-->
-  <string name="flag_encrypt">एन्क्रिप्ट</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,

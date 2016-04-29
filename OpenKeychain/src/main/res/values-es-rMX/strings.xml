@@ -203,21 +203,11 @@
   <string name="choice_8hours">8 horas</string>
   <string name="choice_forever">para siempre</string>
   <string name="choice_select_cert">Elija una clave</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Abrir...</string>
   <string name="error">Error</string>
   <string name="error_message">Error: %s</string>
   <string name="theme_dark">Oscuro</string>
   <string name="theme_light">Claro</string>
-  <!--key flags-->
-  <string name="flag_certify">Certificar</string>
-  <string name="flag_sign">Firmar</string>
-  <string name="flag_encrypt">Cifrar</string>
-  <string name="flag_authenticate">Autenticar</string>
   <!--sentences-->
   <string name="wrong_passphrase">Contraseña incorrecta.</string>
   <string name="no_filemanager_installed">No hay instalado un administrador de archivos compatible.</string>

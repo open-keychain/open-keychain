@@ -2,9 +2,9 @@
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Idazki datuen atzematea eta kudeaketa
+  * Egintza hobekuntzak
+  * EI hobekuntzak Segurtasun Lekukoaren kudeaketarako
 
 
 ## 3.8

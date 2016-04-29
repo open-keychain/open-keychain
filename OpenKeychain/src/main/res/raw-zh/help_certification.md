@@ -14,9 +14,9 @@
 <img src="status_signature_expired_cutout_24dp"/>  
 已过期：这个密钥不再有效。只有它的拥有者能扩展它的有效期。  
 <img src="status_signature_revoked_cutout_24dp"/>  
-已作废：这个密钥不再有效。它已经被所有者声明为已作废。
+已吊销：这个密钥不再有效。它已经被所有者声明为已吊销状态。
 
-## 进一步说明
+## 高级信息
 OpenKeychain 中的“密钥确认”行为，是根据 OpenPGP 标准规定，通过创建认证实现的。
 这个认证是一个 [“一般认证（0x10）”](http://tools.ietf.org/html/rfc4880#section-5.2.1) ，标准中的描述是：
 “对于密钥持有者与密钥所示身份之间的关联，认证签发者不对其可靠性做出任何表态。”

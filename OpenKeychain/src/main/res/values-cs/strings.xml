@@ -253,21 +253,11 @@
   <string name="choice_8hours">8 hodin</string>
   <string name="choice_forever">navždy</string>
   <string name="choice_select_cert">Vybrat klíč</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Otevřít...</string>
   <string name="error">Chyba</string>
   <string name="error_message">Chyba: %s</string>
   <string name="theme_dark">Temný</string>
   <string name="theme_light">Světlý</string>
-  <!--key flags-->
-  <string name="flag_certify">Certifikovat</string>
-  <string name="flag_sign">Podepsat</string>
-  <string name="flag_encrypt">Zašifrovat</string>
-  <string name="flag_authenticate">Authentikovat</string>
   <!--sentences-->
   <string name="wrong_passphrase">Chybné heslo.</string>
   <string name="no_filemanager_installed">Není nainstalován žádný compatibilní správce souborů.</string>
@@ -636,7 +626,6 @@
     <item>Přesunout podklíč do bezpečnostního tokenu</item>
   </string-array>
   <string name="edit_key_new_subkey">nový podklíč</string>
-  <string name="edit_key_select_flag">Prosím vyberte alespoň jeden příznak!</string>
   <string name="edit_key_error_add_identity">Přidejte alespoň jednu identitu!</string>
   <string name="edit_key_error_add_subkey">Přidejte alespoň jeden podklíč!</string>
   <string name="edit_key_error_bad_security_token_algo">Algoritmus nepodporován bezpečnostním tokenem!</string>

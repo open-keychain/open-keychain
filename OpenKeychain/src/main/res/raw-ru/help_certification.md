@@ -21,8 +21,8 @@
 Эта сертификация представляет собой ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) , описанной в стандарте:
 "Издатель такой подписи (поручитель) никак не оговаривает, что провёл какую-то проверку ключа и его связь с лицом, чьё имя указано в сертификате."
 
-Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
-Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+Традиционно, сертификации (также с более высоким уровнем сертификации, такие как "позитивные сертификации" (0x13)) организованы в OpenPGP's Web of Trust.
+Наша модель подтверждения ключа является гораздо более простой концепцией, чтобы избежать наиболее распространённых проблем использования, связанных с Web of Trust.
+Мы предполагаем, что ключи проверяются только до определённой степени, приемлемой для выполнения "на ходу".
+Мы также не осуществляем (потенциально транзитивные) доверенные подписи или базы данных доверенных владельцев как в GnuPG.
+Кроме того, ключи, которые содержат по меньшей мере один идентификатор пользователя, сертифицированный доверенным ключом, будут отмечаться как "подтверждённые" в списке ключей.

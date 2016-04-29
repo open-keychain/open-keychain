@@ -2,9 +2,9 @@
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Откривање и руковање текстуалним подацима
+  * Побољшање перформанси
+  * Побољшања УИ-ја за руковање безбедносним токеном
 
 
 ## 3.8
