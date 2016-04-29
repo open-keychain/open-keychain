@@ -1,28 +1,21 @@
-# Add project specific ProGuard rules here.
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
-#
-# For more details, see
+# Documentation for ProGuard:
 #   http://developer.android.com/guide/developing/tools/proguard.html
+#   http://proguard.sourceforge.net/
 
-# Add any project specific keep options here:
-
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
-
-
-# Workaround for Samsung Android 4.2 bug
-# https://code.google.com/p/android/issues/detail?id=78377
-# https://code.google.com/p/android/issues/detail?id=78377#c188
-# https://code.google.com/p/android/issues/detail?id=78377#c302
--keepattributes **
--keep class !android.support.v7.view.menu.**,** {*;}
--dontpreverify
+#-dontshrink # shrinking enabled, see below
+#-dontobfuscate # obfuscation enabled for one class (see below)
 -dontoptimize
--dontshrink
+-dontpreverify
+-keepattributes **
 -dontwarn **
 -dontnote **
+
+# Rules are defined as negation filters!
+# (! = negation filter, ** = all subpackages)
+# Keep everything (** {*;}) except...
+
+# * Obfuscate android.support.v7.view.menu.** to fix Samsung Android 4.2 bug
+#   https://code.google.com/p/android/issues/detail?id=78377
+# * Remove unneeded Bouncy Castle packages to be under 64K limit
+#   http://developer.android.com/tools/building/multidex.html
+-keep class !android.support.v7.view.menu.**,!org.bouncycastle.crypto.tls.**,!org.bouncycastle.pqc.**,!org.bouncycastle.x509.**,** {*;}

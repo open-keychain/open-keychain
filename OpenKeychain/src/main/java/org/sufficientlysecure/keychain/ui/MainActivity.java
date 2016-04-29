@@ -90,8 +90,9 @@ public class MainActivity extends BaseSecurityTokenNfcActivity implements FabCon
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         if (drawerItem != null) {
+                            PrimaryDrawerItem item = (PrimaryDrawerItem) drawerItem;
                             Intent intent = null;
-                            switch (drawerItem.getIdentifier()) {
+                            switch ((int) item.getIdentifier()) {
                                 case ID_KEYS:
                                     onKeysSelected();
                                     break;
