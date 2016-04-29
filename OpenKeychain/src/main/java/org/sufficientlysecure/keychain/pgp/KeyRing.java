@@ -92,7 +92,7 @@ public abstract class KeyRing {
     public static String createUserId(UserId userId) {
         StringBuilder userIdBuilder = new StringBuilder();
         if (!TextUtils.isEmpty(userId.name)) {
-            userIdBuilder.append(userId.comment);
+            userIdBuilder.append(userId.name);
         }
         if (!TextUtils.isEmpty(userId.comment)) {
             userIdBuilder.append(" (");
