@@ -64,8 +64,8 @@ public class KeyFormattingUtils {
         String algorithmStr;
 
         switch (algorithm) {
-            case PublicKeyAlgorithmTags.RSA_ENCRYPT:
             case PublicKeyAlgorithmTags.RSA_GENERAL:
+            case PublicKeyAlgorithmTags.RSA_ENCRYPT:
             case PublicKeyAlgorithmTags.RSA_SIGN: {
                 algorithmStr = "RSA";
                 break;

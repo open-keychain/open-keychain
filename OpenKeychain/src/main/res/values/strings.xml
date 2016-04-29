@@ -762,7 +762,7 @@
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
     <string name="edit_key_error_bad_security_token_algo">"Algorithm not supported by Security Token!"</string>
     <string name="edit_key_error_bad_security_token_size">"Key size not supported by Security Token!"</string>
-    <string name="edit_key_error_bad_security_token_stripped">"Cannot move key to Security Token (either stripped or 'divert-to-card')!"</string>
+    <string name="edit_key_error_bad_security_token_stripped">"Cannot move key to Security Token (either stripped or already on Security Token)!"</string>
 
     <!-- Create key -->
     <string name="create_key_upload">"Synchronize with the Internet"</string>
@@ -953,7 +953,7 @@
     <string name="msg_is_subkey_empty">"Marked secret subkey %s as available, with empty password"</string>
     <string name="msg_is_subkey_pin">"Marked secret subkey %s as available, with PIN"</string>
     <string name="msg_is_subkey_stripped">"Marked secret subkey %s as stripped"</string>
-    <string name="msg_is_subkey_divert">"Marked secret subkey %s as 'divert-to-card'"</string>
+    <string name="msg_is_subkey_divert">"Marked secret subkey %s as key on Security Token"</string>
     <string name="msg_is_success_identical">"Keyring contains no new data, nothing to do"</string>
     <string name="msg_is_success">"Successfully imported secret keyring"</string>
 
@@ -1062,9 +1062,9 @@
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
-    <string name="msg_mf_divert">"Will divert to Security Token for crypto operations"</string>
-    <string name="msg_mf_error_divert_newsub">"Creation of new subkeys is not supported for 'divert-to-card' primary keys!"</string>
-    <string name="msg_mf_error_divert_serial">"The serial number of a 'divert-to-card' key must be 16 bytes! This is a programming error, please file a bug report!"</string>
+    <string name="msg_mf_divert">"Will use Security Token for crypto operations"</string>
+    <string name="msg_mf_error_divert_newsub">"Creation of new subkeys is not supported for primary keys on Security Tokens!"</string>
+    <string name="msg_mf_error_divert_serial">"The serial number of a key on Security Tokens must be 16 bytes! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_encode">"Encoding exception!"</string>
     <string name="msg_mf_error_fingerprint">"Actual key fingerprint does not match the expected one!"</string>
     <string name="msg_mf_error_keyid">"No key ID. This is an internal error, please file a bug report!"</string>
@@ -1097,7 +1097,7 @@
     <string name="msg_mf_primary_new">"Generating new certificate for new primary user ID"</string>
     <string name="msg_mf_restricted_mode">"Changing to restricted operation mode"</string>
     <string name="msg_mf_subkey_change">"Modifying subkey %s"</string>
-    <string name="msg_mf_require_divert">"Diverting to Security Token for crypto operations"</string>
+    <string name="msg_mf_require_divert">"Using Security Token for crypto operations"</string>
     <string name="msg_mf_require_passphrase">"Password required for operations"</string>
     <string name="msg_mf_subkey_new">"Adding new subkey of type %s"</string>
     <string name="msg_mf_subkey_new_id">"New subkey ID: %s"</string>
@@ -1498,7 +1498,7 @@
     <string name="error_key_not_found">"Key not found!"</string>
     <string name="error_key_processing">"Error processing key!"</string>
     <string name="key_stripped">"stripped"</string>
-    <string name="key_divert">"divert to Security Token"</string>
+    <string name="key_divert">"on Security Token"</string>
     <string name="key_no_passphrase">"no password"</string>
     <string name="key_unavailable">"unavailable"</string>
     <string name="secret_cannot_multiple">"Your own keys can only be deleted individually!"</string>
