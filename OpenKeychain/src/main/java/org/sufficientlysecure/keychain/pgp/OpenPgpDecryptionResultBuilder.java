@@ -26,6 +26,8 @@ public class OpenPgpDecryptionResultBuilder {
     // builder
     private boolean mInsecure = false;
     private boolean mEncrypted = false;
+    private byte[] sessionKey;
+    private byte[] decryptedSessionKey;
 
     public void setInsecure(boolean insecure) {
         this.mInsecure = insecure;
@@ -36,24 +38,26 @@ public class OpenPgpDecryptionResultBuilder {
     }
 
     public OpenPgpDecryptionResult build() {
-        OpenPgpDecryptionResult result = new OpenPgpDecryptionResult();
-
         if (mInsecure) {
             Log.d(Constants.TAG, "RESULT_INSECURE");
-            result.setResult(OpenPgpDecryptionResult.RESULT_INSECURE);
-            return result;
+            return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_INSECURE, sessionKey, decryptedSessionKey);
         }
 
         if (mEncrypted) {
             Log.d(Constants.TAG, "RESULT_ENCRYPTED");
-            result.setResult(OpenPgpDecryptionResult.RESULT_ENCRYPTED);
-        } else {
-            Log.d(Constants.TAG, "RESULT_NOT_ENCRYPTED");
-            result.setResult(OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED);
+            return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_ENCRYPTED, sessionKey, decryptedSessionKey);
         }
 
-        return result;
+        Log.d(Constants.TAG, "RESULT_NOT_ENCRYPTED");
+        return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED);
     }
 
 
+    public void setSessionKey(byte[] sessionKey, byte[] decryptedSessionKey) {
+        if ((sessionKey == null) != (decryptedSessionKey == null)) {
+            throw new AssertionError("sessionKey must be null iff decryptedSessionKey is null!");
+        }
+        this.sessionKey = sessionKey;
+        this.decryptedSessionKey = decryptedSessionKey;
+    }
 }
