@@ -44,17 +44,12 @@ import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class CreateKeyEmailFragment extends Fragment {
     private CreateKeyActivity mCreateKeyActivity;
     private EmailEditText mEmailEdit;
     private ArrayList<EmailAdapter.ViewModel> mAdditionalEmailModels = new ArrayList<>();
     private EmailAdapter mEmailAdapter;
-
-    // NOTE: Do not use more complicated pattern like defined in android.util.Patterns.EMAIL_ADDRESS
-    // EMAIL_ADDRESS fails for mails with umlauts for example
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\S]+@[\\S]+\\.[a-z]+$");
 
     /**
      * Creates new instance of this fragment
@@ -76,16 +71,15 @@ public class CreateKeyEmailFragment extends Fragment {
      * @return true if EditText is not empty
      */
     private boolean isMainEmailValid(EditText editText) {
-        boolean output = true;
-        if (!checkEmail(editText.getText().toString(), false)) {
+        if (editText.getText().length() == 0) {
             editText.setError(getString(R.string.create_key_empty));
             editText.requestFocus();
-            output = false;
-        } else {
-            editText.setError(null);
+            return false;
+        } else if (!checkEmail(editText.getText().toString(), false)){
+            return false;
         }
-
-        return output;
+        editText.setError(null);
+        return true;
     }
 
     @Override
@@ -146,10 +140,9 @@ public class CreateKeyEmailFragment extends Fragment {
      * @return
      */
     private boolean checkEmail(String email, boolean additionalEmail) {
-        // check for email format or if the user did any input
-        if (!isEmailFormatValid(email)) {
+        if (email.isEmpty()) {
             Notify.create(getActivity(),
-                    getString(R.string.create_key_email_invalid_email),
+                    getString(R.string.create_key_email_empty_email),
                     Notify.LENGTH_LONG, Notify.Style.ERROR).show(CreateKeyEmailFragment.this);
             return false;
         }
@@ -164,18 +157,6 @@ public class CreateKeyEmailFragment extends Fragment {
         }
 
         return true;
-    }
-
-    /**
-     * Checks the email format
-     * Uses the default Android Email Pattern
-     *
-     * @param email
-     * @return
-     */
-    private boolean isEmailFormatValid(String email) {
-        // check for email format or if the user did any input
-        return !(email.length() == 0 || !EMAIL_PATTERN.matcher(email).matches());
     }
 
     /**

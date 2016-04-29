@@ -78,18 +78,20 @@ public abstract class KeyRing {
     }
 
     /**
-     * Returns a composed user id. Returns null if name is null!
+     * Returns a composed user id. Returns null if name, email and comment are empty.
      */
     public static String createUserId(UserId userId) {
-        String userIdString = userId.name; // consider name a required value
-        if (userIdString != null && !TextUtils.isEmpty(userId.comment)) {
-            userIdString += " (" + userId.comment + ")";
+        StringBuilder userIdBuilder = new StringBuilder();
+        if (!TextUtils.isEmpty(userId.name)) {
+            userIdBuilder.append(userId.comment);
         }
-        if (userIdString != null && !TextUtils.isEmpty(userId.email)) {
-            userIdString += " <" + userId.email + ">";
+        if (!TextUtils.isEmpty(userId.comment)) {
+            userIdBuilder.append(" (" + userId.comment + ")");
         }
-
-        return userIdString;
+        if (!TextUtils.isEmpty(userId.email)) {
+            userIdBuilder.append(" <" + userId.email + ">");
+        }
+        return userIdBuilder.length() == 0 ? null : userIdBuilder.toString();
     }
 
     public static class UserId implements Serializable {
