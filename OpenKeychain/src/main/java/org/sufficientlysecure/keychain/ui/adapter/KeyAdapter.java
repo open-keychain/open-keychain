@@ -66,6 +66,7 @@ public class KeyAdapter extends CursorAdapter {
             KeyRings.HAS_DUPLICATE_USER_ID,
             KeyRings.FINGERPRINT,
             KeyRings.CREATION,
+            KeyRings.HAS_ENCRYPT
     };
 
     public static final int INDEX_MASTER_KEY_ID = 1;
@@ -77,6 +78,7 @@ public class KeyAdapter extends CursorAdapter {
     public static final int INDEX_HAS_DUPLICATE_USER_ID = 7;
     public static final int INDEX_FINGERPRINT = 8;
     public static final int INDEX_CREATION = 9;
+    public static final int INDEX_HAS_ENCRYPT = 10;
 
     public KeyAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -289,6 +291,7 @@ public class KeyAdapter extends CursorAdapter {
         public final KeyRing.UserId mUserId;
         public final long mKeyId;
         public final boolean mHasDuplicate;
+        public final boolean mHasEncrypt;
         public final Date mCreation;
         public final String mFingerprint;
         public final boolean mIsSecret, mIsRevoked, mIsExpired, mIsVerified;
@@ -299,6 +302,7 @@ public class KeyAdapter extends CursorAdapter {
             mUserIdFull = userId;
             mKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
             mHasDuplicate = cursor.getLong(INDEX_HAS_DUPLICATE_USER_ID) > 0;
+            mHasEncrypt = cursor.getInt(INDEX_HAS_ENCRYPT) != 0;
             mCreation = new Date(cursor.getLong(INDEX_CREATION) * 1000);
             mFingerprint = KeyFormattingUtils.convertFingerprintToHex(
                     cursor.getBlob(INDEX_FINGERPRINT));
@@ -315,6 +319,7 @@ public class KeyAdapter extends CursorAdapter {
             mUserIdFull = userId;
             mKeyId = ring.getMasterKeyId();
             mHasDuplicate = false;
+            mHasEncrypt = key.getKeyRing().getEncryptIds().size() > 0;
             mCreation = key.getCreationTime();
             mFingerprint = KeyFormattingUtils.convertFingerprintToHex(
                     ring.getFingerprint());

@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
@@ -83,6 +84,11 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
         LayoutInflater l = LayoutInflater.from(getContext());
         View view = l.inflate(R.layout.recipient_box_entry, null);
         ((TextView) view.findViewById(android.R.id.text1)).setText(keyItem.getReadableName());
+
+        if (keyItem.mIsRevoked || !keyItem.mHasEncrypt || keyItem.mIsExpired) {
+            ((TextView) view.findViewById(android.R.id.text1)).setTextColor(Color.RED);
+        }
+
         return view;
     }
 
