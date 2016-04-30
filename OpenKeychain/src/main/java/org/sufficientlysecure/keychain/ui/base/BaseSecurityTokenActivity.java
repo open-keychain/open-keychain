@@ -257,6 +257,8 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         }
 
         // Wrong PIN, a status of 63CX indicates X attempts remaining.
+        // NOTE: Used in ykneo-openpgp version < 1.0.10, changed to 0x6982 in 1.0.11
+        // https://github.com/Yubico/ykneo-openpgp/commit/90c2b91e86fb0e43ee234dd258834e75e3416410
         if ((status & (short) 0xFFF0) == 0x63C0) {
             int tries = status & 0x000F;
             // hook to do something different when PIN is wrong
@@ -266,50 +268,49 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
         // Otherwise, all status codes are fixed values.
         switch (status) {
-            // These errors should not occur in everyday use; if they are returned, it means we
-            // made a mistake sending data to the token, or the token is misbehaving.
-            case 0x6A80: {
-                onSecurityTokenError(getString(R.string.security_token_error_bad_data));
+
+            // These error conditions are likely to be experienced by an end user.
+
+            /* OpenPGP Card Spec: Security status not satisfied, PW wrong,
+            PW not checked (command not allowed), Secure messaging incorrect (checksum and/or cryptogram) */
+            // NOTE: Used in ykneo-openpgp >= 1.0.11 for wrong PIN
+            case 0x6982: {
+                // hook to do something different when PIN is wrong
+                onSecurityTokenPinError(getString(R.string.security_token_error_security_not_satisfied));
                 break;
             }
-            case 0x6883: {
-                onSecurityTokenError(getString(R.string.security_token_error_chaining_error));
-                break;
-            }
-            case 0x6B00: {
-                onSecurityTokenError(getString(R.string.security_token_error_header, "P1/P2"));
-                break;
-            }
-            case 0x6D00: {
-                onSecurityTokenError(getString(R.string.security_token_error_header, "INS"));
-                break;
-            }
-            case 0x6E00: {
-                onSecurityTokenError(getString(R.string.security_token_error_header, "CLA"));
-                break;
-            }
-            // These error conditions are more likely to be experienced by an end user.
+            /* OpenPGP Card Spec: Selected file in termination state */
             case 0x6285: {
                 onSecurityTokenError(getString(R.string.security_token_error_terminated));
                 break;
             }
+            /* OpenPGP Card Spec: Wrong length (Lc and/or Le) */
+            // NOTE: Used in ykneo-openpgp < 1.0.10 for too short PIN, changed in 1.0.11 to 0x6A80 for too short PIN
+            // https://github.com/Yubico/ykneo-openpgp/commit/b49ce8241917e7c087a4dab7b2c755420ff4500f
             case 0x6700: {
+                // hook to do something different when PIN is wrong
                 onSecurityTokenPinError(getString(R.string.security_token_error_wrong_length));
                 break;
             }
-            case 0x6982: {
-                onSecurityTokenError(getString(R.string.security_token_error_security_not_satisfied));
+            /* OpenPGP Card Spec: Incorrect parameters in the data field */
+            // NOTE: Used in ykneo-openpgp >= 1.0.11 for too short PIN
+            case 0x6A80: {
+                // hook to do something different when PIN is wrong
+                onSecurityTokenPinError(getString(R.string.security_token_error_bad_data));
                 break;
             }
+            /* OpenPGP Card Spec: Authentication method blocked, PW blocked (error counter zero) */
             case 0x6983: {
                 onSecurityTokenError(getString(R.string.security_token_error_authentication_blocked));
                 break;
             }
+            /* OpenPGP Card Spec: Condition of use not satisfied */
             case 0x6985: {
                 onSecurityTokenError(getString(R.string.security_token_error_conditions_not_satisfied));
                 break;
             }
-            // 6A88 is "Not Found" in the spec, but Yubikey also returns 6A83 for this in some cases.
+            /* OpenPGP Card Spec: SM data objects incorrect (e.g. wrong TLV-structure in command data) */
+            // NOTE: 6A88 is "Not Found" in the spec, but ykneo-openpgp also returns 6A83 for this in some cases.
             case 0x6A88:
             case 0x6A83: {
                 onSecurityTokenError(getString(R.string.security_token_error_data_not_found));
@@ -333,6 +334,30 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
                 } else { // Other (possibly) compatible hardware
                     onSecurityTokenError(getString(R.string.security_token_error_pgp_app_not_installed));
                 }
+                break;
+            }
+
+            // These errors should not occur in everyday use; if they are returned, it means we
+            // made a mistake sending data to the token, or the token is misbehaving.
+
+            /* OpenPGP Card Spec: Last command of the chain expected */
+            case 0x6883: {
+                onSecurityTokenError(getString(R.string.security_token_error_chaining_error));
+                break;
+            }
+            /* OpenPGP Card Spec: Wrong parameters P1-P2 */
+            case 0x6B00: {
+                onSecurityTokenError(getString(R.string.security_token_error_header, "P1/P2"));
+                break;
+            }
+            /* OpenPGP Card Spec: Instruction (INS) not supported */
+            case 0x6D00: {
+                onSecurityTokenError(getString(R.string.security_token_error_header, "INS"));
+                break;
+            }
+            /* OpenPGP Card Spec: Class (CLA) not supported */
+            case 0x6E00: {
+                onSecurityTokenError(getString(R.string.security_token_error_header, "CLA"));
                 break;
             }
             default: {

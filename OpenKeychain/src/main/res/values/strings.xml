@@ -1576,13 +1576,13 @@
         <item quantity="other">"Incorrect PIN!\n%d tries remaining."</item>
     </plurals>
     <string name="security_token_error_terminated">"Security Token in termination state."</string>
-    <string name="security_token_error_wrong_length">"Entered PIN is too short. PINs are at least 6 digits long."</string>
+    <string name="security_token_error_wrong_length">"Entered PIN is too short. PINs are at least 6 digits long.\n(Error: Wrong length)"</string>
     <string name="security_token_error_conditions_not_satisfied">"Conditions of use not satisfied."</string>
-    <string name="security_token_error_security_not_satisfied">"Security status not satisfied."</string>
+    <string name="security_token_error_security_not_satisfied">"Incorrect PIN!\n(Keep in mind that you have only 3 tries!)"</string>
     <string name="security_token_error_authentication_blocked">"PIN blocked after too many attempts."</string>
     <string name="security_token_error_data_not_found">"Key or object not found."</string>
     <string name="security_token_error_unknown">"Unknown Error"</string>
-    <string name="security_token_error_bad_data">"Security Token reported invalid data."</string>
+    <string name="security_token_error_bad_data">"Entered PIN is too short. PINs are at least 6 digits long.\n(Error: Invalid data)"</string>
     <string name="security_token_error_chaining_error">"Security Token expected last command in a chain."</string>
     <string name="security_token_error_header">"Security Token reported invalid %s byte."</string>
     <string name="security_token_error_tag_lost">"Security Token has been taken off too early. Keep the Security Token at the back until the operation finishes."</string>
