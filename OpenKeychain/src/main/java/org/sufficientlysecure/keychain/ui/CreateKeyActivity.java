@@ -166,7 +166,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
         if (mCurrentFragment instanceof CreateSecurityTokenWaitFragment) {
             // hack from http://stackoverflow.com/a/11253987
             CreateSecurityTokenWaitFragment.sDisableFragmentAnimations = true;
-            getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);//            getSupportFragmentManager().
+            getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             CreateSecurityTokenWaitFragment.sDisableFragmentAnimations = false;
         }
 
