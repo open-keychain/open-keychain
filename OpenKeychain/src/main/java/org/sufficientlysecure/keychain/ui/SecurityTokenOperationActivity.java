@@ -40,7 +40,7 @@ import org.sufficientlysecure.keychain.securitytoken.KeyType;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenNfcActivity;
+import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
@@ -58,7 +58,7 @@ import nordpol.android.NfcGuideView;
  * NFC devices.
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
-public class SecurityTokenOperationActivity extends BaseSecurityTokenNfcActivity {
+public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
     public static final String EXTRA_CRYPTO_INPUT = "crypto_input";

@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import org.sufficientlysecure.keychain.R;
@@ -28,7 +29,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenNfcActivity;
+import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -36,7 +37,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
+public class CreateKeyActivity extends BaseSecurityTokenActivity {
 
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_EMAIL = "email";
@@ -77,7 +78,7 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
         // NOTE: ACTION_NDEF_DISCOVERED and not ACTION_TAG_DISCOVERED like in BaseNfcActivity
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
 
-            mTagDispatcher.interceptIntent(getIntent());
+            mNfcTagDispatcher.interceptIntent(getIntent());
 
             setTitle(R.string.title_manage_my_keys);
 
@@ -163,7 +164,10 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
 
         // We don't want get back to wait activity mainly because it looks weird with otg token
         if (mCurrentFragment instanceof CreateSecurityTokenWaitFragment) {
-            getSupportFragmentManager().popBackStackImmediate();
+            // hack from http://stackoverflow.com/a/11253987
+            CreateSecurityTokenWaitFragment.sDisableFragmentAnimations = true;
+            getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);//            getSupportFragmentManager().
+            CreateSecurityTokenWaitFragment.sDisableFragmentAnimations = false;
         }
 
         if (containsKeys(mScannedFingerprints)) {
@@ -257,7 +261,6 @@ public class CreateKeyActivity extends BaseSecurityTokenNfcActivity {
 
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
-
     }
 
     interface SecurityTokenListenerFragment {

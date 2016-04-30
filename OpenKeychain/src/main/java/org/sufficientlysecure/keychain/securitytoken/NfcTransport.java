@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 import android.nfc.Tag;
 
-import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenNfcActivity;
+import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 
 import java.io.IOException;
 
@@ -83,7 +83,7 @@ public class NfcTransport implements Transport {
     public void connect() throws IOException {
         mIsoCard = AndroidCard.get(mTag);
         if (mIsoCard == null) {
-            throw new BaseSecurityTokenNfcActivity.IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
+            throw new BaseSecurityTokenActivity.IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
         }
 
         mIsoCard.setTimeout(TIMEOUT);

@@ -64,7 +64,7 @@ import java.io.IOException;
 import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
 
-public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
+public abstract class BaseSecurityTokenActivity extends BaseActivity
         implements OnDiscoveredTagListener, UsbConnectionDispatcher.OnDiscoveredUsbDeviceListener {
     public static final int REQUEST_CODE_PIN = 1;
 
@@ -73,7 +73,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     private static final String FIDESMO_APP_PACKAGE = "com.fidesmo.sec.android";
 
     protected SecurityTokenHelper mSecurityTokenHelper = SecurityTokenHelper.getInstance();
-    protected TagDispatcher mTagDispatcher;
+    protected TagDispatcher mNfcTagDispatcher;
     protected UsbConnectionDispatcher mUsbDispatcher;
     private boolean mTagHandlingEnabled;
 
@@ -202,7 +202,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTagDispatcher = TagDispatcher.get(this, this, false, false, true, false);
+        mNfcTagDispatcher = TagDispatcher.get(this, this, false, false, true, false);
         mUsbDispatcher = new UsbConnectionDispatcher(this, this);
 
         // Check whether we're recreating a previously destroyed instance
@@ -234,7 +234,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
      */
     @Override
     public void onNewIntent(final Intent intent) {
-        mTagDispatcher.interceptIntent(intent);
+        mNfcTagDispatcher.interceptIntent(intent);
     }
 
     private void handleSecurityTokenError(IOException e) {
@@ -351,7 +351,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
         super.onPause();
         Log.d(Constants.TAG, "BaseNfcActivity.onPause");
 
-        mTagDispatcher.disableExclusiveNfc();
+        mNfcTagDispatcher.disableExclusiveNfc();
     }
 
     /**
@@ -361,7 +361,7 @@ public abstract class BaseSecurityTokenNfcActivity extends BaseActivity
     public void onResume() {
         super.onResume();
         Log.d(Constants.TAG, "BaseNfcActivity.onResume");
-        mTagDispatcher.enableExclusiveNfc();
+        mNfcTagDispatcher.enableExclusiveNfc();
     }
 
     protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput) {

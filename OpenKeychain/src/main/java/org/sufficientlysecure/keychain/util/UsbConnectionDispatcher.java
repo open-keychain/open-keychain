@@ -26,7 +26,6 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.securitytoken.UsbTransport;
 import org.sufficientlysecure.keychain.ui.UsbEventReceiverActivity;
 
 public class UsbConnectionDispatcher {
@@ -34,6 +33,7 @@ public class UsbConnectionDispatcher {
 
     private OnDiscoveredUsbDeviceListener mListener;
     private UsbManager mUsbManager;
+
     /**
      * Receives broadcast when a supported USB device get permission.
      */
@@ -44,7 +44,7 @@ public class UsbConnectionDispatcher {
 
             switch (action) {
                 case UsbEventReceiverActivity.ACTION_USB_PERMISSION: {
-                    android.hardware.usb.UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED,
                             false);
                     if (permission) {
@@ -79,7 +79,7 @@ public class UsbConnectionDispatcher {
      */
     public void rescanDevices() {
         // Note: we don't check devices VID/PID because
-        // we check for permisssion instead.
+        // we check for permission instead.
         // We should have permission only for matching devices
         for (UsbDevice device : mUsbManager.getDeviceList().values()) {
             if (mUsbManager.hasPermission(device)) {

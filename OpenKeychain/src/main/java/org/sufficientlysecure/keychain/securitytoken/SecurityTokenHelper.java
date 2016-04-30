@@ -341,7 +341,6 @@ public class SecurityTokenHelper {
         }
     }
 
-
     /**
      * Puts a key on the token in the given slot.
      *
