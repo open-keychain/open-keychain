@@ -2,7 +2,7 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
-  <string name="app_name">OpenKeychaingn</string>
+  <string name="app_name">OpenKeychain</string>
   <!--title-->
   <string name="title_encrypt_text">Verschlüsseln</string>
   <string name="title_encrypt_files">Verschlüsseln</string>
