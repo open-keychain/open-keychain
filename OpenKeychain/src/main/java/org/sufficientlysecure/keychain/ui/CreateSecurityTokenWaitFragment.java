@@ -38,8 +38,8 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
     View mBackButton;
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         if (this.getActivity() instanceof BaseSecurityTokenActivity) {
             ((BaseSecurityTokenActivity) this.getActivity()).checkDeviceConnection();
