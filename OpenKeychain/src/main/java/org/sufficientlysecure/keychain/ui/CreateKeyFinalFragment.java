@@ -300,7 +300,9 @@ public class CreateKeyFinalFragment extends Fragment {
 
             if(createKeyActivity.mPassphrase != null) {
                 saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(createKeyActivity.mPassphrase));
-            }
+            } else {
+				saveKeyringParcel.setNewUnlock(null);
+			}
         }
         String userId = KeyRing.createUserId(
                 new KeyRing.UserId(createKeyActivity.mName, createKeyActivity.mEmail, null)
