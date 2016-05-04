@@ -454,6 +454,7 @@ public class OpenPgpService extends Service {
                         new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
             }
             if (data.hasExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT_WRAPPER)) {
+                // this is wrapped in a Bundle to avoid ClassLoader problems
                 Bundle wrapperBundle = data.getBundleExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT_WRAPPER);
                 wrapperBundle.setClassLoader(getClassLoader());
                 OpenPgpDecryptionResult decryptionResult = wrapperBundle.getParcelable(OpenPgpApi.EXTRA_DECRYPTION_RESULT);
