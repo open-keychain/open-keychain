@@ -526,8 +526,6 @@
     <string name="import_qr_code_too_short_fingerprint">"Fingerprint is too short!"</string>
     <string name="import_qr_code_button">"Scan QR Code"</string>
     <string name="import_qr_code_text">"Place your camera over the QR Code!"</string>
-    <string name="import_warning_title">"Warning"</string>
-    <string name="import_warning">"Import will overwrite existing keys that have the same IDs!"</string>
 
     <!-- Import from URL -->
     <string name="import_url_warn_no_search_parameter">"No search query defined. You can still manually search on this keyserver."</string>

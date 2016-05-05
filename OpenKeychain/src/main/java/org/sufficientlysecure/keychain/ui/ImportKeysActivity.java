@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,7 +38,6 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
@@ -343,31 +341,6 @@ public class ImportKeysActivity extends BaseActivity
                     .show((ViewGroup) findViewById(R.id.import_snackbar));
             return;
         }
-
-        showWarningDialog();
-    }
-
-    private void showWarningDialog() {
-        CustomAlertDialogBuilder warningDialog = new CustomAlertDialogBuilder(this);
-        warningDialog.setTitle(R.string.import_warning_title).
-                setMessage(R.string.import_warning).setCancelable(true);
-        warningDialog.setPositiveButton(R.string.btn_import, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                executeImport();
-            }
-        });
-        warningDialog.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-            }
-        });
-        warningDialog.show();
-    }
-
-    private void executeImport() {
-        FragmentManager fragMan = getSupportFragmentManager();
-        ImportKeysListFragment keyListFragment = (ImportKeysListFragment) fragMan.findFragmentByTag(TAG_FRAG_LIST);
 
         mOperationHelper = new CryptoOperationHelper<>(
                 1, this, this, R.string.progress_importing
