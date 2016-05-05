@@ -466,7 +466,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
                     Bundle data = message.getData();
 
-					// use new passphrase!
+                    // use new passphrase!
                     mChangeUnlockParcel = new ChangeUnlockParcel(
                             mMasterKeyId,
                             mFingerprint,

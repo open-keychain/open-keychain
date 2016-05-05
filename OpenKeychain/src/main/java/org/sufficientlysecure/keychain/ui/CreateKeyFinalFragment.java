@@ -298,11 +298,11 @@ public class CreateKeyFinalFragment extends Fragment {
             saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
                     3072, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
 
-            if(createKeyActivity.mPassphrase != null) {
+            if (createKeyActivity.mPassphrase != null) {
                 saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(createKeyActivity.mPassphrase));
             } else {
-				saveKeyringParcel.setNewUnlock(null);
-			}
+                saveKeyringParcel.setNewUnlock(null);
+            }
         }
         String userId = KeyRing.createUserId(
                 new KeyRing.UserId(createKeyActivity.mName, createKeyActivity.mEmail, null)
