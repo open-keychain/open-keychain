@@ -57,9 +57,9 @@ import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
+import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -106,7 +106,7 @@ public class ExportTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snips");
-            parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase1);
+            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase1));
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             assertTrue("initial test key creation must succeed", result.success());
@@ -124,7 +124,7 @@ public class ExportTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snails");
-            parcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase("1234"));
+            parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase("1234")));
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             assertTrue("initial test key creation must succeed", result.success());

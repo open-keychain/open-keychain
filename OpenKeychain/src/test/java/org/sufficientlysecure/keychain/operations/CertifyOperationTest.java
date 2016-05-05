@@ -41,9 +41,9 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
+import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -84,7 +84,7 @@ public class CertifyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("derp");
-            parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase1);
+            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase1));
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -108,7 +108,7 @@ public class CertifyOperationTest {
             parcel.mAddUserAttribute.add(
                     WrappedUserAttribute.fromSubpacket(random.nextInt(100)+1, uatdata));
 
-            parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase2);
+            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase2));
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());

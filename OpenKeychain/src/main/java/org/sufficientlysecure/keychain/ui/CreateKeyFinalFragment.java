@@ -44,9 +44,9 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
@@ -289,7 +289,7 @@ public class CreateKeyFinalFragment extends Fragment {
                     2048, null, KeyFlags.AUTHENTICATION, 0L));
 
             // use empty passphrase
-            saveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase());
+            saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));
         } else {
             saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
                     3072, null, KeyFlags.CERTIFY_OTHER, 0L));
@@ -298,9 +298,11 @@ public class CreateKeyFinalFragment extends Fragment {
             saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
                     3072, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
 
-            saveKeyringParcel.mNewUnlock = createKeyActivity.mPassphrase != null
-                    ? new ChangeUnlockParcel(createKeyActivity.mPassphrase)
-                    : null;
+            if (createKeyActivity.mPassphrase != null) {
+                saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(createKeyActivity.mPassphrase));
+            } else {
+                saveKeyringParcel.setNewUnlock(null);
+            }
         }
         String userId = KeyRing.createUserId(
                 new KeyRing.UserId(createKeyActivity.mName, createKeyActivity.mEmail, null)

@@ -50,8 +50,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
@@ -129,7 +129,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.edit_key_fragment, null);
+        View view = inflater.inflate(R.layout.edit_key_fragment, superContainer, false);
 
         mUserIdsList = (ListView) view.findViewById(R.id.edit_key_user_ids);
         mSubkeysList = (ListView) view.findViewById(R.id.edit_key_keys);
@@ -339,9 +339,8 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                     Bundle data = message.getData();
 
                     // cache new returned passphrase!
-                    mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(
-                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
-                    );
+                    mSaveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(
+                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)));
                 }
             }
         };

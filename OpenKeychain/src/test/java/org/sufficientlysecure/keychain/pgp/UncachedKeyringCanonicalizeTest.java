@@ -58,11 +58,11 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
+import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
@@ -117,7 +117,7 @@ public class UncachedKeyringCanonicalizeTest {
         }
 
         // passphrase is tested in PgpKeyOperationTest, just use empty here
-        parcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase());
+        parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         PgpEditKeyResult result = op.createSecretKeyRing(parcel);
