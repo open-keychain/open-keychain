@@ -24,12 +24,14 @@ import java.util.HashMap;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.Binder;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -206,16 +208,13 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 break;
             }
 
-            case API_APPS: {
-                qb.setTables(Tables.API_APPS);
-
-                break;
-            }
-
             case API_APPS_BY_PACKAGE_NAME: {
+                String requestedPackageName = uri.getLastPathSegment();
+                checkIfPackageBelongsToCaller(getContext(), requestedPackageName);
+
                 qb.setTables(Tables.API_APPS);
                 qb.appendWhere(ApiApps.PACKAGE_NAME + " = ");
-                qb.appendWhereEscapeString(uri.getLastPathSegment());
+                qb.appendWhereEscapeString(requestedPackageName);
 
                 break;
             }
@@ -246,6 +245,25 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 "Query: " + qb.buildQuery(projection, selection, null, null, orderBy, null));
 
         return cursor;
+    }
+
+    private void checkIfPackageBelongsToCaller(Context context, String requestedPackageName) {
+        int callerUid = Binder.getCallingUid();
+        String[] callerPackageNames = context.getPackageManager().getPackagesForUid(callerUid);
+        if (callerPackageNames == null) {
+            throw new IllegalStateException("Failed to retrieve caller package name, this is an error!");
+        }
+
+        boolean packageBelongsToCaller = false;
+        for (String p : callerPackageNames) {
+            if (p.equals(requestedPackageName)) {
+                packageBelongsToCaller = true;
+                break;
+            }
+        }
+        if (!packageBelongsToCaller) {
+            throw new SecurityException("ExternalProvider may only check status of caller package!");
+        }
     }
 
     @Override
