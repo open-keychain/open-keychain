@@ -84,7 +84,6 @@
   <string name="btn_add_files">파일(들) 추가</string>
   <string name="btn_share_decrypted_text">공유</string>
   <string name="btn_open_with">다음으로 열기</string>
-  <string name="btn_copy_decrypted_text">복호화 된 텍스트 복사</string>
   <string name="btn_decrypt_clipboard">클립보드에서 읽기</string>
   <string name="btn_decrypt_files">입력 파일 선택</string>
   <string name="btn_encrypt_files">파일들 암호화</string>
@@ -226,21 +225,11 @@
   <string name="choice_8hours">8시간</string>
   <string name="choice_forever">영원히</string>
   <string name="choice_select_cert">키를 선택하세요</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">열기</string>
   <string name="error">에러</string>
   <string name="error_message">에러: %s</string>
   <string name="theme_dark">어두움</string>
   <string name="theme_light">밝음</string>
-  <!--key flags-->
-  <string name="flag_certify">확인</string>
-  <string name="flag_sign">서명</string>
-  <string name="flag_encrypt">암호화</string>
-  <string name="flag_authenticate">인증</string>
   <!--sentences-->
   <string name="wrong_passphrase">암호가 틀렸습니다.</string>
   <string name="no_filemanager_installed">호환되는 파일 관리자가 설치되어 있지 않음.</string>

@@ -18,6 +18,10 @@
 package org.sufficientlysecure.keychain.remote;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -33,14 +37,9 @@ import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 
 /**
@@ -49,13 +48,13 @@ import java.util.Arrays;
 public class ApiPermissionHelper {
 
     private final Context mContext;
-    private final ProviderHelper mProviderHelper;
+    private final ApiDataAccessObject mApiDao;
     private PackageManager mPackageManager;
 
-    public ApiPermissionHelper(Context context) {
+    public ApiPermissionHelper(Context context, ApiDataAccessObject apiDao) {
         mContext = context;
         mPackageManager = context.getPackageManager();
-        mProviderHelper = new ProviderHelper(context);
+        mApiDao = apiDao;
     }
 
     public static class WrongPackageCertificateException extends Exception {
@@ -66,14 +65,24 @@ public class ApiPermissionHelper {
         }
     }
 
+    /** Returns true iff the caller is allowed, or false on any type of problem.
+     * This method should only be used in cases where error handling is dealt with separately.
+     */
+    protected boolean isAllowedIgnoreErrors() {
+        try {
+            return isCallerAllowed();
+        } catch (WrongPackageCertificateException e) {
+            return false;
+        }
+    }
+
     /**
      * Checks if caller is allowed to access the API
      *
      * @return null if caller is allowed, or a Bundle with a PendingIntent
      */
-    protected Intent isAllowed(Intent data) {
+    protected Intent isAllowedOrReturnIntent(Intent data) {
         ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(mContext);
-
         try {
             if (isCallerAllowed()) {
                 return null;
@@ -168,7 +177,7 @@ public class ApiPermissionHelper {
 
         Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(currentPkg, accountName);
 
-        return mProviderHelper.getApiAccountSettings(uri); // can be null!
+        return mApiDao.getApiAccountSettings(uri); // can be null!
     }
 
     @Deprecated
@@ -224,35 +233,29 @@ public class ApiPermissionHelper {
     private boolean isPackageAllowed(String packageName) throws WrongPackageCertificateException {
         Log.d(Constants.TAG, "isPackageAllowed packageName: " + packageName);
 
-        ArrayList<String> allowedPkgs = mProviderHelper.getRegisteredApiApps();
-        Log.d(Constants.TAG, "allowed: " + allowedPkgs);
+        byte[] storedPackageCert = mApiDao.getApiAppCertificate(packageName);
 
-        // check if package is allowed to use our service
-        if (allowedPkgs.contains(packageName)) {
-            Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
+        boolean isKnownPackage = storedPackageCert != null;
+        if (!isKnownPackage) {
+            Log.d(Constants.TAG, "Package is NOT allowed! packageName: " + packageName);
+            return false;
+        }
+        Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
 
-            // check package signature
-            byte[] currentCert;
-            try {
-                currentCert = getPackageCertificate(packageName);
-            } catch (NameNotFoundException e) {
-                throw new WrongPackageCertificateException(e.getMessage());
-            }
-
-            byte[] storedCert = mProviderHelper.getApiAppCertificate(packageName);
-            if (Arrays.equals(currentCert, storedCert)) {
-                Log.d(Constants.TAG,
-                        "Package certificate is correct! (equals certificate from database)");
-                return true;
-            } else {
-                throw new WrongPackageCertificateException(
-                        "PACKAGE NOT ALLOWED! Certificate wrong! (Certificate not " +
-                                "equals certificate from database)");
-            }
+        byte[] currentPackageCert;
+        try {
+            currentPackageCert = getPackageCertificate(packageName);
+        } catch (NameNotFoundException e) {
+            throw new WrongPackageCertificateException(e.getMessage());
         }
 
-        Log.d(Constants.TAG, "Package is NOT allowed! packageName: " + packageName);
-        return false;
+        boolean packageCertMatchesStored = Arrays.equals(currentPackageCert, storedPackageCert);
+        if (packageCertMatchesStored) {
+            Log.d(Constants.TAG,"Package certificate matches expected.");
+            return true;
+        }
+
+        throw new WrongPackageCertificateException("PACKAGE NOT ALLOWED DUE TO CERTIFICATE MISMATCH!");
     }
 
 }

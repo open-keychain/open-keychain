@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
@@ -49,8 +50,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
@@ -128,7 +129,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.edit_key_fragment, null);
+        View view = inflater.inflate(R.layout.edit_key_fragment, superContainer, false);
 
         mUserIdsList = (ListView) view.findViewById(R.id.edit_key_user_ids);
         mSubkeysList = (ListView) view.findViewById(R.id.edit_key_keys);
@@ -338,10 +339,8 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                     Bundle data = message.getData();
 
                     // cache new returned passphrase!
-                    mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(
-                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
-                            null
-                    );
+                    mSaveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(
+                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)));
                 }
             }
         };
@@ -441,50 +440,45 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                         }
                         break;
                     }
-                    case EditSubkeyDialogFragment.MESSAGE_MOVE_KEY_TO_CARD: {
-                        // TODO: enable later when Admin PIN handling is resolved
-                        Notify.create(getActivity(),
-                                "This feature will be available in an upcoming OpenKeychain version.",
-                                Notify.Style.WARN).show();
-                        break;
+                    case EditSubkeyDialogFragment.MESSAGE_MOVE_KEY_TO_SECURITY_TOKEN: {
+                        SecretKeyType secretKeyType = mSubkeysAdapter.getSecretKeyType(position);
+                        if (secretKeyType == SecretKeyType.DIVERT_TO_CARD ||
+                            secretKeyType == SecretKeyType.GNU_DUMMY) {
+                            Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_stripped, Notify.Style.ERROR)
+                                    .show();
+                            break;
+                        }
 
-//                        Activity activity = EditKeyFragment.this.getActivity();
-//                        SecretKeyType secretKeyType = mSubkeysAdapter.getSecretKeyType(position);
-//                        if (secretKeyType == SecretKeyType.DIVERT_TO_CARD ||
-//                            secretKeyType == SecretKeyType.GNU_DUMMY) {
-//                            Notify.create(activity, R.string.edit_key_error_bad_nfc_stripped, Notify.Style.ERROR)
-//                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
-//                            break;
-//                        }
-//                        int algorithm = mSubkeysAdapter.getAlgorithm(position);
-//                        // these are the PGP constants for RSA_GENERAL, RSA_ENCRYPT and RSA_SIGN
-//                        if (algorithm != 1 && algorithm != 2 && algorithm != 3) {
-//                            Notify.create(activity, R.string.edit_key_error_bad_nfc_algo, Notify.Style.ERROR)
-//                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
-//                            break;
-//                        }
-//                        if (mSubkeysAdapter.getKeySize(position) != 2048) {
-//                            Notify.create(activity, R.string.edit_key_error_bad_nfc_size, Notify.Style.ERROR)
-//                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
-//                            break;
-//                        }
-//
-//
-//                        SubkeyChange change;
-//                        change = mSaveKeyringParcel.getSubkeyChange(keyId);
-//                        if (change == null) {
-//                            mSaveKeyringParcel.mChangeSubKeys.add(
-//                                    new SubkeyChange(keyId, false, true)
-//                            );
-//                            break;
-//                        }
-//                        // toggle
-//                        change.mMoveKeyToSecurityToken = !change.mMoveKeyToSecurityToken;
-//                        if (change.mMoveKeyToSecurityToken && change.mDummyStrip) {
-//                            // User had chosen to strip key, but now wants to divert it.
-//                            change.mDummyStrip = false;
-//                        }
-//                        break;
+                        int algorithm = mSubkeysAdapter.getAlgorithm(position);
+                        if (algorithm != PublicKeyAlgorithmTags.RSA_GENERAL
+                                && algorithm != PublicKeyAlgorithmTags.RSA_ENCRYPT
+                                && algorithm != PublicKeyAlgorithmTags.RSA_SIGN) {
+                            Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_algo, Notify.Style.ERROR)
+                                    .show();
+                            break;
+                        }
+
+                        if (mSubkeysAdapter.getKeySize(position) != 2048) {
+                            Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_size, Notify.Style.ERROR)
+                                    .show();
+                            break;
+                        }
+
+                        SubkeyChange change;
+                        change = mSaveKeyringParcel.getSubkeyChange(keyId);
+                        if (change == null) {
+                            mSaveKeyringParcel.mChangeSubKeys.add(
+                                    new SubkeyChange(keyId, false, true)
+                            );
+                            break;
+                        }
+                        // toggle
+                        change.mMoveKeyToSecurityToken = !change.mMoveKeyToSecurityToken;
+                        if (change.mMoveKeyToSecurityToken && change.mDummyStrip) {
+                            // User had chosen to strip key, but now wants to divert it.
+                            change.mDummyStrip = false;
+                        }
+                        break;
                     }
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
@@ -562,15 +556,9 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
     }
 
     private void addSubkey() {
-        boolean willBeMasterKey;
-        if (mSubkeysAdapter != null) {
-            willBeMasterKey = mSubkeysAdapter.getCount() == 0 && mSubkeysAddedAdapter.getCount() == 0;
-        } else {
-            willBeMasterKey = mSubkeysAddedAdapter.getCount() == 0;
-        }
-
+        // new subkey will never be a masterkey, as masterkey cannot be removed
         AddSubkeyDialogFragment addSubkeyDialogFragment =
-                AddSubkeyDialogFragment.newInstance(willBeMasterKey);
+                AddSubkeyDialogFragment.newInstance(false);
         addSubkeyDialogFragment
                 .setOnAlgorithmSelectedListener(
                         new AddSubkeyDialogFragment.OnAlgorithmSelectedListener() {

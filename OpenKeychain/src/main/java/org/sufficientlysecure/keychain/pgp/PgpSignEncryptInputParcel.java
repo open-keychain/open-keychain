@@ -38,7 +38,6 @@ public class PgpSignEncryptInputParcel implements Parcelable {
     protected Long mSignatureSubKeyId = null;
     protected int mSignatureHashAlgorithm = PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT;
     protected long mAdditionalEncryptId = Constants.key.none;
-    protected boolean mFailOnMissingEncryptionKeyIds = false;
     protected String mCharset;
     protected boolean mCleartextSignature;
     protected boolean mDetachedSignature = false;
@@ -65,7 +64,6 @@ public class PgpSignEncryptInputParcel implements Parcelable {
         mSignatureSubKeyId = source.readInt() == 1 ? source.readLong() : null;
         mSignatureHashAlgorithm = source.readInt();
         mAdditionalEncryptId = source.readLong();
-        mFailOnMissingEncryptionKeyIds = source.readInt() == 1;
         mCharset = source.readString();
         mCleartextSignature = source.readInt() == 1;
         mDetachedSignature = source.readInt() == 1;
@@ -96,7 +94,6 @@ public class PgpSignEncryptInputParcel implements Parcelable {
         }
         dest.writeInt(mSignatureHashAlgorithm);
         dest.writeLong(mAdditionalEncryptId);
-        dest.writeInt(mFailOnMissingEncryptionKeyIds ? 1 : 0);
         dest.writeString(mCharset);
         dest.writeInt(mCleartextSignature ? 1 : 0);
         dest.writeInt(mDetachedSignature ? 1 : 0);
@@ -111,10 +108,6 @@ public class PgpSignEncryptInputParcel implements Parcelable {
 
     public void setCharset(String mCharset) {
         this.mCharset = mCharset;
-    }
-
-    public boolean isFailOnMissingEncryptionKeyIds() {
-        return mFailOnMissingEncryptionKeyIds;
     }
 
     public long getAdditionalEncryptId() {
@@ -204,11 +197,6 @@ public class PgpSignEncryptInputParcel implements Parcelable {
 
     public PgpSignEncryptInputParcel setEnableAsciiArmorOutput(boolean enableAsciiArmorOutput) {
         mEnableAsciiArmorOutput = enableAsciiArmorOutput;
-        return this;
-    }
-
-    public PgpSignEncryptInputParcel setFailOnMissingEncryptionKeyIds(boolean failOnMissingEncryptionKeyIds) {
-        mFailOnMissingEncryptionKeyIds = failOnMissingEncryptionKeyIds;
         return this;
     }
 

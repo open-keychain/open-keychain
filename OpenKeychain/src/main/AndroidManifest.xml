@@ -5,11 +5,6 @@
     android:installLocation="auto">
 
     <!--
-        General remarks
-        ===============
-        - Last APG 1 version was 10900 (1.0.9 beta 00)
-        - Keychain starting with versionCode 20000!
-
         Association of file types to Keychain
         =====================================
         General remarks about file ending conventions:
@@ -48,6 +43,11 @@
         android:name="android.hardware.screen.portrait"
         android:required="false" />
 
+    <!-- For OTG tokens -->
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="false" />
+
     <!-- TemporaryStorageProvider should be writable by OpenKeychain only, thus signature-level permission -->
     <permission
         android:name="${applicationId}.WRITE_TEMPORARY_STORAGE"
@@ -81,6 +81,7 @@
 
     <!-- other group (for free) -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
@@ -94,6 +95,15 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Keychain.Light">
+        <!-- broadcast receiver for Wi-Fi Connection -->
+        <receiver
+            android:name=".receiver.NetworkReceiver"
+            android:enabled="false"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
         <!-- singleTop for NFC dispatch, see SecurityTokenOperationActivity -->
         <activity
             android:name=".ui.MainActivity"
@@ -503,21 +513,6 @@
             android:theme="@style/Theme.Keychain.Transparent"
             android:windowSoftInputMode="stateHidden">
 
-            <!-- VIEW with fingerprint scheme:
-                      Handle URIs with fingerprints when scanning directly from Barcode Scanner -->
-            <intent-filter android:label="@string/intent_import_key">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <!-- Android's scheme matcher is case-sensitive, so include most likely variations -->
-                <data android:scheme="openpgp4fpr" />
-                <data android:scheme="OPENPGP4FPR" />
-                <data android:scheme="OpenPGP4FPR" />
-                <data android:scheme="OpenPGP4Fpr" />
-                <data android:scheme="OpenPGP4fpr" />
-            </intent-filter>
             <!-- IMPORT_KEY without mimeType to allow import with extras Bundle -->
             <intent-filter android:label="@string/intent_import_key">
                 <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE" />
@@ -730,10 +725,35 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
+        <activity
+            android:name=".ui.RedirectImportKeysActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_activity_redirect_key"
+            android:theme="@style/Theme.Keychain.Transparent">
+
+            <!-- VIEW with fingerprint scheme:
+                      Handle URIs with fingerprints when scanning directly from Barcode Scanner -->
+            <intent-filter android:label="@string/intent_import_key">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <!-- Android's scheme matcher is case-sensitive, so include most likely variations -->
+                <data android:scheme="openpgp4fpr" />
+                <data android:scheme="OPENPGP4FPR" />
+                <data android:scheme="OpenPGP4FPR" />
+                <data android:scheme="OpenPGP4Fpr" />
+                <data android:scheme="OpenPGP4fpr" />
+            </intent-filter>
+        </activity>
+
+
         <activity
             android:name=".ui.LogDisplayActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -806,7 +826,12 @@
             android:exported="false"
             android:label="@string/keyserver_sync_settings_title" />
 
-        <!-- Internal classes of the remote APIs (not exported!) -->
+        <provider
+            android:name=".remote.KeychainExternalProvider"
+            android:authorities="${applicationId}.provider.exported"
+            android:exported="true" />
+
+        <!-- Internal classes of the remote APIs (not exported) -->
         <activity
             android:name=".remote.ui.RemoteCreateAccountActivity"
             android:exported="false"
@@ -863,6 +888,24 @@
             android:name=".remote.ui.RemoteBackupActivity"
             android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_backup" />
+
+        <!-- Usb interceptor activity -->
+        <activity
+            android:name=".ui.UsbEventReceiverActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Keychain.Transparent"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity="com.example.taskAffinityUsbEventReceiver"
+            android:process=":UsbEventReceiverActivityProcess"
+            android:exported="false">
+
+            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                       android:resource="@xml/usb_device_filter" />
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+        </activity>
 
         <!-- DEPRECATED service,
              using this service may lead to truncated data being returned to the caller -->

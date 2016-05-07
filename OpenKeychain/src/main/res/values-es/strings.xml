@@ -13,7 +13,6 @@
   <string name="title_preferences">Configuración</string>
   <string name="title_api_registered_apps">Aplicaciones</string>
   <string name="title_key_server_preference">Servidores de claves OpenPGP</string>
-  <string name="title_cache_ttl_preference">Personalizar opciones de \"Recordar\"</string>
   <string name="title_change_passphrase">Cambiar contraseña</string>
   <string name="title_share_fingerprint_with">Compartir huella digital con...</string>
   <string name="title_share_key">Compartir clave con...</string>
@@ -86,7 +85,6 @@
   <string name="btn_add_files">Añadir fichero(s)</string>
   <string name="btn_share_decrypted_text">Compartir</string>
   <string name="btn_open_with">Abrir con...</string>
-  <string name="btn_copy_decrypted_text">Copiar texto descifrado</string>
   <string name="btn_decrypt_clipboard">Leer del portapapeles</string>
   <string name="btn_decrypt_files">Seleccionar fichero de entrada</string>
   <string name="btn_encrypt_files">Cifrar ficheros</string>
@@ -137,7 +135,6 @@
   <string name="label_encryption_algorithm">Algoritmo de cifrado</string>
   <string name="label_hash_algorithm">Algoritmo hash</string>
   <string name="label_symmetric">Cifrar con contraseña</string>
-  <string name="label_passphrase_cache_ttl">Personalizar opciones de \"Recordar\"</string>
   <string name="label_passphrase_cache_subs">Recordar contraseñas por subclave</string>
   <string name="label_message_compression">Compresión del texto</string>
   <string name="label_file_compression">Compresión del fichero</string>
@@ -237,21 +234,11 @@
   <string name="choice_8hours">8 horas</string>
   <string name="choice_forever">para siempre</string>
   <string name="choice_select_cert">Seleccione una clave</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Abrir...</string>
   <string name="error">Error</string>
   <string name="error_message">Error: %s</string>
   <string name="theme_dark">Oscuro</string>
   <string name="theme_light">Claro</string>
-  <!--key flags-->
-  <string name="flag_certify">Certificar</string>
-  <string name="flag_sign">Firmar</string>
-  <string name="flag_encrypt">Cifrar</string>
-  <string name="flag_authenticate">Autentificar</string>
   <!--sentences-->
   <string name="wrong_passphrase">Contraseña incorrecta.</string>
   <string name="no_filemanager_installed">No hay un gestor de archivos compatible instalado.</string>
@@ -639,7 +626,6 @@
   <string name="edit_key_edit_user_id_revoked">Esta identidad se ha revocado. Esto no se puede deshacer.</string>
   <string name="edit_key_edit_subkey_title">¡Seleccione una acción!</string>
   <string name="edit_key_new_subkey">nueva subclave</string>
-  <string name="edit_key_select_flag">¡Por favor, seleccione al menos un indicador!</string>
   <string name="edit_key_error_add_identity">¡Añada al menos una identidad!</string>
   <string name="edit_key_error_add_subkey">¡Añadir al menos una subclave!</string>
   <!--Create key-->
@@ -1227,16 +1213,6 @@
   <string name="msg_data_mime_type">Content-Type: %s</string>
   <string name="msg_data_ok">Los datos se procesaron exitosamente</string>
   <string name="msg_acc_saved">Cuenta guardada</string>
-  <string name="msg_get_success">¡Descargado con éxito!</string>
-  <string name="msg_get_no_valid_keys">¡No se encontraron claves válidas en el fichero/portapapeles!</string>
-  <string name="msg_download_no_pgp_parts">PENDIENTE: ¡plurales!</string>
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="one">parte del archivo cargado es un objeto OpenPGP válido pero no una clave OpenPGP</item>
-    <item quantity="other">partes del archivo cargado son objetos OpenPGP válidos pero no claves OpenPGP</item>
-  </plurals>
-  <string name="msg_get_query_too_short">Solicitud de búsqueda demasiado corta. ¡Por favor refine su petición!</string>
-  <string name="msg_get_too_many_responses">La solicitud de búsqueda de clave devolvió demasiados candidatos. ¡Por favor refine su petición!</string>
-  <string name="msg_get_query_too_short_or_too_many_responses">O bien no hay claves o se han encontrado demasiadas. ¡Por favor mejore su petición!</string>
   <string name="msg_download_query_failed">Ocurrió un error al buscar claves.</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">Intentando la verificación con Keybase para %s</string>

@@ -1,37 +1,28 @@
-#Android specific
-bin
-gen
-obj
-libs/armeabi
+# Android specific
 lint.xml
 local.properties
 release.properties
-ant.properties
 *.class
 *.apk
 
-#Gradle
+# Gradle
 .gradle
 build
-gradle.properties
-# this is in here because the prepare-tests thing modifies it, and we DON'T
-# want this to be commited.  use git add -f to work on this file.
-settings.gradle
 
-#Maven
+# Maven
 target
 pom.xml.*
 
-#Eclipse
+# Eclipse
 .project
 .classpath
 .settings
 .metadata
 
-#IntelliJ IDEA
+# IntelliJ IDEA
 .idea
 *.iml
 
-#OS Specific
+# OS Specific
 [Tt]humbs.db
 .DS_Store

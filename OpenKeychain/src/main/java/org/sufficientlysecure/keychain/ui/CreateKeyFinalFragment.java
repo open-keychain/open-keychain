@@ -44,9 +44,9 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
@@ -57,6 +57,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 public class CreateKeyFinalFragment extends Fragment {
 
@@ -80,6 +81,10 @@ public class CreateKeyFinalFragment extends Fragment {
     private EditKeyResult mQueuedSaveKeyResult;
     private OperationResult mQueuedFinishResult;
     private EditKeyResult mQueuedDisplayResult;
+
+    // NOTE: Do not use more complicated pattern like defined in android.util.Patterns.EMAIL_ADDRESS
+    // EMAIL_ADDRESS fails for mails with umlauts for example
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\S]+@[\\S]+\\.[a-z]+$");
 
     public static CreateKeyFinalFragment newInstance() {
         CreateKeyFinalFragment frag = new CreateKeyFinalFragment();
@@ -106,7 +111,11 @@ public class CreateKeyFinalFragment extends Fragment {
         CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
 
         // set values
-        mNameEdit.setText(createKeyActivity.mName);
+        if (createKeyActivity.mName != null) {
+            mNameEdit.setText(createKeyActivity.mName);
+        } else {
+            mNameEdit.setText(getString(R.string.user_id_no_name));
+        }
         if (createKeyActivity.mAdditionalEmails != null && createKeyActivity.mAdditionalEmails.size() > 0) {
             String emailText = createKeyActivity.mEmail + ", ";
             Iterator<?> it = createKeyActivity.mAdditionalEmails.iterator();
@@ -121,6 +130,8 @@ public class CreateKeyFinalFragment extends Fragment {
         } else {
             mEmailEdit.setText(createKeyActivity.mEmail);
         }
+
+        checkEmailValidity();
 
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -278,18 +289,20 @@ public class CreateKeyFinalFragment extends Fragment {
                     2048, null, KeyFlags.AUTHENTICATION, 0L));
 
             // use empty passphrase
-            saveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase(), null);
+            saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));
         } else {
             saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    4096, null, KeyFlags.CERTIFY_OTHER, 0L));
+                    3072, null, KeyFlags.CERTIFY_OTHER, 0L));
             saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    4096, null, KeyFlags.SIGN_DATA, 0L));
+                    3072, null, KeyFlags.SIGN_DATA, 0L));
             saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+                    3072, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
 
-            saveKeyringParcel.mNewUnlock = createKeyActivity.mPassphrase != null
-                    ? new ChangeUnlockParcel(createKeyActivity.mPassphrase, null)
-                    : null;
+            if (createKeyActivity.mPassphrase != null) {
+                saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(createKeyActivity.mPassphrase));
+            } else {
+                saveKeyringParcel.setNewUnlock(null);
+            }
         }
         String userId = KeyRing.createUserId(
                 new KeyRing.UserId(createKeyActivity.mName, createKeyActivity.mEmail, null)
@@ -307,6 +320,31 @@ public class CreateKeyFinalFragment extends Fragment {
         }
 
         return saveKeyringParcel;
+    }
+
+    private void checkEmailValidity() {
+        CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
+
+        boolean emailsValid = true;
+        if (!EMAIL_PATTERN.matcher(createKeyActivity.mEmail).matches()) {
+            emailsValid = false;
+        }
+        if (createKeyActivity.mAdditionalEmails != null && createKeyActivity.mAdditionalEmails.size() > 0) {
+            for (Iterator<?> it = createKeyActivity.mAdditionalEmails.iterator(); it.hasNext(); ) {
+                if (!EMAIL_PATTERN.matcher(it.next().toString()).matches()) {
+                    emailsValid = false;
+                }
+            }
+        }
+        if (!emailsValid) {
+            mEmailEdit.setError(getString(R.string.create_key_final_email_valid_warning));
+            mEmailEdit.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mNameEdit.requestFocus(); // Workaround to remove focus from email
+                }
+            });
+        }
     }
 
     private void createKey() {

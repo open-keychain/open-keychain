@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -80,7 +80,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
         int total = inputBytes != null ? 1 : inputUris.size(), count = 0;
         ArrayList<PgpSignEncryptResult> results = new ArrayList<>();
 
-        NfcSignOperationsBuilder pendingInputBuilder = null;
+        SecurityTokenSignOperationsBuilder pendingInputBuilder = null;
 
         // if signing subkey has not explicitly been set, get first usable subkey capable of signing
         if (input.getSignatureMasterKeyId() != Constants.key.none
@@ -161,7 +161,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
                     return new SignEncryptResult(log, requiredInput, results, cryptoInput);
                 }
                 if (pendingInputBuilder == null) {
-                    pendingInputBuilder = new NfcSignOperationsBuilder(requiredInput.mSignatureTime,
+                    pendingInputBuilder = new SecurityTokenSignOperationsBuilder(requiredInput.mSignatureTime,
                             input.getSignatureMasterKeyId(), input.getSignatureSubKeyId());
                 }
                 pendingInputBuilder.addAll(requiredInput);

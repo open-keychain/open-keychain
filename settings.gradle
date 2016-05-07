@@ -1,9 +1,19 @@
 include ':OpenKeychain'
-include ':extern:openpgp-api-lib:openpgp-api'
-include ':extern:openkeychain-api-lib:openkeychain-intents'
 include ':extern:bouncycastle:core'
 include ':extern:bouncycastle:pg'
 include ':extern:bouncycastle:prov'
 include ':extern:minidns'
-include ':extern:KeybaseLib:Lib'
-include ':extern:safeslinger-exchange:safeslinger-exchange'
+
+// Workaround for Android Gradle Plugin 2.0, as described in http://stackoverflow.com/a/36544850
+//include ':extern:safeslinger-exchange:safeslinger-exchange'
+include ':safeslinger-exchange'
+project(':safeslinger-exchange').projectDir = new File('extern/safeslinger-exchange/safeslinger-exchange')
+//include ':extern:openkeychain-api-lib:openkeychain-intents'
+include ':openkeychain-api-lib'
+project(':openkeychain-api-lib').projectDir = new File('extern/openkeychain-api-lib/openkeychain-intents')
+//include ':extern:openpgp-api-lib:openpgp-api'
+include ':openpgp-api-lib'
+project(':openpgp-api-lib').projectDir = new File('extern/openpgp-api-lib/openpgp-api')
+//include ':extern:KeybaseLib:Lib'
+include ':KeybaseLib'
+project(':KeybaseLib').projectDir = new File('extern/KeybaseLib/Lib')

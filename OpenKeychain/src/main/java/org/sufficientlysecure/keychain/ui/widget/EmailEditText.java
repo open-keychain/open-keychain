@@ -23,14 +23,10 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Patterns;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.ContactHelper;
-
-import java.util.regex.Matcher;
 
 public class EmailEditText extends AppCompatAutoCompleteTextView {
 
@@ -70,20 +66,7 @@ public class EmailEditText extends AppCompatAutoCompleteTextView {
 
         @Override
         public void afterTextChanged(Editable editable) {
-            String email = editable.toString();
-            if (email.length() > 0) {
-                Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(email);
-                if (emailMatcher.matches()) {
-                    EmailEditText.this.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                            R.drawable.ic_stat_retyped_ok, 0);
-                } else {
-                    EmailEditText.this.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                            R.drawable.ic_stat_retyped_bad, 0);
-                }
-            } else {
-                // remove drawable if email is empty
-                EmailEditText.this.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            }
+
         }
     };
 

@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">暗号化</string>
   <string name="title_decrypt">復号化</string>
   <string name="title_add_subkey">副鍵の追加</string>
+  <string name="title_change_master_key">主鍵の変更</string>
   <string name="title_edit_key">鍵の編集</string>
   <string name="title_linked_create">リンクしたユーザIDを作成</string>
   <string name="title_preferences">設定</string>
@@ -35,6 +36,7 @@
   <string name="title_advanced_key_info">詳細</string>
   <string name="title_delete_secret_key">あなたの鍵 \'%s\' を削除しますか?</string>
   <string name="title_manage_my_keys">自分の鍵の管理</string>
+  <string name="title_alert_strip">副鍵のストリップ</string>
   <!--section-->
   <string name="section_user_ids">ユーザID</string>
   <string name="section_security_token">セキュリティ トークン</string>
@@ -88,7 +90,7 @@
   <string name="btn_add_files">ファイルの追加</string>
   <string name="btn_share_decrypted_text">共有</string>
   <string name="btn_open_with">...で開く</string>
-  <string name="btn_copy_decrypted_text">復号化したテキストのコピー</string>
+  <string name="btn_copy_decrypted_text">クリップボードへコピー</string>
   <string name="btn_decrypt_clipboard">クリップボードから読み取り</string>
   <string name="btn_decrypt_files">入力ファイルの選択</string>
   <string name="btn_encrypt_files">ファイルの暗号化</string>
@@ -154,6 +156,7 @@
   <string name="label_keyservers">OpenPGP鍵サーバを選択</string>
   <string name="label_key_id">鍵ID</string>
   <string name="label_key_created">%s で鍵を生成</string>
+  <string name="label_key_type">種別</string>
   <string name="label_creation">生成</string>
   <string name="label_expiry">満了</string>
   <string name="label_usage">使い方</string>
@@ -187,6 +190,7 @@
   <string name="label_sync_settings_keyserver_title">鍵の自動アップデート</string>
   <string name="label_sync_settings_keyserver_summary_on">3日ごとに鍵サーバから鍵をアップデートします</string>
   <string name="label_sync_settings_keyserver_summary_off">鍵を自動でアップデートしません</string>
+  <string name="label_sync_settings_wifi_title">Wi-Fiでのみ同期</string>
   <string name="label_sync_settings_contacts_title">連絡先へ鍵をリンク</string>
   <string name="label_sync_settings_contacts_summary_on">オフランで完結して、名前とメールアドレスに基づいて、鍵を連絡先にリンク</string>
   <string name="label_sync_settings_contacts_summary_off">新しい鍵は連絡先と関連付けしない</string>
@@ -252,21 +256,26 @@
   <string name="choice_8hours">8時間</string>
   <string name="choice_forever">永遠</string>
   <string name="choice_select_cert">鍵を選択</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">開く...</string>
+  <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_2048_description_html">小さいファイルサイズ。2030年までは安全であると考えられます</string>
+  <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_3072_description_html">推奨。2040年までは安全であると考えられます</string>
+  <string name="rsa_4096">RSA 4096</string>
+  <string name="rsa_4096_description_html">大きなファイルサイズ。2040年以降も安全であると考えられます</string>
+  <string name="ecc_p256">ECC P-256</string>
+  <string name="ecc_p256_description_html">極めて小さいファイルサイズ。2040年までは安全であると考えられます &lt;br/&gt; &lt;u&gt;実験的で、すべての実装でサポートされるわけではありません&lt;/u&gt;</string>
+  <string name="ecc_p521">ECC P-521</string>
+  <string name="ecc_p521_description_html">非常に小さいファイルサイズ。2040年以降も安全であると考えられます &lt;br/&gt; &lt;u&gt;実験的で、すべての実装でサポートされるわけではありません&lt;/u&gt;</string>
+  <string name="usage_none">なし (副鍵バインディングのみ)</string>
+  <string name="usage_sign">署名</string>
+  <string name="usage_encrypt">暗号化</string>
+  <string name="usage_sign_and_encrypt">署名と暗号化</string>
   <string name="error">エラー</string>
   <string name="error_message">エラー: %s</string>
   <string name="theme_dark">ダーク</string>
   <string name="theme_light">ライト</string>
-  <!--key flags-->
-  <string name="flag_certify">証明</string>
-  <string name="flag_sign">署名</string>
-  <string name="flag_encrypt">暗号化</string>
-  <string name="flag_authenticate">認証</string>
+  <string name="strip">ストリップ</string>
   <!--sentences-->
   <string name="wrong_passphrase">正しくないパスワードです。</string>
   <string name="no_filemanager_installed">互換性のないファイルマネージャがインストールされています。</string>
@@ -300,6 +309,7 @@
   <string name="public_key_deletetion_confirmation">鍵 \'%s\' を削除しますか?</string>
   <string name="also_export_secret_keys">秘密鍵もエクスポートします</string>
   <string name="reinstall_openkeychain">あなたは既知のAndroidのバグに遭遇しました。もし鍵とあなたの連絡先をリンクさせたいならOpenKeychainを再インストールしてください。</string>
+  <string name="alert_strip">この副鍵をストリップすると、このデバイスで使用不能になってしまいます!</string>
   <string name="key_exported">1つの鍵をエクスポートしました。</string>
   <string name="keys_exported">%d の鍵をエクスポートしました。</string>
   <string name="no_keys_exported">鍵をエクスポートしていません。</string>
@@ -325,6 +335,7 @@
   <string name="error_file_delete_failed">まだ削除されていません。手動での削除です!</string>
   <string name="error_file_added_already">%s はすでに追加済みです。</string>
   <string name="error_file_not_found">ファイルが見付かりません</string>
+  <string name="error_bad_data">データ不良!</string>
   <string name="error_no_secret_key_found">組になっている秘密鍵が見付かりません</string>
   <string name="error_external_storage_not_ready">外部ストレージが準備できていません</string>
   <string name="error_key_size_minimum512bit">鍵サイズは最低でも512bit必要です</string>
@@ -451,6 +462,7 @@
   <string name="help_tab_changelog">Changelog</string>
   <string name="help_tab_about">これについて</string>
   <string name="help_about_version">バージョン:</string>
+  <string name="help_tab_donations">寄付</string>
   <!--Import-->
   <string name="import_tab_keyserver">鍵サーバ</string>
   <string name="import_tab_cloud">鍵の検索</string>
@@ -665,7 +677,7 @@
     <item>副鍵をセキュリティトークンへ移動</item>
   </string-array>
   <string name="edit_key_new_subkey">新しい副鍵</string>
-  <string name="edit_key_select_flag">最低1つフラグを選択してください!</string>
+  <string name="edit_key_select_usage">使用する鍵を選択してください!</string>
   <string name="edit_key_error_add_identity">最低でも1つのユーザIDを追加!</string>
   <string name="edit_key_error_add_subkey">最低でも1つの副鍵を追加!</string>
   <string name="edit_key_error_bad_security_token_algo">セキュリティトークンでサポートされないアルゴリズムです!</string>
@@ -1269,6 +1281,10 @@
   <string name="msg_data_mime_filename">ファイル名: \'%s\'</string>
   <string name="msg_data_mime_from_extension">拡張子からMIME種別を推測しています</string>
   <string name="msg_data_mime_length">コンテンツ長: %s</string>
+  <string name="msg_data_mime_charset">キャラクタセットは \'%s\' です</string>
+  <string name="msg_data_mime_charset_faulty">キャラクタセットは \'%s\' ですが、でコードに失敗しました!</string>
+  <string name="msg_data_mime_charset_guess">キャラクタセットは \'%s\' のようです</string>
+  <string name="msg_data_mime_charset_unknown">キャラクタセットが不明か、データはテキストではありません。</string>
   <string name="msg_data_mime">MIMEデータ構造の解析中</string>
   <string name="msg_data_mime_ok">解析完了</string>
   <string name="msg_data_mime_none">MIME構造が見つかりません</string>
@@ -1278,14 +1294,11 @@
   <string name="msg_data_skip_mime">MIME解析をスキップしています</string>
   <string name="msg_acc_saved">アカウント保存</string>
   <string name="msg_get_success">ダウンロードに成功しました!</string>
+  <string name="msg_get_file_not_found">入力ファイルが見付かりません!</string>
   <string name="msg_get_no_valid_keys">ファイル/クリップボードにて正しい鍵が見付かりません!</string>
-  <string name="msg_download_no_pgp_parts">TODO: 複数部分!</string>
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="other">読み込んだファイルのOpenPGPオブジェクト部分は正しいですが、OpenPGPの鍵ではありません</item>
-  </plurals>
-  <string name="msg_get_query_too_short">鍵検索のクエリが短かすぎます。クエリを精密化してください!</string>
-  <string name="msg_get_too_many_responses">鍵検索のクエリが沢山の候補を返しました。クエリを精密化してください!</string>
-  <string name="msg_get_query_too_short_or_too_many_responses">鍵がまったく無いか、多すぎる鍵が見付かりました。クエリを改善してください!</string>
+  <string name="msg_get_too_many_responses">鍵検索のクエリが沢山の候補を返しました; クエリを精緻化してください</string>
+  <string name="msg_get_query_too_short">鍵検索のクエリが短かすぎます。クエリを精緻化してください!</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">鍵が無いか、見付かった鍵が多すぎます。クエリを改善してください!</string>
   <string name="msg_download_query_failed">鍵の検索時にエラーが発生しました。</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">%s のkeybase検証を試行中</string>
@@ -1398,7 +1411,7 @@
   <string name="snack_security_token_import">インポート</string>
   <string name="button_bind_key">鍵と紐付け</string>
   <string name="security_token_serial_no">シリアルNo: %s</string>
-  <string name="security_token_key_holder">鍵ホルダ:</string>
+  <string name="security_token_key_holder">鍵ホルダ: %s</string>
   <string name="security_token_key_holder_not_set"><![CDATA[鍵ホルダ: <未設定>]]></string>
   <string name="security_token_status_bound">セキュリティトークンが一致、鍵に紐付けます</string>
   <string name="security_token_status_unbound">セキュリティトークンが一致、鍵に紐付けることができます</string>
@@ -1566,4 +1579,23 @@
   <string name="settings_cache_ttl_at_least_one">少なくとも項目を1つ選択する必要があります!</string>
   <string name="settings_cache_ttl_max_three">3つ以上の項目を選択することはできません!</string>
   <string name="remember">記憶する</string>
+  <string name="security_token_error_pgp_app_not_installed">セキュリティトークンでPGPアプリが見つかりません</string>
+  <string name="prompt_fidesmo_pgp_install_title">PGPをインストールしますか?</string>
+  <string name="prompt_fidesmo_pgp_install_message">お使いのFidesmoデバイスには利用できるPGPアプリがありません。</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">インストール</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">キャンセル</string>
+  <string name="prompt_fidesmo_app_install_title">Fidesmoをインストールしますか?</string>
+  <string name="prompt_fidesmo_app_install_message">PGPをインストールするにはFidesmo Androidアプリが必要です。</string>
+  <string name="prompt_fidesmo_app_install_button_positive">インストール</string>
+  <string name="prompt_fidesmo_app_install_button_negative">キャンセル</string>
+  <string name="help_donation_paypal_item">OpenKeychain の寄付</string>
+  <string-array name="help_donation_google_catalog_values">
+    <item>1 ユーロ</item>
+    <item>2 ユーロ</item>
+    <item>3 ユーロ</item>
+    <item>5 ユーロ</item>
+    <item>10 ユーロ</item>
+    <item>50 ユーロ</item>
+    <item>100 ユーロ</item>
+  </string-array>
 </resources>

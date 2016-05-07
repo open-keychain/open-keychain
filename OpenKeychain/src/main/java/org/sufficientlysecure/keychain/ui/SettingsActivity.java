@@ -19,8 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.util.List;
-
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -49,6 +47,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -58,6 +57,8 @@ import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
+
+import java.util.List;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -405,7 +406,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * This fragment shows the keyserver/contacts sync preferences
+     * This fragment shows the keyserver/wifi-only-sync/contacts sync preferences
      */
     public static class SyncPrefsFragment extends PresetPreferenceFragment {
 
@@ -422,8 +423,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onResume();
             // this needs to be done in onResume since the user can change sync values from Android
             // settings and we need to reflect that change when the user navigates back
-            AccountManager manager = AccountManager.get(getActivity());
-            final Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
+            final Account account = KeychainApplication.createAccountIfNecessary(getActivity());
             // for keyserver sync
             initializeSyncCheckBox(
                     (SwitchPreference) findPreference(Constants.Pref.SYNC_KEYSERVER),
@@ -441,8 +441,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         private void initializeSyncCheckBox(final SwitchPreference syncCheckBox,
                                             final Account account,
                                             final String authority) {
-            boolean syncEnabled = ContentResolver.getSyncAutomatically(account, authority)
-                    && checkContactsPermission(authority);
+            // account is null if it could not be created for some reason
+            boolean syncEnabled =
+                    account != null
+                            && ContentResolver.getSyncAutomatically(account, authority)
+                            && checkContactsPermission(authority);
             syncCheckBox.setChecked(syncEnabled);
             setSummary(syncCheckBox, authority, syncEnabled);
 
@@ -464,6 +467,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             return false;
                         }
                     } else {
+                        if (account == null) {
+                            // if account could not be created for some reason,
+                            // we can't have our sync
+                            return false;
+                        }
                         // disable syncs
                         ContentResolver.setSyncAutomatically(account, authority, false);
                         // immediately delete any linked contacts

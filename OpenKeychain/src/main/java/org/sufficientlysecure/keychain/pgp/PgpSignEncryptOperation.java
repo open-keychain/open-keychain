@@ -168,10 +168,17 @@ public class PgpSignEncryptOperation extends BaseOperation {
             try {
                 long signingMasterKeyId = input.getSignatureMasterKeyId();
                 long signingSubKeyId = input.getSignatureSubKeyId();
-                {
-                    CanonicalizedSecretKeyRing signingKeyRing =
-                            mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId);
-                    signingKey = signingKeyRing.getSecretKey(input.getSignatureSubKeyId());
+
+                CanonicalizedSecretKeyRing signingKeyRing =
+                        mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId);
+                signingKey = signingKeyRing.getSecretKey(input.getSignatureSubKeyId());
+
+
+                // Make sure key is not expired or revoked
+                if (signingKeyRing.isExpired() || signingKeyRing.isRevoked()
+                        || signingKey.isExpired() || signingKey.isRevoked()) {
+                    log.add(LogType.MSG_PSE_ERROR_REVOKED_OR_EXPIRED, indent);
+                    return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
 
                 // Make sure we are allowed to sign here!
@@ -281,16 +288,17 @@ public class PgpSignEncryptOperation extends BaseOperation {
                         if (encryptSubKeyIds.isEmpty()) {
                             log.add(LogType.MSG_PSE_KEY_WARN, indent + 1,
                                     KeyFormattingUtils.convertKeyIdToHex(id));
-                            if (input.isFailOnMissingEncryptionKeyIds()) {
-                                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-                            }
+                            return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                        }
+                        // Make sure key is not expired or revoked
+                        if (keyRing.isExpired() || keyRing.isRevoked()) {
+                            log.add(LogType.MSG_PSE_ERROR_REVOKED_OR_EXPIRED, indent);
+                            return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                         }
                     } catch (ProviderHelper.NotFoundException e) {
                         log.add(LogType.MSG_PSE_KEY_UNKNOWN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
-                        if (input.isFailOnMissingEncryptionKeyIds()) {
-                            return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-                        }
+                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                     }
                 }
             }
@@ -470,7 +478,13 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 InputStream in = new BufferedInputStream(inputData.getInputStream());
 
                 if (enableCompression) {
-                    compressGen = new PGPCompressedDataGenerator(input.getCompressionAlgorithm());
+                    // Use preferred compression algo
+                    int algo = input.getCompressionAlgorithm();
+                    if (algo == PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT) {
+                        algo = PgpSecurityConstants.DEFAULT_COMPRESSION_ALGORITHM;
+                    }
+
+                    compressGen = new PGPCompressedDataGenerator(algo);
                     bcpgOut = new BCPGOutputStream(compressGen.open(out));
                 } else {
                     bcpgOut = new BCPGOutputStream(out);
@@ -514,7 +528,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
                     // this secret key diverts to a OpenPGP card, throw exception with hash that will be signed
                     log.add(LogType.MSG_PSE_PENDING_NFC, indent);
-                    return new PgpSignEncryptResult(log, RequiredInputParcel.createNfcSignOperation(
+                    return new PgpSignEncryptResult(log, RequiredInputParcel.createSecurityTokenSignOperation(
                             signingKey.getRing().getMasterKeyId(), signingKey.getKeyId(),
                             e.hashToSign, e.hashAlgo, cryptoInput.getSignatureTime()), cryptoInput);
                 }

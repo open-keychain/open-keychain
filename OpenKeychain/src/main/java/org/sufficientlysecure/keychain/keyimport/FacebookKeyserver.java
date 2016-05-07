@@ -21,11 +21,12 @@ package org.sufficientlysecure.keychain.keyimport;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -33,11 +34,12 @@ import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
+import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.io.IOException;
 import java.net.Proxy;
 
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,10 +106,9 @@ public class FacebookKeyserver extends Keyserver {
             String request = String.format(FB_KEY_URL_FORMAT, fbUsername);
             Log.d(Constants.TAG, "fetching from Facebook with: " + request + " proxy: " + mProxy);
 
-            OkHttpClient client = new OkHttpClient();
-            client.setProxy(mProxy);
-
             URL url = new URL(request);
+
+            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, mProxy);
 
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
 
@@ -126,6 +127,9 @@ public class FacebookKeyserver extends Keyserver {
             throw new QueryFailedException("Cannot connect to Facebook. "
                     + "Check your Internet connection!"
                     + (mProxy == Proxy.NO_PROXY ? "" : " Using proxy " + mProxy));
+        } catch (TlsHelper.TlsHelperException e) {
+            Log.e(Constants.TAG, "Exception in cert pinning", e);
+            throw new QueryFailedException("Exception in cert pinning. ");
         }
     }
 
@@ -190,8 +194,11 @@ public class FacebookKeyserver extends Keyserver {
         return uri.getPathSegments().get(0);
     }
 
-    public static boolean isFacebookHost(Uri uri) {
+    public static boolean isFacebookHost(@Nullable Uri uri) {
+        if (uri == null) {
+            return false;
+        }
         String host = uri.getHost();
-        return host.equalsIgnoreCase(FB_HOST) || host.equalsIgnoreCase(FB_HOST_WWW);
+        return FB_HOST.equalsIgnoreCase(host) || FB_HOST_WWW.equalsIgnoreCase(host);
     }
 }

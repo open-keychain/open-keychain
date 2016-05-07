@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ViewAnimator;
 
 import com.tokenautocomplete.TokenCompleteTextView;
@@ -79,9 +80,6 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         mSignKeySpinner = (KeySpinner) view.findViewById(R.id.sign);
         mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
         mEncryptKeyView.setThreshold(1); // Start working from first character
-        // TODO: workaround for bug in TokenAutoComplete,
-        // see https://github.com/open-keychain/open-keychain/issues/1636
-        mEncryptKeyView.setDeletionStyle(TokenCompleteTextView.TokenDeleteStyle.ToString);
 
         final ViewAnimator vSignatureIcon = (ViewAnimator) view.findViewById(R.id.result_signature_icon);
         mSignKeySpinner.setOnKeyChangedListener(new OnKeyChangedListener() {
@@ -109,6 +107,14 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                 if (vEncryptionIcon.getDisplayedChild() != child) {
                     vEncryptionIcon.setDisplayedChild(child);
                 }
+            }
+        });
+
+        ImageView addRecipientImgView = (ImageView) view.findViewById(R.id.add_recipient);
+        addRecipientImgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEncryptKeyView.showAllKeys();
             }
         });
 

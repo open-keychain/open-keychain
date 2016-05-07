@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- constrain size of backup code input for smaller devices -->
+    <style name="BackupCodeTextStyle">
+        <item name="android:textSize" tools:ignore="SpUsage">16dp</item>
+    </style>
+
+</resources>

@@ -35,5 +35,6 @@
 
     <!-- linked ID view -->
     <color name="card_view_button">#7bad45</color>
+    <color name="toolbar_photo_tint">#1E7bad45</color>
 
 </resources>

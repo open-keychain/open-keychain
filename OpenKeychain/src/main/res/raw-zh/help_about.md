@@ -1,4 +1,4 @@
-[//]: # (注意: 请把每个句子放在其本行中, Transifex把每一行放在它自己的位置！)
+[//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
@@ -19,7 +19,7 @@
   * 'Thialfihar' (APG 开发者)
   * Tim Bray
 
-##临时贡献者
+## 临时贡献者
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov
@@ -61,11 +61,11 @@
   * [Markdown4J](https://github.com/jdcasey/markdown4j) (Apache 许可证 v2)
   * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache 许可证 v2)
   * [MiniDNS](https://github.com/rtreffer/minidns) (Apache 许可证 v2)
-  * [OkHttp](https://square.github.io/okhttp/) (Apache License v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design)</a> (Apache 许可证 v2)
+  * [OkHttp](https://square.github.io/okhttp/) (Apache 许可证 v2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache 许可证 v2)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT 许可证)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT 许可证)
-  * [SpongyCastle](https://rtyley.github.io/bouncycastle/) (MIT X11 License)
+  * [BouncyCastle](https://github.com/open-keychain/bouncycastle) (MIT X11 许可证)
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache 许可证 v2)
   * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Apache 许可证 v2)
   * [ZXing](https://github.com/zxing/zxing) (Apache 许可证 v2)

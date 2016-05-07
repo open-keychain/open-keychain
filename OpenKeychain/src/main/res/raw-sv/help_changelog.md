@@ -1,5 +1,12 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
+## 3.9
+
+  * Detection and handling of text data
+  * Performance improvements
+  * UI improvements for Security Token handling
+
+
 ## 3.8
 
   * Redesigned key editing

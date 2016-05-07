@@ -1,10 +1,17 @@
 [//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
 
+## 3.9
+
+  * Idazki datuen atzematea eta kudeaketa
+  * Egintza hobekuntzak
+  * EI hobekuntzak Segurtasun Lekukoaren kudeaketarako
+
+
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Giltza edizio berdiseinatua
+  * Hautatu ordua banaka sarhitzak idazterakoan
+  * Facebook giltza inportazioa
 
 
 ## 3.7

@@ -41,6 +41,12 @@
                     android:layout_marginBottom="4dp"
                     android:layout_marginTop="4dp" />
 
+                <fragment
+                    android:id="@+id/multi_user_ids_fragment"
+                    android:name="org.sufficientlysecure.keychain.ui.MultiUserIdsFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
                 <TextView
                     style="@style/SectionHeader"
                     android:layout_width="wrap_content"

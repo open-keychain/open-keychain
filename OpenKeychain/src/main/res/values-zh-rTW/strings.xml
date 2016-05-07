@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">加密</string>
   <string name="title_decrypt">解密</string>
   <string name="title_add_subkey">新增子金鑰</string>
+  <string name="title_change_master_key">修改主密匙</string>
   <string name="title_edit_key">編輯金鑰</string>
   <string name="title_preferences">設定</string>
   <string name="title_api_registered_apps">應用程式</string>
@@ -64,7 +65,6 @@
   <string name="btn_view_cert_key">檢視簽署的金鑰</string>
   <string name="btn_create_key">建立金鑰</string>
   <string name="btn_add_files">加入檔案</string>
-  <string name="btn_copy_decrypted_text">複製已解密的訊息</string>
   <string name="btn_decrypt_clipboard">從剪貼簿中讀取</string>
   <string name="btn_decrypt_files">選擇要解密的檔案</string>
   <string name="btn_encrypt_files">加密檔案</string>
@@ -182,21 +182,11 @@
   <string name="choice_4hours">4小時</string>
   <string name="choice_8hours">8小時</string>
   <string name="choice_forever">永久</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">開啟…</string>
   <string name="error">錯誤</string>
   <string name="error_message">錯誤: %s</string>
   <string name="theme_dark">深色</string>
   <string name="theme_light">亮色</string>
-  <!--key flags-->
-  <string name="flag_certify">簽署</string>
-  <string name="flag_sign">簽名</string>
-  <string name="flag_encrypt">加密</string>
-  <string name="flag_authenticate">驗證</string>
   <!--sentences-->
   <string name="wrong_passphrase">密碼錯誤。</string>
   <string name="no_filemanager_installed">找不到相容的檔案管理員。</string>
@@ -514,7 +504,6 @@
   <string name="edit_key_edit_user_id_revoked">這個身分識別已被撤銷。此動作無法還原。</string>
   <string name="edit_key_edit_subkey_title">選擇一個動作！</string>
   <string name="edit_key_new_subkey">新增子金鑰</string>
-  <string name="edit_key_select_flag">請至少選擇一個用途！</string>
   <string name="edit_key_error_add_identity">新增至少一組身分識別！</string>
   <string name="edit_key_error_add_subkey">新增至少一組子金鑰！</string>
   <!--Create key-->
@@ -660,8 +649,6 @@
   <string name="msg_del_error_multi_secret">私鑰只能分別刪除！</string>
   <!--Linked Identity verification-->
   <string name="msg_acc_saved">帳戶已儲存</string>
-  <string name="msg_get_success">下載成功！</string>
-  <string name="msg_get_no_valid_keys">在檔案/剪貼簿中找不到有效的金鑰！</string>
   <string name="msg_download_query_failed">查詢金鑰的時候發生錯誤。</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->

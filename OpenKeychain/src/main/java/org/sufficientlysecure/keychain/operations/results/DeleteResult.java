@@ -131,7 +131,8 @@ public class DeleteResult extends InputPendingResult {
             else if (mFail == 0) {
                 str = activity.getString(R.string.delete_nothing);
             } else {
-                str = activity.getResources().getQuantityString(R.plurals.delete_fail, mFail);
+                str = activity.getResources().getQuantityString(
+                        R.plurals.delete_fail, mFail, mFail);
             }
         }
 

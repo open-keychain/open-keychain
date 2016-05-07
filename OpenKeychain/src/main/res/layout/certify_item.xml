@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:clickable="true"
-        android:layout_marginLeft="8dip"
         android:layout_marginTop="8dip"/>
 
     <LinearLayout android:id="@+id/user_id_body"
@@ -21,7 +20,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:singleLine="true"
-        android:layout_marginLeft="8dip"
         android:layout_marginTop="4dip">
 
         <CheckBox

@@ -60,6 +60,9 @@ public class KeychainContract {
         String MASTER_KEY_ID = "master_key_id"; // foreign key to key_rings._ID
         String TYPE = "type"; // not a database id
         String USER_ID = "user_id"; // not a database id
+        String NAME = "name";
+        String EMAIL = "email";
+        String COMMENT = "comment";
         String ATTRIBUTE_DATA = "attribute_data"; // not a database id
         String RANK = "rank"; // ONLY used for sorting! no key, no nothing!
         String IS_PRIMARY = "is_primary";
@@ -359,6 +362,9 @@ public class KeychainContract {
 
     public static class Certs implements CertsColumns, BaseColumns {
         public static final String USER_ID = UserPacketsColumns.USER_ID;
+        public static final String NAME = UserPacketsColumns.NAME;
+        public static final String EMAIL = UserPacketsColumns.EMAIL;
+        public static final String COMMENT = UserPacketsColumns.COMMENT;
         public static final String SIGNER_UID = "signer_user_id";
 
         public static final int UNVERIFIED = 0;

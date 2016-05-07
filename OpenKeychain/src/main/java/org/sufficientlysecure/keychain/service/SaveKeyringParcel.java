@@ -49,8 +49,6 @@ public class SaveKeyringParcel implements Parcelable {
     // the key fingerprint, for safety. MUST be null for a new key.
     public byte[] mFingerprint;
 
-    public ChangeUnlockParcel mNewUnlock;
-
     public ArrayList<String> mAddUserIds;
     public ArrayList<WrappedUserAttribute> mAddUserAttribute;
     public ArrayList<SubkeyAdd> mAddSubKeys;
@@ -69,6 +67,9 @@ public class SaveKeyringParcel implements Parcelable {
     private boolean mUpload;
     private boolean mUploadAtomic;
     private String mKeyserver;
+
+    // private because we have to set other details like key id
+    private ChangeUnlockParcel mNewUnlock;
 
     public SaveKeyringParcel() {
         reset();
@@ -100,6 +101,18 @@ public class SaveKeyringParcel implements Parcelable {
         mUpload = upload;
         mUploadAtomic = uploadAtomic;
         mKeyserver = keysever;
+    }
+
+    public void setNewUnlock(ChangeUnlockParcel parcel) {
+        mNewUnlock = parcel;
+    }
+
+    public ChangeUnlockParcel getChangeUnlockParcel() {
+        if(mNewUnlock != null) {
+            mNewUnlock.mMasterKeyId = mMasterKeyId;
+            mNewUnlock.mFingerprint = mFingerprint;
+        }
+        return mNewUnlock;
     }
 
     public boolean isUpload() {
@@ -344,64 +357,6 @@ public class SaveKeyringParcel implements Parcelable {
         // BRAINPOOL_P256, BRAINPOOL_P384, BRAINPOOL_P512
     }
 
-    /** This subclass contains information on how the passphrase should be changed.
-     *
-     * If no changes are to be made, this class should NOT be used!
-     *
-     * At this point, there must be *exactly one* non-null value here, which specifies the type
-     * of unlocking mechanism to use.
-     *
-     */
-    public static class ChangeUnlockParcel implements Parcelable {
 
-        // The new passphrase to use
-        public final Passphrase mNewPassphrase;
-        // A new pin to use. Must only contain [0-9]+
-        public final Passphrase mNewPin;
-
-        public ChangeUnlockParcel(Passphrase newPassphrase) {
-            this(newPassphrase, null);
-        }
-        public ChangeUnlockParcel(Passphrase newPassphrase, Passphrase newPin) {
-            if (newPassphrase == null && newPin == null) {
-                throw new RuntimeException("Cannot set both passphrase and pin. THIS IS A BUG!");
-            }
-            mNewPassphrase = newPassphrase;
-            mNewPin = newPin;
-        }
-
-        public ChangeUnlockParcel(Parcel source) {
-            mNewPassphrase = source.readParcelable(Passphrase.class.getClassLoader());
-            mNewPin = source.readParcelable(Passphrase.class.getClassLoader());
-        }
-
-        @Override
-        public void writeToParcel(Parcel destination, int flags) {
-            destination.writeParcelable(mNewPassphrase, flags);
-            destination.writeParcelable(mNewPin, flags);
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        public static final Creator<ChangeUnlockParcel> CREATOR = new Creator<ChangeUnlockParcel>() {
-            public ChangeUnlockParcel createFromParcel(final Parcel source) {
-                return new ChangeUnlockParcel(source);
-            }
-
-            public ChangeUnlockParcel[] newArray(final int size) {
-                return new ChangeUnlockParcel[size];
-            }
-        };
-
-        public String toString() {
-            return mNewPassphrase != null
-                    ? ("passphrase (" + mNewPassphrase + ")")
-                    : ("pin (" + mNewPin + ")");
-        }
-
-    }
 
 }

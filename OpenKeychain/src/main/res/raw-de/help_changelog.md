@@ -1,10 +1,17 @@
 [//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
+## 3.9
+
+  * Erkennung und Bearbeitung von Textdaten
+  * Performanceverbesserungen
+  * Verbesserung der Benutzeroberfläche zur Handhabung von Smartcards
+
+
 ## 3.8
 
   * Bearbeiten von Schlüsseln überarbeitet
   * Wähle die Zeit wie lange dein Passwort erinnert wird beim jedem Eingeben
-  * Facebook key import
+  Facebook Schlüsselimport
 
 
 ## 3.7

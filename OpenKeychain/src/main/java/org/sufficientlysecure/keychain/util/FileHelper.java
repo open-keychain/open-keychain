@@ -20,11 +20,13 @@ package org.sufficientlysecure.keychain.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
@@ -221,6 +223,31 @@ public class FileHelper {
         } else {
             return null;
         }
+    }
+
+    public static boolean isEncryptedFile(Context context, Uri uri) throws IOException {
+        boolean isEncrypted = false;
+
+        BufferedReader br = null;
+        try {
+            InputStream is = context.getContentResolver().openInputStream(uri);
+            br = new BufferedReader(new InputStreamReader(is));
+
+            String header = "-----BEGIN PGP MESSAGE-----";
+            int length = header.length();
+            char[] buffer = new char[length];
+            if (br.read(buffer, 0, length) == length) {
+                isEncrypted = new String(buffer).equals(header);
+            }
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Error closing file", e);
+            }
+        }
+        return isEncrypted;
     }
 
     public static String readableFileSize(long size) {

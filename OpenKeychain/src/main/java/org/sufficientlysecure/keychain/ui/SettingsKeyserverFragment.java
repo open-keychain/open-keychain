@@ -40,6 +40,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.AddEditKeyserverDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperAdapter;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperViewHolder;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperDragCallback;
@@ -312,19 +313,19 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
             public void showAsSelectedKeyserver() {
                 isSelectedKeyserver = true;
                 selectedServerLabel.setVisibility(View.VISIBLE);
-                outerLayout.setBackgroundColor(getResources().getColor(R.color.android_green_dark));
+                outerLayout.setBackgroundColor(FormattingUtils.getColorFromAttr(getContext(), R.attr.colorPrimaryDark));
             }
 
             public void showAsUnselectedKeyserver() {
                 isSelectedKeyserver = false;
                 selectedServerLabel.setVisibility(View.GONE);
-                outerLayout.setBackgroundColor(Color.WHITE);
+                outerLayout.setBackgroundColor(0);
             }
 
             @Override
             public void onItemSelected() {
                 selectedServerLabel.setVisibility(View.GONE);
-                itemView.setBackgroundColor(Color.LTGRAY);
+                itemView.setBackgroundColor(FormattingUtils.getColorFromAttr(getContext(), R.attr.colorBrightToolbar));
             }
 
             @Override

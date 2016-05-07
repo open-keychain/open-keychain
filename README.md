@@ -44,7 +44,7 @@ Development mailinglist at https://lists.riseup.net/www/subscribe/openkeychain
 3. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 4. Open the Android SDK Manager (shell command: ``android``).
 Expand the Tools directory and select "Android SDK Build-tools (Version 23.0.1)".
-Expand the Extras directory and install "Android Support Repository"
+Expand the Extras directory and install "Android Support Library", as well as "Local Maven repository for Support Libraries"
 Select SDK Platform for API levels 21, 22, and 23.
 5. Export ANDROID_HOME pointing to your Android SDK
 6. Execute ``./gradlew assembleFdroidDebug``
@@ -74,7 +74,7 @@ We are using the newest [Android Studio](http://developer.android.com/sdk/instal
 OpenKeychain uses a forked version with some small changes. These changes will been sent to Bouncy Castle.
 
 see
-* Fork: https://github.com/openpgp-keychain/bouncycastle
+* Fork: https://github.com/open-keychain/bouncycastle
 
 #### Bouncy Castle resources
 
@@ -109,6 +109,9 @@ ext {
 }
 ```
 * Change SDK and Build Tools in git submodules "openkeychain-api-lib" and "openpgp-api-lib" manually. They should also build on their own without the ext variables.
+
+#### Update library
+* You can check for library updates with ``./gradlew dependencyUpdates -Drevision=release
 
 #### Add new library
 * You can add the library as a Maven dependency or as a git submodule (if patches are required) in the "extern" folder.

@@ -13,6 +13,7 @@
     <string name="title_encrypt_files">"Encrypt"</string>
     <string name="title_decrypt">"Decrypt"</string>
     <string name="title_add_subkey">"Add subkey"</string>
+    <string name="title_change_master_key">Change master key</string>
     <string name="title_edit_key">"Edit Key"</string>
     <string name="title_linked_create">"Create a Linked Identity"</string>
     <string name="title_preferences">"Settings"</string>
@@ -40,6 +41,7 @@
     <string name="title_advanced_key_info">"Advanced"</string>
     <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
     <string name="title_manage_my_keys">"Manage my keys"</string>
+    <string name="title_alert_strip">"Strip this subkey"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
@@ -165,6 +167,7 @@
     <string name="label_keyservers">"Select OpenPGP keyservers"</string>
     <string name="label_key_id">"Key ID"</string>
     <string name="label_key_created">"Key created %s"</string>
+    <string name="label_key_type">"Type"</string>
     <string name="label_creation">"Creation"</string>
     <string name="label_expiry">"Expiry"</string>
     <string name="label_usage">"Usage"</string>
@@ -201,6 +204,7 @@
     <string name="label_sync_settings_keyserver_title">"Automatic key updates"</string>
     <string name="label_sync_settings_keyserver_summary_on">"Every three days, keys are updated from the preferred keyserver"</string>
     <string name="label_sync_settings_keyserver_summary_off">"Keys are not automatically updated"</string>
+    <string name="label_sync_settings_wifi_title">"Sync only on Wi-Fi"</string>
     <string name="label_sync_settings_contacts_title">"Link keys to contacts"</string>
     <string name="label_sync_settings_contacts_summary_on">"Link keys to contacts based on names and email addresses. This happens completely offline on your device."</string>
     <string name="label_sync_settings_contacts_summary_off">"New keys will not be linked to contacts"</string>
@@ -281,22 +285,26 @@
     <string name="choice_8hours">"8 hours"</string>
     <string name="choice_forever">"forever"</string>
     <string name="choice_select_cert">"Select a Key"</string>
-    <string name="dsa">"DSA"</string>
-    <string name="elgamal">"ElGamal"</string>
-    <string name="rsa">"RSA"</string>
-    <string name="ecdh">"ECDH"</string>
-    <string name="ecdsa">"ECDSA"</string>
     <string name="filemanager_title_open">"Open…"</string>
+    <string name="rsa_2048">"RSA 2048"</string>
+    <string name="rsa_2048_description_html">"smaller file size, considered secure until 2030"</string>
+    <string name="rsa_3072">"RSA 3072"</string>
+    <string name="rsa_3072_description_html">"recommended, considered secure until 2040"</string>
+    <string name="rsa_4096">"RSA 4096"</string>
+    <string name="rsa_4096_description_html">"larger file size, considered secure until 2040+"</string>
+    <string name="ecc_p256">"ECC P-256"</string>
+    <string name="ecc_p256_description_html">"very tiny file size, considered secure until 2040 &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
+    <string name="ecc_p521">"ECC P-521"</string>
+    <string name="ecc_p521_description_html">"tiny file size, considered secure until 2040+ &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
+    <string name="usage_none">"None (subkey binding only)"</string>
+    <string name="usage_sign">"Sign"</string>
+    <string name="usage_encrypt">"Encrypt"</string>
+    <string name="usage_sign_and_encrypt">"Sign &amp; Encrypt"</string>
     <string name="error">"Error"</string>
     <string name="error_message">"Error: %s"</string>
     <string name="theme_dark">"Dark"</string>
     <string name="theme_light">"Light"</string>
-
-    <!-- key flags -->
-    <string name="flag_certify">"Certify"</string>
-    <string name="flag_sign">"Sign"</string>
-    <string name="flag_encrypt">"Encrypt"</string>
-    <string name="flag_authenticate">"Authenticate"</string>
+    <string name="strip">"Strip it"</string>
 
     <!-- sentences -->
     <string name="wrong_passphrase">"Wrong password."</string>
@@ -331,6 +339,7 @@
     <string name="public_key_deletetion_confirmation">"Delete key '%s'?"</string>
     <string name="also_export_secret_keys">"Also export secret keys"</string>
     <string name="reinstall_openkeychain">"You encountered a known bug with Android. Please reinstall OpenKeychain if you want to link your contacts with keys."</string>
+    <string name="alert_strip">"Stripping this subkey will make it unusable on this device!"</string>
 
     <string name="key_exported">"Successfully exported 1 key."</string>
     <string name="keys_exported">"Successfully exported %d keys."</string>
@@ -358,6 +367,7 @@
     <string name="error_file_delete_failed">"have not been deleted. Delete them manually!"</string>
     <string name="error_file_added_already">%s has already been added.</string>
     <string name="error_file_not_found">"file not found"</string>
+    <string name="error_bad_data">"Bad data!"</string>
     <string name="error_no_secret_key_found">"no suitable secret key found"</string>
     <string name="error_external_storage_not_ready">"external storage not ready"</string>
     <string name="error_key_size_minimum512bit">"key size must be at least 512bit"</string>
@@ -370,6 +380,7 @@
     <string name="error_integrity_check_failed">"integrity check failed! Data has been modified!"</string>
     <string name="error_wrong_passphrase">"wrong password"</string>
     <string name="error_could_not_extract_private_key">"could not extract private key"</string>
+    <string name="error_wrong_security_token">"this security token doesn't contain required key"</string>
 
     <!-- errors without preceeding Error: -->
     <string name="error_jelly_bean_needed">"You need Android 4.1 to use Android's NFC Beam feature!"</string>
@@ -566,7 +577,7 @@
         <item quantity="other">"Successfully deleted %1$d keys%2$s."</item>
     </plurals>
     <plurals name="delete_fail">
-        <item quantity="one">"Error deleting one key%2$s."</item>
+        <item quantity="one">"Error deleting one key."</item>
         <item quantity="other">"Error deleting %1$d keys."</item>
     </plurals>
     <string name="delete_nothing">"Nothing to delete."</string>
@@ -746,12 +757,12 @@
         <item>"Move Subkey to Security Token"</item>
     </string-array>
     <string name="edit_key_new_subkey">"new subkey"</string>
-    <string name="edit_key_select_flag">"Please select at least one flag!"</string>
+    <string name="edit_key_select_usage">"Please select key usage!"</string>
     <string name="edit_key_error_add_identity">"Add at least one identity!"</string>
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
     <string name="edit_key_error_bad_security_token_algo">"Algorithm not supported by Security Token!"</string>
     <string name="edit_key_error_bad_security_token_size">"Key size not supported by Security Token!"</string>
-    <string name="edit_key_error_bad_security_token_stripped">"Cannot move key to Security Token (either stripped or 'divert-to-card')!"</string>
+    <string name="edit_key_error_bad_security_token_stripped">"Cannot move key to Security Token (either stripped or already on Security Token)!"</string>
 
     <!-- Create key -->
     <string name="create_key_upload">"Synchronize with the Internet"</string>
@@ -759,6 +770,7 @@
     <string name="create_key_passphrases_not_equal">"Passwords do not match"</string>
     <string name="create_key_final_text">"You entered the following identity:"</string>
     <string name="create_key_final_robot_text">"Creating a key may take a while, have a cup of coffee in the meantime…"</string>
+    <string name="create_key_final_email_valid_warning">"Many applications work better when provided with keys only containing valid email addresses"</string>
     <string name="create_key_rsa">"(3 subkeys, RSA, 4096 bit)"</string>
     <string name="create_key_custom">"(custom key configuration)"</string>
     <string name="create_key_name_text">"Choose a name associated with this key. This can be a full name, e.g., 'John Doe', or a nickname, e.g., 'Johnny'."</string>
@@ -769,7 +781,7 @@
     <string name="create_key_add_email">"Add email address"</string>
     <string name="create_key_add_email_text">"Additional email addresses are also associated to this key and can be used for secure communication."</string>
     <string name="create_key_email_already_exists_text">"Email address has already been added"</string>
-    <string name="create_key_email_invalid_email">"Email address format is invalid"</string>
+    <string name="create_key_email_empty_email">"Email address can not be empty"</string>
     <string name="create_key_yubi_key_pin_text">"Please choose a PIN with 6 numbers."</string>
     <string name="create_key_yubi_key_admin_pin_text">"Please write down the Admin PIN and store it in a safe place (required when you used a wrong PIN 3 times)."</string>
     <string name="create_key_yubi_key_pin">"PIN"</string>
@@ -941,7 +953,7 @@
     <string name="msg_is_subkey_empty">"Marked secret subkey %s as available, with empty password"</string>
     <string name="msg_is_subkey_pin">"Marked secret subkey %s as available, with PIN"</string>
     <string name="msg_is_subkey_stripped">"Marked secret subkey %s as stripped"</string>
-    <string name="msg_is_subkey_divert">"Marked secret subkey %s as 'divert-to-card'"</string>
+    <string name="msg_is_subkey_divert">"Marked secret subkey %s as key on Security Token"</string>
     <string name="msg_is_success_identical">"Keyring contains no new data, nothing to do"</string>
     <string name="msg_is_success">"Successfully imported secret keyring"</string>
 
@@ -1050,9 +1062,10 @@
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
-    <string name="msg_mf_divert">"Will divert to Security Token for crypto operations"</string>
-    <string name="msg_mf_error_divert_newsub">"Creation of new subkeys is not supported for 'divert-to-card' primary keys!"</string>
-    <string name="msg_mf_error_divert_serial">"The serial number of a 'divert-to-card' key must be 16 bytes! This is a programming error, please file a bug report!"</string>
+    <string name="msg_mf_divert">"Will use Security Token for crypto operations"</string>
+    <string name="msg_mf_error_all_keys_stripped">All keys are stripped!</string>
+    <string name="msg_mf_error_divert_newsub">"Creation of new subkeys is not supported for primary keys on Security Tokens!"</string>
+    <string name="msg_mf_error_divert_serial">"The serial number of a key on Security Tokens must be 16 bytes! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_encode">"Encoding exception!"</string>
     <string name="msg_mf_error_fingerprint">"Actual key fingerprint does not match the expected one!"</string>
     <string name="msg_mf_error_keyid">"No key ID. This is an internal error, please file a bug report!"</string>
@@ -1065,6 +1078,7 @@
     <string name="msg_mf_error_null_expiry">"Expiry time cannot be "same as before" on subkey creation. This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_noop">"Nothing to do!"</string>
     <string name="msg_mf_error_passphrase_master">"Fatal error decrypting master key! This is likely a programming error, please file a bug report!"</string>
+    <string name="msg_mf_error_passphrases_unchanged">"No password changed!"</string>
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
     <string name="msg_mf_error_sub_stripped">"Cannot modify stripped subkey %s!"</string>
@@ -1085,7 +1099,7 @@
     <string name="msg_mf_primary_new">"Generating new certificate for new primary user ID"</string>
     <string name="msg_mf_restricted_mode">"Changing to restricted operation mode"</string>
     <string name="msg_mf_subkey_change">"Modifying subkey %s"</string>
-    <string name="msg_mf_require_divert">"Diverting to Security Token for crypto operations"</string>
+    <string name="msg_mf_require_divert">"Using Security Token for crypto operations"</string>
     <string name="msg_mf_require_passphrase">"Password required for operations"</string>
     <string name="msg_mf_subkey_new">"Adding new subkey of type %s"</string>
     <string name="msg_mf_subkey_new_id">"New subkey ID: %s"</string>
@@ -1181,7 +1195,7 @@
     <string name="msg_dc_clear_signature">"Saving signature data for later"</string>
     <string name="msg_dc_clear">"Processing cleartext data"</string>
     <string name="msg_dc_error_bad_passphrase">"Error unlocking key, bad password!"</string>
-    <string name="msg_dc_error_sym_passphrase">"Error decrypting data! (Bad passphrase?)"</string>
+    <string name="msg_dc_error_sym_passphrase">"Error decrypting data! (Bad password?)"</string>
     <string name="msg_dc_error_corrupt_data">"Data is corrupt!"</string>
     <string name="msg_dc_error_extract_key">"Unknown error unlocking key!"</string>
     <string name="msg_dc_error_integrity_check">"Integrity check error!"</string>
@@ -1249,6 +1263,7 @@
     <string name="msg_pse_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_pse_error_sig">"Encountered OpenPGP signature exception!"</string>
     <string name="msg_pse_error_unlock">"Unknown error unlocking key!"</string>
+    <string name="msg_pse_error_revoked_or_expired">"Revoked/Expired key cannot be used for sign or encryption"</string>
     <string name="msg_pse_key_ok">"Encrypting for key: %s"</string>
     <string name="msg_pse_key_unknown">"Missing key for encryption: %s"</string>
     <string name="msg_pse_key_warn">"Bad key for encryption: %s"</string>
@@ -1486,7 +1501,7 @@
     <string name="error_key_not_found">"Key not found!"</string>
     <string name="error_key_processing">"Error processing key!"</string>
     <string name="key_stripped">"stripped"</string>
-    <string name="key_divert">"divert to Security Token"</string>
+    <string name="key_divert">"on Security Token"</string>
     <string name="key_no_passphrase">"no password"</string>
     <string name="key_unavailable">"unavailable"</string>
     <string name="secret_cannot_multiple">"Your own keys can only be deleted individually!"</string>
@@ -1544,7 +1559,7 @@
     <string name="snack_security_token_import">"Import"</string>
     <string name="button_bind_key">"Bind Key"</string>
     <string name="security_token_serial_no">"Serial No: %s"</string>
-    <string name="security_token_key_holder">"Key holder: "</string>
+    <string name="security_token_key_holder">"Key holder: %s"</string>
     <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
     <string name="security_token_status_bound">"Security Token matches and is bound to key"</string>
     <string name="security_token_status_unbound">"Security Token matches, can be bound to key"</string>
@@ -1563,17 +1578,17 @@
         <item quantity="other">"Incorrect PIN!\n%d tries remaining."</item>
     </plurals>
     <string name="security_token_error_terminated">"Security Token in termination state."</string>
-    <string name="security_token_error_wrong_length">"Entered PIN is too short. PINs are at least 6 digits long."</string>
+    <string name="security_token_error_wrong_length">"Entered PIN is too short. PINs are at least 6 digits long.\n(Error: Wrong length)"</string>
     <string name="security_token_error_conditions_not_satisfied">"Conditions of use not satisfied."</string>
-    <string name="security_token_error_security_not_satisfied">"Security status not satisfied."</string>
+    <string name="security_token_error_security_not_satisfied">"Incorrect PIN!\n(Keep in mind that you have only 3 tries!)"</string>
     <string name="security_token_error_authentication_blocked">"PIN blocked after too many attempts."</string>
     <string name="security_token_error_data_not_found">"Key or object not found."</string>
     <string name="security_token_error_unknown">"Unknown Error"</string>
-    <string name="security_token_error_bad_data">"Security Token reported invalid data."</string>
+    <string name="security_token_error_bad_data">"Entered PIN is too short. PINs are at least 6 digits long.\n(Error: Invalid data)"</string>
     <string name="security_token_error_chaining_error">"Security Token expected last command in a chain."</string>
     <string name="security_token_error_header">"Security Token reported invalid %s byte."</string>
     <string name="security_token_error_tag_lost">"Security Token has been taken off too early. Keep the Security Token at the back until the operation finishes."</string>
-    <string name="security_token_error_iso_dep_not_supported">"Tag does not support ISO-DEP (ISO 14443-4)"</string>
+    <string name="security_token_error_iso_dep_not_supported">"Security Token does not support the required communication standard (ISO-DEP, ISO 14443-4)"</string>
     <string name="security_token_error_try_again">"Try again"</string>
     <string name="btn_delete_original">Delete original file</string>
 
@@ -1624,7 +1639,7 @@
     <string name="linked_create_twitter_handle">Twitter Handle</string>
     <string name="linked_create_twitter_2_1">"Touch either button to tweet the message!"</string>
     <string name="linked_create_twitter_2_2">"You can edit the Tweet before posting it, so long as the text inside the brackets is unmodified."</string>
-    <string name="linked_create_twitter_2_3">"Once your Tweet is published as &lt;b&gt;@%s&lt;/b&gt;, touch the Verify button to scan your timeline for it."</string>
+    <string name="linked_create_twitter_2_3">"Once your Tweet is published as <b>@%s</b>, touch the Verify button to scan your timeline for it."</string>
     <string name="linked_create_twitter_2_4">"After successful verification, touch Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
     <string name="linked_create_verify">"Verify"</string>
@@ -1647,7 +1662,7 @@
     <string name="linked_select_1">"A 'linked identity' connects your PGP key to a resource on the web."</string>
     <string name="linked_select_2">"Please select a type:"</string>
     <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nToken for proof:\n%1$s"</string>
-    <string name="linked_id_github_text">"This Gist confirms the Linked Identity in my OpenPGP key, and links it to this GitHub account.\n\nToken for proof:\n%1$s"</string>
+    <string name="linked_id_github_text" translatable="false">"This Gist confirms the Linked Identity in my OpenPGP key, and links it to this GitHub account.\n\nToken for proof:\n%1$s"</string>
     <string name="linked_verifying">"Verifying…"</string>
     <string name="linked_verify_success">"Verified!"</string>
     <string name="linked_verify_error">"Verification error!"</string>
@@ -1733,10 +1748,16 @@
     <string name="help_donation_paypal_item">OpenKeychain Donation</string>
     <string-array name="help_donation_google_catalog_values">
         <item>1 EUR</item>
+        <item>2 EUR</item>
         <item>3 EUR</item>
         <item>5 EUR</item>
         <item>10 EUR</item>
         <item>50 EUR</item>
         <item>100 EUR</item>
     </string-array>
+    <string name="redirect_import_key_title">"Scan with OpenKeychain!"</string>
+    <string name="redirect_import_key_message">"You scanned a OpenPGP QR Code with another app, please scan with Openkeychain directly to be safe."</string>
+    <string name="redirect_import_key_yes">"Scan again"</string>
+    <string name="redirect_import_key_no">"Close"</string>
+    <string name="title_activity_redirect_key">"Key import redirection"</string>
 </resources>

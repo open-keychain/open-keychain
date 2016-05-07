@@ -2,11 +2,23 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">ओपनकीचैन </string>
   <!--title-->
+  <string name="title_encrypt_text">एन्क्रिप्ट</string>
+  <string name="title_encrypt_files">एन्क्रिप्ट</string>
+  <string name="title_decrypt">डिक्रिप्ट </string>
+  <string name="title_add_subkey">उपकुंजी जोड़ें</string>
+  <string name="title_edit_key">संपादित कुंजी</string>
+  <string name="title_linked_create">एक  लिंक्डन  पहचान बनाने</string>
+  <string name="title_preferences">सेटिंग</string>
+  <string name="title_api_registered_apps">एप्लिकेशन</string>
+  <string name="title_change_passphrase">पासवर्ड परिवर्तन </string>
   <!--section-->
+  <string name="section_encrypt">एन्क्रिप्ट</string>
   <!--button-->
   <!--Content Description-->
   <!--menu-->
+  <string name="menu_preferences">सेटिंग</string>
   <!--label-->
   <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
@@ -15,7 +27,6 @@
   <!--InstallDialogFragment strings-->
   <!--StartOrbotDialogFragment strings-->
   <!--choice-->
-  <!--key flags-->
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -42,6 +53,7 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_settings">सेटिंग</string>
   <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
@@ -51,10 +63,13 @@
   <!--Key trust-->
   <!--keybase proof stuff-->
   <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">
+पासवर्ड परिवर्तन </string>
   <!--Create key-->
   <!--View key-->
   <!--Add/Edit keyserver-->
   <!--Navigation Drawer-->
+  <string name="nav_apps">एप्लिकेशन</string>
   <!--hints-->
   <!--certs-->
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
@@ -84,5 +99,6 @@
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">सेटिंग</string>
   <!--Other Linked Identity strings-->
 </resources>

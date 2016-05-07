@@ -106,19 +106,9 @@
   <string name="choice_4hours">4 saat</string>
   <string name="choice_8hours">8 saat</string>
   <string name="choice_forever">daima</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Aç...</string>
   <string name="error">Hata</string>
   <string name="error_message">Hata: %s</string>
-  <!--key flags-->
-  <string name="flag_certify">Tasdikleme</string>
-  <string name="flag_sign">İmzalama</string>
-  <string name="flag_encrypt">Şifreleme</string>
-  <string name="flag_authenticate">Kimlik kanıtlama</string>
   <!--sentences-->
   <string name="no_filemanager_installed">Uyumlu dosya yöneticisi yüklenmedi.</string>
   <string name="encrypt_sign_successful">Başarıyla imzalandı ve/veya şifrelendi.</string>
@@ -326,7 +316,6 @@
   </string-array>
   <string name="edit_key_edit_subkey_title">Bir eylem seç!</string>
   <string name="edit_key_new_subkey">yeni alt anahtar</string>
-  <string name="edit_key_select_flag">Lütfen en az bir bayrak seçiniz!</string>
   <string name="edit_key_error_add_identity">En az bir kimlik ekleyin!</string>
   <string name="edit_key_error_add_subkey">En az bir alt anahtar ekleyin!</string>
   <!--Create key-->
@@ -387,7 +376,6 @@
   <string name="msg_del_error_empty">Silinecek bir şey yok!</string>
   <!--Linked Identity verification-->
   <string name="msg_acc_saved">Hesap kaydedildi</string>
-  <string name="msg_get_success">Başarıyla indirildi!</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->

@@ -159,21 +159,11 @@
   <string name="choice_8hours">8 tuntia</string>
   <string name="choice_forever">ikuisesti</string>
   <string name="choice_select_cert">Valitse avain</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Avaa...</string>
   <string name="error">Virhe</string>
   <string name="error_message">Virhe: %s</string>
   <string name="theme_dark">Tumma</string>
   <string name="theme_light">Vaalea</string>
-  <!--key flags-->
-  <string name="flag_certify">Varmenna</string>
-  <string name="flag_sign">Allekirjoita</string>
-  <string name="flag_encrypt">Salaa</string>
-  <string name="flag_authenticate">Autentikoi</string>
   <!--sentences-->
   <string name="wrong_passphrase">Väärä salasana</string>
   <string name="no_filemanager_installed">Yhteensopivaa tiedostonhallintaa ei ole asennettu.</string>

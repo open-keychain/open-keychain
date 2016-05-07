@@ -28,7 +28,8 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 public class CertifyKeyActivity extends BaseActivity {
 
     public static final String EXTRA_RESULT = "operation_result";
-    public static final String EXTRA_KEY_IDS = "extra_key_ids";
+    // For sending masterKeyIds to MultiUserIdsFragment to display list of keys
+    public static final String EXTRA_KEY_IDS = MultiUserIdsFragment.EXTRA_KEY_IDS ;
     public static final String EXTRA_CERTIFY_KEY_ID = "certify_key_id";
 
     @Override

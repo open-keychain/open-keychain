@@ -39,7 +39,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:focusable="true"
+                android:focusableInTouchMode="true" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -54,6 +56,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp" />
 

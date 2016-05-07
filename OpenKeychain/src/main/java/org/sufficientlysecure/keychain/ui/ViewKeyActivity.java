@@ -32,6 +32,7 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
@@ -80,11 +81,11 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
-import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenNfcActivity;
+import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -102,7 +103,7 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
+public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
@@ -129,8 +130,8 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
     private String mKeyserver;
     private ArrayList<ParcelableKeyRing> mKeyList;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
-    private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mEditOpHelper;
-    private SaveKeyringParcel mSaveKeyringParcel;
+    private CryptoOperationHelper<ChangeUnlockParcel, EditKeyResult> mEditOpHelper;
+    private ChangeUnlockParcel mChangeUnlockParcel;
 
     private TextView mStatusText;
     private ImageView mStatusImage;
@@ -170,9 +171,9 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
     private byte[] mFingerprint;
     private String mFingerprintString;
 
-    private byte[] mNfcFingerprints;
-    private String mNfcUserId;
-    private byte[] mNfcAid;
+    private byte[] mSecurityTokenFingerprints;
+    private String mSecurityTokenUserId;
+    private byte[] mSecurityTokenAid;
 
     @SuppressLint("InflateParams")
     @Override
@@ -428,13 +429,11 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
     }
 
     private void changePassword() {
-        mSaveKeyringParcel = new SaveKeyringParcel(mMasterKeyId, mFingerprint);
-
-        CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult> editKeyCallback
-                = new CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult>() {
+        CryptoOperationHelper.Callback<ChangeUnlockParcel, EditKeyResult> editKeyCallback
+                = new CryptoOperationHelper.Callback<ChangeUnlockParcel, EditKeyResult>() {
             @Override
-            public SaveKeyringParcel createOperationInput() {
-                return mSaveKeyringParcel;
+            public ChangeUnlockParcel createOperationInput() {
+                return mChangeUnlockParcel;
             }
 
             @Override
@@ -468,9 +467,10 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
                     Bundle data = message.getData();
 
                     // use new passphrase!
-                    mSaveKeyringParcel.mNewUnlock = new SaveKeyringParcel.ChangeUnlockParcel(
-                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
-                            null
+                    mChangeUnlockParcel = new ChangeUnlockParcel(
+                            mMasterKeyId,
+                            mFingerprint,
+                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
                     );
 
                     mEditOpHelper.cryptoOperation();
@@ -646,17 +646,17 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
     }
 
     @Override
-    protected void doNfcInBackground() throws IOException {
+    protected void doSecurityTokenInBackground() throws IOException {
 
-        mNfcFingerprints = nfcGetFingerprints();
-        mNfcUserId = nfcGetUserId();
-        mNfcAid = nfcGetAid();
+        mSecurityTokenFingerprints = mSecurityTokenHelper.getFingerprints();
+        mSecurityTokenUserId = mSecurityTokenHelper.getUserId();
+        mSecurityTokenAid = mSecurityTokenHelper.getAid();
     }
 
     @Override
-    protected void onNfcPostExecute() {
+    protected void onSecurityTokenPostExecute() {
 
-        long tokenId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
+        long tokenId = KeyFormattingUtils.getKeyIdFromFingerprint(mSecurityTokenFingerprints);
 
         try {
 
@@ -667,7 +667,7 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
 
             // if the master key of that key matches this one, just show the token dialog
             if (KeyFormattingUtils.convertFingerprintToHex(candidateFp).equals(mFingerprintString)) {
-                showSecurityTokenFragment(mNfcFingerprints, mNfcUserId, mNfcAid);
+                showSecurityTokenFragment(mSecurityTokenFingerprints, mSecurityTokenUserId, mSecurityTokenAid);
                 return;
             }
 
@@ -680,9 +680,9 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
                             Intent intent = new Intent(
                                     ViewKeyActivity.this, ViewKeyActivity.class);
                             intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mNfcAid);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mNfcUserId);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mNfcFingerprints);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mSecurityTokenFingerprints);
                             startActivity(intent);
                             finish();
                         }
@@ -695,9 +695,9 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
                         public void onAction() {
                             Intent intent = new Intent(
                                     ViewKeyActivity.this, CreateKeyActivity.class);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mNfcAid);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mNfcUserId);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mNfcFingerprints);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mSecurityTokenFingerprints);
                             startActivity(intent);
                             finish();
                         }
@@ -924,6 +924,7 @@ public class ViewKeyActivity extends BaseSecurityTokenNfcActivity implements
                                     }
 
                                     mPhoto.setImageBitmap(photo);
+                                    mPhoto.setColorFilter(getResources().getColor(R.color.toolbar_photo_tint), PorterDuff.Mode.SRC_ATOP);
                                     mPhotoLayout.setVisibility(View.VISIBLE);
                                 }
                             };

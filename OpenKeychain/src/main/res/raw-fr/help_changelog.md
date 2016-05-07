@@ -1,10 +1,17 @@
 [//] : # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 3.9
+
+  * Détection et gestion de données texte
+  * Améliorations des performances
+  * Améliorations de l'IG pour la gestion des jetons de sécurité
+
+
 ## 3.8
 
   * Nouvelle conception de la modification des clefs
   * Choisir les délais de mémorisation individuellement lors de la saisie des mots de passe
-  * Facebook key import
+  * Importation de clef Facebook
 
 
 ## 3.7

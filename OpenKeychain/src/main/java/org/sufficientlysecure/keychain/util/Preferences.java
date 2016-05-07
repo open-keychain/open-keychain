@@ -19,6 +19,22 @@
 package org.sufficientlysecure.keychain.util;
 
 
+import android.accounts.Account;
+import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Constants.Pref;
+import org.sufficientlysecure.keychain.KeychainApplication;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
+
 import java.io.Serializable;
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -31,19 +47,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Constants.Pref;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 
 /**
  * Singleton Implementation of a Preference Helper
@@ -76,9 +79,8 @@ public class Preferences {
 
     /**
      * Makes android's preference framework write to our file instead of default.
-     * This allows us to use the "persistent" attribute to simplify code, which automatically
+     * This allows us to use the xml "persistent" attribute to simplify code, which automatically
      * writes and reads preference values.
-     * @param manager
      */
     public static void setPreferenceManagerFileAndMode(PreferenceManager manager) {
         manager.setSharedPreferencesName(PREF_FILE_NAME);
@@ -302,6 +304,23 @@ public class Preferences {
 
     }
 
+    /**
+     * @return true if a periodic sync exists and is set to run automatically, false otherwise
+     */
+    public static boolean getKeyserverSyncEnabled(Context context) {
+        Account account = KeychainApplication.createAccountIfNecessary(context);
+
+        if (account == null) {
+            // if the account could not be created for some reason, we can't have a sync
+            return false;
+        }
+
+        String authority = Constants.PROVIDER_AUTHORITY;
+
+        return ContentResolver.getSyncAutomatically(account, authority) &&
+                !ContentResolver.getPeriodicSyncs(account, authority).isEmpty();
+    }
+
     public CacheTTLPrefs getPassphraseCacheTtl() {
         Set<String> pref = mSharedPreferences.getStringSet(Constants.Pref.PASSPHRASE_CACHE_TTLS, null);
         if (pref == null) {
@@ -422,6 +441,12 @@ public class Preferences {
                 return new CloudSearchPrefs[size];
             }
         };
+    }
+
+    // sync preferences
+
+    public boolean getWifiOnlySync() {
+        return mSharedPreferences.getBoolean(Pref.ENABLE_WIFI_SYNC_ONLY, true);
     }
 
     // experimental prefs

@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
+  <!--title-->
+  <string name="title_encrypt_text">Krypter</string>
+  <string name="title_encrypt_files">Krypter</string>
+  <string name="title_decrypt">Dekrypter</string>
+  <string name="title_add_subkey">Legg til undernøkkel</string>
+  <string name="title_change_master_key">Endre hovednøkkel</string>
+  <string name="title_edit_key">Rediger nøkkel</string>
+  <string name="title_linked_create">Lag en tilknyttet identitet</string>
+  <string name="title_preferences">Innstillinger</string>
+  <string name="title_api_registered_apps">Programmer</string>
+  <string name="title_key_server_preference">OpenPGP-nøkkeltjenere</string>
+  <string name="title_cache_ttl_preference">Tilpass \"husk\"-valg</string>
+  <string name="title_change_passphrase">Endre passord</string>
+  <string name="title_share_fingerprint_with">Del fingeravtrykk med…</string>
+  <string name="title_share_key">Del nøkkel med…</string>
+  <string name="title_share_file">Del fil med…</string>
+  <string name="title_share_message">Del tekst med…</string>
+  <string name="title_encrypt_to_file">Krypter til fil</string>
+  <string name="title_decrypt_to_file">Dekrypter til fil</string>
+  <string name="title_import_keys">Importer nøkler</string>
+  <string name="title_export_key">Sikkerhetskopier nøkkel</string>
+  <string name="title_export_keys">Sikkerhetskopier nøkler</string>
+  <string name="title_key_not_found">Finner ikke nøkkel</string>
+  <string name="title_send_key">Last opp til nøkkeltjener</string>
+  <string name="title_backup">Sikkerhetskopi</string>
+  <string name="title_certify_key">Bekreft nøkkel</string>
+  <string name="title_key_details">Nøkkeldetaljer</string>
+  <string name="title_help">Hjelp</string>
+  <string name="title_log_display">Logg</string>
+  <string name="title_exchange_keys">Utveksle nøkler</string>
+  <string name="title_advanced_key_info">Avansert</string>
+  <string name="title_delete_secret_key">Slett DIN nøkkel \"%s\"?</string>
+  <string name="title_manage_my_keys">Behandle nøklene mine</string>
+  <string name="title_alert_strip">Fjern denne undernøkkelen</string>
+  <!--section-->
+  <string name="section_user_ids">Identiteter</string>
+  <string name="section_security_token">Sikkerhetssymbol</string>
+  <string name="section_linked_system_contact">Lenket systemkontakt</string>
+  <string name="section_keybase_proofs">Keybase.io-beviser</string>
+  <string name="section_should_you_trust">Kan du stole på denne nøkkelen?</string>
+  <string name="section_proof_details">Bekreft bevis</string>
+  <string name="section_keys">Undernøkler</string>
+  <string name="section_cloud_search">Finn nøkkel</string>
+  <string name="section_cloud_search_summary">Nøkkeltjener, keybase.io</string>
+  <string name="section_passphrase_cache">Passord og PIN-koder</string>
+  <string name="section_proxy_settings">Nettverks-anonymitet</string>
+  <string name="section_proxy_settings_summary">Tor, mellomtjener-innstillinger</string>
+  <string name="section_gui">Grensesnitt</string>
+  <string name="section_sync_settings">Synkronisering</string>
+  <string name="section_sync_settings_summary">Automatisk nøkkel-oppdatering, kontakt-lenking</string>
+  <string name="section_experimental_features">Eksperimentelle funksjoner</string>
+  <string name="section_certify">Bekreft</string>
+  <string name="section_actions">Handlinger</string>
+  <string name="section_share_key">Nøkkel</string>
+  <string name="section_key_server">Nøkkeltjener</string>
+  <string name="section_fingerprint">Fingeravtrykk</string>
+  <string name="section_phrases">Fraser</string>
+  <string name="section_encrypt">Krypter</string>
+  <string name="section_decrypt">Dekrypter / bekreft</string>
+  <string name="section_current_expiry">Gjeldende forfall</string>
+  <string name="section_new_expiry">Nytt forfall</string>
+  <!--button-->
+  <string name="btn_decrypt_verify_file">Dekrypter, verifiser, og lagre fil</string>
+  <string name="btn_encrypt_share_file">Krypter og del fil</string>
+  <string name="btn_encrypt_save_file">Krypter og lagre fil</string>
+  <string name="btn_save_file">Lagre fil</string>
+  <string name="btn_save">Lagre</string>
+  <string name="btn_view_log">Se logg</string>
+  <string name="btn_do_not_save">Avbryt</string>
+  <string name="btn_delete">Slett</string>
+  <string name="btn_no_date">Ingen forfall</string>
+  <string name="btn_okay">Ok</string>
+  <string name="btn_export_to_server">Last opp til nøkkelserver</string>
+  <string name="btn_next">Neste</string>
+  <string name="btn_back">Tilbake</string>
+  <string name="btn_no">Nei</string>
+  <string name="btn_share_encrypted_signed">Krypter/signer og del tekst</string>
+  <string name="btn_copy_encrypted_signed">Krypter/signer og kopier tekst</string>
+  <!--Content Description-->
+  <!--menu-->
+  <!--label-->
+  <!--label shown in Android settings under the OpenKeychain account-->
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
+  <string name="secret_key">Hemmelig nøkkel:</string>
+  <!--choice-->
+  <string name="choice_none">Ingen</string>
+  <string name="choice_15secs">15 sekunder</string>
+  <string name="choice_1min">ett min</string>
+  <string name="choice_3mins">tre min</string>
+  <string name="choice_5mins">fem min</string>
+  <string name="choice_10mins">ti min</string>
+  <string name="choice_20mins">20 min</string>
+  <string name="choice_40mins">40 min</string>
+  <string name="choice_1hour">én time</string>
+  <string name="choice_2hours">to timer</string>
+  <string name="choice_4hours">fire timer</string>
+  <string name="choice_8hours">åtte timer</string>
+  <string name="choice_forever">for all tid</string>
+  <string name="choice_select_cert">Velg en nøkkel</string>
+  <string name="filemanager_title_open">Åpne…</string>
+  <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_2048_description_html">mindre filstørrelse, antatt sikker til 2030</string>
+  <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_3072_description_html">anbefalt, antatt sikker til 2040</string>
+  <string name="rsa_4096">RSA 4096</string>
+  <string name="rsa_4096_description_html">større filstørrelse, antatt sikker til 2040+</string>
+  <string name="ecc_p256">ECC P-256</string>
+  <string name="ecc_p521">ECC P-521</string>
+  <string name="usage_sign">Signer</string>
+  <string name="usage_encrypt">Krypter</string>
+  <string name="usage_sign_and_encrypt">Signer &amp; krypter</string>
+  <string name="error">Feil</string>
+  <string name="error_message">Feil: %s</string>
+  <string name="theme_dark">Mørkt</string>
+  <string name="theme_light">Lyst</string>
+  <!--sentences-->
+  <string name="wrong_passphrase">Feil passord.</string>
+  <string name="no_filemanager_installed">Ingen kompatibel filbehandler installert.</string>
+  <string name="passphrases_do_not_match">Passordene samsvarer ikke.</string>
+  <string name="passphrase_must_not_be_empty">Skriv inn ett passord.</string>
+  <string name="passphrase_for_symmetric_encryption">Skriv inn passord</string>
+  <string name="passphrase_for_backup">Skriv inn sikkerhetskopierings-kode</string>
+  <string name="passphrase_for">Skriv inn passord fo \'%s\'</string>
+  <string name="pin_for">Skriv inn PIN for \'%s\'</string>
+  <string name="security_token_pin_for">Skriv inn PIN for å få tilgang til sikkerhetssymbol for \'%s\'</string>
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--errors without preceeding Error:-->
+  <!--results shown after decryption/verification-->
+  <!--Add keys-->
+  <!--progress dialogs, usually ending in '…'-->
+  <!--action strings-->
+  <!--key bit length selections-->
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+  <!--compression-->
+  <!--Help-->
+  <!--Import-->
+  <!--Import from URL-->
+  <!--Generic result toast-->
+  <!--Import result toast-->
+  <!--Delete result toast-->
+  <!--Revoke result toast (snackbar)-->
+  <!--Certify result toast-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <!--Share-->
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
+  <!--Key list-->
+  <!--Key view-->
+  <!--Key trust-->
+  <!--keybase proof stuff-->
+  <!--Edit key-->
+  <!--Create key-->
+  <!--View key-->
+  <!--Add/Edit keyserver-->
+  <!--Navigation Drawer-->
+  <!--hints-->
+  <!--certs-->
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
+  <!--modifySecretKeyRing-->
+  <!--Consolidate-->
+  <!--Edit Key (higher level than modify)-->
+  <!--Promote key-->
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for VerifySignedLiteralData operation-->
+  <!--Messages for SignEncrypt operation-->
+  <!--Messages for PgpSignEncrypt operation-->
+  <!--Linked Identity verification-->
+  <!--Messages for Keybase Verification operation-->
+  <!--Messages for Mime parsing operation-->
+  <!--PassphraseCache-->
+  <!--Keyserver sync-->
+  <!--First Time-->
+  <!--unsorted-->
+  <!--Android Account-->
+  <!--Passphrase wizard-->
+  <!--TODO: rename all the things!-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <!--Other Linked Identity strings-->
+</resources>

@@ -40,11 +40,11 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
-import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenNfcActivity;
+import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-public class MainActivity extends BaseSecurityTokenNfcActivity implements FabContainer, OnBackStackChangedListener {
+public class MainActivity extends BaseSecurityTokenActivity implements FabContainer, OnBackStackChangedListener {
 
     static final int ID_KEYS = 1;
     static final int ID_ENCRYPT_DECRYPT = 2;
@@ -90,8 +90,9 @@ public class MainActivity extends BaseSecurityTokenNfcActivity implements FabCon
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         if (drawerItem != null) {
+                            PrimaryDrawerItem item = (PrimaryDrawerItem) drawerItem;
                             Intent intent = null;
-                            switch (drawerItem.getIdentifier()) {
+                            switch ((int) item.getIdentifier()) {
                                 case ID_KEYS:
                                     onKeysSelected();
                                     break;

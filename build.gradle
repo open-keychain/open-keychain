@@ -7,16 +7,15 @@ buildscript {
 
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:2.1.0'
         classpath files('gradle-witness.jar')
         // bintray dependency to satisfy dependency of openpgp-api lib
         classpath 'com.novoda:bintray-release:0.2.7'
-        
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
-        // classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.0.2'
 
-        // allows to check for lib updates with "gradle dependencyUpdates -Drevision=release"
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.11.3'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
+
+        // allows to check for lib updates with "./gradlew dependencyUpdates -Drevision=release"
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
     }
 }
 
@@ -27,7 +26,7 @@ allprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.5'
+    gradleVersion = '2.12'
 }
 
 subprojects {
@@ -49,5 +48,5 @@ project(':extern:bouncycastle') {
 // See http://tools.android.com/tech-docs/new-build-system/tips#TOC-Controlling-Android-properties-of-all-your-modules-from-the-main-project.
 ext {
     compileSdkVersion = 23
-    buildToolsVersion = '23.0.1'
+    buildToolsVersion = '23.0.2'
 }

@@ -29,7 +29,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.util.Log;
@@ -98,7 +98,7 @@ public class AccountSettingsActivity extends BaseActivity {
     }
 
     private void loadData(Uri accountUri) {
-        AccountSettings settings = new ProviderHelper(this).getApiAccountSettings(accountUri);
+        AccountSettings settings = new ApiDataAccessObject(this).getApiAccountSettings(accountUri);
         mAccountSettingsFragment.setAccSettings(settings);
     }
 
@@ -110,7 +110,7 @@ public class AccountSettingsActivity extends BaseActivity {
     }
 
     private void save() {
-        new ProviderHelper(this).updateApiAccount(mAccountUri, mAccountSettingsFragment.getAccSettings());
+        new ApiDataAccessObject(this).updateApiAccount(mAccountUri, mAccountSettingsFragment.getAccSettings());
         SingletonResult result = new SingletonResult(
                 SingletonResult.RESULT_OK, LogType.MSG_ACC_SAVED);
         Intent intent = new Intent();

@@ -26,9 +26,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.security.SignatureException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -60,7 +63,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
-import org.sufficientlysecure.keychain.util.CharsetVerifier;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -73,6 +75,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.CharsetVerifier;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -197,6 +200,10 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         PGPEncryptedData encryptedData;
         InputStream cleartextStream;
 
+        // the cached session key
+        byte[] sessionKey;
+        byte[] decryptedSessionKey;
+
         int symmetricEncryptionAlgo = 0;
 
         boolean skippedDisallowedKey = false;
@@ -304,6 +311,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                 // if this worked out so far, the data is encrypted
                 decryptionResultBuilder.setEncrypted(true);
+                if (esResult.sessionKey != null && esResult.decryptedSessionKey != null) {
+                    decryptionResultBuilder.setSessionKey(esResult.sessionKey, esResult.decryptedSessionKey);
+                }
 
                 if (esResult.insecureEncryptionKey) {
                     log.add(LogType.MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
@@ -545,10 +555,14 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         boolean asymmetricPacketFound = false;
         boolean symmetricPacketFound = false;
         boolean anyPacketFound = false;
+        boolean decryptedSessionKeyAvailable = false;
 
         PGPPublicKeyEncryptedData encryptedDataAsymmetric = null;
         PGPPBEEncryptedData encryptedDataSymmetric = null;
         CanonicalizedSecretKey decryptionKey = null;
+        CachingDataDecryptorFactory cachedKeyDecryptorFactory = new CachingDataDecryptorFactory(
+                Constants.BOUNCY_CASTLE_PROVIDER_NAME, cryptoInput.getCryptoData());
+        ;
 
         Passphrase passphrase = null;
 
@@ -568,6 +582,13 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                 log.add(LogType.MSG_DC_ASYM, indent,
                         KeyFormattingUtils.convertKeyIdToHex(subKeyId));
+
+                decryptedSessionKeyAvailable = cachedKeyDecryptorFactory.hasCachedSessionData(encData);
+                if (decryptedSessionKeyAvailable) {
+                    asymmetricPacketFound = true;
+                    encryptedDataAsymmetric = encData;
+                    break;
+                }
 
                 CachedPublicKeyRing cachedPublicKeyRing;
                 try {
@@ -746,34 +767,38 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             currentProgress += 2;
             updateProgress(R.string.progress_extracting_key, currentProgress, 100);
 
-            try {
-                log.add(LogType.MSG_DC_UNLOCKING, indent + 1);
-                if (!decryptionKey.unlock(passphrase)) {
-                    log.add(LogType.MSG_DC_ERROR_BAD_PASSPHRASE, indent + 1);
+            CachingDataDecryptorFactory decryptorFactory;
+            if (decryptedSessionKeyAvailable) {
+                decryptorFactory = cachedKeyDecryptorFactory;
+            } else {
+                try {
+                    log.add(LogType.MSG_DC_UNLOCKING, indent + 1);
+                    if (!decryptionKey.unlock(passphrase)) {
+                        log.add(LogType.MSG_DC_ERROR_BAD_PASSPHRASE, indent + 1);
+                        return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
+                    }
+                } catch (PgpGeneralException e) {
+                    log.add(LogType.MSG_DC_ERROR_EXTRACT_KEY, indent + 1);
                     return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
                 }
-            } catch (PgpGeneralException e) {
-                log.add(LogType.MSG_DC_ERROR_EXTRACT_KEY, indent + 1);
-                return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
-            }
 
-            currentProgress += 2;
-            updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
+                currentProgress += 2;
+                updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
-            CachingDataDecryptorFactory decryptorFactory
-                    = decryptionKey.getCachingDecryptorFactory(cryptoInput);
+                decryptorFactory = decryptionKey.getCachingDecryptorFactory(cryptoInput);
 
-            // special case: if the decryptor does not have a session key cached for this encrypted
-            // data, and can't actually decrypt on its own, return a pending intent
-            if (!decryptorFactory.canDecrypt()
-                    && !decryptorFactory.hasCachedSessionData(encryptedDataAsymmetric)) {
+                // special case: if the decryptor does not have a session key cached for this encrypted
+                // data, and can't actually decrypt on its own, return a pending intent
+                if (!decryptorFactory.canDecrypt()
+                        && !decryptorFactory.hasCachedSessionData(encryptedDataAsymmetric)) {
 
-                log.add(LogType.MSG_DC_PENDING_NFC, indent + 1);
-                return result.with(new DecryptVerifyResult(log, RequiredInputParcel.createNfcDecryptOperation(
-                        decryptionKey.getRing().getMasterKeyId(),
-                        decryptionKey.getKeyId(), encryptedDataAsymmetric.getSessionKey()[0]
-                ), cryptoInput));
-
+                    log.add(LogType.MSG_DC_PENDING_NFC, indent + 1);
+                    return result.with(new DecryptVerifyResult(log,
+                            RequiredInputParcel.createSecurityTokenDecryptOperation(
+                                    decryptionKey.getRing().getMasterKeyId(),
+                                    decryptionKey.getKeyId(), encryptedDataAsymmetric.getSessionKey()[0]
+                    ), cryptoInput));
+                }
             }
 
             try {
@@ -786,8 +811,13 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             result.symmetricEncryptionAlgo = encryptedDataAsymmetric.getSymmetricAlgorithm(decryptorFactory);
             result.encryptedData = encryptedDataAsymmetric;
 
-            cryptoInput.addCryptoData(decryptorFactory.getCachedSessionKeys());
-
+            Map<ByteBuffer, byte[]> cachedSessionKeys = decryptorFactory.getCachedSessionKeys();
+            cryptoInput.addCryptoData(cachedSessionKeys);
+            if (cachedSessionKeys.size() >= 1) {
+                Entry<ByteBuffer, byte[]> entry = cachedSessionKeys.entrySet().iterator().next();
+                result.sessionKey = entry.getKey().array();
+                result.decryptedSessionKey = entry.getValue();
+            }
         } else {
             // there wasn't even any useful data
             if (!anyPacketFound) {

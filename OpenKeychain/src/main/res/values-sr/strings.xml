@@ -87,7 +87,7 @@
   <string name="btn_add_files">Додај фајл(ове)</string>
   <string name="btn_share_decrypted_text">Дели</string>
   <string name="btn_open_with">Отвори помоћу…</string>
-  <string name="btn_copy_decrypted_text">Копирај дешифровани текст</string>
+  <string name="btn_copy_decrypted_text">Копирај на клипборд</string>
   <string name="btn_decrypt_clipboard">Учитај са клипборда</string>
   <string name="btn_decrypt_files">Изабери фајл</string>
   <string name="btn_encrypt_files">Шифруј фајлове</string>
@@ -254,21 +254,14 @@
   <string name="choice_8hours">8 сати</string>
   <string name="choice_forever">заувек</string>
   <string name="choice_select_cert">Изаберите кључ</string>
-  <string name="dsa">ДСА</string>
-  <string name="elgamal">Елгамал</string>
-  <string name="rsa">РСА</string>
-  <string name="ecdh">ЕЦДХ</string>
-  <string name="ecdsa">ЕЦДСА</string>
   <string name="filemanager_title_open">Отвори…</string>
+  <string name="rsa_2048">РСА 2048</string>
+  <string name="rsa_3072">РСА 3072</string>
+  <string name="rsa_4096">РСА 4096</string>
   <string name="error">Грешка</string>
   <string name="error_message">Грешка: %s</string>
   <string name="theme_dark">Тамна</string>
   <string name="theme_light">Светла</string>
-  <!--key flags-->
-  <string name="flag_certify">Овера</string>
-  <string name="flag_sign">Потпис</string>
-  <string name="flag_encrypt">Шифровање</string>
-  <string name="flag_authenticate">Аутентификовање</string>
   <!--sentences-->
   <string name="wrong_passphrase">Погрешна лозинка.</string>
   <string name="no_filemanager_installed">Нема подесног менаџера фајлова.</string>
@@ -448,6 +441,7 @@
   <string name="help_tab_changelog">Дневник измена</string>
   <string name="help_tab_about">О програму</string>
   <string name="help_about_version">Издање:</string>
+  <string name="help_tab_donations">Донирај</string>
   <!--Import-->
   <string name="import_tab_keyserver">Сервер кључева</string>
   <string name="import_tab_cloud">Претрага кључа</string>
@@ -685,7 +679,6 @@
     <item>Премести поткључ у безбедносни токен</item>
   </string-array>
   <string name="edit_key_new_subkey">нови поткључ</string>
-  <string name="edit_key_select_flag">Изаберите бар једну заставицу!</string>
   <string name="edit_key_error_add_identity">Додајте бар један идентитет!</string>
   <string name="edit_key_error_add_subkey">Додајте бар један поткључ!</string>
   <!--Create key-->
@@ -1273,6 +1266,7 @@
   <string name="msg_lv_fp_error">Отисак се не поклапа!</string>
   <string name="msg_lv_error_twitter_auth">Грешка добављања аутентификацијског токена за Твитер!</string>
   <string name="msg_lv_error_twitter_response">Неочекивани одзив Твитер АПИ-ја!</string>
+  <string name="msg_lv_error_github_not_found">Гист не садржи поклапајуће фајлове!</string>
   <string name="msg_lv_fetch">Добављам УРИ „%s“</string>
   <string name="msg_lv_fetch_redir">Пратим преусмерење на „%s“</string>
   <string name="msg_lv_fetch_ok">Успешно добављено (ХТТП %s)</string>
@@ -1303,6 +1297,10 @@
   <string name="msg_data_mime_filename">Назив фајла: „%s“</string>
   <string name="msg_data_mime_from_extension">Погађам МИМЕ тип на основу екстензије</string>
   <string name="msg_data_mime_length">Дужина садржаја: %s</string>
+  <string name="msg_data_mime_charset">Кодирање је „%s“</string>
+  <string name="msg_data_mime_charset_faulty">Кодирање је „%s“, али декодирање није успело!</string>
+  <string name="msg_data_mime_charset_guess">Чини се да је кодирање „%s“</string>
+  <string name="msg_data_mime_charset_unknown">Кодирање је непознато, или подаци нису текстуални.</string>
   <string name="msg_data_mime">Рашчлањујем структуру МИМЕ података</string>
   <string name="msg_data_mime_ok">Рашчлањивање завршено</string>
   <string name="msg_data_mime_none">Није нађена МИМЕ структура</string>
@@ -1312,15 +1310,10 @@
   <string name="msg_data_skip_mime">Прескачем рашчлањивање МИМЕ-а</string>
   <string name="msg_acc_saved">Налог је сачуван</string>
   <string name="msg_get_success">Успешно преузето!</string>
+  <string name="msg_get_file_not_found">Улазни фајл није нађен!</string>
   <string name="msg_get_no_valid_keys">Нема исправних кључева у фајлу/клипборду!</string>
-  <string name="msg_download_no_pgp_parts">УРАДИТИ: множине!</string>
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="one">део учитаног фајла је исправан ОпенПГП објекат али није ОпенПГП кључ</item>
-    <item quantity="few">дела учитаног фајла су исправни ОпенПГП објекти али нису ОпенПГП кључеви</item>
-    <item quantity="other">делови учитаног фајла су исправни ОпенПГП објекти али нису ОпенПГП кључеви</item>
-  </plurals>
-  <string name="msg_get_query_too_short">Упит за претрагу је прекратак. Прецизирајте упит!</string>
   <string name="msg_get_too_many_responses">Претрага кључева је вратила превише кандидата. Прецизирајте упит!</string>
+  <string name="msg_get_query_too_short">Упит за претрагу је прекратак. Прецизирајте упит!</string>
   <string name="msg_get_query_too_short_or_too_many_responses">Или није нађен ниједан кључ или их је нађено превише. Побољшајте ваш упит!</string>
   <string name="msg_download_query_failed">Дошло је до грешке приликом претраге кључева.</string>
   <!--Messages for Keybase Verification operation-->
@@ -1430,7 +1423,6 @@
   <string name="snack_security_token_import">Увези</string>
   <string name="button_bind_key">Повежи кључ</string>
   <string name="security_token_serial_no">Серијски број: %s</string>
-  <string name="security_token_key_holder">Држач кључа: </string>
   <string name="security_token_key_holder_not_set"><![CDATA[Држач кључа: <није постављено>]]></string>
   <string name="btn_import">Увези</string>
   <string name="btn_reset">Ресетуј</string>
@@ -1539,6 +1531,8 @@
   <string name="linked_error_network">Грешка мреже!</string>
   <string name="linked_error_http">Грешка комуникације: %s</string>
   <string name="linked_webview_title_github">Гитхаб овлашћење</string>
+  <string name="linked_gist_description">Повезани идентитет Отвореног кључарника</string>
+  <string name="linked_empty">Повежите ваш кључ са Гитхабом, Твитером или осталим сајтовима!</string>
   <string name="snack_btn_overwrite">Пребриши</string>
   <string name="backup_code_explanation">Резерва ће бити обезбеђена кôдом за резерву. Запишите га пре него што наставите даље!</string>
   <string name="backup_code_enter">Унесите кôд за резерву:</string>
@@ -1551,6 +1545,7 @@
   <string name="snack_backup_saved">Резерва сачувана</string>
   <string name="snack_backup_exists">Резерва већ постоји!</string>
   <string name="snack_backup_saved_dir">Сачувано у директоријум „OpenKeychain“</string>
+  <string name="btn_backup_back">Назад на проверу</string>
   <string name="snack_text_too_long">Текст је предугачак да би био приказан у целости!</string>
   <string name="snack_shared_text_too_long">Дељени текст је одсечен јер је био предугачак!</string>
   <string name="share_log_dialog_title">Поделити запис?</string>
@@ -1574,4 +1569,22 @@
   <string name="settings_cache_ttl_at_least_one">Бар једна ставка мора бити изабрана!</string>
   <string name="settings_cache_ttl_max_three">Не можете изабрати више од три ставке!</string>
   <string name="remember">Запамти</string>
+  <string name="prompt_fidesmo_pgp_install_title">Инсталирати ПГП?</string>
+  <string name="prompt_fidesmo_pgp_install_message">Нема апликације за ПГП на вашем „Fidesmo“ уређају.</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">Инсталирај</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Одустани</string>
+  <string name="prompt_fidesmo_app_install_title">Инсталирати „Fidesmo“?</string>
+  <string name="prompt_fidesmo_app_install_message">Да бисте инсталирали ПГП потребна вам је „Fidesmo“ апликација за Андроид.</string>
+  <string name="prompt_fidesmo_app_install_button_positive">Инсталирај</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Одустани</string>
+  <string name="help_donation_paypal_item">Донација Отвореном кључарнику</string>
+  <string-array name="help_donation_google_catalog_values">
+    <item>1 евро</item>
+    <item>2 евра</item>
+    <item>3 евра</item>
+    <item>5 евра</item>
+    <item>10 евра</item>
+    <item>50 евра</item>
+    <item>100 евра</item>
+  </string-array>
 </resources>

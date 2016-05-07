@@ -18,13 +18,11 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
@@ -48,27 +46,6 @@ public class CreateKeyNameFragment extends Fragment {
         frag.setArguments(args);
 
         return frag;
-    }
-
-    /**
-     * Checks if text of given EditText is not empty. If it is empty an error is
-     * set and the EditText gets the focus.
-     *
-     * @param context
-     * @param editText
-     * @return true if EditText is not empty
-     */
-    private static boolean isEditTextNotEmpty(Context context, EditText editText) {
-        boolean output = true;
-        if (editText.getText().length() == 0) {
-            editText.setError(context.getString(R.string.create_key_empty));
-            editText.requestFocus();
-            output = false;
-        } else {
-            editText.setError(null);
-        }
-
-        return output;
     }
 
     @Override
@@ -109,13 +86,11 @@ public class CreateKeyNameFragment extends Fragment {
     }
 
     private void nextClicked() {
-        if (isEditTextNotEmpty(getActivity(), mNameEdit)) {
-            // save state
-            mCreateKeyActivity.mName = mNameEdit.getText().toString();
+        // save state
+        mCreateKeyActivity.mName = mNameEdit.getText().length() == 0 ? null : mNameEdit.getText().toString();
 
-            CreateKeyEmailFragment frag = CreateKeyEmailFragment.newInstance();
-            mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
-        }
+        CreateKeyEmailFragment frag = CreateKeyEmailFragment.newInstance();
+        mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
     }
 
 }

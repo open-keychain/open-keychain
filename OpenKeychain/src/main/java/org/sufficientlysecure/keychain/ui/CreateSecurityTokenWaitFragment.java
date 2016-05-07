@@ -17,21 +17,34 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
-
+import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 
 public class CreateSecurityTokenWaitFragment extends Fragment {
 
+    public static boolean sDisableFragmentAnimations = false;
+
     CreateKeyActivity mCreateKeyActivity;
     View mBackButton;
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (this.getActivity() instanceof BaseSecurityTokenActivity) {
+            ((BaseSecurityTokenActivity) this.getActivity()).checkDeviceConnection();
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,9 +63,22 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         mCreateKeyActivity = (CreateKeyActivity) getActivity();
+    }
+
+    /**
+     * hack from http://stackoverflow.com/a/11253987
+     */
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        if (sDisableFragmentAnimations) {
+            Animation a = new Animation() {};
+            a.setDuration(0);
+            return a;
+        }
+        return super.onCreateAnimation(transit, enter, nextAnim);
     }
 
 }

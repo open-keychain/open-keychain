@@ -30,8 +30,6 @@
   <!--StartOrbotDialogFragment strings-->
   <!--choice-->
   <string name="choice_none">Tidak ada</string>
-  <!--key flags-->
-  <string name="flag_encrypt">Enkripsi</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,

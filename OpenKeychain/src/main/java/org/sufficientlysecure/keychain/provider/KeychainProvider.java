@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
- * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ * Copyright (C) 2014-2016 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -308,13 +308,18 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.ALGORITHM, Tables.KEYS + "." + Keys.ALGORITHM);
                 projectionMap.put(KeyRings.FINGERPRINT, Tables.KEYS + "." + Keys.FINGERPRINT);
                 projectionMap.put(KeyRings.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID);
+                projectionMap.put(KeyRings.NAME, Tables.USER_PACKETS + "." + UserPackets.NAME);
+                projectionMap.put(KeyRings.EMAIL, Tables.USER_PACKETS + "." + UserPackets.EMAIL);
+                projectionMap.put(KeyRings.COMMENT, Tables.USER_PACKETS + "." + UserPackets.COMMENT);
                 projectionMap.put(KeyRings.HAS_DUPLICATE_USER_ID,
-                        "(EXISTS (SELECT * FROM " + Tables.USER_PACKETS + " AS dups"
+                            "(EXISTS (SELECT * FROM " + Tables.USER_PACKETS + " AS dups"
                                 + " WHERE dups." + UserPackets.MASTER_KEY_ID
                                     + " != " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " AND dups." + UserPackets.RANK + " = 0"
-                                + " AND dups." + UserPackets.USER_ID
-                                    + " = "+ Tables.USER_PACKETS + "." + UserPackets.USER_ID
+                                + " AND dups." + UserPackets.NAME
+                                    + " = " + Tables.USER_PACKETS + "." + UserPackets.NAME + " COLLATE NOCASE"
+                                + " AND dups." + UserPackets.EMAIL
+                                    + " = " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " COLLATE NOCASE"
                                 + ")) AS " + KeyRings.HAS_DUPLICATE_USER_ID);
                 projectionMap.put(KeyRings.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
                 projectionMap.put(KeyRings.PUBKEY_DATA,
@@ -451,12 +456,12 @@ public class KeychainProvider extends ContentProvider {
                             if (i != 0) {
                                 emailWhere += " OR ";
                             }
-                            emailWhere += "tmp." + UserPackets.USER_ID + " LIKE ";
-                            // match '*<email>', so it has to be at the *end* of the user id
                             if (match == KEY_RINGS_FIND_BY_EMAIL) {
-                                emailWhere += DatabaseUtils.sqlEscapeString("%<" + chunks[i] + ">");
+                                emailWhere += "tmp." + UserPackets.EMAIL + " LIKE "
+                                        + DatabaseUtils.sqlEscapeString(chunks[i]);
                             } else {
-                                emailWhere += DatabaseUtils.sqlEscapeString("%" + chunks[i] + "%");
+                                emailWhere += "tmp." + UserPackets.USER_ID + " LIKE "
+                                        + DatabaseUtils.sqlEscapeString("%" + chunks[i] + "%");
                             }
                             gotCondition = true;
                         }

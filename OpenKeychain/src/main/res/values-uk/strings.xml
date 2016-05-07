@@ -108,19 +108,9 @@
   <string name="choice_4hours">4 години</string>
   <string name="choice_8hours">8 годин</string>
   <string name="choice_forever">назавжди</string>
-  <string name="dsa">DSA</string>
-  <string name="elgamal">ElGamal</string>
-  <string name="rsa">RSA</string>
-  <string name="ecdh">ECDH</string>
-  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Відкрити…</string>
   <string name="error">Помилка</string>
   <string name="error_message">Помилка: %s</string>
-  <!--key flags-->
-  <string name="flag_certify">Сертифікувати</string>
-  <string name="flag_sign">Підписати</string>
-  <string name="flag_encrypt">Зашифрувати</string>
-  <string name="flag_authenticate">Перевірити справжність</string>
   <!--sentences-->
   <string name="no_filemanager_installed">Нема встановленого сумісного менеджера файлів.</string>
   <string name="encrypt_sign_successful">Успішно підписано та/або перевірено.</string>
@@ -330,7 +320,6 @@
   <string name="edit_key_edit_user_id_revoked">Ця сутність вже відкликана. Це не можна скасувати.</string>
   <string name="edit_key_edit_subkey_title">Виберіть дію!</string>
   <string name="edit_key_new_subkey">новий підключ</string>
-  <string name="edit_key_select_flag">Будь ласка, виберіть хоча б один прапор!</string>
   <string name="edit_key_error_add_identity">Додати хоча б одну сутність!</string>
   <string name="edit_key_error_add_subkey">Додати хоча б один підключ!</string>
   <!--Create key-->
@@ -475,11 +464,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Linked Identity verification-->
-  <plurals name="error_import_non_pgp_part">
-    <item quantity="one">частина завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
-    <item quantity="few">частини завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
-    <item quantity="other">частин завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
-  </plurals>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
