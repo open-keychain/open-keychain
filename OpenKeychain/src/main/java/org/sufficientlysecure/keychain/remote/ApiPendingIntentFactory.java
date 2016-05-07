@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.os.Build;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.remote.ui.RemoteBackupActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteCreateAccountActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteImportKeysActivity;
@@ -120,6 +121,14 @@ public class ApiPendingIntentFactory {
         Intent intent = new Intent(mContext, SelectSignKeyIdActivity.class);
         intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
         intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
+
+        return createInternal(data, intent);
+    }
+
+    PendingIntent createBackupPendingIntent(Intent data, long[] masterKeyIds, boolean backupSecret) {
+        Intent intent = new Intent(mContext, RemoteBackupActivity.class);
+        intent.putExtra(RemoteBackupActivity.EXTRA_MASTER_KEY_IDS, masterKeyIds);
+        intent.putExtra(RemoteBackupActivity.EXTRA_SECRET, backupSecret);
 
         return createInternal(data, intent);
     }

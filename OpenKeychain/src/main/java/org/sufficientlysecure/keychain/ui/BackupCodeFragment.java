@@ -24,8 +24,10 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -51,6 +53,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
@@ -73,6 +76,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     public static final String ARG_BACKUP_CODE = "backup_code";
     public static final String BACK_STACK_INPUT = "state_display";
     public static final String ARG_EXPORT_SECRET = "export_secret";
+    public static final String ARG_EXECUTE_BACKUP_OPERATION = "execute_backup_operation";
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
     public static final String ARG_CURRENT_STATE = "current_state";
 
@@ -91,6 +95,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     private boolean mExportSecret;
     private long[] mMasterKeyIds;
     String mBackupCode;
+    private boolean mExecuteBackupOperation;
 
     private EditText[] mCodeEditText;
 
@@ -101,13 +106,15 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     private boolean mShareNotSave;
     private boolean mDebugModeAcceptAnyCode;
 
-    public static BackupCodeFragment newInstance(long[] masterKeyIds, boolean exportSecret) {
+    public static BackupCodeFragment newInstance(long[] masterKeyIds, boolean exportSecret,
+                                                 boolean executeBackupOperation) {
         BackupCodeFragment frag = new BackupCodeFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_BACKUP_CODE, generateRandomBackupCode());
         args.putLongArray(ARG_MASTER_KEY_IDS, masterKeyIds);
         args.putBoolean(ARG_EXPORT_SECRET, exportSecret);
+        args.putBoolean(ARG_EXECUTE_BACKUP_OPERATION, executeBackupOperation);
         frag.setArguments(args);
 
         return frag;
@@ -198,8 +205,12 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
             case STATE_OK: {
                 mTitleAnimator.setDisplayedChild(2, animate);
-                mStatusAnimator.setDisplayedChild(3, animate);
                 mCodeFieldsAnimator.setDisplayedChild(1, false);
+                if (mExecuteBackupOperation) {
+                    mStatusAnimator.setDisplayedChild(3, animate);
+                } else {
+                    mStatusAnimator.setDisplayedChild(1, animate);
+                }
 
                 hideKeyboard();
 
@@ -219,6 +230,18 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
                 popBackStackNoAction();
 
+                // special case for remote API, see RemoteBackupActivity
+                if (!mExecuteBackupOperation) {
+                    // wait for animation to finish...
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            startBackup();
+                        }
+                    }, 2000);
+                }
+
                 break;
             }
 
@@ -236,6 +259,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         mBackupCode = args.getString(ARG_BACKUP_CODE);
         mMasterKeyIds = args.getLongArray(ARG_MASTER_KEY_IDS);
         mExportSecret = args.getBoolean(ARG_EXPORT_SECRET);
+        mExecuteBackupOperation = args.getBoolean(ARG_EXECUTE_BACKUP_OPERATION, true);
 
         mCodeEditText = new EditText[6];
         mCodeEditText[0] = (EditText) view.findViewById(R.id.backup_code_1);
@@ -493,10 +517,22 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 + (mExportSecret ? Constants.FILE_EXTENSION_ENCRYPTED_BACKUP_SECRET
                 : Constants.FILE_EXTENSION_ENCRYPTED_BACKUP_PUBLIC);
 
+        Passphrase passphrase = new Passphrase(mBackupCode);
+        if (Constants.DEBUG && mDebugModeAcceptAnyCode) {
+            passphrase = new Passphrase("AAAA-AAAA-AAAA-AAAA-AAAA-AAAA");
+        }
+
+        // if we don't want to execute the actual operation outside of this activity, drop out here
+        if (!mExecuteBackupOperation) {
+            ((BackupActivity) getActivity()).handleBackupOperation(new CryptoInputParcel(passphrase));
+            return;
+        }
+
         if (mCachedBackupUri == null) {
             mCachedBackupUri = TemporaryFileProvider.createFile(activity, filename,
                     Constants.MIME_TYPE_ENCRYPTED_ALTERNATE);
-            cryptoOperation();
+
+            cryptoOperation(new CryptoInputParcel(passphrase));
             return;
         }
 
@@ -570,11 +606,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     @Nullable
     @Override
     public BackupKeyringParcel createOperationInput() {
-        Passphrase passphrase = new Passphrase(mBackupCode);
-        if (Constants.DEBUG && mDebugModeAcceptAnyCode) {
-            passphrase = new Passphrase("AAAA-AAAA-AAAA-AAAA-AAAA-AAAA");
-        }
-        return new BackupKeyringParcel(passphrase, mMasterKeyIds, mExportSecret, mCachedBackupUri);
+        return new BackupKeyringParcel(mMasterKeyIds, mExportSecret, mCachedBackupUri);
     }
 
     @Override

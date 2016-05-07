@@ -51,7 +51,9 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -69,6 +71,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -728,6 +731,49 @@ public class OpenPgpService extends Service {
         }
     }
 
+    private Intent backupImpl(Intent data, OutputStream outputStream) {
+        try {
+            long[] masterKeyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
+            boolean backupSecret = data.getBooleanExtra(OpenPgpApi.EXTRA_BACKUP_SECRET, false);
+
+            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
+
+            CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
+            if (inputParcel == null) {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createBackupPendingIntent(data, masterKeyIds, backupSecret));
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                return result;
+            }
+            // after user interaction with RemoteBackupActivity,
+            // the backup code is cached in CryptoInputParcelCacheService, now we can proceed
+
+            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, null);
+            BackupOperation op = new BackupOperation(this, mProviderHelper, null);
+            ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
+
+            if (pgpResult.success()) {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                return result;
+            } else {
+                // should not happen normally...
+                String errorMsg = getString(pgpResult.getLog().getLast().mType.getMsgId());
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_ERROR, new OpenPgpError(OpenPgpError.GENERIC_ERROR, errorMsg));
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+                return result;
+            }
+        } catch (Exception e) {
+            Log.d(Constants.TAG, "backupImpl", e);
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.RESULT_ERROR,
+                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+            return result;
+        }
+    }
+
     @NonNull
     private static long[] getUnboxedLongArray(@NonNull Collection<Long> arrayList) {
         long[] result = new long[arrayList.size()];
@@ -910,6 +956,9 @@ public class OpenPgpService extends Service {
             }
             case OpenPgpApi.ACTION_GET_KEY: {
                 return getKeyImpl(data, outputStream);
+            }
+            case OpenPgpApi.ACTION_BACKUP: {
+                return backupImpl(data, outputStream);
             }
             default: {
                 return null;

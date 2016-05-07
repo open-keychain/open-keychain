@@ -884,6 +884,10 @@
             android:name=".remote.ui.RemoteImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_import_keys" />
+        <activity
+            android:name=".remote.ui.RemoteBackupActivity"
+            android:configChanges="keyboardHidden|keyboard"
+            android:label="@string/title_backup" />
 
         <!-- Usb interceptor activity -->
         <activity

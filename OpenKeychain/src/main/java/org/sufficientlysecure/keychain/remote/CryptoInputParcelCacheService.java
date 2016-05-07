@@ -37,7 +37,10 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+/**
+ * This service caches CryptoInputParcels, which contain sensitive data like passphrases.
+ * This way, they are not exposed to the client app using the API.
+ */
 public class CryptoInputParcelCacheService extends Service {
 
     public static final String ACTION_ADD = Constants.INTENT_PREFIX + "ADD";

@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.operations;
 
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -97,6 +98,12 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
     @NonNull
     public ExportResult execute(@NonNull BackupKeyringParcel backupInput, @Nullable CryptoInputParcel cryptoInput) {
+        return execute(backupInput, cryptoInput, null);
+    }
+
+    @NonNull
+    public ExportResult execute(@NonNull BackupKeyringParcel backupInput, @Nullable CryptoInputParcel cryptoInput,
+                                OutputStream outputStream) {
 
         OperationLog log = new OperationLog();
         if (backupInput.mMasterKeyIds != null) {
@@ -107,18 +114,23 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
         try {
 
-            boolean nonEncryptedOutput = backupInput.mSymmetricPassphrase == null;
+            boolean nonEncryptedOutput = cryptoInput == null;
 
-            Uri backupOutputUri = nonEncryptedOutput
-                    ? backupInput.mOutputUri
-                    : TemporaryFileProvider.createFile(mContext);
+            Uri plainUri = null;
+            OutputStream plainOut;
+            if (nonEncryptedOutput && backupInput.mOutputUri == null) {
+                plainOut = outputStream;
+            } else if (nonEncryptedOutput) {
+                plainOut = mContext.getContentResolver().openOutputStream(backupInput.mOutputUri);
+            } else {
+                plainUri = TemporaryFileProvider.createFile(mContext);
+                plainOut = mContext.getContentResolver().openOutputStream(plainUri);
+            }
 
             int exportedDataSize;
 
             { // export key data, and possibly return if we don't encrypt
-
-                DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(
-                        mContext.getContentResolver().openOutputStream(backupOutputUri)));
+                DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(plainOut));
 
                 boolean backupSuccess = exportKeysToStream(
                         log, backupInput.mMasterKeyIds, backupInput.mExportSecret, outStream);
@@ -140,11 +152,11 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             PgpSignEncryptOperation pseOp = new PgpSignEncryptOperation(mContext, mProviderHelper, mProgressable, mCancelled);
 
             PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel();
-            inputParcel.setSymmetricPassphrase(backupInput.mSymmetricPassphrase);
+            inputParcel.setSymmetricPassphrase(cryptoInput.getPassphrase());
             inputParcel.setEnableAsciiArmorOutput(true);
             inputParcel.setAddBackupHeader(true);
 
-            InputStream inStream = mContext.getContentResolver().openInputStream(backupOutputUri);
+            InputStream inStream = mContext.getContentResolver().openInputStream(plainUri);
 
             String filename;
             if (backupInput.mMasterKeyIds != null && backupInput.mMasterKeyIds.length == 1) {
@@ -156,7 +168,12 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
             InputData inputData = new InputData(inStream, exportedDataSize, filename);
 
-            OutputStream outStream = mContext.getContentResolver().openOutputStream(backupInput.mOutputUri);
+            OutputStream outStream;
+            if (backupInput.mOutputUri == null) {
+                outStream = outputStream;
+            } else {
+                outStream = mContext.getContentResolver().openOutputStream(backupInput.mOutputUri);
+            }
             outStream = new BufferedOutputStream(outStream);
 
             PgpSignEncryptResult encryptResult = pseOp.execute(inputParcel, new CryptoInputParcel(), inputData, outStream);
