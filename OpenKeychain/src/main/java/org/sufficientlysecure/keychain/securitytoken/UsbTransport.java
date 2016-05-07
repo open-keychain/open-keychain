@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
+import android.hardware.usb.UsbConfiguration;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
@@ -30,6 +31,7 @@ import android.util.Pair;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.t1.T1TPDUProtocol;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
@@ -77,11 +79,6 @@ public class UsbTransport implements Transport {
         };
 
         sendRaw(iccPowerCommand);
-        byte[] bytes;
-        do {
-            bytes = receive();
-        } while (isDataBlockNotReady(bytes));
-        checkDataBlockResponse(bytes);
     }
 
     /**
@@ -190,7 +187,17 @@ public class UsbTransport implements Transport {
         }
 
         setIccPower(true);
-        Log.d(Constants.TAG, "Usb transport connected");
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+
+        }
+        byte[] atrPacket = receiveRaw();
+
+        Log.d(Constants.TAG, "Usb transport connected, ATR="
+                + Hex.toHexString(atrPacket));
+
+        new T1TPDUProtocol(this).pps();
     }
 
     /**
@@ -201,14 +208,23 @@ public class UsbTransport implements Transport {
      */
     @Override
     public byte[] transceive(byte[] data) throws UsbTransportException {
-        sendXfrBlock(data);
+        final T1TPDUProtocol t1TPDUProtocol = new T1TPDUProtocol(this);
+        return t1TPDUProtocol.transceive(data);
+        /*sendXfrBlock(data);
+        byte[] bytes = receiveRaw();
+
+        // Discard header
+        return Arrays.copyOfRange(bytes, 10, bytes.length);*/
+    }
+
+    public byte[] receiveRaw() throws UsbTransportException {
         byte[] bytes;
         do {
             bytes = receive();
         } while (isDataBlockNotReady(bytes));
 
         checkDataBlockResponse(bytes);
-        // Discard header
+
         return Arrays.copyOfRange(bytes, 10, bytes.length);
     }
 
@@ -218,7 +234,7 @@ public class UsbTransport implements Transport {
      * @param payload payload to transmit
      * @throws UsbTransportException
      */
-    private void sendXfrBlock(byte[] payload) throws UsbTransportException {
+    public void sendXfrBlock(byte[] payload) throws UsbTransportException {
         int l = payload.length;
         byte[] data = Arrays.concatenate(new byte[]{
                         0x6f,
@@ -237,11 +253,16 @@ public class UsbTransport implements Transport {
         }
     }
 
-    private byte[] receive() throws UsbTransportException {
+    public byte[] receive() throws UsbTransportException {
         byte[] buffer = new byte[mBulkIn.getMaxPacketSize()];
         byte[] result = null;
         int readBytes = 0, totalBytes = 0;
 
+        /*try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+
+        }*/
         do {
             int res = mConnection.bulkTransfer(mBulkIn, buffer, buffer.length, TIMEOUT);
             if (res < 0) {
