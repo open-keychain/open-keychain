@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openintents.openpgp.IOpenPgpService;
+import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.R;
 
@@ -52,7 +52,7 @@ public class OpenPgpServiceTest {
         IBinder binder = mServiceRule.bindService(serviceIntent);
 
         mApi = new OpenPgpApi(InstrumentationRegistry.getTargetContext(),
-                IOpenPgpService.Stub.asInterface(binder));
+                IOpenPgpService2.Stub.asInterface(binder));
 
     }
 
