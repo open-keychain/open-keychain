@@ -15,21 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.securitytoken.t1;
+package org.sufficientlysecure.keychain.securitytoken.usb.tpdu.block;
 
-public enum ChecksumType {
-    LRC, CRC;
-
-    public byte[] computeChecksum(byte[] data) {
-        if (this == LRC) {
-            byte res = 0;
-            for (byte b : data) {
-                res ^= b;
-            }
-            return new byte[]{res};
-        } else {
-            // Not needed for Nitrokey
-            return null;
-        }
+public class SBlock extends Block {
+    public SBlock(Block baseBlock) {
+        super(baseBlock);
     }
 }

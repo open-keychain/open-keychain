@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.securitytoken.t1;
+package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
-import org.sufficientlysecure.keychain.securitytoken.UsbTransportException;
+import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
 public enum FrameType {
     I_BLOCK(0b00000000, 0b10000000, 6, true), // Information
