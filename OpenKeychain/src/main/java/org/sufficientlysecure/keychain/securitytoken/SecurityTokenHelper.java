@@ -47,6 +47,7 @@ import nordpol.Apdu;
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
 public class SecurityTokenHelper {
+    private static final int MAX_APDU_DATAFIELD_SIZE = 254;
     // Fidesmo constants
     private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
 
@@ -248,30 +249,43 @@ public class SecurityTokenHelper {
      * @param encryptedSessionKey the encoded session key
      * @return the decoded session key
      */
-    public byte[] decryptSessionKey(byte[] encryptedSessionKey) throws IOException {
+    public byte[] decryptSessionKey(@NonNull byte[] encryptedSessionKey) throws IOException {
         if (!mPw1ValidatedForDecrypt) {
             verifyPin(0x82); // (Verify PW1 with mode 82 for decryption)
         }
 
-        String firstApdu = "102a8086fe";
-        String secondApdu = "002a808603";
-        String le = "00";
+        int offset = 1; // Skip first byte
+        String response = "", status = "";
 
-        byte[] one = new byte[254];
-        // leave out first byte:
-        System.arraycopy(encryptedSessionKey, 1, one, 0, one.length);
+        // Transmit
+        while (offset < encryptedSessionKey.length) {
+            boolean isLastCommand = offset + MAX_APDU_DATAFIELD_SIZE < encryptedSessionKey.length;
+            String cla = isLastCommand ? "10" : "00";
 
-        byte[] two = new byte[encryptedSessionKey.length - 1 - one.length];
-        for (int i = 0; i < two.length; i++) {
-            two[i] = encryptedSessionKey[i + one.length + 1];
+            int len = Math.min(MAX_APDU_DATAFIELD_SIZE, encryptedSessionKey.length - offset);
+            response = communicate(cla + "2a8086" + Hex.toHexString(new byte[]{(byte) len})
+                            + Hex.toHexString(encryptedSessionKey, offset, len));
+            status = response.substring(response.length() - 4);
+
+            if (!isLastCommand && !response.endsWith("9000")) {
+                throw new CardException("Deciphering with Security token failed on transmit", parseCardStatus(response));
+            }
+
+            offset += MAX_APDU_DATAFIELD_SIZE;
         }
 
-        communicate(firstApdu + getHex(one));
-        String second = communicate(secondApdu + getHex(two) + le);
+        // Receive
+        String result = getDataField(response);
+        while (response.endsWith("61")) {
+            response = communicate("00C00000" + status.substring(2));
+            status = response.substring(response.length() - 4);
+            result += getDataField(response);
+        }
+        if (!status.equals("9000")) {
+            throw new CardException("Deciphering with Security token failed on receive", parseCardStatus(response));
+        }
 
-        String decryptedSessionKey = getDataField(second);
-
-        return Hex.decode(decryptedSessionKey);
+        return Hex.decode(result);
     }
 
     /**
@@ -589,8 +603,9 @@ public class SecurityTokenHelper {
         }
 
         // Make sure the signature we received is actually the expected number of bytes long!
-        if (signature.length() != 256 && signature.length() != 512) {
-            throw new IOException("Bad signature length! Expected 128 or 256 bytes, got " + signature.length() / 2);
+        if (signature.length() != 256 && signature.length() != 512
+                && signature.length() != 768 && signature.length() != 1024) {
+            throw new IOException("Bad signature length! Expected 128/256/384/512 bytes, got " + signature.length() / 2);
         }
 
         return Hex.decode(signature);
