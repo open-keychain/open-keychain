@@ -477,10 +477,18 @@ public class SecurityTokenHelper {
         String data = "00CA006E00";
         byte[] buf = mTransport.transceive(Hex.decode(data));
 
-        Iso7816TLV tlv = Iso7816TLV.readSingle(buf, true);
-        Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlv.prettyPrint());
+        Iso7816TLV[] tlvs = Iso7816TLV.readList(buf, true);
+        Iso7816TLV fptlv = null;
 
-        Iso7816TLV fptlv = Iso7816TLV.findRecursive(tlv, 0xc5);
+        for (int i = 0; i < tlvs.length; i++) {
+            Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlvs[i].prettyPrint());
+
+            Iso7816TLV tlv = Iso7816TLV.findRecursive(tlvs[i], 0xc5);
+            if (tlv != null) {
+                fptlv = tlv;
+            }
+        }
+
         if (fptlv == null) {
             return null;
         }
