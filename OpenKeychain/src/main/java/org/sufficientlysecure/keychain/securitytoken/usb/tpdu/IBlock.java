@@ -20,6 +20,9 @@ package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
 public class IBlock extends Block {
+    public static final byte MASK_RBLOCK = (byte) 0b10000000;
+    public static final byte MASK_VALUE_RBLOCK = (byte) 0b00000000;
+
     private static final byte BIT_SEQUENCE = 6;
     private static final byte BIT_CHAINING = 5;
 

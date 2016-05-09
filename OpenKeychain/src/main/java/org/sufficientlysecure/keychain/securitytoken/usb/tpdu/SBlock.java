@@ -18,6 +18,9 @@
 package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
 public class SBlock extends Block {
+    public static final byte MASK_SBLOCK = (byte) 0b11000000;
+    public static final byte MASK_VALUE_SBLOCK = (byte) 0b11000000;
+
     public SBlock(Block baseBlock) {
         super(baseBlock);
     }

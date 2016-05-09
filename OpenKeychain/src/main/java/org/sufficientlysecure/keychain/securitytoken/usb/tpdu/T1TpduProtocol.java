@@ -103,10 +103,10 @@ public class T1TpduProtocol implements CcidTransportProtocol {
         byte[] responseApdu = responseBlock.getApdu();
 
         while (((IBlock) responseBlock).getChaining()) {
-            Block ackBlock = newRBlock((byte) (1 - ((IBlock) responseBlock).getSequence()));
+            Block ackBlock = newRBlock((byte) (((IBlock) responseBlock).getSequence() + 1));
             mTransceiver.sendXfrBlock(ackBlock.getRawData());
 
-            responseBlock = getBlockFromResponse(mTransceiver.receive());
+            responseBlock = getBlockFromResponse(mTransceiver.receiveRaw());
 
             if (responseBlock instanceof IBlock) {
                 responseApdu = Arrays.concatenate(responseApdu, responseBlock.getApdu());
@@ -123,11 +123,11 @@ public class T1TpduProtocol implements CcidTransportProtocol {
     public Block getBlockFromResponse(byte[] data) throws UsbTransportException {
         final Block baseBlock = new Block(mChecksumType, data);
 
-        if ((baseBlock.getPcb() & 0b10000000) == 0b00000000) {
+        if ((baseBlock.getPcb() & IBlock.MASK_RBLOCK) == IBlock.MASK_VALUE_RBLOCK) {
             return new IBlock(baseBlock);
-        } else if ((baseBlock.getPcb() & 0b11000000) == 0b11000000) {
+        } else if ((baseBlock.getPcb() & SBlock.MASK_SBLOCK) == SBlock.MASK_VALUE_SBLOCK) {
             return new SBlock(baseBlock);
-        } else if ((baseBlock.getPcb() & 0b11000000) == 0b10000000) {
+        } else if ((baseBlock.getPcb() & RBlock.MASK_RBLOCK) == RBlock.MASK_VALUE_RBLOCK) {
             return new RBlock(baseBlock);
         }
 

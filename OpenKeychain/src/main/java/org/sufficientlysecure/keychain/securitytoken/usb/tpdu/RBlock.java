@@ -22,7 +22,10 @@ import android.support.annotation.NonNull;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
 public class RBlock extends Block {
-    private static final byte BIT_SEQUENCE = 5;
+    public static final byte MASK_RBLOCK = (byte) 0b11000000;
+    public static final byte MASK_VALUE_RBLOCK = (byte) 0b10000000;
+
+    private static final byte BIT_SEQUENCE = 4;
 
     public RBlock(Block baseBlock) throws UsbTransportException {
         super(baseBlock);
@@ -33,7 +36,7 @@ public class RBlock extends Block {
 
     public RBlock(BlockChecksumType checksumType, byte nad, byte sequence)
             throws UsbTransportException {
-        super(checksumType, nad, (byte) (0b10000000 | ((sequence & 1) << BIT_SEQUENCE)), new byte[0]);
+        super(checksumType, nad, (byte) (MASK_VALUE_RBLOCK | ((sequence & 1) << BIT_SEQUENCE)), new byte[0]);
     }
 
     public RError getError() throws UsbTransportException {
