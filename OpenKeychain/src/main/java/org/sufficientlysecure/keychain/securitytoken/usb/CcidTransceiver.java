@@ -80,7 +80,7 @@ public class CcidTransceiver {
             try {
                 atr = receiveRaw();
                 break;
-            } catch (UsbTransportException e) {
+            } catch (Exception e) {
                 // Try more startTime
                 if (System.currentTimeMillis() - startTime > TIMEOUT) {
                     break;

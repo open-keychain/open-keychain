@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.securitytoken.usb.tpdu.block;
+package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
 public class SBlock extends Block {
     public SBlock(Block baseBlock) {

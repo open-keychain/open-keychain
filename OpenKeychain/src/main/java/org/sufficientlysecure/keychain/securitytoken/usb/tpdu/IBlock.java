@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.securitytoken.usb.tpdu.block;
+package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
-import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.BlockChecksumType;
 
 public class IBlock extends Block {
     private static final byte BIT_SEQUENCE = 6;

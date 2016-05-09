@@ -30,6 +30,7 @@ import android.util.Pair;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1TpduProtocol;
+import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
@@ -42,10 +43,9 @@ import java.nio.ByteOrder;
  * Implements small subset of these features
  */
 public class UsbTransport implements Transport {
-    private static final int USB_CLASS_SMARTCARD = 11;
     private static final int PROTOCOLS_OFFSET = 6;
     private static final int FEATURES_OFFSET = 40;
-    private static final int MASK_T1_PROTO = 2;
+    private static final short MASK_T1_PROTO = 2;
 
     // dwFeatures Masks
     private static final int MASK_TPDU = 0x10000;
@@ -77,7 +77,7 @@ public class UsbTransport implements Transport {
     private static UsbInterface getSmartCardInterface(UsbDevice device) {
         for (int i = 0; i < device.getInterfaceCount(); i++) {
             UsbInterface anInterface = device.getInterface(i);
-            if (anInterface.getInterfaceClass() == USB_CLASS_SMARTCARD) {
+            if (anInterface.getInterfaceClass() == UsbConstants.USB_CLASS_CSCID) {
                 return anInterface;
             }
         }
@@ -180,13 +180,35 @@ public class UsbTransport implements Transport {
 
     private void configureProtocol() throws UsbTransportException {
         byte[] desc = mConnection.getRawDescriptors();
-        if (desc.length < FEATURES_OFFSET + 4)
-            throw new UsbTransportException("Can't access dwFeatures for protocol selection");
+        int dwProtocols = 0, dwFeatures = 0;
+        boolean hasCcidDescriptor = false;
 
-        int dwProtocols = ByteBuffer.wrap(desc, FEATURES_OFFSET, 4).order(ByteOrder.LITTLE_ENDIAN)
-                .asIntBuffer().get();
-        int dwFeatures = ByteBuffer.wrap(desc, FEATURES_OFFSET, 4).order(ByteOrder.LITTLE_ENDIAN)
-                .asIntBuffer().get();
+        ByteBuffer byteBuffer = ByteBuffer.wrap(desc).order(ByteOrder.LITTLE_ENDIAN);
+
+        while (byteBuffer.hasRemaining()) {
+            byteBuffer.mark();
+            byte len = byteBuffer.get(), type = byteBuffer.get();
+
+            if (type == 0x21 && len == 0x36) {
+                byteBuffer.reset();
+
+                byteBuffer.position(byteBuffer.position() + PROTOCOLS_OFFSET);
+                dwProtocols = byteBuffer.getInt();
+
+                byteBuffer.reset();
+
+                byteBuffer.position(byteBuffer.position() + FEATURES_OFFSET);
+                dwFeatures = byteBuffer.getInt();
+                hasCcidDescriptor = true;
+                break;
+            } else {
+                byteBuffer.position(byteBuffer.position() + len - 2);
+            }
+        }
+
+        if (!hasCcidDescriptor) {
+            throw new UsbTransportException("CCID descriptor not found");
+        }
 
         if ((dwProtocols & MASK_T1_PROTO) == 0) {
             throw new UsbTransportException("T=0 protocol is not supported");

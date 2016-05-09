@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.securitytoken.usb.tpdu.block;
+package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
 import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
-import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.BlockChecksumType;
 
 public class RBlock extends Block {
     private static final byte BIT_SEQUENCE = 5;

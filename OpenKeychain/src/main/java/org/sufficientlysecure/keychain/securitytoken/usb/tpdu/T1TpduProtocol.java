@@ -25,10 +25,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransportProtocol;
-import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.block.Block;
-import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.block.IBlock;
-import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.block.RBlock;
-import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.block.SBlock;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class T1TpduProtocol implements CcidTransportProtocol {
@@ -107,7 +103,7 @@ public class T1TpduProtocol implements CcidTransportProtocol {
         byte[] responseApdu = responseBlock.getApdu();
 
         while (((IBlock) responseBlock).getChaining()) {
-            Block ackBlock = newRBlock(((IBlock) responseBlock).getSequence());
+            Block ackBlock = newRBlock((byte) (1 - ((IBlock) responseBlock).getSequence()));
             mTransceiver.sendXfrBlock(ackBlock.getRawData());
 
             responseBlock = getBlockFromResponse(mTransceiver.receive());

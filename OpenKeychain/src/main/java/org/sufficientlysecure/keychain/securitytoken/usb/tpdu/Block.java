@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.securitytoken.usb.tpdu.block;
+package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
-import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.BlockChecksumType;
 
 public class Block {
     protected static final int MAX_PAYLOAD_LEN = 254;
@@ -78,7 +77,7 @@ public class Block {
     }
 
     public byte[] getEdc() {
-        return Arrays.copyOfRange(mData, mData.length - mChecksumType.getLength(), mChecksumType.getLength());
+        return Arrays.copyOfRange(mData, mData.length - mChecksumType.getLength(), mData.length);
     }
 
     public BlockChecksumType getChecksumType() {
