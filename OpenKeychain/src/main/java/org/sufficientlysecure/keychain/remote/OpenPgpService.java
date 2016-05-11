@@ -37,8 +37,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -65,6 +68,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
+import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -437,8 +441,8 @@ public class OpenPgpService extends Service {
         }
     }
 
-    private Intent decryptAndVerifyImpl(Intent data, InputStream inputStream,
-                                        OutputStream outputStream, boolean decryptMetadataOnly) {
+    private Intent decryptAndVerifyImpl(Intent data, InputStream inputStream, OutputStream outputStream,
+            boolean decryptMetadataOnly, Progressable progressable) {
         try {
             // output is optional, e.g., for verifying detached signatures
             if (decryptMetadataOnly) {
@@ -475,10 +479,9 @@ public class OpenPgpService extends Service {
 
             byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
 
-            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mProviderHelper, null);
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mProviderHelper, progressable);
 
-            // TODO this is not correct!
-            long inputLength = inputStream.available();
+            long inputLength = data.getLongExtra(OpenPgpApi.EXTRA_DATA_LENGTH, InputData.UNKNOWN_FILESIZE);
             InputData inputData = new InputData(inputStream, inputLength);
 
             // allow only private keys associated with accounts of this app
@@ -613,14 +616,13 @@ public class OpenPgpService extends Service {
                 return result;
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(Constants.TAG, "decryptAndVerifyImpl", e);
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_ERROR, new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
         }
-
     }
 
     private Intent getKeyImpl(Intent data, OutputStream outputStream) {
@@ -927,6 +929,12 @@ public class OpenPgpService extends Service {
             return errorResult;
         }
 
+        Progressable progressable = null;
+        if (data.hasExtra(OpenPgpApi.EXTRA_PROGRESS_MESSENGER)) {
+            Messenger messenger = data.getParcelableExtra(OpenPgpApi.EXTRA_PROGRESS_MESSENGER);
+            progressable = createMessengerProgressable(messenger);
+        }
+
         String action = data.getAction();
         switch (action) {
             case OpenPgpApi.ACTION_CHECK_PERMISSION: {
@@ -950,10 +958,10 @@ public class OpenPgpService extends Service {
                 return encryptAndSignImpl(data, inputStream, outputStream, true);
             }
             case OpenPgpApi.ACTION_DECRYPT_VERIFY: {
-                return decryptAndVerifyImpl(data, inputStream, outputStream, false);
+                return decryptAndVerifyImpl(data, inputStream, outputStream, false, progressable);
             }
             case OpenPgpApi.ACTION_DECRYPT_METADATA: {
-                return decryptAndVerifyImpl(data, inputStream, outputStream, true);
+                return decryptAndVerifyImpl(data, inputStream, outputStream, true, null);
             }
             case OpenPgpApi.ACTION_GET_SIGN_KEY_ID: {
                 return getSignKeyIdImpl(data);
@@ -972,6 +980,43 @@ public class OpenPgpService extends Service {
             }
         }
 
+    }
+
+    @NonNull
+    private static Progressable createMessengerProgressable(final Messenger messenger) {
+        return new Progressable() {
+            boolean errorState = false;
+            @Override
+            public void setProgress(String message, int current, int total) {
+                setProgress(current, total);
+            }
+
+            @Override
+            public void setProgress(int resourceId, int current, int total) {
+                setProgress(current, total);
+            }
+
+            @Override
+            public void setProgress(int current, int total) {
+                if (errorState) {
+                    return;
+                }
+                Message m = Message.obtain();
+                m.arg1 = current;
+                m.arg2 = total;
+                try {
+                    messenger.send(m);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                    errorState = true;
+                }
+            }
+
+            @Override
+            public void setPreventCancel() {
+
+            }
+        };
     }
 
 }
