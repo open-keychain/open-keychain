@@ -47,7 +47,7 @@ import nordpol.Apdu;
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
 public class SecurityTokenHelper {
-    private static final int MAX_APDU_DATAFIELD_SIZE = 254;
+    private static final int MAX_APDU_DATAFIELD_SIZE = 254 * 500;
     // Fidesmo constants
     private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
 
@@ -254,17 +254,22 @@ public class SecurityTokenHelper {
             verifyPin(0x82); // (Verify PW1 with mode 82 for decryption)
         }
 
-        int offset = 1; // Skip first byte
+        int offset = 2; // Skip first byte TODO: why?
         String response = "", status = "";
+        boolean shouldPad = true;
 
         // Transmit
         while (offset < encryptedSessionKey.length) {
-            boolean isLastCommand = offset + MAX_APDU_DATAFIELD_SIZE < encryptedSessionKey.length;
-            String cla = isLastCommand ? "10" : "00";
+            boolean isLastCommand = MAX_APDU_DATAFIELD_SIZE >= encryptedSessionKey.length - offset;
+            String cla = isLastCommand ? "00" : "10";
 
-            int len = Math.min(MAX_APDU_DATAFIELD_SIZE, encryptedSessionKey.length - offset);
-            response = communicate(cla + "2a8086" + Hex.toHexString(new byte[]{(byte) len})
-                            + Hex.toHexString(encryptedSessionKey, offset, len));
+            int len = Math.min(MAX_APDU_DATAFIELD_SIZE, encryptedSessionKey.length - offset + (shouldPad ? 1 : 0));
+            String command = cla + "2a8086"
+                    + Hex.toHexString(new byte[]{(byte) ((len >> 16) & 0xFF), (byte) ((len >> 8) & 0xFF), (byte) (len & 0xFF)})
+                    + (shouldPad ? "00": "")
+                    + Hex.toHexString(encryptedSessionKey, offset, len - (shouldPad ? 1 : 0)) + "0000";
+            shouldPad = false;
+            response = communicate(command);
             status = response.substring(response.length() - 4);
 
             if (!isLastCommand && !response.endsWith("9000")) {
@@ -579,8 +584,9 @@ public class SecurityTokenHelper {
         // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
         String apdu =
                 "002A9E9A" // CLA, INS, P1, P2
+                        + "0000"
                         + dsi // digital signature input
-                        + "00"; // Le
+                        + "0000"; // Le
 
         String response = communicate(apdu);
 
