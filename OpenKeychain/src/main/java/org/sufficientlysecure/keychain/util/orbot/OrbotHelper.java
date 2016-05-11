@@ -150,10 +150,14 @@ public class OrbotHelper {
         // only static utility methods, do not instantiate
     }
 
+    /**
+     * Initialize the OrbotStatusReceiver (if not already happened) and check, whether Orbot is
+     * running or not.
+     * @param context context
+     * @return if Orbot is running
+     */
     public static boolean isOrbotRunning(Context context) {
-        int procId = TorServiceUtils.findProcessId(context);
-
-        return (procId != -1);
+        return OrbotStatusReceiver.getInstance().isTorRunning(context);
     }
 
     public static boolean isOrbotInstalled(Context context) {

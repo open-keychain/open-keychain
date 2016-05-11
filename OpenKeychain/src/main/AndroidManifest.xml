@@ -104,6 +104,12 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
+        <!-- broadcast receiver for Orbots status -->
+        <receiver android:name=".util.orbot.OrbotStatusReceiver">
+            <intent-filter>
+                <action android:name="org.torproject.android.intent.action.STATUS"/>
+            </intent-filter>
+        </receiver>
         <!-- singleTop for NFC dispatch, see SecurityTokenOperationActivity -->
         <activity
             android:name=".ui.MainActivity"
