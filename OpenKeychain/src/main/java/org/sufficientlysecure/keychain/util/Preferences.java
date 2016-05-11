@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
+import org.sufficientlysecure.keychain.util.orbot.OrbotStatusReceiver;
 
 import java.io.Serializable;
 import java.net.Proxy;
@@ -270,6 +271,8 @@ public class Preferences {
         boolean useNormalProxy = getUseNormalProxy();
 
         if (useTor) {
+            //TODO: Replace Constants.Orbot.PROXY_PORT with OrbotStatusReceiver.getProxyPortHttp()
+            //TODO: in order to always have the actual port Orbot is offering?
             return new ProxyPrefs(true, false, Constants.Orbot.PROXY_HOST, Constants.Orbot.PROXY_PORT,
                     Constants.Orbot.PROXY_TYPE);
         } else if (useNormalProxy) {
