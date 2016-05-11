@@ -710,15 +710,15 @@ public abstract class OperationResult implements Parcelable {
 
         // signencrypt
         MSG_SE (LogLevel.START, R.string.msg_se),
-        MSG_SE_INPUT_BYTES (LogLevel.INFO, R.string.msg_se_input_bytes),
-        MSG_SE_INPUT_URI (LogLevel.INFO, R.string.msg_se_input_uri),
         MSG_SE_ERROR_NO_INPUT (LogLevel.DEBUG, R.string.msg_se_error_no_input),
-        MSG_SE_ERROR_INPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_input_uri_not_found),
-        MSG_SE_ERROR_OUTPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_output_uri_not_found),
         MSG_SE_ERROR_TOO_MANY_INPUTS (LogLevel.ERROR, R.string.msg_se_error_too_many_inputs),
         MSG_SE_SUCCESS (LogLevel.OK, R.string.msg_se_success),
 
         // pgpsignencrypt
+        MSG_PSE_INPUT_BYTES (LogLevel.INFO, R.string.msg_se_input_bytes),
+        MSG_PSE_INPUT_URI (LogLevel.INFO, R.string.msg_se_input_uri),
+        MSG_PSE_ERROR_INPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_input_uri_not_found),
+        MSG_PSE_ERROR_OUTPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_output_uri_not_found),
         MSG_PSE_ASYMMETRIC (LogLevel.INFO, R.string.msg_pse_asymmetric),
         MSG_PSE_COMPRESSING (LogLevel.DEBUG, R.string.msg_pse_compressing),
         MSG_PSE_ENCRYPTING (LogLevel.DEBUG, R.string.msg_pse_encrypting),

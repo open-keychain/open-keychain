@@ -180,11 +180,12 @@ public class PgpEncryptDecryptTest {
 
             InputData data = new InputData(in, in.available());
 
-            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
-            b.setSymmetricPassphrase(mSymmetricPassphrase);
-            b.setSymmetricEncryptionAlgorithm(
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            pgpData.setSymmetricPassphrase(mSymmetricPassphrase);
+            pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
 
+            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel(pgpData);
             PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(new Date()),
                     data, out);
 
@@ -303,13 +304,15 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
 
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
             // only sign, and not as cleartext
-            input.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
-            input.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
-            input.setCleartextSignature(false);
-            input.setDetachedSignature(false);
+            pgpData.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
+            pgpData.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
+            pgpData.setCleartextSignature(false);
+            pgpData.setDetachedSignature(false);
+
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData);
 
             PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
             Assert.assertTrue("signing must succeed", result.success());
@@ -357,14 +360,16 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
 
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
             // only sign, as cleartext
-            input.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
-            input.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
-            input.setCleartextSignature(true);
-            input.setEnableAsciiArmorOutput(true);
-            input.setDetachedSignature(false);
+            pgpData.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
+            pgpData.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
+            pgpData.setCleartextSignature(true);
+            pgpData.setEnableAsciiArmorOutput(true);
+            pgpData.setDetachedSignature(false);
+
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData);
 
             PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
             Assert.assertTrue("signing must succeed", result.success());
@@ -417,12 +422,14 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
 
+            PgpSignEncryptData pgpData = new PgpSignEncryptData(); 
             // only sign, as cleartext
-            input.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
-            input.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
-            input.setDetachedSignature(true);
+            pgpData.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
+            pgpData.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
+            pgpData.setDetachedSignature(true);
+
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData);
 
             PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
             Assert.assertTrue("signing must succeed", result.success());
@@ -472,11 +479,14 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
 
-            input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
-            input.setSymmetricEncryptionAlgorithm(
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            pgpData.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
+            pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
+
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData);
+
             PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
@@ -572,11 +582,14 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
 
-            input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
-            input.setSymmetricEncryptionAlgorithm(
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            pgpData.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
+            pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
+
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData);
+
             PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
@@ -679,11 +692,14 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
 
-            input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
-            input.setSymmetricEncryptionAlgorithm(
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            pgpData.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
+            pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
+
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData);
+
             PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
@@ -722,13 +738,15 @@ public class PgpEncryptDecryptTest {
 
             InputData data = new InputData(in, in.available());
 
-            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
-            b.setEncryptionMasterKeyIds(new long[] {
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            pgpData.setEncryptionMasterKeyIds(new long[] {
                     mStaticRing1.getMasterKeyId(),
                     mStaticRing2.getMasterKeyId()
             });
-            b.setSymmetricEncryptionAlgorithm(
+            pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
+
+            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel(pgpData);
 
             PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(new Date()),
                     data, out);
@@ -848,16 +866,18 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
 
-            b.setEncryptionMasterKeyIds(new long[] {
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            pgpData.setEncryptionMasterKeyIds(new long[] {
                     mStaticRing1.getMasterKeyId(),
                     mStaticRing2.getMasterKeyId()
             });
-            b.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
-            b.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
-            b.setSymmetricEncryptionAlgorithm(
+            pgpData.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
+            pgpData.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
+            pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
+
+            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel(pgpData);
 
             PgpSignEncryptResult result = op.execute(b,
                     new CryptoInputParcel(new Date(), mKeyPhrase1), data, out);
@@ -933,14 +953,17 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
 
-            b.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
-            b.setSymmetricEncryptionAlgorithm(
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            pgpData.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
+            pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
             // this only works with ascii armored output!
-            b.setEnableAsciiArmorOutput(true);
-            b.setCharset("iso-2022-jp");
+            pgpData.setEnableAsciiArmorOutput(true);
+            pgpData.setCharset("iso-2022-jp");
+
+            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel(pgpData);
+
             PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
@@ -1002,11 +1025,14 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
 
-            input.setEncryptionMasterKeyIds(new long[]{key.getMasterKeyId()})
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            pgpData.setEncryptionMasterKeyIds(new long[]{key.getMasterKeyId()})
                     .setSymmetricEncryptionAlgorithm(algorithm)
                     .setIntegrityProtected(isIntegrityProtected);
+
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData);
+
             PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());

@@ -62,6 +62,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing.UserId;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -199,12 +200,13 @@ public class OpenPgpService extends Service {
             boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
             // sign-only
-            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel()
-                    .setEnableAsciiArmorOutput(asciiArmor)
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            pgpData.setEnableAsciiArmorOutput(asciiArmor)
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
                     .setVersionHeader(null)
                     .setSignatureHashAlgorithm(PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT);
+
 
             Intent signKeyIdIntent = getSignKeyMasterId(data);
             // NOTE: Fallback to return account settings (Old API)
@@ -217,17 +219,20 @@ public class OpenPgpService extends Service {
             if (signKeyId == Constants.key.none) {
                 throw new Exception("No signing key given");
             } else {
-                pseInput.setSignatureMasterKeyId(signKeyId);
+                pgpData.setSignatureMasterKeyId(signKeyId);
 
                 // get first usable subkey capable of signing
                 try {
                     long signSubKeyId = mProviderHelper.getCachedPublicKeyRing(
-                            pseInput.getSignatureMasterKeyId()).getSecretSignId();
-                    pseInput.setSignatureSubKeyId(signSubKeyId);
+                            pgpData.getSignatureMasterKeyId()).getSecretSignId();
+                    pgpData.setSignatureSubKeyId(signSubKeyId);
                 } catch (PgpKeyNotFoundException e) {
                     throw new Exception("signing subkey not found!", e);
                 }
             }
+
+
+            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData);
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             if (!cleartextSign) {
@@ -335,8 +340,8 @@ public class OpenPgpService extends Service {
             long inputLength = inputStream.available();
             InputData inputData = new InputData(inputStream, inputLength, originalFilename);
 
-            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel();
-            pseInput.setEnableAsciiArmorOutput(asciiArmor)
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            pgpData.setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(null)
                     .setCompressionAlgorithm(compressionId)
                     .setSymmetricEncryptionAlgorithm(PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT)
@@ -354,20 +359,20 @@ public class OpenPgpService extends Service {
                 if (signKeyId == Constants.key.none) {
                     throw new Exception("No signing key given");
                 } else {
-                    pseInput.setSignatureMasterKeyId(signKeyId);
+                    pgpData.setSignatureMasterKeyId(signKeyId);
 
                     // get first usable subkey capable of signing
                     try {
                         long signSubKeyId = mProviderHelper.getCachedPublicKeyRing(
-                                pseInput.getSignatureMasterKeyId()).getSecretSignId();
-                        pseInput.setSignatureSubKeyId(signSubKeyId);
+                                pgpData.getSignatureMasterKeyId()).getSecretSignId();
+                        pgpData.setSignatureSubKeyId(signSubKeyId);
                     } catch (PgpKeyNotFoundException e) {
                         throw new Exception("signing subkey not found!", e);
                     }
                 }
 
                 // sign and encrypt
-                pseInput.setSignatureHashAlgorithm(PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT)
+                pgpData.setSignatureHashAlgorithm(PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT)
                         .setAdditionalEncryptId(signKeyId); // add sign key for encryption
             }
 
@@ -382,8 +387,10 @@ public class OpenPgpService extends Service {
                 if (accSettings == null || (accSettings.getKeyId() == Constants.key.none)) {
                     return mApiPermissionHelper.getCreateAccountIntent(data, accName);
                 }
-                pseInput.setAdditionalEncryptId(accSettings.getKeyId());
+                pgpData.setAdditionalEncryptId(accSettings.getKeyId());
             }
+
+            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData);
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {

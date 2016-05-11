@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -83,9 +84,10 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
             SignEncryptOperation op =
                     new SignEncryptOperation(mContext, mProviderHelper,
                             new ProgressScaler(mProgressable, i*(50/numRepeats), (i+1)*(50/numRepeats), 100), mCancelled);
-            SignEncryptParcel input = new SignEncryptParcel();
-            input.setSymmetricPassphrase(passphrase);
-            input.setSymmetricEncryptionAlgorithm(OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
+            PgpSignEncryptData data = new PgpSignEncryptData();
+            data.setSymmetricPassphrase(passphrase);
+            data.setSymmetricEncryptionAlgorithm(OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
+            SignEncryptParcel input = new SignEncryptParcel(data);
             input.setBytes(buf);
             encryptResult = op.execute(input, new CryptoInputParcel());
             log.add(encryptResult, 1);

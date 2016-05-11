@@ -18,15 +18,6 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -36,6 +27,8 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
@@ -45,16 +38,18 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
-import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
  * This is a high-level operation, which encapsulates one or more sign/encrypt
  * operations, using URIs or byte arrays as input and output.
- *
+ * <p/>
  * This operation is fail-fast: If any sign/encrypt sub-operation fails or returns
  * a pending result, it will terminate.
  */
@@ -75,20 +70,20 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
         ArrayDeque<Uri> inputUris = new ArrayDeque<>(input.getInputUris());
         ArrayDeque<Uri> outputUris = new ArrayDeque<>(input.getOutputUris());
         byte[] inputBytes = input.getBytes();
-        byte[] outputBytes = null;
 
         int total = inputBytes != null ? 1 : inputUris.size(), count = 0;
         ArrayList<PgpSignEncryptResult> results = new ArrayList<>();
 
         SecurityTokenSignOperationsBuilder pendingInputBuilder = null;
 
+        PgpSignEncryptData data = input.getData();
         // if signing subkey has not explicitly been set, get first usable subkey capable of signing
-        if (input.getSignatureMasterKeyId() != Constants.key.none
-                && input.getSignatureSubKeyId() == null) {
+        if (data.getSignatureMasterKeyId() != Constants.key.none
+                && data.getSignatureSubKeyId() == null) {
             try {
                 long signKeyId = mProviderHelper.getCachedPublicKeyRing(
-                        input.getSignatureMasterKeyId()).getSecretSignId();
-                input.setSignatureSubKeyId(signKeyId);
+                        data.getSignatureMasterKeyId()).getSecretSignId();
+                data.setSignatureSubKeyId(signKeyId);
             } catch (PgpKeyNotFoundException e) {
                 Log.e(Constants.TAG, "Key not found", e);
                 return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log, results);
@@ -96,61 +91,22 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
         }
 
         do {
-
             if (checkCancelled()) {
                 log.add(LogType.MSG_OPERATION_CANCELLED, 0);
                 return new SignEncryptResult(SignEncryptResult.RESULT_CANCELLED, log, results);
             }
 
-            InputData inputData;
-            {
-                if (inputBytes != null) {
-                    log.add(LogType.MSG_SE_INPUT_BYTES, 1);
-                    InputStream is = new ByteArrayInputStream(inputBytes);
-                    inputData = new InputData(is, inputBytes.length);
-                    inputBytes = null;
-                } else {
-                    if (inputUris.isEmpty()) {
-                        log.add(LogType.MSG_SE_ERROR_NO_INPUT, 1);
-                        return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log, results);
-                    }
-
-                    log.add(LogType.MSG_SE_INPUT_URI, 1);
-                    Uri uri = inputUris.removeFirst();
-                    try {
-                        InputStream is = FileHelper.openInputStreamSafe(mContext.getContentResolver(), uri);
-                        long fileSize = FileHelper.getFileSize(mContext, uri, 0);
-                        String filename = FileHelper.getFilename(mContext, uri);
-                        inputData = new InputData(is, fileSize, filename);
-                    } catch (FileNotFoundException e) {
-                        log.add(LogType.MSG_SE_ERROR_INPUT_URI_NOT_FOUND, 1);
-                        return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log, results);
-                    }
-                }
-            }
-
-            OutputStream outStream;
-            {
-                if (!outputUris.isEmpty()) {
-                    try {
-                        Uri outputUri = outputUris.removeFirst();
-                        outStream = mContext.getContentResolver().openOutputStream(outputUri);
-                    } catch (FileNotFoundException e) {
-                        log.add(LogType.MSG_SE_ERROR_OUTPUT_URI_NOT_FOUND, 1);
-                        return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log, results);
-                    }
-                } else {
-                    if (outputBytes != null) {
-                        log.add(LogType.MSG_SE_ERROR_TOO_MANY_INPUTS, 1);
-                        return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log, results);
-                    }
-                    outStream = new ByteArrayOutputStream();
-                }
-            }
-
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(mContext, mProviderHelper,
                     new ProgressScaler(mProgressable, 100 * count / total, 100 * ++count / total, 100), mCancelled);
-            PgpSignEncryptResult result = op.execute(input, cryptoInput, inputData, outStream);
+            PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(input.getData());
+            if (inputBytes != null) {
+                inputParcel.setInputBytes(inputBytes);
+            } else {
+                inputParcel.setInputUri(inputUris.removeFirst());
+            }
+            inputParcel.setOutputUri(outputUris.pollFirst());
+
+            PgpSignEncryptResult result = op.execute(inputParcel, cryptoInput);
             results.add(result);
             log.add(result, 2);
 
@@ -162,17 +118,12 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
                 }
                 if (pendingInputBuilder == null) {
                     pendingInputBuilder = new SecurityTokenSignOperationsBuilder(requiredInput.mSignatureTime,
-                            input.getSignatureMasterKeyId(), input.getSignatureSubKeyId());
+                            data.getSignatureMasterKeyId(), data.getSignatureSubKeyId());
                 }
                 pendingInputBuilder.addAll(requiredInput);
             } else if (!result.success()) {
                 return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log, results);
             }
-
-            if (outStream instanceof ByteArrayOutputStream) {
-                outputBytes = ((ByteArrayOutputStream) outStream).toByteArray();
-            }
-
         } while (!inputUris.isEmpty());
 
         if (pendingInputBuilder != null && !pendingInputBuilder.isEmpty()) {
@@ -184,8 +135,8 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
         }
 
         log.add(LogType.MSG_SE_SUCCESS, 1);
-        return new SignEncryptResult(SignEncryptResult.RESULT_OK, log, results, outputBytes);
-
+        return new SignEncryptResult(SignEncryptResult.RESULT_OK, log, results,
+                results.get(results.size() - 1).getOutputBytes());
     }
 
 }

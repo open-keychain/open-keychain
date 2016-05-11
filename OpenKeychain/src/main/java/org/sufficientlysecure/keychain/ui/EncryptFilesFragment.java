@@ -63,6 +63,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -620,9 +621,7 @@ public class EncryptFilesFragment
         }
 
         // fill values for this action
-        SignEncryptParcel data = new SignEncryptParcel();
-
-        data.addInputUris(mFilesAdapter.getAsArrayList());
+        PgpSignEncryptData data = new PgpSignEncryptData();
 
         if (mUseCompression) {
             data.setCompressionAlgorithm(
@@ -673,7 +672,11 @@ public class EncryptFilesFragment
             data.setSymmetricPassphrase(passphrase);
         }
 
-        return data;
+
+        SignEncryptParcel parcel = new SignEncryptParcel(data);
+        parcel.addInputUris(mFilesAdapter.getAsArrayList());
+
+        return parcel;
     }
 
     private Intent createSendIntent() {

@@ -25,6 +25,8 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 public class PgpSignEncryptResult extends InputPendingResult {
 
+    byte[] mOutputBytes;
+
     byte[] mDetachedSignature;
     public long mOperationTime;
     // this is the micalg parameter used in PGP/MIME, see RFC3156:
@@ -51,6 +53,14 @@ public class PgpSignEncryptResult extends InputPendingResult {
     public PgpSignEncryptResult(Parcel source) {
         super(source);
         mDetachedSignature = source.readInt() != 0 ? source.createByteArray() : null;
+    }
+
+    public void setOutputBytes(byte[] outputBytes) {
+        mOutputBytes = outputBytes;
+    }
+
+    public byte[] getOutputBytes() {
+        return mOutputBytes;
     }
 
     public int describeContents() {
