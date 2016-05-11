@@ -84,6 +84,8 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInputParcel> {
 
+    public static final int PROGRESS_STRIDE_MILLISECONDS = 200;
+
     public PgpDecryptVerifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
     }
@@ -153,10 +155,10 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 return verifyDetachedSignature(input, inputData, outputStream, 0);
             } else {
                 // automatically works with PGP ascii armor and PGP binary
-                InputStream in = PGPUtil.getDecoderStream(inputData.getInputStream());
+                InputStream inputStream = PGPUtil.getDecoderStream(inputData.getInputStream());
 
-                if (in instanceof ArmoredInputStream) {
-                    ArmoredInputStream aIn = (ArmoredInputStream) in;
+                if (inputStream instanceof ArmoredInputStream) {
+                    ArmoredInputStream aIn = (ArmoredInputStream) inputStream;
                     // it is ascii armored
                     Log.d(Constants.TAG, "ASCII Armor Header Line: " + aIn.getArmorHeaderLine());
 
@@ -165,10 +167,10 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         return verifyCleartextSignature(aIn, outputStream, 0);
                     } else {
                         // else: ascii armored encryption! go on...
-                        return decryptVerify(input, cryptoInput, in, outputStream, 0);
+                        return decryptVerify(input, cryptoInput, inputData, inputStream, outputStream, 0);
                     }
                 } else {
-                    return decryptVerify(input, cryptoInput, in, outputStream, 0);
+                    return decryptVerify(input, cryptoInput, inputData, inputStream, outputStream, 0);
                 }
             }
         } catch (PGPException e) {
@@ -272,15 +274,14 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
     @NonNull
     private DecryptVerifyResult decryptVerify(
             PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
-            InputStream in, OutputStream out, int indent) throws IOException, PGPException {
+            InputData inputData, InputStream in, OutputStream out, int indent) throws IOException, PGPException {
 
         OperationLog log = new OperationLog();
 
         log.add(LogType.MSG_DC, indent);
         indent += 1;
 
-        int currentProgress = 0;
-        updateProgress(R.string.progress_reading_data, currentProgress, 100);
+        updateProgress(R.string.progress_reading_data, 0, 100);
 
         // parse ASCII Armor headers
         ArmorHeaders armorHeaders = parseArmorHeaders(in, log, indent);
@@ -301,8 +302,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
             if (obj instanceof PGPEncryptedDataList) {
                 esResult = handleEncryptedPacket(
-                        input, cryptoInput, (PGPEncryptedDataList) obj, log, indent,
-                        currentProgress, useBackupCode);
+                        input, cryptoInput, (PGPEncryptedDataList) obj, log, indent, useBackupCode);
 
                 // if there is an error, nothing left to do here
                 if (esResult.errorResult != null) {
@@ -346,8 +346,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         // resolve compressed data
         if (dataChunk instanceof PGPCompressedData) {
             log.add(LogType.MSG_DC_CLEAR_DECOMPRESS, indent + 1);
-            currentProgress += 2;
-            updateProgress(R.string.progress_decompressing_data, currentProgress, 100);
 
             PGPCompressedData compressedData = (PGPCompressedData) dataChunk;
 
@@ -377,8 +375,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         log.add(LogType.MSG_DC_CLEAR_DATA, indent + 1);
         indent += 2;
-        currentProgress += 4;
-        updateProgress(R.string.progress_decrypting, currentProgress, 100);
 
         PGPLiteralData literalData = (PGPLiteralData) dataChunk;
 
@@ -436,20 +432,22 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             return result;
         }
 
-        ProgressScaler progressScaler =
-                new ProgressScaler(mProgressable, currentProgress, 95, 100);
-
         InputStream dataIn = literalData.getInputStream();
 
         long opTime, startTime = System.currentTimeMillis();
 
         long alreadyWritten = 0;
-        long wholeSize = 0; // TODO inputData.getSize() - inputData.getStreamPosition();
+        long wholeSize = inputData.getSize() - inputData.getStreamPosition();
+        boolean sizeIsKnown = inputData.getSize() != InputData.UNKNOWN_FILESIZE && wholeSize > 0;
         int length;
         byte[] buffer = new byte[8192];
         byte[] firstBytes = new byte[48];
         CharsetVerifier charsetVerifier = new CharsetVerifier(buffer, mimeType, charset);
 
+        updateProgress(R.string.progress_decrypting, 1, 100);
+
+        long nextProgressTime = 0L;
+        int lastReportedProgress = 1;
         while ((length = dataIn.read(buffer)) > 0) {
             // Log.d(Constants.TAG, "read bytes: " + length);
             if (out != null) {
@@ -467,14 +465,17 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             }
 
             alreadyWritten += length;
-            // noinspection ConstantConditions, TODO progress
-            if (wholeSize > 0) {
-                long progress = 100 * alreadyWritten / wholeSize;
+            if (sizeIsKnown && nextProgressTime < System.currentTimeMillis()) {
+                long progress = 100 * inputData.getStreamPosition() / wholeSize;
                 // stop at 100% for wrong file sizes...
                 if (progress > 100) {
                     progress = 100;
                 }
-                progressScaler.setProgress((int) progress, 100);
+                if (progress > lastReportedProgress) {
+                    updateProgress((int) progress, 100);
+                    lastReportedProgress = (int) progress;
+                    nextProgressTime = System.currentTimeMillis() + PROGRESS_STRIDE_MILLISECONDS;
+                }
             }
         }
 
@@ -490,7 +491,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         }
 
         opTime = System.currentTimeMillis()-startTime;
-        Log.d(Constants.TAG, "decrypt time taken: " + String.format("%.2f", opTime / 1000.0) + "s");
+        Log.d(Constants.TAG, "decrypt time taken: " + String.format("%.2f", opTime / 1000.0) + "s, for "
+                + alreadyWritten + " bytes");
 
         // special treatment to detect pgp mime types
         // TODO move into CharsetVerifier? seems like that would be a plausible place for this logic
@@ -513,8 +515,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         if (esResult != null) {
             if (esResult.encryptedData.isIntegrityProtected()) {
-                updateProgress(R.string.progress_verifying_integrity, 95, 100);
-
                 if (esResult.encryptedData.verify()) {
                     log.add(LogType.MSG_DC_INTEGRITY_CHECK_OK, indent);
                 } else {
@@ -548,7 +548,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
     }
 
     private EncryptStreamResult handleEncryptedPacket(PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
-            PGPEncryptedDataList enc, OperationLog log, int indent, int currentProgress, boolean useBackupCode) throws PGPException {
+            PGPEncryptedDataList enc, OperationLog log, int indent, boolean useBackupCode) throws PGPException {
 
         EncryptStreamResult result = new EncryptStreamResult();
 
@@ -573,9 +573,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             Object obj = it.next();
             if (obj instanceof PGPPublicKeyEncryptedData) {
                 anyPacketFound = true;
-
-                currentProgress += 2;
-                updateProgress(R.string.progress_finding_key, currentProgress, 100);
 
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
                 long subKeyId = encData.getKeyID();
@@ -741,9 +738,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         // we made sure above one of these two would be true
         if (symmetricPacketFound) {
-            currentProgress += 2;
-            updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
-
             PGPDigestCalculatorProvider digestCalcProvider = new JcaPGPDigestCalculatorProviderBuilder()
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build();
             PBEDataDecryptorFactory decryptorFactory = new JcePBEDataDecryptorFactoryBuilder(
@@ -764,9 +758,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
             result.symmetricEncryptionAlgo = encryptedDataSymmetric.getSymmetricAlgorithm(decryptorFactory);
         } else if (asymmetricPacketFound) {
-            currentProgress += 2;
-            updateProgress(R.string.progress_extracting_key, currentProgress, 100);
-
             CachingDataDecryptorFactory decryptorFactory;
             if (decryptedSessionKeyAvailable) {
                 decryptorFactory = cachedKeyDecryptorFactory;
@@ -781,9 +772,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     log.add(LogType.MSG_DC_ERROR_EXTRACT_KEY, indent + 1);
                     return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
                 }
-
-                currentProgress += 2;
-                updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
                 decryptorFactory = decryptionKey.getCachingDecryptorFactory(cryptoInput);
 

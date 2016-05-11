@@ -23,6 +23,8 @@ import java.io.InputStream;
  * Wrapper to include size besides an InputStream
  */
 public class InputData {
+    public static final int UNKNOWN_FILESIZE = -1;
+
     private PositionAwareInputStream mInputStream;
     private long mSize;
     String mOriginalFilename;

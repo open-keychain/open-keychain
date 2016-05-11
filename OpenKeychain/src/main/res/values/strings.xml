@@ -457,7 +457,8 @@
     <string name="progress_extracting_key">"extracting key…"</string>
     <string name="progress_preparing_streams">"preparing streams…"</string>
     <string name="progress_encrypting">"encrypting data…"</string>
-    <string name="progress_decrypting">"decrypting data…"</string>
+    <string name="progress_prepare_decryption">"Starting decryption…"</string>
+    <string name="progress_decrypting">"Decrypting data…"</string>
     <string name="progress_preparing_signature">"preparing signature…"</string>
     <string name="progress_processing_signature">processing signature…</string>
     <string name="progress_generating_signature">"generating signature…"</string>

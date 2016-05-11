@@ -169,7 +169,12 @@ public class DecryptListFragment
         vFilesList.setHasFixedSize(true);
         // TODO make this a grid, for tablets!
         vFilesList.setLayoutManager(new LinearLayoutManager(getActivity()));
-        vFilesList.setItemAnimator(new DefaultItemAnimator());
+        vFilesList.setItemAnimator(new DefaultItemAnimator() {
+            @Override
+            public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder) {
+                return true;
+            }
+        });
 
         mAdapter = new DecryptFilesAdapter();
         vFilesList.setAdapter(mAdapter);
