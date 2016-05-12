@@ -20,8 +20,9 @@ public class NetworkReceiver extends BroadcastReceiver {
         ConnectivityManager conn = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = conn.getActiveNetworkInfo();
-        boolean isTypeWifi = (networkInfo.getType() == ConnectivityManager.TYPE_WIFI);
-        boolean isConnected = networkInfo.isConnected();
+        boolean isTypeWifi = (networkInfo != null) &&
+                (networkInfo.getType() == ConnectivityManager.TYPE_WIFI);
+        boolean isConnected = (networkInfo != null) && networkInfo.isConnected();
 
         if (isTypeWifi && isConnected) {
 
