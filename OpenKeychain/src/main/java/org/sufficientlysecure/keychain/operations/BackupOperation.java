@@ -18,20 +18,6 @@
 
 package org.sufficientlysecure.keychain.operations;
 
-
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -63,6 +49,17 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An operation class which implements high level backup
@@ -76,7 +73,7 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
-    private static final String[] PROJECTION = new String[] {
+    private static final String[] PROJECTION = new String[]{
             KeyRings.MASTER_KEY_ID,
             KeyRings.PUBKEY_DATA,
             KeyRings.PRIVKEY_DATA,
@@ -115,18 +112,10 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
         try {
 
-            boolean nonEncryptedOutput = cryptoInput == null;
-
             Uri plainUri = null;
             OutputStream plainOut;
-            if (nonEncryptedOutput && backupInput.mOutputUri == null) {
-                plainOut = outputStream;
-            } else if (nonEncryptedOutput) {
-                plainOut = mContext.getContentResolver().openOutputStream(backupInput.mOutputUri);
-            } else {
-                plainUri = TemporaryFileProvider.createFile(mContext);
-                plainOut = mContext.getContentResolver().openOutputStream(plainUri);
-            }
+            plainUri = TemporaryFileProvider.createFile(mContext);
+            plainOut = mContext.getContentResolver().openOutputStream(plainUri);
 
             int exportedDataSize;
 
@@ -141,12 +130,6 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                 if (!backupSuccess) {
                     // if there was an error, it will be in the log so we just have to return
                     return new ExportResult(ExportResult.RESULT_ERROR, log);
-                }
-
-                if (nonEncryptedOutput) {
-                    // log.add(LogType.MSG_EXPORT_NO_ENCRYPT, 1);
-                    log.add(LogType.MSG_BACKUP_SUCCESS, 1);
-                    return new ExportResult(ExportResult.RESULT_OK, log);
                 }
             }
 
