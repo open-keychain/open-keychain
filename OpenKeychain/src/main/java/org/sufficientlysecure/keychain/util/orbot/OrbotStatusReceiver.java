@@ -45,7 +45,7 @@ public class OrbotStatusReceiver extends BroadcastReceiver {
     }
 
     public static OrbotStatusReceiver getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new OrbotStatusReceiver();
         }
         return instance;
@@ -59,18 +59,18 @@ public class OrbotStatusReceiver extends BroadcastReceiver {
             String status = intent.getStringExtra(OrbotHelper.EXTRA_STATUS) + " (" + intent.getStringExtra(OrbotHelper.EXTRA_PACKAGE_NAME) + ")";
             this.torRunning = (intent.getStringExtra(OrbotHelper.EXTRA_STATUS).equals(OrbotHelper.STATUS_ON));
 
-            Log.d(Constants.TAG, "Orbot status: "+status);
-            if(torRunning){
+            Log.d(Constants.TAG, "Orbot status: " + status);
+            if (torRunning) {
                 Bundle extras = intent.getExtras();
 
                 if (extras.containsKey(EXTRA_PROXY_PORT_HTTP)) {
                     this.proxy_port_http = extras.getInt(EXTRA_PROXY_PORT_HTTP, -1);
-                    Log.i(Constants.TAG, "Http proxy set to "+proxy_port_http);
+                    Log.i(Constants.TAG, "Http proxy set to " + proxy_port_http);
                 }
 
                 if (extras.containsKey(EXTRA_PROXY_PORT_SOCKS)) {
                     this.proxy_port_socks = extras.getInt(EXTRA_PROXY_PORT_SOCKS, -1);
-                    Log.i(Constants.TAG, "Socks proxy set to "+proxy_port_socks);
+                    Log.i(Constants.TAG, "Socks proxy set to " + proxy_port_socks);
                 }
             }
         }

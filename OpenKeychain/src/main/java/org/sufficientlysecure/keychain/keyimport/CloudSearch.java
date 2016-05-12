@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.sufficientlysecure.keychain.keyimport;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import android.support.annotation.NonNull;
-
 
 /**
  * Search two or more types of server for online keys.
@@ -82,7 +82,7 @@ public class CloudSearch {
                 for (Thread thread : searchThreads) {
                     // kill threads that haven't returned yet
                     thread.interrupt();
-		}
+                }
             } catch (InterruptedException ignored) {
             }
         }
