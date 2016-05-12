@@ -39,21 +39,13 @@
 
         <org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView
             android:id="@+id/recipient_list"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
             android:hint="@string/label_to"
             android:minHeight="56dip"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical" />
-        <ImageView
-            android:id="@+id/add_recipient"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:clickable="true"
-            android:src="@drawable/ic_person_add_grey_24dp"/>
 
     </LinearLayout>
 
