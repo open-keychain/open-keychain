@@ -190,9 +190,6 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            // Enable code coverage (Jacoco)
-            testCoverageEnabled true
-
             applicationIdSuffix ".debug"
 
             // Reference them in the java files with e.g. BuildConfig.ACCOUNT_TYPE.
@@ -206,6 +203,13 @@ android {
             // Github API
             buildConfigField "String", "GITHUB_CLIENT_ID", "\"c942cd81844d94e7e41b\""
             buildConfigField "String", "GITHUB_CLIENT_SECRET", "\"f1dd17e70a0614abbd9310b00a310e23c6c8edff\""
+        }
+
+        // Workaround for http://stackoverflow.com/questions/27909613/cannot-see-parameter-value-in-android-studio-when-breakpoint-is-in-first-line-of
+        debugWithTestCoverage.initWith(debug)
+        debugWithTestCoverage {
+            // Enable code coverage (Jacoco)
+            testCoverageEnabled true
         }
     }
 
@@ -285,12 +289,12 @@ android {
     }
 }
 
-task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugUnitTest") {
+task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugWithTestCoverageUnitTest") {
     group = "Reporting"
     description = "Generate Jacoco coverage reports"
 
     classDirectories = fileTree(
-            dir: "${buildDir}/intermediates/classes/debug",
+            dir: "${buildDir}/intermediates/classes/fdroid/debugWithTestCoverage",
             excludes: ['**/R.class',
                        '**/R$*.class',
                        '**/*$ViewInjector*.*',
@@ -302,8 +306,8 @@ task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugUnitTest") {
 
     sourceDirectories = files("${buildDir.parent}/src/main/java")
     additionalSourceDirs = files([
-            "${buildDir}/generated/source/buildConfig/debug",
-            "${buildDir}/generated/source/r/debug"
+            "${buildDir}/generated/source/buildConfig/fdroid/debugWithTestCoverage",
+            "${buildDir}/generated/source/r/fdroid/debugWithTestCoverage"
     ])
     executionData = fileTree(dir: "${buildDir}/jacoco", include: "**/*.exec")
 
