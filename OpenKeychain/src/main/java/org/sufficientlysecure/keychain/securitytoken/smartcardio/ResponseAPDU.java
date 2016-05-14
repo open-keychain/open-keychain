@@ -37,7 +37,6 @@ import java.util.Arrays;
  * via byte arrays, defensive cloning is performed.
  *
  * @see CommandAPDU
- * @see CardChannel#transmit CardChannel.transmit
  *
  * @since   1.6
  * @author  Andreas Sterbenz

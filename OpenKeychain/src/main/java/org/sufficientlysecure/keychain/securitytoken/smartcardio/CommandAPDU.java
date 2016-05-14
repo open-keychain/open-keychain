@@ -56,7 +56,6 @@ import java.nio.ByteBuffer;
  * via byte arrays, defensive cloning is performed.
  *
  * @see ResponseAPDU
- * @see CardChannel#transmit CardChannel.transmit
  *
  * @since   1.6
  * @author  Andreas Sterbenz
