@@ -163,7 +163,7 @@ public class SecurityTokenHelper {
 
         // Connect on smartcard layer
         // Command APDU (page 51) for SELECT FILE command (page 29)
-        CommandAPDU select = new CommandAPDU(0x00, 0xA4, 0x04, 0x00, Hex.decode("D27600012401"), MAX_APDU_NE_EXT);
+        CommandAPDU select = new CommandAPDU(0x00, 0xA4, 0x04, 0x00, Hex.decode("D27600012401"));
         ResponseAPDU response = communicate(select);  // activate connection
 
         if (response.getSW() != APDU_SW_SUCCESS) {
@@ -608,8 +608,7 @@ public class SecurityTokenHelper {
     }
 
     public boolean isFidesmoToken() {
-        return false; // TODO
-        /*if (isConnected()) { // Check if we can still talk to the card
+        if (isConnected()) { // Check if we can still talk to the card
             try {
                 // By trying to select any apps that have the Fidesmo AID prefix we can
                 // see if it is a Fidesmo device or not
@@ -619,7 +618,7 @@ public class SecurityTokenHelper {
                 Log.e(Constants.TAG, "Card communication failed!", e);
             }
         }
-        return false;*/
+        return false;
     }
 
     /**
