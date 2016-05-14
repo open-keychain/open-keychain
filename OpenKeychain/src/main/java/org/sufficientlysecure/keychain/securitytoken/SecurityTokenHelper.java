@@ -32,10 +32,12 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.securitytoken.smartcardio.CommandAPDU;
 import org.sufficientlysecure.keychain.securitytoken.smartcardio.ResponseAPDU;
+import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -57,11 +59,14 @@ public class SecurityTokenHelper {
 
     private static final int APDU_SW_SUCCESS = 0x9000;
 
+    private static final int MASK_CLA_CHAINING = 1 << 4;
+
     // Fidesmo constants
     private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
 
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private Transport mTransport;
+    private CardCapabilities mCardCapabilities;
 
     private Passphrase mPin;
     private Passphrase mAdminPin;
@@ -152,6 +157,8 @@ public class SecurityTokenHelper {
      */
     public void connectToDevice() throws IOException {
         // Connect on transport layer
+        mCardCapabilities = null;
+
         mTransport.connect();
 
         // Connect on smartcard layer
@@ -162,6 +169,8 @@ public class SecurityTokenHelper {
         if (response.getSW() != APDU_SW_SUCCESS) {
             throw new CardException("Initialization failed!", response.getSW());
         }
+
+        mCardCapabilities = new CardCapabilities(getHistoricalBytes());
 
         byte[] pwStatusBytes = getPwStatusBytes();
         mPw1ValidForMultipleSignatures = (pwStatusBytes[0] == 1);
@@ -442,6 +451,10 @@ public class SecurityTokenHelper {
         return getHolderName(getData(0x00, 0x65));
     }
 
+    private byte[] getHistoricalBytes() throws IOException {
+        return getData(0x5F, 0x52);
+    }
+
     private byte[] getData(int p1, int p2) throws IOException {
         ResponseAPDU response = communicate(new CommandAPDU(0x00, 0xCA, p1, p2));
         if (response.getSW() != APDU_SW_SUCCESS) {
@@ -538,7 +551,48 @@ public class SecurityTokenHelper {
      * Transceive data via NFC encoded as Hex
      */
     private ResponseAPDU communicate(CommandAPDU apdu) throws IOException {
-        return mTransport.transceive(apdu);
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+
+        ResponseAPDU lastResponse = null;
+        // Transmit
+        if (mCardCapabilities.hasExtended()) {
+            lastResponse = mTransport.transceive(apdu);
+        } else if (apdu.getData().length <= MAX_APDU_NC) {
+            lastResponse = mTransport.transceive(new CommandAPDU(apdu.getCLA(), apdu.getINS(),
+                    apdu.getP1(), apdu.getP2(), apdu.getData(), MAX_APDU_NE));
+        } else if (apdu.getData().length > MAX_APDU_NC && mCardCapabilities.hasChaining()) {
+            int offset = 0;
+            byte[] data = apdu.getData();
+            while (offset < data.length) {
+                int curLen = Math.min(MAX_APDU_NC, data.length - offset);
+                boolean last = offset + curLen >= data.length;
+                int cla = apdu.getCLA() + (last ? 0 : MASK_CLA_CHAINING);
+
+                lastResponse = mTransport.transceive(new CommandAPDU(cla, apdu.getINS(), apdu.getP1(),
+                        apdu.getP2(), apdu.getData(), MAX_APDU_NE));
+
+                if (!last && lastResponse.getSW() != APDU_SW_SUCCESS) {
+                    throw new UsbTransportException("Failed to chain apdu");
+                }
+            }
+        }
+        if (lastResponse == null) {
+            throw new UsbTransportException("Can't transmit command");
+        }
+
+        result.write(lastResponse.getData());
+
+        // Receive
+        while (lastResponse.getSW1() == 0x61) {
+            CommandAPDU getResponse = new CommandAPDU(0x00, 0xC0, 0x00, 0x00, lastResponse.getSW2());
+            lastResponse = mTransport.transceive(getResponse);
+            result.write(lastResponse.getData());
+        }
+
+        result.write(lastResponse.getSW1());
+        result.write(lastResponse.getSW2());
+
+        return new ResponseAPDU(result.toByteArray());
     }
 
     public Transport getTransport() {
