@@ -207,6 +207,12 @@ android {
             buildConfigField "String", "GITHUB_CLIENT_ID", "\"c942cd81844d94e7e41b\""
             buildConfigField "String", "GITHUB_CLIENT_SECRET", "\"f1dd17e70a0614abbd9310b00a310e23c6c8edff\""
         }
+
+        // Workaround for http://stackoverflow.com/questions/27909613/cannot-see-parameter-value-in-android-studio-when-breakpoint-is-in-first-line-of
+        debugWithoutTestCoverage.initWith(debug)
+        debugWithoutTestCoverage {
+            testCoverageEnabled false
+        }
     }
 
     productFlavors {
