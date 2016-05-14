@@ -666,13 +666,11 @@ public class SecurityTokenHelper {
      * Afterwards, the token is reactivated.
      */
     public void resetAndWipeToken() throws IOException {
-        String accepted = "9000";
-
         // try wrong PIN 4 times until counter goes to C0
         byte[] pin = "XXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
             ResponseAPDU response = tryPin(0x81, pin);
-            if (response.getSW() != APDU_SW_SUCCESS) { // Should NOT accept!
+            if (response.getSW() == APDU_SW_SUCCESS) { // Should NOT accept!
                 throw new CardException("Should never happen, XXXXXX has been accepted!", response.getSW());
             }
         }
@@ -681,7 +679,7 @@ public class SecurityTokenHelper {
         byte[] adminPin = "XXXXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
             ResponseAPDU response = tryPin(0x83, adminPin);
-            if (response.getSW() != APDU_SW_SUCCESS) { // Should NOT accept!
+            if (response.getSW() == APDU_SW_SUCCESS) { // Should NOT accept!
                 throw new CardException("Should never happen, XXXXXXXX has been accepted", response.getSW());
             }
         }
