@@ -31,8 +31,8 @@
     <!-- Nitrokey Pro-->
     <usb-device class="11" vendor-id="8352" product-id="16648"/>
     <!-- Nitrokey Storage-->
-    <usb-device class="11" vendor-id="8352" product-id="16649"/>
+    <!--<usb-device class="11" vendor-id="8352" product-id="16649"/>-->
     <!-- Nitrokey Start-->
-    <usb-device class="11" vendor-id="8352" product-id="16913"/>
+    <!--<usb-device class="11" vendor-id="8352" product-id="16913"/>-->
 
 </resources>
