@@ -27,6 +27,15 @@ public class CardException extends IOException {
         mResponseCode = responseCode;
     }
 
+    public CardException(String detailMessage, int responseCode) {
+        super(detailMessage);
+        mResponseCode = (short) responseCode;
+    }
+
+    public CardException(String s) {
+        this(s, -1);
+    }
+
     public short getResponseCode() {
         return mResponseCode;
     }
