@@ -157,13 +157,13 @@ public class SecurityTokenHelper {
      */
     public void connectToDevice() throws IOException {
         // Connect on transport layer
-        mCardCapabilities = null;
+        mCardCapabilities = new CardCapabilities();
 
         mTransport.connect();
 
         // Connect on smartcard layer
         // Command APDU (page 51) for SELECT FILE command (page 29)
-        CommandAPDU select = new CommandAPDU(0x00, 0xA4, 0x04, 0x00, Hex.decode("D27600012401"));
+        CommandAPDU select = new CommandAPDU(0x00, 0xA4, 0x04, 0x00, Hex.decode("D27600012401"), MAX_APDU_NE_EXT);
         ResponseAPDU response = communicate(select);  // activate connection
 
         if (response.getSW() != APDU_SW_SUCCESS) {
@@ -409,7 +409,7 @@ public class SecurityTokenHelper {
      * @return The fingerprints of all subkeys in a contiguous byte array.
      */
     public byte[] getFingerprints() throws IOException {
-        CommandAPDU apdu = new CommandAPDU(0x00, 0xCA, 0x00, 0x6E);
+        CommandAPDU apdu = new CommandAPDU(0x00, 0xCA, 0x00, 0x6E, MAX_APDU_NE_EXT);
         ResponseAPDU response = communicate(apdu);
 
         if (response.getSW() != APDU_SW_SUCCESS) {
@@ -456,7 +456,7 @@ public class SecurityTokenHelper {
     }
 
     private byte[] getData(int p1, int p2) throws IOException {
-        ResponseAPDU response = communicate(new CommandAPDU(0x00, 0xCA, p1, p2));
+        ResponseAPDU response = communicate(new CommandAPDU(0x00, 0xCA, p1, p2, MAX_APDU_NE_EXT));
         if (response.getSW() != APDU_SW_SUCCESS) {
             throw new CardException("Failed to get pw status bytes", response.getSW());
         }
@@ -544,7 +544,7 @@ public class SecurityTokenHelper {
             throw new IOException("Bad signature length! Expected 128/256/384/512 bytes, got " + signature.length);
         }
 
-        return Hex.decode(signature);
+        return signature;
     }
 
     /**
@@ -558,22 +558,26 @@ public class SecurityTokenHelper {
         if (mCardCapabilities.hasExtended()) {
             lastResponse = mTransport.transceive(apdu);
         } else if (apdu.getData().length <= MAX_APDU_NC) {
+            int ne = Math.min(apdu.getNe(), MAX_APDU_NE);
             lastResponse = mTransport.transceive(new CommandAPDU(apdu.getCLA(), apdu.getINS(),
-                    apdu.getP1(), apdu.getP2(), apdu.getData(), MAX_APDU_NE));
+                    apdu.getP1(), apdu.getP2(), apdu.getData(), ne));
         } else if (apdu.getData().length > MAX_APDU_NC && mCardCapabilities.hasChaining()) {
             int offset = 0;
             byte[] data = apdu.getData();
+            int ne = Math.min(apdu.getNe(), MAX_APDU_NE);
             while (offset < data.length) {
                 int curLen = Math.min(MAX_APDU_NC, data.length - offset);
                 boolean last = offset + curLen >= data.length;
                 int cla = apdu.getCLA() + (last ? 0 : MASK_CLA_CHAINING);
 
                 lastResponse = mTransport.transceive(new CommandAPDU(cla, apdu.getINS(), apdu.getP1(),
-                        apdu.getP2(), apdu.getData(), MAX_APDU_NE));
+                        apdu.getP2(), Arrays.copyOfRange(data, offset, offset + curLen), ne));
 
                 if (!last && lastResponse.getSW() != APDU_SW_SUCCESS) {
                     throw new UsbTransportException("Failed to chain apdu");
                 }
+
+                offset += curLen;
             }
         }
         if (lastResponse == null) {
@@ -604,7 +608,8 @@ public class SecurityTokenHelper {
     }
 
     public boolean isFidesmoToken() {
-        if (isConnected()) { // Check if we can still talk to the card
+        return false; // TODO
+        /*if (isConnected()) { // Check if we can still talk to the card
             try {
                 // By trying to select any apps that have the Fidesmo AID prefix we can
                 // see if it is a Fidesmo device or not
@@ -614,7 +619,7 @@ public class SecurityTokenHelper {
                 Log.e(Constants.TAG, "Card communication failed!", e);
             }
         }
-        return false;
+        return false;*/
     }
 
     /**
