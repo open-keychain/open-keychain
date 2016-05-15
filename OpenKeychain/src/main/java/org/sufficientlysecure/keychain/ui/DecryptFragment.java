@@ -39,6 +39,7 @@ import android.widget.ViewAnimator;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -308,7 +309,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         long signatureKeyId = mSignatureResult.getKeyId();
 
         String userId = data.getString(INDEX_USER_ID);
-        KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
+        OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
         if (userIdSplit.name != null) {
             mSignatureName.setText(userIdSplit.name);
         } else {
@@ -418,7 +419,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         }
 
         String userId = mSignatureResult.getPrimaryUserId();
-        KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
+        OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
         if (userIdSplit.name != null) {
             mSignatureName.setText(userIdSplit.name);
         } else {

@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
@@ -141,7 +142,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
         // main user id
         String userId = entry.getUserIds().get(0);
-        KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
+        OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
 
         // name
         if (userIdSplit.name != null) {

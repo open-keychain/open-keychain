@@ -34,6 +34,7 @@ import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 import android.util.Patterns;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -503,7 +504,7 @@ public class ContactHelper {
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                KeyRing.UserId userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
+                OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
@@ -578,7 +579,7 @@ public class ContactHelper {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                KeyRing.UserId userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
+                OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
 
                 if (!isExpired && !isRevoked && userIdSplit.name != null) {
                     // if expired or revoked will not be removed from keysToDelete or inserted
@@ -840,7 +841,7 @@ public class ContactHelper {
                 null, null);
         if (ids != null) {
             while (ids.moveToNext()) {
-                KeyRing.UserId userId = KeyRing.splitUserId(ids.getString(0));
+                OpenPgpUtils.UserId userId = KeyRing.splitUserId(ids.getString(0));
                 if (userId.email != null) {
                     ops.add(referenceRawContact(
                             ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI),

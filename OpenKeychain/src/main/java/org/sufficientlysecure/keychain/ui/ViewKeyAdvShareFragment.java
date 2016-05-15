@@ -51,6 +51,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -247,7 +248,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 TemporaryFileProvider shareFileProv = new TemporaryFileProvider();
 
                 String filename = KeyFormattingUtils.convertFingerprintToHex(mFingerprint);
-                KeyRing.UserId mainUserId = KeyRing.splitUserId(mUserId);
+                OpenPgpUtils.UserId mainUserId = KeyRing.splitUserId(mUserId);
                 if (mainUserId.name != null) {
                     filename = mainUserId.name;
                 }

@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.openintents.openpgp.util.OpenPgpApi;
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -90,7 +91,7 @@ public class SelectSignKeyIdActivity extends BaseActivity {
     }
 
     private void createKey(String userId) {
-        KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
+        OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
 
         Intent intent = new Intent(this, CreateKeyActivity.class);
         intent.putExtra(CreateKeyActivity.EXTRA_NAME, userIdSplit.name);

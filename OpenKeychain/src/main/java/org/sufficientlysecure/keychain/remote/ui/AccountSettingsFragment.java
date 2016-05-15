@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
@@ -92,7 +93,7 @@ public class AccountSettingsFragment extends Fragment {
     }
 
     private void createKey() {
-        KeyRing.UserId userId = KeyRing.splitUserId(mAccSettings.getAccountName());
+        OpenPgpUtils.UserId userId = KeyRing.splitUserId(mAccSettings.getAccountName());
 
         Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
         intent.putExtra(CreateKeyActivity.EXTRA_NAME, userId.name);

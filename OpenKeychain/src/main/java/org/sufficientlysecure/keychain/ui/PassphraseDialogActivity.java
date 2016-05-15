@@ -46,6 +46,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -236,7 +237,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     // above can't be statically verified to have been set in all cases because
                     // the catch clause doesn't return.
                     String mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
-                    KeyRing.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
+                    OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
                     if (mainUserIdSplit.name != null) {
                         userId = mainUserIdSplit.name;
                     } else {

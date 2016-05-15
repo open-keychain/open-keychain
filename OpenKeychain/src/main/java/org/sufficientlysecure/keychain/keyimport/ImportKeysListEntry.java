@@ -21,6 +21,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -318,7 +319,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public void updateMergedUserIds() {
         mMergedUserIds = new HashMap<>();
         for (String userId : mUserIds) {
-            KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
+            OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
 
             // TODO: comment field?
 

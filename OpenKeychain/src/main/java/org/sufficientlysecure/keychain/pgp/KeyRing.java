@@ -20,6 +20,8 @@ package org.sufficientlysecure.keychain.pgp;
 
 import android.text.TextUtils;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
+import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 
 import java.io.Serializable;
@@ -45,7 +47,7 @@ public abstract class KeyRing {
 
     abstract public String getPrimaryUserIdWithFallback() throws PgpKeyNotFoundException;
 
-    public UserId getSplitPrimaryUserIdWithFallback() throws PgpKeyNotFoundException {
+    public OpenPgpUtils.UserId getSplitPrimaryUserIdWithFallback() throws PgpKeyNotFoundException {
         return splitUserId(getPrimaryUserIdWithFallback());
     }
 
@@ -59,10 +61,6 @@ public abstract class KeyRing {
 
     abstract public int getVerified() throws PgpKeyNotFoundException;
 
-    private static final Pattern USER_ID_PATTERN = Pattern.compile("^(.*?)(?: \\((.*)\\))?(?: <(.*)>)?$");
-
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^.*@.*\\..*$");
-
     /**
      * Splits userId string into naming part, email part, and comment part
      * <p/>
@@ -70,53 +68,15 @@ public abstract class KeyRing {
      * http://fiddle.re/t4p6f
      */
     public static UserId splitUserId(final String userId) {
-        if (!TextUtils.isEmpty(userId)) {
-            final Matcher matcher = USER_ID_PATTERN.matcher(userId);
-            if (matcher.matches()) {
-                String name = matcher.group(1).isEmpty() ? null : matcher.group(1);
-                String comment = matcher.group(2);
-                String email = matcher.group(3);
-                if (comment == null && email == null && name != null && EMAIL_PATTERN.matcher(name).matches()) {
-                    email = name;
-                    name = null;
-                }
-                return new UserId(name, email, comment);
-            }
-        }
-        return new UserId(null, null, null);
+        return OpenPgpUtils.splitUserId(userId);
     }
 
     /**
      * Returns a composed user id. Returns null if name, email and comment are empty.
      */
     public static String createUserId(UserId userId) {
-        StringBuilder userIdBuilder = new StringBuilder();
-        if (!TextUtils.isEmpty(userId.name)) {
-            userIdBuilder.append(userId.name);
-        }
-        if (!TextUtils.isEmpty(userId.comment)) {
-            userIdBuilder.append(" (");
-            userIdBuilder.append(userId.comment);
-            userIdBuilder.append(")");
-        }
-        if (!TextUtils.isEmpty(userId.email)) {
-            userIdBuilder.append(" <");
-            userIdBuilder.append(userId.email);
-            userIdBuilder.append(">");
-        }
-        return userIdBuilder.length() == 0 ? null : userIdBuilder.toString();
+        return OpenPgpUtils.createUserId(userId);
     }
 
-    public static class UserId implements Serializable {
-        public final String name;
-        public final String email;
-        public final String comment;
-
-        public UserId(String name, String email, String comment) {
-            this.name = name;
-            this.email = email;
-            this.comment = comment;
-        }
-    }
 
 }

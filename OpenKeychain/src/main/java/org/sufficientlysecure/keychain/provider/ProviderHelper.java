@@ -30,6 +30,7 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.util.LongSparseArray;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -454,7 +455,7 @@ public class ProviderHelper {
                 String userId = Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId);
                 UserPacketItem item = new UserPacketItem();
                 uids.add(item);
-                KeyRing.UserId splitUserId =  KeyRing.splitUserId(userId);
+                OpenPgpUtils.UserId splitUserId =  KeyRing.splitUserId(userId);
                 item.userId = userId;
                 item.name = splitUserId.name;
                 item.email = splitUserId.email;

@@ -30,6 +30,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
@@ -87,7 +88,7 @@ public class MultiUserIdsAdapter extends CursorAdapter {
 
         { // first one
             String userId = uids.get(0);
-            KeyRing.UserId splitUserId = KeyRing.splitUserId(userId);
+            OpenPgpUtils.UserId splitUserId = KeyRing.splitUserId(userId);
             if (splitUserId.name != null) {
                 vName.setText(splitUserId.name);
             } else {
@@ -112,7 +113,7 @@ public class MultiUserIdsAdapter extends CursorAdapter {
 
         StringBuilder lines = new StringBuilder();
         for (String uid : uids) {
-            KeyRing.UserId splitUserId = KeyRing.splitUserId(uid);
+            OpenPgpUtils.UserId splitUserId = KeyRing.splitUserId(uid);
             if (splitUserId.email == null) {
                 continue;
             }

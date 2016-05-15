@@ -35,6 +35,7 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
@@ -100,7 +101,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 );
 
                 String name;
-                KeyRing.UserId mainUserId = KeyRing.splitUserId(
+                OpenPgpUtils.UserId mainUserId = KeyRing.splitUserId(
                         (String) data.get(KeychainContract.KeyRings.USER_ID));
                 if (mainUserId.name != null) {
                     name = mainUserId.name;
@@ -280,7 +281,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                             }
                     );
                     String name;
-                    KeyRing.UserId mainUserId = KeyRing.splitUserId((String) data.get(KeychainContract.KeyRings.USER_ID));
+                    OpenPgpUtils.UserId mainUserId = KeyRing.splitUserId((String) data.get(KeychainContract.KeyRings.USER_ID));
                     if (mainUserId.name != null) {
                         name = mainUserId.name;
                     } else {

@@ -38,6 +38,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -125,7 +126,7 @@ public class KeyAdapter extends CursorAdapter {
             mDisplayedItem = item;
 
             { // set name and stuff, common to both key types
-                KeyRing.UserId userIdSplit = item.mUserId;
+                OpenPgpUtils.UserId userIdSplit = item.mUserId;
                 if (userIdSplit.name != null) {
                     mMainUserId.setText(highlighter.highlight(userIdSplit.name));
                 } else {
@@ -288,7 +289,7 @@ public class KeyAdapter extends CursorAdapter {
     public static class KeyItem implements Serializable {
 
         public final String mUserIdFull;
-        public final KeyRing.UserId mUserId;
+        public final OpenPgpUtils.UserId mUserId;
         public final long mKeyId;
         public final boolean mHasDuplicate;
         public final boolean mHasEncrypt;
