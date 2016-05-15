@@ -43,8 +43,6 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.interfaces.RSAPrivateCrtKey;
 
-import nordpol.Apdu;
-
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
  * devices.
@@ -80,10 +78,6 @@ public class SecurityTokenHelper {
 
     public static SecurityTokenHelper getInstance() {
         return LazyHolder.SECURITY_TOKEN_HELPER;
-    }
-
-    private static String getHex(byte[] raw) {
-        return new String(Hex.encode(raw));
     }
 
     private String getHolderName(byte[] name) {
@@ -133,8 +127,8 @@ public class SecurityTokenHelper {
                     keyType.toString()));
         }
 
-        putKey(keyType.getmSlot(), secretKey, passphrase);
-        putData(keyType.getmFingerprintObjectId(), secretKey.getFingerprint());
+        putKey(keyType.getSlot(), secretKey, passphrase);
+        putData(keyType.getFingerprintObjectId(), secretKey.getFingerprint());
         putData(keyType.getTimestampObjectId(), timestampBytes);
     }
 
@@ -474,7 +468,6 @@ public class SecurityTokenHelper {
             verifyPin(0x81); // (Verify PW1 with mode 81 for signing)
         }
 
-        // dsi, including Lc
         byte[] dsi;
 
         Log.i(Constants.TAG, "Hash: " + hashAlgo);
