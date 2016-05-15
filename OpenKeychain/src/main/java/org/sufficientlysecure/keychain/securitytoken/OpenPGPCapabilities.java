@@ -1,0 +1,174 @@
+/*
+ * Copyright (C) 2016 Nikita Mikhailov <nikita.s.mikhailov@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.sufficientlysecure.keychain.securitytoken;
+
+import org.sufficientlysecure.keychain.util.Iso7816TLV;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+public class OpenPGPCapabilities {
+    private final static int MASK_SM = 1 << 7;
+    private final static int MASK_KEY_IMPORT = 1 << 5;
+    private final static int MASK_ATTRIBUTES_CHANGABLE = 1 << 2;
+
+    private boolean mPw1ValidForMultipleSignatures;
+    private byte[] mAid;
+    private byte[] mHistoricalBytes;
+
+    private boolean mHasSM;
+    private boolean mAttriburesChangable;
+    private boolean mHasKeyImport;
+
+    private byte mSMAlgo;
+    private int mMaxCmdLen;
+    private int mMaxRspLen;
+
+    private Map<KeyType, AlgorithmFormat> mKeyFormats;
+
+    public OpenPGPCapabilities(byte[] data) throws IOException {
+        Iso7816TLV[] tlvs = Iso7816TLV.readList(data, true);
+        mKeyFormats = new HashMap<>();
+
+        for (Iso7816TLV tlv : tlvs) {
+            switch (tlv.mT) {
+                case 0x4F:
+                    mAid = tlv.mV;
+                    break;
+                case 0x5F52:
+                    mHistoricalBytes = tlv.mV;
+                    break;
+                case 0x73:
+                    parseDdo((Iso7816TLV.Iso7816CompositeTLV) tlv);
+                    break;
+            }
+        }
+    }
+
+    private void parseDdo(Iso7816TLV.Iso7816CompositeTLV tlvs) {
+        for (Iso7816TLV tlv : tlvs.mSubs) {
+            switch (tlv.mT) {
+                case 0xC0:
+                    parseExtendedCaps(tlv.mV);
+                    break;
+                case 0xC1:
+                    parseAlgoCaps(KeyType.SIGN, tlv.mV);
+                    break;
+                case 0xC2:
+                    parseAlgoCaps(KeyType.ENCRYPT, tlv.mV);
+                    break;
+                case 0xC3:
+                    parseAlgoCaps(KeyType.AUTH, tlv.mV);
+                    break;
+                case 0xC4:
+                    mPw1ValidForMultipleSignatures = tlv.mV[0] == 1;
+                    break;
+            }
+        }
+    }
+
+    private void parseAlgoCaps(KeyType keyType, byte[] data) {
+        mKeyFormats.put(keyType, AlgorithmFormat.from(data[5]));
+    }
+
+    private void parseExtendedCaps(byte[] v) {
+        mHasSM = (v[0] & MASK_SM) != 0;
+        mHasKeyImport = (v[0] & MASK_KEY_IMPORT) != 0;
+        mAttriburesChangable =(v[0] & MASK_ATTRIBUTES_CHANGABLE) != 0;
+
+        mSMAlgo = v[1];
+
+        mMaxCmdLen = (v[6] << 8) + v[7];
+        mMaxRspLen = (v[8] << 8) + v[9];
+    }
+
+    public boolean isPw1ValidForMultipleSignatures() {
+        return mPw1ValidForMultipleSignatures;
+    }
+
+    public byte[] getAid() {
+        return mAid;
+    }
+
+    public byte[] getHistoricalBytes() {
+        return mHistoricalBytes;
+    }
+
+    public boolean isHasSM() {
+        return mHasSM;
+    }
+
+    public boolean isAttriburesChangable() {
+        return mAttriburesChangable;
+    }
+
+    public boolean isHasKeyImport() {
+        return mHasKeyImport;
+    }
+
+    public byte getSMAlgo() {
+        return mSMAlgo;
+    }
+
+    public int getMaxCmdLen() {
+        return mMaxCmdLen;
+    }
+
+    public int getMaxRspLen() {
+        return mMaxRspLen;
+    }
+
+    public AlgorithmFormat getFormatForKeyType(KeyType keyType) {
+        return mKeyFormats.get(keyType);
+    }
+
+    public enum AlgorithmFormat {
+        STANDARD(0, false, false),
+        STANDARD_WITH_MODULUS(1, false, true),
+        CRT(2, true, false),
+        CRT_WITH_MODULUS(3, true, true);
+
+        private int mValue;
+        private boolean mHasModulus;
+        private boolean mHasExtra;
+
+        AlgorithmFormat(int value, boolean hasExtra, boolean hasModulus) {
+            mValue = value;
+            mHasModulus = hasModulus;
+            mHasExtra = hasExtra;
+        }
+
+        public boolean isHasModulus() {
+            return mHasModulus;
+        }
+
+        public boolean isHasExtra() {
+            return mHasExtra;
+        }
+
+        public static AlgorithmFormat from(byte b) {
+            for (AlgorithmFormat format : values()) {
+                if (format.mValue == b) {
+                    return format;
+                }
+            }
+            return null;
+        }
+    }
+}

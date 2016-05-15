@@ -65,10 +65,10 @@ public class SecurityTokenHelper {
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private Transport mTransport;
     private CardCapabilities mCardCapabilities;
+    private OpenPGPCapabilities mOpenPGPCapabilities;
 
     private Passphrase mPin;
     private Passphrase mAdminPin;
-    private boolean mPw1ValidForMultipleSignatures;
     private boolean mPw1ValidatedForSignature;
     private boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
     private boolean mPw3Validated;
@@ -164,10 +164,9 @@ public class SecurityTokenHelper {
             throw new CardException("Initialization failed!", response.getSW());
         }
 
-        mCardCapabilities = new CardCapabilities(getHistoricalBytes());
+        mOpenPGPCapabilities = new OpenPGPCapabilities(getData(0x00, 0x65));
+        mCardCapabilities = new CardCapabilities(mOpenPGPCapabilities.getHistoricalBytes());
 
-        byte[] pwStatusBytes = getPwStatusBytes();
-        mPw1ValidForMultipleSignatures = (pwStatusBytes[0] == 1);
         mPw1ValidatedForSignature = false;
         mPw1ValidatedForDecrypt = false;
         mPw3Validated = false;
@@ -445,10 +444,6 @@ public class SecurityTokenHelper {
         return getHolderName(getData(0x00, 0x65));
     }
 
-    private byte[] getHistoricalBytes() throws IOException {
-        return getData(0x5F, 0x52);
-    }
-
     private byte[] getData(int p1, int p2) throws IOException {
         ResponseAPDU response = communicate(new CommandAPDU(0x00, 0xCA, p1, p2, MAX_APDU_NE_EXT));
         if (response.getSW() != APDU_SW_SUCCESS) {
@@ -525,7 +520,7 @@ public class SecurityTokenHelper {
             throw new CardException("Failed to sign", response.getSW());
         }
 
-        if (!mPw1ValidForMultipleSignatures) {
+        if (!mOpenPGPCapabilities.isPw1ValidForMultipleSignatures()) {
             mPw1ValidatedForSignature = false;
         }
 
