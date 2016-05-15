@@ -47,7 +47,7 @@ public abstract class KeyRing {
 
     abstract public String getPrimaryUserIdWithFallback() throws PgpKeyNotFoundException;
 
-    public OpenPgpUtils.UserId getSplitPrimaryUserIdWithFallback() throws PgpKeyNotFoundException {
+    public UserId getSplitPrimaryUserIdWithFallback() throws PgpKeyNotFoundException {
         return splitUserId(getPrimaryUserIdWithFallback());
     }
 

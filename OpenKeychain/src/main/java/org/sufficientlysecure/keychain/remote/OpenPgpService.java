@@ -53,7 +53,7 @@ import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.openintents.openpgp.util.OpenPgpUtils.UserId;
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
@@ -135,7 +135,7 @@ public class OpenPgpService extends Service {
         ArrayList<String> duplicateEmails = new ArrayList<>();
         if (!noUserIdsCheck) {
             for (String rawUserId : encryptionUserIds) {
-                UserId userId = KeyRing.splitUserId(rawUserId);
+                OpenPgpUtils.UserId userId = KeyRing.splitUserId(rawUserId);
                 String email = userId.email != null ? userId.email : rawUserId;
                 // try to find the key for this specific email
                 Uri uri = KeyRings.buildUnifiedKeyRingsFindByEmailUri(email);
