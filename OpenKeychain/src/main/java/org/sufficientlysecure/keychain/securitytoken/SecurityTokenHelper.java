@@ -127,7 +127,7 @@ public class SecurityTokenHelper {
                     keyType.toString()));
         }
 
-        putKey(keyType.getSlot(), secretKey, passphrase);
+        putKey(keyType, secretKey, passphrase);
         putData(keyType.getFingerprintObjectId(), secretKey.getFingerprint());
         putData(keyType.getTimestampObjectId(), timestampBytes);
     }
@@ -164,7 +164,7 @@ public class SecurityTokenHelper {
             throw new CardException("Initialization failed!", response.getSW());
         }
 
-        mOpenPGPCapabilities = new OpenPGPCapabilities(getData(0x00, 0x65));
+        mOpenPGPCapabilities = new OpenPGPCapabilities(getData(0x00, 0x6E));
         mCardCapabilities = new CardCapabilities(mOpenPGPCapabilities.getHistoricalBytes());
 
         mPw1ValidatedForSignature = false;
@@ -307,12 +307,8 @@ public class SecurityTokenHelper {
      *             0xB8: Decipherment Key
      *             0xA4: Authentication Key
      */
-    private void putKey(int slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
+    private void putKey(KeyType slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
             throws IOException {
-        if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
-            throw new IOException("Invalid key slot");
-        }
-
         RSAPrivateCrtKey crtSecretKey;
         try {
             secretKey.unlock(passphrase);
@@ -335,64 +331,115 @@ public class SecurityTokenHelper {
             verifyPin(0x83); // (Verify PW3 with mode 83)
         }
 
-        byte[] header = Hex.decode(
-                "4D82" + "03A2"      // Extended header list 4D82, length of 930 bytes. (page 23)
-                        + String.format("%02x", slot) + "00" // CRT to indicate targeted key, no length
-                        + "7F48" + "15"      // Private key template 0x7F48, length 21 (decimal, 0x15 hex)
-                        + "9103"             // Public modulus, length 3
-                        + "928180"           // Prime P, length 128
-                        + "938180"           // Prime Q, length 128
-                        + "948180"           // Coefficient (1/q mod p), length 128
-                        + "958180"           // Prime exponent P (d mod (p - 1)), length 128
-                        + "968180"           // Prime exponent Q (d mod (1 - 1)), length 128
-                        + "97820100"         // Modulus, length 256, last item in private key template
-                        + "5F48" + "820383");// DO 5F48; 899 bytes of concatenated key data will follow
-        byte[] dataToSend = new byte[934];
-        byte[] currentKeyObject;
-        int offset = 0;
+        ByteArrayOutputStream stream = new ByteArrayOutputStream(),
+                template = new ByteArrayOutputStream(),
+                data = new ByteArrayOutputStream(),
+                res = new ByteArrayOutputStream();
 
-        System.arraycopy(header, 0, dataToSend, offset, header.length);
-        offset += header.length;
-        currentKeyObject = crtSecretKey.getPublicExponent().toByteArray();
-        System.arraycopy(currentKeyObject, 0, dataToSend, offset, 3);
-        offset += 3;
-        // NOTE: For a 2048-bit key, these lengths are fixed. However, bigint includes a leading 0
-        // in the array to represent sign, so we take care to set the offset to 1 if necessary.
-        currentKeyObject = crtSecretKey.getPrimeP().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte) 0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getPrimeQ().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte) 0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getCrtCoefficient().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte) 0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getPrimeExponentP().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte) 0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getPrimeExponentQ().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte) 0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getModulus().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 256, dataToSend, offset, 256);
+        // Public modulus, length 3
+        template.write(Hex.decode("9104"));
+        writeBits(data, crtSecretKey.getPublicExponent(), 4);
 
+        // Prime P, length 128
+        template.write(Hex.decode("928180"));
+        writeBits(data, crtSecretKey.getPrimeP(), 128);
+
+        // Prime Q, length 128
+        template.write(Hex.decode("938180"));
+        writeBits(data, crtSecretKey.getPrimeQ(), 128);
+
+        OpenPGPCapabilities.AlgorithmFormat format = mOpenPGPCapabilities.getFormatForKeyType(slot);
+        if (format.isHasExtra()) {
+            // Coefficient (1/q mod p), length 128
+            template.write(Hex.decode("948180"));
+            writeBits(data, crtSecretKey.getCrtCoefficient(), 128);
+
+            // Prime exponent P (d mod (p - 1)), length 128
+            template.write(Hex.decode("958180"));
+            writeBits(data, crtSecretKey.getPrimeExponentP(), 128);
+
+            // Prime exponent Q (d mod (1 - 1)), length 128
+            template.write(Hex.decode("968180"));
+            writeBits(data, crtSecretKey.getPrimeExponentQ(), 128);
+        }
+
+        if (format.isHasModulus()) {
+            // Modulus, length 256, last item in private key template
+            template.write(Hex.decode("97820100"));
+            writeBits(data, crtSecretKey.getModulus(), 256);
+        }
+
+        // Bundle up
+
+        // Ext header list data
+        // Control Reference Template to indicate the private key
+        stream.write(slot.getSlot());
+        stream.write(0);
+
+        // Cardholder private key template
+        stream.write(Hex.decode("7F48"));
+        stream.write(encodeLength(template.size()));
+        stream.write(template.toByteArray());
+
+        // Concatenation of key data as defined in DO 7F48
+        stream.write(Hex.decode("5F48"));
+        stream.write(encodeLength(data.size()));
+        stream.write(data.toByteArray());
+
+
+        // Result tlv
+        res.write(Hex.decode("4D"));
+        res.write(encodeLength(stream.size()));
+        res.write(stream.toByteArray());
+
+        byte[] bytes = res.toByteArray();
         // Now we're ready to communicate with the token.
-
-        CommandAPDU apdu = new CommandAPDU(0x00, 0xDB, 0x3F, 0xFF, dataToSend);
-
-        // Clear array with secret data before we return.
-        Arrays.fill(dataToSend, (byte) 0);
-
+        CommandAPDU apdu = new CommandAPDU(0x00, 0xDB, 0x3F, 0xFF, bytes);
         ResponseAPDU response = communicate(apdu);
 
         if (response.getSW() != APDU_SW_SUCCESS) {
             throw new CardException("Key export to Security Token failed", response.getSW());
         }
+    }
+
+    private byte[] encodeLength(int len) {
+        byte[] res;
+        if (len < 128) {
+            res = new byte[1];
+            res[0] = (byte) len;
+        } else if (len < 256) {
+            res = new byte[2];
+            res[0] = -127;
+            res[1] = (byte) len;
+        } else if (len < 65536) {
+            res = new byte[3];
+            res[0] = -126;
+            res[1] = (byte) (len / 256);
+            res[2] = (byte) (len % 256);
+        } else {
+            res = new byte[4];
+            if (len >= 16777216) {
+                throw new IllegalStateException("length [" + len + "] out of range (0x1000000)");
+            }
+
+            res[0] = -125;
+            res[1] = (byte) (len / 65536);
+            res[2] = (byte) (len / 256);
+            res[3] = (byte) (len % 256);
+        }
+        return res;
+    }
+
+    private void writeBits(ByteArrayOutputStream stream, BigInteger value, int bits) {
+        byte[] prime = value.toByteArray();
+        byte[] res = new byte[bits];
+        int empty = bits - prime.length + 1;
+
+        System.arraycopy(prime, 1, res, Math.max(0, empty), Math.min(prime.length - 1, bits));
+
+        stream.write(res, 0, bits);
+        Arrays.fill(res, (byte) 0);
+        Arrays.fill(prime, (byte) 0);
     }
 
     /**

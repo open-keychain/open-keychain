@@ -45,6 +45,9 @@ public class OpenPGPCapabilities {
     public OpenPGPCapabilities(byte[] data) throws IOException {
         Iso7816TLV[] tlvs = Iso7816TLV.readList(data, true);
         mKeyFormats = new HashMap<>();
+        if (tlvs.length == 1 && tlvs[0].mT == 0x6E) {
+            tlvs = ((Iso7816TLV.Iso7816CompositeTLV) tlvs[0]).mSubs;
+        }
 
         for (Iso7816TLV tlv : tlvs) {
             switch (tlv.mT) {
@@ -56,6 +59,21 @@ public class OpenPGPCapabilities {
                     break;
                 case 0x73:
                     parseDdo((Iso7816TLV.Iso7816CompositeTLV) tlv);
+                    break;
+                case 0xC0:
+                    parseExtendedCaps(tlv.mV);
+                    break;
+                case 0xC1:
+                    parseAlgoCaps(KeyType.SIGN, tlv.mV);
+                    break;
+                case 0xC2:
+                    parseAlgoCaps(KeyType.ENCRYPT, tlv.mV);
+                    break;
+                case 0xC3:
+                    parseAlgoCaps(KeyType.AUTH, tlv.mV);
+                    break;
+                case 0xC4:
+                    mPw1ValidForMultipleSignatures = tlv.mV[0] == 1;
                     break;
             }
         }
