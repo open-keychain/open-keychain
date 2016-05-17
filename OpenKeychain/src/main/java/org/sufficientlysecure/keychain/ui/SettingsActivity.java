@@ -210,9 +210,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             return false;
                         }
                     });
-
-            initializePassphraseCacheSubs(
-                    (SwitchPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_SUBS));
         }
     }
 
@@ -589,16 +586,5 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || SyncPrefsFragment.class.getName().equals(fragmentName)
                 || ExperimentalPrefsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
-    }
-
-    private static void initializePassphraseCacheSubs(final SwitchPreference mPassphraseCacheSubs) {
-        mPassphraseCacheSubs.setChecked(sPreferences.getPassphraseCacheSubs());
-        mPassphraseCacheSubs.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mPassphraseCacheSubs.setChecked((Boolean) newValue);
-                sPreferences.setPassphraseCacheSubs((Boolean) newValue);
-                return false;
-            }
-        });
     }
 }

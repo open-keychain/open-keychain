@@ -4,6 +4,7 @@
         android:key="passphraseCacheTtls"
         android:title="@string/label_passphrase_cache_ttl" />
     <SwitchPreference
+        android:defaultValue="false"
         android:key="passphraseCacheSubs"
         android:title="@string/label_passphrase_cache_subs" />
     <SwitchPreference
