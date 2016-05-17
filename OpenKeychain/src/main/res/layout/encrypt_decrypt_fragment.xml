@@ -56,11 +56,6 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider" />
-
         <TextView
             style="@style/SectionHeader"
             android:layout_width="match_parent"
@@ -117,11 +112,6 @@
 
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider"
-            android:layout_marginBottom="8dp" />
     </LinearLayout>
 
 </ScrollView>

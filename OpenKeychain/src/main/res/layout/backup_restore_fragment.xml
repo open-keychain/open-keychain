@@ -83,11 +83,6 @@
             android:text="@string/btn_decrypt_files"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:layout_marginBottom="8dp"
-            android:background="?android:attr/listDivider" />
     </LinearLayout>
 
 </ScrollView>
