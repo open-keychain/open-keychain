@@ -79,7 +79,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
-public class ExportTest {
+public class BackupOperationTest {
 
     static Passphrase mPassphrase = TestingUtils.genPassphrase(true);
 
