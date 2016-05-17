@@ -30,7 +30,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -213,7 +212,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     });
 
             initializePassphraseCacheSubs(
-                    (CheckBoxPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_SUBS));
+                    (SwitchPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_SUBS));
         }
     }
 
@@ -592,7 +591,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || super.isValidFragment(fragmentName);
     }
 
-    private static void initializePassphraseCacheSubs(final CheckBoxPreference mPassphraseCacheSubs) {
+    private static void initializePassphraseCacheSubs(final SwitchPreference mPassphraseCacheSubs) {
         mPassphraseCacheSubs.setChecked(sPreferences.getPassphraseCacheSubs());
         mPassphraseCacheSubs.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {

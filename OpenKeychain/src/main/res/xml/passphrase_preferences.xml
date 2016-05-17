@@ -1,15 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceScreen
         android:key="passphraseCacheTtls"
-        android:persistent="false"
         android:title="@string/label_passphrase_cache_ttl" />
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="passphraseCacheSubs"
-        android:persistent="true"
         android:title="@string/label_passphrase_cache_subs" />
-    <CheckBoxPreference
+    <SwitchPreference
         android:defaultValue="true"
         android:key="useNumKeypadForYubikeyPin"
-        android:persistent="true"
         android:title="@string/label_use_num_keypad_for_security_token_pin" />
 </PreferenceScreen>
