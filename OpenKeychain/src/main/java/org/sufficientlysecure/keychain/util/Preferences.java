@@ -107,12 +107,6 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.PASSPHRASE_CACHE_SUBS, false);
     }
 
-    public void setPassphraseCacheSubs(boolean value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Pref.PASSPHRASE_CACHE_SUBS, value);
-        editor.commit();
-    }
-
     public boolean getCachedConsolidate() {
         return mSharedPreferences.getBoolean(Pref.CACHED_CONSOLIDATE, false);
     }

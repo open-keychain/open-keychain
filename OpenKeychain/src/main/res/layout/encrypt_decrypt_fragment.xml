@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,33 +7,29 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="4dp"
+        android:orientation="vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:orientation="vertical"
-        >
+        android:paddingTop="16dp">
 
         <TextView
             style="@style/SectionHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:text="@string/section_encrypt" />
 
         <TextView
             android:id="@+id/encrypt_files"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="?android:attr/listPreferredItemHeight"
             android:clickable="true"
-            style="?android:attr/borderlessButtonStyle"
-            android:text="@string/btn_encrypt_files"
-            android:drawableRight="@drawable/ic_folder_grey_24dp"
             android:drawablePadding="8dp"
-            android:gravity="center_vertical" />
+            android:drawableRight="@drawable/ic_folder_grey_24dp"
+            android:gravity="center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:text="@string/btn_encrypt_files"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <View
             android:layout_width="match_parent"
@@ -43,23 +38,16 @@
 
         <TextView
             android:id="@+id/encrypt_text"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="?android:attr/listPreferredItemHeight"
             android:clickable="true"
-            style="?android:attr/borderlessButtonStyle"
-            android:text="@string/btn_encrypt_text"
-            android:drawableRight="@drawable/ic_comment_text_grey600_24dp"
             android:drawablePadding="8dp"
-            android:gravity="center_vertical" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider" />
+            android:drawableRight="@drawable/ic_comment_text_grey600_24dp"
+            android:gravity="center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:text="@string/btn_encrypt_text"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             style="@style/SectionHeader"
@@ -70,18 +58,16 @@
 
         <TextView
             android:id="@+id/decrypt_files"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="?android:attr/listPreferredItemHeight"
             android:clickable="true"
-            style="?android:attr/borderlessButtonStyle"
-            android:text="@string/btn_decrypt_files"
-            android:drawableRight="@drawable/ic_folder_grey_24dp"
             android:drawablePadding="8dp"
-            android:gravity="center_vertical" />
+            android:drawableRight="@drawable/ic_folder_grey_24dp"
+            android:gravity="center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:text="@string/btn_decrypt_files"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <View
             android:layout_width="match_parent"
@@ -90,38 +76,31 @@
 
         <LinearLayout
             android:id="@+id/decrypt_from_clipboard"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
-            style="?android:attr/borderlessButtonStyle"
             android:orientation="horizontal"
-            android:paddingLeft="8dp"
-            android:paddingRight="0dp"
             tools:ignore="UseCompoundDrawables">
 
             <TextView
-                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
-                android:text="@string/btn_decrypt_clipboard" />
+                android:layout_weight="1"
+                android:text="@string/btn_decrypt_clipboard"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ImageView
                 android:id="@+id/clipboard_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:padding="8dp"
-                android:src="@drawable/ic_content_paste_grey_24dp"
-                android:layout_gravity="center_vertical" />
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="8dp"
+                android:src="@drawable/ic_content_paste_grey_24dp" />
 
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider"
-            android:layout_marginBottom="8dp" />
     </LinearLayout>
 
 </ScrollView>

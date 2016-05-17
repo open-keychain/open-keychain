@@ -10,12 +10,11 @@
         android:orientation="vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:paddingTop="24dp">
+        android:paddingTop="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dip"
             android:text="@string/backup_text"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -36,8 +35,6 @@
             android:drawableRight="@drawable/ic_save_grey_24dp"
             android:gravity="center_vertical"
             android:minHeight="?android:attr/listPreferredItemHeight"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
             android:text="@string/backup_all"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -56,8 +53,6 @@
             android:drawableRight="@drawable/ic_save_grey_24dp"
             android:gravity="center_vertical"
             android:minHeight="?android:attr/listPreferredItemHeight"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
             android:text="@string/backup_public_keys"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -78,16 +73,9 @@
             android:drawableRight="@drawable/ic_folder_grey_24dp"
             android:gravity="center_vertical"
             android:minHeight="?android:attr/listPreferredItemHeight"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
             android:text="@string/btn_decrypt_files"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:layout_marginBottom="8dp"
-            android:background="?android:attr/listDivider" />
     </LinearLayout>
 
 </ScrollView>
