@@ -242,7 +242,6 @@ public class ExportTest {
 
     @Test
     public void testExportUnencrypted() throws Exception {
-
         ContentResolver mockResolver = mock(ContentResolver.class);
 
         Uri fakeOutputUri = Uri.parse("content://fake/out/1");
@@ -256,7 +255,7 @@ public class ExportTest {
                 new ProviderHelper(RuntimeEnvironment.application), null);
 
         BackupKeyringParcel parcel = new BackupKeyringParcel(
-                new long[] { mStaticRing1.getMasterKeyId() }, false, fakeOutputUri);
+                new long[] { mStaticRing1.getMasterKeyId() }, false, false, fakeOutputUri);
 
         ExportResult result = op.execute(parcel, null);
 
@@ -284,8 +283,6 @@ public class ExportTest {
 
     @Test
     public void testExportEncrypted() throws Exception {
-
-
         Application spyApplication;
         ContentResolver mockResolver = mock(ContentResolver.class);
 
@@ -315,7 +312,7 @@ public class ExportTest {
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
             BackupKeyringParcel parcel = new BackupKeyringParcel(
-                    new long[] { mStaticRing1.getMasterKeyId() }, false, fakeOutputUri);
+                    new long[] { mStaticRing1.getMasterKeyId() }, false, true, fakeOutputUri);
             CryptoInputParcel inputParcel = new CryptoInputParcel(passphrase);
             ExportResult result = op.execute(parcel, inputParcel);
 
