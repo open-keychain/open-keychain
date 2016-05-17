@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -118,7 +119,7 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         ViewHolderItem h = (ViewHolderItem) view.getTag();
 
         String userId = cursor.getString(mIndexUserId);
-        KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
+        OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
 
         if (userIdSplit.name != null) {
             h.mainUserId.setText(highlighter.highlight(userIdSplit.name));

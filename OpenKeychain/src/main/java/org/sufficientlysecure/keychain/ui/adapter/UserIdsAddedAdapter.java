@@ -28,6 +28,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 
@@ -92,7 +93,7 @@ public class UserIdsAddedAdapter extends ArrayAdapter<String> {
         // save reference to model item
         holder.mModel = getItem(position);
 
-        KeyRing.UserId splitUserId = KeyRing.splitUserId(holder.mModel);
+        OpenPgpUtils.UserId splitUserId = KeyRing.splitUserId(holder.mModel);
         if (splitUserId.name != null) {
             holder.vName.setText(splitUserId.name);
         } else {

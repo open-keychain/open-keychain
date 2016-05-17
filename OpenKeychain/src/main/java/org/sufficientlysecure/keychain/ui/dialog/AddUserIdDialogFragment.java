@@ -38,6 +38,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -110,7 +111,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
 
                 // return new user id back to activity
                 Bundle data = new Bundle();
-                String userId = KeyRing.createUserId(new KeyRing.UserId(mName.getText().toString(),
+                String userId = KeyRing.createUserId(new OpenPgpUtils.UserId(mName.getText().toString(),
                         mEmail.getText().toString(), mComment.getText().toString()));
                 data.putString(MESSAGE_DATA_USER_ID, userId);
                 sendMessageToHandler(MESSAGE_OKAY, data);

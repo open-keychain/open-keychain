@@ -34,6 +34,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
@@ -305,7 +306,7 @@ public class CreateKeyFinalFragment extends Fragment {
             }
         }
         String userId = KeyRing.createUserId(
-                new KeyRing.UserId(createKeyActivity.mName, createKeyActivity.mEmail, null)
+                new OpenPgpUtils.UserId(createKeyActivity.mName, createKeyActivity.mEmail, null)
         );
         saveKeyringParcel.mAddUserIds.add(userId);
         saveKeyringParcel.mChangePrimaryUserId = userId;
@@ -313,7 +314,7 @@ public class CreateKeyFinalFragment extends Fragment {
                 && createKeyActivity.mAdditionalEmails.size() > 0) {
             for (String email : createKeyActivity.mAdditionalEmails) {
                 String thisUserId = KeyRing.createUserId(
-                        new KeyRing.UserId(createKeyActivity.mName, email, null)
+                        new OpenPgpUtils.UserId(createKeyActivity.mName, email, null)
                 );
                 saveKeyringParcel.mAddUserIds.add(thisUserId);
             }

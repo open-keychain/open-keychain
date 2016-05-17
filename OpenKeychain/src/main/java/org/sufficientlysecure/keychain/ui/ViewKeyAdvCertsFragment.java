@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -237,7 +238,7 @@ public class ViewKeyAdvCertsFragment extends LoaderFragment implements
             TextView wSignStatus = (TextView) view.findViewById(R.id.signStatus);
 
             String signerKeyId = KeyFormattingUtils.beautifyKeyIdWithPrefix(getActivity(), cursor.getLong(mIndexSignerKeyId));
-            KeyRing.UserId userId = KeyRing.splitUserId(cursor.getString(mIndexSignerUserId));
+            OpenPgpUtils.UserId userId = KeyRing.splitUserId(cursor.getString(mIndexSignerUserId));
             if (userId.name != null) {
                 wSignerName.setText(userId.name);
             } else {

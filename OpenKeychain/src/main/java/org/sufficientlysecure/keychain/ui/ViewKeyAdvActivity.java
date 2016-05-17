@@ -41,6 +41,7 @@ import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -213,7 +214,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             case LOADER_ID_UNIFIED: {
                 if (data.moveToFirst()) {
                     // get name, email, and comment from USER_ID
-                    KeyRing.UserId mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
+                    OpenPgpUtils.UserId mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
                     if (mainUserId.name != null) {
                         setTitle(mainUserId.name);
                     } else {

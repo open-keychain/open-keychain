@@ -37,6 +37,7 @@ import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.util.encoders.Hex;
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
@@ -593,7 +594,7 @@ public class KeyFormattingUtils {
             holder.getSignatureAction().setDisplayedChild(sigActionDisplayedChild);
 
             String userId = result.getSignatureResult().getPrimaryUserId();
-            KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
+            OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
             if (userIdSplit.name != null) {
                 holder.getSignatureUserName().setText(userIdSplit.name);
             } else {

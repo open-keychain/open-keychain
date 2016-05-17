@@ -58,6 +58,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
@@ -704,7 +705,7 @@ public class EncryptFilesFragment
 
         Set<String> users = new HashSet<>();
         for (String user : encryptionUserIds) {
-            KeyRing.UserId userId = KeyRing.splitUserId(user);
+            OpenPgpUtils.UserId userId = KeyRing.splitUserId(user);
             if (userId.email != null) {
                 users.add(userId.email);
             }

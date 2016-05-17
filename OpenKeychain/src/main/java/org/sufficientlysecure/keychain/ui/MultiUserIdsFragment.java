@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -151,7 +152,7 @@ public class MultiUserIdsFragment extends Fragment implements LoaderManager.Load
         while (!data.isAfterLast()) {
             long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
             String userId = data.getString(INDEX_USER_ID);
-            KeyRing.UserId pieces = KeyRing.splitUserId(userId);
+            OpenPgpUtils.UserId pieces = KeyRing.splitUserId(userId);
 
             // Two cases:
 

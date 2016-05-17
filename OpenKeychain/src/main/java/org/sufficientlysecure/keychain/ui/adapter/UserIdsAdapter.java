@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
@@ -70,7 +71,7 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         vDeleteButton.setVisibility(View.GONE); // not used
 
         String userId = cursor.getString(INDEX_USER_ID);
-        KeyRing.UserId splitUserId = KeyRing.splitUserId(userId);
+        OpenPgpUtils.UserId splitUserId = KeyRing.splitUserId(userId);
         if (splitUserId.name != null) {
             vName.setText(splitUserId.name);
         } else {
