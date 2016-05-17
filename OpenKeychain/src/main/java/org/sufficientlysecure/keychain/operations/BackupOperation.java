@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.operations;
 
 
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -113,23 +112,25 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             log.add(LogType.MSG_BACKUP_ALL, 0);
         }
 
+        if (backupInput.mIsEncrypted && cryptoInput == null) {
+            throw new IllegalStateException("Encrypted backup must supply cryptoInput parameter");
+        }
+
         try {
-
-            boolean nonEncryptedOutput = cryptoInput == null;
-
             Uri plainUri = null;
             OutputStream plainOut;
-            if (nonEncryptedOutput && backupInput.mOutputUri == null) {
-                plainOut = outputStream;
-            } else if (nonEncryptedOutput) {
-                plainOut = mContext.getContentResolver().openOutputStream(backupInput.mOutputUri);
-            } else {
+            if (backupInput.mIsEncrypted) {
                 plainUri = TemporaryFileProvider.createFile(mContext);
                 plainOut = mContext.getContentResolver().openOutputStream(plainUri);
+            } else {
+                if (backupInput.mOutputUri == null) {
+                    throw new IllegalArgumentException("Unencrypted export to output stream is not supported!");
+                } else {
+                    plainOut = mContext.getContentResolver().openOutputStream(backupInput.mOutputUri);
+                }
             }
 
             int exportedDataSize;
-
             { // export key data, and possibly return if we don't encrypt
                 DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(plainOut));
 

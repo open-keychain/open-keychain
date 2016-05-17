@@ -757,7 +757,7 @@ public class OpenPgpService extends Service {
             // after user interaction with RemoteBackupActivity,
             // the backup code is cached in CryptoInputParcelCacheService, now we can proceed
 
-            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, null);
+            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, null);
             BackupOperation op = new BackupOperation(this, mProviderHelper, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 

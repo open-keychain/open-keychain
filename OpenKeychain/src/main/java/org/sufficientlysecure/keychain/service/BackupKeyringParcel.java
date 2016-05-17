@@ -29,14 +29,16 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 public class BackupKeyringParcel implements Parcelable {
     public Uri mCanonicalizedPublicKeyringUri;
 
-    public boolean mExportSecret;
-    public long mMasterKeyIds[];
-    public Uri mOutputUri;
+    public final boolean mExportSecret;
+    public final boolean mIsEncrypted;
+    public final long mMasterKeyIds[];
+    public final Uri mOutputUri;
 
-    public BackupKeyringParcel(long[] masterKeyIds, boolean exportSecret, Uri outputUri) {
+    public BackupKeyringParcel(long[] masterKeyIds, boolean exportSecret, boolean isEncrypted, Uri outputUri) {
         mMasterKeyIds = masterKeyIds;
         mExportSecret = exportSecret;
         mOutputUri = outputUri;
+        mIsEncrypted = isEncrypted;
     }
 
     protected BackupKeyringParcel(Parcel in) {
@@ -44,6 +46,7 @@ public class BackupKeyringParcel implements Parcelable {
         mExportSecret = in.readByte() != 0x00;
         mOutputUri = (Uri) in.readValue(Uri.class.getClassLoader());
         mMasterKeyIds = in.createLongArray();
+        mIsEncrypted = in.readInt() != 0;
     }
 
     @Override
@@ -57,6 +60,7 @@ public class BackupKeyringParcel implements Parcelable {
         dest.writeByte((byte) (mExportSecret ? 0x01 : 0x00));
         dest.writeValue(mOutputUri);
         dest.writeLongArray(mMasterKeyIds);
+        dest.writeInt(mIsEncrypted ? 1 : 0);
     }
 
     public static final Parcelable.Creator<BackupKeyringParcel> CREATOR = new Parcelable.Creator<BackupKeyringParcel>() {
