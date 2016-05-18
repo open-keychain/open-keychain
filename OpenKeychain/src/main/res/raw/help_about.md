@@ -16,10 +16,13 @@ License: GPLv3+
   * Adithya Abraham Philip
   * Ash Hughes
   * 'mar-v-in'
+  * Nikita Mikhailov
   * 'Thialfihar' (APG developer)
   * Tim Bray
 
 ## Occasional Contributors
+  * Alex Fong Jie Wen
+  * Andrea Torlaschi
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov
@@ -42,10 +45,12 @@ License: GPLv3+
   * Lukas Zorich
   * Manoj Khanna
   * Markus Doits
+  * Michal Kepkowski
   * Miroojin Bakshi
   * Morgan Gangwere
   * Nikhil Peter Raj
   * Paul Sarbinowski
+  * Petter Arvidsson
   * 'Senecaso'
   * Signe Rüsch
   * Sreeram Boyapati
