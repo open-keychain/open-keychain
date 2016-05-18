@@ -1,5 +1,10 @@
 [//]: # (تذکر: هر جمله در همان خط!)
 
+## 4.0
+
+  * Experimental support for Security Tokens over USB
+  * Allow password changing of stripped keys
+
 ## 3.9
 
   * Detection and handling of text data

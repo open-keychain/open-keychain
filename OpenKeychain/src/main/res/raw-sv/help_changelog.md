@@ -1,5 +1,10 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
+## 4.0
+
+  * Experimental support for Security Tokens over USB
+  * Allow password changing of stripped keys
+
 ## 3.9
 
   * Detection and handling of text data
@@ -11,7 +16,7 @@
 
   * Redesigned key editing
   * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Facebook nyckelimport
 
 
 ## 3.7
@@ -22,7 +27,7 @@
 
 ## 3.6
 
-  * Encrypted backups
+  * Krypterade säkerhetskopior
   * Security fixes based on external security audit
   * YubiKey NEO key creation wizard
   * Basic internal MIME support
@@ -66,8 +71,8 @@
   * Redesigned key screen
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
+  * Korrigering: Vissa giltiga nycklar visades som återkallade eller förfallna
+  * Acceptera inte signaturer av undernycklar som har förfallit eller återkallats
   * Keybase.io-stöd i avancerad vy
   * Metod för att uppdatera alla nycklar på en gång
 
@@ -147,7 +152,7 @@
   * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
   * New first time screen
   * New key creation screen: autocompletion of name and email based on your personal Android accounts
-  * File encryption: awesome new design, support for encrypting multiple files
+  * Filkryptering: maffig ny design, stöd för kryptering av flera filer
   * New icons to show status of key (by Brennan Novak)
   * Important bug fix: Importing of large key collections from a file is now possible
   * Notification showing cached passphrases
@@ -182,7 +187,7 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
 
   * Fix decryption of symmetric OpenPGP messages/files
   * Refactored key edit screen (thanks to Ash Hughes)
-  * New modern design for encrypt/decrypt screens
+  * Ny modern design för kryptera/dekryptera skärmar
   * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
 
 

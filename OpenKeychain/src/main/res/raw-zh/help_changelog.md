@@ -1,5 +1,10 @@
 [//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
+## 4.0
+
+  * Experimental support for Security Tokens over USB
+  * Allow password changing of stripped keys
+
 ## 3.9
 
   * 检测并处理文本数据

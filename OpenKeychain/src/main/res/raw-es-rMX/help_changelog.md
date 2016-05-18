@@ -1,5 +1,10 @@
 [//]: # (Observe: ¡Por favor ingrese cada enunciado en su propia línea, Transifex coloca cada línea en su propio campo de traducción!)
 
+## 4.0
+
+  * Experimental support for Security Tokens over USB
+  * Allow password changing of stripped keys
+
 ## 3.9
 
   * Detection and handling of text data

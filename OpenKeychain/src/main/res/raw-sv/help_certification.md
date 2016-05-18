@@ -10,11 +10,11 @@ För att bekräfta nycklar mellan fler än två personer så föreslår vi att d
 <img src="status_signature_verified_cutout_24dp"/>  
 Bekräftat: Du har redan bekräftat den här nyckeln, t.ex genom att skanna QR-koden.  
 <img src="status_signature_unverified_cutout_24dp"/>  
-Unconfirmed: This key has not been confirmed yet. You cannot be sure if the key really corresponds to a specific person.  
+Obekräftad: Denna nyckel har inte bekräftats ännu. Du kan inte vara säker på om nyckeln verkligen motsvarar en viss person.  
 <img src="status_signature_expired_cutout_24dp"/>  
 Utgången: Den här nyckeln är inte längre giltig. Endast ägaren kan förlänga dess giltighet.  
 <img src="status_signature_revoked_cutout_24dp"/>  
-Revoked: This key is no longer valid. It has been revoked by its owner.
+Återkallats: Denna nyckel är inte längre giltigt. Den har återkallats av dess ägare.
 
 ## Avancerad information
 A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.

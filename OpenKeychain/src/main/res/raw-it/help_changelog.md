@@ -1,5 +1,10 @@
 [//]: # (NOTA: Si prega di mettere ogni frase in una propria linea, Transifex mette ogni riga nel proprio campo di traduzione!)
 
+## 4.0
+
+  * Experimental support for Security Tokens over USB
+  * Allow password changing of stripped keys
+
 ## 3.9
 
   * Detection and handling of text data
@@ -11,7 +16,7 @@
 
   * Redesigned key editing
   * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Importazione delle password di Facebook
 
 
 ## 3.7
@@ -22,7 +27,7 @@
 
 ## 3.6
 
-  * Encrypted backups
+  * Copie di backup crittografate
   * Security fixes based on external security audit
   * YubiKey NEO key creation wizard
   * Basic internal MIME support
@@ -80,7 +85,7 @@
 ## 3.1.1
 
   * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * Risolto un crash in Android 2.3
 
 
 ## 3.1
@@ -124,7 +129,7 @@
 
   * Split encrypt screen into two
   * Fix key flags handling (now supporting Mailvelope 0.7 keys)
-  * Improved passphrase handling
+  * Gestione delle password migliorata
   * Key sharing via SafeSlinger
   * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Fix usage of stripped keys
@@ -160,7 +165,7 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
   * Purple! (Dominik, Vincent)
   * New key view design (Dominik, Vincent)
   * New flat Android buttons (Dominik, Vincent)
-  * API fixes (Dominik)
+  * Diverse correzioni alle API (Dominik)
   * Keybase.io import (Tim Bray)
 
 
@@ -276,17 +281,17 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 1.0.6
 
   * Account adding crash on Froyo fixed
-  * Secure file deletion
+  * Cancellazione sicura dei file
   * Option to delete key file after import
   * Stream encryption/decryption (gallery, etc.)
   * New options (language, force v3 signatures)
-  * Interface changes
+  * Modifiche all'interfaccia utente
   * Correzione di bug
 
 
 ## 1.0.5
 
-  * German and Italian translation
+  * Traduzione in Italiano e Tedesco
   * Much smaller package, due to reduced BC sources
   * New preferences GUI
   * Layout adjustment for localization

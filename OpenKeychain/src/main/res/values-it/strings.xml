@@ -176,6 +176,7 @@
   <string name="label_experimental_settings_desc_title">Attenzione</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Abilita Tor</string>
+  <string name="pref_proxy_port_err_invalid">Numero di porta inserito non valido</string>
   <string name="pref_proxy_type_title">Tipo proxy</string>
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
@@ -299,6 +300,7 @@
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Non Firmato</string>
   <string name="decrypt_result_invalid_signature">Firma non valida!</string>
+  <string name="decrypt_result_insecure_cryptography">Firma non valida (la crittografia potrebbe essere compromessa)!</string>
   <string name="decrypt_result_signature_uncertified">Firmato da chiave <b> non confermata </b></string>
   <string name="decrypt_result_signature_secret">Firmato con tua chiave</string>
   <string name="decrypt_result_signature_certified">Firmato con chiave confermata</string>
@@ -466,9 +468,12 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="share_qr_code_dialog_title">Condividi tramite Codice QR</string>
   <string name="share_nfc_dialog">Condividi tramite NFC</string>
   <!--retry upload dialog-->
+  <string name="retry_up_dialog_btn_reupload">Riprova operazione</string>
   <string name="retry_up_dialog_btn_cancel">Annulla operazione</string>
   <!--Delete or revoke private key dialog-->
+  <string name="del_rev_dialog_btn_delete">Cancella e basta</string>
   <!--Delete Or Revoke Dialog spinner-->
+  <string name="del_rev_dialog_choice_delete">Cancella e basta</string>
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 chiave selezionata.</item>
@@ -498,10 +503,17 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="user_id_info_invalid_title">Non valido</string>
   <string name="user_id_info_invalid_text">C\'è qualcosa che non va con questa identità!</string>
   <!--Key trust-->
+  <string name="key_trust_start_cloud_search">Avvia la ricerca</string>
   <!--keybase proof stuff-->
+  <string name="keybase_narrative_twitter">È presente su Twitter come %s</string>
+  <string name="keybase_narrative_github">È presente su GitHub come %s</string>
+  <string name="keybase_narrative_reddit">È presente su Reddit come %s</string>
+  <string name="keybase_narrative_coinbase">È presente su CoinBase come %s</string>
+  <string name="keybase_narrative_hackernews">È presente su Hacker News come %s</string>
   <string name="keybase_problem_fetching_evidence">Errore durante la verifica</string>
   <string name="keybase_twitter_proof">Un tweet</string>
   <string name="keybase_web_site_proof">Un file di testo</string>
+  <string name="keybase_reddit_proof">Un file JSON</string>
   <string name="keybase_verify">Verifica</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Cambio password</string>
@@ -539,6 +551,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="add_keyserver_dialog_title">Aggiungi server delle chiavi</string>
   <string name="add_keyserver_connection_verified">Connessione verificata.</string>
   <string name="add_keyserver_invalid_url">URL non valido!</string>
+  <string name="keyserver_preference_deleted">%s cancellato</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Chiavi</string>
   <string name="nav_apps">Apps</string>
@@ -684,6 +697,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_cr_error_no_certify">La chiave principale deve avere la caratteristica di certificazione!</string>
   <string name="msg_cr_error_null_expiry">La data di scadenza non può essere \'come prima\' sulla creazione di chiavi. Questo è un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
   <string name="msg_cr_error_no_keysize">Nessuna curva ellittica specificata! Questo è un errore di programmazione, per favore invia una segnalazione!</string>
+  <string name="msg_cr_error_internal_pgp">Errore interno di PGP!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Modifica del portachiavi %s</string>
   <string name="msg_mf_error_encode">Eccezione di codifica!</string>
@@ -694,6 +708,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_mf_error_null_expiry">La data di scadenza non può essere \"come prima\" sulla creazione di sottochiavi. Questo è un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
   <string name="msg_mf_error_noop">Non c\'è nessuna azione da eseguire.</string>
   <string name="msg_mf_error_passphrase_master">Errore irreversibile nella decodifica della chiave principale! Questo è probabilmente un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
+  <string name="msg_mf_error_pgp">Errore interno di PGP!</string>
   <string name="msg_mf_error_sig">Eccezione di firma!</string>
   <string name="msg_mf_error_subkey_missing">Tentativo di operare su sottochiave %s mancante!</string>
   <string name="msg_mf_master">Modifica delle certificazioni principali</string>
@@ -744,6 +759,8 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_clear_meta_file">Nome file: %s</string>
   <string name="msg_dc_clear_meta_mime">Tipo MIME: %s</string>
+  <string name="msg_dc_clear_meta_size">Dimensione file: %s</string>
+  <string name="msg_dc_clear_meta_size_unknown">Dimensione del file sconosciuta</string>
   <string name="msg_dc_clear_meta_time">Ultima modifica: %s</string>
   <string name="msg_dc_clear_signature_bad">Controllo firma NON OK!</string>
   <string name="msg_dc_clear_signature_check">Verifica dati firma</string>
@@ -761,13 +778,18 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <string name="msg_pse_error_bad_passphrase">Password errata!</string>
   <string name="msg_crt_success">Identità certificata correttamente</string>
   <string name="msg_crt_warn_not_found">Chiave non trovata!</string>
   <string name="msg_crt_upload_success">Chiave caricata con successo sul server</string>
   <string name="msg_upload_server">Server: %s</string>
+  <string name="msg_upload_error_not_found">Chiave non trovata!</string>
   <string name="msg_del_error_empty">Niente da cancellare!</string>
   <!--Linked Identity verification-->
+  <string name="msg_lv_fetch_error_io">Errore di input output!</string>
   <string name="msg_data_mime_filename">Nome file: \'%s\'</string>
+  <string name="msg_data_mime_charset">Il set di caratteri è \'%s\'</string>
+  <string name="msg_data_mime_charset_unknown">Il set di caratteri è sconosciuto, oppure i dati non sono testo.</string>
   <string name="msg_acc_saved">Account salvato</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_error_specific">%s</string>
@@ -819,6 +841,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="linked_title_https">Sito (HTTPS)</string>
   <string name="linked_title_github">GitHub</string>
   <string name="linked_title_twitter">Twitter</string>
+  <string name="linked_button_verify">Verifica</string>
   <string name="linked_text_error">Errore</string>
   <string name="share_log_dialog_cancel_button">Cancella</string>
   <string name="menu_uids_save">Salva</string>

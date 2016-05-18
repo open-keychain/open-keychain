@@ -1,5 +1,10 @@
 [//]: #
 
+## 4.0
+
+  * Experimental support for Security Tokens over USB
+  * Allow password changing of stripped keys
+
 ## 3.9
 
   * Откривање и руковање текстуалним подацима

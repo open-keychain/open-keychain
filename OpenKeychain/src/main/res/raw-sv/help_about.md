@@ -12,7 +12,7 @@ Licens: GPLv3+
   * Dominik Schürmann (Projektledare)
   * Vincent Breitmoser
 
-## Top Contributors
+## Toppbidragsgivare
   * Adithya Abraham Philip
   * Ash Hughes
   * 'mar-v-in'

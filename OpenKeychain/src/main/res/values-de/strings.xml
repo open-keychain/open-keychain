@@ -1464,7 +1464,7 @@
   <string name="security_token_error_chaining_error">Der Security-Token erwartete das letzte Kommando in einer Reihe.</string>
   <string name="security_token_error_header">Der Security-Token meldete ungültige %s Byte.</string>
   <string name="security_token_error_tag_lost">Security-Token wurde zu früh abgenommen. Halte den Security-Token an die Rückseite, bis der Vorgang beendet ist.</string>
-  <string name="security_token_error_iso_dep_not_supported">Smartcard unterstützt ISO-DEP (ISO 14443-4) nicht</string>
+  <string name="security_token_error_iso_dep_not_supported">Security-Token unterstützt ISO-DEP (ISO 14443-4) nicht</string>
   <string name="security_token_error_try_again">Erneut versuchen</string>
   <string name="btn_delete_original">Originaldatei löschen</string>
   <string name="snack_encrypt_filenames_on">Dateinamen <b>sind</b> verschlüsselt.</string>

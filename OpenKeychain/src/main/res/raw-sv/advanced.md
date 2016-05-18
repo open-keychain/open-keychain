@@ -2,8 +2,8 @@
 
 Advanced screen allows you to
 * share key in non-recommended ways
-* edit identities
-* edit subkeys
+* redigera identiteter
+* redigera undernycklar
 * examine certificates in detail
 
 Only proceed if you know what you are doing!
