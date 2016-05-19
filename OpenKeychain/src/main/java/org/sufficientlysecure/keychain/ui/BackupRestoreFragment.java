@@ -17,7 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import android.app.Activity;
 import android.content.ContentResolver;
