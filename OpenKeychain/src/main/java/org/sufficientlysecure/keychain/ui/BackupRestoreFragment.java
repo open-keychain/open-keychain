@@ -17,9 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -31,6 +30,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +47,7 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 public class BackupRestoreFragment extends Fragment {
 
     // masterKeyId & subKeyId for multi-key export
-    private Iterator<Map.Entry<Long, Long>> mIdsForRepeatAskPassphrase;
+    private Iterator<Pair<Long, Long>> mIdsForRepeatAskPassphrase;
 
     private static final int REQUEST_REPEAT_PASSPHRASE = 0x00007002;
     private static final int REQUEST_CODE_INPUT = 0x00007003;
@@ -95,10 +95,10 @@ public class BackupRestoreFragment extends Fragment {
             return;
         }
 
-        new AsyncTask<ContentResolver, Void, HashMap<Long, Long>>() {
+        new AsyncTask<ContentResolver, Void, ArrayList<Pair<Long, Long>>>() {
             @Override
-            protected HashMap<Long, Long> doInBackground(ContentResolver... resolver) {
-                HashMap<Long, Long> askPassphraseIds = new HashMap<>();
+            protected ArrayList<Pair<Long,Long>> doInBackground(ContentResolver... resolver) {
+                ArrayList<Pair<Long, Long>> askPassphraseIds = new ArrayList<>();
                 Cursor cursor = resolver[0].query(
                         KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                                 KeyRings.MASTER_KEY_ID,
@@ -118,13 +118,13 @@ public class BackupRestoreFragment extends Fragment {
                                     Long masterKeyId = cursor.getLong(0);
                                     Long subKeyId = getFirstSubKeyWithPassphrase(masterKeyId, resolver[0]);
                                     if(subKeyId != null) {
-                                        askPassphraseIds.put(masterKeyId, subKeyId);
+                                        askPassphraseIds.add(new Pair<>(masterKeyId, subKeyId));
                                     }
                                     continue;
                                 }
                                 default: {
                                     long masterKeyId = cursor.getLong(0);
-                                    askPassphraseIds.put(masterKeyId, masterKeyId);
+                                    askPassphraseIds.add(new Pair<>(masterKeyId, masterKeyId));
                                 }
                             }
                         }
@@ -169,14 +169,14 @@ public class BackupRestoreFragment extends Fragment {
             }
 
             @Override
-            protected void onPostExecute(HashMap<Long, Long> askPassphraseIds) {
+            protected void onPostExecute(ArrayList<Pair<Long, Long>> askPassphraseIds) {
                 super.onPostExecute(askPassphraseIds);
                 FragmentActivity activity = getActivity();
                 if (activity == null) {
                     return;
                 }
 
-                mIdsForRepeatAskPassphrase = askPassphraseIds.entrySet().iterator();
+                mIdsForRepeatAskPassphrase = askPassphraseIds.iterator();
 
                 if (mIdsForRepeatAskPassphrase.hasNext()) {
                     startPassphraseActivity();
@@ -196,9 +196,9 @@ public class BackupRestoreFragment extends Fragment {
         }
 
         Intent intent = new Intent(activity, PassphraseDialogActivity.class);
-        Map.Entry<Long, Long> keyPair = mIdsForRepeatAskPassphrase.next();
-        long masterKeyId = keyPair.getKey();
-        long subKeyId = keyPair.getValue();
+        Pair<Long, Long> keyPair = mIdsForRepeatAskPassphrase.next();
+        long masterKeyId = keyPair.first;
+        long subKeyId = keyPair.second;
         RequiredInputParcel requiredInput =
                 RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, subKeyId);
         requiredInput.mSkipCaching = true;
