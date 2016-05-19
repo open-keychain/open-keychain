@@ -275,7 +275,7 @@ android {
         // dexInProcess requires much RAM, which is not available on all dev systems
         dexInProcess = false
         jumboMode = true
-        javaMaxHeapSize "4g"
+        javaMaxHeapSize "2g"
     }
 
     packagingOptions {
