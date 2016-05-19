@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -35,17 +35,17 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
 public class BackupRestoreFragment extends Fragment {
 
-    // This ids for multiple key export.
-    private ArrayList<Long> mIdsForRepeatAskPassphrase;
-    // This index for remembering the number of master key.
-    private int mIndex;
+    // masterKeyId & subKeyId for multi-key export
+    private Iterator<Map.Entry<Long, Long>> mIdsForRepeatAskPassphrase;
 
     private static final int REQUEST_REPEAT_PASSPHRASE = 0x00007002;
     private static final int REQUEST_CODE_INPUT = 0x00007003;
@@ -93,10 +93,10 @@ public class BackupRestoreFragment extends Fragment {
             return;
         }
 
-        new AsyncTask<ContentResolver, Void, ArrayList<Long>>() {
+        new AsyncTask<ContentResolver, Void, HashMap<Long, Long>>() {
             @Override
-            protected ArrayList<Long> doInBackground(ContentResolver... resolver) {
-                ArrayList<Long> askPassphraseIds = new ArrayList<>();
+            protected HashMap<Long, Long> doInBackground(ContentResolver... resolver) {
+                HashMap<Long, Long> askPassphraseIds = new HashMap<>();
                 Cursor cursor = resolver[0].query(
                         KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                                 KeyRings.MASTER_KEY_ID,
@@ -109,13 +109,20 @@ public class BackupRestoreFragment extends Fragment {
                             switch (secretKeyType) {
                                 // all of these make no sense to ask
                                 case PASSPHRASE_EMPTY:
-                                case GNU_DUMMY:
                                 case DIVERT_TO_CARD:
                                 case UNAVAILABLE:
                                     continue;
+                                case GNU_DUMMY: {
+                                    Long masterKeyId = cursor.getLong(0);
+                                    Long subKeyId = getFirstSubKeyWithPassphrase(masterKeyId, resolver[0]);
+                                    if(subKeyId != null) {
+                                        askPassphraseIds.put(masterKeyId, subKeyId);
+                                    }
+                                    continue;
+                                }
                                 default: {
-                                    long keyId = cursor.getLong(0);
-                                    askPassphraseIds.add(keyId);
+                                    long masterKeyId = cursor.getLong(0);
+                                    askPassphraseIds.put(masterKeyId, masterKeyId);
                                 }
                             }
                         }
@@ -128,18 +135,48 @@ public class BackupRestoreFragment extends Fragment {
                 return askPassphraseIds;
             }
 
+            private Long getFirstSubKeyWithPassphrase(long masterKeyId, ContentResolver resolver) {
+                Cursor cursor = resolver.query(
+                        KeychainContract.Keys.buildKeysUri(masterKeyId), new String[]{
+                                Keys.KEY_ID,
+                                Keys.HAS_SECRET,
+                        }, Keys.HAS_SECRET + " != 0", null, null);
+                try {
+                    if (cursor != null) {
+                        while(cursor.moveToNext()) {
+                            SecretKeyType secretKeyType = SecretKeyType.fromNum(cursor.getInt(1));
+                            switch (secretKeyType) {
+                                case PASSPHRASE_EMPTY:
+                                case DIVERT_TO_CARD:
+                                case UNAVAILABLE:
+                                    return null;
+                                case GNU_DUMMY:
+                                    continue;
+                                default: {
+                                    return cursor.getLong(0);
+                                }
+                            }
+                        }
+                    }
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+                return null;
+            }
+
             @Override
-            protected void onPostExecute(ArrayList<Long> askPassphraseIds) {
+            protected void onPostExecute(HashMap<Long, Long> askPassphraseIds) {
                 super.onPostExecute(askPassphraseIds);
                 FragmentActivity activity = getActivity();
                 if (activity == null) {
                     return;
                 }
 
-                mIdsForRepeatAskPassphrase = askPassphraseIds;
-                mIndex = 0;
+                mIdsForRepeatAskPassphrase = askPassphraseIds.entrySet().iterator();
 
-                if (mIdsForRepeatAskPassphrase.size() != 0) {
+                if (mIdsForRepeatAskPassphrase.hasNext()) {
                     startPassphraseActivity();
                     return;
                 }
@@ -157,9 +194,11 @@ public class BackupRestoreFragment extends Fragment {
         }
 
         Intent intent = new Intent(activity, PassphraseDialogActivity.class);
-        long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
+        Map.Entry<Long, Long> keyPair = mIdsForRepeatAskPassphrase.next();
+        long masterKeyId = keyPair.getKey();
+        long subKeyId = keyPair.getValue();
         RequiredInputParcel requiredInput =
-                RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, masterKeyId);
+                RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, subKeyId);
         requiredInput.mSkipCaching = true;
         intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
         startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
@@ -172,7 +211,7 @@ public class BackupRestoreFragment extends Fragment {
                 if (resultCode != Activity.RESULT_OK) {
                     return;
                 }
-                if (mIndex < mIdsForRepeatAskPassphrase.size()) {
+                if (mIdsForRepeatAskPassphrase.hasNext()) {
                     startPassphraseActivity();
                     return;
                 }
