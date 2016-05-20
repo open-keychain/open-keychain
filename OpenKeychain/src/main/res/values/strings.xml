@@ -1085,7 +1085,7 @@
     <string name="msg_mf_error_sub_stripped">"Cannot modify stripped subkey %s!"</string>
     <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
     <string name="msg_mf_error_conflicting_nfc_commands">"Cannot move key to Security Token in same operation that creates an on-card signature."</string>
-    <string name="msg_mf_error_duplicate_keytocard_for_slot">"Smart card supports only one slot per key type."</string>
+    <string name="msg_mf_error_duplicate_keytocard_for_slot">"Security Token supports only one slot per key type."</string>
     <string name="msg_mf_error_invalid_flags_for_keytocard">"Inappropriate key flags for Security Token key."</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
