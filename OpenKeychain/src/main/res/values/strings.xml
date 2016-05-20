@@ -68,7 +68,7 @@
     <string name="section_fingerprint">"Fingerprint"</string>
     <string name="section_phrases">"Phrases"</string>
     <string name="section_encrypt">"Encrypt"</string>
-    <string name="section_decrypt">"Decrypt / Verify"</string>
+    <string name="section_decrypt">"Decrypt/Verify"</string>
     <string name="section_current_expiry">"Current expiry"</string>
     <string name="section_new_expiry">"New expiry"</string>
 
