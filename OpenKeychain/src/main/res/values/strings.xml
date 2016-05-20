@@ -164,7 +164,7 @@
     <string name="label_passphrase_cache_subs">"Remember passwords by subkey"</string>
     <string name="label_message_compression">"Text compression"</string>
     <string name="label_file_compression">"File compression"</string>
-    <string name="label_keyservers">"Select OpenPGP keyservers"</string>
+    <string name="label_keyservers">"Manage OpenPGP keyservers"</string>
     <string name="label_key_id">"Key ID"</string>
     <string name="label_key_created">"Key created %s"</string>
     <string name="label_key_type">"Type"</string>
