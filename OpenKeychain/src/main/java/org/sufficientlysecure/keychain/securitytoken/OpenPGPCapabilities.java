@@ -40,7 +40,7 @@ public class OpenPGPCapabilities {
     private int mMaxCmdLen;
     private int mMaxRspLen;
 
-    private Map<KeyType, AlgorithmFormat> mKeyFormats;
+    private Map<KeyType, KeyFormat> mKeyFormats;
 
     public OpenPGPCapabilities(byte[] data) throws IOException {
         Iso7816TLV[] tlvs = Iso7816TLV.readList(data, true);
@@ -64,13 +64,13 @@ public class OpenPGPCapabilities {
                     parseExtendedCaps(tlv.mV);
                     break;
                 case 0xC1:
-                    parseAlgoCaps(KeyType.SIGN, tlv.mV);
+                    mKeyFormats.put(KeyType.SIGN, new KeyFormat(tlv.mV));
                     break;
                 case 0xC2:
-                    parseAlgoCaps(KeyType.ENCRYPT, tlv.mV);
+                    mKeyFormats.put(KeyType.ENCRYPT, new KeyFormat(tlv.mV));
                     break;
                 case 0xC3:
-                    parseAlgoCaps(KeyType.AUTH, tlv.mV);
+                    mKeyFormats.put(KeyType.AUTH, new KeyFormat(tlv.mV));
                     break;
                 case 0xC4:
                     mPw1ValidForMultipleSignatures = tlv.mV[0] == 1;
@@ -86,23 +86,19 @@ public class OpenPGPCapabilities {
                     parseExtendedCaps(tlv.mV);
                     break;
                 case 0xC1:
-                    parseAlgoCaps(KeyType.SIGN, tlv.mV);
+                    mKeyFormats.put(KeyType.SIGN, new KeyFormat(tlv.mV));
                     break;
                 case 0xC2:
-                    parseAlgoCaps(KeyType.ENCRYPT, tlv.mV);
+                    mKeyFormats.put(KeyType.ENCRYPT, new KeyFormat(tlv.mV));
                     break;
                 case 0xC3:
-                    parseAlgoCaps(KeyType.AUTH, tlv.mV);
+                    mKeyFormats.put(KeyType.AUTH, new KeyFormat(tlv.mV));
                     break;
                 case 0xC4:
                     mPw1ValidForMultipleSignatures = tlv.mV[0] == 1;
                     break;
             }
         }
-    }
-
-    private void parseAlgoCaps(KeyType keyType, byte[] data) {
-        mKeyFormats.put(keyType, AlgorithmFormat.from(data[5]));
     }
 
     private void parseExtendedCaps(byte[] v) {
@@ -152,41 +148,7 @@ public class OpenPGPCapabilities {
         return mMaxRspLen;
     }
 
-    public AlgorithmFormat getFormatForKeyType(KeyType keyType) {
+    public KeyFormat getFormatForKeyType(KeyType keyType) {
         return mKeyFormats.get(keyType);
-    }
-
-    public enum AlgorithmFormat {
-        STANDARD(0, false, false),
-        STANDARD_WITH_MODULUS(1, false, true),
-        CRT(2, true, false),
-        CRT_WITH_MODULUS(3, true, true);
-
-        private int mValue;
-        private boolean mHasModulus;
-        private boolean mHasExtra;
-
-        AlgorithmFormat(int value, boolean hasExtra, boolean hasModulus) {
-            mValue = value;
-            mHasModulus = hasModulus;
-            mHasExtra = hasExtra;
-        }
-
-        public boolean isHasModulus() {
-            return mHasModulus;
-        }
-
-        public boolean isHasExtra() {
-            return mHasExtra;
-        }
-
-        public static AlgorithmFormat from(byte b) {
-            for (AlgorithmFormat format : values()) {
-                if (format.mValue == b) {
-                    return format;
-                }
-            }
-            return null;
-        }
     }
 }
