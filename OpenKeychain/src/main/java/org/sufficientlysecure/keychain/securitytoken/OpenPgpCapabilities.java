@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OpenPGPCapabilities {
+public class OpenPgpCapabilities {
     private final static int MASK_SM = 1 << 7;
     private final static int MASK_KEY_IMPORT = 1 << 5;
     private final static int MASK_ATTRIBUTES_CHANGABLE = 1 << 2;
@@ -42,7 +42,7 @@ public class OpenPGPCapabilities {
 
     private Map<KeyType, KeyFormat> mKeyFormats;
 
-    public OpenPGPCapabilities(byte[] data) throws IOException {
+    public OpenPgpCapabilities(byte[] data) throws IOException {
         Iso7816TLV[] tlvs = Iso7816TLV.readList(data, true);
         mKeyFormats = new HashMap<>();
         if (tlvs.length == 1 && tlvs[0].mT == 0x6E) {

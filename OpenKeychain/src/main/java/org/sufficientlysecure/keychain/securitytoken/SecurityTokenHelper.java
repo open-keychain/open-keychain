@@ -65,7 +65,7 @@ public class SecurityTokenHelper {
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private Transport mTransport;
     private CardCapabilities mCardCapabilities;
-    private OpenPGPCapabilities mOpenPGPCapabilities;
+    private OpenPgpCapabilities mOpenPgpCapabilities;
 
     private Passphrase mPin;
     private Passphrase mAdminPin;
@@ -164,8 +164,8 @@ public class SecurityTokenHelper {
             throw new CardException("Initialization failed!", response.getSW());
         }
 
-        mOpenPGPCapabilities = new OpenPGPCapabilities(getData(0x00, 0x6E));
-        mCardCapabilities = new CardCapabilities(mOpenPGPCapabilities.getHistoricalBytes());
+        mOpenPgpCapabilities = new OpenPgpCapabilities(getData(0x00, 0x6E));
+        mCardCapabilities = new CardCapabilities(mOpenPgpCapabilities.getHistoricalBytes());
 
         mPw1ValidatedForSignature = false;
         mPw1ValidatedForDecrypt = false;
@@ -334,7 +334,7 @@ public class SecurityTokenHelper {
 
         // Now we're ready to communicate with the token.
         byte[] bytes = SecurityTokenUtils.createPrivKeyTemplate(crtSecretKey, slot,
-                mOpenPGPCapabilities.getFormatForKeyType(slot));
+                mOpenPgpCapabilities.getFormatForKeyType(slot));
 
         CommandAPDU apdu = new CommandAPDU(0x00, 0xDB, 0x3F, 0xFF, bytes);
         ResponseAPDU response = communicate(apdu);
@@ -469,7 +469,7 @@ public class SecurityTokenHelper {
             throw new CardException("Failed to sign", response.getSW());
         }
 
-        if (!mOpenPGPCapabilities.isPw1ValidForMultipleSignatures()) {
+        if (!mOpenPgpCapabilities.isPw1ValidForMultipleSignatures()) {
             mPw1ValidatedForSignature = false;
         }
 
