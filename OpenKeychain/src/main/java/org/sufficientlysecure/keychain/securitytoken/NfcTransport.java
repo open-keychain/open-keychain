@@ -19,8 +19,8 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 import android.nfc.Tag;
 
-import org.sufficientlysecure.keychain.securitytoken.smartcardio.CommandAPDU;
-import org.sufficientlysecure.keychain.securitytoken.smartcardio.ResponseAPDU;
+import javax.smartcardio.CommandAPDU;
+import javax.smartcardio.ResponseAPDU;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 
 import java.io.IOException;

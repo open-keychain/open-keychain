@@ -23,7 +23,7 @@
  * questions.
  */
 
-package org.sufficientlysecure.keychain.securitytoken.smartcardio;
+package javax.smartcardio;
 
 import java.util.Arrays;
 

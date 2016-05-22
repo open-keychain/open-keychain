@@ -17,8 +17,8 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
-import org.sufficientlysecure.keychain.securitytoken.smartcardio.CommandAPDU;
-import org.sufficientlysecure.keychain.securitytoken.smartcardio.ResponseAPDU;
+import javax.smartcardio.CommandAPDU;
+import javax.smartcardio.ResponseAPDU;
 
 import java.io.IOException;
 
