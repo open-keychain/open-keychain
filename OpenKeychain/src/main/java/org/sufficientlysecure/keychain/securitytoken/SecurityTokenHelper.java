@@ -484,8 +484,14 @@ public class SecurityTokenHelper {
         return signature;
     }
 
+
     /**
-     * Transceive data via NFC encoded as Hex
+     * Transceives APDU
+     * Splits extended APDU into short APDUs and chains them if necessary
+     * Performs GET RESPONSE command(ISO/IEC 7816-4 par.7.6.1) on retrieving if necessary
+     * @param apdu short or extended APDU to transceive
+     * @return response from the card
+     * @throws IOException
      */
     private ResponseAPDU communicate(CommandAPDU apdu) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -525,6 +531,7 @@ public class SecurityTokenHelper {
 
         // Receive
         while (lastResponse.getSW1() == 0x61) {
+            // GET RESPONSE ISO/IEC 7816-4 par.7.6.1
             CommandAPDU getResponse = new CommandAPDU(0x00, 0xC0, 0x00, 0x00, lastResponse.getSW2());
             lastResponse = mTransport.transceive(getResponse);
             result.write(lastResponse.getData());
@@ -621,7 +628,8 @@ public class SecurityTokenHelper {
         }
 
         // reactivate token!
-
+        // NOTE: keep the order here! First execute _both_ reactivate commands. Before checking _both_ responses
+        // If a token is in a bad state and reactivate1 fails, it could still be reactivated with reactivate2
         CommandAPDU reactivate1 = new CommandAPDU(0x00, 0xE6, 0x00, 0x00);
         CommandAPDU reactivate2 = new CommandAPDU(0x00, 0x44, 0x00, 0x00);
         ResponseAPDU response1 = communicate(reactivate1);
