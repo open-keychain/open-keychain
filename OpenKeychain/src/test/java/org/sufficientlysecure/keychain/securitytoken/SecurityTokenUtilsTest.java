@@ -22,9 +22,9 @@ import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
@@ -38,81 +38,7 @@ import java.security.interfaces.RSAPrivateCrtKey;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
-public class SecurityTokenUtilsTest {
-    private static RSAPrivateCrtKey mKey2048;
-
-    @BeforeClass
-    public static void setUpOnce() throws Exception {
-        mKey2048 = new RSAPrivateCrtKey() {
-            @Override
-            public BigInteger getCrtCoefficient() {
-                byte[] bytes = new byte[128];
-                Arrays.fill(bytes, (byte) 0x10);
-                return new BigInteger(bytes);
-            }
-
-            @Override
-            public BigInteger getPrimeP() {
-                byte[] bytes = new byte[128];
-                Arrays.fill(bytes, (byte) 0x11);
-                return new BigInteger(bytes);
-            }
-
-            @Override
-            public BigInteger getPrimeQ() {
-                byte[] bytes = new byte[128];
-                Arrays.fill(bytes, (byte) 0x12);
-                return new BigInteger(bytes);
-            }
-
-            @Override
-            public BigInteger getPrimeExponentP() {
-                byte[] bytes = new byte[128];
-                Arrays.fill(bytes, (byte) 0x13);
-                return new BigInteger(bytes);
-            }
-
-            @Override
-            public BigInteger getPrimeExponentQ() {
-                byte[] bytes = new byte[128];
-                Arrays.fill(bytes, (byte) 0x14);
-                return new BigInteger(bytes);
-            }
-
-            @Override
-            public BigInteger getPublicExponent() {
-                return new BigInteger("10001", 16);
-            }
-
-            @Override
-            public BigInteger getPrivateExponent() {
-                return null;
-            }
-
-            @Override
-            public String getAlgorithm() {
-                return null;
-            }
-
-            @Override
-            public String getFormat() {
-                return null;
-            }
-
-            @Override
-            public byte[] getEncoded() {
-                return new byte[0];
-            }
-
-            @Override
-            public BigInteger getModulus() {
-                byte[] bytes = new byte[256];
-                Arrays.fill(bytes, (byte) 0x17);
-                return new BigInteger(bytes);
-            }
-        };
-    }
-
+public class SecurityTokenUtilsTest extends Mockito {
     @Before
     public void setUp() {
         ShadowLog.stream = System.out;
@@ -201,27 +127,37 @@ public class SecurityTokenUtilsTest {
     @Test
     public void testPrivateKeyTemplateSimple2048() throws Exception {
         KeyFormat format = new KeyFormat(Hex.decode("010000001800"));
-        byte[] res = SecurityTokenUtils.createPrivKeyTemplate(mKey2048, KeyType.AUTH, format);
+        RSAPrivateCrtKey key2048 = mock(RSAPrivateCrtKey.class);
+        byte[] tmp = new byte[128];
+        Arrays.fill(tmp, (byte) 0x11);
+        when(key2048.getPrimeP()).thenReturn(new BigInteger(tmp));
 
-        Assert.assertArrayEquals(Hex.decode("4d820115" + // Header TL
-                "a400" + // CRT
-                "7f4808" + // 8 bytes
-                "9103" + // e
-                "928180" + // p
-                "938180" + // q
-                "5f48820103" +
+        Arrays.fill(tmp, (byte) 0x12);
+        when(key2048.getPrimeQ()).thenReturn(new BigInteger(tmp));
 
-                "010001" +
+        when(key2048.getPublicExponent()).thenReturn(new BigInteger("65537"));
 
-                "1111111111111111111111111111111111111111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111" +
+        Assert.assertArrayEquals(
+                Hex.decode("4d820115" + // Header TL
+                        "a400" + // CRT
+                        "7f4808" + // 8 bytes
+                        "9103" + // e
+                        "928180" + // p
+                        "938180" + // q
+                        "5f48820103" +
 
-                "1212121212121212121212121212121212121212121212121212121212121212" +
-                "1212121212121212121212121212121212121212121212121212121212121212" +
-                "1212121212121212121212121212121212121212121212121212121212121212" +
-                "1212121212121212121212121212121212121212121212121212121212121212"
-        ), res);
+                        "010001" +
+
+                        "1111111111111111111111111111111111111111111111111111111111111111" +
+                        "1111111111111111111111111111111111111111111111111111111111111111" +
+                        "1111111111111111111111111111111111111111111111111111111111111111" +
+                        "1111111111111111111111111111111111111111111111111111111111111111" +
+
+                        "1212121212121212121212121212121212121212121212121212121212121212" +
+                        "1212121212121212121212121212121212121212121212121212121212121212" +
+                        "1212121212121212121212121212121212121212121212121212121212121212" +
+                        "1212121212121212121212121212121212121212121212121212121212121212"
+                ),
+                SecurityTokenUtils.createPrivKeyTemplate(key2048, KeyType.AUTH, format));
     }
 }
