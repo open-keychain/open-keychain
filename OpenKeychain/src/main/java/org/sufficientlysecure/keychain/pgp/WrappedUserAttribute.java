@@ -1,8 +1,5 @@
 /*
-<<<<<<< HEAD
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
-=======
->>>>>>> development
  * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
