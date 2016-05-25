@@ -55,6 +55,7 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -82,6 +83,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 public class OpenPgpService extends Service {
 
@@ -858,6 +860,31 @@ public class OpenPgpService extends Service {
             return result;
         }
 
+        // check if database has to be updated
+        result = databaseIsUpToDateOrReturnIntent(data);
+        if (result != null) {
+            return result;
+        }
+
+        return null;
+    }
+
+
+    private Intent databaseIsUpToDateOrReturnIntent(Intent data) {
+        Preferences pref = Preferences.getPreferences(getApplicationContext());
+
+        if(pref.isUsingS2k()) {
+            // main app has not updated to using symmetric key blocks
+            // prompt user to start app and commence update
+            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(this);
+            PendingIntent pi = piFactory.createErrorPendingIntent(data,
+                    this.getString(R.string.api_open_main_app_text));
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+            result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+
+            return result;
+        }
         return null;
     }
 

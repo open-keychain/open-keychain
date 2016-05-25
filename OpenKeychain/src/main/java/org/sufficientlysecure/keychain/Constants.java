@@ -100,6 +100,7 @@ public final class Constants {
         public static final String KEY_SERVERS = "keyServers";
         public static final String PREF_DEFAULT_VERSION = "keyServersDefaultVersion";
         public static final String FIRST_TIME = "firstTime";
+        public static final String USING_S2K = "usingS2k";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
         public static final String SEARCH_KEYBASE = "search_keybase_pref";

@@ -131,6 +131,16 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean isUsingS2k() {
+        return mSharedPreferences.getBoolean(Constants.Pref.USING_S2K, true);
+    }
+
+    public void setUsingS2k(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.Pref.USING_S2K, value);
+        editor.commit();
+    }
+
     public String[] getKeyServers() {
         String rawData = mSharedPreferences.getString(Constants.Pref.KEY_SERVERS,
                 Constants.Defaults.KEY_SERVERS);
