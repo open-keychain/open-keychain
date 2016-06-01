@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -79,6 +80,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     public void setData(List<ImportKeysListEntry> data) {
         this.mData = data;
+        notifyDataSetChanged();
     }
 
     public List<ImportKeysListEntry> getData() {
@@ -209,7 +211,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             // we want conventional gpg UserIDs first, then Keybase ”proofs”
             HashMap<String, HashSet<String>> mergedUserIds = entry.getMergedUserIds();
             ArrayList<Map.Entry<String, HashSet<String>>> sortedIds = new ArrayList<Map.Entry<String, HashSet<String>>>(mergedUserIds.entrySet());
-            java.util.Collections.sort(sortedIds, new java.util.Comparator<Map.Entry<String, HashSet<String>>>() {
+            Collections.sort(sortedIds, new java.util.Comparator<Map.Entry<String, HashSet<String>>>() {
                 @Override
                 public int compare(Map.Entry<String, HashSet<String>> entry1, Map.Entry<String, HashSet<String>> entry2) {
 

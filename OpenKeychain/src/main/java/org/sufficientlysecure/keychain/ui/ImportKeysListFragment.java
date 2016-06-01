@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
@@ -71,7 +72,7 @@ public class ImportKeysListFragment extends Fragment implements
 
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
-    private Activity mActivity;
+    private FragmentActivity mActivity;
     private ParcelableProxy mParcelableProxy;
 
     private ProgressBar mProgressBar;
@@ -224,8 +225,8 @@ public class ImportKeysListFragment extends Fragment implements
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.progress_view);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mActivity);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mActivity);
+        mRecyclerView.setLayoutManager(layoutManager);
 
         // Create an empty adapter we will use to display the loaded data.
         mAdapter = new ImportKeysAdapter(mActivity, nonInteractive);
@@ -237,17 +238,15 @@ public class ImportKeysListFragment extends Fragment implements
             Preferences.CloudSearchPrefs cloudSearchPrefs
                     = args.getParcelable(ARG_CLOUD_SEARCH_PREFS);
             if (cloudSearchPrefs == null) {
-                cloudSearchPrefs = Preferences.getPreferences(getActivity()).getCloudSearchPrefs();
+                cloudSearchPrefs = Preferences.getPreferences(mActivity).getCloudSearchPrefs();
             }
 
             mLoaderState = new CloudLoaderState(query, cloudSearchPrefs);
         }
 
-        if (dataUri != null && !checkAndRequestReadPermission(dataUri)) {
-            return view;
+        if (dataUri == null || checkAndRequestReadPermission(dataUri)) {
+            restartLoaders();
         }
-
-        restartLoaders();
 
         return view;
     }
@@ -270,7 +269,7 @@ public class ImportKeysListFragment extends Fragment implements
             return true;
         }
 
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             return true;
         }
@@ -299,9 +298,9 @@ public class ImportKeysListFragment extends Fragment implements
             // permission granted -> load key
             restartLoaders();
         } else {
-            Toast.makeText(getActivity(), R.string.error_denied_storage_permission, Toast.LENGTH_LONG).show();
-            getActivity().setResult(Activity.RESULT_CANCELED);
-            getActivity().finish();
+            Toast.makeText(mActivity, R.string.error_denied_storage_permission, Toast.LENGTH_LONG).show();
+            mActivity.setResult(Activity.RESULT_CANCELED);
+            mActivity.finish();
         }
     }
 
@@ -340,13 +339,17 @@ public class ImportKeysListFragment extends Fragment implements
         }
     }
 
+    private void setLoadingStatus(boolean ready) {
+        mRecyclerView.setVisibility(ready ? View.VISIBLE : View.GONE);
+        mProgressBar.setVisibility(ready ? View.GONE : View.VISIBLE);
+    }
+
     @Override
     public Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> onCreateLoader(
             int id,
             Bundle args
     ) {
-
-        Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader;
+        Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader = null;
         switch (id) {
             case LOADER_ID_BYTES: {
                 loader = new ImportKeysListLoader(mActivity, (BytesLoaderState) mLoaderState);
@@ -354,17 +357,14 @@ public class ImportKeysListFragment extends Fragment implements
             }
             case LOADER_ID_CLOUD: {
                 CloudLoaderState ls = (CloudLoaderState) mLoaderState;
-                loader = new ImportKeysListCloudLoader(getActivity(), ls.mServerQuery,
+                loader = new ImportKeysListCloudLoader(mActivity, ls.mServerQuery,
                         ls.mCloudPrefs, mParcelableProxy);
                 break;
             }
-            default:
-                loader = null;
         }
 
         if (loader != null) {
-            mRecyclerView.setVisibility(View.GONE);
-            mProgressBar.setVisibility(View.VISIBLE);
+            setLoadingStatus(false);
         }
 
         return loader;
@@ -375,12 +375,9 @@ public class ImportKeysListFragment extends Fragment implements
             Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader,
             AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data
     ) {
+        setLoadingStatus(true);
 
         mAdapter.setData(data.getResult());
-        mAdapter.notifyDataSetChanged();
-
-        mRecyclerView.setVisibility(View.VISIBLE);
-        mProgressBar.setVisibility(View.GONE);
 
         // free old cached key data
         mCachedKeyData = null;
@@ -392,7 +389,7 @@ public class ImportKeysListFragment extends Fragment implements
                     // No error
                     mCachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
                 } else {
-                    getKeyResult.createNotify(getActivity()).show();
+                    getKeyResult.createNotify(mActivity).show();
                 }
                 break;
 
@@ -433,8 +430,7 @@ public class ImportKeysListFragment extends Fragment implements
                                             }
                                         };
 
-                                if (OrbotHelper.putOrbotInRequiredState(dialogActions,
-                                        getActivity())) {
+                                if (OrbotHelper.putOrbotInRequiredState(dialogActions, mActivity)) {
                                     // looks like we didn't have to show the
                                     // dialog after all
                                     mShowingOrbotDialog = false;
@@ -446,7 +442,7 @@ public class ImportKeysListFragment extends Fragment implements
                         mShowingOrbotDialog = true;
                     }
                 } else {
-                    getKeyResult.createNotify(getActivity()).show();
+                    getKeyResult.createNotify(mActivity).show();
                 }
                 break;
 
@@ -459,11 +455,7 @@ public class ImportKeysListFragment extends Fragment implements
     public void onLoaderReset(Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader) {
         switch (loader.getId()) {
             case LOADER_ID_BYTES:
-                // Clear the data in the adapter.
-                mAdapter.clearData();
-                break;
             case LOADER_ID_CLOUD:
-                // Clear the data in the adapter.
                 mAdapter.clearData();
                 break;
             default:
