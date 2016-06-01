@@ -18,10 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -31,15 +27,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.util.LongSparseArray;
-import android.view.MotionEvent;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnTouchListener;
-import android.widget.ListView;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -58,7 +56,11 @@ import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
-public class ImportKeysListFragment extends ListFragment implements
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class ImportKeysListFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
 
     private static final String ARG_DATA_URI = "uri";
@@ -70,8 +72,11 @@ public class ImportKeysListFragment extends ListFragment implements
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
     private Activity mActivity;
-    private ImportKeysAdapter mAdapter;
     private ParcelableProxy mParcelableProxy;
+
+    private ProgressBar mProgressBar;
+    private RecyclerView mRecyclerView;
+    private ImportKeysAdapter mAdapter;
 
     private LoaderState mLoaderState;
 
@@ -79,7 +84,6 @@ public class ImportKeysListFragment extends ListFragment implements
     private static final int LOADER_ID_CLOUD = 1;
 
     private LongSparseArray<ParcelableKeyRing> mCachedKeyData;
-    private boolean mNonInteractive;
 
     private boolean mShowingOrbotDialog;
 
@@ -206,39 +210,26 @@ public class ImportKeysListFragment extends ListFragment implements
         }
     }
 
-    /**
-     * Define Adapter and Loader on create of Activity
-     */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.import_keys_list_fragment, container, false);
 
         mActivity = getActivity();
-
-        // Give some text to display if there is no data.
-        setEmptyText(mActivity.getString(R.string.error_nothing_import));
-
-        // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new ImportKeysAdapter(mActivity);
-        setListAdapter(mAdapter);
 
         Bundle args = getArguments();
         Uri dataUri = args.getParcelable(ARG_DATA_URI);
         byte[] bytes = args.getByteArray(ARG_BYTES);
         String query = args.getString(ARG_SERVER_QUERY);
-        mNonInteractive = args.getBoolean(ARG_NON_INTERACTIVE, false);
+        boolean nonInteractive = args.getBoolean(ARG_NON_INTERACTIVE, false);
 
-        getListView().setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (!mAdapter.isEmpty()) {
-                    mActivity.onTouchEvent(event);
-                }
-                return false;
-            }
-        });
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progress_view);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mActivity);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
-        getListView().setFastScrollEnabled(true);
+        // Create an empty adapter we will use to display the loaded data.
+        mAdapter = new ImportKeysAdapter(mActivity, nonInteractive);
+        mRecyclerView.setAdapter(mAdapter);
 
         if (dataUri != null || bytes != null) {
             mLoaderState = new BytesLoaderState(bytes, dataUri);
@@ -252,23 +243,25 @@ public class ImportKeysListFragment extends ListFragment implements
             mLoaderState = new CloudLoaderState(query, cloudSearchPrefs);
         }
 
-        if (dataUri != null && ! checkAndRequestReadPermission(dataUri)) {
-            return;
+        if (dataUri != null && !checkAndRequestReadPermission(dataUri)) {
+            return view;
         }
 
         restartLoaders();
+
+        return view;
     }
 
     /**
      * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.
-     *
+     * <p/>
      * This method returns true on Android < 6, or if permission is already granted. It
      * requests the permission and returns false otherwise.
-     *
+     * <p/>
      * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
      */
     private boolean checkAndRequestReadPermission(final Uri uri) {
-        if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+        if (!ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
             return true;
         }
 
@@ -312,30 +305,13 @@ public class ImportKeysListFragment extends ListFragment implements
         }
     }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        if (mNonInteractive) {
-            return;
-        }
-
-        // Select checkbox!
-        // Update underlying data and notify adapter of change. The adapter will
-        // update the view automatically.
-
-        ImportKeysListEntry entry = mAdapter.getItem(position);
-        entry.setSelected(!entry.isSelected());
-        mAdapter.notifyDataSetChanged();
-    }
-
     public void loadNew(LoaderState loaderState) {
         mLoaderState = loaderState;
 
         if (mLoaderState instanceof BytesLoaderState) {
             BytesLoaderState ls = (BytesLoaderState) mLoaderState;
 
-            if ( ls.mDataUri != null && ! checkAndRequestReadPermission(ls.mDataUri)) {
+            if (ls.mDataUri != null && !checkAndRequestReadPermission(ls.mDataUri)) {
                 return;
             }
         }
@@ -344,69 +320,67 @@ public class ImportKeysListFragment extends ListFragment implements
     }
 
     public void destroyLoader() {
-        if (getLoaderManager().getLoader(LOADER_ID_BYTES) != null) {
-            getLoaderManager().destroyLoader(LOADER_ID_BYTES);
+        LoaderManager loaderManager = getLoaderManager();
+
+        if (loaderManager.getLoader(LOADER_ID_BYTES) != null) {
+            loaderManager.destroyLoader(LOADER_ID_BYTES);
         }
-        if (getLoaderManager().getLoader(LOADER_ID_CLOUD) != null) {
-            getLoaderManager().destroyLoader(LOADER_ID_CLOUD);
-        }
-        if (getView() != null) {
-            setListShown(true);
+        if (loaderManager.getLoader(LOADER_ID_CLOUD) != null) {
+            loaderManager.destroyLoader(LOADER_ID_CLOUD);
         }
     }
 
     private void restartLoaders() {
+        LoaderManager loaderManager = getLoaderManager();
+
         if (mLoaderState instanceof BytesLoaderState) {
-            // Start out with a progress indicator.
-            setListShown(false);
-
-            getLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
+            loaderManager.restartLoader(LOADER_ID_BYTES, null, this);
         } else if (mLoaderState instanceof CloudLoaderState) {
-            // Start out with a progress indicator.
-            setListShown(false);
-
-            getLoaderManager().restartLoader(LOADER_ID_CLOUD, null, this);
+            loaderManager.restartLoader(LOADER_ID_CLOUD, null, this);
         }
     }
 
     @Override
-    public Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>>
-    onCreateLoader(int id, Bundle args) {
+    public Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> onCreateLoader(
+            int id,
+            Bundle args
+    ) {
+
+        Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader;
         switch (id) {
             case LOADER_ID_BYTES: {
-                return new ImportKeysListLoader(mActivity, (BytesLoaderState) mLoaderState);
+                loader = new ImportKeysListLoader(mActivity, (BytesLoaderState) mLoaderState);
+                break;
             }
             case LOADER_ID_CLOUD: {
                 CloudLoaderState ls = (CloudLoaderState) mLoaderState;
-                return new ImportKeysListCloudLoader(getActivity(), ls.mServerQuery, ls.mCloudPrefs,
-                        mParcelableProxy);
+                loader = new ImportKeysListCloudLoader(getActivity(), ls.mServerQuery,
+                        ls.mCloudPrefs, mParcelableProxy);
+                break;
             }
-
             default:
-                return null;
+                loader = null;
         }
+
+        if (loader != null) {
+            mRecyclerView.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        return loader;
     }
 
     @Override
-    public void onLoadFinished(Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader,
-                               AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data) {
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
+    public void onLoadFinished(
+            Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader,
+            AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data
+    ) {
 
-        Log.d(Constants.TAG, "data: " + data.getResult());
-
-        // swap in the real data!
         mAdapter.setData(data.getResult());
         mAdapter.notifyDataSetChanged();
 
-        setListAdapter(mAdapter);
-
-        // The list should now be shown.
-        if (isResumed()) {
-            setListShown(true);
-        } else {
-            setListShownNoAnimation(true);
-        }
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.GONE);
 
         // free old cached key data
         mCachedKeyData = null;
@@ -414,7 +388,6 @@ public class ImportKeysListFragment extends ListFragment implements
         GetKeyResult getKeyResult = (GetKeyResult) data.getOperationResult();
         switch (loader.getId()) {
             case LOADER_ID_BYTES:
-
                 if (getKeyResult.success()) {
                     // No error
                     mCachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
@@ -424,7 +397,6 @@ public class ImportKeysListFragment extends ListFragment implements
                 break;
 
             case LOADER_ID_CLOUD:
-
                 if (getKeyResult.success()) {
                     // No error
                 } else if (getKeyResult.isPending()) {
@@ -488,11 +460,11 @@ public class ImportKeysListFragment extends ListFragment implements
         switch (loader.getId()) {
             case LOADER_ID_BYTES:
                 // Clear the data in the adapter.
-                mAdapter.clear();
+                mAdapter.clearData();
                 break;
             case LOADER_ID_CLOUD:
                 // Clear the data in the adapter.
-                mAdapter.clear();
+                mAdapter.clearData();
                 break;
             default:
                 break;

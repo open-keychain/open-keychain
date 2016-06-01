@@ -17,16 +17,14 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -47,13 +45,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
-    protected LayoutInflater mInflater;
-    protected Activity mActivity;
+public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder> {
 
-    protected List<ImportKeysListEntry> mData;
+    private Context mContext;
+    private boolean mNonInteractive;
+    private List<ImportKeysListEntry> mData;
 
-    static class ViewHolder {
+    public ImportKeysAdapter(Context mContext, boolean mNonInteractive) {
+        this.mContext = mContext;
+        this.mNonInteractive = mNonInteractive;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mainUserId;
         public TextView mainUserIdRest;
         public TextView keyId;
@@ -63,38 +66,29 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         public View userIdsDivider;
         public LinearLayout userIdsList;
         public CheckBox checkBox;
-    }
 
-    public ImportKeysAdapter(Activity activity) {
-        super(activity, -1);
-        mActivity = activity;
-        mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void setData(List<ImportKeysListEntry> data) {
-
-        clear();
-        if (data != null) {
-            this.mData = data;
-
-            // add data to extended ArrayAdapter
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                addAll(data);
-            } else {
-                for (ImportKeysListEntry entry : data) {
-                    add(entry);
-                }
-            }
+        public ViewHolder(View itemView) {
+            super(itemView);
         }
+    }
+
+    public void clearData() {
+        mData = null;
+        notifyDataSetChanged();
+    }
+
+    public void setData(List<ImportKeysListEntry> data) {
+        this.mData = data;
     }
 
     public List<ImportKeysListEntry> getData() {
         return mData;
     }
 
-    /** This method returns a list of all selected entries, with public keys sorted
+    /**
+     * This method returns a list of all selected entries, with public keys sorted
      * before secret keys, see ImportOperation for specifics.
+     *
      * @see ImportOperation
      */
     public ArrayList<ImportKeysListEntry> getSelectedEntries() {
@@ -115,30 +109,27 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     }
 
     @Override
-    public boolean hasStableIds() {
-        return true;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.import_keys_list_item, parent, false);
+
+        ViewHolder vh = new ViewHolder(v);
+        vh.mainUserId = (TextView) v.findViewById(R.id.import_item_user_id);
+        vh.mainUserIdRest = (TextView) v.findViewById(R.id.import_item_user_id_email);
+        vh.keyId = (TextView) v.findViewById(R.id.import_item_key_id);
+        vh.fingerprint = (TextView) v.findViewById(R.id.import_item_fingerprint);
+        vh.algorithm = (TextView) v.findViewById(R.id.import_item_algorithm);
+        vh.status = (ImageView) v.findViewById(R.id.import_item_status);
+        vh.userIdsDivider = v.findViewById(R.id.import_item_status_divider);
+        vh.userIdsList = (LinearLayout) v.findViewById(R.id.import_item_user_ids_list);
+        vh.checkBox = (CheckBox) v.findViewById(R.id.import_item_selected);
+
+        return vh;
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ImportKeysListEntry entry = mData.get(position);
-        Highlighter highlighter = new Highlighter(mActivity, entry.getQuery());
-        ViewHolder holder;
-        if (convertView == null) {
-            holder = new ViewHolder();
-            convertView = mInflater.inflate(R.layout.import_keys_list_item, null);
-            holder.mainUserId = (TextView) convertView.findViewById(R.id.import_item_user_id);
-            holder.mainUserIdRest = (TextView) convertView.findViewById(R.id.import_item_user_id_email);
-            holder.keyId = (TextView) convertView.findViewById(R.id.import_item_key_id);
-            holder.fingerprint = (TextView) convertView.findViewById(R.id.import_item_fingerprint);
-            holder.algorithm = (TextView) convertView.findViewById(R.id.import_item_algorithm);
-            holder.status = (ImageView) convertView.findViewById(R.id.import_item_status);
-            holder.userIdsDivider = convertView.findViewById(R.id.import_item_status_divider);
-            holder.userIdsList = (LinearLayout) convertView.findViewById(R.id.import_item_user_ids_list);
-            holder.checkBox = (CheckBox) convertView.findViewById(R.id.import_item_selected);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        final ImportKeysListEntry entry = mData.get(position);
+        Highlighter highlighter = new Highlighter(mContext, entry.getQuery());
 
         // main user id
         String userId = entry.getUserIds().get(0);
@@ -148,8 +139,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         if (userIdSplit.name != null) {
             // show red user id if it is a secret key
             if (entry.isSecretKey()) {
-                holder.mainUserId.setText(mActivity.getString(R.string.secret_key)
-                        + " " + userIdSplit.name);
+                holder.mainUserId.setText(mContext.getString(R.string.secret_key) + " " + userIdSplit.name);
             } else {
                 holder.mainUserId.setText(highlighter.highlight(userIdSplit.name));
             }
@@ -165,7 +155,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.mainUserIdRest.setVisibility(View.GONE);
         }
 
-        holder.keyId.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(getContext(), entry.getKeyIdHex()));
+        holder.keyId.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(mContext, entry.getKeyIdHex()));
 
         // don't show full fingerprint on key import
         holder.fingerprint.setVisibility(View.GONE);
@@ -178,9 +168,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         }
 
         if (entry.isRevoked()) {
-            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, State.REVOKED, R.color.key_flag_gray);
+            KeyFormattingUtils.setStatusImage(mContext, holder.status, null, State.REVOKED, R.color.key_flag_gray);
         } else if (entry.isExpired()) {
-            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, State.EXPIRED, R.color.key_flag_gray);
+            KeyFormattingUtils.setStatusImage(mContext, holder.status, null, State.EXPIRED, R.color.key_flag_gray);
         }
 
         if (entry.isRevoked() || entry.isExpired()) {
@@ -189,9 +179,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             // no more space for algorithm display
             holder.algorithm.setVisibility(View.GONE);
 
-            holder.mainUserId.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
-            holder.mainUserIdRest.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
-            holder.keyId.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
+            holder.mainUserId.setTextColor(mContext.getResources().getColor(R.color.key_flag_gray));
+            holder.mainUserIdRest.setTextColor(mContext.getResources().getColor(R.color.key_flag_gray));
+            holder.keyId.setTextColor(mContext.getResources().getColor(R.color.key_flag_gray));
         } else {
             holder.status.setVisibility(View.GONE);
             holder.algorithm.setVisibility(View.VISIBLE);
@@ -199,11 +189,11 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             if (entry.isSecretKey()) {
                 holder.mainUserId.setTextColor(Color.RED);
             } else {
-                holder.mainUserId.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
+                holder.mainUserId.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
             }
 
-            holder.mainUserIdRest.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
-            holder.keyId.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
+            holder.mainUserIdRest.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
+            holder.keyId.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
         }
 
         if (entry.getUserIds().size() == 1) {
@@ -237,31 +227,33 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
                 String cUserId = pair.getKey();
                 HashSet<String> cEmails = pair.getValue();
 
-                TextView uidView = (TextView) mInflater.inflate(
+                LayoutInflater inflater = LayoutInflater.from(mContext);
+
+                TextView uidView = (TextView) inflater.inflate(
                         R.layout.import_keys_list_entry_user_id, null);
                 uidView.setText(highlighter.highlight(cUserId));
-                uidView.setPadding(0, 0, FormattingUtils.dpToPx(getContext(), 8), 0);
+                uidView.setPadding(0, 0, FormattingUtils.dpToPx(mContext, 8), 0);
 
                 if (entry.isRevoked() || entry.isExpired()) {
-                    uidView.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
+                    uidView.setTextColor(mContext.getResources().getColor(R.color.key_flag_gray));
                 } else {
-                    uidView.setTextColor(FormattingUtils.getColorFromAttr(getContext(), R.attr.colorText));
+                    uidView.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
                 }
 
                 holder.userIdsList.addView(uidView);
 
                 for (String email : cEmails) {
-                    TextView emailView = (TextView) mInflater.inflate(
+                    TextView emailView = (TextView) inflater.inflate(
                             R.layout.import_keys_list_entry_user_id, null);
                     emailView.setPadding(
-                            FormattingUtils.dpToPx(getContext(), 16), 0,
-                            FormattingUtils.dpToPx(getContext(), 8), 0);
+                            FormattingUtils.dpToPx(mContext, 16), 0,
+                            FormattingUtils.dpToPx(mContext, 8), 0);
                     emailView.setText(highlighter.highlight(email));
 
                     if (entry.isRevoked() || entry.isExpired()) {
-                        emailView.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
+                        emailView.setTextColor(mContext.getResources().getColor(R.color.key_flag_gray));
                     } else {
-                        emailView.setTextColor(FormattingUtils.getColorFromAttr(getContext(), R.attr.colorText));
+                        emailView.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
                     }
 
                     holder.userIdsList.addView(emailView);
@@ -270,8 +262,19 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         }
 
         holder.checkBox.setChecked(entry.isSelected());
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!mNonInteractive) {
+                    entry.setSelected(isChecked);
+                }
+            }
+        });
+    }
 
-        return convertView;
+    @Override
+    public int getItemCount() {
+        return mData != null ? mData.size() : 0;
     }
 
 }
