@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
     <include
         android:id="@+id/toolbar_include"
@@ -13,22 +12,21 @@
         https://medium.com/@ngdelamo/using-drawerlayout-the-material-way-i-716bba2b5705
     -->
     <LinearLayout
-        android:layout_below="@id/toolbar_include"
-        android:fitsSystemWindows="true"
-        android:layout_marginTop="@dimen/minus_statusbar_height"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_include"
+        android:layout_marginTop="@dimen/minus_statusbar_height"
+        android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <include layout="@layout/notify_area" />
 
         <LinearLayout
+            android:id="@+id/import_keys_top_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:id="@+id/import_keys_top_layout"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:visibility="gone">
 
             <FrameLayout
                 android:id="@+id/import_keys_top_container"
@@ -46,39 +44,29 @@
         <FrameLayout
             android:id="@+id/import_keys_list_container"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="vertical"
+            android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <RelativeLayout
+        <android.support.v7.widget.Toolbar
             android:id="@+id/import_footer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <View
-                android:id="@+id/import_divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dip"
-                android:background="?android:attr/listDivider" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <TextView
                 android:id="@+id/import_import"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_below="@id/import_divider"
-                android:text="@string/import_import"
-                android:minHeight="?android:attr/listPreferredItemHeight"
-                android:drawableRight="@drawable/ic_file_download_grey_24dp"
+                android:layout_height="match_parent"
                 android:drawablePadding="8dp"
+                android:drawableRight="@drawable/ic_file_download_white_24dp"
                 android:gravity="center_vertical"
-                android:clickable="true"
-                android:background="?android:selectableItemBackground" />
+                android:text="@string/import_import"
+                android:textColor="#ffffffff" />
 
             <RelativeLayout
                 android:id="@+id/import_snackbar"
@@ -86,6 +74,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@id/import_import" />
 
-        </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+
     </LinearLayout>
+
 </RelativeLayout>
