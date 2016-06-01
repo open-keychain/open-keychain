@@ -19,12 +19,12 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -58,6 +58,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        public View container;
+
         public TextView mainUserId;
         public TextView mainUserIdRest;
         public TextView keyId;
@@ -66,10 +68,10 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         public ImageView status;
         public View userIdsDivider;
         public LinearLayout userIdsList;
-        public CheckBox checkBox;
 
-        public ViewHolder(View itemView) {
-            super(itemView);
+        public ViewHolder(View container) {
+            super(container);
+            this.container = container;
         }
     }
 
@@ -123,7 +125,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         vh.status = (ImageView) v.findViewById(R.id.import_item_status);
         vh.userIdsDivider = v.findViewById(R.id.import_item_status_divider);
         vh.userIdsList = (LinearLayout) v.findViewById(R.id.import_item_user_ids_list);
-        vh.checkBox = (CheckBox) v.findViewById(R.id.import_item_selected);
 
         return vh;
     }
@@ -263,12 +264,15 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             }
         }
 
-        holder.checkBox.setChecked(entry.isSelected());
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        int defaultColor = ContextCompat.getColor(mContext, R.color.cardview_light_background);
+        int selectedColor = ContextCompat.getColor(mContext, R.color.primaryLight);
+        holder.container.setBackgroundColor(entry.isSelected() ? selectedColor : defaultColor);
+        holder.container.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onClick(View v) {
                 if (!mNonInteractive) {
-                    entry.setSelected(isChecked);
+                    entry.setSelected(!entry.isSelected());
+                    notifyDataSetChanged();
                 }
             }
         });

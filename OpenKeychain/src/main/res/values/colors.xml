@@ -2,6 +2,7 @@
 <resources>
 
     <color name="primary">#7bad45</color>
+    <color name="primaryLight">#e5f0da</color>
 
     <color name="icons">#ffffff</color>
     <color name="transparent">#00ffffff</color>
