@@ -473,7 +473,7 @@ public class OpenPgpService extends Service {
                 wrapperBundle.setClassLoader(getClassLoader());
                 OpenPgpDecryptionResult decryptionResult = wrapperBundle.getParcelable(OpenPgpApi.EXTRA_DECRYPTION_RESULT);
                 if (decryptionResult != null && decryptionResult.hasDecryptedSessionKey()) {
-                    cryptoInput.addCryptoData(decryptionResult.sessionKey, decryptionResult.decryptedSessionKey);
+                    cryptoInput.addCryptoData(decryptionResult.getSessionKey(), decryptionResult.getDecryptedSessionKey());
                 }
             }
 
