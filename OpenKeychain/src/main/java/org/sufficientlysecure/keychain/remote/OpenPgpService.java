@@ -514,8 +514,6 @@ public class OpenPgpService extends Service {
 
                 OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
 
-                result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
-
                 switch (signatureResult.getResult()) {
                     case OpenPgpSignatureResult.RESULT_KEY_MISSING: {
                         // If signature key is missing we return a PendingIntent to retrieve the key
@@ -545,14 +543,14 @@ public class OpenPgpService extends Service {
                     // RESULT_INVALID_KEY_REVOKED and RESULT_INVALID_KEY_EXPIRED have been added in version 5
                     if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED
                             || signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED) {
-                        signatureResult.setResult(OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE);
+                        signatureResult = OpenPgpSignatureResult.createWithInvalidSignature();
                     }
                 }
 
                 if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 8) {
                     // RESULT_INVALID_INSECURE has been added in version 8, fallback to RESULT_INVALID_SIGNATURE
                     if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_INSECURE) {
-                        signatureResult.setResult(OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE);
+                        signatureResult = OpenPgpSignatureResult.createWithInvalidSignature();
                     }
 
                     // RESULT_NO_SIGNATURE has been added in version 8, before the signatureResult was null
@@ -568,7 +566,7 @@ public class OpenPgpService extends Service {
                         if (decryptionResult.getResult() == OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED
                                 && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
                             // noinspection deprecation
-                            signatureResult.setSignatureOnly(true);
+                            signatureResult = signatureResult.withSignatureOnlyFlag();
                         }
 
                         // case RESULT_INSECURE, simply accept as a fallback like in previous API versions
@@ -597,6 +595,7 @@ public class OpenPgpService extends Service {
                     result.putExtra(OpenPgpApi.RESULT_CHARSET, charset);
                 }
 
+                result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
             } else {

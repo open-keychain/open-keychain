@@ -97,10 +97,6 @@ public class OpenPgpSignatureResultBuilder {
         this.mConfirmedUserIds = confirmedUserIds;
     }
 
-    public boolean isValidSignature() {
-        return mValidSignature;
-    }
-
     public boolean isInsecure() {
         return mInsecure;
     }
@@ -147,52 +143,41 @@ public class OpenPgpSignatureResultBuilder {
     }
 
     public OpenPgpSignatureResult build() {
-        OpenPgpSignatureResult result = new OpenPgpSignatureResult();
-
         if (!mSignatureAvailable) {
             Log.d(Constants.TAG, "RESULT_NO_SIGNATURE");
-            result.setResult(OpenPgpSignatureResult.RESULT_NO_SIGNATURE);
-            return result;
+            return OpenPgpSignatureResult.createWithNoSignature();
         }
 
         if (!mKnownKey) {
-            result.setKeyId(mKeyId);
-
             Log.d(Constants.TAG, "RESULT_KEY_MISSING");
-            result.setResult(OpenPgpSignatureResult.RESULT_KEY_MISSING);
-            return result;
+            return OpenPgpSignatureResult.createWithKeyMissing(mKeyId);
         }
 
         if (!mValidSignature) {
             Log.d(Constants.TAG, "RESULT_INVALID_SIGNATURE");
-            result.setResult(OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE);
-            return result;
+            return OpenPgpSignatureResult.createWithInvalidSignature();
         }
 
-        result.setKeyId(mKeyId);
-        result.setPrimaryUserId(mPrimaryUserId);
-        result.setUserIds(mUserIds);
-        result.setConfirmedUserIds(mConfirmedUserIds);
-        result.setSenderResult(mSenderStatus);
-
+        int signatureStatus;
         if (mIsKeyRevoked) {
             Log.d(Constants.TAG, "RESULT_INVALID_KEY_REVOKED");
-            result.setResult(OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED);
+            signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED;
         } else if (mIsKeyExpired) {
             Log.d(Constants.TAG, "RESULT_INVALID_KEY_EXPIRED");
-            result.setResult(OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED);
+            signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED;
         } else if (mInsecure) {
             Log.d(Constants.TAG, "RESULT_INVALID_INSECURE");
-            result.setResult(OpenPgpSignatureResult.RESULT_INVALID_INSECURE);
+            signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_INSECURE;
         } else if (mIsSignatureKeyCertified) {
             Log.d(Constants.TAG, "RESULT_VALID_CONFIRMED");
-            result.setResult(OpenPgpSignatureResult.RESULT_VALID_CONFIRMED);
+            signatureStatus = OpenPgpSignatureResult.RESULT_VALID_CONFIRMED;
         } else {
             Log.d(Constants.TAG, "RESULT_VALID_UNCONFIRMED");
-            result.setResult(OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED);
+            signatureStatus = OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED;
         }
 
-        return result;
+        return OpenPgpSignatureResult.createWithValidSignature(
+                signatureStatus, mPrimaryUserId, mKeyId, mUserIds, mConfirmedUserIds, mSenderStatus);
     }
 
     public void setSenderAddress(String senderAddress) {
