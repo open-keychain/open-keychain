@@ -17,22 +17,30 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
+import java.util.ArrayList;
+
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.ArrayList;
 
 /**
  * This class can be used to build OpenPgpSignatureResult objects based on several checks.
  * It serves as a constraint which information are returned inside an OpenPgpSignatureResult object.
  */
 public class OpenPgpSignatureResultBuilder {
+    // injected
+    private final ProviderHelper mProviderHelper;
+
     // OpenPgpSignatureResult
     private String mPrimaryUserId;
     private ArrayList<String> mUserIds = new ArrayList<>();
+    private ArrayList<String> mConfirmedUserIds;
     private long mKeyId;
+    private int mSenderStatus;
 
     // builder
     private boolean mSignatureAvailable = false;
@@ -42,6 +50,11 @@ public class OpenPgpSignatureResultBuilder {
     private boolean mIsKeyRevoked = false;
     private boolean mIsKeyExpired = false;
     private boolean mInsecure = false;
+    private String mSenderAddress;
+
+    public OpenPgpSignatureResultBuilder(ProviderHelper providerHelper) {
+        this.mProviderHelper = providerHelper;
+    }
 
     public void setPrimaryUserId(String userId) {
         this.mPrimaryUserId = userId;
@@ -79,8 +92,9 @@ public class OpenPgpSignatureResultBuilder {
         this.mIsKeyExpired = keyExpired;
     }
 
-    public void setUserIds(ArrayList<String> userIds) {
+    public void setUserIds(ArrayList<String> userIds, ArrayList<String> confirmedUserIds) {
         this.mUserIds = userIds;
+        this.mConfirmedUserIds = confirmedUserIds;
     }
 
     public boolean isValidSignature() {
@@ -105,8 +119,27 @@ public class OpenPgpSignatureResultBuilder {
             Log.d(Constants.TAG, "No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
         }
         setSignatureKeyCertified(signingRing.getVerified() > 0);
-        Log.d(Constants.TAG, "signingRing.getUnorderedUserIds(): " + signingRing.getUnorderedUserIds());
-        setUserIds(signingRing.getUnorderedUserIds());
+
+        try {
+            ArrayList<String> allUserIds = signingRing.getUnorderedUserIds();
+            ArrayList<String> confirmedUserIds = mProviderHelper.getConfirmedUserIds(signingRing.getMasterKeyId());
+            setUserIds(allUserIds, confirmedUserIds);
+
+            if (mSenderAddress != null) {
+                if (confirmedUserIds.contains(mSenderAddress)) {
+                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_CONFIRMED);
+                } else if (allUserIds.contains(mSenderAddress)) {
+                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UNCONFIRMED);
+                } else {
+                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_MISSING);
+                }
+            } else {
+                setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_NO_SENDER);
+            }
+
+        } catch (NotFoundException e) {
+            throw new IllegalStateException("Key didn't exist anymore for user id query!", e);
+        }
 
         // either master key is expired/revoked or this specific subkey is expired/revoked
         setKeyExpired(signingRing.isExpired() || signingKey.isExpired());
@@ -139,6 +172,8 @@ public class OpenPgpSignatureResultBuilder {
         result.setKeyId(mKeyId);
         result.setPrimaryUserId(mPrimaryUserId);
         result.setUserIds(mUserIds);
+        result.setConfirmedUserIds(mConfirmedUserIds);
+        result.setSenderResult(mSenderStatus);
 
         if (mIsKeyRevoked) {
             Log.d(Constants.TAG, "RESULT_INVALID_KEY_REVOKED");
@@ -160,5 +195,11 @@ public class OpenPgpSignatureResultBuilder {
         return result;
     }
 
+    public void setSenderAddress(String senderAddress) {
+        mSenderAddress = senderAddress;
+    }
 
+    public void setSenderStatus(int senderStatus) {
+        mSenderStatus = senderStatus;
+    }
 }

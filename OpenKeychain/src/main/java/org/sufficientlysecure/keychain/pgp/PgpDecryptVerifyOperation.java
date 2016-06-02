@@ -164,7 +164,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                     if (aIn.isClearText()) {
                         // a cleartext signature, verify it with the other method
-                        return verifyCleartextSignature(aIn, outputStream, 0);
+                        return verifyCleartextSignature(input, aIn, outputStream, 0);
                     } else {
                         // else: ascii armored encryption! go on...
                         return decryptVerify(input, cryptoInput, inputData, inputStream, outputStream, 0);
@@ -354,7 +354,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             plainFact = fact;
         }
 
-        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper);
+        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper, input.getSenderAddress());
         if (signatureChecker.initializeOnePassSignature(dataChunk, log, indent +1)) {
             dataChunk = plainFact.nextObject();
         }
@@ -835,7 +835,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
      */
     @NonNull
     private DecryptVerifyResult verifyCleartextSignature(
-            ArmoredInputStream aIn, OutputStream outputStream, int indent) throws IOException, PGPException {
+            PgpDecryptVerifyInputParcel input, ArmoredInputStream aIn, OutputStream outputStream, int indent) throws IOException, PGPException {
 
         OperationLog log = new OperationLog();
 
@@ -872,7 +872,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         updateProgress(R.string.progress_processing_signature, 60, 100);
         JcaSkipMarkerPGPObjectFactory pgpFact = new JcaSkipMarkerPGPObjectFactory(aIn);
 
-        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper);
+        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper, input.getSenderAddress());
 
         Object o = pgpFact.nextObject();
         if (!signatureChecker.initializeSignature(o, log, indent+1)) {
@@ -927,7 +927,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             o = pgpFact.nextObject();
         }
 
-        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper);
+        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper, input.getSenderAddress());
 
         if ( ! signatureChecker.initializeSignature(o, log, indent+1)) {
             log.add(LogType.MSG_DC_ERROR_INVALID_DATA, 0);

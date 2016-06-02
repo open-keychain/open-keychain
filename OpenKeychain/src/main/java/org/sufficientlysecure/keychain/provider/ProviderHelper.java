@@ -274,6 +274,27 @@ public class ProviderHelper {
         return (CanonicalizedSecretKeyRing) getCanonicalizedKeyRing(queryUri, true);
     }
 
+    public ArrayList<String> getConfirmedUserIds(long masterKeyId) throws NotFoundException {
+        Cursor cursor = mContentResolver.query(UserPackets.buildUserIdsUri(masterKeyId),
+                new String[]{ UserPackets.USER_ID }, UserPackets.VERIFIED + " = " + Certs.VERIFIED_SECRET, null, null
+        );
+        if (cursor == null) {
+            throw new NotFoundException("Key id for requested user ids not found");
+        }
+
+        try {
+            ArrayList<String> userIds = new ArrayList<>(cursor.getCount());
+            while (cursor.moveToNext()) {
+                String userId = cursor.getString(0);
+                userIds.add(userId);
+            }
+
+            return userIds;
+        } finally {
+            cursor.close();
+        }
+    }
+
     private KeyRing getCanonicalizedKeyRing(Uri queryUri, boolean secret) throws NotFoundException {
         Cursor cursor = mContentResolver.query(queryUri,
                 new String[]{

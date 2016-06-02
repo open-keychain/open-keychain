@@ -47,7 +47,7 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 class PgpSignatureChecker {
 
-    OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
+    private final OpenPgpSignatureResultBuilder signatureResultBuilder;
 
     private CanonicalizedPublicKey signingKey;
 
@@ -57,8 +57,11 @@ class PgpSignatureChecker {
 
     ProviderHelper mProviderHelper;
 
-    PgpSignatureChecker(ProviderHelper providerHelper) {
+    PgpSignatureChecker(ProviderHelper providerHelper, String senderAddress) {
         mProviderHelper = providerHelper;
+
+        signatureResultBuilder = new OpenPgpSignatureResultBuilder(providerHelper);
+        signatureResultBuilder.setSenderAddress(senderAddress);
     }
 
     boolean initializeSignature(Object dataChunk, OperationLog log, int indent) throws PGPException {

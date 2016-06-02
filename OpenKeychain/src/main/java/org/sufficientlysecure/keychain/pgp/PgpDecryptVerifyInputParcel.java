@@ -36,6 +36,7 @@ public class PgpDecryptVerifyInputParcel implements Parcelable {
     private boolean mDecryptMetadataOnly;
     private byte[] mDetachedSignature;
     private String mRequiredSignerFingerprint;
+    private String mSenderAddress;
 
     public PgpDecryptVerifyInputParcel() {
     }
@@ -138,6 +139,15 @@ public class PgpDecryptVerifyInputParcel implements Parcelable {
         return this;
     }
 
+    public PgpDecryptVerifyInputParcel setSenderAddress(String senderAddress) {
+        mSenderAddress = senderAddress;
+        return this;
+    }
+
+    public String getSenderAddress() {
+        return mSenderAddress;
+    }
+
     String getRequiredSignerFingerprint() {
         return mRequiredSignerFingerprint;
     }
@@ -156,6 +166,5 @@ public class PgpDecryptVerifyInputParcel implements Parcelable {
             return new PgpDecryptVerifyInputParcel[size];
         }
     };
-
 }
 
