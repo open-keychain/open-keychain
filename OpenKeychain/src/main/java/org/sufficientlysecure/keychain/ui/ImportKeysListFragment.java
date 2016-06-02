@@ -22,6 +22,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.pm.PackageManager;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,11 +39,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.databinding.ImportKeysListFragmentBinding;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
@@ -73,13 +74,18 @@ public class ImportKeysListFragment extends Fragment implements
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
     private FragmentActivity mActivity;
+    private ImportKeysListFragmentBinding binding;
     private ParcelableProxy mParcelableProxy;
 
-    private ProgressBar mProgressBar;
     private RecyclerView mRecyclerView;
     private ImportKeysAdapter mAdapter;
 
     private LoaderState mLoaderState;
+
+    public static final int STATUS_FIRST = 0;
+    public static final int STATUS_LOADING = 1;
+    public static final int STATUS_LOADED = 2;
+    public static final int STATUS_EMPTY = 3;
 
     private static final int LOADER_ID_BYTES = 0;
     private static final int LOADER_ID_CLOUD = 1;
@@ -87,6 +93,7 @@ public class ImportKeysListFragment extends Fragment implements
     private LongSparseArray<ParcelableKeyRing> mCachedKeyData;
 
     private boolean mShowingOrbotDialog;
+
 
     public LoaderState getLoaderState() {
         return mLoaderState;
@@ -137,7 +144,6 @@ public class ImportKeysListFragment extends Fragment implements
             Log.e(Constants.TAG, "Adapter not initialized, returning empty list");
             return new ArrayList<>();
         }
-
     }
 
     /**
@@ -209,11 +215,14 @@ public class ImportKeysListFragment extends Fragment implements
             mServerQuery = serverQuery;
             mCloudPrefs = cloudPrefs;
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.import_keys_list_fragment, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.import_keys_list_fragment, container, false);
+        binding.setStatus(STATUS_FIRST);
+        View view = binding.getRoot();
 
         mActivity = getActivity();
 
@@ -223,7 +232,6 @@ public class ImportKeysListFragment extends Fragment implements
         String query = args.getString(ARG_SERVER_QUERY);
         boolean nonInteractive = args.getBoolean(ARG_NON_INTERACTIVE, false);
 
-        mProgressBar = (ProgressBar) view.findViewById(R.id.progress_view);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -339,11 +347,6 @@ public class ImportKeysListFragment extends Fragment implements
         }
     }
 
-    private void setLoadingStatus(boolean ready) {
-        mRecyclerView.setVisibility(ready ? View.VISIBLE : View.GONE);
-        mProgressBar.setVisibility(ready ? View.GONE : View.VISIBLE);
-    }
-
     @Override
     public Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> onCreateLoader(
             int id,
@@ -364,7 +367,7 @@ public class ImportKeysListFragment extends Fragment implements
         }
 
         if (loader != null) {
-            setLoadingStatus(false);
+            binding.setStatus(STATUS_LOADING);
         }
 
         return loader;
@@ -375,9 +378,9 @@ public class ImportKeysListFragment extends Fragment implements
             Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader,
             AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data
     ) {
-        setLoadingStatus(true);
-
-        mAdapter.setData(data.getResult());
+        ArrayList<ImportKeysListEntry> result = data.getResult();
+        binding.setStatus(result.size() > 0 ? STATUS_LOADED : STATUS_EMPTY);
+        mAdapter.setData(result);
 
         // free old cached key data
         mCachedKeyData = null;

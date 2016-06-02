@@ -65,6 +65,7 @@
                 android:drawablePadding="8dp"
                 android:drawableRight="@drawable/ic_file_download_white_24dp"
                 android:gravity="center_vertical"
+                android:maxLines="1"
                 android:text="@string/import_import"
                 android:textColor="#ffffffff" />
 

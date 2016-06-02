@@ -1,22 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/md_grey_100">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ProgressBar
-        android:id="@+id/progress_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+    <data>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
+        <import type="android.view.View" />
+
+        <import
+            alias="i"
+            type="org.sufficientlysecure.keychain.ui.ImportKeysListFragment" />
+
+        <variable
+            name="status"
+            type="int" />
+    </data>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:scrollbars="vertical"
-        android:visibility="gone" />
-</FrameLayout>
+        android:background="@color/md_grey_100">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="@{status == i.STATUS_LOADING ? View.VISIBLE : View.GONE}" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:scrollbars="vertical"
+            android:visibility="@{status == i.STATUS_LOADED ? View.VISIBLE : View.GONE}" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/error_nothing_import"
+            android:visibility="@{status == i.STATUS_EMPTY ? View.VISIBLE : View.GONE}" />
+    </FrameLayout>
+</layout>
