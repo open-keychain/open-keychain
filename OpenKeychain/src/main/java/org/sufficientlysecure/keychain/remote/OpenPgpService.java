@@ -557,30 +557,21 @@ public class OpenPgpService extends Service {
                     if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
                         result.putExtra(OpenPgpApi.RESULT_SIGNATURE, (Parcelable[]) null);
                     }
-
-                    // OpenPgpDecryptionResult does not exist in API < 8
-                    {
-                        OpenPgpDecryptionResult decryptionResult = pgpResult.getDecryptionResult();
-
-                        // case RESULT_NOT_ENCRYPTED, but a signature, fallback to deprecated signatureOnly variable
-                        if (decryptionResult.getResult() == OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED
-                                && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
-                            // noinspection deprecation
-                            signatureResult = signatureResult.withSignatureOnlyFlag();
-                        }
-
-                        // case RESULT_INSECURE, simply accept as a fallback like in previous API versions
-
-                        // case RESULT_ENCRYPTED
-                        // nothing to do!
-                    }
                 }
 
-                if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 8) {
+                boolean apiHasOpenPgpDecryptionResult = data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 8;
+                if (apiHasOpenPgpDecryptionResult) {
                     OpenPgpDecryptionResult decryptionResult = pgpResult.getDecryptionResult();
                     if (decryptionResult != null) {
                         result.putExtra(OpenPgpApi.RESULT_DECRYPTION, decryptionResult);
                     }
+                } else {
+                    // this info was kept in OpenPgpSignatureResult, so put it there for compatibility
+                    OpenPgpDecryptionResult decryptionResult = pgpResult.getDecryptionResult();
+                    boolean signatureOnly = decryptionResult.getResult() == OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED
+                            && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE;
+                    // noinspection deprecation, this is for backwards compatibility
+                    signatureResult = signatureResult.withSignatureOnlyFlag(signatureOnly);
                 }
 
                 OpenPgpMetadata metadata = pgpResult.getDecryptionMetadata();
