@@ -1018,22 +1018,22 @@
   <string name="msg_con_error_bad_state">データベースでキャッシュせずに統合が開始されています! これはおそらくプログラムエラーなので、バグレポートでファイルの提出をお願いします!</string>
   <string name="msg_con_error_concurrent">統合を中断しました、すでに他のスレッドで動いているためです!</string>
   <string name="msg_con_save_secret">秘密鍵の鍵輪を保存中</string>
-  <string name="msg_con_save_public">公開鍵の鍵輪を保存中</string>
+  <string name="msg_con_save_all_public">公開鍵の鍵輪を保存中</string>
   <string name="msg_con_db_clear">データベースの消去中</string>
   <string name="msg_con_success">データベースの統合が成功しました</string>
   <string name="msg_con_critical_in">クリティカルなフェーズに入りました</string>
   <string name="msg_con_critical_out">クリティカルなフェーズを抜けました</string>
-  <string name="msg_con_delete_public">公開鍵輪のキャッシュファイルを削除中</string>
+  <string name="msg_con_delete_all_public">公開鍵輪のキャッシュファイルを削除中</string>
   <string name="msg_con_delete_secret">秘密鍵輪のキャッシュファイルを削除中</string>
   <string name="msg_con_error_db">データベースオープン中のエラー!</string>
-  <string name="msg_con_error_io_public">キャッシュに公開鍵を書く際にI/Oエラー!</string>
+  <string name="msg_con_error_io_all_public">キャッシュに公開鍵を書く際にI/Oエラー!</string>
   <string name="msg_con_error_io_secret">キャッシュに秘密鍵を書く際にI/Oエラー!</string>
-  <string name="msg_con_error_public">公開鍵の再インポートのエラー!</string>
+  <string name="msg_con_error_all_public">公開鍵の再インポートのエラー!</string>
   <string name="msg_con_error_secret">秘密鍵の再インポートのエラー!</string>
   <string name="msg_con_recover">統合整理処理のレジューム</string>
   <string name="msg_con_recursive">再帰統合処理をスキップ</string>
   <string name="msg_con_recover_unknown">不明な状態からの統合整理処理のレジューム</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="other">%d の公開鍵を再インポート中</item>
   </plurals>
   <string name="msg_con_reimport_public_skip">再インポートで公開鍵がありません、スキップします...</string>
@@ -1041,7 +1041,7 @@
     <item quantity="other">%d の秘密鍵を再インポート中</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">再インポートで秘密鍵がありません、スキップします...</string>
-  <string name="msg_con_warn_delete_public">公開鍵キャッシュファイルの削除例外</string>
+  <string name="msg_con_warn_delete_all_public">公開鍵キャッシュファイルの削除例外</string>
   <string name="msg_con_warn_delete_secret">秘密鍵のキャッシュファイルを削除中に例外発生</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">キー操作の実行</string>

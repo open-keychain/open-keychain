@@ -795,15 +795,15 @@
   <string name="msg_con">Konsoliderar databas</string>
   <string name="msg_con_error_bad_state">Konsolidering startade medan ingen databas var cachad! Detta är förmodligen ett programmeringsfel, skicka en buggrapport.</string>
   <string name="msg_con_save_secret">Sparar privata nyckelringar</string>
-  <string name="msg_con_save_public">Sparar publika nyckelringar</string>
+  <string name="msg_con_save_all_public">Sparar publika nyckelringar</string>
   <string name="msg_con_db_clear">Rensar databas</string>
   <string name="msg_con_success">Konsoliderade databas</string>
-  <string name="msg_con_delete_public">Raderar cache-fil för publik nyckelring</string>
+  <string name="msg_con_delete_all_public">Raderar cache-fil för publik nyckelring</string>
   <string name="msg_con_delete_secret">Raderar cache-fil för privat nyckelring</string>
   <string name="msg_con_error_db">Fel när databas skulle öppnas!</string>
-  <string name="msg_con_error_public">Fel när publika nycklar skulle återimporteras!</string>
+  <string name="msg_con_error_all_public">Fel när publika nycklar skulle återimporteras!</string>
   <string name="msg_con_error_secret">Fel när privata nycklar skulle återimporteras!</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Återimporterar en publik nyckel</item>
     <item quantity="other">Återimporterar %d publika nycklar</item>
   </plurals>

@@ -1032,22 +1032,22 @@
   <string name="msg_con_error_bad_state">La consolidation a été commencée alors qu\'aucune base de données n\'était en cache ! C\'est probablement une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_con_error_concurrent">La consolidation a été abandonnée, elle est déjà en cours sur un autre exétron !</string>
   <string name="msg_con_save_secret">Enregistrement des trousseaux secrets</string>
-  <string name="msg_con_save_public">Enregistrement des trousseaux publiques</string>
+  <string name="msg_con_save_all_public">Enregistrement des trousseaux publiques</string>
   <string name="msg_con_db_clear">Nettoyage de la base de données</string>
   <string name="msg_con_success">Base de données consolidée avec succès</string>
   <string name="msg_con_critical_in">Début de la phase critique</string>
   <string name="msg_con_critical_out">Fin de la phase critique</string>
-  <string name="msg_con_delete_public">Suppression du fichier de cache du trousseau public</string>
+  <string name="msg_con_delete_all_public">Suppression du fichier de cache du trousseau public</string>
   <string name="msg_con_delete_secret">Suppression du fichier de cache du trousseau secret</string>
   <string name="msg_con_error_db">Erreur d\'ouverture de la base de données !</string>
-  <string name="msg_con_error_io_public">Erreur E/S d\'écriture des clefs publiques vers le cache !</string>
+  <string name="msg_con_error_io_all_public">Erreur E/S d\'écriture des clefs publiques vers le cache !</string>
   <string name="msg_con_error_io_secret">Erreur E/S d\'écriture des clefs secrètes vers le cache !</string>
-  <string name="msg_con_error_public">Erreur de réimportation des clefs publiques !</string>
+  <string name="msg_con_error_all_public">Erreur de réimportation des clefs publiques !</string>
   <string name="msg_con_error_secret">Erreur de réimportation des clefs secrètes !</string>
   <string name="msg_con_recover">Reprise du processus de consolidation</string>
   <string name="msg_con_recursive">Consolidation récursive ignorée</string>
   <string name="msg_con_recover_unknown">Reprise du processus de consolidation à partir d\'un état inconnu</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Réimportation d\'une clef publique</item>
     <item quantity="other">Réimportation de %d clefs publiques</item>
   </plurals>
@@ -1057,7 +1057,7 @@
     <item quantity="other">Réimportation de %d clefs secrètes</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Aucune clef secrète à réimporter, étape ignorée...</string>
-  <string name="msg_con_warn_delete_public">Exception de suppression du fichier de cache public</string>
+  <string name="msg_con_warn_delete_all_public">Exception de suppression du fichier de cache public</string>
   <string name="msg_con_warn_delete_secret">Exception de suppression du fichier de cache secret</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Exécution de l\'opération sur la clef</string>

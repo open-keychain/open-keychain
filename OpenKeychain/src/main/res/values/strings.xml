@@ -942,6 +942,20 @@
     <string name="msg_is_bad_type_public">"Tried to import public keyring as secret. This is a bug, please file a report!"</string>
     <string name="msg_is_bad_type_uncanon">"Tried to import a keyring without canonicalization. This is a bug, please file a report!"</string>
 
+    <!-- Write Secret log entries -->
+    <string name="msg_ws">"Writing secret key %s"</string>
+    <string name="msg_ws_db_exception">"Database error!"</string>
+    <string name="msg_ws_writing_subkey_data">"Writing subkey data"</string>
+    <string name="msg_ws_subkey_nonexistent">"Subkey %s unavailable in secret key"</string>
+    <string name="msg_ws_subkey_ok">"Marked secret subkey %s as available"</string>
+    <string name="msg_ws_subkey_empty">"Marked secret subkey %s as available, with empty password"</string>
+    <string name="msg_ws_subkey_pin">"Marked secret subkey %s as available, with PIN"</string>
+    <string name="msg_ws_subkey_stripped">"Marked secret subkey %s as stripped"</string>
+    <string name="msg_ws_subkey_divert">"Marked secret subkey %s as key on Security Token"</string>
+    <string name="msg_ws_success">"Successfully written secret keyring"</string>
+    <string name="msg_ws_updating_self_certs">"Updating self certs"</string>
+    <string name="msg_ws_updated_self_certs">"Updated self certs"</string>
+
     <!-- Import Secret log entries -->
     <string name="msg_is">"Importing secret key %s"</string>
     <string name="msg_is_db_exception">"Database error!"</string>
@@ -1127,24 +1141,32 @@
     <string name="msg_con_error_bad_state">"Consolidation was started while no database was cached! This is probably a programming error, please file a bug report."</string>
     <string name="msg_con_error_concurrent">"Consolidation aborted, already running on other thread!"</string>
     <string name="msg_con_save_secret">"Saving secret keyrings"</string>
-    <string name="msg_con_save_public">"Saving public keyrings"</string>
+    <string name="msg_con_save_own_public">"Saving own public keyrings"</string>
+    <string name="msg_con_save_foreign_public">"Saving foreign public keyrings"</string>
     <string name="msg_con_db_clear">"Clearing database"</string>
     <string name="msg_con_success">"Successfully consolidated database"</string>
     <string name="msg_con_critical_in">"Entering critical phase"</string>
     <string name="msg_con_critical_out">"Leaving critical phase"</string>
-    <string name="msg_con_delete_public">"Deleting public keyring cache file"</string>
+    <string name="msg_con_delete_foreign_public">"Deleting foreign public keyring cache file"</string>
+    <string name="msg_con_delete_own_public">"Deleting own public keyring cache file"</string>
     <string name="msg_con_delete_secret">"Deleting secret keyring cache file"</string>
     <string name="msg_con_error_db">"Error opening database!"</string>
-    <string name="msg_con_error_io_public">"IO error writing public keys to cache!"</string>
+    <string name="msg_con_error_io_foreign_public">"IO error writing foreign public keys to cache!"</string>
+    <string name="msg_con_error_io_own_public">"IO error writing own public keys to cache!"</string>
     <string name="msg_con_error_io_secret">"IO error writing secret keys to cache!"</string>
-    <string name="msg_con_error_public">"Error reimporting public keys!"</string>
+    <string name="msg_con_error_foreign_public">"Error reimporting foreign public keys!"</string>
+    <string name="msg_con_error_own_public">"Error reimporting own public keys!"</string>
     <string name="msg_con_error_secret">"Error reimporting secret keys!"</string>
     <string name="msg_con_recover">"Resuming consolidation process"</string>
     <string name="msg_con_recursive">"Skipping recursive consolidation"</string>
     <string name="msg_con_recover_unknown">"Resuming consolidation process from unknown state"</string>
-    <plurals name="msg_con_reimport_public">
-        <item quantity="one">"Reimporting one public key"</item>
-        <item quantity="other">"Reimporting %d public keys"</item>
+    <plurals name="msg_con_reimport_foreign_public">
+        <item quantity="one">"Reimporting one foreign public key"</item>
+        <item quantity="other">"Reimporting %d foreign public keys"</item>
+    </plurals>
+    <plurals name="msg_con_reimport_own_public">
+        <item quantity="one">"Reimporting one personal public key"</item>
+        <item quantity="other">"Reimporting %d personal public keys"</item>
     </plurals>
     <string name="msg_con_reimport_public_skip">"No public keys to reimport, skipping…"</string>
     <plurals name="msg_con_reimport_secret">
@@ -1152,7 +1174,8 @@
         <item quantity="other">"Reimporting %d secret keys"</item>
     </plurals>
     <string name="msg_con_reimport_secret_skip">"No secret keys to reimport, skipping…"</string>
-    <string name="msg_con_warn_delete_public">"Exception deleting public cache file"</string>
+    <string name="msg_con_warn_delete_foreign_public">"Exception deleting foreign public cache file"</string>
+    <string name="msg_con_warn_delete_own_public">"Exception deleting own public cache file"</string>
     <string name="msg_con_warn_delete_secret">"Exception deleting secret cache file"</string>
 
     <!-- Edit Key (higher level than modify) -->
@@ -1306,6 +1329,12 @@
     <string name="msg_crt_warn_upload_failed">"Upload operation failed!"</string>
 
     <string name="msg_crt_upload_success">"Successfully uploaded key to server"</string>
+
+    <plurals name="msg_write">
+        <item quantity="one">"Writing key"</item>
+        <item quantity="other">"Writing %d keys"</item>
+    </plurals>
+    <string name="msg_write_success">"Write keys successful!"</string>
 
     <plurals name="msg_import">
         <item quantity="one">"Importing key"</item>

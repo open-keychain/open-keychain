@@ -971,6 +971,20 @@ public class KeychainProvider extends ContentProvider {
                             buildDefaultApiAccountsSelection(uri, selection), selectionArgs);
                     break;
                 }
+                case KEY_RING_CERTS: {
+                    if (values.size() != 1 || !values.containsKey(Certs.VERIFIED)) {
+                        throw new UnsupportedOperationException(
+                                "Only verified column may be updated");
+                    }
+                    // make sure we get a long value here
+                    Long mkid = Long.parseLong(uri.getPathSegments().get(1));
+                    String actualSelection = Keys.MASTER_KEY_ID + " = " + Long.toString(mkid);
+                    if (!TextUtils.isEmpty(selection)) {
+                        actualSelection += " AND (" + selection + ")";
+                    }
+                    count = db.update(Tables.CERTS, values, actualSelection, selectionArgs);
+                    break;
+                }
                 default: {
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
                 }

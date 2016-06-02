@@ -46,4 +46,30 @@ public class ConsolidateResult extends OperationResult {
         }
     };
 
+    public static class WriteKeyRingsResult extends OperationResult {
+
+        public WriteKeyRingsResult(int result, OperationLog log) {
+            super(result, log);
+        }
+
+        /** Construct from a parcel - trivial because we have no extra data. */
+        public WriteKeyRingsResult(Parcel source) {
+            super(source);
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+        }
+
+        public static Creator<WriteKeyRingsResult> CREATOR = new Creator<WriteKeyRingsResult>() {
+            public WriteKeyRingsResult createFromParcel(final Parcel source) {
+                return new WriteKeyRingsResult(source);
+            }
+
+            public WriteKeyRingsResult[] newArray(final int size) {
+                return new WriteKeyRingsResult[size];
+            }
+        };
+    }
 }

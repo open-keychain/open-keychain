@@ -962,22 +962,22 @@
   <string name="msg_con_error_bad_state">¡La consolidación se inició cuando ninguna base de datos estaba en caché! Probablemente esto es un error de programación, por favor, consigne un informe de fallo.</string>
   <string name="msg_con_error_concurrent">¡Consolidación abortada, ejecutándose ya en otro hilo!</string>
   <string name="msg_con_save_secret">Guardando juegos de claves secretas (privadas)</string>
-  <string name="msg_con_save_public">Guardando juegos de claves públicas</string>
+  <string name="msg_con_save_all_public">Guardando juegos de claves públicas</string>
   <string name="msg_con_db_clear">Limpiando base de datos</string>
   <string name="msg_con_success">Base de datos consolidada con éxito</string>
   <string name="msg_con_critical_in">Entrando en fase crítica</string>
   <string name="msg_con_critical_out">Abandonando fase crítica</string>
-  <string name="msg_con_delete_public">Borrando fichero de caché del juego de claves públicas</string>
+  <string name="msg_con_delete_all_public">Borrando fichero de caché del juego de claves públicas</string>
   <string name="msg_con_delete_secret">Borrando fichero de caché del juego de claves secretas (privadas)</string>
   <string name="msg_con_error_db">¡Error al abrir la base de datos!</string>
-  <string name="msg_con_error_io_public">¡Error de E/S al escribir claves públicas en caché!</string>
+  <string name="msg_con_error_io_all_public">¡Error de E/S al escribir claves públicas en caché!</string>
   <string name="msg_con_error_io_secret">¡Error de E/S al escribir claves secretas (privadas) en caché!</string>
-  <string name="msg_con_error_public">¡Error al reimportar claves públicas!</string>
+  <string name="msg_con_error_all_public">¡Error al reimportar claves públicas!</string>
   <string name="msg_con_error_secret">¡Error reimportando claves secretas (privadas)!</string>
   <string name="msg_con_recover">Retomando el proceso de consolidación</string>
   <string name="msg_con_recursive">Omitiendo consolidación recursiva</string>
   <string name="msg_con_recover_unknown">Retomando el proceso de consolidación desde un estado desconocido</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Reimportando una clave pública</item>
     <item quantity="other">Reimportando %d claves públicas</item>
   </plurals>
@@ -987,7 +987,7 @@
     <item quantity="other">Reimportando %d claves secretas (privadas)</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">No hay claves públicas a reimportar, omitiendo...</string>
-  <string name="msg_con_warn_delete_public">Excepción al borrar el fichero de caché de claves públicas</string>
+  <string name="msg_con_warn_delete_all_public">Excepción al borrar el fichero de caché de claves públicas</string>
   <string name="msg_con_warn_delete_secret">Excepción al borrar el fichero de caché de claves secretas (privadas)</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Realizando operación en la clave</string>

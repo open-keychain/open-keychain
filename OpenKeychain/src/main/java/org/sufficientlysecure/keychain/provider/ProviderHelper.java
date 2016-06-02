@@ -30,13 +30,18 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.util.LongSparseArray;
 
+import android.util.Pair;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableEncryptedKeyRing;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.ConsolidateOperation;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
+import org.sufficientlysecure.keychain.operations.results.ConsolidateResult.WriteKeyRingsResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
@@ -360,6 +365,7 @@ public class ProviderHelper {
     @SuppressWarnings("unchecked")
     private int saveCanonicalizedPublicKeyRing(CanonicalizedPublicKeyRing keyRing,
                                                Progressable progress, boolean selfCertsAreTrusted) {
+        selfCertsAreTrusted = selfCertsAreTrusted || mConsolidatingOwnPublic;
 
         // start with ok result
         int result = SaveKeyringResult.SAVED_PUBLIC;
@@ -1019,6 +1025,10 @@ public class ProviderHelper {
 
     }
 
+    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing) {
+        return saveSecretKeyRing(secretRing, new ProgressScaler());
+    }
+
     public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing, Progressable progress) {
 
         try {
@@ -1132,11 +1142,9 @@ public class ProviderHelper {
 
     @NonNull
     public ConsolidateResult consolidateDatabaseStep1(Progressable progress) {
-
         OperationLog log = new OperationLog();
         int indent = 0;
 
-        // 1a. fetch all secret keyrings into a cache file
         log.add(LogType.MSG_CON, indent);
         indent += 1;
 
@@ -1150,122 +1158,84 @@ public class ProviderHelper {
         // The consolidate operation can never be cancelled!
         progress.setPreventCancel();
 
+        // 1a. fetch own public keyrings into a cache file
         try {
+            log.add(LogType.MSG_CON_SAVE_OWN_PUBLIC, indent);
+            indent += 1;
 
+            Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(),
+                    new String[]{KeyRings.PUBKEY_DATA, KeyRings.HAS_ANY_SECRET},
+                    KeyRings.HAS_ANY_SECRET + "!=0", null, null);
+            cachePublicKeyRings(cursor, 0, "consolidate_own_public.pcl");
+            //noinspection ConstantConditions
+            cursor.close();
+
+        } catch (NullPointerException e) {
+            log.add(LogType.MSG_CON_ERROR_DB, indent);
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
+
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "error saving own public", e);
+            log.add(LogType.MSG_CON_ERROR_IO_OWN_PUBLIC, indent);
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
+
+        } finally {
+            indent -= 1;
+        }
+
+        progress.setProgress(R.string.progress_con_saving, 1, 100);
+
+        // 1b. fetch all encrypted secret keyRing blocks and subKey type into a cache file
+        try {
             log.add(LogType.MSG_CON_SAVE_SECRET, indent);
             indent += 1;
 
-            final Cursor cursor = mContentResolver.query(KeyRingData.buildSecretKeyRingUri(),
-                    new String[]{KeyRingData.KEY_RING_DATA}, null, null, null);
-
-            if (cursor == null) {
-                log.add(LogType.MSG_CON_ERROR_DB, indent);
-                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
-            }
-
-            // No keys existing might be a legitimate option, we write an empty file in that case
-            cursor.moveToFirst();
-            ParcelableFileCache<ParcelableKeyRing> cache =
-                    new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
-            cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
-                ParcelableKeyRing ring;
-
-                @Override
-                public boolean hasNext() {
-                    if (ring != null) {
-                        return true;
-                    }
-                    if (cursor.isAfterLast()) {
-                        return false;
-                    }
-                    ring = new ParcelableKeyRing(cursor.getBlob(0));
-                    cursor.moveToNext();
-                    return true;
-                }
-
-                @Override
-                public ParcelableKeyRing next() {
-                    try {
-                        return ring;
-                    } finally {
-                        ring = null;
-                    }
-                }
-
-                @Override
-                public void remove() {
-                    throw new UnsupportedOperationException();
-                }
-
-            });
+            final Cursor cursor = mContentResolver.query(
+                    KeyRingData.buildSecretKeyRingUri(),
+                    new String[]{KeyRingData.KEY_RING_DATA, KeyRingData.MASTER_KEY_ID},
+                    null, null, null);
+            cacheSecretKeyRings(cursor, 0, "consolidate_secret.pcl");
+            //noinspection ConstantConditions
             cursor.close();
+
+        } catch (NullPointerException e) {
+            log.add(LogType.MSG_CON_ERROR_DB, indent);
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving secret", e);
             log.add(LogType.MSG_CON_ERROR_IO_SECRET, indent);
             return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
+
         } finally {
             indent -= 1;
         }
 
         progress.setProgress(R.string.progress_con_saving, 3, 100);
 
-        // 1b. fetch all public keyrings into a cache file
+        // 1c. fetch all public keyrings into a cache file
         try {
-
-            log.add(LogType.MSG_CON_SAVE_PUBLIC, indent);
+            log.add(LogType.MSG_CON_SAVE_FOREIGN_PUBLIC, indent);
             indent += 1;
 
-            final Cursor cursor = mContentResolver.query(
+            // Importing own public rings and all public rings ==
+            // importing own public rings and foreign public rings
+            Cursor cursor = mContentResolver.query(
                     KeyRingData.buildPublicKeyRingUri(),
                     new String[]{KeyRingData.KEY_RING_DATA}, null, null, null);
-
-            if (cursor == null) {
-                log.add(LogType.MSG_CON_ERROR_DB, indent);
-                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
-            }
-
-            // No keys existing might be a legitimate option, we write an empty file in that case
-            cursor.moveToFirst();
-            ParcelableFileCache<ParcelableKeyRing> cache =
-                    new ParcelableFileCache<>(mContext, "consolidate_public.pcl");
-            cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
-                ParcelableKeyRing ring;
-
-                @Override
-                public boolean hasNext() {
-                    if (ring != null) {
-                        return true;
-                    }
-                    if (cursor.isAfterLast()) {
-                        return false;
-                    }
-                    ring = new ParcelableKeyRing(cursor.getBlob(0));
-                    cursor.moveToNext();
-                    return true;
-                }
-
-                @Override
-                public ParcelableKeyRing next() {
-                    try {
-                        return ring;
-                    } finally {
-                        ring = null;
-                    }
-                }
-
-                @Override
-                public void remove() {
-                    throw new UnsupportedOperationException();
-                }
-
-            });
+            cachePublicKeyRings(cursor, 0, "consolidate_foreign_public.pcl");
+            //noinspection ConstantConditions
             cursor.close();
+
+        } catch (NullPointerException e) {
+            log.add(LogType.MSG_CON_ERROR_DB, indent);
+            return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving public", e);
-            log.add(LogType.MSG_CON_ERROR_IO_PUBLIC, indent);
+            log.add(LogType.MSG_CON_ERROR_IO_FOREIGN_PUBLIC, indent);
             return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
+
         } finally {
             indent -= 1;
         }
@@ -1276,12 +1246,118 @@ public class ProviderHelper {
         return consolidateDatabaseStep2(log, indent, progress, false);
     }
 
+    private void cachePublicKeyRings(final Cursor cursor, final int keyRingPosition, String fileName)
+            throws IOException, NullPointerException {
+        // No keys existing might be a legitimate option, we write an empty file in that case
+        cursor.moveToFirst();
+        ParcelableFileCache<ParcelableKeyRing> cache = new ParcelableFileCache<>(mContext, fileName);
+
+        cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
+            ParcelableKeyRing ring;
+
+            @Override
+            public boolean hasNext() {
+                if (ring != null) {
+                    return true;
+                }
+                if (cursor.isAfterLast()) {
+                    return false;
+                }
+                ring = new ParcelableKeyRing(cursor.getBlob(keyRingPosition));
+                cursor.moveToNext();
+                return true;
+            }
+
+            @Override
+            public ParcelableKeyRing next() {
+                try {
+                    return ring;
+                } finally {
+                    ring = null;
+                }
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+
+        });
+    }
+
+    /**
+     * Caches secret keyrings with subkey related data obtainable only by
+     * reading the secret keyrings
+     */
+    private void cacheSecretKeyRings(final Cursor cursor, final int keyRingPosition, String fileName)
+            throws IOException, NullPointerException {
+        // No keys existing might be a legitimate option, we write an empty file in that case
+        cursor.moveToFirst();
+        ParcelableFileCache<ParcelableEncryptedKeyRing> cache = new ParcelableFileCache<>(mContext, fileName);
+
+        cache.writeCache(cursor.getCount(), new Iterator<ParcelableEncryptedKeyRing>() {
+            ParcelableEncryptedKeyRing ring;
+
+            @Override
+            public boolean hasNext() {
+                if (ring != null) {
+                    return true;
+                }
+                if (cursor.isAfterLast()) {
+                    return false;
+                }
+                long masterKeyId = cursor.getLong(1);
+                ArrayList<Pair<Long, Integer>> subKeyIdsAndType = getSubKeyIdsAndType(masterKeyId);
+                ring = new ParcelableEncryptedKeyRing(cursor.getBlob(keyRingPosition), masterKeyId, subKeyIdsAndType);
+                cursor.moveToNext();
+                return true;
+            }
+
+            @Override
+            public ParcelableEncryptedKeyRing next() {
+                try {
+                    return ring;
+                } finally {
+                    ring = null;
+                }
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+
+        });
+    }
+
+    private ArrayList<Pair<Long, Integer>> getSubKeyIdsAndType(long masterKeyId) {
+        ArrayList<Pair<Long, Integer>> idsAndType = new ArrayList<>();
+        Cursor cursor = mContentResolver.query(KeychainContract.Keys.buildKeysUri(masterKeyId),
+                                                new String[] {Keys.KEY_ID, Keys.HAS_SECRET,},
+                                                Keys.HAS_SECRET + " !=0", null, null);
+        try {
+            if (cursor != null) {
+                while(cursor.moveToNext()) {
+                    long subKeyId = cursor.getLong(0);
+                    int subKeyType = cursor.getInt(1);
+                    idsAndType.add(new Pair<>(subKeyId, subKeyType));
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return idsAndType;
+    }
+
     @NonNull
     public ConsolidateResult consolidateDatabaseStep2(Progressable progress) {
         return consolidateDatabaseStep2(new OperationLog(), 0, progress, true);
     }
 
     private static boolean mConsolidateCritical = false;
+    private boolean mConsolidatingOwnPublic = false;
 
     @NonNull
     private ConsolidateResult consolidateDatabaseStep2(
@@ -1334,23 +1410,48 @@ public class ProviderHelper {
             log.add(LogType.MSG_CON_DB_CLEAR, indent);
             mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
-            ParcelableFileCache<ParcelableKeyRing> cacheSecret, cachePublic;
+            ParcelableFileCache<ParcelableKeyRing> cacheOwnPublic, cacheAllPublic;
+            ParcelableFileCache<ParcelableEncryptedKeyRing> cacheSecret;
 
             // Set flag that we have a cached consolidation here
             try {
-                cacheSecret = new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
-                IteratorWithSize<ParcelableKeyRing> itSecrets = cacheSecret.readCache(false);
-                int numSecrets = itSecrets.getSize();
+                cacheOwnPublic = new ParcelableFileCache<>(mContext, "consolidate_own_public.pcl");
+                IteratorWithSize<ParcelableKeyRing> itOwnPublics = cacheOwnPublic.readCache(false);
+                int numPublic = itOwnPublics.getSize();
 
-                log.add(LogType.MSG_CON_REIMPORT_SECRET, indent, numSecrets);
+                log.add(LogType.MSG_CON_REIMPORT_OWN_PUBLIC, indent, numPublic);
                 indent += 1;
 
-                // 3. Re-Import secret keyrings from cache
-                if (numSecrets > 0) {
-
+                // 3. Re-Import own public keyrings from cache
+                mConsolidatingOwnPublic = true;
+                if (numPublic > 0) {
                     ImportKeyResult result = new ImportOperation(mContext, this,
-                            new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
-                            .serialKeyRingImport(itSecrets, numSecrets, null, null);
+                            new ProgressFixedScaler(progress, 10, 20, 100, R.string.progress_con_reimport))
+                            .serialKeyRingImport(itOwnPublics, numPublic, null, null);
+                    log.add(result, indent);
+                } else {
+                    log.add(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP, indent);
+                }
+
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "error importing own public", e);
+                log.add(LogType.MSG_CON_ERROR_OWN_PUBLIC, indent);
+                return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
+            } finally {
+                mConsolidatingOwnPublic = false;
+                indent -= 1;
+            }
+
+            try {
+                cacheSecret = new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
+                IteratorWithSize<ParcelableEncryptedKeyRing> itSecrets = cacheSecret.readCache(false);
+                int numSecret = itSecrets.getSize();
+                log.add(LogType.MSG_CON_REIMPORT_SECRET, indent, numSecret);
+                indent += 1;
+
+                // 4. Re-Import secret keyrings & related subkey data from cache
+                if (numSecret > 0) {
+                    OperationResult result = writeSecretKeyRingsToDb(itSecrets, numSecret);
                     log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_SECRET_SKIP, indent);
@@ -1366,14 +1467,14 @@ public class ProviderHelper {
 
             try {
 
-                cachePublic = new ParcelableFileCache<>(mContext, "consolidate_public.pcl");
-                IteratorWithSize<ParcelableKeyRing> itPublics = cachePublic.readCache();
+                cacheAllPublic = new ParcelableFileCache<>(mContext, "consolidate_foreign_public.pcl");
+                IteratorWithSize<ParcelableKeyRing> itPublics = cacheAllPublic.readCache();
                 int numPublics = itPublics.getSize();
 
-                log.add(LogType.MSG_CON_REIMPORT_PUBLIC, indent, numPublics);
+                log.add(LogType.MSG_CON_REIMPORT_FOREIGN_PUBLIC, indent, numPublics);
                 indent += 1;
 
-                // 4. Re-Import public keyrings from cache
+                // 5. Re-Import foreign public keyrings from cache
                 if (numPublics > 0) {
 
                     ImportKeyResult result = new ImportOperation(mContext, this,
@@ -1389,8 +1490,8 @@ public class ProviderHelper {
                 }
 
             } catch (IOException e) {
-                Log.e(Constants.TAG, "error importing public", e);
-                log.add(LogType.MSG_CON_ERROR_PUBLIC, indent);
+                Log.e(Constants.TAG, "error importing all public", e);
+                log.add(LogType.MSG_CON_ERROR_FOREIGN_PUBLIC, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
             } finally {
                 indent -= 1;
@@ -1399,7 +1500,19 @@ public class ProviderHelper {
             log.add(LogType.MSG_CON_CRITICAL_OUT, indent);
             Preferences.getPreferences(mContext).setCachedConsolidate(false);
 
-            // 5. Delete caches
+            // 6. Delete caches
+            try {
+                log.add(LogType.MSG_CON_DELETE_OWN_PUBLIC, indent);
+                indent += 1;
+                cacheOwnPublic.delete();
+            } catch (IOException e) {
+                // doesn't /really/ matter
+                Log.e(Constants.TAG, "IOException during delete of own public cache", e);
+                log.add(LogType.MSG_CON_WARN_DELETE_OWN_PUBLIC, indent);
+            } finally {
+                indent -= 1;
+            }
+
             try {
                 log.add(LogType.MSG_CON_DELETE_SECRET, indent);
                 indent += 1;
@@ -1413,13 +1526,13 @@ public class ProviderHelper {
             }
 
             try {
-                log.add(LogType.MSG_CON_DELETE_PUBLIC, indent);
+                log.add(LogType.MSG_CON_DELETE_FOREIGN_PUBLIC, indent);
                 indent += 1;
-                cachePublic.delete();
+                cacheAllPublic.delete();
             } catch (IOException e) {
                 // doesn't /really/ matter
                 Log.e(Constants.TAG, "IOException during deletion of public cache", e);
-                log.add(LogType.MSG_CON_WARN_DELETE_PUBLIC, indent);
+                log.add(LogType.MSG_CON_WARN_DELETE_FOREIGN_PUBLIC, indent);
             } finally {
                 indent -= 1;
             }
@@ -1433,6 +1546,95 @@ public class ProviderHelper {
             mConsolidateCritical = false;
         }
 
+    }
+
+    /**
+     * Writes encrypted keyring block and related data directly into db, throws error if writing fails.
+     * Parcels are trusted to be valid. There is no way to verify the contents.
+     */
+    private WriteKeyRingsResult writeSecretKeyRingsToDb(Iterator<ParcelableEncryptedKeyRing> it, int num) {
+        OperationLog log = new OperationLog();
+        int indent = 0;
+        ContentResolver contentResolver = mContext.getContentResolver();
+        log.add(LogType.MSG_WRITE, indent, num);
+
+        indent += 1;
+        while(it.hasNext()) {
+            ParcelableEncryptedKeyRing encryptedRing = it.next();
+            long masterKeyId = encryptedRing.mMasterKeyId;
+            log.add(LogType.MSG_WS, indent, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
+            indent += 1;
+
+            // 1. save secret keyring
+            ContentValues values = new ContentValues();
+            values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
+            values.put(KeyRingData.KEY_RING_DATA, encryptedRing.mBytes);
+            Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
+            if (contentResolver.insert(uri, values) == null) {
+                log.add(LogType.MSG_WS_DB_EXCEPTION, indent);
+                return new WriteKeyRingsResult(OperationResult.RESULT_ERROR, log);
+            }
+
+            // 2. insert subkey info
+            uri = Keys.buildKeysUri(masterKeyId);
+
+            // first, mark all keys as not available
+            values = new ContentValues();
+            values.put(Keys.HAS_SECRET, SecretKeyType.GNU_DUMMY.getNum());
+            contentResolver.update(uri, values, null, null);
+
+            // then, mark exactly the keys we have available
+            log.add(LogType.MSG_WS_WRITING_SUBKEY_DATA, indent);
+            indent += 1;
+            for (Pair<Long, Integer> subKeyIdWithType : encryptedRing.mSubKeyIdsAndType) {
+                long id = subKeyIdWithType.first;
+                int subKeyType = subKeyIdWithType.second;
+                values.put(Keys.HAS_SECRET, subKeyType);
+                int upd = contentResolver.update(uri, values, Keys.KEY_ID + " = ?",
+                        new String[]{Long.toString(id)});
+                if (upd == 1) {
+                    switch (SecretKeyType.values()[subKeyType]) {
+                        case PASSPHRASE:
+                            log.add(LogType.MSG_WS_SUBKEY_OK, indent,
+                                    KeyFormattingUtils.convertKeyIdToHex(id)
+                            );
+                            break;
+                        case PASSPHRASE_EMPTY:
+                            log.add(LogType.MSG_WS_SUBKEY_EMPTY, indent,
+                                    KeyFormattingUtils.convertKeyIdToHex(id)
+                            );
+                            break;
+                        case PIN:
+                            log.add(LogType.MSG_WS_SUBKEY_PIN, indent,
+                                    KeyFormattingUtils.convertKeyIdToHex(id)
+                            );
+                            break;
+                        case GNU_DUMMY:
+                            log.add(LogType.MSG_WS_SUBKEY_STRIPPED, indent,
+                                    KeyFormattingUtils.convertKeyIdToHex(id)
+                            );
+                            break;
+                        case DIVERT_TO_CARD:
+                            log.add(LogType.MSG_WS_SUBKEY_DIVERT, indent,
+                                    KeyFormattingUtils.convertKeyIdToHex(id)
+                            );
+                            break;
+                    }
+                } else {
+                    log.add(LogType.MSG_WS_SUBKEY_NONEXISTENT, indent,
+                            KeyFormattingUtils.convertKeyIdToHex(id)
+                    );
+                }
+            }
+            indent -= 1;
+
+            // this implicitly leaves all keys which were not in the secret key ring
+            // with has_secret = 1
+            log.add(LogType.MSG_WS_SUCCESS, indent);
+        }
+        indent -= 1;
+        log.add(LogType.MSG_WRITE_SUCCESS, indent);
+        return new WriteKeyRingsResult(OperationResult.RESULT_OK, log);
     }
 
     /**

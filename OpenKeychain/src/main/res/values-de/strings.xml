@@ -1032,22 +1032,22 @@
   <string name="msg_con_error_bad_state">Zusammenführung wurde gestartet, während keine Datenbank zwischengespeichert war! Dies ist wahrscheinlich ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_con_error_concurrent">Zusammenführung wurde abgebrochen, läuft bereits in einem anderen Thread!</string>
   <string name="msg_con_save_secret">Private Schlüsselbünde werden gespeichert</string>
-  <string name="msg_con_save_public">Öffentliche Schlüsselbünde werden gespeichert</string>
+  <string name="msg_con_save_all_public">Öffentliche Schlüsselbünde werden gespeichert</string>
   <string name="msg_con_db_clear">Datenbank wird geleert</string>
   <string name="msg_con_success">Datenbank wurde erfolgreich zusammengeführt!</string>
   <string name="msg_con_critical_in">Beginne kritische Phase!</string>
   <string name="msg_con_critical_out">Verlasse kritische Phase</string>
-  <string name="msg_con_delete_public">Lösche Zwischenspeicherdatei des öffentlichen Schlüsselbundes</string>
+  <string name="msg_con_delete_all_public">Lösche Zwischenspeicherdatei des öffentlichen Schlüsselbundes</string>
   <string name="msg_con_delete_secret">Lösche Zwischenspeicherdatei des privaten Schlüsselbundes</string>
   <string name="msg_con_error_db">Fehler beim Öffnen der Datenbank!</string>
-  <string name="msg_con_error_io_public">Ein-/Ausgabefehler beim Schreiben von öffentlichen Schlüsseln in den Zwischenspeicher!</string>
+  <string name="msg_con_error_io_all_public">Ein-/Ausgabefehler beim Schreiben von öffentlichen Schlüsseln in den Zwischenspeicher!</string>
   <string name="msg_con_error_io_secret">Ein-/Ausgabefehler beim Schreiben von privaten Schlüsseln in den Zwischenspeicher!</string>
-  <string name="msg_con_error_public">Fehler beim Reimportieren der öffentlichen Schlüssel!</string>
+  <string name="msg_con_error_all_public">Fehler beim Reimportieren der öffentlichen Schlüssel!</string>
   <string name="msg_con_error_secret">Fehler beim Reimportieren der privaten Schlüssel!</string>
   <string name="msg_con_recover">Zusammenführungsvorgang wird fortgesetzt</string>
   <string name="msg_con_recursive">Rekursive Zusammenführung wird übersprungen</string>
   <string name="msg_con_recover_unknown">Zusammenführungsvorgang aus unbekanntem Zustand wird fortgesetzt</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Ein öffentlicher Schlüssel wird reimportiert</item>
     <item quantity="other">%d öffentliche Schlüssel werden reimportiert</item>
   </plurals>
@@ -1057,7 +1057,7 @@
     <item quantity="other">%d private Schlüssel werden reimportiert</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Keine privaten Schlüssel für Reimport, überspringe...</string>
-  <string name="msg_con_warn_delete_public">Ausnahmefehler beim Löschen der öffentlichen Zwischenspeicherdatei</string>
+  <string name="msg_con_warn_delete_all_public">Ausnahmefehler beim Löschen der öffentlichen Zwischenspeicherdatei</string>
   <string name="msg_con_warn_delete_secret">Ausnahmefehler beim Löschen der privaten Zwischenspeicherdatei</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Schlüsselvorgang wird ausgeführt</string>

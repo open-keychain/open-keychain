@@ -928,22 +928,22 @@
   <string name="msg_con_error_bad_state">Consolidatie gestart terwijl er geen database was gecached! Dit is waarschijnlijk een bug, gelieve een verslag in te dienen!</string>
   <string name="msg_con_error_concurrent">Consolidatie afgebroken, loopt al op een andere draad!</string>
   <string name="msg_con_save_secret">Bezig met opslaan van geheime sleutelbossen</string>
-  <string name="msg_con_save_public">Bezig met opslaan van publieke sleutelbossen</string>
+  <string name="msg_con_save_all_public">Bezig met opslaan van publieke sleutelbossen</string>
   <string name="msg_con_db_clear">Bezig met wissen van database</string>
   <string name="msg_con_success">Database succesvol geconsolideerd</string>
   <string name="msg_con_critical_in">Begin van kritieke fase</string>
   <string name="msg_con_critical_out">Einde van kritieke fase</string>
-  <string name="msg_con_delete_public">Bezig met verwijderen van cachebestand van publieke sleutelbos</string>
+  <string name="msg_con_delete_all_public">Bezig met verwijderen van cachebestand van publieke sleutelbos</string>
   <string name="msg_con_delete_secret">Bezig met verwijderen van cachebestand van geheime sleutelbos</string>
   <string name="msg_con_error_db">Fout bij openen van database!</string>
-  <string name="msg_con_error_io_public">I/O-fout bij schrijven van publieke sleutels naar cache!</string>
+  <string name="msg_con_error_io_all_public">I/O-fout bij schrijven van publieke sleutels naar cache!</string>
   <string name="msg_con_error_io_secret">I/O-fout bij schrijven van geheime sleutels naar cache!</string>
-  <string name="msg_con_error_public">Fout bij opnieuw importeren van publieke sleutels!</string>
+  <string name="msg_con_error_all_public">Fout bij opnieuw importeren van publieke sleutels!</string>
   <string name="msg_con_error_secret">Fout bij opnieuw importeren van geheime sleutels!</string>
   <string name="msg_con_recover">Bezig met hervatten van consolidatieproces</string>
   <string name="msg_con_recursive">Recursief samenvoegen wordt overgeslaan</string>
   <string name="msg_con_recover_unknown">Bezig met hervatten van consolidatieproces uit onbekende staat</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Bezig met opnieuw importeren van een publieke sleutel</item>
     <item quantity="other">Bezig met opnieuw importeren van %d publieke sleutels</item>
   </plurals>
@@ -953,7 +953,7 @@
     <item quantity="other">Bezig met opnieuw importeren van %d geheime sleutels</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Geen geheime sleutel om opnieuw te importeren, bewerking wordt overgeslaan…</string>
-  <string name="msg_con_warn_delete_public">Uitzondering bij verwijderen van publiek cachebestand</string>
+  <string name="msg_con_warn_delete_all_public">Uitzondering bij verwijderen van publiek cachebestand</string>
   <string name="msg_con_warn_delete_secret">Uitzondering bij verwijderen van geheim cachebestand</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Bezig met uitvoeren van sleutelbewerking</string>

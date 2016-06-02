@@ -126,8 +126,8 @@ public class CertifyOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
-        providerHelper.savePublicKeyRing(mStaticRing2.extractPublicKeyRing(), new ProgressScaler(), null);
+        providerHelper.saveSecretKeyRing(mStaticRing1);
+        providerHelper.savePublicKeyRing(mStaticRing2.extractPublicKeyRing());
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;

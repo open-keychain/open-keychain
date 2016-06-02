@@ -158,8 +158,8 @@ public class PgpEncryptDecryptTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
-        providerHelper.saveSecretKeyRing(mStaticRing2, new ProgressScaler());
+        providerHelper.saveSecretKeyRing(mStaticRing1);
+        providerHelper.saveSecretKeyRing(mStaticRing2);
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -631,7 +631,7 @@ public class PgpEncryptDecryptTest {
                     new CryptoInputParcel(new Date(), mKeyPhrase1));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.saveSecretKeyRing(modified, new ProgressScaler());
+            providerHelper.saveSecretKeyRing(modified);
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     new ProviderHelper(RuntimeEnvironment.application), null);
@@ -653,7 +653,7 @@ public class PgpEncryptDecryptTest {
                     new CryptoInputParcel(new Date(), mKeyPhrase1));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.saveSecretKeyRing(modified, new ProgressScaler());
+            providerHelper.saveSecretKeyRing(modified);
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     new ProviderHelper(RuntimeEnvironment.application), null);
@@ -680,7 +680,7 @@ public class PgpEncryptDecryptTest {
                     new CryptoInputParcel(new Date(), mKeyPhrase1));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.saveSecretKeyRing(modified, new ProgressScaler());
+            providerHelper.saveSecretKeyRing(modified);
         }
 
         { // encrypt to this keyring, make sure it's not encrypted to the revoked subkey

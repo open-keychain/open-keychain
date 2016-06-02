@@ -957,20 +957,20 @@
   <string name="msg_con_error_bad_state">Sendotzea abiatu da datubasea katxeatu gabe! Hau zihurrenik programazio akats bat  da, mesedez agiritu akats jakinarazpen bat.</string>
   <string name="msg_con_error_concurrent">Sendotzea utzita, jadanik beste hari batean ekinean!</string>
   <string name="msg_con_save_secret">Giltza-uztai sekretuak gordetzen</string>
-  <string name="msg_con_save_public">Giltza-uztai publikoak gordetzen</string>
+  <string name="msg_con_save_all_public">Giltza-uztai publikoak gordetzen</string>
   <string name="msg_con_db_clear">Datubasea garbitzen</string>
   <string name="msg_con_success">Datubasea ongi trinkotu da</string>
   <string name="msg_con_critical_in">Fase kritikoan sartzen</string>
   <string name="msg_con_critical_out">Fase kritikoa uzten</string>
-  <string name="msg_con_delete_public">Giltza-uztai publikoaren katxe agiria ezabatzen</string>
+  <string name="msg_con_delete_all_public">Giltza-uztai publikoaren katxe agiria ezabatzen</string>
   <string name="msg_con_delete_secret">Giltza-uztai sekretuaren katxe agiria ezabatzen</string>
   <string name="msg_con_error_db">Akatsa datubasea irekitzerakoan!</string>
-  <string name="msg_con_error_io_public">S/I akatsa giltza publikoak katxera idazterakoan!</string>
+  <string name="msg_con_error_io_all_public">S/I akatsa giltza publikoak katxera idazterakoan!</string>
   <string name="msg_con_error_io_secret">S/I akatsa giltza sekretuak katxera idazterakoan!</string>
-  <string name="msg_con_error_public">Akatsa giltza publikoak ber-inportatzerakoan!</string>
+  <string name="msg_con_error_all_public">Akatsa giltza publikoak ber-inportatzerakoan!</string>
   <string name="msg_con_error_secret">Akatsa giltza sekretuak ber-inportatzerakoan!</string>
   <string name="msg_con_recover">Trinkotze aurrerabidea berrekiten</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Giltza publiko bat berrinportatzen</item>
     <item quantity="other">%d giltza publiko berrinportatzen</item>
   </plurals>
@@ -980,7 +980,7 @@
     <item quantity="other">%d giltza sekretu berrinportatzen</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Ez dago giltza sekreturik berrinportatzeko, jauzi egiten...</string>
-  <string name="msg_con_warn_delete_public">Salbuespena katxe publikoaren agiria ezabatzerakoan</string>
+  <string name="msg_con_warn_delete_all_public">Salbuespena katxe publikoaren agiria ezabatzerakoan</string>
   <string name="msg_con_warn_delete_secret">Salbuespena katxe agiri sekretua ezabatzerakoan</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Giltza eragiketa burutzen</string>

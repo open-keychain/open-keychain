@@ -1061,22 +1061,22 @@
   <string name="msg_con_error_bad_state">Консолидация началась но база не кэширована! Это программная ошибка, пожалуйста, сообщите об этом.</string>
   <string name="msg_con_error_concurrent">Консолидация прервана, уже запущена на другом потоке!</string>
   <string name="msg_con_save_secret">Сохранение секретной связки ключей</string>
-  <string name="msg_con_save_public">Сохранение публичной связки ключей</string>
+  <string name="msg_con_save_all_public">Сохранение публичной связки ключей</string>
   <string name="msg_con_db_clear">Очистка базы данных</string>
   <string name="msg_con_success">Успешно консолидированная база данных</string>
   <string name="msg_con_critical_in">Ввод в критическую фазу</string>
   <string name="msg_con_critical_out">Выход из критической фазы</string>
-  <string name="msg_con_delete_public">Удаление кэша связки публичных ключей</string>
+  <string name="msg_con_delete_all_public">Удаление кэша связки публичных ключей</string>
   <string name="msg_con_delete_secret">Удаление кэша связки секретных ключей</string>
   <string name="msg_con_error_db">Ошибка открытия базы данных!</string>
-  <string name="msg_con_error_io_public">Ошибка записи публичных ключей в кэш!</string>
+  <string name="msg_con_error_io_all_public">Ошибка записи публичных ключей в кэш!</string>
   <string name="msg_con_error_io_secret">Ошибка записи приватных ключей в кэш!</string>
-  <string name="msg_con_error_public">Ошибка переимпортирования публичных ключей!</string>
+  <string name="msg_con_error_all_public">Ошибка переимпортирования публичных ключей!</string>
   <string name="msg_con_error_secret">Ошибка переимпортирования приватных ключей!</string>
   <string name="msg_con_recover">Возобновление процесса консолидации</string>
   <string name="msg_con_recursive">Пропуск рекурсивной консолидации</string>
   <string name="msg_con_recover_unknown">Возобновление процесса консолидации из неизвестного состояния</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Переимпортирование публичного ключа!</item>
     <item quantity="few">Переимпортирование %d публичных ключей!</item>
     <item quantity="many">Переимпортирование %d публичных ключей!</item>
@@ -1090,7 +1090,7 @@
     <item quantity="other">Переимпортирование %d секретных ключей!</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Нет секретных ключей для повторного импорта, пропуск…</string>
-  <string name="msg_con_warn_delete_public">Исключение удаления публичного файла кэша</string>
+  <string name="msg_con_warn_delete_all_public">Исключение удаления публичного файла кэша</string>
   <string name="msg_con_warn_delete_secret">Исключение удаления секретного файла кэша</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Выполнение операции ключа</string>

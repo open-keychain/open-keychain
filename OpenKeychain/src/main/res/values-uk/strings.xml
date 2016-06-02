@@ -446,10 +446,10 @@
   <string name="msg_mf_unlock">Розблоковується в\'язка</string>
   <!--Consolidate-->
   <string name="msg_con_save_secret">Збереження секретних  в\'язок</string>
-  <string name="msg_con_save_public">Збереження публічних в\'язок</string>
+  <string name="msg_con_save_all_public">Збереження публічних в\'язок</string>
   <string name="msg_con_db_clear">Очищення бази даних</string>
   <string name="msg_con_error_db">Помилка відкриття бази даних!</string>
-  <string name="msg_con_error_public">Помилка повторного імпорту публічних ключів!</string>
+  <string name="msg_con_error_all_public">Помилка повторного імпорту публічних ключів!</string>
   <string name="msg_con_error_secret">Помилка повторного імпорту секретних ключів!</string>
   <!--Edit Key (higher level than modify)-->
   <!--Promote key-->

@@ -453,7 +453,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="msg_mf_unlock">Odblokowanie pęku kluczy</string>
   <!--Consolidate-->
   <string name="msg_con_save_secret">Zapisywanie prywatnych pęków kluczy</string>
-  <string name="msg_con_save_public">Zapisywanie publicznych pęków kluczy</string>
+  <string name="msg_con_save_all_public">Zapisywanie publicznych pęków kluczy</string>
   <string name="msg_con_db_clear">Czyszczenie bazy danych</string>
   <!--Edit Key (higher level than modify)-->
   <!--Promote key-->

@@ -967,7 +967,7 @@
   <string name="msg_con_db_clear">正在清空数据库</string>
   <string name="msg_con_success">成功整理数据库</string>
   <string name="msg_con_error_db">打开数据库时出错！</string>
-  <string name="msg_con_error_public">重新导入公共密钥时出错</string>
+  <string name="msg_con_error_all_public">重新导入公共密钥时出错</string>
   <string name="msg_con_error_secret">重新导入私有密钥时出错</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed_error_key_not_found">未找到密钥</string>

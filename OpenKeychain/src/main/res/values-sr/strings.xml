@@ -1034,22 +1034,22 @@
   <string name="msg_con_error_bad_state">Учвршћивање покренуто док база података није била кеширана! Ово је вероватно грешка у програмирању, поднесите извештај о грешци.</string>
   <string name="msg_con_error_concurrent">Учвршћивање прекинуто, већ је у току на другој нити!</string>
   <string name="msg_con_save_secret">Уписујем тајне привеске</string>
-  <string name="msg_con_save_public">Уписујем јавне привеске</string>
+  <string name="msg_con_save_all_public">Уписујем јавне привеске</string>
   <string name="msg_con_db_clear">Чистим базу података</string>
   <string name="msg_con_success">База података је успешно учвршћена</string>
   <string name="msg_con_critical_in">Долазим у критичну фазу</string>
   <string name="msg_con_critical_out">Напуштам критичну фазу</string>
-  <string name="msg_con_delete_public">Бришем фајл кеша јавног привеска</string>
+  <string name="msg_con_delete_all_public">Бришем фајл кеша јавног привеска</string>
   <string name="msg_con_delete_secret">Бришем фајл кеша тајног привеска</string>
   <string name="msg_con_error_db">Грешка отварања базе података!</string>
-  <string name="msg_con_error_io_public">У/И грешка при упису јавних кључева у кеш!</string>
+  <string name="msg_con_error_io_all_public">У/И грешка при упису јавних кључева у кеш!</string>
   <string name="msg_con_error_io_secret">У/И грешка при упису тајних кључева у кеш!</string>
-  <string name="msg_con_error_public">Грешка поновног увоза јавних кључева!</string>
+  <string name="msg_con_error_all_public">Грешка поновног увоза јавних кључева!</string>
   <string name="msg_con_error_secret">Грешка поновног увоза тајних кључева!</string>
   <string name="msg_con_recover">Настављам поступак учвршћивања</string>
   <string name="msg_con_recursive">Прескачем рекурзивно учвршћивање</string>
   <string name="msg_con_recover_unknown">Настављам поступак учвршћивања из непознатог стања</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Поново увозим %d јавни кључ</item>
     <item quantity="few">Поново увозим %d јавна кључа</item>
     <item quantity="other">Поново увозим %d јавних кључева</item>
@@ -1061,7 +1061,7 @@
     <item quantity="other">Поново увозим %d тајних кључева</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Нема тајних кључева за поновно увожење, прескачем…</string>
-  <string name="msg_con_warn_delete_public">Изузетак при брисању фајла јавног кеша</string>
+  <string name="msg_con_warn_delete_all_public">Изузетак при брисању фајла јавног кеша</string>
   <string name="msg_con_warn_delete_secret">Изузетак при брисању фајла тајног кеша</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Извршавам радњу на кључу</string>
