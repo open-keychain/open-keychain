@@ -106,7 +106,7 @@ public class TestHelpers {
             if (ring.isSecret()) {
                 helper.saveSecretKeyRing(ring, new ProgressScaler());
             } else {
-                helper.savePublicKeyRing(ring, new ProgressScaler());
+                helper.savePublicKeyRing(ring);
             }
         }
 
