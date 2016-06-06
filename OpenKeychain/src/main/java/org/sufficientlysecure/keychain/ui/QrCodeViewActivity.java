@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -78,7 +79,7 @@ public class QrCodeViewActivity extends BaseActivity {
         try {
             byte[] blob = (byte[]) providerHelper.getGenericData(
                     KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                    KeychainContract.KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+                    KeychainContract.KeyRings.FINGERPRINT, Cursor.FIELD_TYPE_BLOB);
             if (blob == null) {
                 Log.e(Constants.TAG, "key not found!");
                 Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();

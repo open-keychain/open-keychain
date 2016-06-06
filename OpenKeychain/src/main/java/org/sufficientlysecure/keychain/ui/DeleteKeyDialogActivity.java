@@ -20,6 +20,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -95,8 +96,8 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                                 KeychainContract.KeyRings.USER_ID,
                                 KeychainContract.KeyRings.IS_REVOKED
                         }, new int[]{
-                                ProviderHelper.FIELD_TYPE_STRING,
-                                ProviderHelper.FIELD_TYPE_INTEGER
+                                Cursor.FIELD_TYPE_STRING,
+                                Cursor.FIELD_TYPE_INTEGER
                         }
                 );
 
@@ -276,8 +277,8 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                                     KeychainContract.KeyRings.USER_ID,
                                     KeychainContract.KeyRings.HAS_ANY_SECRET
                             }, new int[]{
-                                    ProviderHelper.FIELD_TYPE_STRING,
-                                    ProviderHelper.FIELD_TYPE_INTEGER
+                                    Cursor.FIELD_TYPE_STRING,
+                                    Cursor.FIELD_TYPE_INTEGER
                             }
                     );
                     String name;

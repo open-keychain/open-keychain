@@ -145,14 +145,6 @@ public class ProviderHelper {
         mLog = new OperationLog();
     }
 
-    // If we ever switch to api level 11, we can ditch this whole mess!
-    public static final int FIELD_TYPE_NULL = 1;
-    // this is called integer to stay coherent with the constants in Cursor (api level 11)
-    public static final int FIELD_TYPE_INTEGER = 2;
-    public static final int FIELD_TYPE_FLOAT = 3;
-    public static final int FIELD_TYPE_STRING = 4;
-    public static final int FIELD_TYPE_BLOB = 5;
-
     public Object getGenericData(Uri uri, String column, int type) throws NotFoundException {
         Object result = getGenericData(uri, new String[]{column}, new int[]{type}, null).get(column);
         if (result == null) {
@@ -181,19 +173,19 @@ public class ProviderHelper {
                 int pos = 0;
                 for (String p : proj) {
                     switch (types[pos]) {
-                        case FIELD_TYPE_NULL:
+                        case Cursor.FIELD_TYPE_NULL:
                             result.put(p, cursor.isNull(pos));
                             break;
-                        case FIELD_TYPE_INTEGER:
+                        case Cursor.FIELD_TYPE_INTEGER:
                             result.put(p, cursor.getLong(pos));
                             break;
-                        case FIELD_TYPE_FLOAT:
+                        case Cursor.FIELD_TYPE_FLOAT:
                             result.put(p, cursor.getFloat(pos));
                             break;
-                        case FIELD_TYPE_STRING:
+                        case Cursor.FIELD_TYPE_STRING:
                             result.put(p, cursor.getString(pos));
                             break;
-                        case FIELD_TYPE_BLOB:
+                        case Cursor.FIELD_TYPE_BLOB:
                             result.put(p, cursor.getBlob(pos));
                             break;
                     }
@@ -251,7 +243,7 @@ public class ProviderHelper {
 
     public long getMasterKeyId(long subKeyId) throws NotFoundException {
         return (Long) getGenericData(KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId),
-                KeyRings.MASTER_KEY_ID, FIELD_TYPE_INTEGER);
+                KeyRings.MASTER_KEY_ID, Cursor.FIELD_TYPE_INTEGER);
     }
 
     public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {
@@ -1167,7 +1159,7 @@ public class ProviderHelper {
                     new String[]{KeyRings.PUBKEY_DATA, KeyRings.HAS_ANY_SECRET},
                     KeyRings.HAS_ANY_SECRET + "!=0", null, null);
             cachePublicKeyRings(cursor, 0, "consolidate_own_public.pcl");
-            //noinspection ConstantConditions
+            //noinspection ConstantConditions, null is caught below
             cursor.close();
 
         } catch (NullPointerException e) {
@@ -1195,7 +1187,7 @@ public class ProviderHelper {
                     new String[]{KeyRingData.KEY_RING_DATA, KeyRingData.MASTER_KEY_ID},
                     null, null, null);
             cacheSecretKeyRings(cursor, 0, "consolidate_secret.pcl");
-            //noinspection ConstantConditions
+            //noinspection ConstantConditions, null is caught below
             cursor.close();
 
         } catch (NullPointerException e) {
@@ -1224,7 +1216,7 @@ public class ProviderHelper {
                     KeyRingData.buildPublicKeyRingUri(),
                     new String[]{KeyRingData.KEY_RING_DATA}, null, null, null);
             cachePublicKeyRings(cursor, 0, "consolidate_foreign_public.pcl");
-            //noinspection ConstantConditions
+            //noinspection ConstantConditions, null is caught below
             cursor.close();
 
         } catch (NullPointerException e) {
@@ -1694,7 +1686,7 @@ public class ProviderHelper {
     public String getKeyRingAsArmoredString(Uri uri)
             throws NotFoundException, IOException, PgpGeneralException {
         byte[] data = (byte[]) getGenericData(
-                uri, KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
+                uri, KeyRingData.KEY_RING_DATA, Cursor.FIELD_TYPE_BLOB);
         return getKeyRingAsArmoredString(data);
     }
 

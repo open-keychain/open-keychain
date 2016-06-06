@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
@@ -104,7 +105,7 @@ public class SafeSlingerActivity extends BaseActivity
         Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId);
         try {
             byte[] keyBlob = (byte[]) new ProviderHelper(this).getGenericData(
-                    uri, KeychainContract.KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
+                    uri, KeychainContract.KeyRingData.KEY_RING_DATA, Cursor.FIELD_TYPE_BLOB);
 
             Intent slingerIntent = new Intent(this, ExchangeActivity.class);
 

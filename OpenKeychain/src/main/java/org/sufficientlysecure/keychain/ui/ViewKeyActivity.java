@@ -1101,7 +1101,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         byte[] blob = (byte[]) providerHelper.getGenericData(
                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+                KeychainContract.Keys.FINGERPRINT, Cursor.FIELD_TYPE_BLOB);
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
 
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null);

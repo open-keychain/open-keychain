@@ -22,6 +22,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -131,7 +132,7 @@ public class NfcHelper {
                                     mNfcKeyringBytes = (byte[]) mProviderHelper.getGenericData(
                                             blobUri,
                                             KeychainContract.KeyRingData.KEY_RING_DATA,
-                                            ProviderHelper.FIELD_TYPE_BLOB);
+                                            Cursor.FIELD_TYPE_BLOB);
                                 } catch (ProviderHelper.NotFoundException e) {
                                     Log.e(Constants.TAG, "key not found!", e);
                                 }
