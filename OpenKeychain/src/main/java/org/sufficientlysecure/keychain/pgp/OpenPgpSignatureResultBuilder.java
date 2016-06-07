@@ -21,6 +21,8 @@ package org.sufficientlysecure.keychain.pgp;
 import java.util.ArrayList;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.openintents.openpgp.util.OpenPgpUtils;
+import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -122,12 +124,12 @@ public class OpenPgpSignatureResultBuilder {
             setUserIds(allUserIds, confirmedUserIds);
 
             if (mSenderAddress != null) {
-                if (confirmedUserIds.contains(mSenderAddress)) {
-                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_CONFIRMED);
+                if (userIdListContainsAddress(mSenderAddress, confirmedUserIds)) {
+                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_CONFIRMED);
                 } else if (allUserIds.contains(mSenderAddress)) {
-                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UNCONFIRMED);
+                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_UNCONFIRMED);
                 } else {
-                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_MISSING);
+                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_MISSING);
                 }
             } else {
                 setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_NO_SENDER);
@@ -140,6 +142,16 @@ public class OpenPgpSignatureResultBuilder {
         // either master key is expired/revoked or this specific subkey is expired/revoked
         setKeyExpired(signingRing.isExpired() || signingKey.isExpired());
         setKeyRevoked(signingRing.isRevoked() || signingKey.isRevoked());
+    }
+
+    private static boolean userIdListContainsAddress(String senderAddress, ArrayList<String> confirmedUserIds) {
+        for (String rawUserId : confirmedUserIds) {
+            UserId userId = OpenPgpUtils.splitUserId(rawUserId);
+            if (senderAddress.equals(userId.email)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public OpenPgpSignatureResult build() {
@@ -167,13 +179,13 @@ public class OpenPgpSignatureResultBuilder {
             signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED;
         } else if (mInsecure) {
             Log.d(Constants.TAG, "RESULT_INVALID_INSECURE");
-            signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_INSECURE;
+            signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE;
         } else if (mIsSignatureKeyCertified) {
             Log.d(Constants.TAG, "RESULT_VALID_CONFIRMED");
-            signatureStatus = OpenPgpSignatureResult.RESULT_VALID_CONFIRMED;
+            signatureStatus = OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED;
         } else {
             Log.d(Constants.TAG, "RESULT_VALID_UNCONFIRMED");
-            signatureStatus = OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED;
+            signatureStatus = OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED;
         }
 
         return OpenPgpSignatureResult.createWithValidSignature(
