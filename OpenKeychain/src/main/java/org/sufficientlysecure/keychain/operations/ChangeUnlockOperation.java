@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 
@@ -90,8 +91,10 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         // It's a success, so this must be non-null now
         UncachedKeyRing ring = modifyResult.getRing();
 
+        // TODO: fix this when secret key block encryption is complete
         SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 70, 95, 100));
+                .saveSecretKeyRing(ring, new KeyringPassphrases(ring.getMasterKeyId()),
+                        new ProgressScaler(mProgressable, 70, 95, 100));
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here

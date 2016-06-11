@@ -22,15 +22,12 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -40,7 +37,6 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -96,13 +92,13 @@ public class ProviderHelperSaveTest {
         SaveKeyringResult result;
 
         // insert secret, this should fail because of missing self-cert
-        result = new ProviderHelper(RuntimeEnvironment.application).saveSecretKeyRing(seckey);
+        result = new ProviderHelper(RuntimeEnvironment.application).saveSecretKeyRingForTest(seckey);
         Assert.assertFalse("secret keyring import before pubring import should fail", result.success());
 
         // insert pubkey, then seckey - both should succeed
         result = new ProviderHelper(RuntimeEnvironment.application).savePublicKeyRing(pubkey);
         Assert.assertTrue("public keyring import should succeed", result.success());
-        result = new ProviderHelper(RuntimeEnvironment.application).saveSecretKeyRing(seckey);
+        result = new ProviderHelper(RuntimeEnvironment.application).saveSecretKeyRingForTest(seckey);
         Assert.assertTrue("secret keyring import after pubring import should succeed", result.success());
 
     }
@@ -137,7 +133,7 @@ public class ProviderHelperSaveTest {
 
         SaveKeyringResult result;
 
-        result = mProviderHelper.saveSecretKeyRing(sec);
+        result = mProviderHelper.saveSecretKeyRingForTest(sec);
         Assert.assertTrue("import of secret keyring should succeed", result.success());
 
         // make sure both the CanonicalizedSecretKeyRing as well as the CachedPublicKeyRing correctly
@@ -228,7 +224,7 @@ public class ProviderHelperSaveTest {
 
         SaveKeyringResult result;
 
-        result = mProviderHelper.saveSecretKeyRing(key);
+        result = mProviderHelper.saveSecretKeyRingForTest(key);
         Assert.assertTrue("import of keyring should succeed", result.success());
 
         long signId;

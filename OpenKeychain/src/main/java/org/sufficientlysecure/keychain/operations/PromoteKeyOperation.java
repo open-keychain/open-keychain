@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 /** An operation which promotes a public key ring to a secret one.
@@ -115,7 +116,9 @@ public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
 
         // Save the new keyring.
         SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(promotedRing, new ProgressScaler(mProgressable, 60, 95, 100));
+                .saveSecretKeyRing(promotedRing,
+                        new KeyringPassphrases(promotedRing.getMasterKeyId()),
+                        new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here

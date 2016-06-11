@@ -17,9 +17,12 @@
 
 package org.sufficientlysecure.keychain.util;
 
+import java.util.Iterator;
 import java.util.Random;
 
 import junit.framework.Assert;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 
 
 public class TestingUtils {
@@ -57,6 +60,16 @@ public class TestingUtils {
             Assert.assertEquals(msg, expected[i], actual[actual.length -expected.length +i]);
         }
 
+    }
+
+    public static KeyringPassphrases generateKeyringPassphrases(UncachedKeyRing keyRing, Passphrase passphrase) {
+        KeyringPassphrases keyringPassphrases = new KeyringPassphrases(keyRing.getMasterKeyId());
+        Iterator<UncachedPublicKey> iterator = keyRing.getPublicKeys();
+        while(iterator.hasNext()) {
+            UncachedPublicKey key = iterator.next();
+            keyringPassphrases.mSubkeyPassphrases.put(key.getKeyId(), passphrase);
+        }
+        return keyringPassphrases;
     }
 
 }

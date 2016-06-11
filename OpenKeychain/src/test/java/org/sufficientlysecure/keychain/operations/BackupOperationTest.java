@@ -63,7 +63,6 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -143,8 +142,8 @@ public class BackupOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRing(mStaticRing1);
-        providerHelper.saveSecretKeyRing(mStaticRing2);
+        providerHelper.saveSecretKeyRingForTest(mStaticRing1);
+        providerHelper.saveSecretKeyRingForTest(mStaticRing2);
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;

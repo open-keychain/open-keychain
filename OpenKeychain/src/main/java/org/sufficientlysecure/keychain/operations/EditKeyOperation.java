@@ -38,12 +38,12 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 /**
@@ -161,9 +161,12 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
             }
         }
 
+        // TODO: add in the passphrase used here! we need this for encrypting the secretkey block
+        KeyringPassphrases keyringPassphrases = new KeyringPassphrases(ring.getMasterKeyId());
+
         // Save the new keyring.
         SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 60, 95, 100));
+                .saveSecretKeyRing(ring, keyringPassphrases, new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here

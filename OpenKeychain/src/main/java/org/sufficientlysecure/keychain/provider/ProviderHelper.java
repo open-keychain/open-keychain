@@ -36,21 +36,22 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableEncryptedKeyRing;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.operations.ConsolidateOperation;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
-import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult.WriteKeyRingsResult;
+import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
@@ -58,6 +59,8 @@ import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor.EncryptDecryptException;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor.IncorrectPassphraseException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -66,9 +69,11 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -807,7 +812,8 @@ public class ProviderHelper {
      * Saves an UncachedKeyRing of the secret variant into the db.
      * This method will fail if no corresponding public keyring is in the database!
      */
-    private int saveCanonicalizedSecretKeyRing(CanonicalizedSecretKeyRing keyRing) {
+    private int saveCanonicalizedSecretKeyRing(CanonicalizedSecretKeyRing keyRing,
+                                               KeyringPassphrases passphrases, boolean skipReEncryption) {
 
         long masterKeyId = keyRing.getMasterKeyId();
         log(LogType.MSG_IS, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
@@ -818,23 +824,62 @@ public class ProviderHelper {
             // IF this is successful, it's a secret key
             int result = SaveKeyringResult.SAVED_SECRET;
 
+            byte[] keyData;
+
+            // skip re-encryption for certain tests
+            if (skipReEncryption) {
+                try {
+                    keyData = keyRing.getEncoded();
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "Failed to encode key!", e);
+                    log(LogType.MSG_IS_ERROR_IO_EXC);
+                    return SaveKeyringResult.RESULT_ERROR;
+                }
+            } else {
+                // remove s2k encryption on individual keys
+                PgpKeyOperation op = new PgpKeyOperation(null);
+                PgpEditKeyResult editResult = op.removeKeyRingPassphrases(keyRing, passphrases);
+                mLog.add(editResult, mIndent);
+                if (!editResult.success()) {
+                    log(LogType.MSG_IS_ERROR_REMOVING_PASSPHRASES);
+                    return SaveKeyringResult.RESULT_ERROR;
+                }
+                keyRing = (CanonicalizedSecretKeyRing) editResult.getRing().canonicalize(mLog, mIndent);
+
+                // get passphrase for keyring block encryption, or use empty passphrase if no obvious one exists
+                Passphrase passphrase = passphrases.mNewKeyringPassphrase;
+                for (CanonicalizedSecretKey key: keyRing.secretKeyIterator()) {
+                    Passphrase current = passphrases.mSubkeyPassphrases.get(key.getKeyId());
+                    if(current != null && !current.isEmpty()) {
+                        passphrase = current;
+                        break;
+                    }
+                }
+
+                // encrypt secret keyring block
+                try {
+                    keyData = ByteArrayEncryptor.encryptByteArray(keyRing.getEncoded(), passphrase.getCharArray());
+                } catch (EncryptDecryptException | IOException e) {
+                    Log.e(Constants.TAG, "Encryption went wrong.", e);
+                    log(LogType.MSG_IS_ERROR_IO_ENCRYPT);
+                    return SaveKeyringResult.RESULT_ERROR;
+                }
+            }
+
             // save secret keyring
-            try {
+            {
                 ContentValues values = new ContentValues();
                 values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
-                values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
+                values.put(KeyRingData.KEY_RING_DATA, keyData);
                 // insert new version of this keyRing
                 Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
                 if (mContentResolver.insert(uri, values) == null) {
                     log(LogType.MSG_IS_DB_EXCEPTION);
                     return SaveKeyringResult.RESULT_ERROR;
                 }
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Failed to encode key!", e);
-                log(LogType.MSG_IS_ERROR_IO_EXC);
-                return SaveKeyringResult.RESULT_ERROR;
             }
 
+            // save subkey data
             {
                 Uri uri = Keys.buildKeysUri(masterKeyId);
 
@@ -901,6 +946,7 @@ public class ProviderHelper {
 
     }
 
+
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
         return savePublicKeyRing(keyRing, new ProgressScaler(), null);
     }
@@ -962,7 +1008,10 @@ public class ProviderHelper {
             }
 
             // If there is a secret key, merge new data (if any) and save the key for later
-            CanonicalizedSecretKeyRing canSecretRing;
+            CanonicalizedSecretKeyRing canSecretRing = null;
+            /*
+            // TODO: differ implementation for now.. can merge during other key ops which require passphrase instead
+
             try {
                 UncachedKeyRing secretRing = getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId())
                         .getUncachedKeyRing();
@@ -982,8 +1031,7 @@ public class ProviderHelper {
             } catch (NotFoundException e) {
                 // No secret key available (this is what happens most of the time)
                 canSecretRing = null;
-            }
-
+            }*/
 
             // If we have an expected fingerprint, make sure it matches
             if (expectedFingerprint != null) {
@@ -997,14 +1045,16 @@ public class ProviderHelper {
 
             int result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);
 
+            // TODO: differ for now... as above
             // Save the saved keyring (if any)
+            /*
             if (canSecretRing != null) {
                 progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
                 int secretResult = saveCanonicalizedSecretKeyRing(canSecretRing);
                 if ((secretResult & SaveKeyringResult.RESULT_ERROR) != SaveKeyringResult.RESULT_ERROR) {
                     result |= SaveKeyringResult.SAVED_SECRET;
                 }
-            }
+            }*/
 
             return new SaveKeyringResult(result, mLog, canSecretRing);
 
@@ -1017,11 +1067,20 @@ public class ProviderHelper {
 
     }
 
-    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing) {
-        return saveSecretKeyRing(secretRing, new ProgressScaler());
+    /**
+     * Only for testing, where we lack passphrases for the key to be imported
+     */
+    public SaveKeyringResult saveSecretKeyRingForTest(UncachedKeyRing secretRing) {
+        return saveSecretKeyRing(secretRing, null, new ProgressScaler(), true);
     }
 
-    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing, Progressable progress) {
+    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing, KeyringPassphrases keyringPassphrases,
+                                               Progressable progress) {
+        return saveSecretKeyRing(secretRing, keyringPassphrases, progress, false);
+    }
+
+    private SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing, KeyringPassphrases keyringPassphrases,
+                                               Progressable progress, boolean skipReEncryption) {
 
         try {
             long masterKeyId = secretRing.getMasterKeyId();
@@ -1037,6 +1096,9 @@ public class ProviderHelper {
 
             // If there is an old secret key, merge it.
             try {
+                // TODO: Differ.Need passphrase to do merge. show a dialog mentioning key already present, ask for passphrase?
+                throw new NotFoundException();
+                /*
                 UncachedKeyRing oldSecretRing = getCanonicalizedSecretKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new secret ring into old one
@@ -1062,6 +1124,7 @@ public class ProviderHelper {
                             KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
                     return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
                 }
+                */
             } catch (NotFoundException e) {
                 // Not an issue, just means we are dealing with a new keyring
 
@@ -1119,7 +1182,7 @@ public class ProviderHelper {
             }
 
             progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
-            result = saveCanonicalizedSecretKeyRing(canSecretRing);
+            result = saveCanonicalizedSecretKeyRing(canSecretRing, keyringPassphrases, skipReEncryption);
 
             return new SaveKeyringResult(result, mLog, canSecretRing);
 
@@ -1419,7 +1482,7 @@ public class ProviderHelper {
                 if (numPublic > 0) {
                     ImportKeyResult result = new ImportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 10, 20, 100, R.string.progress_con_reimport))
-                            .serialKeyRingImport(itOwnPublics, numPublic, null, null);
+                            .serialKeyRingImport(itOwnPublics, numPublic, null, null, new ArrayList<KeyringPassphrases>());
                     log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP, indent);
@@ -1468,10 +1531,9 @@ public class ProviderHelper {
 
                 // 5. Re-Import foreign public keyrings from cache
                 if (numPublics > 0) {
-
                     ImportKeyResult result = new ImportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
-                            .serialKeyRingImport(itPublics, numPublics, null, null);
+                            .serialKeyRingImport(itPublics, numPublics, null, null, new ArrayList<KeyringPassphrases>());
                     log.add(result, indent);
                     // re-insert our backed up list of updated key times
                     // TODO: can this cause issues in case a public key re-import failed?

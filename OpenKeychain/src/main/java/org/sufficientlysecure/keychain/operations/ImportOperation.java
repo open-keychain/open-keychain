@@ -24,6 +24,7 @@ import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -57,6 +58,7 @@ import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
@@ -97,20 +99,22 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     // Overloaded functions for using progressable supplied in constructor during import
     public ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
-                                               String keyServerUri, Proxy proxy) {
-        return serialKeyRingImport(entries, num, keyServerUri, mProgressable, proxy);
+                                               String keyServerUri, Proxy proxy,
+                                               List<KeyringPassphrases> keyringPassphrasesList) {
+        return serialKeyRingImport(entries, num, keyServerUri, mProgressable, proxy, keyringPassphrasesList);
     }
 
     @NonNull
     private ImportKeyResult serialKeyRingImport(ParcelableFileCache<ParcelableKeyRing> cache,
-                                                String keyServerUri, Proxy proxy) {
+                                                String keyServerUri, Proxy proxy,
+                                                List<KeyringPassphrases> keyringPassphrasesList) {
 
         // get entries from cached file
         try {
             IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
             int numEntries = it.getSize();
 
-            return serialKeyRingImport(it, numEntries, keyServerUri, mProgressable, proxy);
+            return serialKeyRingImport(it, numEntries, keyServerUri, mProgressable, proxy, keyringPassphrasesList);
         } catch (IOException e) {
 
             // Special treatment here, we need a lot
@@ -136,7 +140,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     @NonNull
     private ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
                                                 String keyServerUri, Progressable progressable,
-                                                @NonNull Proxy proxy) {
+                                                @NonNull Proxy proxy,
+                                                List<KeyringPassphrases> keyringPassphrasesList) {
         if (progressable != null) {
             progressable.setProgress(R.string.progress_importing, 0, 100);
         }
@@ -314,7 +319,9 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                 synchronized (mProviderHelper) {
                     mProviderHelper.clearLog();
                     if (key.isSecret()) {
-                        result = mProviderHelper.saveSecretKeyRing(key,
+                        KeyringPassphrases passphrases = KeyringPassphrases.getKeyringPassphrases(keyringPassphrasesList,
+                                                                                        key.getMasterKeyId());
+                        result = mProviderHelper.saveSecretKeyRing(key, passphrases,
                                 new ProgressScaler(progressable, (int) (position * progSteps),
                                         (int) ((position + 1) * progSteps), 100));
                     } else {
@@ -433,7 +440,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             ParcelableFileCache<ParcelableKeyRing> cache = new ParcelableFileCache<>(mContext,
                     "key_import.pcl");
 
-            result = serialKeyRingImport(cache, null, null);
+            result = serialKeyRingImport(cache, null, null, importInput.mKeyringPassphrasesList);
         } else {
             Proxy proxy;
             if (cryptoInput.getParcelableProxy() == null) {
@@ -487,7 +494,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     ArrayList<ParcelableKeyRing> list = new ArrayList<>();
                     list.add(pkRing);
 
-                    return serialKeyRingImport(list.iterator(), 1, keyServer, ignoreProgressable, proxy);
+                    return serialKeyRingImport(list.iterator(), 1, keyServer, ignoreProgressable, proxy, null);
                 }
             };
 

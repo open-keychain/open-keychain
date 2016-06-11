@@ -29,12 +29,16 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,11 +61,14 @@ public class ProviderHelperConsolidateTest {
                 KeyRings.buildUnifiedKeyRingsUri(), null, null);
     }
 
+    // Test consolidate with basic configuration of an ordinary gpg key
     @Test
     public void testConsolidateBasicConfig() throws Exception {
-        // insert secret, this should work
-        UncachedKeyRing secKey = readRingFromResource("/test-keys/basic-gpg-secret.asc");
-        mProviderHelper.saveSecretKeyRing(secKey);
+        // insert secret key, should succeed
+        UncachedKeyRing secKey = readRingFromResource("/test-keys/passwordless-gpg-sec.asc");
+        KeyringPassphrases passphrases = TestingUtils.generateKeyringPassphrases(secKey, new Passphrase());
+        OperationResult saveResult = mProviderHelper.saveSecretKeyRing(secKey, passphrases, new ProgressScaler());
+        Assert.assertTrue("Failed to insert secret key", saveResult.success());
         Long masterKeyId = secKey.getMasterKeyId();
 
         ContentResolver resolver = mProviderHelper.getContentResolver();

@@ -3,6 +3,9 @@ package org.sufficientlysecure.keychain.service.input;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.KeychainApplication;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.nio.ByteBuffer;
@@ -27,17 +30,20 @@ public class RequiredInputParcel implements Parcelable {
 
     private Long mMasterKeyId;
     private Long mSubKeyId;
+    private ParcelableKeyRing mParcelableKeyRing;
 
     public boolean mSkipCaching = false;
 
     private RequiredInputParcel(RequiredInputType type, byte[][] inputData,
-            int[] signAlgos, Date signatureTime, Long masterKeyId, Long subKeyId) {
+            int[] signAlgos, Date signatureTime, Long masterKeyId, Long subKeyId,
+                                ParcelableKeyRing parcelableKeyRing) {
         mType = type;
         mInputData = inputData;
         mSignAlgos = signAlgos;
         mSignatureTime = signatureTime;
         mMasterKeyId = masterKeyId;
         mSubKeyId = subKeyId;
+        mParcelableKeyRing = parcelableKeyRing;
     }
 
     public RequiredInputParcel(Parcel source) {
@@ -68,6 +74,9 @@ public class RequiredInputParcel implements Parcelable {
         mSignatureTime = source.readInt() != 0 ? new Date(source.readLong()) : null;
         mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
         mSubKeyId = source.readInt() != 0 ? source.readLong() : null;
+        mParcelableKeyRing = source.readInt() != 0
+                ? (ParcelableKeyRing) source.readParcelable(KeychainApplication.class.getClassLoader())
+                : null;
         mSkipCaching = source.readInt() != 0;
 
     }
@@ -80,13 +89,20 @@ public class RequiredInputParcel implements Parcelable {
         return mSubKeyId;
     }
 
+    public boolean hasParcelableKeyRing() {
+        return mParcelableKeyRing != null;
+    }
+    public ParcelableKeyRing getParcelableKeyRing() {
+        return mParcelableKeyRing;
+    }
+
     public static RequiredInputParcel createRetryUploadOperation() {
         return new RequiredInputParcel(RequiredInputType.UPLOAD_FAIL_RETRY,
-                null, null, null, 0L, 0L);
+                null, null, null, 0L, 0L, null);
     }
 
     public static RequiredInputParcel createOrbotRequiredOperation() {
-        return new RequiredInputParcel(RequiredInputType.ENABLE_ORBOT, null, null, null, 0L, 0L);
+        return new RequiredInputParcel(RequiredInputType.ENABLE_ORBOT, null, null, null, 0L, 0L, null);
     }
 
     public static RequiredInputParcel createSecurityTokenSignOperation(
@@ -94,46 +110,52 @@ public class RequiredInputParcel implements Parcelable {
             byte[] inputHash, int signAlgo, Date signatureTime) {
         return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_SIGN,
                 new byte[][] { inputHash }, new int[] { signAlgo },
-                signatureTime, masterKeyId, subKeyId);
+                signatureTime, masterKeyId, subKeyId, null);
     }
 
     public static RequiredInputParcel createSecurityTokenDecryptOperation(
             long masterKeyId, long subKeyId, byte[] encryptedSessionKey) {
         return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_DECRYPT,
-                new byte[][] { encryptedSessionKey }, null, null, masterKeyId, subKeyId);
+                new byte[][] { encryptedSessionKey }, null, null, masterKeyId, subKeyId, null);
     }
 
     public static RequiredInputParcel createSecurityTokenReset() {
         return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_RESET_CARD,
-                null, null, null, null, null);
+                null, null, null, null, null, null);
     }
 
     public static RequiredInputParcel createRequiredSignPassphrase(
             long masterKeyId, long subKeyId, Date signatureTime) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
-                null, null, signatureTime, masterKeyId, subKeyId);
+                null, null, signatureTime, masterKeyId, subKeyId, null);
     }
 
     public static RequiredInputParcel createRequiredDecryptPassphrase(
             long masterKeyId, long subKeyId) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
-                null, null, null, masterKeyId, subKeyId);
+                null, null, null, masterKeyId, subKeyId, null);
+    }
+
+    public static RequiredInputParcel createRequiredDecryptPassphrase(
+            long masterKeyId, long subKeyId, ParcelableKeyRing parcelableKeyRing) {
+        return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
+                null, null, null, masterKeyId, subKeyId, parcelableKeyRing);
     }
 
     public static RequiredInputParcel createRequiredSymmetricPassphrase() {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SYMMETRIC,
-                null, null, null, null, null);
+                null, null, null, null, null, null);
     }
 
     public static RequiredInputParcel createRequiredBackupCode() {
         return new RequiredInputParcel(RequiredInputType.BACKUP_CODE,
-                null, null, null, null, null);
+                null, null, null, null, null, null);
     }
 
     public static RequiredInputParcel createRequiredPassphrase(
             RequiredInputParcel req) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
-                null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId);
+                null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId, null);
     }
 
     @Override
@@ -174,6 +196,12 @@ public class RequiredInputParcel implements Parcelable {
         } else {
             dest.writeInt(0);
         }
+        if (mParcelableKeyRing != null) {
+            dest.writeInt(1);
+            dest.writeParcelable(mParcelableKeyRing, 0);
+        } else {
+            dest.writeInt(0);
+        }
         dest.writeInt(mSkipCaching ? 1 : 0);
 
     }
@@ -210,7 +238,7 @@ public class RequiredInputParcel implements Parcelable {
             }
 
             return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_SIGN,
-                    inputHashes, signAlgos, mSignatureTime, mMasterKeyId, mSubKeyId);
+                    inputHashes, signAlgos, mSignatureTime, mMasterKeyId, mSubKeyId, null);
         }
 
         public void addHash(byte[] hash, int algo) {
@@ -265,7 +293,7 @@ public class RequiredInputParcel implements Parcelable {
 
             // We need to pass in a subkey here...
             return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_MOVE_KEY_TO_CARD,
-                    inputData, null, null, mMasterKeyId, buf.getLong());
+                    inputData, null, null, mMasterKeyId, buf.getLong(), null);
         }
 
         public void addSubkey(long subkeyId) {

@@ -46,7 +46,6 @@ import org.bouncycastle.bcpg.PacketTags;
 import org.bouncycastle.bcpg.PublicKeyEncSessionPacket;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openpgp.PGPKeyFlags;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -158,9 +157,8 @@ public class PgpEncryptDecryptTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRing(mStaticRing1);
-        providerHelper.saveSecretKeyRing(mStaticRing2);
-
+        providerHelper.saveSecretKeyRingForTest(mStaticRing1);
+        providerHelper.saveSecretKeyRingForTest(mStaticRing2);
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
     }
@@ -631,7 +629,7 @@ public class PgpEncryptDecryptTest {
                     new CryptoInputParcel(new Date(), mKeyPhrase1));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.saveSecretKeyRing(modified);
+            providerHelper.saveSecretKeyRingForTest(modified);
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     new ProviderHelper(RuntimeEnvironment.application), null);
@@ -653,7 +651,7 @@ public class PgpEncryptDecryptTest {
                     new CryptoInputParcel(new Date(), mKeyPhrase1));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.saveSecretKeyRing(modified);
+            providerHelper.saveSecretKeyRingForTest(modified);
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     new ProviderHelper(RuntimeEnvironment.application), null);
@@ -680,7 +678,7 @@ public class PgpEncryptDecryptTest {
                     new CryptoInputParcel(new Date(), mKeyPhrase1));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.saveSecretKeyRing(modified);
+            providerHelper.saveSecretKeyRingForTest(modified);
         }
 
         { // encrypt to this keyring, make sure it's not encrypted to the revoked subkey

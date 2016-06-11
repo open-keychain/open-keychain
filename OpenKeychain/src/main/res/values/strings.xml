@@ -381,6 +381,7 @@
     <string name="error_integrity_check_failed">"integrity check failed! Data has been modified!"</string>
     <string name="error_wrong_passphrase">"wrong password"</string>
     <string name="error_could_not_extract_private_key">"could not extract private key"</string>
+    <string name="error_could_not_process_key_data">"could not process key data"</string>
     <string name="error_wrong_security_token">"this security token doesn't contain required key"</string>
 
     <!-- errors without preceeding Error: -->
@@ -960,7 +961,9 @@
     <string name="msg_is">"Importing secret key %s"</string>
     <string name="msg_is_db_exception">"Database error!"</string>
     <string name="msg_is_importing_subkeys">"Processing secret subkeys"</string>
+    <string name="msg_is_error_removing_passphrases">"Error removing passphrases"</string>
     <string name="msg_is_error_io_exc">"Error encoding keyring"</string>
+    <string name="msg_is_error_io_encrypt">"Error encoding encrypted keyring"</string>
     <string name="msg_is_merge_public">"Merging imported data into existing public keyring"</string>
     <string name="msg_is_merge_secret">"Merging imported data into existing secret keyring"</string>
     <string name="msg_is_merge_special">"Merging in self-certificates data from public keyring"</string>
@@ -1095,6 +1098,7 @@
     <string name="msg_mf_error_null_expiry">"Expiry time cannot be "same as before" on subkey creation. This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_noop">"Nothing to do!"</string>
     <string name="msg_mf_error_passphrase_master">"Fatal error decrypting master key! This is likely a programming error, please file a bug report!"</string>
+    <string name="msg_mf_error_passphrase_subkey">"Fatal error decrypting subkey! This is likely a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_passphrases_unchanged">"No password changed!"</string>
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
@@ -1104,6 +1108,7 @@
     <string name="msg_mf_error_duplicate_keytocard_for_slot">"Security Token supports only one slot per key type."</string>
     <string name="msg_mf_error_invalid_flags_for_keytocard">"Inappropriate key flags for Security Token key."</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
+    <string name="msg_mf_missing_passphrase">"Password for subkey cannot be changed. (Is it stripped or revoked?)"</string>
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
     <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
     <string name="msg_mf_passphrase">"Changing password for keyring"</string>
