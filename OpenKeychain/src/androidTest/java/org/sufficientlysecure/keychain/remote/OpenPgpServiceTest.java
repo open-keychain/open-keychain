@@ -1,10 +1,8 @@
 package org.sufficientlysecure.keychain.remote;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.test.InstrumentationRegistry;
@@ -20,6 +18,9 @@ import org.junit.runner.RunWith;
 import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.R;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -41,31 +42,29 @@ public class OpenPgpServiceTest {
     @Rule
     public final ServiceTestRule mServiceRule = new ServiceTestRule();
 
-    OpenPgpApi mApi;
+    private OpenPgpApi mApi;
 
     @Before
     public void setUp() throws Exception {
+        Context context = InstrumentationRegistry.getTargetContext();
 
-        cleanupForTests(InstrumentationRegistry.getTargetContext());
+        cleanupForTests(context);
 
-        Intent serviceIntent = new Intent(InstrumentationRegistry.getTargetContext(), OpenPgpService.class);
+        Intent serviceIntent = new Intent(context, OpenPgpService2.class);
         IBinder binder = mServiceRule.bindService(serviceIntent);
 
-        mApi = new OpenPgpApi(InstrumentationRegistry.getTargetContext(),
-                IOpenPgpService2.Stub.asInterface(binder));
-
+        mApi = new OpenPgpApi(context, IOpenPgpService2.Stub.asInterface(binder));
     }
 
     @Test
     public void testStuff() throws Exception {
-
         // TODO why does this not ask for general usage permissions?!
 
         {
             Intent intent = new Intent();
             intent.setAction(OpenPgpApi.ACTION_ENCRYPT);
             intent.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
-            intent.putExtra(OpenPgpApi.EXTRA_KEY_IDS, new long[] { 0x9D604D2F310716A3L });
+            intent.putExtra(OpenPgpApi.EXTRA_KEY_IDS, new long[]{0x9D604D2F310716A3L});
 
             ByteArrayInputStream is = new ByteArrayInputStream("swag".getBytes());
             ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -80,7 +79,6 @@ public class OpenPgpServiceTest {
             pi.send();
 
             onView(withText(R.string.api_register_allow)).perform(click());
-
         }
 
         byte[] ciphertext;
@@ -88,14 +86,14 @@ public class OpenPgpServiceTest {
             Intent intent = new Intent();
             intent.setAction(OpenPgpApi.ACTION_ENCRYPT);
             intent.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
-            intent.putExtra(OpenPgpApi.EXTRA_KEY_IDS, new long[] { 0x9D604D2F310716A3L });
+            intent.putExtra(OpenPgpApi.EXTRA_KEY_IDS, new long[]{0x9D604D2F310716A3L});
 
             ByteArrayInputStream is = new ByteArrayInputStream("swag".getBytes());
             ByteArrayOutputStream os = new ByteArrayOutputStream();
 
             Intent result = mApi.executeApi(intent, is, os);
 
-            assertThat("result is ok",
+            assertThat("result is encrypt ok",
                     result.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR),
                     is(OpenPgpApi.RESULT_CODE_SUCCESS));
 
@@ -118,14 +116,11 @@ public class OpenPgpServiceTest {
             PendingIntent pi = result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
             pi.send();
 
+            Thread.sleep(1 * 1000); // Wait for activity to start
             onData(withKeyItemId(0x9D604D2F310716A3L))
                     .inAdapterView(isAssignableFrom(AdapterView.class))
                     .perform(click());
-
             onView(withText(R.string.api_settings_save)).perform(click());
-
-            // unfortunately, getting the activity result from the
-
         }
 
         { // decrypt again, this time pending passphrase
@@ -144,6 +139,7 @@ public class OpenPgpServiceTest {
             PendingIntent pi = result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
             pi.send();
 
+            Thread.sleep(1 * 1000); // Wait for activity to start
             onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
             onView(withText(R.string.btn_unlock)).perform(click());
         }
@@ -157,15 +153,13 @@ public class OpenPgpServiceTest {
 
             Intent result = mApi.executeApi(intent, is, os);
 
-            assertThat("result is pending passphrase",
+            assertThat("result is decrypt ok",
                     result.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR),
                     is(OpenPgpApi.RESULT_CODE_SUCCESS));
 
             byte[] plaintext = os.toByteArray();
             assertThat("decrypted plaintext matches plaintext", new String(plaintext), is("swag"));
-
         }
-
     }
 
 }
