@@ -59,18 +59,18 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
                     new PgpKeyOperation(new ProgressScaler(mProgressable, 0, 70, 100));
 
             try {
-                    log.add(OperationResult.LogType.MSG_ED_FETCHING, 1,
-                            KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
+                log.add(OperationResult.LogType.MSG_ED_FETCHING, 1,
+                        KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
 
-                    CanonicalizedSecretKeyRing secRing =
-                            mProviderHelper.getCanonicalizedSecretKeyRing(unlockParcel.mMasterKeyId);
-                    modifyResult = keyOperations.modifyKeyRingPassphrase(secRing, cryptoInput, unlockParcel);
+                CanonicalizedSecretKeyRing secRing =
+                        mProviderHelper.getCanonicalizedSecretKeyRing(unlockParcel.mMasterKeyId);
+                modifyResult = keyOperations.modifyKeyRingPassphrase(secRing, cryptoInput, unlockParcel);
 
-                    if (modifyResult.isPending()) {
-                        // obtain original passphrase from user
-                        log.add(modifyResult, 1);
-                        return new EditKeyResult(log, modifyResult);
-                    }
+                if (modifyResult.isPending()) {
+                    // obtain original passphrase from user
+                    log.add(modifyResult, 1);
+                    return new EditKeyResult(log, modifyResult);
+                }
             } catch (ProviderHelper.NotFoundException e) {
                 log.add(OperationResult.LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
