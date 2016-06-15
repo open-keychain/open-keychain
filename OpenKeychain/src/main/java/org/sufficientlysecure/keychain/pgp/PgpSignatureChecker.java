@@ -289,9 +289,11 @@ class PgpSignatureChecker {
         PGPContentVerifierBuilder pgpContentVerifierBuilder = new JcaPGPRawDigestContentVerifierBuilderProvider()
                 .get(signingKey.getAlgorithm(), signature.getHashAlgorithm());
         PGPContentVerifier pgpContentVerifier = pgpContentVerifierBuilder.build(signingKey.getPublicKey());
+        byte[] signedMessageDigest = digest.digest();
+
         try {
             OutputStream outputStream = pgpContentVerifier.getOutputStream();
-            outputStream.write(digest.digest());
+            outputStream.write(signedMessageDigest);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -310,6 +312,7 @@ class PgpSignatureChecker {
         }
 
         signatureResultBuilder.setValidSignature(validSignature);
+        signatureResultBuilder.setSignedMessageDigest(signedMessageDigest);
     }
 
     public byte[] getSigningFingerprint() {

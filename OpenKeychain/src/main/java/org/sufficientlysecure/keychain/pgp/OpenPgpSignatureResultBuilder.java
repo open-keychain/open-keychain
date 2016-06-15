@@ -35,72 +35,73 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class OpenPgpSignatureResultBuilder {
     // injected
-    private final ProviderHelper mProviderHelper;
+    private final ProviderHelper providerHelper;
 
     // OpenPgpSignatureResult
-    private String mPrimaryUserId;
-    private ArrayList<String> mUserIds = new ArrayList<>();
-    private ArrayList<String> mConfirmedUserIds;
-    private long mKeyId;
-    private int mSenderStatus;
+    private String primaryUserId;
+    private ArrayList<String> userIds = new ArrayList<>();
+    private ArrayList<String> confirmedUserIds;
+    private long keyId;
+    private String senderAddress;
+    private int senderStatus;
+    private byte[] signedMessageDigest;
 
     // builder
-    private boolean mSignatureAvailable = false;
-    private boolean mKnownKey = false;
-    private boolean mValidSignature = false;
-    private boolean mIsSignatureKeyCertified = false;
-    private boolean mIsKeyRevoked = false;
-    private boolean mIsKeyExpired = false;
-    private boolean mInsecure = false;
-    private String mSenderAddress;
+    private boolean signatureAvailable = false;
+    private boolean knownKey = false;
+    private boolean validSignature = false;
+    private boolean isSignatureKeyCertified = false;
+    private boolean isKeyRevoked = false;
+    private boolean isKeyExpired = false;
+    private boolean isInsecure = false;
 
     public OpenPgpSignatureResultBuilder(ProviderHelper providerHelper) {
-        this.mProviderHelper = providerHelper;
+        this.providerHelper = providerHelper;
     }
 
     public void setPrimaryUserId(String userId) {
-        this.mPrimaryUserId = userId;
+        this.primaryUserId = userId;
     }
 
     public void setKeyId(long keyId) {
-        this.mKeyId = keyId;
+        this.keyId = keyId;
     }
 
     public void setKnownKey(boolean knownKey) {
-        this.mKnownKey = knownKey;
+        this.knownKey = knownKey;
     }
 
     public void setValidSignature(boolean validSignature) {
-        this.mValidSignature = validSignature;
+        this.validSignature = validSignature;
     }
 
     public void setInsecure(boolean insecure) {
-        this.mInsecure = insecure;
+        this.isInsecure = insecure;
     }
 
     public void setSignatureKeyCertified(boolean isSignatureKeyCertified) {
-        this.mIsSignatureKeyCertified = isSignatureKeyCertified;
+        this.isSignatureKeyCertified = isSignatureKeyCertified;
     }
 
     public void setSignatureAvailable(boolean signatureAvailable) {
-        this.mSignatureAvailable = signatureAvailable;
+        this.signatureAvailable = signatureAvailable;
     }
 
     public void setKeyRevoked(boolean keyRevoked) {
-        this.mIsKeyRevoked = keyRevoked;
+        this.isKeyRevoked = keyRevoked;
     }
 
     public void setKeyExpired(boolean keyExpired) {
-        this.mIsKeyExpired = keyExpired;
+        this.isKeyExpired = keyExpired;
     }
 
     public void setUserIds(ArrayList<String> userIds, ArrayList<String> confirmedUserIds) {
-        this.mUserIds = userIds;
-        this.mConfirmedUserIds = confirmedUserIds;
+        this.userIds = userIds;
+        this.confirmedUserIds = confirmedUserIds;
     }
 
     public boolean isInsecure() {
-        return mInsecure;
+        return isInsecure;
     }
 
     public void initValid(CanonicalizedPublicKey signingKey) {
@@ -120,13 +121,13 @@ public class OpenPgpSignatureResultBuilder {
 
         try {
             ArrayList<String> allUserIds = signingRing.getUnorderedUserIds();
-            ArrayList<String> confirmedUserIds = mProviderHelper.getConfirmedUserIds(signingRing.getMasterKeyId());
+            ArrayList<String> confirmedUserIds = providerHelper.getConfirmedUserIds(signingRing.getMasterKeyId());
             setUserIds(allUserIds, confirmedUserIds);
 
-            if (mSenderAddress != null) {
-                if (userIdListContainsAddress(mSenderAddress, confirmedUserIds)) {
+            if (senderAddress != null) {
+                if (userIdListContainsAddress(senderAddress, confirmedUserIds)) {
                     setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_CONFIRMED);
-                } else if (allUserIds.contains(mSenderAddress)) {
+                } else if (allUserIds.contains(senderAddress)) {
                     setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_UNCONFIRMED);
                 } else {
                     setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_MISSING);
@@ -155,32 +156,32 @@ public class OpenPgpSignatureResultBuilder {
     }
 
     public OpenPgpSignatureResult build() {
-        if (!mSignatureAvailable) {
+        if (!signatureAvailable) {
             Log.d(Constants.TAG, "RESULT_NO_SIGNATURE");
             return OpenPgpSignatureResult.createWithNoSignature();
         }
 
-        if (!mKnownKey) {
+        if (!knownKey) {
             Log.d(Constants.TAG, "RESULT_KEY_MISSING");
-            return OpenPgpSignatureResult.createWithKeyMissing(mKeyId);
+            return OpenPgpSignatureResult.createWithKeyMissing(keyId);
         }
 
-        if (!mValidSignature) {
+        if (!validSignature) {
             Log.d(Constants.TAG, "RESULT_INVALID_SIGNATURE");
             return OpenPgpSignatureResult.createWithInvalidSignature();
         }
 
         int signatureStatus;
-        if (mIsKeyRevoked) {
+        if (isKeyRevoked) {
             Log.d(Constants.TAG, "RESULT_INVALID_KEY_REVOKED");
             signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED;
-        } else if (mIsKeyExpired) {
+        } else if (isKeyExpired) {
             Log.d(Constants.TAG, "RESULT_INVALID_KEY_EXPIRED");
             signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED;
-        } else if (mInsecure) {
+        } else if (isInsecure) {
             Log.d(Constants.TAG, "RESULT_INVALID_INSECURE");
             signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE;
-        } else if (mIsSignatureKeyCertified) {
+        } else if (isSignatureKeyCertified) {
             Log.d(Constants.TAG, "RESULT_VALID_CONFIRMED");
             signatureStatus = OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED;
         } else {
@@ -188,15 +189,19 @@ public class OpenPgpSignatureResultBuilder {
             signatureStatus = OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED;
         }
 
-        return OpenPgpSignatureResult.createWithValidSignature(
-                signatureStatus, mPrimaryUserId, mKeyId, mUserIds, mConfirmedUserIds, mSenderStatus);
+        return OpenPgpSignatureResult.createWithValidSignature(signatureStatus,
+                primaryUserId, keyId, userIds, confirmedUserIds, senderStatus, signedMessageDigest);
     }
 
     public void setSenderAddress(String senderAddress) {
-        mSenderAddress = senderAddress;
+        this.senderAddress = senderAddress;
     }
 
     public void setSenderStatus(int senderStatus) {
-        mSenderStatus = senderStatus;
+        this.senderStatus = senderStatus;
+    }
+
+    public void setSignedMessageDigest(byte[] signedMessageDigest) {
+        this.signedMessageDigest = signedMessageDigest;
     }
 }
