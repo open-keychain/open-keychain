@@ -355,7 +355,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         }
 
         PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper, input.getSenderAddress());
-        if (signatureChecker.initializeOnePassSignature(dataChunk, log, indent +1)) {
+        if (signatureChecker.initializeSignatureOnePass(dataChunk, log, indent +1)) {
             dataChunk = plainFact.nextObject();
         }
 
@@ -875,7 +875,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper, input.getSenderAddress());
 
         Object o = pgpFact.nextObject();
-        if (!signatureChecker.initializeSignature(o, log, indent+1)) {
+        if (!signatureChecker.initializeSignatureCleartext(o, log, indent+1)) {
             log.add(LogType.MSG_DC_ERROR_INVALID_DATA, 0);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
@@ -885,7 +885,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 updateProgress(R.string.progress_verifying_signature, 90, 100);
 
                 signatureChecker.updateSignatureWithCleartext(clearText);
-                signatureChecker.verifySignature(log, indent);
+                signatureChecker.verifySignatureCleartext(log, indent);
 
             } catch (SignatureException e) {
                 Log.d(Constants.TAG, "SignatureException", e);
@@ -929,7 +929,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper, input.getSenderAddress());
 
-        if ( ! signatureChecker.initializeSignature(o, log, indent+1)) {
+        if ( ! signatureChecker.initializeSignatureDetached(o, log, indent+1)) {
             log.add(LogType.MSG_DC_ERROR_INVALID_DATA, 0);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
@@ -964,9 +964,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             }
 
             updateProgress(R.string.progress_verifying_signature, 90, 100);
-            log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
 
-            signatureChecker.verifySignature(log, indent);
+            signatureChecker.verifySignatureDetached(log, indent);
 
         }
 

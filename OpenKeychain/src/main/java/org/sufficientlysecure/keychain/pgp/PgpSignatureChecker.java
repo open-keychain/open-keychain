@@ -24,15 +24,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.SignatureException;
 
-import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPOnePassSignature;
 import org.bouncycastle.openpgp.PGPOnePassSignatureList;
 import org.bouncycastle.openpgp.PGPSignature;
 import org.bouncycastle.openpgp.PGPSignatureList;
-import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
+import org.bouncycastle.openpgp.operator.PGPContentVerifier;
+import org.bouncycastle.openpgp.operator.PGPContentVerifierBuilder;
+import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentDigest;
+import org.bouncycastle.openpgp.operator.jcajce.JcaPGPRawDigestContentVerifierBuilderProvider;
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -46,14 +50,15 @@ import org.sufficientlysecure.keychain.util.Log;
  *
  */
 class PgpSignatureChecker {
-
     private final OpenPgpSignatureResultBuilder signatureResultBuilder;
 
-    private CanonicalizedPublicKey signingKey;
+    private SignatureMode signatureMode;
 
-    private int signatureIndex;
-    PGPOnePassSignature onePassSignature;
-    PGPSignature signature;
+    private CanonicalizedPublicKey signingKey;
+    private Integer hashAlgorithm;
+    private Integer signatureIndex;
+    private PGPSignature signature;
+    private JcaPGPContentDigest digest;
 
     ProviderHelper mProviderHelper;
 
@@ -64,40 +69,48 @@ class PgpSignatureChecker {
         signatureResultBuilder.setSenderAddress(senderAddress);
     }
 
-    boolean initializeSignature(Object dataChunk, OperationLog log, int indent) throws PGPException {
+    public boolean initializeSignatureCleartext(Object dataChunk, OperationLog log, int indent) throws PGPException {
+        if (signatureMode != null) {
+            throw new IllegalStateException("cannot initialize twice!");
+        }
+        signatureMode = SignatureMode.CLEARTEXT;
 
+        return initializeSignatureNonOnePass(dataChunk, log, indent);
+    }
+
+    public boolean initializeSignatureDetached(Object dataChunk, OperationLog log, int indent) throws PGPException {
+        if (signatureMode != null) {
+            throw new IllegalStateException("cannot initialize twice!");
+        }
+        signatureMode = SignatureMode.DETACHED;
+
+        return initializeSignatureNonOnePass(dataChunk, log, indent);
+    }
+
+    private boolean initializeSignatureNonOnePass(Object dataChunk, OperationLog log, int indent) {
         if (!(dataChunk instanceof PGPSignatureList)) {
             return false;
         }
 
         PGPSignatureList sigList = (PGPSignatureList) dataChunk;
-        findAvailableSignature(sigList);
+        findNonOnePassSignature(sigList);
 
         if (signingKey != null) {
-
-            // key found in our database!
-            signatureResultBuilder.initValid(signingKey);
-
-            JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
-                    new JcaPGPContentVerifierBuilderProvider()
-                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-            signature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
-            checkKeySecurity(log, indent);
-
-
+            initializeSignature(log, indent);
         } else if (!sigList.isEmpty()) {
-
             signatureResultBuilder.setSignatureAvailable(true);
             signatureResultBuilder.setKnownKey(false);
             signatureResultBuilder.setKeyId(sigList.get(0).getKeyID());
-
         }
 
         return true;
-
     }
 
-    boolean initializeOnePassSignature(Object dataChunk, OperationLog log, int indent) throws PGPException {
+    boolean initializeSignatureOnePass(Object dataChunk, OperationLog log, int indent) throws PGPException {
+        if (signatureMode != null) {
+            throw new IllegalStateException("cannot initialize twice!");
+        }
+        signatureMode = SignatureMode.ONEPASS;
 
         if (!(dataChunk instanceof PGPOnePassSignatureList)) {
             return false;
@@ -106,30 +119,28 @@ class PgpSignatureChecker {
         log.add(LogType.MSG_DC_CLEAR_SIGNATURE, indent + 1);
 
         PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
-        findAvailableSignature(sigList);
+        findOnePassSignature(sigList);
 
         if (signingKey != null) {
-
-            // key found in our database!
-            signatureResultBuilder.initValid(signingKey);
-
-            JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
-                    new JcaPGPContentVerifierBuilderProvider()
-                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-            onePassSignature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
-
-            checkKeySecurity(log, indent);
-
+            initializeSignature(log, indent);
         } else if (!sigList.isEmpty()) {
-
             signatureResultBuilder.setSignatureAvailable(true);
             signatureResultBuilder.setKnownKey(false);
             signatureResultBuilder.setKeyId(sigList.get(0).getKeyID());
-
         }
 
         return true;
 
+    }
+
+    private void initializeSignature(OperationLog log, int indent) {
+        // key found in our database!
+        signatureResultBuilder.initValid(signingKey);
+
+        digest = JcaPGPContentDigest.newInstance(
+                Constants.BOUNCY_CASTLE_PROVIDER_NAME, hashAlgorithm);
+
+        checkKeySecurity(log, indent);
     }
 
     private void checkKeySecurity(OperationLog log, int indent) {
@@ -144,7 +155,7 @@ class PgpSignatureChecker {
         return signingKey != null;
     }
 
-    private void findAvailableSignature(PGPOnePassSignatureList sigList) {
+    private void findOnePassSignature(PGPOnePassSignatureList sigList) {
         // go through all signatures (should be just one), make sure we have
         //  the key and it matches the one we’re looking for
         for (int i = 0; i < sigList.size(); ++i) {
@@ -159,15 +170,16 @@ class PgpSignatureChecker {
                 }
                 signatureIndex = i;
                 signingKey = keyCandidate;
-                onePassSignature = sigList.get(i);
-                return;
+                PGPOnePassSignature onePassSignature = sigList.get(i);
+                hashAlgorithm = onePassSignature.getHashAlgorithm();
+                break;
             } catch (ProviderHelper.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found, trying next signature...");
             }
         }
     }
 
-    public void findAvailableSignature(PGPSignatureList sigList) {
+    private void findNonOnePassSignature(PGPSignatureList sigList) {
         // go through all signatures (should be just one), make sure we have
         //  the key and it matches the one we’re looking for
         for (int i = 0; i < sigList.size(); ++i) {
@@ -183,7 +195,8 @@ class PgpSignatureChecker {
                 signatureIndex = i;
                 signingKey = keyCandidate;
                 signature = sigList.get(i);
-                return;
+                hashAlgorithm = signature.getHashAlgorithm();
+                break;
             } catch (ProviderHelper.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found, trying next signature...");
             }
@@ -191,6 +204,9 @@ class PgpSignatureChecker {
     }
 
     public void updateSignatureWithCleartext(byte[] clearText) throws IOException, SignatureException {
+        if (signatureMode != SignatureMode.CLEARTEXT) {
+            throw new IllegalStateException("update with cleartext while not in cleartext mode!");
+        }
 
         InputStream sigIn = new BufferedInputStream(new ByteArrayInputStream(clearText));
 
@@ -198,50 +214,51 @@ class PgpSignatureChecker {
 
         int lookAhead = readInputLine(outputBuffer, sigIn);
 
-        processLine(signature, outputBuffer.toByteArray());
+        processLine(digest, outputBuffer.toByteArray());
 
         while (lookAhead != -1) {
             lookAhead = readInputLine(outputBuffer, lookAhead, sigIn);
 
-            signature.update((byte) '\r');
-            signature.update((byte) '\n');
+            digest.update((byte) '\r');
+            digest.update((byte) '\n');
 
-            processLine(signature, outputBuffer.toByteArray());
+            processLine(digest, outputBuffer.toByteArray());
         }
 
     }
 
     public void updateSignatureData(byte[] buf, int off, int len) {
-        if (signature != null) {
-            signature.update(buf, off, len);
-        } else if (onePassSignature != null) {
-            onePassSignature.update(buf, off, len);
+        if (signatureMode != SignatureMode.DETACHED && signatureMode != SignatureMode.ONEPASS) {
+            throw new IllegalStateException("update with data while not in detached or onepass mode!");
+        }
+
+        if (digest != null) {
+            digest.update(buf, off, len);
         }
     }
 
-    void verifySignature(OperationLog log, int indent) throws PGPException {
+    public void verifySignatureDetached(OperationLog log, int indent) throws PGPException {
+        if (signatureMode != SignatureMode.DETACHED) {
+            throw new IllegalStateException("call to verifySignatureDetached while not in detached mode!");
+        }
 
         log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
-
-        // Verify signature
-        boolean validSignature = signature.verify();
-        if (validSignature) {
-            log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent + 1);
-        } else {
-            log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
-        }
-
-        // check for insecure hash algorithms
-        if (!PgpSecurityConstants.isSecureHashAlgorithm(signature.getHashAlgorithm())) {
-            log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
-            signatureResultBuilder.setInsecure(true);
-        }
-
-        signatureResultBuilder.setValidSignature(validSignature);
-
+        verifySignatureInternal(log, indent);
     }
 
-    boolean verifySignatureOnePass(Object o, OperationLog log, int indent) throws PGPException {
+    public void verifySignatureCleartext(OperationLog log, int indent) throws PGPException {
+        if (signatureMode != SignatureMode.CLEARTEXT) {
+            throw new IllegalStateException("call to verifySignatureCleartext while not in cleartext mode!");
+        }
+
+        log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
+        verifySignatureInternal(log, indent);
+    }
+
+    public boolean verifySignatureOnePass(Object o, OperationLog log, int indent) throws PGPException {
+        if (signatureMode != SignatureMode.ONEPASS) {
+            throw new IllegalStateException("call to verifySignatureOnePass while not in onepass mode!");
+        }
 
         if (!(o instanceof PGPSignatureList)) {
             log.add(LogType.MSG_DC_ERROR_NO_SIGNATURE, indent);
@@ -255,10 +272,31 @@ class PgpSignatureChecker {
 
         // PGPOnePassSignature and PGPSignature packets are "bracketed",
         // so we need to take the last-minus-index'th element here
-        PGPSignature messageSignature = signatureList.get(signatureList.size() - 1 - signatureIndex);
+        signature = signatureList.get(signatureList.size() - 1 - signatureIndex);
 
-        // Verify signature
-        boolean validSignature = onePassSignature.verify(messageSignature);
+        verifySignatureInternal(log, indent);
+
+        return true;
+    }
+
+    private void verifySignatureInternal(OperationLog log, int indent) throws PGPException {
+        if (signature == null) {
+            throw new IllegalStateException("signature must be set at this point!");
+        }
+
+        digest.update(signature.getSignatureTrailer());
+
+        PGPContentVerifierBuilder pgpContentVerifierBuilder = new JcaPGPRawDigestContentVerifierBuilderProvider()
+                .get(signingKey.getAlgorithm(), signature.getHashAlgorithm());
+        PGPContentVerifier pgpContentVerifier = pgpContentVerifierBuilder.build(signingKey.getPublicKey());
+        try {
+            OutputStream outputStream = pgpContentVerifier.getOutputStream();
+            outputStream.write(digest.digest());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        boolean validSignature = pgpContentVerifier.verify(signature.getSignature());
         if (validSignature) {
             log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent + 1);
         } else {
@@ -266,15 +304,12 @@ class PgpSignatureChecker {
         }
 
         // check for insecure hash algorithms
-        if (!PgpSecurityConstants.isSecureHashAlgorithm(onePassSignature.getHashAlgorithm())) {
+        if (!PgpSecurityConstants.isSecureHashAlgorithm(signature.getHashAlgorithm())) {
             log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
             signatureResultBuilder.setInsecure(true);
         }
 
         signatureResultBuilder.setValidSignature(validSignature);
-
-        return true;
-
     }
 
     public byte[] getSigningFingerprint() {
@@ -289,11 +324,11 @@ class PgpSignatureChecker {
      * Mostly taken from ClearSignedFileProcessor in Bouncy Castle
      */
 
-    private static void processLine(PGPSignature sig, byte[] line)
+    private static void processLine(JcaPGPContentDigest digest, byte[] line)
             throws SignatureException {
         int length = getLengthWithoutWhiteSpace(line);
         if (length > 0) {
-            sig.update(line, 0, length);
+            digest.update(line, 0, length);
         }
     }
 
@@ -360,6 +395,10 @@ class PgpSignatureChecker {
 
     private static boolean isWhiteSpace(byte b) {
         return b == '\r' || b == '\n' || b == '\t' || b == ' ';
+    }
+
+    private enum SignatureMode {
+        DETACHED, CLEARTEXT, ONEPASS
     }
 
 }
