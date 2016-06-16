@@ -25,7 +25,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -94,12 +93,6 @@ public class ImportKeysActivity extends BaseActivity
         mFreshIntent = true;
 
         setFullScreenDialogClose(Activity.RESULT_CANCELED, true);
-        findViewById(R.id.import_import).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                importSelectedKeys();
-            }
-        });
     }
 
     @Override

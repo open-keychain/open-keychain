@@ -47,35 +47,10 @@
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/import_footer"
+        <RelativeLayout
+            android:id="@+id/import_snackbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-            <TextView
-                android:id="@+id/import_import"
-                style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:drawablePadding="8dp"
-                android:drawableRight="@drawable/ic_file_download_white_24dp"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:text="@string/import_import"
-                android:textColor="#ffffffff" />
-
-            <RelativeLayout
-                android:id="@+id/import_snackbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/import_import" />
-
-        </android.support.v7.widget.Toolbar>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
