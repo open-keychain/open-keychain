@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.SecurityTokenListenerFragment;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.loader.CloudLoaderState;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -210,7 +211,7 @@ public class CreateSecurityTokenImportResetFragment
     }
 
     public void refreshSearch() {
-        mListFragment.loadNew(new ImportKeysListFragment.CloudLoaderState("0x" + mTokenFingerprint,
+        mListFragment.loadNew(new CloudLoaderState("0x" + mTokenFingerprint,
                 Preferences.getPreferences(getActivity()).getCloudSearchPrefs()));
     }
 

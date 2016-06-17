@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.adapter;
+package org.sufficientlysecure.keychain.ui.loader;
 
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 

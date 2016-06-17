@@ -48,10 +48,13 @@ import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListCloudLoader;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
+import org.sufficientlysecure.keychain.ui.loader.AsyncTaskResultWrapper;
+import org.sufficientlysecure.keychain.ui.loader.BytesLoaderState;
+import org.sufficientlysecure.keychain.ui.loader.CloudLoaderState;
+import org.sufficientlysecure.keychain.ui.loader.ImportKeysListCloudLoader;
+import org.sufficientlysecure.keychain.ui.loader.ImportKeysListLoader;
+import org.sufficientlysecure.keychain.ui.loader.LoaderState;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
@@ -192,30 +195,6 @@ public class ImportKeysListFragment extends Fragment implements
         frag.setArguments(args);
 
         return frag;
-    }
-
-    static public class LoaderState {
-    }
-
-    static public class BytesLoaderState extends LoaderState {
-        public byte[] mKeyBytes;
-        public Uri mDataUri;
-
-        BytesLoaderState(byte[] keyBytes, Uri dataUri) {
-            mKeyBytes = keyBytes;
-            mDataUri = dataUri;
-        }
-    }
-
-    static public class CloudLoaderState extends LoaderState {
-        Preferences.CloudSearchPrefs mCloudPrefs;
-        String mServerQuery;
-
-        CloudLoaderState(String serverQuery, Preferences.CloudSearchPrefs cloudPrefs) {
-            mServerQuery = serverQuery;
-            mCloudPrefs = cloudPrefs;
-        }
-
     }
 
     @Override

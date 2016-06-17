@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.adapter;
+package org.sufficientlysecure.keychain.ui.loader;
 
 
 import java.io.BufferedInputStream;
@@ -39,7 +39,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
-import org.sufficientlysecure.keychain.ui.ImportKeysListFragment.BytesLoaderState;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;

@@ -37,6 +37,9 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.loader.BytesLoaderState;
+import org.sufficientlysecure.keychain.ui.loader.CloudLoaderState;
+import org.sufficientlysecure.keychain.ui.loader.LoaderState;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
@@ -318,7 +321,7 @@ public class ImportKeysActivity extends BaseActivity
         }
     }
 
-    public void loadCallback(final ImportKeysListFragment.LoaderState loaderState) {
+    public void loadCallback(LoaderState loaderState) {
         FragmentManager fragMan = getSupportFragmentManager();
         ImportKeysListFragment keyListFragment = (ImportKeysListFragment) fragMan.findFragmentByTag(TAG_FRAG_LIST);
         keyListFragment.loadNew(loaderState);
@@ -339,8 +342,8 @@ public class ImportKeysActivity extends BaseActivity
                 1, this, this, R.string.progress_importing
         );
 
-        ImportKeysListFragment.LoaderState ls = keyListFragment.getLoaderState();
-        if (ls instanceof ImportKeysListFragment.BytesLoaderState) {
+        LoaderState ls = keyListFragment.getLoaderState();
+        if (ls instanceof BytesLoaderState) {
             Log.d(Constants.TAG, "importKeys started");
 
             // get DATA from selected key entries
@@ -365,9 +368,8 @@ public class ImportKeysActivity extends BaseActivity
                 Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR)
                         .show((ViewGroup) findViewById(R.id.import_snackbar));
             }
-        } else if (ls instanceof ImportKeysListFragment.CloudLoaderState) {
-            ImportKeysListFragment.CloudLoaderState sls =
-                    (ImportKeysListFragment.CloudLoaderState) ls;
+        } else if (ls instanceof CloudLoaderState) {
+            CloudLoaderState sls = (CloudLoaderState) ls;
 
             // get selected key entries
             ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
