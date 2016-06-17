@@ -49,12 +49,12 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
-import org.sufficientlysecure.keychain.ui.loader.AsyncTaskResultWrapper;
-import org.sufficientlysecure.keychain.ui.loader.BytesLoaderState;
-import org.sufficientlysecure.keychain.ui.loader.CloudLoaderState;
-import org.sufficientlysecure.keychain.ui.loader.ImportKeysListCloudLoader;
-import org.sufficientlysecure.keychain.ui.loader.ImportKeysListLoader;
-import org.sufficientlysecure.keychain.ui.loader.LoaderState;
+import org.sufficientlysecure.keychain.keyimport.loader.AsyncTaskResultWrapper;
+import org.sufficientlysecure.keychain.keyimport.loader.BytesLoaderState;
+import org.sufficientlysecure.keychain.keyimport.loader.CloudLoaderState;
+import org.sufficientlysecure.keychain.keyimport.loader.ImportKeysListCloudLoader;
+import org.sufficientlysecure.keychain.keyimport.loader.ImportKeysListLoader;
+import org.sufficientlysecure.keychain.keyimport.loader.LoaderState;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
@@ -108,7 +108,7 @@ public class ImportKeysListFragment extends Fragment implements
      * ArrayList would have been, but we save some memory by just returning
      * relevant elements on demand.
      */
-    public IteratorWithSize<ParcelableKeyRing> getSelectedData() {
+    public IteratorWithSize<ParcelableKeyRing> getData() {
         final List<ImportKeysListEntry> entries = getEntries();
         final Iterator<ImportKeysListEntry> it = entries.iterator();
         return new IteratorWithSize<ParcelableKeyRing>() {

@@ -24,8 +24,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -39,9 +37,9 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.loader.BytesLoaderState;
-import org.sufficientlysecure.keychain.ui.loader.CloudLoaderState;
-import org.sufficientlysecure.keychain.ui.loader.LoaderState;
+import org.sufficientlysecure.keychain.keyimport.loader.BytesLoaderState;
+import org.sufficientlysecure.keychain.keyimport.loader.CloudLoaderState;
+import org.sufficientlysecure.keychain.keyimport.loader.LoaderState;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
@@ -349,7 +347,7 @@ public class ImportKeysActivity extends BaseActivity
             Log.d(Constants.TAG, "importKeys started");
 
             // get DATA from selected key entries
-            IteratorWithSize<ParcelableKeyRing> selectedEntries = keyListFragment.getSelectedData();
+            IteratorWithSize<ParcelableKeyRing> entries = keyListFragment.getData();
 
             // instead of giving the entries by Intent extra, cache them into a
             // file to prevent Java Binder problems on heavy imports
@@ -359,17 +357,16 @@ public class ImportKeysActivity extends BaseActivity
                 // display here, we should be able to import.
                 ParcelableFileCache<ParcelableKeyRing> cache =
                         new ParcelableFileCache<>(this, "key_import.pcl");
-                cache.writeCache(selectedEntries);
-
-                mKeyList = null;
-                mKeyserver = null;
-                mOperationHelper.cryptoOperation();
-
+                cache.writeCache(entries);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Problem writing cache file", e);
                 Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR)
                         .show((ViewGroup) findViewById(R.id.import_snackbar));
+                return;
             }
+
+            mKeyList = null;
+            mKeyserver = null;
         } else if (ls instanceof CloudLoaderState) {
             CloudLoaderState sls = (CloudLoaderState) ls;
 
@@ -386,9 +383,9 @@ public class ImportKeysActivity extends BaseActivity
 
             mKeyList = keys;
             mKeyserver = sls.mCloudPrefs.keyserver;
-            mOperationHelper.cryptoOperation();
-
         }
+
+        mOperationHelper.cryptoOperation();
     }
 
     @Override

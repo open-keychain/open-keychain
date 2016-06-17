@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.loader;
+package org.sufficientlysecure.keychain.keyimport.loader;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

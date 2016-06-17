@@ -44,7 +44,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.SecurityTokenListenerFragment;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
-import org.sufficientlysecure.keychain.ui.loader.CloudLoaderState;
+import org.sufficientlysecure.keychain.keyimport.loader.CloudLoaderState;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
 
