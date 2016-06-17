@@ -133,6 +133,7 @@
     <string name="menu_certify_fingerprint_phrases">"Confirm with phrases"</string>
     <string name="menu_share_log">"Share log"</string>
     <string name="menu_change_password">"Change password"</string>
+    <string name="menu_import_all_keys">"Import all keys"</string>
 
     <string name="menu_keyserver_add">"Add"</string>
 

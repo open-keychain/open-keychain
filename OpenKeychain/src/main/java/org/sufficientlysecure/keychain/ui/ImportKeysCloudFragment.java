@@ -25,6 +25,9 @@ import android.preference.PreferenceActivity;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -119,15 +122,7 @@ public class ImportKeysCloudFragment extends Fragment {
             }
         });
 
-        View configButton = view.findViewById(R.id.cloud_import_server_config_button);
-        configButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mImportActivity, SettingsActivity.class);
-                intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsActivity.CloudSearchPrefsFragment.class.getName());
-                startActivity(intent);
-            }
-        });
+        setHasOptionsMenu(true);
 
         return view;
     }
@@ -160,6 +155,25 @@ public class ImportKeysCloudFragment extends Fragment {
         super.onAttach(activity);
 
         mImportActivity = (ImportKeysActivity) activity;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.import_keys_cloud_fragment, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.import_cloud_settings:
+                Intent intent = new Intent(mImportActivity, SettingsActivity.class);
+                intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsActivity.CloudSearchPrefsFragment.class.getName());
+                startActivity(intent);
+                return true;
+        }
+
+        return false;
     }
 
     private void search(String query) {

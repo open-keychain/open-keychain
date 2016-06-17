@@ -24,6 +24,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -112,6 +114,17 @@ public class ImportKeysActivity extends BaseActivity
             // every time the activity is resumed
             mFreshIntent = false;
         }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // the only thing we need to take care of for restoring state is
+        // that the top layout is shown iff it contains a fragment
+        Fragment topFragment = getSupportFragmentManager().findFragmentByTag(TAG_FRAG_TOP);
+        boolean hasTopFragment = topFragment != null;
+        findViewById(R.id.import_keys_top_layout).setVisibility(hasTopFragment ? View.VISIBLE : View.GONE);
     }
 
     protected void handleActions(@NonNull Intent intent) {
@@ -250,17 +263,6 @@ public class ImportKeysActivity extends BaseActivity
                 break;
             }
         }
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        // the only thing we need to take care of for restoring state is
-        // that the top layout is shown iff it contains a fragment
-        Fragment topFragment = getSupportFragmentManager().findFragmentByTag(TAG_FRAG_TOP);
-        boolean hasTopFragment = topFragment != null;
-        findViewById(R.id.import_keys_top_layout).setVisibility(hasTopFragment ? View.VISIBLE : View.GONE);
     }
 
     /**

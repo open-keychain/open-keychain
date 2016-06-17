@@ -25,10 +25,14 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -105,6 +109,8 @@ public class ImportKeysFileFragment extends Fragment {
             }
         });
 
+        setHasOptionsMenu(true);
+
         return view;
     }
 
@@ -113,6 +119,23 @@ public class ImportKeysFileFragment extends Fragment {
         super.onAttach(activity);
 
         mImportActivity = (ImportKeysActivity) activity;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.import_keys_file_fragment, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.import_all_keys:
+                //TODO
+                return true;
+        }
+
+        return false;
     }
 
     @Override
