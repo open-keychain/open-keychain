@@ -102,10 +102,6 @@ public class ImportKeysListFragment extends Fragment implements
         return mLoaderState;
     }
 
-    public List<ImportKeysListEntry> getData() {
-        return mAdapter.getData();
-    }
-
     /**
      * Returns an Iterator (with size) of the selected data items.
      * This iterator is sort of a tradeoff, it's slightly more complex than an
@@ -113,7 +109,7 @@ public class ImportKeysListFragment extends Fragment implements
      * relevant elements on demand.
      */
     public IteratorWithSize<ParcelableKeyRing> getSelectedData() {
-        final ArrayList<ImportKeysListEntry> entries = getSelectedEntries();
+        final List<ImportKeysListEntry> entries = getEntries();
         final Iterator<ImportKeysListEntry> it = entries.iterator();
         return new IteratorWithSize<ParcelableKeyRing>() {
 
@@ -140,9 +136,9 @@ public class ImportKeysListFragment extends Fragment implements
         };
     }
 
-    public ArrayList<ImportKeysListEntry> getSelectedEntries() {
+    public List<ImportKeysListEntry> getEntries() {
         if (mAdapter != null) {
-            return mAdapter.getSelectedEntries();
+            return mAdapter.getEntries();
         } else {
             Log.e(Constants.TAG, "Adapter not initialized, returning empty list");
             return new ArrayList<>();

@@ -56,8 +56,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private ArrayList<String> mOrigins;
     private Integer mHashCode = null;
 
-    private boolean mSelected;
-
     public int describeContents() {
         return 0;
     }
@@ -82,7 +80,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         }
         dest.writeString(mAlgorithm);
         dest.writeByte((byte) (mSecretKey ? 1 : 0));
-        dest.writeByte((byte) (mSelected ? 1 : 0));
         dest.writeString(mKeybaseName);
         dest.writeString(mFbUsername);
         dest.writeStringList(mOrigins);
@@ -104,7 +101,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mBitStrength = source.readInt() != 0 ? source.readInt() : null;
             vr.mAlgorithm = source.readString();
             vr.mSecretKey = source.readByte() == 1;
-            vr.mSelected = source.readByte() == 1;
             vr.mKeybaseName = source.readString();
             vr.mFbUsername = source.readString();
             vr.mOrigins = new ArrayList<>();
@@ -134,14 +130,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public String getKeyIdHex() {
         return mKeyIdHex;
-    }
-
-    public boolean isSelected() {
-        return mSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        mSelected = selected;
     }
 
     public boolean isExpired() {
@@ -275,8 +263,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public ImportKeysListEntry() {
         // keys from keyserver are always public keys; from keybase too
         mSecretKey = false;
-        // do not select by default
-        mSelected = false;
+
         mUserIds = new ArrayList<>();
         mOrigins = new ArrayList<>();
     }
@@ -286,9 +273,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
      */
     @SuppressWarnings("unchecked")
     public ImportKeysListEntry(Context context, UncachedKeyRing ring) {
-        // selected is default
-        this.mSelected = true;
-
         mSecretKey = ring.isSecret();
         UncachedPublicKey key = ring.getPublicKey();
 

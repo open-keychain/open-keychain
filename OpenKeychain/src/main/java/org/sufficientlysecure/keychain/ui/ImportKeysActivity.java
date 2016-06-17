@@ -51,6 +51,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ImportKeysActivity extends BaseActivity
         implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
@@ -329,12 +330,11 @@ public class ImportKeysActivity extends BaseActivity
         keyListFragment.loadNew(loaderState);
     }
 
-    private void importSelectedKeys() {
-
+    public void importAllKeys() {
         FragmentManager fragMan = getSupportFragmentManager();
         ImportKeysListFragment keyListFragment = (ImportKeysListFragment) fragMan.findFragmentByTag(TAG_FRAG_LIST);
 
-        if (keyListFragment.getSelectedEntries().size() == 0) {
+        if (keyListFragment.getEntries().size() == 0) {
             Notify.create(this, R.string.error_nothing_import_selected, Notify.Style.ERROR)
                     .show((ViewGroup) findViewById(R.id.import_snackbar));
             return;
@@ -377,7 +377,7 @@ public class ImportKeysActivity extends BaseActivity
             ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
             {
                 // change the format into ParcelableKeyRing
-                ArrayList<ImportKeysListEntry> entries = keyListFragment.getSelectedEntries();
+                List<ImportKeysListEntry> entries = keyListFragment.getEntries();
                 for (ImportKeysListEntry entry : entries) {
                     keys.add(new ParcelableKeyRing(entry.getFingerprintHex(),
                             entry.getKeyIdHex(), entry.getKeybaseName(), entry.getFbUsername()));

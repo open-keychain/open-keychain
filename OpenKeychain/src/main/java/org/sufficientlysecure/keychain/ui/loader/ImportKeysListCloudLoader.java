@@ -152,7 +152,6 @@ public class ImportKeysListCloudLoader
                      * to enforce a check when the key is imported by KeychainService
                      */
                     uniqueEntry.setFingerprintHex(fingerprint);
-                    uniqueEntry.setSelected(true);
                     mEntryList.add(uniqueEntry);
                 }
             } else {

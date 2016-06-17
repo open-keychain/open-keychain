@@ -85,27 +85,21 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         notifyDataSetChanged();
     }
 
-    public List<ImportKeysListEntry> getData() {
-        return mData;
-    }
-
     /**
      * This method returns a list of all selected entries, with public keys sorted
      * before secret keys, see ImportOperation for specifics.
      *
      * @see ImportOperation
      */
-    public ArrayList<ImportKeysListEntry> getSelectedEntries() {
+    public List<ImportKeysListEntry> getEntries() {
         ArrayList<ImportKeysListEntry> result = new ArrayList<>();
         ArrayList<ImportKeysListEntry> secrets = new ArrayList<>();
         if (mData == null) {
             return result;
         }
         for (ImportKeysListEntry entry : mData) {
-            if (entry.isSelected()) {
-                // add this entry to either the secret or the public list
-                (entry.isSecretKey() ? secrets : result).add(entry);
-            }
+            // add this entry to either the secret or the public list
+            (entry.isSecretKey() ? secrets : result).add(entry);
         }
         // add secret keys at the end of the list
         result.addAll(secrets);
@@ -263,19 +257,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 }
             }
         }
-
-        int defaultColor = ContextCompat.getColor(mContext, R.color.cardview_light_background);
-        int selectedColor = ContextCompat.getColor(mContext, R.color.primaryLight);
-        holder.container.setBackgroundColor(entry.isSelected() ? selectedColor : defaultColor);
-        holder.container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!mNonInteractive) {
-                    entry.setSelected(!entry.isSelected());
-                    notifyDataSetChanged();
-                }
-            }
-        });
     }
 
     @Override
