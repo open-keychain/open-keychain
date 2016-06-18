@@ -33,26 +33,26 @@ import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
+import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysOperationCallback;
+import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.keyimport.loader.BytesLoaderState;
-import org.sufficientlysecure.keychain.keyimport.loader.CloudLoaderState;
-import org.sufficientlysecure.keychain.keyimport.loader.LoaderState;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImportKeysActivity extends BaseActivity
-        implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
+public class ImportKeysActivity extends BaseActivity implements ImportKeysListener {
 
     public static final String ACTION_IMPORT_KEY = OpenKeychainIntents.IMPORT_KEY;
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER;
@@ -81,13 +81,9 @@ public class ImportKeysActivity extends BaseActivity
     public static final String TAG_FRAG_LIST = "frag_list";
     public static final String TAG_FRAG_TOP = "frag_top";
 
-    // for CryptoOperationHelper.Callback
-    private String mKeyserver;
-    private ArrayList<ParcelableKeyRing> mKeyList;
+    private boolean mFreshIntent;
 
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
-
-    private boolean mFreshIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -322,72 +318,6 @@ public class ImportKeysActivity extends BaseActivity
         }
     }
 
-    public void loadCallback(LoaderState loaderState) {
-        FragmentManager fragMan = getSupportFragmentManager();
-        ImportKeysListFragment keyListFragment = (ImportKeysListFragment) fragMan.findFragmentByTag(TAG_FRAG_LIST);
-        keyListFragment.loadNew(loaderState);
-    }
-
-    public void importAllKeys() {
-        FragmentManager fragMan = getSupportFragmentManager();
-        ImportKeysListFragment keyListFragment = (ImportKeysListFragment) fragMan.findFragmentByTag(TAG_FRAG_LIST);
-
-        if (keyListFragment.getEntries().size() == 0) {
-            Notify.create(this, R.string.error_nothing_import_selected, Notify.Style.ERROR)
-                    .show((ViewGroup) findViewById(R.id.import_snackbar));
-            return;
-        }
-
-        mOperationHelper = new CryptoOperationHelper<>(
-                1, this, this, R.string.progress_importing
-        );
-
-        LoaderState ls = keyListFragment.getLoaderState();
-        if (ls instanceof BytesLoaderState) {
-            Log.d(Constants.TAG, "importKeys started");
-
-            // get DATA from selected key entries
-            IteratorWithSize<ParcelableKeyRing> entries = keyListFragment.getData();
-
-            // instead of giving the entries by Intent extra, cache them into a
-            // file to prevent Java Binder problems on heavy imports
-            // read FileImportCache for more info.
-            try {
-                // We parcel this iteratively into a file - anything we can
-                // display here, we should be able to import.
-                ParcelableFileCache<ParcelableKeyRing> cache =
-                        new ParcelableFileCache<>(this, "key_import.pcl");
-                cache.writeCache(entries);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Problem writing cache file", e);
-                Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR)
-                        .show((ViewGroup) findViewById(R.id.import_snackbar));
-                return;
-            }
-
-            mKeyList = null;
-            mKeyserver = null;
-        } else if (ls instanceof CloudLoaderState) {
-            CloudLoaderState sls = (CloudLoaderState) ls;
-
-            // get selected key entries
-            ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
-            {
-                // change the format into ParcelableKeyRing
-                List<ImportKeysListEntry> entries = keyListFragment.getEntries();
-                for (ImportKeysListEntry entry : entries) {
-                    keys.add(new ParcelableKeyRing(entry.getFingerprintHex(),
-                            entry.getKeyIdHex(), entry.getKeybaseName(), entry.getFbUsername()));
-                }
-            }
-
-            mKeyList = keys;
-            mKeyserver = sls.mCloudPrefs.keyserver;
-        }
-
-        mOperationHelper.cryptoOperation();
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (mOperationHelper != null &&
@@ -397,18 +327,81 @@ public class ImportKeysActivity extends BaseActivity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    /**
-     * Defines how the result of this activity is returned.
-     * Is overwritten in RemoteImportKeysActivity
-     */
-    protected void handleResult(ImportKeyResult result) {
+    @Override
+    public void loadKeys(LoaderState loaderState) {
+        FragmentManager fM = getSupportFragmentManager();
+        ImportKeysListFragment listFragment = (ImportKeysListFragment) fM.findFragmentByTag(TAG_FRAG_LIST);
+
+        listFragment.loadState(loaderState);
+    }
+
+    @Override
+    public void importKeys() {
+        FragmentManager fM = getSupportFragmentManager();
+        ImportKeysListFragment listFragment = (ImportKeysListFragment) fM.findFragmentByTag(TAG_FRAG_LIST);
+
+        if (listFragment.getEntries().size() == 0) {
+            Notify.create(this, R.string.error_nothing_import_selected, Notify.Style.ERROR).show();
+            return;
+        }
+
+        String keyserver = null;
+        ArrayList<ParcelableKeyRing> keyList = null;
+        LoaderState loaderState = listFragment.getState();
+
+        Log.d(Constants.TAG, "importKeys started");
+        if (loaderState instanceof BytesLoaderState) {
+            // get DATA from selected key entries
+            ParcelableFileCache.IteratorWithSize<ParcelableKeyRing> entries = listFragment.getData();
+
+            // instead of giving the entries by Intent extra, cache them into a
+            // file to prevent Java Binder problems on heavy imports
+            // read FileImportCache for more info.
+            try {
+                // We parcel this iteratively into a file - anything we can
+                // display here, we should be able to import.
+                ParcelableFileCache<ParcelableKeyRing> cache = new ParcelableFileCache<>(this, "key_import.pcl");
+                cache.writeCache(entries);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Problem writing cache file", e);
+                Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR).show();
+                return;
+            }
+
+            keyList = null;
+            keyserver = null;
+        } else if (loaderState instanceof CloudLoaderState) {
+            CloudLoaderState sls = (CloudLoaderState) loaderState;
+
+            // get selected key entries
+            ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
+
+            // change the format into ParcelableKeyRing
+            List<ImportKeysListEntry> entries = listFragment.getEntries();
+            for (ImportKeysListEntry entry : entries) {
+                keys.add(new ParcelableKeyRing(entry.getFingerprintHex(),
+                        entry.getKeyIdHex(), entry.getKeybaseName(), entry.getFbUsername()));
+            }
+
+            keyList = keys;
+            keyserver = sls.mCloudPrefs.keyserver;
+        }
+
+        ImportKeysOperationCallback callback = new ImportKeysOperationCallback(this, keyserver, keyList);
+        mOperationHelper = new CryptoOperationHelper(1, this, callback, R.string.progress_importing);
+
+        mOperationHelper.cryptoOperation();
+    }
+
+    @Override
+    public void handleResult(ImportKeyResult result) {
         String intentAction = getIntent().getAction();
 
-        if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(intentAction)
-                || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(intentAction)) {
+        if (ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(intentAction)
+                || ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(intentAction)) {
             Intent intent = new Intent();
             intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
-            setResult(RESULT_OK, intent);
+            setResult(Activity.RESULT_OK, intent);
             finish();
         } else if (result.isOkNew() || result.isOkUpdated()) {
             // User has successfully imported a key, hide first time dialog
@@ -419,35 +412,8 @@ public class ImportKeysActivity extends BaseActivity
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         } else {
-            result.createNotify(ImportKeysActivity.this)
-                    .show((ViewGroup) findViewById(R.id.import_snackbar));
+            result.createNotify(this).show();
         }
     }
 
-    // methods from CryptoOperationHelper.Callback
-
-    @Override
-    public ImportKeyringParcel createOperationInput() {
-        return new ImportKeyringParcel(mKeyList, mKeyserver);
-    }
-
-    @Override
-    public void onCryptoOperationSuccess(ImportKeyResult result) {
-        handleResult(result);
-    }
-
-    @Override
-    public void onCryptoOperationCancelled() {
-        // do nothing
-    }
-
-    @Override
-    public void onCryptoOperationError(ImportKeyResult result) {
-        handleResult(result);
-    }
-
-    @Override
-    public boolean onCryptoSetProgress(String msg, int progress, int max) {
-        return false;
-    }
 }

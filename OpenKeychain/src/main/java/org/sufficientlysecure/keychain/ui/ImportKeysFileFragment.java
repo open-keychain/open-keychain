@@ -39,8 +39,9 @@ import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
+import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.keyimport.loader.BytesLoaderState;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -49,7 +50,10 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.io.IOException;
 
 public class ImportKeysFileFragment extends Fragment {
-    private ImportKeysActivity mImportActivity;
+
+    private Activity mActivity;
+    private ImportKeysListener mCallback;
+
     private View mBrowse;
     private View mClipboardButton;
 
@@ -78,7 +82,6 @@ public class ImportKeysFileFragment extends Fragment {
         View view = inflater.inflate(R.layout.import_keys_file_fragment, container, false);
 
         mBrowse = view.findViewById(R.id.import_keys_file_browse);
-
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // open .asc or .gpg files
@@ -100,10 +103,10 @@ public class ImportKeysFileFragment extends Fragment {
                     sendText = clipboardText.toString();
                     sendText = PgpHelper.getPgpKeyContent(sendText);
                     if (sendText == null) {
-                        Notify.create(mImportActivity, R.string.error_bad_data, Style.ERROR).show();
+                        Notify.create(mActivity, R.string.error_bad_data, Style.ERROR).show();
                         return;
                     }
-                    mImportActivity.loadCallback(new BytesLoaderState(sendText.getBytes(), null));
+                    mCallback.loadKeys(new BytesLoaderState(sendText.getBytes(), null));
                 }
             }
         });
@@ -117,7 +120,14 @@ public class ImportKeysFileFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        mImportActivity = (ImportKeysActivity) activity;
+        mActivity = activity;
+
+        try {
+            mCallback = (ImportKeysListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement ImportKeysListener");
+        }
     }
 
     @Override
@@ -130,7 +140,7 @@ public class ImportKeysFileFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.import_all_keys:
-                mImportActivity.importAllKeys();
+                mCallback.importKeys();
                 return true;
         }
 
@@ -161,30 +171,30 @@ public class ImportKeysFileFragment extends Fragment {
     private void startImportingKeys() {
         boolean isEncrypted;
         try {
-            isEncrypted = FileHelper.isEncryptedFile(mImportActivity, mCurrentUri);
+            isEncrypted = FileHelper.isEncryptedFile(mActivity, mCurrentUri);
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error opening file", e);
 
-            Notify.create(mImportActivity, R.string.error_bad_data, Style.ERROR).show();
+            Notify.create(mActivity, R.string.error_bad_data, Style.ERROR).show();
             return;
         }
 
         if (isEncrypted) {
-            Intent intent = new Intent(mImportActivity, DecryptActivity.class);
+            Intent intent = new Intent(mActivity, DecryptActivity.class);
             intent.setAction(Intent.ACTION_VIEW);
             intent.setData(mCurrentUri);
             startActivity(intent);
         } else {
-            mImportActivity.loadCallback(new BytesLoaderState(null, mCurrentUri));
+            mCallback.loadKeys(new BytesLoaderState(null, mCurrentUri));
         }
     }
 
     /**
      * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.
-     * <p/>
+     * <p>
      * This method returns true on Android < 6, or if permission is already granted. It
      * requests the permission and returns false otherwise.
-     * <p/>
+     * <p>
      * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
      */
     private boolean checkAndRequestReadPermission(final Uri uri) {
@@ -225,9 +235,9 @@ public class ImportKeysFileFragment extends Fragment {
         if (permissionWasGranted) {
             startImportingKeys();
         } else {
-            Toast.makeText(getActivity(), R.string.error_denied_storage_permission, Toast.LENGTH_LONG).show();
-            getActivity().setResult(Activity.RESULT_CANCELED);
-            getActivity().finish();
+            Toast.makeText(mActivity, R.string.error_denied_storage_permission, Toast.LENGTH_LONG).show();
+            mActivity.setResult(Activity.RESULT_CANCELED);
+            mActivity.finish();
         }
     }
 

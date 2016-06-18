@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.keyimport.loader;
+package org.sufficientlysecure.keychain.keyimport.processing;
 
 import android.net.Uri;
 

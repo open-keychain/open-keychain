@@ -39,7 +39,8 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.loader.CloudLoaderState;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
+import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -50,11 +51,13 @@ import java.util.List;
  * Consists of the search bar, search button, and search settings button
  */
 public class ImportKeysCloudFragment extends Fragment {
+
     public static final String ARG_QUERY = "query";
     public static final String ARG_DISABLE_QUERY_EDIT = "disable_query_edit";
     public static final String ARG_CLOUD_SEARCH_PREFS = "cloud_search_prefs";
 
-    private ImportKeysActivity mImportActivity;
+    private Activity mActivity;
+    private ImportKeysListener mCallback;
 
     private AutoCompleteTextView mQueryEditText;
 
@@ -154,7 +157,14 @@ public class ImportKeysCloudFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        mImportActivity = (ImportKeysActivity) activity;
+        mActivity = activity;
+
+        try {
+            mCallback = (ImportKeysListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement ImportKeysListener");
+        }
     }
 
     @Override
@@ -167,7 +177,7 @@ public class ImportKeysCloudFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.import_cloud_settings:
-                Intent intent = new Intent(mImportActivity, SettingsActivity.class);
+                Intent intent = new Intent(mActivity, SettingsActivity.class);
                 intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsActivity.CloudSearchPrefsFragment.class.getName());
                 startActivity(intent);
                 return true;
@@ -185,7 +195,7 @@ public class ImportKeysCloudFragment extends Fragment {
             cloudSearchPrefs = Preferences.getPreferences(getActivity()).getCloudSearchPrefs();
         }
 
-        mImportActivity.loadCallback(new CloudLoaderState(query, cloudSearchPrefs));
+        mCallback.loadKeys(new CloudLoaderState(query, cloudSearchPrefs));
         toggleKeyboard(false);
     }
 

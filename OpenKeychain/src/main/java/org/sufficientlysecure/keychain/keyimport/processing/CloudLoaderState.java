@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.keyimport.loader;
+package org.sufficientlysecure.keychain.keyimport.processing;
 
 import org.sufficientlysecure.keychain.util.Preferences;
 

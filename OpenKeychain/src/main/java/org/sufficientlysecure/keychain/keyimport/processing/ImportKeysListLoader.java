@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.keyimport.loader;
+package org.sufficientlysecure.keychain.keyimport.processing;
 
 
 import java.io.BufferedInputStream;

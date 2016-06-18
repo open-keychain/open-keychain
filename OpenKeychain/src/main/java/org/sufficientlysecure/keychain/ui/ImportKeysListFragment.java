@@ -46,15 +46,15 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListFragmentBinding;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.keyimport.processing.AsyncTaskResultWrapper;
+import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
+import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListCloudLoader;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListLoader;
+import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
-import org.sufficientlysecure.keychain.keyimport.loader.AsyncTaskResultWrapper;
-import org.sufficientlysecure.keychain.keyimport.loader.BytesLoaderState;
-import org.sufficientlysecure.keychain.keyimport.loader.CloudLoaderState;
-import org.sufficientlysecure.keychain.keyimport.loader.ImportKeysListCloudLoader;
-import org.sufficientlysecure.keychain.keyimport.loader.ImportKeysListLoader;
-import org.sufficientlysecure.keychain.keyimport.loader.LoaderState;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
@@ -77,6 +77,7 @@ public class ImportKeysListFragment extends Fragment implements
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
     private FragmentActivity mActivity;
+
     private ImportKeysListFragmentBinding binding;
     private ParcelableProxy mParcelableProxy;
 
@@ -92,15 +93,9 @@ public class ImportKeysListFragment extends Fragment implements
 
     private static final int LOADER_ID_BYTES = 0;
     private static final int LOADER_ID_CLOUD = 1;
-
     private LongSparseArray<ParcelableKeyRing> mCachedKeyData;
 
     private boolean mShowingOrbotDialog;
-
-
-    public LoaderState getLoaderState() {
-        return mLoaderState;
-    }
 
     /**
      * Returns an Iterator (with size) of the selected data items.
@@ -287,7 +282,11 @@ public class ImportKeysListFragment extends Fragment implements
         }
     }
 
-    public void loadNew(LoaderState loaderState) {
+    public LoaderState getState() {
+        return mLoaderState;
+    }
+
+    public void loadState(LoaderState loaderState) {
         mLoaderState = loaderState;
 
         if (mLoaderState instanceof BytesLoaderState) {
@@ -299,17 +298,6 @@ public class ImportKeysListFragment extends Fragment implements
         }
 
         restartLoaders();
-    }
-
-    public void destroyLoader() {
-        LoaderManager loaderManager = getLoaderManager();
-
-        if (loaderManager.getLoader(LOADER_ID_BYTES) != null) {
-            loaderManager.destroyLoader(LOADER_ID_BYTES);
-        }
-        if (loaderManager.getLoader(LOADER_ID_CLOUD) != null) {
-            loaderManager.destroyLoader(LOADER_ID_CLOUD);
-        }
     }
 
     private void restartLoaders() {
