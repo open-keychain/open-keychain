@@ -17,33 +17,28 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -60,7 +55,6 @@ public class ImportKeysFileFragment extends Fragment {
     private Uri mCurrentUri;
 
     private static final int REQUEST_CODE_FILE = 0x00007003;
-    private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
     /**
      * Creates new instance of this fragment
@@ -154,7 +148,7 @@ public class ImportKeysFileFragment extends Fragment {
                 if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
                     mCurrentUri = data.getData();
 
-                    if (checkAndRequestReadPermission(mCurrentUri)) {
+                    if (PermissionsUtil.checkAndRequestReadPermission(mActivity, mCurrentUri)) {
                         startImportingKeys();
                     }
                 }
@@ -189,53 +183,15 @@ public class ImportKeysFileFragment extends Fragment {
         }
     }
 
-    /**
-     * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.
-     * <p>
-     * This method returns true on Android < 6, or if permission is already granted. It
-     * requests the permission and returns false otherwise.
-     * <p>
-     * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
-     */
-    private boolean checkAndRequestReadPermission(final Uri uri) {
-        if (!ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
-            return true;
-        }
-
-        // Additional check due to https://commonsware.com/blog/2015/11/09/you-cannot-hold-nonexistent-permissions.html
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-
-        requestPermissions(
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
-
-        return false;
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
 
-        if (requestCode != REQUEST_PERMISSION_READ_EXTERNAL_STORAGE) {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            return;
-        }
-
-        boolean permissionWasGranted = grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
-        if (permissionWasGranted) {
+        if (PermissionsUtil.checkReadPermissionResult(mActivity, requestCode, grantResults)) {
             startImportingKeys();
         } else {
-            Toast.makeText(mActivity, R.string.error_denied_storage_permission, Toast.LENGTH_LONG).show();
             mActivity.setResult(Activity.RESULT_CANCELED);
             mActivity.finish();
         }

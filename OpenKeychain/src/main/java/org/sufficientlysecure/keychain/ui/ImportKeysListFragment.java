@@ -18,20 +18,15 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,7 +34,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -55,6 +49,7 @@ import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
+import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
@@ -73,8 +68,6 @@ public class ImportKeysListFragment extends Fragment implements
     public static final String ARG_SERVER_QUERY = "query";
     public static final String ARG_NON_INTERACTIVE = "non_interactive";
     public static final String ARG_CLOUD_SEARCH_PREFS = "cloud_search_prefs";
-
-    private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
     private FragmentActivity mActivity;
 
@@ -222,41 +215,11 @@ public class ImportKeysListFragment extends Fragment implements
             mLoaderState = new CloudLoaderState(query, cloudSearchPrefs);
         }
 
-        if (dataUri == null || checkAndRequestReadPermission(dataUri)) {
+        if (dataUri == null || PermissionsUtil.checkAndRequestReadPermission(mActivity, dataUri)) {
             restartLoaders();
         }
 
         return view;
-    }
-
-    /**
-     * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.
-     * <p/>
-     * This method returns true on Android < 6, or if permission is already granted. It
-     * requests the permission and returns false otherwise.
-     * <p/>
-     * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
-     */
-    private boolean checkAndRequestReadPermission(final Uri uri) {
-        if (!ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
-            return true;
-        }
-
-        // Additional check due to https://commonsware.com/blog/2015/11/09/you-cannot-hold-nonexistent-permissions.html
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-
-        if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-
-        requestPermissions(
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
-
-        return false;
     }
 
     @Override
@@ -264,19 +227,9 @@ public class ImportKeysListFragment extends Fragment implements
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
 
-        if (requestCode != REQUEST_PERMISSION_READ_EXTERNAL_STORAGE) {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            return;
-        }
-
-        boolean permissionWasGranted = grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
-        if (permissionWasGranted) {
-            // permission granted -> load key
+        if (PermissionsUtil.checkReadPermissionResult(mActivity, requestCode, grantResults)) {
             restartLoaders();
         } else {
-            Toast.makeText(mActivity, R.string.error_denied_storage_permission, Toast.LENGTH_LONG).show();
             mActivity.setResult(Activity.RESULT_CANCELED);
             mActivity.finish();
         }
@@ -292,7 +245,8 @@ public class ImportKeysListFragment extends Fragment implements
         if (mLoaderState instanceof BytesLoaderState) {
             BytesLoaderState ls = (BytesLoaderState) mLoaderState;
 
-            if (ls.mDataUri != null && !checkAndRequestReadPermission(ls.mDataUri)) {
+            if (ls.mDataUri != null &&
+                    !PermissionsUtil.checkAndRequestReadPermission(mActivity, ls.mDataUri)) {
                 return;
             }
         }
