@@ -593,19 +593,12 @@ public class KeyFormattingUtils {
 
             holder.getSignatureAction().setDisplayedChild(sigActionDisplayedChild);
 
-            String userId = result.getSignatureResult().getPrimaryUserId();
-            OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
-            if (userIdSplit.name != null) {
-                holder.getSignatureUserName().setText(userIdSplit.name);
-            } else {
-                holder.getSignatureUserName().setText(R.string.user_id_no_name);
-            }
-            if (userIdSplit.email != null) {
-                holder.getSignatureUserEmail().setVisibility(View.VISIBLE);
-                holder.getSignatureUserEmail().setText(userIdSplit.email);
-            } else {
-                holder.getSignatureUserEmail().setVisibility(View.GONE);
-            }
+            
+            holder.getSignatureUserName().setText(KeyRings.Name);
+            holder.getSignatureUserEmail().setVisibility(View.VISIBLE);
+            holder.getSignatureUserEmail().setText(KeyRings.email);
+            holder.getSignatureUserEmail().setVisibility(View.GONE);
+            
 
         } else {
 
