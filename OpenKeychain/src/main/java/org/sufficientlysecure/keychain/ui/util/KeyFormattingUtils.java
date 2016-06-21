@@ -596,7 +596,7 @@ public class KeyFormattingUtils {
             
             holder.getSignatureUserName().setText(KeyRings.Name);
             holder.getSignatureUserEmail().setVisibility(View.VISIBLE);
-            holder.getSignatureUserEmail().setText(KeyRings.email);
+            holder.getSignatureUserEmail().setText(KeyRings.Email);
             holder.getSignatureUserEmail().setVisibility(View.GONE);
             
 
