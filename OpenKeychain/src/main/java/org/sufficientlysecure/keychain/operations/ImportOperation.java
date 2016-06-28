@@ -19,20 +19,6 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.io.IOException;
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 
@@ -57,12 +43,26 @@ import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.util.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
+
+import java.io.IOException;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An operation class which implements high level import
@@ -84,6 +84,8 @@ import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     public static final int MAX_THREADS = 10;
+
+    public static final String CACHE_FILE_NAME = "key_import.pcl";
 
     public ImportOperation(Context context, ProviderHelper providerHelper, Progressable
             progressable) {
@@ -430,15 +432,14 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         ImportKeyResult result;
 
         if (keyList == null) {// import from file, do serially
-            ParcelableFileCache<ParcelableKeyRing> cache = new ParcelableFileCache<>(mContext,
-                    "key_import.pcl");
-
+            ParcelableFileCache<ParcelableKeyRing> cache =
+                    new ParcelableFileCache<>(mContext, CACHE_FILE_NAME);
             result = serialKeyRingImport(cache, null, null);
         } else {
             Proxy proxy;
             if (cryptoInput.getParcelableProxy() == null) {
                 // explicit proxy not set
-                if(!OrbotHelper.isOrbotInRequiredState(mContext)) {
+                if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
                     // show dialog to enable/install dialog
                     return new ImportKeyResult(null,
                             RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);

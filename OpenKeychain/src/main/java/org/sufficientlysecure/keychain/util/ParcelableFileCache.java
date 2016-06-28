@@ -216,12 +216,4 @@ public class ParcelableFileCache<E extends Parcelable> {
         return tempFile.delete();
     }
 
-    /** As the name implies, this is an extended iterator interface, which
-     * knows the total number of its entries beforehand.
-     */
-    public static interface IteratorWithSize<E> extends Iterator<E> {
-        /** Returns the number of total entries in this iterator. */
-        int getSize();
-    }
-
 }

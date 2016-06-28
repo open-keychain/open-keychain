@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysOperationCallback;
 import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
+import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
@@ -351,25 +352,20 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
 
         Log.d(Constants.TAG, "importKeys started");
         if (loaderState instanceof BytesLoaderState) {
-            // get DATA from selected key entries
-            ParcelableFileCache.IteratorWithSize<ParcelableKeyRing> entries = listFragment.getData();
-
             // instead of giving the entries by Intent extra, cache them into a
             // file to prevent Java Binder problems on heavy imports
             // read FileImportCache for more info.
             try {
                 // We parcel this iteratively into a file - anything we can
                 // display here, we should be able to import.
-                ParcelableFileCache<ParcelableKeyRing> cache = new ParcelableFileCache<>(this, "key_import.pcl");
-                cache.writeCache(entries);
+                ParcelableFileCache<ParcelableKeyRing> cache =
+                        new ParcelableFileCache<>(this, ImportOperation.CACHE_FILE_NAME);
+                cache.writeCache(listFragment.getData());
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Problem writing cache file", e);
                 Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR).show();
                 return;
             }
-
-            keyList = null;
-            keyserver = null;
         } else if (loaderState instanceof CloudLoaderState) {
             CloudLoaderState sls = (CloudLoaderState) loaderState;
 

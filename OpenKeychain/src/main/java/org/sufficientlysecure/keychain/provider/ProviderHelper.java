@@ -61,9 +61,9 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -276,7 +276,7 @@ public class ProviderHelper {
 
     public ArrayList<String> getConfirmedUserIds(long masterKeyId) throws NotFoundException {
         Cursor cursor = mContentResolver.query(UserPackets.buildUserIdsUri(masterKeyId),
-                new String[]{ UserPackets.USER_ID }, UserPackets.VERIFIED + " = " + Certs.VERIFIED_SECRET, null, null
+                new String[]{UserPackets.USER_ID}, UserPackets.VERIFIED + " = " + Certs.VERIFIED_SECRET, null, null
         );
         if (cursor == null) {
             throw new NotFoundException("Key id for requested user ids not found");
@@ -476,7 +476,7 @@ public class ProviderHelper {
                 String userId = Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId);
                 UserPacketItem item = new UserPacketItem();
                 uids.add(item);
-                OpenPgpUtils.UserId splitUserId =  KeyRing.splitUserId(userId);
+                OpenPgpUtils.UserId splitUserId = KeyRing.splitUserId(userId);
                 item.userId = userId;
                 item.name = splitUserId.name;
                 item.email = splitUserId.email;
@@ -794,7 +794,7 @@ public class ProviderHelper {
             }
             // if one is *trusted* but the other isn't, that one comes first
             // this overrides the primary attribute, even!
-            if ( (trustedCerts.size() == 0) != (o.trustedCerts.size() == 0) ) {
+            if ((trustedCerts.size() == 0) != (o.trustedCerts.size() == 0)) {
                 return trustedCerts.size() > o.trustedCerts.size() ? -1 : 1;
             }
             // if one key is primary but the other isn't, the primary one always comes first
