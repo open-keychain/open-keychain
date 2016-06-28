@@ -57,7 +57,39 @@ public class ParcelableFileCache<E extends Parcelable> {
     }
 
     public void writeCache(int numEntries, Iterator<E> it) throws IOException {
+        DataOutputStream oos = getOutputStream();
 
+        try {
+            oos.writeInt(numEntries);
+            while (it.hasNext()) {
+                writeParcelable(it.next(), oos);
+            }
+        } finally {
+            oos.close();
+        }
+    }
+
+    public void writeCache(E obj) throws IOException {
+        DataOutputStream oos = getOutputStream();
+
+        try {
+            oos.writeInt(1);
+            writeParcelable(obj, oos);
+        } finally {
+            oos.close();
+        }
+    }
+
+    private void writeParcelable(E obj, DataOutputStream oos) throws IOException {
+        Parcel p = Parcel.obtain(); // creating empty parcel object
+        p.writeParcelable(obj, 0); // saving bundle as parcel
+        byte[] buf = p.marshall();
+        oos.writeInt(buf.length);
+        oos.write(buf);
+        p.recycle();
+    }
+
+    private DataOutputStream getOutputStream() throws IOException {
         File cacheDir = mContext.getCacheDir();
         if (cacheDir == null) {
             // https://groups.google.com/forum/#!topic/android-developers/-694j87eXVU
@@ -65,29 +97,12 @@ public class ParcelableFileCache<E extends Parcelable> {
         }
 
         File tempFile = new File(mContext.getCacheDir(), mFilename);
-
-
-        DataOutputStream oos = new DataOutputStream(new FileOutputStream(tempFile));
-
-        try {
-            oos.writeInt(numEntries);
-
-            while (it.hasNext()) {
-                Parcel p = Parcel.obtain(); // creating empty parcel object
-                p.writeParcelable(it.next(), 0); // saving bundle as parcel
-                byte[] buf = p.marshall();
-                oos.writeInt(buf.length);
-                oos.write(buf);
-                p.recycle();
-            }
-        } finally {
-            oos.close();
-        }
-
+        return new DataOutputStream(new FileOutputStream(tempFile));
     }
 
     /**
      * Reads from cache file and deletes it afterward. Convenience function for readCache(boolean).
+     *
      * @return an IteratorWithSize object containing entries read from the cache file
      * @throws IOException
      */
@@ -97,10 +112,11 @@ public class ParcelableFileCache<E extends Parcelable> {
 
     /**
      * Reads entries from a cache file and returns an IteratorWithSize object containing the entries
+     *
      * @param deleteAfterRead if true, the cache file will be deleted after being read
      * @return an IteratorWithSize object containing entries read from the cache file
      * @throws IOException if cache directory/parcel import file does not exist, or a read error
-     * occurs
+     *                     occurs
      */
     public IteratorWithSize<E> readCache(final boolean deleteAfterRead) throws IOException {
 
@@ -205,7 +221,6 @@ public class ParcelableFileCache<E extends Parcelable> {
     }
 
     public boolean delete() throws IOException {
-
         File cacheDir = mContext.getCacheDir();
         if (cacheDir == null) {
             // https://groups.google.com/forum/#!topic/android-developers/-694j87eXVU

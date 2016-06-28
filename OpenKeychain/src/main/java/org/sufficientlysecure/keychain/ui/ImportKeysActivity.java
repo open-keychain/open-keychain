@@ -337,6 +337,41 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     }
 
     @Override
+    public void importKey(ParcelableKeyRing keyRing) {
+        FragmentManager fM = getSupportFragmentManager();
+        ImportKeysListFragment listFragment = (ImportKeysListFragment) fM.findFragmentByTag(TAG_FRAG_LIST);
+
+        String keyserver = null;
+        ArrayList<ParcelableKeyRing> keyList = null;
+        LoaderState loaderState = listFragment.getState();
+
+        Log.d(Constants.TAG, "importKey started");
+        if (loaderState instanceof BytesLoaderState) {
+            // instead of giving the entries by Intent extra, cache them into a
+            // file to prevent Java Binder problems on heavy imports
+            // read FileImportCache for more info.
+            try {
+                // We parcel this iteratively into a file - anything we can
+                // display here, we should be able to import.
+                ParcelableFileCache<ParcelableKeyRing> cache =
+                        new ParcelableFileCache<>(this, ImportOperation.CACHE_FILE_NAME);
+                cache.writeCache(keyRing);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Problem writing cache file", e);
+                Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR).show();
+                return;
+            }
+        } else if (loaderState instanceof CloudLoaderState) {
+            //TODO
+        }
+
+        ImportKeysOperationCallback callback = new ImportKeysOperationCallback(this, keyserver, keyList);
+        mOperationHelper = new CryptoOperationHelper(1, this, callback, R.string.progress_importing);
+
+        mOperationHelper.cryptoOperation();
+    }
+
+    @Override
     public void importKeys() {
         FragmentManager fM = getSupportFragmentManager();
         ImportKeysListFragment listFragment = (ImportKeysListFragment) fM.findFragmentByTag(TAG_FRAG_LIST);
@@ -367,6 +402,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 return;
             }
         } else if (loaderState instanceof CloudLoaderState) {
+            //TODO This need to be removed because it makes no sense to import "all" from cloud
             CloudLoaderState sls = (CloudLoaderState) loaderState;
 
             // get selected key entries
