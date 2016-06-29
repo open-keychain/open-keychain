@@ -157,8 +157,15 @@ public class PgpEncryptDecryptTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRingForTest(mStaticRing1);
-        providerHelper.saveSecretKeyRingForTest(mStaticRing2);
+        providerHelper.saveSecretKeyRing(
+                mStaticRing1,
+                TestingUtils.generateImportPassphrases(mStaticRing1, mKeyPhrase1),
+                new ProgressScaler());
+        providerHelper.saveSecretKeyRing(
+                mStaticRing2,
+                TestingUtils.generateImportPassphrases(mStaticRing2, mKeyPhrase2),
+                new ProgressScaler());
+
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
     }
@@ -558,7 +565,7 @@ public class PgpEncryptDecryptTest {
             Assert.assertFalse("decryption with no passphrase must return pending", result.success());
             Assert.assertTrue("decryption with no passphrase should return pending", result.isPending());
             Assert.assertEquals("decryption with no passphrase should return pending passphrase",
-                    RequiredInputType.PASSPHRASE, result.getRequiredInputParcel().mType);
+                    RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK, result.getRequiredInputParcel().mType);
         }
 
     }

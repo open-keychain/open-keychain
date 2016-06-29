@@ -62,8 +62,12 @@ public class TestingUtils {
 
     }
 
-    public static KeyringPassphrases generateKeyringPassphrases(UncachedKeyRing keyRing, Passphrase passphrase) {
-        KeyringPassphrases keyringPassphrases = new KeyringPassphrases(keyRing.getMasterKeyId());
+    /**
+     * Convenience method for pairing a passphrase to all subkeys
+     */
+    public static KeyringPassphrases generateImportPassphrases(UncachedKeyRing keyRing, Passphrase passphrase) {
+        // TODO: wip, switch null with a proper passphrase
+        KeyringPassphrases keyringPassphrases = new KeyringPassphrases(keyRing.getMasterKeyId(), null);
         Iterator<UncachedPublicKey> iterator = keyRing.getPublicKeys();
         while(iterator.hasNext()) {
             UncachedPublicKey key = iterator.next();

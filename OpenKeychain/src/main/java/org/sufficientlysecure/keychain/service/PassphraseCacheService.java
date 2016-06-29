@@ -166,6 +166,7 @@ public class PassphraseCacheService extends Service {
     public static Passphrase getCachedPassphrase(Context context, long masterKeyId, long subKeyId) throws KeyNotFoundException {
         Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphrase() for masterKeyId "
                 + masterKeyId + ", subKeyId " + subKeyId);
+        // TODO: caching wip
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_GET);

@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -54,7 +55,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         }
 
         // Perform actual modification
-        PgpEditKeyResult modifyResult;
+        PgpEditKeyResult modifyResult = null;
         {
             PgpKeyOperation keyOperations =
                     new PgpKeyOperation(new ProgressScaler(mProgressable, 0, 70, 100));
@@ -63,8 +64,9 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
                 log.add(OperationResult.LogType.MSG_ED_FETCHING, 1,
                         KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
 
+                // TODO: wip
                 CanonicalizedSecretKeyRing secRing =
-                        mProviderHelper.getCanonicalizedSecretKeyRing(unlockParcel.mMasterKeyId);
+                        mProviderHelper.getCanonicalizedSecretKeyRing(unlockParcel.mMasterKeyId, null);
                 modifyResult = keyOperations.modifyKeyRingPassphrase(secRing, cryptoInput, unlockParcel);
 
                 if (modifyResult.isPending()) {
@@ -75,6 +77,8 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
             } catch (ProviderHelper.NotFoundException e) {
                 log.add(OperationResult.LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+            } catch (ByteArrayEncryptor.EncryptDecryptException | ByteArrayEncryptor.IncorrectPassphraseException e) {
+                //TODO: wip
             }
         }
 
@@ -91,9 +95,9 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         // It's a success, so this must be non-null now
         UncachedKeyRing ring = modifyResult.getRing();
 
-        // TODO: fix this when secret key block encryption is complete
+        // TODO: wip
         SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(ring, new KeyringPassphrases(ring.getMasterKeyId()),
+                .saveSecretKeyRing(ring, new KeyringPassphrases(ring.getMasterKeyId(), null),
                         new ProgressScaler(mProgressable, 70, 95, 100));
         log.add(saveResult, 1);
 

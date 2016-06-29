@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -51,19 +52,17 @@ import android.widget.ViewAnimator;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -84,12 +83,15 @@ import java.io.IOException;
  * internally and is NOT meant to be used by signing operations before adding a signature time
  */
 public class PassphraseDialogActivity extends FragmentActivity {
-
+    public static final int REQUEST_KEYRING_PASSPHRASE = 1;
     public static final String RESULT_CRYPTO_INPUT = "result_data";
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
     public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
     public static final String EXTRA_PASSPHRASE_TO_TRY = "passphrase_to_try";
+
+    private CryptoInputParcel mCryptoInputParcel;
+    private RequiredInputParcel mRequiredInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,44 +99,43 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         // do not allow screenshots of passphrase input
         // to prevent "too easy" passphrase theft by root apps
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getWindow().setFlags(
                     WindowManager.LayoutParams.FLAG_SECURE,
                     WindowManager.LayoutParams.FLAG_SECURE
             );
         }
 
-        CryptoInputParcel cryptoInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
-        if (cryptoInputParcel == null) {
-            cryptoInputParcel = new CryptoInputParcel();
-            getIntent().putExtra(EXTRA_CRYPTO_INPUT, cryptoInputParcel);
+        mCryptoInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
+        if (mCryptoInputParcel == null) {
+            mCryptoInputParcel = new CryptoInputParcel();
+            getIntent().putExtra(EXTRA_CRYPTO_INPUT, mCryptoInputParcel);
         }
 
         // this activity itself has no content view (see manifest)
-        RequiredInputParcel requiredInput = getIntent().getParcelableExtra(EXTRA_REQUIRED_INPUT);
-        if (requiredInput.mType != RequiredInputType.PASSPHRASE) {
-            return;
-        }
+        mRequiredInput = getIntent().getParcelableExtra(EXTRA_REQUIRED_INPUT);
 
-        // handle empty passphrases by directly returning an empty crypto input parcel
-        if (!requiredInput.hasParcelableKeyRing()) {
-            // only for keys already in db
-            try {
-                CachedPublicKeyRing pubRing =
-                        new ProviderHelper(this).getCachedPublicKeyRing(requiredInput.getMasterKeyId());
-                // use empty passphrase for empty passphrase
-                if (pubRing.getSecretKeyType(requiredInput.getSubKeyId()) == SecretKeyType.PASSPHRASE_EMPTY) {
-                    // also return passphrase back to activity
-                    Intent returnIntent = new Intent();
-                    cryptoInputParcel.mPassphrase = new Passphrase("");
-                    returnIntent.putExtra(RESULT_CRYPTO_INPUT, cryptoInputParcel);
-                    setResult(RESULT_OK, returnIntent);
-                    finish();
+
+        switch (mRequiredInput.mType) {
+            case PASSPHRASE_KEYRING_UNLOCK:
+            case PASSPHRASE_IMPORT_KEY:
+            case PASSPHRASE_SYMMETRIC:
+            case BACKUP_CODE:
+                return;
+            case PASSPHRASE_SUBKEY_UNLOCK: {
+                if (!mCryptoInputParcel.hasKeyringPassphrase()) {
+                    // ask for keyring's passphrase before getting subkey's passphrase
+                    Intent intent = new Intent(this, PassphraseDialogActivity.class);
+                    RequiredInputParcel parcel = RequiredInputParcel.
+                            createRequiredKeyringPassphrase(mRequiredInput.getMasterKeyId());
+                    intent.putExtra(EXTRA_REQUIRED_INPUT, parcel);
+                    intent.putExtra(EXTRA_CRYPTO_INPUT, mCryptoInputParcel);
+                    startActivityForResult(intent, REQUEST_KEYRING_PASSPHRASE);
+                    break;
                 }
-            } catch (NotFoundException e) {
-                Log.e(Constants.TAG, "Key not found?!", e);
-                setResult(RESULT_CANCELED);
-                finish();
+            }
+            default: {
+                throw new AssertionError("Unhandled input type! (Should not happen)");
             }
         }
 
@@ -144,9 +145,30 @@ public class PassphraseDialogActivity extends FragmentActivity {
     protected void onResumeFragments() {
         super.onResumeFragments();
 
+        // TODO: wip do the same for keyrings after we add column to db
+        // for subkeys, handle empty passphrases by directly returning an empty crypto input parcel
+        if (mRequiredInput.mType == RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK) {
+            try {
+                CachedPublicKeyRing pubRing =
+                        new ProviderHelper(this).getCachedPublicKeyRing(mRequiredInput.getMasterKeyId());
+                if (pubRing.getSecretKeyType(mRequiredInput.getSubKeyId()) == CanonicalizedSecretKey.SecretKeyType.PASSPHRASE_EMPTY) {
+                    // return empty passphrase back to activity
+                    Intent returnIntent = new Intent();
+                    mCryptoInputParcel.mOtherPassphrase = new Passphrase("");
+                    returnIntent.putExtra(RESULT_CRYPTO_INPUT, mCryptoInputParcel);
+                    setResult(RESULT_OK, returnIntent);
+                    finish();
+                }
+            } catch (ProviderHelper.NotFoundException e) {
+                Log.e(Constants.TAG, "Key not found?!", e);
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        }
+
         /* Show passphrase dialog to cache a new passphrase the user enters for using it later for
-         * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
-         * for a symmetric passphrase
+         * encryption. Based on the required input type, it asks for a passphrase for either
+         * a keyring block, a private key, or for a symmetric passphrase
          */
         PassphraseDialogFragment frag = new PassphraseDialogFragment();
         frag.setArguments(getIntent().getExtras());
@@ -170,11 +192,15 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         private boolean mIsCancelled = false;
         private RequiredInputParcel mRequiredInput;
+        private CryptoInputParcel mCryptoInput;
 
         private ViewAnimator mLayout;
         private CacheTTLSpinner mTimeToLiveSpinner;
 
+        // for subkey unlocking
         private CanonicalizedSecretKey mSecretKeyToUnlock;
+
+        // for importing keys
         private Passphrase mPassphraseToTry;
 
         @NonNull
@@ -185,6 +211,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(activity);
 
             mRequiredInput = getArguments().getParcelable(EXTRA_REQUIRED_INPUT);
+            mCryptoInput = getArguments().getParcelable(EXTRA_CRYPTO_INPUT);
             mPassphraseToTry = getArguments().getParcelable(EXTRA_PASSPHRASE_TO_TRY);
 
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
@@ -234,90 +261,106 @@ public class PassphraseDialogActivity extends FragmentActivity {
             });
 
             CanonicalizedSecretKey.SecretKeyType keyType = CanonicalizedSecretKey.SecretKeyType.PASSPHRASE;
-
             String message;
             String hint;
-            if (mRequiredInput.mType == RequiredInputType.PASSPHRASE_SYMMETRIC) {
-                message = getString(R.string.passphrase_for_symmetric_encryption);
-                hint = getString(R.string.label_passphrase);
-            } else {
-                try {
-                    // yes the inner try/catch block is necessary, otherwise the final variable
-                    // above can't be statically verified to have been set in all cases because
-                    // the catch clause doesn't return.
-                    String mainUserId;
-                    long subKeyId = mRequiredInput.getSubKeyId();
+            ProviderHelper helper = new ProviderHelper(activity);
 
-                    if(mRequiredInput.getParcelableKeyRing() != null) {
-                        // use parcelable keyring
+            try {
+                switch (mRequiredInput.mType) {
+                    case PASSPHRASE_SYMMETRIC: {
+                        message = getString(R.string.passphrase_for_symmetric_encryption);
+                        hint = getString(R.string.label_passphrase);
+                        break;
+
+                    }
+                    case PASSPHRASE_KEYRING_UNLOCK: {
+                        CachedPublicKeyRing cachedPublicKeyRing = helper.getCachedPublicKeyRing(
+                                KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getSubKeyId()));
+
+                        String mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
+                        OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
+                        String userId = (mainUserIdSplit.name == null)
+                                ? getString(R.string.user_id_no_name)
+                                : mainUserIdSplit.name;
+
+                        message = getString(R.string.passphrase_for, userId);
+                        hint = getString(R.string.label_passphrase);
+                        break;
+
+                    }
+                    case PASSPHRASE_IMPORT_KEY: {
                         UncachedKeyRing uKeyRing =
                                 UncachedKeyRing.decodeFromData(mRequiredInput.getParcelableKeyRing().mBytes);
                         CanonicalizedSecretKeyRing canonicalizedKeyRing = (CanonicalizedSecretKeyRing)
                                 uKeyRing.canonicalize(new OperationResult.OperationLog(), 0);
-                        mSecretKeyToUnlock = canonicalizedKeyRing.getSecretKey(subKeyId);
-                        mainUserId = canonicalizedKeyRing.getPrimaryUserIdWithFallback();
+                        mSecretKeyToUnlock = canonicalizedKeyRing.getSecretKey(mRequiredInput.getSubKeyId());
 
-                        if(mSecretKeyToUnlock.isDummy()) {
-                            finishCaching(null);
+                        // don't need passphrase for dummy keys
+                        if (mSecretKeyToUnlock.isDummy()) {
+                            returnWithoutPassphrase();
                         }
 
-                    } else {
-                        // use db
-                        ProviderHelper helper = new ProviderHelper(activity);
+                        String mainUserId = canonicalizedKeyRing.getPrimaryUserIdWithFallback();
+                        OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
+                        String userId = (mainUserIdSplit.name == null)
+                                ? getString(R.string.user_id_no_name)
+                                : mainUserIdSplit.name;
 
-                        CanonicalizedSecretKeyRing secretKeyRing =
-                                new ProviderHelper(getActivity()).getCanonicalizedSecretKeyRing(
-                                        KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
+                        message = getString(R.string.passphrase_for, userId);
+                        hint = getString(R.string.label_passphrase);
+                        break;
+
+                    }
+                    case PASSPHRASE_SUBKEY_UNLOCK: {
+
+                        CanonicalizedSecretKeyRing secretKeyRing = helper.getCanonicalizedSecretKeyRing(
+                                mRequiredInput.getMasterKeyId(),
+                                mCryptoInput.getKeyringPassphrase()
+                        );
+                        long subKeyId = mRequiredInput.getSubKeyId();
                         mSecretKeyToUnlock = secretKeyRing.getSecretKey(subKeyId);
 
+                        // cached key operations are less expensive
                         CachedPublicKeyRing cachedPublicKeyRing = helper.getCachedPublicKeyRing(
                                 KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
-
-                        mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
+                        String mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
+                        OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
+                        String userId = (mainUserIdSplit.name == null)
+                                ? getString(R.string.user_id_no_name)
+                                : mainUserIdSplit.name;
 
                         keyType = cachedPublicKeyRing.getSecretKeyType(subKeyId);
-                    }
-
-                    String userId;
-                    OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
-                    if (mainUserIdSplit.name != null) {
-                        userId = mainUserIdSplit.name;
-                    } else {
-                        userId = getString(R.string.user_id_no_name);
-                    }
-
-                    switch (keyType) {
-                        case PASSPHRASE:
-                            message = getString(R.string.passphrase_for, userId);
-                            hint = getString(R.string.label_passphrase);
-                            break;
-                        case PIN:
-                            message = getString(R.string.pin_for, userId);
-                            hint = getString(R.string.label_pin);
-                            break;
-                        case DIVERT_TO_CARD:
-                            message = getString(R.string.security_token_pin_for, userId);
-                            hint = getString(R.string.label_pin);
-                            break;
-                        // special case: empty passphrase just returns the empty passphrase
-                        case PASSPHRASE_EMPTY:
-                            finishCaching(new Passphrase(""));
-                        default:
-                            throw new AssertionError("Unhandled SecretKeyType (should not happen)");
-                    }
-
-                } catch (PgpKeyNotFoundException | ProviderHelper.NotFoundException |
-                        IOException | PgpGeneralException e) {
-                    alert.setTitle(R.string.title_key_not_found);
-                    alert.setMessage(getString(R.string.key_not_found, mRequiredInput.getSubKeyId()));
-                    alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dismiss();
+                        switch (keyType) {
+                            case DIVERT_TO_CARD:
+                                message = getString(R.string.security_token_pin_for, userId);
+                                hint = getString(R.string.label_pin);
+                                break;
+                            case PASSPHRASE_EMPTY:
+                            case PASSPHRASE:
+                            case PIN:
+                            default:
+                                throw new AssertionError("Unhandled SecretKeyType (should not happen)");
                         }
-                    });
-                    alert.setCancelable(false);
-                    return alert.create();
+                        break;
+
+                    }
+                    default: {
+                        throw new AssertionError("Unknown RequiredInputParcel type (should not happen)");
+                    }
+
                 }
+            } catch (ByteArrayEncryptor.IncorrectPassphraseException | ByteArrayEncryptor.EncryptDecryptException e) {
+                throw new AssertionError("Cannot decrypt || Given passphrase is wrong (programming error)");
+            } catch (IOException | PgpGeneralException | PgpKeyNotFoundException | ProviderHelper.NotFoundException e) {
+                alert.setTitle(R.string.title_key_not_found);
+                alert.setMessage(getString(R.string.key_not_found, mRequiredInput.getSubKeyId()));
+                alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dismiss();
+                    }
+                });
+                alert.setCancelable(false);
+                return alert.create();
             }
 
             mPassphraseText.setText(message);
@@ -485,10 +528,33 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         @Override
                         protected CanonicalizedSecretKey doInBackground(Void... params) {
                             try {
+                                // unlocking may take a very long time (100ms to several seconds!)
                                 long timeBeforeOperation = System.currentTimeMillis();
+                                boolean unlockSucceeded;
+                                ProviderHelper helper = new ProviderHelper(getActivity());
 
-                                // this is the operation may take a very long time (100ms to several seconds!)
-                                boolean unlockSucceeded = mSecretKeyToUnlock.unlock(passphrase);
+                                switch (mRequiredInput.mType) {
+                                    case PASSPHRASE_KEYRING_UNLOCK: {
+                                        try {
+                                            CanonicalizedSecretKeyRing secretKeyRing =
+                                                    helper.getCanonicalizedSecretKeyRing(mRequiredInput.getMasterKeyId(), passphrase);
+                                            unlockSucceeded = true;
+                                            // required to indicate a successful unlock
+                                            mSecretKeyToUnlock = secretKeyRing.getSecretKey(mRequiredInput.getMasterKeyId());
+                                        } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
+                                            unlockSucceeded = false;
+                                        }
+                                        break;
+                                    }
+                                    case PASSPHRASE_IMPORT_KEY:
+                                    case PASSPHRASE_SUBKEY_UNLOCK: {
+                                        unlockSucceeded = mSecretKeyToUnlock.unlock(passphrase);
+                                        break;
+                                    }
+                                    default: {
+                                        throw new AssertionError("Unhandled RequiredInputParcelType! (should not happen)");
+                                    }
+                                }
 
                                 // if it didn't take that long, give the user time to appreciate the progress bar
                                 long operationTime = System.currentTimeMillis() - timeBeforeOperation;
@@ -501,7 +567,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 }
 
                                 return unlockSucceeded ? mSecretKeyToUnlock : null;
-                            } catch (PgpGeneralException e) {
+                            } catch (PgpGeneralException | ProviderHelper.NotFoundException |
+                                    ByteArrayEncryptor.EncryptDecryptException e) {
                                 Toast.makeText(getActivity(), R.string.error_could_not_extract_private_key,
                                         Toast.LENGTH_SHORT).show();
 
@@ -536,6 +603,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
                             if (mRequiredInput.mSkipCaching) {
                                 Log.d(Constants.TAG, "Not caching entered passphrase!");
+                            } else if (mRequiredInput.mType == RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK) {
+                                // TODO: wip, edit cache to deal with this. only security tokens require this..
+                                Log.d(Constants.TAG, "Caching passphrase for subkey is not yet implemented!");
                             } else {
                                 Log.d(Constants.TAG, "Caching entered passphrase");
 
@@ -561,17 +631,35 @@ public class PassphraseDialogActivity extends FragmentActivity {
             }
         }
 
+        private void returnWithoutPassphrase() {
+            CryptoInputParcel inputParcel = getArguments().getParcelable(EXTRA_CRYPTO_INPUT);
+
+            ((PassphraseDialogActivity) getActivity()).handleResult(inputParcel);
+
+            dismiss();
+            getActivity().finish();
+        }
+
         private void finishCaching(Passphrase passphrase) {
             // any indication this isn't needed anymore, don't do it.
             if (mIsCancelled || getActivity() == null) {
                 return;
             }
 
-            CryptoInputParcel inputParcel = getArguments().getParcelable(EXTRA_CRYPTO_INPUT);
-            // noinspection ConstantConditions, we handle the non-null case in PassphraseDialogActivity.onCreate()
-            inputParcel.mPassphrase = passphrase;
-
-            ((PassphraseDialogActivity) getActivity()).handleResult(inputParcel);
+            CryptoInputParcel cryptoParcel = getArguments().getParcelable(EXTRA_CRYPTO_INPUT);
+            switch (mRequiredInput.mType) {
+                case PASSPHRASE_KEYRING_UNLOCK: {
+                    // noinspection ConstantConditions, we handle the non-null case in PassphraseDialogActivity.onCreate()
+                    cryptoParcel.mKeyringPassphrase = passphrase;
+                    break;
+                }
+                default: {
+                    // noinspection ConstantConditions
+                    cryptoParcel.mOtherPassphrase = passphrase;
+                    break;
+                }
+            }
+            ((PassphraseDialogActivity) getActivity()).handleResult(cryptoParcel);
 
             dismiss();
             getActivity().finish();
@@ -619,6 +707,27 @@ public class PassphraseDialogActivity extends FragmentActivity {
             return false;
         }
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_KEYRING_PASSPHRASE: {
+                if (resultCode != RESULT_OK) {
+                    this.finish();
+                }
+                // set keyring passphrase and continue
+                mCryptoInputParcel = data.getParcelableExtra(RESULT_CRYPTO_INPUT);
+                getIntent().putExtra(EXTRA_CRYPTO_INPUT, mCryptoInputParcel);
+                if(!mCryptoInputParcel.hasKeyringPassphrase()) {
+                    throw new AssertionError("No passphrase returned (programming bug!)");
+                }
+                break;
+            }
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
     }
 
     /**

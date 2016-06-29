@@ -140,7 +140,9 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 return;
             }
 
-            case PASSPHRASE:
+            case PASSPHRASE_SUBKEY_UNLOCK:
+            case PASSPHRASE_IMPORT_KEY:
+            case PASSPHRASE_KEYRING_UNLOCK:
             case PASSPHRASE_SYMMETRIC:
             case BACKUP_CODE: {
                 Intent intent = new Intent(activity, PassphraseDialogActivity.class);

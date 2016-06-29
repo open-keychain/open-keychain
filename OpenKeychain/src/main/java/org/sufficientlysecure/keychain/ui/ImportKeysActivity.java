@@ -470,8 +470,8 @@ public class ImportKeysActivity extends BaseActivity
             }
         }
 
-        RequiredInputParcel requiredInput =
-                RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, subKeyId, parcelableKeyRing);
+        RequiredInputParcel requiredInput = RequiredInputParcel.
+                        createRequiredImportKeyPassphrase(masterKeyId, subKeyId, parcelableKeyRing);
         requiredInput.mSkipCaching = true;
         intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
         startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
@@ -493,7 +493,7 @@ public class ImportKeysActivity extends BaseActivity
                 CryptoInputParcel cryptoParcel = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
                 long masterKeyId = requiredParcel.getMasterKeyId();
                 long subKeyId = requiredParcel.getSubKeyId();
-                Passphrase passphrase = cryptoParcel.getPassphrase();
+                Passphrase passphrase = cryptoParcel.getSubkeyPassphrase();
 
                 // save passphrase if one is returned
                 // could be stripped or diverted to card otherwise
@@ -502,7 +502,7 @@ public class ImportKeysActivity extends BaseActivity
                             mPassphrasesList.get(mPassphrasesList.size() - 1).mMasterKeyId != masterKeyId);
 
                     if (isNewKeyRing) {
-                        KeyringPassphrases newKeyring = new KeyringPassphrases(masterKeyId);
+                        KeyringPassphrases newKeyring = new KeyringPassphrases(masterKeyId, null);
                         newKeyring.mSubkeyPassphrases.put(subKeyId, passphrase);
                         mPassphrasesList.add(newKeyring);
                     } else {

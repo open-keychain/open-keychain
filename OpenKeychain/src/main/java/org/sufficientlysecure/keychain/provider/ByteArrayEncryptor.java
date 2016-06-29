@@ -69,7 +69,7 @@ public final class ByteArrayEncryptor {
     }
 
     public static byte[] decryptByteArray(byte[] storedData, char[] passphrase)
-            throws EncryptDecryptException, IncorrectPassphraseException{
+            throws EncryptDecryptException, IncorrectPassphraseException {
         try {
             storedData = storedData.clone();
             EncryptedData encryptedData = EncryptedData.fromBytes(storedData);

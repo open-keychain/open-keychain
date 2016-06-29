@@ -113,7 +113,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
             if (result.isPending()) {
                 RequiredInputParcel requiredInput = result.getRequiredInputParcel();
                 // Passphrase returns immediately, nfc are aggregated
-                if (requiredInput.mType == RequiredInputType.PASSPHRASE) {
+                if (requiredInput.mType == RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK) {
                     return new SignEncryptResult(log, requiredInput, results, cryptoInput);
                 }
                 if (pendingInputBuilder == null) {

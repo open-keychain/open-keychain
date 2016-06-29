@@ -261,19 +261,32 @@ public class ProviderHelper {
     }
 
     public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(long id) throws NotFoundException {
-        return (CanonicalizedPublicKeyRing) getCanonicalizedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), false);
+        return getCanonicalizedPublicKeyRing(KeyRings.buildUnifiedKeyRingUri(id));
     }
 
     public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri queryUri) throws NotFoundException {
-        return (CanonicalizedPublicKeyRing) getCanonicalizedKeyRing(queryUri, false);
-    }
+        Cursor cursor = mContentResolver.query(queryUri,
+                new String[]{
+                        // we pick from cache only information that is not easily available from keyrings
+                        KeyRings.VERIFIED,
+                        // and of course, ring data
+                        KeyRings.PUBKEY_DATA
+                }, null, null, null
+        );
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
 
-    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long id) throws NotFoundException {
-        return (CanonicalizedSecretKeyRing) getCanonicalizedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), true);
-    }
-
-    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri queryUri) throws NotFoundException {
-        return (CanonicalizedSecretKeyRing) getCanonicalizedKeyRing(queryUri, true);
+                int verified = cursor.getInt(0);
+                byte[] blob = cursor.getBlob(1);
+                return new CanonicalizedPublicKeyRing(blob, verified);
+            } else {
+                throw new NotFoundException("Key not found!");
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     public ArrayList<String> getConfirmedUserIds(long masterKeyId) throws NotFoundException {
@@ -297,13 +310,19 @@ public class ProviderHelper {
         }
     }
 
-    private KeyRing getCanonicalizedKeyRing(Uri queryUri, boolean secret) throws NotFoundException {
-        Cursor cursor = mContentResolver.query(queryUri,
+    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long id, Passphrase passphrase)
+            throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
+        return getCanonicalizedSecretKeyRing(KeyRings.buildUnifiedKeyRingUri(id), passphrase);
+    }
+
+    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri uri, Passphrase passphrase)
+            throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
+        Cursor cursor = mContentResolver.query(uri,
                 new String[]{
                         // we pick from cache only information that is not easily available from keyrings
                         KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED,
                         // and of course, ring data
-                        secret ? KeyRings.PRIVKEY_DATA : KeyRings.PUBKEY_DATA
+                        KeyRings.PRIVKEY_DATA
                 }, null, null, null
         );
         try {
@@ -312,12 +331,11 @@ public class ProviderHelper {
                 boolean hasAnySecret = cursor.getInt(0) > 0;
                 int verified = cursor.getInt(1);
                 byte[] blob = cursor.getBlob(2);
-                if (secret & !hasAnySecret) {
+                if (!hasAnySecret) {
                     throw new NotFoundException("Secret key not available!");
                 }
-                return secret
-                        ? new CanonicalizedSecretKeyRing(blob, true, verified)
-                        : new CanonicalizedPublicKeyRing(blob, verified);
+                blob = ByteArrayEncryptor.decryptByteArray(blob, passphrase.getCharArray());
+                return new CanonicalizedSecretKeyRing(blob, true, verified);
             } else {
                 throw new NotFoundException("Key not found!");
             }
@@ -826,7 +844,7 @@ public class ProviderHelper {
 
             byte[] keyData;
 
-            // skip re-encryption for certain tests
+            // skip re-encryption for tests
             if (skipReEncryption) {
                 try {
                     keyData = keyRing.getEncoded();
@@ -847,7 +865,7 @@ public class ProviderHelper {
                 keyRing = (CanonicalizedSecretKeyRing) editResult.getRing().canonicalize(mLog, mIndent);
 
                 // get passphrase for keyring block encryption, or use empty passphrase if no obvious one exists
-                Passphrase passphrase = passphrases.mNewKeyringPassphrase;
+                Passphrase passphrase = null;
                 for (CanonicalizedSecretKey key: keyRing.secretKeyIterator()) {
                     Passphrase current = passphrases.mSubkeyPassphrases.get(key.getKeyId());
                     if(current != null && !current.isEmpty()) {
@@ -855,6 +873,7 @@ public class ProviderHelper {
                         break;
                     }
                 }
+                passphrase = (passphrase == null) ? new Passphrase() : passphrase;
 
                 // encrypt secret keyring block
                 try {
@@ -946,7 +965,6 @@ public class ProviderHelper {
 
     }
 
-
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
         return savePublicKeyRing(keyRing, new ProgressScaler(), null);
     }
@@ -1010,7 +1028,7 @@ public class ProviderHelper {
             // If there is a secret key, merge new data (if any) and save the key for later
             CanonicalizedSecretKeyRing canSecretRing = null;
             /*
-            // TODO: differ implementation for now.. can merge during other key ops which require passphrase instead
+            // TODO: WIP differ implementation for now.. can merge during other key ops which require passphrase instead
 
             try {
                 UncachedKeyRing secretRing = getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId())
@@ -1045,7 +1063,7 @@ public class ProviderHelper {
 
             int result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);
 
-            // TODO: differ for now... as above
+            // TODO: WIP differ for now... as above
             // Save the saved keyring (if any)
             /*
             if (canSecretRing != null) {
@@ -1068,7 +1086,7 @@ public class ProviderHelper {
     }
 
     /**
-     * Only for testing, where we lack passphrases for the key to be imported
+     * Only for import testing, where we lack passphrases for the test keyrings
      */
     public SaveKeyringResult saveSecretKeyRingForTest(UncachedKeyRing secretRing) {
         return saveSecretKeyRing(secretRing, null, new ProgressScaler(), true);
@@ -1096,7 +1114,7 @@ public class ProviderHelper {
 
             // If there is an old secret key, merge it.
             try {
-                // TODO: Differ.Need passphrase to do merge. show a dialog mentioning key already present, ask for passphrase?
+                // TODO: WIP differ. need passphrase to do merge. can we remove this?
                 throw new NotFoundException();
                 /*
                 UncachedKeyRing oldSecretRing = getCanonicalizedSecretKeyRing(masterKeyId).getUncachedKeyRing();
@@ -1194,6 +1212,8 @@ public class ProviderHelper {
         }
 
     }
+
+
 
     @NonNull
     public ConsolidateResult consolidateDatabaseStep1(Progressable progress) {

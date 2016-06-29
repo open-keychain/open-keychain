@@ -475,7 +475,7 @@ public class PgpKeyOperation {
         }
 
         // Do we require a passphrase? If so, pass it along
-        if (!isDivertToCard(masterSecretKey) && !cryptoInput.hasPassphrase()) {
+        if (!isDivertToCard(masterSecretKey) && !cryptoInput.hasSubkeyPassphrase()) {
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
             return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
                     masterSecretKey.getKeyID(), masterSecretKey.getKeyID(),
@@ -523,7 +523,7 @@ public class PgpKeyOperation {
             {
                 try {
                     PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                            Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(cryptoInput.getPassphrase().getCharArray());
+                            Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(cryptoInput.getSubkeyPassphrase().getCharArray());
                     masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
                 } catch (PGPException e) {
                     log.add(LogType.MSG_MF_UNLOCK_ERROR, indent + 1);
@@ -911,7 +911,7 @@ public class PgpKeyOperation {
                 if (!isDivertToCard(sKey)) {
                     PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                    cryptoInput.getPassphrase().getCharArray());
+                                    cryptoInput.getSubkeyPassphrase().getCharArray());
                     subPrivateKey = sKey.extractPrivateKey(keyDecryptor);
                     // super special case: subkey is allowed to sign, but isn't available
                     if (subPrivateKey == null) {
@@ -1035,7 +1035,7 @@ public class PgpKeyOperation {
                             PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
                             PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                    cryptoInput.getPassphrase().getCharArray());
+                                    cryptoInput.getSubkeyPassphrase().getCharArray());
 
                     PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
                             .build().get(PgpSecurityConstants.SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO);
@@ -1062,7 +1062,7 @@ public class PgpKeyOperation {
                 log.add(LogType.MSG_MF_PASSPHRASE, indent);
                 indent += 1;
 
-                sKR = applyNewPassphrase(sKR, masterPublicKey, cryptoInput.getPassphrase(),
+                sKR = applyNewPassphrase(sKR, masterPublicKey, cryptoInput.getSubkeyPassphrase(),
                         saveParcel.getChangeUnlockParcel().mNewPassphrase, log, indent);
                 if (sKR == null) {
                     // The error has been logged above, just return a bad state
@@ -1231,7 +1231,7 @@ public class PgpKeyOperation {
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
-        if (!cryptoInput.hasPassphrase()) {
+        if (!cryptoInput.hasSubkeyPassphrase()) {
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
 
             return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
@@ -1243,7 +1243,7 @@ public class PgpKeyOperation {
             indent += 1;
 
             try {
-                sKR = applyNewPassphrase(sKR, masterPublicKey, cryptoInput.getPassphrase(),
+                sKR = applyNewPassphrase(sKR, masterPublicKey, cryptoInput.getSubkeyPassphrase(),
                         changeUnlockParcel.mNewPassphrase, log, indent);
                 if (sKR == null) {
                     // The error has been logged above, just return a bad state

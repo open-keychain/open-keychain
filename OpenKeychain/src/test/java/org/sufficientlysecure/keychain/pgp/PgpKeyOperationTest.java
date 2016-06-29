@@ -1243,8 +1243,8 @@ public class PgpKeyOperationTest {
         CanonicalizedSecretKeyRing cskr = (CanonicalizedSecretKeyRing) ring.canonicalize(new OperationLog(), 0);
         long masterKeyId = cskr.getMasterKeyId();
 
-        // set-up KeyringPassphrases without master key
-        KeyringPassphrases keyringPassphrases = new KeyringPassphrases(masterKeyId);
+        // set-up KeyringPassphrases without passphrase for master key
+        KeyringPassphrases keyringPassphrases = new KeyringPassphrases(masterKeyId, null);
         HashMap<Long, Passphrase> subkeyPassphrases = keyringPassphrases.mSubkeyPassphrases;
         for (CanonicalizedSecretKey secretKey : cskr.secretKeyIterator()) {
             if(secretKey.getKeyId() != masterKeyId) {
@@ -1273,7 +1273,7 @@ public class PgpKeyOperationTest {
         }
 
         // set-up KeyringPassphrases with only master key
-        keyringPassphrases = new KeyringPassphrases(masterKeyId);
+        keyringPassphrases = new KeyringPassphrases(masterKeyId, null);
         keyringPassphrases.mSubkeyPassphrases.put(masterKeyId, nonEmptyPassphrase);
 
         // remove only master passphrase

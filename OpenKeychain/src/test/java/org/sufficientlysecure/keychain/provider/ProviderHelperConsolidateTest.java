@@ -66,7 +66,7 @@ public class ProviderHelperConsolidateTest {
     public void testConsolidateBasicConfig() throws Exception {
         // insert secret key, should succeed
         UncachedKeyRing secKey = readRingFromResource("/test-keys/passwordless-gpg-sec.asc");
-        KeyringPassphrases passphrases = TestingUtils.generateKeyringPassphrases(secKey, new Passphrase());
+        KeyringPassphrases passphrases = TestingUtils.generateImportPassphrases(secKey, new Passphrase());
         OperationResult saveResult = mProviderHelper.saveSecretKeyRing(secKey, passphrases, new ProgressScaler());
         Assert.assertTrue("Failed to insert secret key", saveResult.success());
         Long masterKeyId = secKey.getMasterKeyId();

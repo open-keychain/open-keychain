@@ -115,9 +115,10 @@ public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
         setPreventCancel();
 
         // Save the new keyring.
+        // TODO: WIP
         SaveKeyringResult saveResult = mProviderHelper
                 .saveSecretKeyRing(promotedRing,
-                        new KeyringPassphrases(promotedRing.getMasterKeyId()),
+                        new KeyringPassphrases(promotedRing.getMasterKeyId(), null),
                         new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 

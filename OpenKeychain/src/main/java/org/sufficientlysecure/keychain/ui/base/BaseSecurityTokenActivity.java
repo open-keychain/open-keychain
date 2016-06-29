@@ -392,6 +392,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput) {
 
         try {
+            // TODO: wip cache
             Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
                     requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
             if (passphrase != null) {
@@ -401,7 +402,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
-                    RequiredInputParcel.createRequiredPassphrase(requiredInput));
+                    RequiredInputParcel.createRequiredSubkeyPassphrase(requiredInput));
             startActivityForResult(intent, REQUEST_CODE_PIN);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
             throw new AssertionError(
@@ -420,7 +421,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
                     return;
                 }
                 CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                mSecurityTokenHelper.setPin(input.getPassphrase());
+                mSecurityTokenHelper.setPin(input.getSubkeyPassphrase());
                 break;
             }
             default:

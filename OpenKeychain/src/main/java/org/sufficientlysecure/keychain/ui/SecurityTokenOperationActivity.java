@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
@@ -223,13 +224,17 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 mSecurityTokenHelper.setAdminPin(new Passphrase("12345678"));
 
                 ProviderHelper providerHelper = new ProviderHelper(this);
-                CanonicalizedSecretKeyRing secretKeyRing;
+                CanonicalizedSecretKeyRing secretKeyRing = null;
                 try {
+                    //TODO: wip
                     secretKeyRing = providerHelper.getCanonicalizedSecretKeyRing(
-                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId())
+                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId()),
+                            null
                     );
                 } catch (ProviderHelper.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
+                } catch (ByteArrayEncryptor.EncryptDecryptException | ByteArrayEncryptor.IncorrectPassphraseException e) {
+                    //TODO: wip
                 }
 
                 byte[] newPin = mRequiredInput.mInputData[0];

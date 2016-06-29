@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
@@ -74,8 +75,8 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_CRT, 0);
 
-        // Retrieve and unlock secret key
-        CanonicalizedSecretKey certificationKey;
+        // Retrieve and unlock secret key TODO: wip
+        CanonicalizedSecretKey certificationKey = null;
         long masterKeyId = parcel.mMasterKeyId;
         try {
 
@@ -88,7 +89,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                 case PIN:
                 case PATTERN:
                 case PASSPHRASE:
-                    passphrase = cryptoInput.getPassphrase();
+                    passphrase = cryptoInput.getSubkeyPassphrase();
                     if (passphrase == null) {
                         try {
                             passphrase = getCachedPassphrase(masterKeyId, masterKeyId);
@@ -119,9 +120,9 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                     return new CertifyResult(CertifyResult.RESULT_ERROR, log);
             }
 
-            // Get actual secret key
+            // Get actual secret key TODO: wip
             CanonicalizedSecretKeyRing secretKeyRing =
-                    mProviderHelper.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId);
+                    mProviderHelper.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId, null);
             certificationKey = secretKeyRing.getSecretKey();
 
             log.add(LogType.MSG_CRT_UNLOCK, 1);
@@ -136,6 +137,8 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
         } catch (NotFoundException e) {
             log.add(LogType.MSG_CRT_ERROR_MASTER_NOT_FOUND, 2);
             return new CertifyResult(CertifyResult.RESULT_ERROR, log);
+        } catch (ByteArrayEncryptor.EncryptDecryptException | ByteArrayEncryptor.IncorrectPassphraseException e) {
+            // TODO: wip
         }
 
         ArrayList<UncachedKeyRing> certifiedKeys = new ArrayList<>();

@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -83,7 +84,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         }
 
         // Perform actual modification (or creation)
-        PgpEditKeyResult modifyResult;
+        PgpEditKeyResult modifyResult = null;
         {
             PgpKeyOperation keyOperations =
                     new PgpKeyOperation(new ProgressScaler(mProgressable, 10, 60, 100), mCancelled);
@@ -94,8 +95,9 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
 
                     log.add(LogType.MSG_ED_FETCHING, 1,
                             KeyFormattingUtils.convertKeyIdToHex(saveParcel.mMasterKeyId));
+                    // TODO: wip
                     CanonicalizedSecretKeyRing secRing =
-                            mProviderHelper.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
+                            mProviderHelper.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId, null);
 
                     modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
                     if (modifyResult.isPending()) {
@@ -106,6 +108,8 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                 } catch (NotFoundException e) {
                     log.add(LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                } catch (ByteArrayEncryptor.EncryptDecryptException | ByteArrayEncryptor.IncorrectPassphraseException e) {
+                    // TODO: wip
                 }
             } else {
                 // otherwise, create new one
@@ -161,8 +165,8 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
             }
         }
 
-        // TODO: add in the passphrase used here! we need this for encrypting the secretkey block
-        KeyringPassphrases keyringPassphrases = new KeyringPassphrases(ring.getMasterKeyId());
+        // TODO: wip
+        KeyringPassphrases keyringPassphrases = new KeyringPassphrases(ring.getMasterKeyId(), null);
 
         // Save the new keyring.
         SaveKeyringResult saveResult = mProviderHelper

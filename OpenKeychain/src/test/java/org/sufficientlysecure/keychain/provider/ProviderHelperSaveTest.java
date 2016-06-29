@@ -139,7 +139,8 @@ public class ProviderHelperSaveTest {
         // make sure both the CanonicalizedSecretKeyRing as well as the CachedPublicKeyRing correctly
         // indicate the secret key type
         CachedPublicKeyRing cachedRing = mProviderHelper.getCachedPublicKeyRing(keyId);
-        CanonicalizedSecretKeyRing secRing = mProviderHelper.getCanonicalizedSecretKeyRing(keyId);
+        // TODO: wip
+        CanonicalizedSecretKeyRing secRing = mProviderHelper.getCanonicalizedSecretKeyRing(keyId, null);
 
         Iterator<CanonicalizedSecretKey> it = secRing.secretKeyIterator().iterator();
 
@@ -229,7 +230,8 @@ public class ProviderHelperSaveTest {
 
         long signId;
         {
-            CanonicalizedSecretKeyRing ring = mProviderHelper.getCanonicalizedSecretKeyRing(masterKeyId);
+            // TODO: wip
+            CanonicalizedSecretKeyRing ring = mProviderHelper.getCanonicalizedSecretKeyRing(masterKeyId, null);
             Assert.assertTrue("master key should have sign flag", ring.getPublicKey().canSign());
             Assert.assertTrue("master key should have encrypt flag", ring.getPublicKey().canEncrypt());
 

@@ -21,7 +21,6 @@ package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
@@ -40,13 +39,12 @@ import org.bouncycastle.openpgp.operator.jcajce.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -225,8 +223,9 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 long signingMasterKeyId = data.getSignatureMasterKeyId();
                 long signingSubKeyId = data.getSignatureSubKeyId();
 
+                // TODO: wip
                 CanonicalizedSecretKeyRing signingKeyRing =
-                        mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId);
+                        mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId, null);
                 signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
 
 
@@ -257,7 +256,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                     case PIN:
                     case PATTERN:
                     case PASSPHRASE: {
-                        Passphrase localPassphrase = cryptoInput.getPassphrase();
+                        Passphrase localPassphrase = cryptoInput.getSubkeyPassphrase();
                         if (localPassphrase == null) {
                             try {
                                 localPassphrase = getCachedPassphrase(signingMasterKeyId, signingKey.getKeyId());
@@ -293,6 +292,8 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             } catch (PgpGeneralException e) {
                 log.add(LogType.MSG_PSE_ERROR_UNLOCK, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+            } catch (ByteArrayEncryptor.IncorrectPassphraseException | ByteArrayEncryptor.EncryptDecryptException e) {
+                // TODO: WIP
             }
 
             // Use requested hash algo

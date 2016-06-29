@@ -140,8 +140,9 @@ public class PromoteKeyOperationTest {
         Assert.assertTrue("promotion must succeed", result.success());
 
         {
+            //TODO: wip
             CanonicalizedSecretKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId());
+                    .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId(), null);
 
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
                 Assert.assertEquals("all subkeys must be divert-to-card",
@@ -170,8 +171,9 @@ public class PromoteKeyOperationTest {
         Assert.assertTrue("promotion must succeed", result.success());
 
         {
+            //TODO: wip
             CanonicalizedSecretKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId());
+                    .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId(), null);
 
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
                 if (key.getKeyId() == keyId) {

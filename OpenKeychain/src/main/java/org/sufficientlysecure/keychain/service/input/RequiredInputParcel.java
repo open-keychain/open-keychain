@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.nio.ByteBuffer;
@@ -17,7 +16,7 @@ import java.util.Date;
 public class RequiredInputParcel implements Parcelable {
 
     public enum RequiredInputType {
-        PASSPHRASE, PASSPHRASE_SYMMETRIC, BACKUP_CODE, SECURITY_TOKEN_SIGN, SECURITY_TOKEN_DECRYPT,
+        PASSPHRASE_SUBKEY_UNLOCK, PASSPHRASE_IMPORT_KEY, PASSPHRASE_KEYRING_UNLOCK, PASSPHRASE_SYMMETRIC, BACKUP_CODE, SECURITY_TOKEN_SIGN, SECURITY_TOKEN_DECRYPT,
         SECURITY_TOKEN_MOVE_KEY_TO_CARD, SECURITY_TOKEN_RESET_CARD, ENABLE_ORBOT, UPLOAD_FAIL_RETRY,
     }
 
@@ -92,6 +91,7 @@ public class RequiredInputParcel implements Parcelable {
     public boolean hasParcelableKeyRing() {
         return mParcelableKeyRing != null;
     }
+
     public ParcelableKeyRing getParcelableKeyRing() {
         return mParcelableKeyRing;
     }
@@ -124,21 +124,27 @@ public class RequiredInputParcel implements Parcelable {
                 null, null, null, null, null, null);
     }
 
+    public static RequiredInputParcel createRequiredSubkeyPassphrase(
+            RequiredInputParcel req) {
+        return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK,
+                null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId, null);
+    }
+
     public static RequiredInputParcel createRequiredSignPassphrase(
             long masterKeyId, long subKeyId, Date signatureTime) {
-        return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
+        return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK,
                 null, null, signatureTime, masterKeyId, subKeyId, null);
     }
 
     public static RequiredInputParcel createRequiredDecryptPassphrase(
             long masterKeyId, long subKeyId) {
-        return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
+        return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK,
                 null, null, null, masterKeyId, subKeyId, null);
     }
 
-    public static RequiredInputParcel createRequiredDecryptPassphrase(
+    public static RequiredInputParcel createRequiredImportKeyPassphrase(
             long masterKeyId, long subKeyId, ParcelableKeyRing parcelableKeyRing) {
-        return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
+        return new RequiredInputParcel(RequiredInputType.PASSPHRASE_IMPORT_KEY,
                 null, null, null, masterKeyId, subKeyId, parcelableKeyRing);
     }
 
@@ -152,10 +158,9 @@ public class RequiredInputParcel implements Parcelable {
                 null, null, null, null, null, null);
     }
 
-    public static RequiredInputParcel createRequiredPassphrase(
-            RequiredInputParcel req) {
-        return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
-                null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId, null);
+    public static RequiredInputParcel createRequiredKeyringPassphrase(long masterKeyId) {
+        return new RequiredInputParcel(RequiredInputType.PASSPHRASE_KEYRING_UNLOCK,
+                null, null, null, masterKeyId, masterKeyId, null);
     }
 
     @Override

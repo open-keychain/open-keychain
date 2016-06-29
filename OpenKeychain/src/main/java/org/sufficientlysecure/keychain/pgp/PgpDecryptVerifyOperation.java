@@ -69,6 +69,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -618,8 +619,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     }
 
                     // get actual subkey which has been used for this encryption packet
+                    //TODO: wip
                     CanonicalizedSecretKeyRing canonicalizedSecretKeyRing = mProviderHelper
-                            .getCanonicalizedSecretKeyRing(masterKeyId);
+                            .getCanonicalizedSecretKeyRing(masterKeyId, null);
                     CanonicalizedSecretKey candidateDecryptionKey = canonicalizedSecretKeyRing.getSecretKey(subKeyId);
 
                     if (!candidateDecryptionKey.canEncrypt()) {
@@ -631,8 +633,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         passphrase = null;
                     } else if (secretKeyType == SecretKeyType.PASSPHRASE_EMPTY) {
                         passphrase = new Passphrase("");
-                    } else if (cryptoInput.hasPassphrase()) {
-                        passphrase = cryptoInput.getPassphrase();
+                    } else if (cryptoInput.hasSubkeyPassphrase()) {
+                        passphrase = cryptoInput.getSubkeyPassphrase();
                     } else {
                         // if no passphrase was explicitly set try to get it from the cache service
                         try {
@@ -668,6 +670,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     // continue with the next packet in the while loop
                     log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
                     continue;
+                } catch (ByteArrayEncryptor.EncryptDecryptException | ByteArrayEncryptor.IncorrectPassphraseException e) {
+                    //TODO: wip
                 }
 
                 // break out of while, only decrypt the first packet where we have a key
@@ -693,7 +697,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                 // if no passphrase is given, return here
                 // indicating that a passphrase is missing!
-                if (!cryptoInput.hasPassphrase()) {
+                if (!cryptoInput.hasSubkeyPassphrase()) {
 
                     try {
                         passphrase = getCachedPassphrase(key.symmetric);
@@ -713,7 +717,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     }
 
                 } else {
-                    passphrase = cryptoInput.getPassphrase();
+                    passphrase = cryptoInput.getSubkeyPassphrase();
                 }
 
                 // break out of while, only decrypt the first packet

@@ -37,14 +37,17 @@ public class CryptoInputParcel implements Parcelable {
     private Date mSignatureTime;
     private boolean mHasSignature;
 
-    public Passphrase mPassphrase;
+    // for subkeys, symmetric keys & backup code
+    public Passphrase mOtherPassphrase;
+    public Passphrase mKeyringPassphrase;
+
     // used to supply an explicit proxy to operations that require it
     // this is not final so it can be added to an existing CryptoInputParcel
     // (e.g) CertifyOperation with upload might require both passphrase and orbot to be enabled
     private ParcelableProxy mParcelableProxy;
 
     // specifies whether passphrases should be cached
-    public boolean mCachePassphrase = true;
+    public boolean mCachePassphrases = true;
 
     // this map contains both decrypted session keys and signed hashes to be
     // used in the crypto operation described by this parcel.
@@ -52,27 +55,33 @@ public class CryptoInputParcel implements Parcelable {
 
     public CryptoInputParcel() {
         mSignatureTime = null;
-        mPassphrase = null;
-        mCachePassphrase = true;
+        mOtherPassphrase = null;
+        mCachePassphrases = true;
     }
 
     public CryptoInputParcel(Date signatureTime, Passphrase passphrase) {
         mHasSignature = true;
         mSignatureTime = signatureTime == null ? new Date() : signatureTime;
-        mPassphrase = passphrase;
-        mCachePassphrase = true;
+        mOtherPassphrase = passphrase;
+        mCachePassphrases = true;
     }
 
-    public CryptoInputParcel(Passphrase passphrase) {
-        mPassphrase = passphrase;
-        mCachePassphrase = true;
+    public CryptoInputParcel(Passphrase keyringPassphrase) {
+        mKeyringPassphrase = keyringPassphrase;
+        mCachePassphrases = true;
+    }
+
+    public CryptoInputParcel(Passphrase keyringPassphrase, Passphrase subkeyPassphrase) {
+        mKeyringPassphrase = keyringPassphrase;
+        mOtherPassphrase = subkeyPassphrase;
+        mCachePassphrases = true;
     }
 
     public CryptoInputParcel(Date signatureTime) {
         mHasSignature = true;
         mSignatureTime = signatureTime == null ? new Date() : signatureTime;
-        mPassphrase = null;
-        mCachePassphrase = true;
+        mOtherPassphrase = null;
+        mCachePassphrases = true;
     }
 
     public CryptoInputParcel(ParcelableProxy parcelableProxy) {
@@ -80,15 +89,16 @@ public class CryptoInputParcel implements Parcelable {
         mParcelableProxy =  parcelableProxy;
     }
 
-    public CryptoInputParcel(Date signatureTime, boolean cachePassphrase) {
+    public CryptoInputParcel(Date signatureTime, boolean cachePassphrases) {
         mHasSignature = true;
         mSignatureTime = signatureTime == null ? new Date() : signatureTime;
-        mPassphrase = null;
-        mCachePassphrase = cachePassphrase;
+        mOtherPassphrase = null;
+        mKeyringPassphrase = null;
+        mCachePassphrases = cachePassphrases;
     }
 
     public CryptoInputParcel(boolean cachePassphrase) {
-        mCachePassphrase = cachePassphrase;
+        mCachePassphrases = cachePassphrase;
     }
 
     protected CryptoInputParcel(Parcel source) {
@@ -96,9 +106,10 @@ public class CryptoInputParcel implements Parcelable {
         if (mHasSignature) {
             mSignatureTime = new Date(source.readLong());
         }
-        mPassphrase = source.readParcelable(getClass().getClassLoader());
+        mKeyringPassphrase = source.readParcelable(getClass().getClassLoader());
+        mOtherPassphrase = source.readParcelable(getClass().getClassLoader());
         mParcelableProxy = source.readParcelable(getClass().getClassLoader());
-        mCachePassphrase = source.readByte() != 0;
+        mCachePassphrases = source.readByte() != 0;
 
         {
             int count = source.readInt();
@@ -123,9 +134,10 @@ public class CryptoInputParcel implements Parcelable {
         if (mHasSignature) {
             dest.writeLong(mSignatureTime.getTime());
         }
-        dest.writeParcelable(mPassphrase, 0);
+        dest.writeParcelable(mKeyringPassphrase, 0);
+        dest.writeParcelable(mOtherPassphrase, 0);
         dest.writeParcelable(mParcelableProxy, 0);
-        dest.writeByte((byte) (mCachePassphrase ? 1 : 0));
+        dest.writeByte((byte) (mCachePassphrases ? 1 : 0));
 
         dest.writeInt(mCryptoData.size());
         for (HashMap.Entry<ByteBuffer, byte[]> entry : mCryptoData.entrySet()) {
@@ -162,12 +174,20 @@ public class CryptoInputParcel implements Parcelable {
         return mSignatureTime;
     }
 
-    public boolean hasPassphrase() {
-        return mPassphrase != null;
+    public boolean hasSubkeyPassphrase() {
+        return mOtherPassphrase != null;
     }
 
-    public Passphrase getPassphrase() {
-        return mPassphrase;
+    public Passphrase getSubkeyPassphrase() {
+        return mOtherPassphrase;
+    }
+
+    public boolean hasKeyringPassphrase() {
+        return mKeyringPassphrase != null;
+    }
+
+    public Passphrase getKeyringPassphrase() {
+        return mKeyringPassphrase;
     }
 
     public static final Creator<CryptoInputParcel> CREATOR = new Creator<CryptoInputParcel>() {
@@ -185,7 +205,7 @@ public class CryptoInputParcel implements Parcelable {
         StringBuilder b = new StringBuilder();
         b.append("CryptoInput: { ");
         b.append(mSignatureTime).append(" ");
-        if (mPassphrase != null) {
+        if (mOtherPassphrase != null) {
             b.append("passphrase");
         }
         if (mCryptoData != null) {
