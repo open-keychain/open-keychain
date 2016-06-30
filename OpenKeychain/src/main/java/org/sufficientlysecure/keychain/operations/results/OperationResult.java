@@ -652,6 +652,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_ED_CACHING_NEW (LogLevel.DEBUG, R.string.msg_ed_caching_new),
         MSG_ED_ERROR_NO_PARCEL (LogLevel.ERROR, R.string.msg_ed_error_no_parcel),
         MSG_ED_ERROR_KEY_NOT_FOUND (LogLevel.ERROR, R.string.msg_ed_error_key_not_found),
+        MSG_ED_ERROR_ENCRYPT_DECRYPT (LogLevel.ERROR, R.string.msg_ed_error_encrypt_decrypt),
+        MSG_ED_ERROR_INCORRECT_PASSPHRASE (LogLevel.ERROR, R.string.msg_ed_error_incorrect_passphrase),
         MSG_ED_ERROR_EXTRACTING_PUBLIC_UPLOAD (LogLevel.ERROR,
                 R.string.msg_ed_error_extract_public_upload),
         MSG_ED_FETCHING (LogLevel.DEBUG, R.string.msg_ed_fetching),

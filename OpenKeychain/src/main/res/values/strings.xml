@@ -1188,7 +1188,9 @@
     <string name="msg_ed_caching_new">"Caching new password"</string>
     <string name="msg_ed_error_no_parcel">"Missing SaveKeyringParcel! (this is a bug, please report)"</string>
     <string name="msg_ed_error_key_not_found">"Key not found!"</string>
+    <string name="msg_ed_error_encrypt_decrypt">"Error encrypting/decrypting secret keyring! (this is a bug, please report)"</string>
     <string name="msg_ed_error_extract_public_upload">"Error extracting public key for upload!"</string>
+    <string name="msg_ed_error_incorrect_passphrase">"Decrypt secret keyring failed due to incorrect passphrase! (this is a bug, please report)"</string>
     <string name="msg_ed_fetching">"Fetching key to modify (%s)"</string>
     <string name="msg_ed_success">"Key operation successful"</string>
 
