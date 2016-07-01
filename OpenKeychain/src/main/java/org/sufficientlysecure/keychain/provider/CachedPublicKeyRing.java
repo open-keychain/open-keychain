@@ -23,6 +23,8 @@ import android.net.Uri;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -203,4 +205,8 @@ public class CachedPublicKeyRing extends KeyRing {
         return SecretKeyType.fromNum(((Long) data).intValue());
     }
 
+    public SecretKeyRingType getSecretKeyringType() throws NotFoundException {
+        // TODO: wip, implement after adding col to db
+        return SecretKeyRingType.PASSPHRASE;
+    }
 }

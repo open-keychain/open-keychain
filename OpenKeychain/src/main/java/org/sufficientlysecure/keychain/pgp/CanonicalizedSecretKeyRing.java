@@ -42,6 +42,36 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
         mRing = ring;
     }
 
+    public enum SecretKeyRingType {
+        UNAVAILABLE(0), PASSPHRASE(1), PASSPHRASE_EMPTY(2), PIN(3), PATTERN(4);
+
+        final int mNum;
+
+        SecretKeyRingType(int num) {
+            mNum = num;
+        }
+
+        public static SecretKeyRingType fromNum(int num) {
+            switch (num) {
+                case 1:
+                    return PASSPHRASE;
+                case 2:
+                    return PASSPHRASE_EMPTY;
+                case 3:
+                    return PIN;
+                case 4:
+                    return PATTERN;
+                // if this case happens, it's probably a check from a database value
+                default:
+                    return UNAVAILABLE;
+            }
+        }
+
+        public int getNum() {
+            return mNum;
+        }
+    }
+
     public CanonicalizedSecretKeyRing(byte[] blob, boolean isRevoked, int verified)
     {
         super(verified);
