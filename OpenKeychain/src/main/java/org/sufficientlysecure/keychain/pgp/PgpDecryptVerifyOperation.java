@@ -633,8 +633,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         passphrase = null;
                     } else if (secretKeyType == SecretKeyType.PASSPHRASE_EMPTY) {
                         passphrase = new Passphrase("");
-                    } else if (cryptoInput.hasSubkeyPassphrase()) {
-                        passphrase = cryptoInput.getSubkeyPassphrase();
+                    } else if (cryptoInput.hasPassphrase()) {
+                        passphrase = cryptoInput.getPassphrase();
                     } else {
                         // if no passphrase was explicitly set try to get it from the cache service
                         try {
@@ -697,7 +697,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                 // if no passphrase is given, return here
                 // indicating that a passphrase is missing!
-                if (!cryptoInput.hasSubkeyPassphrase()) {
+                if (!cryptoInput.hasPassphrase()) {
 
                     try {
                         passphrase = getCachedPassphrase(key.symmetric);
@@ -717,7 +717,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     }
 
                 } else {
-                    passphrase = cryptoInput.getSubkeyPassphrase();
+                    passphrase = cryptoInput.getPassphrase();
                 }
 
                 // break out of while, only decrypt the first packet

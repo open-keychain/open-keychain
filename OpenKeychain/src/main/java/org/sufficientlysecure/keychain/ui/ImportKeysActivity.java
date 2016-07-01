@@ -493,7 +493,7 @@ public class ImportKeysActivity extends BaseActivity
                 CryptoInputParcel cryptoParcel = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
                 long masterKeyId = requiredParcel.getMasterKeyId();
                 long subKeyId = requiredParcel.getSubKeyId();
-                Passphrase passphrase = cryptoParcel.getSubkeyPassphrase();
+                Passphrase passphrase = cryptoParcel.getPassphrase();
 
                 // save passphrase if one is returned
                 // could be stripped or diverted to card otherwise

@@ -47,7 +47,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
     @NonNull
     public OperationResult execute(ChangeUnlockParcel unlockParcel, CryptoInputParcel cryptoInput) {
         OperationResult.OperationLog log = new OperationResult.OperationLog();
-        log.add(OperationResult.LogType.MSG_ED, 0);
+        log.add(LogType.MSG_ED, 0);
 
         if (unlockParcel == null || unlockParcel.mMasterKeyId == null) {
             log.add(LogType.MSG_ED_ERROR_NO_PARCEL, 1);
@@ -55,7 +55,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         }
 
         // obtain keyring passphrase
-        if (!cryptoInput.hasKeyringPassphrase()) {
+        if (!cryptoInput.hasPassphrase()) {
             // TODO: wip check cache first
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, 2);
             return new PgpEditKeyResult(log,
@@ -70,14 +70,14 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         CanonicalizedSecretKeyRing retrievedRing;
         {
             try {
-                log.add(OperationResult.LogType.MSG_ED_FETCHING, 1,
+                log.add(LogType.MSG_ED_FETCHING, 1,
                         KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
                 retrievedRing = mProviderHelper.getCanonicalizedSecretKeyRing(
                         unlockParcel.mMasterKeyId,
-                        cryptoInput.getKeyringPassphrase()
+                        cryptoInput.getPassphrase()
                 );
             } catch (ProviderHelper.NotFoundException e) {
-                log.add(OperationResult.LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
+                log.add(LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             } catch (ByteArrayEncryptor.EncryptDecryptException e) {
                 log.add(LogType.MSG_ED_ERROR_ENCRYPT_DECRYPT, 2);
@@ -102,7 +102,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         }
 
         updateProgress(R.string.progress_done, 100, 100);
-        log.add(OperationResult.LogType.MSG_ED_SUCCESS, 0);
+        log.add(LogType.MSG_ED_SUCCESS, 0);
         return new EditKeyResult(EditKeyResult.RESULT_OK, log, retrievedRing.getMasterKeyId());
 
     }

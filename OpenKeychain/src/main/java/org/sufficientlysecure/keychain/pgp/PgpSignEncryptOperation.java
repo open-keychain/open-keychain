@@ -256,7 +256,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                     case PIN:
                     case PATTERN:
                     case PASSPHRASE: {
-                        Passphrase localPassphrase = cryptoInput.getSubkeyPassphrase();
+                        Passphrase localPassphrase = cryptoInput.getPassphrase();
                         if (localPassphrase == null) {
                             try {
                                 localPassphrase = getCachedPassphrase(signingMasterKeyId, signingKey.getKeyId());

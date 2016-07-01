@@ -89,7 +89,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                 case PIN:
                 case PATTERN:
                 case PASSPHRASE:
-                    passphrase = cryptoInput.getSubkeyPassphrase();
+                    passphrase = cryptoInput.getPassphrase();
                     if (passphrase == null) {
                         try {
                             passphrase = getCachedPassphrase(masterKeyId, masterKeyId);

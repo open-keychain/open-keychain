@@ -123,7 +123,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             case BACKUP_CODE:
                 return;
             case PASSPHRASE_SUBKEY_UNLOCK: {
-                if (!mCryptoInputParcel.hasKeyringPassphrase()) {
+                if (!mCryptoInputParcel.hasPassphrase()) {
                     // ask for keyring's passphrase before getting subkey's passphrase
                     Intent intent = new Intent(this, PassphraseDialogActivity.class);
                     RequiredInputParcel parcel = RequiredInputParcel.
@@ -154,7 +154,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 if (pubRing.getSecretKeyType(mRequiredInput.getSubKeyId()) == CanonicalizedSecretKey.SecretKeyType.PASSPHRASE_EMPTY) {
                     // return empty passphrase back to activity
                     Intent returnIntent = new Intent();
-                    mCryptoInputParcel.mOtherPassphrase = new Passphrase("");
+                    mCryptoInputParcel.mPassphrase = new Passphrase("");
                     returnIntent.putExtra(RESULT_CRYPTO_INPUT, mCryptoInputParcel);
                     setResult(RESULT_OK, returnIntent);
                     finish();
@@ -315,7 +315,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
                         CanonicalizedSecretKeyRing secretKeyRing = helper.getCanonicalizedSecretKeyRing(
                                 mRequiredInput.getMasterKeyId(),
-                                mCryptoInput.getKeyringPassphrase()
+                                mCryptoInput.getPassphrase()
                         );
                         long subKeyId = mRequiredInput.getSubKeyId();
                         mSecretKeyToUnlock = secretKeyRing.getSecretKey(subKeyId);
@@ -650,12 +650,12 @@ public class PassphraseDialogActivity extends FragmentActivity {
             switch (mRequiredInput.mType) {
                 case PASSPHRASE_KEYRING_UNLOCK: {
                     // noinspection ConstantConditions, we handle the non-null case in PassphraseDialogActivity.onCreate()
-                    cryptoParcel.mKeyringPassphrase = passphrase;
+                    cryptoParcel.mPassphrase = passphrase;
                     break;
                 }
                 default: {
                     // noinspection ConstantConditions
-                    cryptoParcel.mOtherPassphrase = passphrase;
+                    cryptoParcel.mPassphrase = passphrase;
                     break;
                 }
             }
@@ -719,7 +719,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 // set keyring passphrase and continue
                 mCryptoInputParcel = data.getParcelableExtra(RESULT_CRYPTO_INPUT);
                 getIntent().putExtra(EXTRA_CRYPTO_INPUT, mCryptoInputParcel);
-                if(!mCryptoInputParcel.hasKeyringPassphrase()) {
+                if(!mCryptoInputParcel.hasPassphrase()) {
                     throw new AssertionError("No passphrase returned (programming bug!)");
                 }
                 break;

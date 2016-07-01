@@ -421,7 +421,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
                     return;
                 }
                 CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                mSecurityTokenHelper.setPin(input.getSubkeyPassphrase());
+                mSecurityTokenHelper.setPin(input.getPassphrase());
                 break;
             }
             default:
