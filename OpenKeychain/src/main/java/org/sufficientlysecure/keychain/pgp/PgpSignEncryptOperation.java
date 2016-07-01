@@ -259,7 +259,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                         Passphrase localPassphrase = cryptoInput.getPassphrase();
                         if (localPassphrase == null) {
                             try {
-                                localPassphrase = getCachedPassphrase(signingMasterKeyId, signingKey.getKeyId());
+                                localPassphrase = getCachedSubkeyPassphrase(signingMasterKeyId, signingKey.getKeyId());
                             } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
                             }
                         }

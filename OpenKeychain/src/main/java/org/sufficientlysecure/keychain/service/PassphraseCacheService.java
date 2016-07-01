@@ -39,45 +39,32 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.Date;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main
- * passphrase cache. Use the static methods addCachedPassphrase and getCachedPassphrase for
- * convenience.
+ * passphrase cache. Use the static methods addCachedPassphrase, addCachedSubkeyPassphrase
+ * getCachedPassphrase and getCachedSubkeyPassphrase for convenience.
  *
- * The passphrase cache service always works with both a master key id and a subkey id. The master
- * key id is always used to retrieve relevant info from the database, while the subkey id is used
- * to determine the type behavior (regular passphrase, empty passphrase, stripped key,
- * divert-to-card) for the specific key requested.
- *
- * Caching behavior for subkeys depends on the cacheSubs preference:
- *
- * - If cacheSubs is NOT set, passphrases will be cached and retrieved by master key id. The
- * checks for special subkeys will still be done, but otherwise it is assumed that all subkeys
- * from the same master key will use the same passphrase. This can lead to bad passphrase
- * errors if two subkeys are encrypted differently. This is the default behavior.
- *
- * - If cacheSubs IS set, passphrases will be cached per subkey id. This means that if a keyring
- * has two subkeys for different purposes, passphrases will be cached independently and the
- * user will be asked for a passphrase once per subkey even if it is the same one. This mode
- * of operation is more precise, since we can assume that all passphrases returned from cache
- * will be correct without fail. Since keyrings with differently encrypted subkeys are a very
- * rare occurrence, and caching by keyring is what the user expects in the vast majority of
- * cases, this is not the default behavior.
- *
+ * The passphrase cache service works with master key ids. The master key id is used to
+ * retrieve relevant keyring info from the database, including passphrases for subkeys.
+ * It is assumed that all subkeys from the same master key will use the same passphrase.
+ * TODO: may not be the case security token related operations become more robust
  */
 public class PassphraseCacheService extends Service {
 
-    public static final String ACTION_PASSPHRASE_CACHE_ADD = Constants.INTENT_PREFIX
-            + "PASSPHRASE_CACHE_ADD";
+    public static final String ACTION_PASSPHRASE_CACHE_ADD_MAIN = Constants.INTENT_PREFIX
+            + "PASSPHRASE_CACHE_ADD_MAIN";
+    public static final String ACTION_PASSPHRASE_CACHE_ADD_SUB = Constants.INTENT_PREFIX
+            + "PASSPHRASE_CACHE_ADD_SUB";
     public static final String ACTION_PASSPHRASE_CACHE_GET = Constants.INTENT_PREFIX
             + "PASSPHRASE_CACHE_GET";
     public static final String ACTION_PASSPHRASE_CACHE_CLEAR = Constants.INTENT_PREFIX
@@ -100,7 +87,7 @@ public class PassphraseCacheService extends Service {
 
     private BroadcastReceiver mIntentReceiver;
 
-    private LongSparseArray<CachedPassphrase> mPassphraseCache = new LongSparseArray<>();
+    private LongSparseArray<CachedPassphrases> mPassphraseCache = new LongSparseArray<>();
 
     Context mContext;
 
@@ -118,14 +105,32 @@ public class PassphraseCacheService extends Service {
      * service is only run once. Thus, when the service is already started, new commands just add
      * new events to the alarm manager for new passphrases to let them timeout in the future.
      */
-    public static void addCachedPassphrase(Context context, long masterKeyId, long subKeyId,
+    public static void addCachedPassphrase(Context context, long masterKeyId,
                                            Passphrase passphrase,
                                            String primaryUserId,
                                            int timeToLiveSeconds) {
         Log.d(Constants.TAG, "PassphraseCacheService.addCachedPassphrase() for " + masterKeyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
-        intent.setAction(ACTION_PASSPHRASE_CACHE_ADD);
+        intent.setAction(ACTION_PASSPHRASE_CACHE_ADD_MAIN);
+
+        intent.putExtra(EXTRA_TTL, timeToLiveSeconds);
+        intent.putExtra(EXTRA_PASSPHRASE, passphrase);
+        intent.putExtra(EXTRA_KEY_ID, masterKeyId);
+        intent.putExtra(EXTRA_USER_ID, primaryUserId);
+
+        context.startService(intent);
+    }
+
+    public static void addCachedSubKeyPassphrase(Context context, long masterKeyId,
+                                                 long subKeyId,
+                                           Passphrase passphrase,
+                                           String primaryUserId,
+                                           int timeToLiveSeconds) {
+        Log.d(Constants.TAG, "PassphraseCacheService.addCachedSubkeyPassphrase() for " + subKeyId);
+
+        Intent intent = new Intent(context, PassphraseCacheService.class);
+        intent.setAction(ACTION_PASSPHRASE_CACHE_ADD_SUB);
 
         intent.putExtra(EXTRA_TTL, timeToLiveSeconds);
         intent.putExtra(EXTRA_PASSPHRASE, passphrase);
@@ -136,20 +141,30 @@ public class PassphraseCacheService extends Service {
         context.startService(intent);
     }
 
-    public static void clearCachedPassphrase(Context context, long masterKeyId, long subKeyId) {
+    public static void clearCachedPassphrase(Context context, long masterKeyId) {
         Log.d(Constants.TAG, "PassphraseCacheService.clearCachedPassphrase() for " + masterKeyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
 
         intent.putExtra(EXTRA_KEY_ID, masterKeyId);
-        intent.putExtra(EXTRA_SUBKEY_ID, subKeyId);
 
         context.startService(intent);
     }
 
-    public static void clearCachedPassphrases(Context context) {
-        Log.d(Constants.TAG, "PassphraseCacheService.clearCachedPassphrase()");
+    public static void clearCachedSubkeyPassphrase(Context context, long masterKeyId, long subkeyId) {
+        Log.d(Constants.TAG, "PassphraseCacheService.clearCachedPassphrase() for " + masterKeyId);
+
+        Intent intent = new Intent(context, PassphraseCacheService.class);
+        intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
+
+        intent.putExtra(EXTRA_KEY_ID, masterKeyId);
+        intent.putExtra(EXTRA_KEY_ID, subkeyId);
+        context.startService(intent);
+    }
+
+    public static void clearAllCachedPassphrases(Context context) {
+        Log.d(Constants.TAG, "PassphraseCacheService.clearAllCachedPassphrases()");
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
@@ -163,10 +178,17 @@ public class PassphraseCacheService extends Service {
      *
      * @return passphrase or null (if no passphrase is cached for this keyId)
      */
-    public static Passphrase getCachedPassphrase(Context context, long masterKeyId, long subKeyId) throws KeyNotFoundException {
-        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphrase() for masterKeyId "
+    public static Passphrase getCachedPassphrase(Context context, long masterKeyId) throws KeyNotFoundException {
+        return getCachedPassphrase(context, masterKeyId, Constants.key.none);
+    }
+
+    public static Passphrase getCachedSubkeyPassphrase(Context context, long masterKeyId, long subkeyId) throws KeyNotFoundException {
+        return getCachedPassphrase(context, masterKeyId, subkeyId);
+    }
+
+    private static Passphrase getCachedPassphrase(Context context, long masterKeyId, long subKeyId) throws KeyNotFoundException {
+        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId "
                 + masterKeyId + ", subKeyId " + subKeyId);
-        // TODO: caching wip
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_GET);
@@ -234,58 +256,52 @@ public class PassphraseCacheService extends Service {
         // passphrase for symmetric encryption?
         if (masterKeyId == Constants.key.symmetric) {
             Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for symmetric encryption");
-            CachedPassphrase cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric);
-            if (cachedPassphrase == null) {
+            CachedPassphrases cachedPassphrases = mPassphraseCache.get(Constants.key.symmetric);
+            if (cachedPassphrases == null) {
                 return null;
             }
-            return cachedPassphrase.mPassphrase;
+            return cachedPassphrases.mKeyringPassphrase;
         }
 
         // try to get master key id which is used as an identifier for cached passphrases
-        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId "
-                + masterKeyId + ", subKeyId " + subKeyId);
+        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId " + masterKeyId);
 
         // get the type of key (from the database)
         CachedPublicKeyRing keyRing = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
-        SecretKeyType keyType = keyRing.getSecretKeyType(subKeyId);
 
-        switch (keyType) {
-            case PASSPHRASE_EMPTY:
-                return new Passphrase("");
-            case UNAVAILABLE:
-                throw new ProviderHelper.NotFoundException("secret key for this subkey is not available");
-            case GNU_DUMMY:
-                throw new ProviderHelper.NotFoundException("secret key for stripped subkey is not available");
+
+        // get cached passphrases
+        CachedPassphrases cachedPassphrases = mPassphraseCache.get(masterKeyId);
+        if (cachedPassphrases == null) {
+            Log.d(Constants.TAG, "PassphraseCacheService: keyring passphrase not (yet) cached, returning null");
+            // not really an error, just means the passphrase is not cached but not empty either
+            return null;
         }
 
-        // get cached passphrase
-        CachedPassphrase cachedPassphrase = mPassphraseCache.get(subKeyId);
-        if (cachedPassphrase == null) {
-
-            // If we cache strictly by subkey, exit early
-            if (Preferences.getPreferences(mContext).getPassphraseCacheSubs()) {
-                Log.d(Constants.TAG, "PassphraseCacheService: specific subkey passphrase not (yet) cached, returning null");
-                // not really an error, just means the passphrase is not cached but not empty either
-                return null;
+        // return keyring passphrase || subkey passphrase
+        if (subKeyId == Constants.key.none) {
+            // TODO: wip, implement after adding col to db
+            SecretKeyRingType keyType = keyRing.getSecretKeyringType();
+            switch (keyType) {
+                case PASSPHRASE_EMPTY:
+                    return new Passphrase();
+                case UNAVAILABLE:
+                    throw new ProviderHelper.NotFoundException("secret key data for this keyring is not available");
             }
-
-            if (subKeyId == masterKeyId) {
-                Log.d(Constants.TAG, "PassphraseCacheService: masterkey passphrase not (yet) cached, returning null");
-                // not really an error, just means the passphrase is not cached but not empty either
-                return null;
+            return cachedPassphrases.mKeyringPassphrase;
+        } else {
+            SecretKeyType subKeyType = keyRing.getSecretKeyType(subKeyId);
+            switch (subKeyType) {
+                case PASSPHRASE_EMPTY:
+                    return new Passphrase();
+                case GNU_DUMMY:
+                    throw new ProviderHelper.NotFoundException("secret key for stripped subkey is not available");
+                case UNAVAILABLE:
+                    throw new ProviderHelper.NotFoundException("secret key data for this subkey is not available");
             }
-
-            cachedPassphrase = mPassphraseCache.get(masterKeyId);
-            // If we cache strictly by subkey, exit early
-            if (cachedPassphrase == null) {
-                Log.d(Constants.TAG, "PassphraseCacheService: keyring passphrase not (yet) cached, returning null");
-                // not really an error, just means the passphrase is not cached but not empty either
-                return null;
-            }
-
+            return cachedPassphrases.mSubkeyPassphrase;
         }
 
-        return cachedPassphrase.mPassphrase;
     }
 
     /**
@@ -345,62 +361,86 @@ public class PassphraseCacheService extends Service {
 
         String action = intent.getAction();
         switch (action) {
-            case ACTION_PASSPHRASE_CACHE_ADD: {
-                long masterKeyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
-                long subKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, -1);
+            case ACTION_PASSPHRASE_CACHE_ADD_MAIN: {
+                long masterKeyId = intent.getLongExtra(EXTRA_KEY_ID, Constants.key.none);
                 long timeoutTtl = intent.getIntExtra(EXTRA_TTL, DEFAULT_TTL);
 
                 Passphrase passphrase = intent.getParcelableExtra(EXTRA_PASSPHRASE);
                 String primaryUserID = intent.getStringExtra(EXTRA_USER_ID);
 
                 Log.d(Constants.TAG,
-                        "PassphraseCacheService: Received ACTION_PASSPHRASE_CACHE_ADD intent in onStartCommand() with masterkeyId: "
-                                + masterKeyId + ", subKeyId: " + subKeyId + ", ttl: " + timeoutTtl + ", usrId: " + primaryUserID
+                        "PassphraseCacheService: Received ACTION_PASSPHRASE_CACHE_ADD_MAIN intent in onStartCommand() with masterkeyId: "
+                                + masterKeyId + ", ttl: " + timeoutTtl + ", usrId: " + primaryUserID
                 );
 
-                // if we don't cache by specific subkey id, or the requested subkey is the master key,
-                // just add master key id to the cache, otherwise, add this specific subkey to the cache
-                long referenceKeyId =
-                        Preferences.getPreferences(mContext).getPassphraseCacheSubs() ? subKeyId : masterKeyId;
-
-                CachedPassphrase cachedPassphrase;
+                CachedPassphrases cachedPassphrases;
                 if (timeoutTtl == 0L) {
-                    cachedPassphrase = CachedPassphrase.getPassphraseLock(passphrase, primaryUserID);
+                    cachedPassphrases = CachedPassphrases.getPassphraseLock(passphrase, primaryUserID);
                 } else if (timeoutTtl >= Integer.MAX_VALUE) {
-                    cachedPassphrase = CachedPassphrase.getPassphraseNoTimeout(passphrase, primaryUserID);
+                    cachedPassphrases = CachedPassphrases.getPassphraseNoTimeout(passphrase, primaryUserID);
                 } else {
-                    cachedPassphrase = CachedPassphrase.getPassphraseTtlTimeout(passphrase, primaryUserID, timeoutTtl);
+                    cachedPassphrases = CachedPassphrases.getPassphraseTtlTimeout(passphrase, primaryUserID, timeoutTtl);
 
                     long triggerTime = new Date().getTime() + (timeoutTtl * 1000);
                     // register new alarm with keyId for this passphrase
                     AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-                    am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, referenceKeyId));
+                    am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, masterKeyId));
                 }
 
-                mPassphraseCache.put(referenceKeyId, cachedPassphrase);
-
+                mPassphraseCache.put(masterKeyId, cachedPassphrases);
                 break;
             }
+
+            case ACTION_PASSPHRASE_CACHE_ADD_SUB: {
+                long masterKeyId = intent.getLongExtra(EXTRA_KEY_ID, Constants.key.none);
+                long subKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, Constants.key.none);
+                long timeoutTtl = intent.getIntExtra(EXTRA_TTL, DEFAULT_TTL);
+                Passphrase subkeyPassphrase = intent.getParcelableExtra(EXTRA_PASSPHRASE);
+                String primaryUserID = intent.getStringExtra(EXTRA_USER_ID);
+
+                Log.d(Constants.TAG,
+                        "PassphraseCacheService: Received ACTION_PASSPHRASE_CACHE_ADD_SUB intent in onStartCommand() with masterkeyId: "
+                                + masterKeyId + ", subkeyId: " + subKeyId +  ", ttl: " + timeoutTtl + ", usrId: " + primaryUserID
+                );
+
+                CachedPassphrases cachedPassphrases = mPassphraseCache.get(masterKeyId);
+                if (cachedPassphrases == null) {
+                    // keyring uses an empty password & thus is not cached yet
+                    // create a new cache object for it
+                    Passphrase keyringPassphrase = new Passphrase();
+                    if (timeoutTtl == 0L) {
+                        cachedPassphrases = CachedPassphrases.getPassphraseLock(keyringPassphrase, subkeyPassphrase, primaryUserID);
+                    } else if (timeoutTtl >= Integer.MAX_VALUE) {
+                        cachedPassphrases = CachedPassphrases.getPassphraseNoTimeout(keyringPassphrase, subkeyPassphrase, primaryUserID);
+                    } else {
+                        cachedPassphrases = CachedPassphrases.getPassphraseTtlTimeout(keyringPassphrase, subkeyPassphrase, primaryUserID, timeoutTtl);
+                        long triggerTime = new Date().getTime() + (timeoutTtl * 1000);
+                        // register new alarm with keyId for this passphrase
+                        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+                        am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, masterKeyId));
+                    }
+                } else {
+                    cachedPassphrases.mSubkeyPassphrase = subkeyPassphrase;
+                }
+
+                mPassphraseCache.put(masterKeyId, cachedPassphrases);
+                break;
+            }
+
             case ACTION_PASSPHRASE_CACHE_GET: {
-                long masterKeyId = intent.getLongExtra(EXTRA_KEY_ID, Constants.key.symmetric);
-                long subKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, Constants.key.symmetric);
+                long masterKeyId = intent.getLongExtra(EXTRA_KEY_ID, Constants.key.none);
+                long subKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, Constants.key.none);
                 Messenger messenger = intent.getParcelableExtra(EXTRA_MESSENGER);
 
                 Message msg = Message.obtain();
                 try {
-                    // If only one of these is symmetric, error out!
-                    if (masterKeyId == Constants.key.symmetric ^ subKeyId == Constants.key.symmetric) {
-                        Log.e(Constants.TAG, "PassphraseCacheService: Bad request, missing masterKeyId or subKeyId!");
-                        msg.what = MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND;
-                    } else {
-                        Passphrase passphrase = getCachedPassphraseImpl(masterKeyId, subKeyId);
-                        msg.what = MSG_PASSPHRASE_CACHE_GET_OKAY;
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable(EXTRA_PASSPHRASE, passphrase);
-                        msg.setData(bundle);
-                    }
+                    Passphrase passphrase = getCachedPassphraseImpl(masterKeyId, subKeyId);
+                    msg.what = MSG_PASSPHRASE_CACHE_GET_OKAY;
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable(EXTRA_PASSPHRASE, passphrase);
+                    msg.setData(bundle);
                 } catch (ProviderHelper.NotFoundException e) {
-                    Log.e(Constants.TAG, "PassphraseCacheService: Passphrase for unknown key was requested!");
+                    Log.e(Constants.TAG, "PassphraseCacheService: Passphrases for unknown key was requested!");
                     msg.what = MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND;
                 }
 
@@ -414,29 +454,23 @@ public class PassphraseCacheService extends Service {
             case ACTION_PASSPHRASE_CACHE_CLEAR: {
                 AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
-                if (intent.hasExtra(EXTRA_SUBKEY_ID) && intent.hasExtra(EXTRA_KEY_ID)) {
-
-                    long referenceKeyId;
-                    if (Preferences.getPreferences(mContext).getPassphraseCacheSubs()) {
-                        referenceKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, 0L);
-                    } else {
-                        referenceKeyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
-                    }
+                if (intent.hasExtra(EXTRA_KEY_ID)) {
+                    long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
                     // Stop specific ttl alarm and
-                    am.cancel(buildIntent(this, referenceKeyId));
-                    mPassphraseCache.delete(referenceKeyId);
-
+                    am.cancel(buildIntent(this, keyId));
+                    mPassphraseCache.delete(keyId);
+                } else if (intent.hasExtra(EXTRA_SUBKEY_ID)) {
+                    long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
+                    mPassphraseCache.get(keyId).mSubkeyPassphrase = null;
                 } else {
-
                     // Stop all ttl alarms
                     for (int i = 0; i < mPassphraseCache.size(); i++) {
-                        CachedPassphrase cachedPassphrase = mPassphraseCache.valueAt(i);
-                        if (cachedPassphrase.mTimeoutMode == TimeoutMode.TTL) {
+                        CachedPassphrases cachedPassphrases = mPassphraseCache.valueAt(i);
+                        if (cachedPassphrases.mTimeoutMode == TimeoutMode.TTL) {
                             am.cancel(buildIntent(this, mPassphraseCache.keyAt(i)));
                         }
                     }
                     mPassphraseCache.clear();
-
                 }
                 break;
             }
@@ -454,11 +488,11 @@ public class PassphraseCacheService extends Service {
     /** Called when one specific passphrase for keyId timed out. */
     private void removeTimeoutedPassphrase(long keyId) {
 
-        CachedPassphrase cPass = mPassphraseCache.get(keyId);
+        CachedPassphrases cPass = mPassphraseCache.get(keyId);
         if (cPass != null) {
-            if (cPass.mPassphrase != null) {
+            if (cPass.mKeyringPassphrase != null) {
                 // clean internal char[] from memory!
-                cPass.mPassphrase.removeFromMemory();
+                cPass.mKeyringPassphrase.removeFromMemory();
             }
             // remove passphrase object
             mPassphraseCache.remove(keyId);
@@ -472,7 +506,7 @@ public class PassphraseCacheService extends Service {
     private void removeScreenLockPassphrases() {
 
         for (int i = 0; i < mPassphraseCache.size(); ) {
-            CachedPassphrase cPass = mPassphraseCache.valueAt(i);
+            CachedPassphrases cPass = mPassphraseCache.valueAt(i);
             if (cPass.mTimeoutMode == TimeoutMode.LOCK) {
                 // remove passphrase object
                 mPassphraseCache.removeAt(i);
@@ -573,29 +607,43 @@ public class PassphraseCacheService extends Service {
         NEVER, TTL, LOCK
     }
 
-    private static class CachedPassphrase {
+    private static class CachedPassphrases {
         private String mPrimaryUserId;
-        private Passphrase mPassphrase;
+        private Passphrase mKeyringPassphrase;
+        private Passphrase mSubkeyPassphrase;
         private TimeoutMode mTimeoutMode;
         private Long mTimeoutTime;
 
-        private CachedPassphrase(Passphrase passphrase, String primaryUserId, TimeoutMode timeoutMode, Long timeoutTime) {
-            mPassphrase = passphrase;
+        private CachedPassphrases(Passphrase keyringPassphrase, Passphrase subkeyPassphrase, String primaryUserId, TimeoutMode timeoutMode, Long timeoutTime) {
+            mKeyringPassphrase = keyringPassphrase;
+            mSubkeyPassphrase = subkeyPassphrase;
             mPrimaryUserId = primaryUserId;
             mTimeoutMode = timeoutMode;
             mTimeoutTime = timeoutTime;
         }
 
-        static CachedPassphrase getPassphraseNoTimeout(Passphrase passphrase, String primaryUserId) {
-            return new CachedPassphrase(passphrase, primaryUserId, TimeoutMode.NEVER, null);
+        static CachedPassphrases getPassphraseNoTimeout(Passphrase keyringPassphrase, String primaryUserId) {
+            return new CachedPassphrases(keyringPassphrase, null, primaryUserId, TimeoutMode.NEVER, null);
         }
 
-        static CachedPassphrase getPassphraseTtlTimeout(Passphrase passphrase, String primaryUserId, long timeoutTime) {
-            return new CachedPassphrase(passphrase, primaryUserId, TimeoutMode.TTL, timeoutTime);
+        static CachedPassphrases getPassphraseTtlTimeout(Passphrase keyringPassphrase, String primaryUserId, long timeoutTime) {
+            return new CachedPassphrases(keyringPassphrase, null, primaryUserId, TimeoutMode.TTL, timeoutTime);
         }
 
-        static CachedPassphrase getPassphraseLock(Passphrase passphrase, String primaryUserId) {
-            return new CachedPassphrase(passphrase, primaryUserId, TimeoutMode.LOCK, null);
+        static CachedPassphrases getPassphraseLock(Passphrase keyringPassphrase, String primaryUserId) {
+            return new CachedPassphrases(keyringPassphrase, null, primaryUserId, TimeoutMode.LOCK, null);
+        }
+
+        static CachedPassphrases getPassphraseNoTimeout(Passphrase keyringPassphrase, Passphrase subkeyPassphrase, String primaryUserId) {
+            return new CachedPassphrases(keyringPassphrase, subkeyPassphrase, primaryUserId, TimeoutMode.NEVER, null);
+        }
+
+        static CachedPassphrases getPassphraseTtlTimeout(Passphrase keyringPassphrase, Passphrase subkeyPassphrase, String primaryUserId, long timeoutTime) {
+            return new CachedPassphrases(keyringPassphrase, subkeyPassphrase, primaryUserId, TimeoutMode.TTL, timeoutTime);
+        }
+
+        static CachedPassphrases getPassphraseLock(Passphrase keyringPassphrase, Passphrase subkeyPassphrase, String primaryUserId) {
+            return new CachedPassphrases(keyringPassphrase, subkeyPassphrase, primaryUserId, TimeoutMode.LOCK, null);
         }
     }
 

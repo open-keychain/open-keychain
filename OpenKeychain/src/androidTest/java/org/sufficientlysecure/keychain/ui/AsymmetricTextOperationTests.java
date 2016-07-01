@@ -79,7 +79,7 @@ public class AsymmetricTextOperationTests {
         importKeysFromResource(activity, "x.sec.asc");
 
         // make sure no passphrases are cached
-        PassphraseCacheService.clearCachedPassphrases(activity);
+        PassphraseCacheService.clearAllCachedPassphrases(activity);
     }
 
     //@Test

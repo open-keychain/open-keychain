@@ -512,7 +512,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     if (mRequiredInput.mType == RequiredInputType.PASSPHRASE_SYMMETRIC) {
                         if (!mRequiredInput.mSkipCaching) {
                             PassphraseCacheService.addCachedPassphrase(getActivity(),
-                                    Constants.key.symmetric, Constants.key.symmetric, passphrase,
+                                    Constants.key.symmetric, passphrase,
                                     getString(R.string.passp_cache_notif_pwd), timeToLiveSeconds);
                         }
 
@@ -604,14 +604,19 @@ public class PassphraseDialogActivity extends FragmentActivity {
                             if (mRequiredInput.mSkipCaching) {
                                 Log.d(Constants.TAG, "Not caching entered passphrase!");
                             } else if (mRequiredInput.mType == RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK) {
-                                // TODO: wip, edit cache to deal with this. only security tokens require this..
-                                Log.d(Constants.TAG, "Caching passphrase for subkey is not yet implemented!");
+                                Log.d(Constants.TAG, "Caching entered subkey passphrase");
+                                try {
+                                    PassphraseCacheService.addCachedSubKeyPassphrase(getActivity(),
+                                            mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId(),
+                                            passphrase, result.getRing().getPrimaryUserIdWithFallback(), timeToLiveSeconds);
+                                } catch (PgpKeyNotFoundException e) {
+                                    Log.e(Constants.TAG, "adding of a passphrase failed", e);
+                                }
                             } else {
                                 Log.d(Constants.TAG, "Caching entered passphrase");
-
                                 try {
                                     PassphraseCacheService.addCachedPassphrase(getActivity(),
-                                            mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId(), passphrase,
+                                            mRequiredInput.getMasterKeyId(), passphrase,
                                             result.getRing().getPrimaryUserIdWithFallback(), timeToLiveSeconds);
                                 } catch (PgpKeyNotFoundException e) {
                                     Log.e(Constants.TAG, "adding of a passphrase failed", e);

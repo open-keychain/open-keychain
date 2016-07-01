@@ -39,7 +39,7 @@ public class PanicResponderActivity extends Activity {
 
         Intent intent = getIntent();
         if (intent != null && PANIC_TRIGGER_ACTION.equals(intent.getAction())) {
-            PassphraseCacheService.clearCachedPassphrases(this);
+            PassphraseCacheService.clearAllCachedPassphrases(this);
             PanicExitActivity.exitAndRemoveFromRecentApps(this);
         }
 

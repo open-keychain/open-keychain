@@ -26,8 +26,9 @@ public interface PassphraseCacheInterface {
         }
     }
 
-    public Passphrase getCachedPassphrase(long subKeyId) throws NoSecretKeyException;
 
-    public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException;
+    public Passphrase getCachedPassphrase(long masterKeyId) throws NoSecretKeyException;
+
+    public Passphrase getCachedSubkeyPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException;
 
 }

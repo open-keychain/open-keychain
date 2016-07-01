@@ -392,8 +392,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput) {
 
         try {
-            // TODO: wip cache
-            Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
+            Passphrase passphrase = PassphraseCacheService.getCachedSubkeyPassphrase(this,
                     requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
             if (passphrase != null) {
                 mSecurityTokenHelper.setPin(passphrase);

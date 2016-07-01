@@ -158,7 +158,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
     private void checkPinAvailability() {
         try {
-            Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
+            Passphrase passphrase = PassphraseCacheService.getCachedSubkeyPassphrase(this,
                     mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
             if (passphrase != null) {
                 checkDeviceConnection();
@@ -250,7 +250,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
                     Passphrase passphrase;
                     try {
-                        passphrase = PassphraseCacheService.getCachedPassphrase(this,
+                        passphrase = PassphraseCacheService.getCachedSubkeyPassphrase(this,
                                 mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
                     } catch (PassphraseCacheService.KeyNotFoundException e) {
                         throw new IOException("Unable to get cached passphrase!");
@@ -344,7 +344,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
         onSecurityTokenError(error);
 
         // clear (invalid) passphrase
-        PassphraseCacheService.clearCachedPassphrase(
+        PassphraseCacheService.clearCachedSubkeyPassphrase(
                 this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
     }
 }

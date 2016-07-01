@@ -158,7 +158,7 @@ public class TestHelpers {
         importKeysFromResource(context, "x.sec.asc");
 
         // make sure no passphrases are cached
-        PassphraseCacheService.clearCachedPassphrases(context);
+        PassphraseCacheService.clearAllCachedPassphrases(context);
 
     }
 

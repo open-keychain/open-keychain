@@ -92,7 +92,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                     passphrase = cryptoInput.getPassphrase();
                     if (passphrase == null) {
                         try {
-                            passphrase = getCachedPassphrase(masterKeyId, masterKeyId);
+                            passphrase = getCachedSubkeyPassphrase(masterKeyId, masterKeyId);
                         } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
                             // treat as a cache miss for error handling purposes
                         }

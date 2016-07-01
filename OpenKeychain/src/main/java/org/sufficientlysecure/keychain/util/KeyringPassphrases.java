@@ -47,6 +47,16 @@ public class KeyringPassphrases implements Parcelable {
         }
     }
 
+    public void removeFromMemory() {
+        if (mKeyringPassphrase != null) {
+            mKeyringPassphrase.removeFromMemory();
+        }
+
+        for (Passphrase passphrase : mSubkeyPassphrases.values()) {
+            passphrase.removeFromMemory();
+        }
+    }
+
     private static ParcelableHashMap<ParcelableLong, Passphrase> toParcelableHashMap(HashMap<Long, Passphrase> hashMap) {
         HashMap<ParcelableLong, Passphrase> forParceling = new HashMap<>();
         Set<Long> keys = hashMap.keySet();

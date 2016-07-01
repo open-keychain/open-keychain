@@ -103,10 +103,6 @@ public class Preferences {
         editor.commit();
     }
 
-    public boolean getPassphraseCacheSubs() {
-        return mSharedPreferences.getBoolean(Pref.PASSPHRASE_CACHE_SUBS, false);
-    }
-
     public boolean getCachedConsolidate() {
         return mSharedPreferences.getBoolean(Pref.CACHED_CONSOLIDATE, false);
     }
