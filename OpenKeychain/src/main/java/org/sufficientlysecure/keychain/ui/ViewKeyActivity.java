@@ -533,8 +533,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         if (keyHasPassphrase()) {
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
+            // TODO: WIP parcel
             RequiredInputParcel requiredInput =
-                    RequiredInputParcel.createRequiredDecryptPassphrase(mMasterKeyId, mMasterKeyId);
+                    RequiredInputParcel.createRequiredDecryptPassphrase(mMasterKeyId, mMasterKeyId, null);
             requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
             startActivityForResult(intent, requestCode);

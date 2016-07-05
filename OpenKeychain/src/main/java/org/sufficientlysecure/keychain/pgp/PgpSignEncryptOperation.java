@@ -265,8 +265,9 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                         }
                         if (localPassphrase == null) {
                             log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
+                            // TODO: wip, parcel
                             return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                                    signingMasterKeyId, signingKey.getKeyId(),
+                                    signingMasterKeyId, signingKey.getKeyId(), null,
                                     cryptoInput.getSignatureTime()), cryptoInput);
                         }
                         if (!signingKey.unlock(localPassphrase)) {

@@ -100,7 +100,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
                     if (passphrase == null) {
                         return new CertifyResult(log,
-                                RequiredInputParcel.createRequiredSignPassphrase(masterKeyId, masterKeyId, null),
+                                RequiredInputParcel.createRequiredSignPassphrase(masterKeyId, masterKeyId, null, null),
                                 cryptoInput
                         );
                     }

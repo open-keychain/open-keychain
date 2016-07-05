@@ -29,12 +29,14 @@ public class RequiredInputParcel implements Parcelable {
 
     private Long mMasterKeyId;
     private Long mSubKeyId;
+    private Passphrase mKeyringPassphrase;
     private ParcelableKeyRing mParcelableKeyRing;
 
     public boolean mSkipCaching = false;
 
     private RequiredInputParcel(RequiredInputType type, byte[][] inputData,
             int[] signAlgos, Date signatureTime, Long masterKeyId, Long subKeyId,
+                                Passphrase keyringPassphrase,
                                 ParcelableKeyRing parcelableKeyRing) {
         mType = type;
         mInputData = inputData;
@@ -42,6 +44,7 @@ public class RequiredInputParcel implements Parcelable {
         mSignatureTime = signatureTime;
         mMasterKeyId = masterKeyId;
         mSubKeyId = subKeyId;
+        mKeyringPassphrase = keyringPassphrase;
         mParcelableKeyRing = parcelableKeyRing;
     }
 
@@ -73,8 +76,11 @@ public class RequiredInputParcel implements Parcelable {
         mSignatureTime = source.readInt() != 0 ? new Date(source.readLong()) : null;
         mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
         mSubKeyId = source.readInt() != 0 ? source.readLong() : null;
+        mKeyringPassphrase = source.readInt() != 0
+                ? (Passphrase) source.readParcelable(Passphrase.class.getClassLoader())
+                : null;
         mParcelableKeyRing = source.readInt() != 0
-                ? (ParcelableKeyRing) source.readParcelable(KeychainApplication.class.getClassLoader())
+                ? (ParcelableKeyRing) source.readParcelable(ParcelableKeyRing.class.getClassLoader())
                 : null;
         mSkipCaching = source.readInt() != 0;
 
@@ -88,6 +94,18 @@ public class RequiredInputParcel implements Parcelable {
         return mSubKeyId;
     }
 
+    public boolean hasKeyringPassphrase() {
+        return mKeyringPassphrase != null;
+    }
+
+    public Passphrase getKeyringPassphrase() {
+        return mKeyringPassphrase;
+    }
+
+    public void setKeyringPassphrase(Passphrase passphrase) {
+        mKeyringPassphrase = passphrase;
+    }
+
     public boolean hasParcelableKeyRing() {
         return mParcelableKeyRing != null;
     }
@@ -98,11 +116,11 @@ public class RequiredInputParcel implements Parcelable {
 
     public static RequiredInputParcel createRetryUploadOperation() {
         return new RequiredInputParcel(RequiredInputType.UPLOAD_FAIL_RETRY,
-                null, null, null, 0L, 0L, null);
+                null, null, null, 0L, 0L, null, null);
     }
 
     public static RequiredInputParcel createOrbotRequiredOperation() {
-        return new RequiredInputParcel(RequiredInputType.ENABLE_ORBOT, null, null, null, 0L, 0L, null);
+        return new RequiredInputParcel(RequiredInputType.ENABLE_ORBOT, null, null, null, 0L, 0L, null, null);
     }
 
     public static RequiredInputParcel createSecurityTokenSignOperation(
@@ -110,57 +128,64 @@ public class RequiredInputParcel implements Parcelable {
             byte[] inputHash, int signAlgo, Date signatureTime) {
         return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_SIGN,
                 new byte[][] { inputHash }, new int[] { signAlgo },
-                signatureTime, masterKeyId, subKeyId, null);
+                signatureTime, masterKeyId, subKeyId, null, null);
     }
 
     public static RequiredInputParcel createSecurityTokenDecryptOperation(
             long masterKeyId, long subKeyId, byte[] encryptedSessionKey) {
         return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_DECRYPT,
-                new byte[][] { encryptedSessionKey }, null, null, masterKeyId, subKeyId, null);
+                new byte[][] { encryptedSessionKey }, null, null, masterKeyId, subKeyId, null, null);
     }
 
     public static RequiredInputParcel createSecurityTokenReset() {
         return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_RESET_CARD,
-                null, null, null, null, null, null);
+                null, null, null, null, null, null, null);
     }
 
     public static RequiredInputParcel createRequiredSubkeyPassphrase(
             RequiredInputParcel req) {
+        //TODO: wip, WHAT DO TO WITH THIS?
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK,
-                null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId, null);
+                null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId, req.mKeyringPassphrase, null);
     }
 
     public static RequiredInputParcel createRequiredSignPassphrase(
-            long masterKeyId, long subKeyId, Date signatureTime) {
+            long masterKeyId, long subKeyId, Passphrase keyringPassphrase, Date signatureTime) {
+        if (keyringPassphrase == null) {
+            throw new IllegalArgumentException("keyring's passphrase is null");
+        }
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK,
-                null, null, signatureTime, masterKeyId, subKeyId, null);
+                null, null, signatureTime, masterKeyId, subKeyId, keyringPassphrase, null);
     }
 
     public static RequiredInputParcel createRequiredDecryptPassphrase(
-            long masterKeyId, long subKeyId) {
+            long masterKeyId, long subKeyId, Passphrase keyringPassphrase) {
+        if (keyringPassphrase == null) {
+            throw new IllegalArgumentException("keyring's passphrase is null");
+        }
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK,
-                null, null, null, masterKeyId, subKeyId, null);
+                null, null, null, masterKeyId, subKeyId, keyringPassphrase, null);
     }
 
     public static RequiredInputParcel createRequiredImportKeyPassphrase(
             long masterKeyId, long subKeyId, ParcelableKeyRing parcelableKeyRing) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_IMPORT_KEY,
-                null, null, null, masterKeyId, subKeyId, parcelableKeyRing);
+                null, null, null, masterKeyId, subKeyId, null, parcelableKeyRing);
     }
 
     public static RequiredInputParcel createRequiredSymmetricPassphrase() {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SYMMETRIC,
-                null, null, null, null, null, null);
+                null, null, null, null, null, null, null);
     }
 
     public static RequiredInputParcel createRequiredBackupCode() {
         return new RequiredInputParcel(RequiredInputType.BACKUP_CODE,
-                null, null, null, null, null, null);
+                null, null, null, null, null, null, null);
     }
 
     public static RequiredInputParcel createRequiredKeyringPassphrase(long masterKeyId) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_KEYRING_UNLOCK,
-                null, null, null, masterKeyId, masterKeyId, null);
+                null, null, null, masterKeyId, masterKeyId, null, null);
     }
 
     @Override
@@ -198,6 +223,12 @@ public class RequiredInputParcel implements Parcelable {
         if (mSubKeyId != null) {
             dest.writeInt(1);
             dest.writeLong(mSubKeyId);
+        } else {
+            dest.writeInt(0);
+        }
+        if (mKeyringPassphrase != null) {
+            dest.writeInt(1);
+            dest.writeParcelable(mKeyringPassphrase, 0);
         } else {
             dest.writeInt(0);
         }
@@ -243,7 +274,7 @@ public class RequiredInputParcel implements Parcelable {
             }
 
             return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_SIGN,
-                    inputHashes, signAlgos, mSignatureTime, mMasterKeyId, mSubKeyId, null);
+                    inputHashes, signAlgos, mSignatureTime, mMasterKeyId, mSubKeyId, null, null);
         }
 
         public void addHash(byte[] hash, int algo) {
@@ -298,7 +329,7 @@ public class RequiredInputParcel implements Parcelable {
 
             // We need to pass in a subkey here...
             return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_MOVE_KEY_TO_CARD,
-                    inputData, null, null, mMasterKeyId, buf.getLong(), null);
+                    inputData, null, null, mMasterKeyId, buf.getLong(), null, null);
         }
 
         public void addSubkey(long subkeyId) {

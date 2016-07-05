@@ -650,7 +650,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         if (passphrase == null) {
                             log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
                             return result.with(new DecryptVerifyResult(log,
-                                    RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, subKeyId),
+                                    RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, subKeyId, null),
                                     cryptoInput));
                         }
                     }

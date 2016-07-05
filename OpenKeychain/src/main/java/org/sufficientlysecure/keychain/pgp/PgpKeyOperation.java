@@ -473,11 +473,12 @@ public class PgpKeyOperation {
             return internalRestricted(sKR, saveParcel, log, indent + 1);
         }
 
+        // TODO: wip
         // Do we require a passphrase? If so, pass it along
         if (!isDivertToCard(masterSecretKey) && !cryptoInput.hasPassphrase()) {
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
             return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                    masterSecretKey.getKeyID(), masterSecretKey.getKeyID(),
+                    masterSecretKey.getKeyID(), masterSecretKey.getKeyID(), null,
                     cryptoInput.getSignatureTime()), cryptoInput);
         }
 
@@ -1233,8 +1234,9 @@ public class PgpKeyOperation {
         if (!cryptoInput.hasPassphrase()) {
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
 
+            // TODO: wip, cleanup
             return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                    masterSecretKey.getKeyID(), nonDummy.getKeyID(),
+                    masterSecretKey.getKeyID(), nonDummy.getKeyID(), null,
                     cryptoInput.getSignatureTime()), cryptoInput);
         } else {
             progress(R.string.progress_modify_passphrase, 50);
@@ -1287,12 +1289,12 @@ public class PgpKeyOperation {
         return false;
     }
 
-    public PgpEditKeyResult removeKeyRingPassphrases(CanonicalizedSecretKeyRing wsKR,
-                                                    KeyringPassphrases keyringPassphrases) {
+    public PgpEditKeyResult removeEncryption(CanonicalizedSecretKeyRing wsKR,
+                                             KeyringPassphrases passphrases) {
         OperationLog log = new OperationLog();
         int indent = 0;
 
-        if (keyringPassphrases.mMasterKeyId != wsKR.getMasterKeyId()) {
+        if (passphrases.mMasterKeyId != wsKR.getMasterKeyId()) {
             log.add(LogType.MSG_MF_ERROR_KEYID, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
@@ -1310,7 +1312,7 @@ public class PgpKeyOperation {
         indent += 1;
 
         try {
-            sKR = removeKeyRingEncryption(sKR, keyringPassphrases.mSubkeyPassphrases, log, indent);
+            sKR = removeEncryptionImpl(sKR, passphrases.mSubkeyPassphrases, log, indent);
             if (sKR == null) {
                 // The error has been logged above, just return a bad state
                 return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
@@ -1326,9 +1328,9 @@ public class PgpKeyOperation {
     }
 
     /**
-     * Remove encryption on all subkeys if possible
+     * Implementation of remove encryption, removes encryption on all subkeys if possible
      */
-    private static PGPSecretKeyRing removeKeyRingEncryption(
+    private static PGPSecretKeyRing removeEncryptionImpl(
             PGPSecretKeyRing sKR,
             HashMap<Long, Passphrase> passphrases,
             OperationLog log, int indent) throws PGPException {

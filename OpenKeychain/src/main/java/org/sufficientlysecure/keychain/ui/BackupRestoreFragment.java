@@ -199,8 +199,9 @@ public class BackupRestoreFragment extends Fragment {
         Pair<Long, Long> keyPair = mIdsForRepeatAskPassphrase.next();
         long masterKeyId = keyPair.first;
         long subKeyId = keyPair.second;
+        // TODO: wip, parcel
         RequiredInputParcel requiredInput =
-                RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, subKeyId);
+                RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, subKeyId, null);
         requiredInput.mSkipCaching = true;
         intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
         startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);

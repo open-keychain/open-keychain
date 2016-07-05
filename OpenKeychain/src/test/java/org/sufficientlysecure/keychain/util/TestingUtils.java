@@ -67,13 +67,13 @@ public class TestingUtils {
      */
     public static KeyringPassphrases generateImportPassphrases(UncachedKeyRing keyRing, Passphrase passphrase) {
         // TODO: wip, switch null with a proper passphrase
-        KeyringPassphrases keyringPassphrases = new KeyringPassphrases(keyRing.getMasterKeyId(), null);
+        KeyringPassphrases passphrases = new KeyringPassphrases(keyRing.getMasterKeyId(), null);
         Iterator<UncachedPublicKey> iterator = keyRing.getPublicKeys();
         while(iterator.hasNext()) {
             UncachedPublicKey key = iterator.next();
-            keyringPassphrases.mSubkeyPassphrases.put(key.getKeyId(), passphrase);
+            passphrases.mSubkeyPassphrases.put(key.getKeyId(), passphrase);
         }
-        return keyringPassphrases;
+        return passphrases;
     }
 
 }

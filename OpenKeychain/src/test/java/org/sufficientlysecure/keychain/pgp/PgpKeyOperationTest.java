@@ -1235,7 +1235,7 @@ public class PgpKeyOperationTest {
     }
 
     @Test
-    public void testRemoveKeyRingPassphrases() {
+    public void testRemovePassphrases() {
         // change passphrase to non-empty passphrase
         Passphrase nonEmptyPassphrase = TestingUtils.genPassphrase(true);
         parcel.setNewUnlock(new ChangeUnlockParcel(nonEmptyPassphrase));
@@ -1244,8 +1244,8 @@ public class PgpKeyOperationTest {
         long masterKeyId = cskr.getMasterKeyId();
 
         // set-up KeyringPassphrases without passphrase for master key
-        KeyringPassphrases keyringPassphrases = new KeyringPassphrases(masterKeyId, null);
-        HashMap<Long, Passphrase> subkeyPassphrases = keyringPassphrases.mSubkeyPassphrases;
+        KeyringPassphrases passphrases = new KeyringPassphrases(masterKeyId, null);
+        HashMap<Long, Passphrase> subkeyPassphrases = passphrases.mSubkeyPassphrases;
         for (CanonicalizedSecretKey secretKey : cskr.secretKeyIterator()) {
             if(secretKey.getKeyId() != masterKeyId) {
                 subkeyPassphrases.put(secretKey.getKeyId(), nonEmptyPassphrase);
@@ -1253,7 +1253,7 @@ public class PgpKeyOperationTest {
         }
 
         // remove all passphrases except master key's
-        PgpEditKeyResult result = op.removeKeyRingPassphrases(cskr, keyringPassphrases);
+        PgpEditKeyResult result = op.removeEncryption(cskr, passphrases);
         Assert.assertTrue("removing passphrases must succeed", result.success());
 
         // test all keys (expect unlock to fail only for masterkey)
@@ -1273,11 +1273,11 @@ public class PgpKeyOperationTest {
         }
 
         // set-up KeyringPassphrases with only master key
-        keyringPassphrases = new KeyringPassphrases(masterKeyId, null);
-        keyringPassphrases.mSubkeyPassphrases.put(masterKeyId, nonEmptyPassphrase);
+        passphrases = new KeyringPassphrases(masterKeyId, null);
+        passphrases.mSubkeyPassphrases.put(masterKeyId, nonEmptyPassphrase);
 
         // remove only master passphrase
-        result = op.removeKeyRingPassphrases(cskr, keyringPassphrases);
+        result = op.removeEncryption(cskr, passphrases);
         Assert.assertTrue("removing passphrases must succeed", result.success());
 
         // test all keys (unlock should succeed for all)

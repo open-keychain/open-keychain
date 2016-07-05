@@ -166,11 +166,11 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         }
 
         // TODO: wip
-        KeyringPassphrases keyringPassphrases = new KeyringPassphrases(ring.getMasterKeyId(), null);
+        KeyringPassphrases passphrases = new KeyringPassphrases(ring.getMasterKeyId(), null);
 
         // Save the new keyring.
         SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(ring, keyringPassphrases, new ProgressScaler(mProgressable, 60, 95, 100));
+                .saveSecretKeyRing(ring, passphrases, new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here

@@ -856,7 +856,7 @@ public class ProviderHelper {
             } else {
                 // remove s2k encryption on individual keys
                 PgpKeyOperation op = new PgpKeyOperation(null);
-                PgpEditKeyResult editResult = op.removeKeyRingPassphrases(keyRing, passphrases);
+                PgpEditKeyResult editResult = op.removeEncryption(keyRing, passphrases);
                 mLog.add(editResult, mIndent);
                 if (!editResult.success()) {
                     log(LogType.MSG_IS_ERROR_REMOVING_PASSPHRASES);
