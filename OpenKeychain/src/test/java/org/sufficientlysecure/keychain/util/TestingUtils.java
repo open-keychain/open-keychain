@@ -65,13 +65,12 @@ public class TestingUtils {
     /**
      * Convenience method for pairing a passphrase to all subkeys
      */
-    public static KeyringPassphrases generateImportPassphrases(UncachedKeyRing keyRing, Passphrase passphrase) {
-        // TODO: wip, switch null with a proper passphrase
-        KeyringPassphrases passphrases = new KeyringPassphrases(keyRing.getMasterKeyId(), null);
+    public static KeyringPassphrases generateImportPassphrases(UncachedKeyRing keyRing, Passphrase subkeyPassphrase, Passphrase keyringPassphrase) {
+        KeyringPassphrases passphrases = new KeyringPassphrases(keyRing.getMasterKeyId(), keyringPassphrase);
         Iterator<UncachedPublicKey> iterator = keyRing.getPublicKeys();
         while(iterator.hasNext()) {
             UncachedPublicKey key = iterator.next();
-            passphrases.mSubkeyPassphrases.put(key.getKeyId(), passphrase);
+            passphrases.mSubkeyPassphrases.put(key.getKeyId(), subkeyPassphrase);
         }
         return passphrases;
     }

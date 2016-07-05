@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -100,6 +101,9 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         if (!saveResult.success()) {
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
+
+        // clear cache of old passphrase
+        PassphraseCacheService.clearCachedPassphrase(mContext, retrievedRing.getMasterKeyId());
 
         updateProgress(R.string.progress_done, 100, 100);
         log.add(LogType.MSG_ED_SUCCESS, 0);

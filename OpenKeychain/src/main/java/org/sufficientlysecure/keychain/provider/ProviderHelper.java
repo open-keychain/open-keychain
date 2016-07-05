@@ -865,15 +865,19 @@ public class ProviderHelper {
                 keyRing = (CanonicalizedSecretKeyRing) editResult.getRing().canonicalize(mLog, mIndent);
 
                 // get passphrase for keyring block encryption, or use empty passphrase if no obvious one exists
-                Passphrase passphrase = null;
-                for (CanonicalizedSecretKey key: keyRing.secretKeyIterator()) {
-                    Passphrase current = passphrases.mSubkeyPassphrases.get(key.getKeyId());
-                    if(current != null && !current.isEmpty()) {
-                        passphrase = current;
-                        break;
+                Passphrase passphrase = passphrases.mKeyringPassphrase;
+                if (passphrase == null) {
+                    // guess from subkeys' passphrases
+                    for (CanonicalizedSecretKey key: keyRing.secretKeyIterator()) {
+                        Passphrase current = passphrases.mSubkeyPassphrases.get(key.getKeyId());
+                        if(current != null && !current.isEmpty()) {
+                            passphrase = current;
+                            break;
+                        }
                     }
+                    // use empty passphrase
+                    passphrase = (passphrase == null) ? new Passphrase() : passphrase;
                 }
-                passphrase = (passphrase == null) ? new Passphrase() : passphrase;
 
                 // encrypt secret keyring block
                 try {

@@ -49,6 +49,14 @@ public class ByteArrayEncryptorTest {
     }
 
     @Test
+    public void testEncryptWithEmptyPassphrase() throws Exception {
+        byte[] encrypted;
+
+        encrypted = ByteArrayEncryptor.encryptByteArray(mData, new Passphrase().getCharArray());
+        Assert.assertFalse("byte mData should be different after encryption", Arrays.equals(mData, encrypted));
+    }
+
+    @Test
     public void testDecrypt() throws Exception {
         byte[] encrypted;
         byte[] decrypted;
@@ -59,6 +67,20 @@ public class ByteArrayEncryptorTest {
 
         // try decrypting
         decrypted = ByteArrayEncryptor.decryptByteArray(encrypted, mPassphrase.getCharArray());
+        Assert.assertTrue("byte data should be equal after decryption", Arrays.equals(mData, decrypted));
+    }
+
+    @Test
+    public void testDecryptWithEmptyPassphrase() throws Exception {
+        byte[] encrypted;
+        byte[] decrypted;
+
+        // encrypt
+        encrypted = ByteArrayEncryptor.encryptByteArray(mData, new Passphrase().getCharArray());
+        Assert.assertFalse("byte data should be different after encryption", Arrays.equals(mData, encrypted));
+
+        // try decrypting
+        decrypted = ByteArrayEncryptor.decryptByteArray(encrypted, new Passphrase().getCharArray());
         Assert.assertTrue("byte data should be equal after decryption", Arrays.equals(mData, decrypted));
     }
 
@@ -78,4 +100,5 @@ public class ByteArrayEncryptorTest {
         // try decrypting with a wrong passphrase
         ByteArrayEncryptor.decryptByteArray(encrypted, otherPassphrase.getCharArray());
     }
+
 }

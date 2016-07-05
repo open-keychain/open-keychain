@@ -159,11 +159,11 @@ public class PgpEncryptDecryptTest {
 
         providerHelper.saveSecretKeyRing(
                 mStaticRing1,
-                TestingUtils.generateImportPassphrases(mStaticRing1, mKeyPhrase1),
+                TestingUtils.generateImportPassphrases(mStaticRing1, mKeyPhrase1, mKeyPhrase1),
                 new ProgressScaler());
         providerHelper.saveSecretKeyRing(
                 mStaticRing2,
-                TestingUtils.generateImportPassphrases(mStaticRing2, mKeyPhrase2),
+                TestingUtils.generateImportPassphrases(mStaticRing2, mKeyPhrase2, mKeyPhrase2),
                 new ProgressScaler());
 
         // ok NOW log verbosely!
