@@ -29,6 +29,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
@@ -37,6 +38,10 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
+import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.ProgressScaler;
+import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -139,8 +144,7 @@ public class ProviderHelperSaveTest {
         // make sure both the CanonicalizedSecretKeyRing as well as the CachedPublicKeyRing correctly
         // indicate the secret key type
         CachedPublicKeyRing cachedRing = mProviderHelper.getCachedPublicKeyRing(keyId);
-        // TODO: wip
-        CanonicalizedSecretKeyRing secRing = mProviderHelper.getCanonicalizedSecretKeyRing(keyId, null);
+        CanonicalizedSecretKeyRing secRing = mProviderHelper.getCanonicalizedSecretKeyRingForTest(keyId);
 
         Iterator<CanonicalizedSecretKey> it = secRing.secretKeyIterator().iterator();
 
@@ -230,8 +234,7 @@ public class ProviderHelperSaveTest {
 
         long signId;
         {
-            // TODO: wip
-            CanonicalizedSecretKeyRing ring = mProviderHelper.getCanonicalizedSecretKeyRing(masterKeyId, null);
+            CanonicalizedSecretKeyRing ring = mProviderHelper.getCanonicalizedSecretKeyRingForTest(masterKeyId);
             Assert.assertTrue("master key should have sign flag", ring.getPublicKey().canSign());
             Assert.assertTrue("master key should have encrypt flag", ring.getPublicKey().canEncrypt());
 
@@ -245,6 +248,26 @@ public class ProviderHelperSaveTest {
             Assert.assertEquals("signing key should be same id cached as uncached", signId, ring.getSecretSignId());
         }
 
+    }
+
+    @Test
+    public void testImportAndEncrypt() throws Exception {
+        Passphrase keyringPassphrase = TestingUtils.genPassphrase();
+
+        // save key
+        UncachedKeyRing secKey = readRingFromResource("/test-keys/passwordless-gpg-sec.asc");
+        CanonicalizedSecretKeyRing canSecKeyRing = (CanonicalizedSecretKeyRing) secKey.canonicalize(new OperationLog(), 0);
+        KeyringPassphrases passphrases = TestingUtils.generateImportPassphrases(secKey, new Passphrase(), keyringPassphrase);
+        OperationResult saveResult = mProviderHelper.saveSecretKeyRing(secKey, passphrases, new ProgressScaler());
+        Assert.assertTrue("Failed to insert secret key", saveResult.success());
+
+        // retrieve key
+        CanonicalizedSecretKeyRing retrievedSecKeyRing = mProviderHelper.getCanonicalizedSecretKeyRing(secKey.getMasterKeyId(), keyringPassphrase);
+
+        // TODO: better test for verifying retrieved keyring?
+        for (CanonicalizedSecretKey key : canSecKeyRing.secretKeyIterator()) {
+            Assert.assertNotNull("did not manage to save a key", retrievedSecKeyRing.getSecretKey(key.getKeyId()));
+        }
     }
 
     UncachedKeyRing readRingFromResource(String name) throws Exception {

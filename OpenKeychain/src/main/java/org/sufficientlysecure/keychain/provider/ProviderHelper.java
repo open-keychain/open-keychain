@@ -310,12 +310,22 @@ public class ProviderHelper {
         }
     }
 
+    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRingForTest(long id)
+        throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
+        return getCanonicalizedSecretKeyRingHelper(KeyRings.buildUnifiedKeyRingUri(id), null, false);
+    }
+
     public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long id, Passphrase passphrase)
             throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
         return getCanonicalizedSecretKeyRing(KeyRings.buildUnifiedKeyRingUri(id), passphrase);
     }
 
     public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri uri, Passphrase passphrase)
+            throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
+        return getCanonicalizedSecretKeyRingHelper(uri, passphrase, true);
+    }
+
+    private CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRingHelper(Uri uri, Passphrase passphrase, boolean isEncrypted)
             throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
         Cursor cursor = mContentResolver.query(uri,
                 new String[]{
@@ -334,7 +344,9 @@ public class ProviderHelper {
                 if (!hasAnySecret) {
                     throw new NotFoundException("Secret key not available!");
                 }
-                blob = ByteArrayEncryptor.decryptByteArray(blob, passphrase.getCharArray());
+                if (isEncrypted) {
+                    blob = ByteArrayEncryptor.decryptByteArray(blob, passphrase.getCharArray());
+                }
                 return new CanonicalizedSecretKeyRing(blob, true, verified);
             } else {
                 throw new NotFoundException("Key not found!");
