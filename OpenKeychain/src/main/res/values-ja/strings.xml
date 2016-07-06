@@ -1147,7 +1147,7 @@
   <string name="msg_pse_error_no_passphrase">パスワードが提供されてない!</string>
   <string name="msg_pse_error_pgp">OpenPGP内部エラー!</string>
   <string name="msg_pse_error_sig">OpenPGP署名例外に当たりました!</string>
-  <string name="msg_pse_error_unlock">鍵のロック解除で不明なエラー!</string>
+  <string name="msg_pse_error_unlock_subkey">鍵のロック解除で不明なエラー!</string>
   <string name="msg_pse_key_ok">暗号化の鍵: %s</string>
   <string name="msg_pse_key_unknown">暗号化の鍵を紛失: %s</string>
   <string name="msg_pse_key_warn">暗号化に問題のある鍵: %s</string>
@@ -1170,7 +1170,7 @@
   <string name="msg_crt_error_self">自己証明書的な発行は行えません!</string>
   <string name="msg_crt_error_master_not_found">主鍵が見当りません!</string>
   <string name="msg_crt_error_nothing">検証できた鍵がない!</string>
-  <string name="msg_crt_error_unlock">主鍵のロック解除エラー!</string>
+  <string name="msg_crt_error_unlock_master">主鍵のロック解除エラー!</string>
   <string name="msg_crt">鍵輪の検証</string>
   <string name="msg_crt_master_fetch">検証中の主鍵のフェッチ</string>
   <string name="msg_crt_nfc_return">NFCの画面に復帰</string>

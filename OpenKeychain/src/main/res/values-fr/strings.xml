@@ -1163,7 +1163,7 @@
   <string name="msg_pse_error_no_passphrase">Aucun mot de passe fourni !</string>
   <string name="msg_pse_error_pgp">Erreur interne OpenPGP !</string>
   <string name="msg_pse_error_sig">Une exception de signature OpenPGP a été rencontrée !</string>
-  <string name="msg_pse_error_unlock">Erreur inconnue de déverrouillage de la clef !</string>
+  <string name="msg_pse_error_unlock_subkey">Erreur inconnue de déverrouillage de la clef !</string>
   <string name="msg_pse_key_ok">Chiffrement pour la clef : %s</string>
   <string name="msg_pse_key_unknown">Clef manquante pour le chiffrement : %s</string>
   <string name="msg_pse_key_warn">Clef erronée pour le chiffrement : %s</string>
@@ -1188,7 +1188,7 @@
   <string name="msg_crt_error_self">Un auto-certificat ne peut pas être délivré ainsi !</string>
   <string name="msg_crt_error_master_not_found">Clef maîtresse introuvable !</string>
   <string name="msg_crt_error_nothing">Aucune clef certifiée !</string>
-  <string name="msg_crt_error_unlock">Erreur de déverrouillage de la clef maîtresse !</string>
+  <string name="msg_crt_error_unlock_master">Erreur de déverrouillage de la clef maîtresse !</string>
   <string name="msg_crt">Certification des trousseaux</string>
   <string name="msg_crt_master_fetch">Récupération de la clef maîtresse de certification</string>
   <string name="msg_crt_nfc_return">Retour vers l\'écran NFC</string>

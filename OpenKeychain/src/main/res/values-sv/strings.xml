@@ -874,7 +874,7 @@
   <string name="msg_pse_symmetric">Förbereder symmetrisk kryptering</string>
   <string name="msg_crt_error_master_not_found">Huvudnyckel hittades inte!</string>
   <string name="msg_crt_error_nothing">Inga nycklar certifierade!</string>
-  <string name="msg_crt_error_unlock">Fel vid upplåsning av huvudnyckel!</string>
+  <string name="msg_crt_error_unlock_master">Fel vid upplåsning av huvudnyckel!</string>
   <string name="msg_crt">Certifierar nyckelringar</string>
   <string name="msg_crt_save">Sparar certifierad nyckel %s</string>
   <string name="msg_crt_saving">Sparar nyckelringar</string>

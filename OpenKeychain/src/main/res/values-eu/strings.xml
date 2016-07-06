@@ -1077,7 +1077,7 @@
   <string name="msg_pse_error_no_passphrase">Ez da sarhitzik eman!</string>
   <string name="msg_pse_error_pgp">Barneko OpenPGP akatsa!</string>
   <string name="msg_pse_error_sig">OpenPGP sinadura salbuespena aurkitu da!</string>
-  <string name="msg_pse_error_unlock">Akats ezezaguna giltza desblokeatzerakoan!</string>
+  <string name="msg_pse_error_unlock_subkey">Akats ezezaguna giltza desblokeatzerakoan!</string>
   <string name="msg_pse_key_ok">Enkriptatzen giltzarako: %s</string>
   <string name="msg_pse_key_unknown">Ez dago enkriptaketarako giltza: %s</string>
   <string name="msg_pse_key_warn">Giltza gaitza enkriptaketarako: %s</string>
@@ -1094,7 +1094,7 @@
   <string name="msg_crt_error_self">Ezin da hau bezalako berez-egiaztatua jaulki!</string>
   <string name="msg_crt_error_master_not_found">Maisu giltza ez da aurkitu!</string>
   <string name="msg_crt_error_nothing">Ez da giltzarik egiaztagiritu!</string>
-  <string name="msg_crt_error_unlock">Akatsa maisu giltza desblokeatzerakoan!</string>
+  <string name="msg_crt_error_unlock_master">Akatsa maisu giltza desblokeatzerakoan!</string>
   <string name="msg_crt">Giltza-uztaiak egiaztagiritzen</string>
   <string name="msg_crt_master_fetch">Maisu giltza egiaztagiritua lortzen</string>
   <string name="msg_crt_nfc_return">NFC ikusleihora itzultzen</string>

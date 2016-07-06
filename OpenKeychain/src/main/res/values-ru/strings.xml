@@ -1196,7 +1196,7 @@
   <string name="msg_pse_error_no_passphrase">Пароль не предусмотрен!</string>
   <string name="msg_pse_error_pgp">Внутренняя ошибка OpenPGP!</string>
   <string name="msg_pse_error_sig">Обнаружена исключительная ситуация  подписи OpenPGP!</string>
-  <string name="msg_pse_error_unlock">Неизвестная ошибка разблокировения ключа!</string>
+  <string name="msg_pse_error_unlock_subkey">Неизвестная ошибка разблокировения ключа!</string>
   <string name="msg_pse_key_ok">Шифрование для ключа: %s</string>
   <string name="msg_pse_key_unknown">Отсутствует ключ для шифрования: %s</string>
   <string name="msg_pse_key_warn">Некорректный ключ для шифрования: %s</string>
@@ -1225,7 +1225,7 @@
   <string name="msg_crt_error_self">Нельзя выпустить самосертификат вроде этого!</string>
   <string name="msg_crt_error_master_not_found">Основной ключ не найден!</string>
   <string name="msg_crt_error_nothing">Нет сертифицированных ключей!</string>
-  <string name="msg_crt_error_unlock">Ошибка разблокирования основного ключа!</string>
+  <string name="msg_crt_error_unlock_master">Ошибка разблокирования основного ключа!</string>
   <string name="msg_crt">Сертификация связок</string>
   <string name="msg_crt_master_fetch">Получение сертификации основного ключа</string>
   <string name="msg_crt_nfc_return">Возвращение к экрану NFC</string>

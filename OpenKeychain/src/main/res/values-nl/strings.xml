@@ -1045,7 +1045,7 @@
   <string name="msg_pse_error_no_passphrase">Geen wachtwoord opgegeven!</string>
   <string name="msg_pse_error_pgp">Interne OpenPGP-fout!</string>
   <string name="msg_pse_error_sig">OpenPGP-ondertekeningsuitzondering tegengekomen!</string>
-  <string name="msg_pse_error_unlock">Onbekende fout bij ontgrendelen van sleutel!</string>
+  <string name="msg_pse_error_unlock_subkey">Onbekende fout bij ontgrendelen van sleutel!</string>
   <string name="msg_pse_key_ok">Bezig met versleutelen voor sleutel: %s</string>
   <string name="msg_pse_key_unknown">Ontbrekende sleutel voor versleuteling: %s</string>
   <string name="msg_pse_key_warn">Slechte sleutel voor versleuteling: %s</string>
@@ -1070,7 +1070,7 @@
   <string name="msg_crt_error_self">Kan self-certificaat zo niet uitgeven!</string>
   <string name="msg_crt_error_master_not_found">Hoofdsleutel niet gevonden!</string>
   <string name="msg_crt_error_nothing">Geen sleutels gecertificeerd!</string>
-  <string name="msg_crt_error_unlock">Fout bij ontgrendelen van hoofdsleutel!</string>
+  <string name="msg_crt_error_unlock_master">Fout bij ontgrendelen van hoofdsleutel!</string>
   <string name="msg_crt">Bezig met certificeren van sleutelbossen</string>
   <string name="msg_crt_master_fetch">Bezig met ophalen van gecertificeerde hoofdsleutel</string>
   <string name="msg_crt_nfc_return">Terugkeren naar NFC-scherm</string>

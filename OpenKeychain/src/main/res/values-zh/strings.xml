@@ -1012,7 +1012,7 @@
   <string name="msg_pse_error_no_passphrase">没有提供密码！</string>
   <string name="msg_pse_error_pgp">OpenPGP 内部错误！</string>
   <string name="msg_pse_error_sig">遇到 OpenPGP 签名异常！</string>
-  <string name="msg_pse_error_unlock">未知的密钥解锁错误！</string>
+  <string name="msg_pse_error_unlock_subkey">未知的密钥解锁错误！</string>
   <string name="msg_pse_key_ok">正在加密到密钥：%s</string>
   <string name="msg_pse_key_unknown">没有找到加密的密钥：%s</string>
   <string name="msg_pse_key_warn">不可用于加密的密钥：%s</string>

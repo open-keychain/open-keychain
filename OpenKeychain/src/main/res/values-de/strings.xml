@@ -1163,7 +1163,7 @@
   <string name="msg_pse_error_no_passphrase">Kein Passwort angegeben!</string>
   <string name="msg_pse_error_pgp">Interner OpenPGP-Fehler!</string>
   <string name="msg_pse_error_sig">Es ist ein OpenPGP-Signatur-Ausnahmefehler aufgetreten!</string>
-  <string name="msg_pse_error_unlock">Unbekannter Fehler beim Entsperren des Schlüssels!</string>
+  <string name="msg_pse_error_unlock_subkey">Unbekannter Fehler beim Entsperren des Schlüssels!</string>
   <string name="msg_pse_key_ok">Verschlüssele für Schlüssel: %s</string>
   <string name="msg_pse_key_unknown">Fehlender Schlüssel für Verschlüsselung: %s</string>
   <string name="msg_pse_key_warn">Fehlerhafter Schlüssel für Verschlüsselung: %s</string>
@@ -1188,7 +1188,7 @@
   <string name="msg_crt_error_self">Auf diese Art und Weise kann keine Eigenbeglaubigung ausgestellt werden!</string>
   <string name="msg_crt_error_master_not_found">Hauptschlüssel wurde nicht gefunden!</string>
   <string name="msg_crt_error_nothing">Keine beglaubigten Schlüssel!</string>
-  <string name="msg_crt_error_unlock">Fehler beim Entsperren des Hauptschlüssels!</string>
+  <string name="msg_crt_error_unlock_master">Fehler beim Entsperren des Hauptschlüssels!</string>
   <string name="msg_crt">Schlüsselbünde werden beglaubigt</string>
   <string name="msg_crt_master_fetch">Beglaubigender Hauptschlüssel wird abgerfufen</string>
   <string name="msg_crt_nfc_return">Kehre zu NFC-Bildschirm zurück</string>

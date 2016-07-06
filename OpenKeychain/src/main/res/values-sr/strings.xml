@@ -1166,7 +1166,7 @@
   <string name="msg_pse_error_no_passphrase">Лозинка није дата!</string>
   <string name="msg_pse_error_pgp">Унутрашња ОпенПГП грешка!</string>
   <string name="msg_pse_error_sig">Наиђох на изузетак ОпенПГП потписивања!</string>
-  <string name="msg_pse_error_unlock">Непозната грешка откључавања кључа!</string>
+  <string name="msg_pse_error_unlock_subkey">Непозната грешка откључавања кључа!</string>
   <string name="msg_pse_key_ok">Шифрујем за кључ: %s</string>
   <string name="msg_pse_key_unknown">Недостаје кључ за шифровање: %s</string>
   <string name="msg_pse_key_warn">Лош кључ за шифровање: %s</string>
@@ -1193,7 +1193,7 @@
   <string name="msg_crt_error_self">Не могу да издам овакав самопотписани сертификат!</string>
   <string name="msg_crt_error_master_not_found">Главни кључ није нађен!</string>
   <string name="msg_crt_error_nothing">Нема оверених кључева!</string>
-  <string name="msg_crt_error_unlock">Грешка откључавања главног кључа!</string>
+  <string name="msg_crt_error_unlock_master">Грешка откључавања главног кључа!</string>
   <string name="msg_crt">Оверавам привеске</string>
   <string name="msg_crt_master_fetch">Добављам главни кључ за оверавање</string>
   <string name="msg_crt_nfc_return">Враћам на НФЦ екран</string>

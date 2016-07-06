@@ -223,9 +223,22 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 long signingMasterKeyId = data.getSignatureMasterKeyId();
                 long signingSubKeyId = data.getSignatureSubKeyId();
 
-                // TODO: wip
+                // get keyring passphrase
+                Passphrase keyringPassphrase = cryptoInput.getPassphrase();
+                if (keyringPassphrase == null) {
+                    try {
+                        keyringPassphrase = getCachedPassphrase(signingMasterKeyId);
+                    } catch (NoSecretKeyException ignored) {
+                        // treat as a cache miss for error handling purposes
+                    }
+                    if (keyringPassphrase == null) {
+                        log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
+                        return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredKeyringPassphrase(signingMasterKeyId), cryptoInput);
+                    }
+                }
+
                 CanonicalizedSecretKeyRing signingKeyRing =
-                        mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId, null);
+                        mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId, keyringPassphrase);
                 signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
 
 
@@ -252,37 +265,10 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                         }
                         break;
                     }
-
-                    case PIN:
-                    case PATTERN:
-                    case PASSPHRASE: {
-                        Passphrase localPassphrase = cryptoInput.getPassphrase();
-                        if (localPassphrase == null) {
-                            try {
-                                localPassphrase = getCachedSubkeyPassphrase(signingMasterKeyId, signingKey.getKeyId());
-                            } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
-                            }
-                        }
-                        if (localPassphrase == null) {
-                            log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
-                            // TODO: wip, parcel
-                            return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                                    signingMasterKeyId, signingKey.getKeyId(), null,
-                                    cryptoInput.getSignatureTime()), cryptoInput);
-                        }
-                        if (!signingKey.unlock(localPassphrase)) {
-                            log.add(LogType.MSG_PSE_ERROR_BAD_PASSPHRASE, indent);
-                            return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-                        }
-                        break;
-                    }
-
-                    case GNU_DUMMY: {
-                        log.add(LogType.MSG_PSE_ERROR_UNLOCK, indent);
-                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-                    }
                     default: {
-                        throw new AssertionError("Unhandled SecretKeyType! (should not happen)");
+                        // other key types should not exist
+                        log.add(LogType.MSG_PSE_ERROR_UNLOCK_SUBKEY, indent);
+                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                     }
 
                 }
@@ -291,10 +277,14 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 log.add(LogType.MSG_PSE_ERROR_SIGN_KEY, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             } catch (PgpGeneralException e) {
-                log.add(LogType.MSG_PSE_ERROR_UNLOCK, indent);
+                log.add(LogType.MSG_PSE_ERROR_UNLOCK_SUBKEY, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-            } catch (ByteArrayEncryptor.IncorrectPassphraseException | ByteArrayEncryptor.EncryptDecryptException e) {
-                // TODO: WIP
+            } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
+                log.add(LogType.MSG_PSE_ERROR_UNLOCK_KEYRING, indent);
+                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+            } catch (ByteArrayEncryptor.EncryptDecryptException e) {
+                log.add(LogType.MSG_PSE_ERROR_DECRYPT_KEYRING, indent);
+                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             }
 
             // Use requested hash algo

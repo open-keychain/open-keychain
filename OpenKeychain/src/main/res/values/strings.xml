@@ -1288,6 +1288,7 @@
     <string name="msg_pse_compressing">"Preparing compression"</string>
     <string name="msg_pse_encrypting">"Encrypting data"</string>
     <string name="msg_pse_error_bad_passphrase">"Bad password!"</string>
+    <string name="msg_pse_error_decrypt_keyring">"Error decrypting keyring!"</string>
     <string name="msg_pse_error_io">"Encountered IO Exception during operation!"</string>
     <string name="msg_pse_error_key_sign">"Selected signing key cannot sign data!"</string>
     <string name="msg_pse_error_sign_key">"Error fetching signing key!"</string>
@@ -1295,7 +1296,8 @@
     <string name="msg_pse_error_no_passphrase">"No password provided!"</string>
     <string name="msg_pse_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_pse_error_sig">"Encountered OpenPGP signature exception!"</string>
-    <string name="msg_pse_error_unlock">"Unknown error unlocking key!"</string>
+    <string name="msg_pse_error_unlock_subkey">"Unknown error unlocking key!"</string>
+    <string name="msg_pse_error_unlock_keyring">"Unknown error unlocking keyring!"</string>
     <string name="msg_pse_error_revoked_or_expired">"Revoked/Expired key cannot be used for sign or encryption"</string>
     <string name="msg_pse_key_ok">"Encrypting for key: %s"</string>
     <string name="msg_pse_key_unknown">"Missing key for encryption: %s"</string>
@@ -1320,9 +1322,11 @@
         <item quantity="other">"Certifying %1$d user attributes for key %2$s"</item>
     </plurals>
     <string name="msg_crt_error_self">"Cannot issue self-certificate like this!"</string>
+    <string name="msg_crt_error_decrypt_keyring">"Error decrypting keyring!"</string>
     <string name="msg_crt_error_master_not_found">"Master key not found!"</string>
     <string name="msg_crt_error_nothing">"No keys certified!"</string>
-    <string name="msg_crt_error_unlock">"Error unlocking master key!"</string>
+    <string name="msg_crt_error_unlock_master">"Error unlocking master key!"</string>
+    <string name="msg_crt_error_unlock_keyring">"Error unlocking keyring!"</string>
     <string name="msg_crt">"Certifying keyrings"</string>
     <string name="msg_crt_master_fetch">"Fetching certifying master key"</string>
     <string name="msg_crt_nfc_return">"Returning to NFC screen"</string>

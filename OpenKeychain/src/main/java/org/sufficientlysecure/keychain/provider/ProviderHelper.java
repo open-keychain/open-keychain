@@ -327,6 +327,9 @@ public class ProviderHelper {
 
     private CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRingHelper(Uri uri, Passphrase passphrase, boolean isEncrypted)
             throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
+        if (passphrase == null) {
+            throw new IllegalArgumentException("passphrase is null");
+        }
         Cursor cursor = mContentResolver.query(uri,
                 new String[]{
                         // we pick from cache only information that is not easily available from keyrings

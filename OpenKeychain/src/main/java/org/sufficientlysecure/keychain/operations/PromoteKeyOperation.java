@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 /** An operation which promotes a public key ring to a secret one.
@@ -115,10 +116,10 @@ public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
         setPreventCancel();
 
         // Save the new keyring.
-        // TODO: WIP
+        // TODO: passphrase is empty for now, change when migrating to single passphrase for app
         SaveKeyringResult saveResult = mProviderHelper
                 .saveSecretKeyRing(promotedRing,
-                        new KeyringPassphrases(promotedRing.getMasterKeyId(), null),
+                        new KeyringPassphrases(promotedRing.getMasterKeyId(), new Passphrase()),
                         new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 
