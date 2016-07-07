@@ -254,22 +254,22 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 2.0
 
-  * Complete redesign
-  * Share public keys via QR codes, NFC beam
-  * Sign keys
-  * Upload keys to server
-  * Fixes import issues
+  * Fullstendig redesign
+  * Del offentlige nøkler via QR-koder eller NFC
+  * Signer nøkler
+  * Last opp nøkler til tjener
+  * Fikser importproblemer
   * New AIDL API
 
 
 ## 1.0.8
 
-  * Basic keyserver support
+  * Enkel nøkkeltjener-støtte
   * App2sd
   * More choices for passphrase cache: 1, 2, 4, 8, hours
   * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Bugfixes
-  * Optimizations
+  * Feilretting
+  * Optimering
 
 
 ## 1.0.7
@@ -286,7 +286,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Stream encryption/decryption (gallery, etc.)
   * New options (language, force v3 signatures)
   * Interface changes
-  * Bugfixes
+  * Feilretting
 
 
 ## 1.0.5
@@ -325,7 +325,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * K-9 Mail integration, APG supporting beta build of K-9 Mail
   * Support of more file managers (including ASTRO)
-  * Slovensk oversettelse ved
-  * New database, much faster, less memory usage
+  * Slovensk oversettelse
+  * Ny database, mye raskere, mindre minnebruk
   * Defined Intents and content provider for other apps
-  * Bugfixes
+  * Feilretting

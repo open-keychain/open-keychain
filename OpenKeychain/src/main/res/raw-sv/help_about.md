@@ -6,7 +6,7 @@
 
 Licens: GPLv3+
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (OBS: Alfabetisk ordning)
 
 ## Huvudsakliga utvecklare
   * Dominik Schürmann (Projektledare)
@@ -19,7 +19,7 @@ Licens: GPLv3+
   * 'Thialfihar' (APG-utvecklare)
   * Tim Bray
 
-## Occasional Contributors
+## Sporadiska bidragare
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov
@@ -51,7 +51,7 @@ Licens: GPLv3+
   * Sreeram Boyapati
   * 'steelman'
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (OBS: Alfabetisk ordning)
 
 ## Biblioteken
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)

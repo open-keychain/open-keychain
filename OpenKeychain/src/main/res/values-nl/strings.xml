@@ -8,10 +8,13 @@
   <string name="title_encrypt_files">Versleutelen</string>
   <string name="title_decrypt">Ontsleutelen</string>
   <string name="title_add_subkey">Voeg subsleutel toe</string>
+  <string name="title_change_master_key">Verander meestersleutel</string>
   <string name="title_edit_key">Sleutel bewerken</string>
+  <string name="title_linked_create">Maak een Gekoppelde Identiteit</string>
   <string name="title_preferences">Instellingen</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">OpenPGP-sleutelservers</string>
+  <string name="title_cache_ttl_preference">Pas \'Onthoud\' keuzes aan</string>
   <string name="title_change_passphrase">Wachtwoord wijzigen</string>
   <string name="title_share_fingerprint_with">Vingerafdruk delen met…</string>
   <string name="title_share_key">Sleutel delen met…</string>
@@ -20,22 +23,35 @@
   <string name="title_encrypt_to_file">Versleutelen naar bestand</string>
   <string name="title_decrypt_to_file">Ontsleutelen naar bestand</string>
   <string name="title_import_keys">Sleutels importeren</string>
+  <string name="title_export_key">Sleutel exporteren</string>
+  <string name="title_export_keys">Sleutels exporteren</string>
   <string name="title_key_not_found">Sleutel niet gevonden</string>
   <string name="title_send_key">Upload naar sleutelserver</string>
+  <string name="title_backup">Sleutel exporteren</string>
   <string name="title_certify_key">Sleutel bevestigen</string>
   <string name="title_key_details">Sleutel Details</string>
   <string name="title_help">Help</string>
   <string name="title_log_display">Log</string>
   <string name="title_exchange_keys">Sleutels uitwisselen</string>
+  <string name="title_advanced_key_info">Geavanceerd</string>
   <string name="title_delete_secret_key">JOUW sleutel \'%s\' verwijderen?</string>
   <string name="title_manage_my_keys">Beheer mijn sleutels</string>
+  <string name="title_alert_strip">Strip deze subsluetel</string>
   <!--section-->
   <string name="section_user_ids">Identiteiten</string>
   <string name="section_linked_system_contact">Verbonden systeemcontact</string>
+  <string name="section_keybase_proofs">Keybase.io Bewijzen</string>
   <string name="section_should_you_trust">Zou je deze sleutel vertrouwen?</string>
   <string name="section_proof_details">Bewijs van verificatie</string>
   <string name="section_keys">Subsleutels</string>
+  <string name="section_cloud_search">Zoek naar sleutels</string>
+  <string name="section_cloud_search_summary">Keyserver, keybase.io</string>
+  <string name="section_passphrase_cache">Wachtwoorden en PIN\'s</string>
+  <string name="section_proxy_settings">Netwerkanonimiteit</string>
+  <string name="section_proxy_settings_summary">Tor, Proxy-instellingen</string>
   <string name="section_gui">Interface</string>
+  <string name="section_sync_settings">Synchronizatie</string>
+  <string name="section_experimental_features">Experimentele Functies</string>
   <string name="section_certify">Bevestigen</string>
   <string name="section_actions">Acties</string>
   <string name="section_share_key">Sleutel</string>
@@ -61,9 +77,14 @@
   <string name="btn_back">Terug</string>
   <string name="btn_no">Nee</string>
   <string name="btn_match">Vingerafdrukken komen overeen</string>
+  <string name="btn_share_encrypted_signed">Versleutel/teken en deel tekst</string>
+  <string name="btn_copy_encrypted_signed">Versleutel/teken en kopieër tekst</string>
+  <string name="btn_paste_encrypted_signed">Versleutel/teken en plak tekst</string>
   <string name="btn_view_cert_key">Toon certificatiesleutel</string>
   <string name="btn_create_key">Sleutel aanmaken</string>
   <string name="btn_add_files">Bestand(en) toevoegen</string>
+  <string name="btn_share_decrypted_text">Deel</string>
+  <string name="btn_open_with">Open met...</string>
   <string name="btn_decrypt_clipboard">Lezen van klembord</string>
   <string name="btn_decrypt_files">Kies invoerbestand</string>
   <string name="btn_encrypt_files">Bestanden versleutelen</string>
@@ -74,9 +95,14 @@
   <string name="btn_save_default">Opslaan als standaard</string>
   <string name="btn_saved">Opgeslagen!</string>
   <!--Content Description-->
+  <string name="cd_encrypt_files">Versleutel bestanden</string>
+  <string name="cd_exchange_keys">Wissel sleutels uit</string>
+  <string name="cd_encrypt_text">Versleutel tekst</string>
+  <string name="cd_share_nfc">Deel met NFC</string>
   <!--menu-->
   <string name="menu_preferences">Instellingen</string>
   <string name="menu_help">Help</string>
+  <string name="menu_export_key">Exporteer sleutel</string>
   <string name="menu_delete_key">Sleutel verwijderen</string>
   <string name="menu_manage_keys">Beheer mijn sleutels</string>
   <string name="menu_search">Zoeken</string>
@@ -86,6 +112,11 @@
   <string name="menu_select_all">Alles selecteren</string>
   <string name="menu_export_all_keys">Alle sleutels exporteren</string>
   <string name="menu_update_all_keys">Alle sleutels bijwerken</string>
+  <string name="menu_advanced">Geavanceerd</string>
+  <string name="menu_certify_fingerprint">Bevestig met vingerafdruk</string>
+  <string name="menu_certify_fingerprint_phrases">Bevestig met zi</string>
+  <string name="menu_share_log">Deel logboek</string>
+  <string name="menu_change_password">Verander wachtwoord</string>
   <string name="menu_keyserver_add">Toevoegen</string>
   <!--label-->
   <string name="label_message">Tekst</string>
@@ -94,6 +125,7 @@
   <string name="label_file_colon">Bestand:</string>
   <string name="label_no_passphrase">Geen wachtwoord</string>
   <string name="label_passphrase">Wachtwoord</string>
+  <string name="label_pin">PIN</string>
   <string name="label_unlock">Bezig met ontgrendelen…</string>
   <string name="label_passphrase_again">Herhaal wachtwoord</string>
   <string name="label_show_passphrase">Wachtwoord weergeven</string>
@@ -103,6 +135,7 @@
   <string name="label_write_version_header">Laat anderen weten dat je OpenKeychain gebruikt</string>
   <string name="label_write_version_header_summary">Voegt \'OpenKeychain v2.7\' toe aan OpenPGP ondertekeningen, cijfertekst en geëxporteerde sleutels</string>
   <string name="label_asymmetric_from">Ondertekenen met:</string>
+  <string name="label_to">Versleutelen naar</string>
   <string name="label_delete_after_encryption">Verwijder bestanden na versleuteling</string>
   <string name="label_delete_after_decryption">Verwijderen na ontsleuteling</string>
   <string name="label_encryption_algorithm">Versleutelingsalgoritme</string>
@@ -114,6 +147,7 @@
   <string name="label_keyservers">Kies OpenPGP-sleutelservers</string>
   <string name="label_key_id">Sleutel-id</string>
   <string name="label_key_created">Sleutel aangemaakt %s</string>
+  <string name="label_key_type">Soort</string>
   <string name="label_creation">Aanmaak</string>
   <string name="label_expiry">Verlopen</string>
   <string name="label_usage">Gebruik</string>
@@ -123,6 +157,7 @@
   <string name="label_name">Naam</string>
   <string name="label_comment">Opmerking</string>
   <string name="label_email">E-mailadres</string>
+  <string name="label_send_key">Synchroniseren met het internet</string>
   <string name="label_fingerprint">Vingerafdruk</string>
   <string name="expiry_date_dialog_title">Bepaal verloopdatum</string>
   <string name="label_keyservers_title">Sleutelservers</string>
@@ -132,13 +167,28 @@
   <string name="label_enable_compression">Compressie aanzetten</string>
   <string name="label_encrypt_filenames">Versleutel bestandsnamen</string>
   <string name="label_hidden_recipients">Verberg ontvangers</string>
+  <string name="label_verify_keyserver_connection">Test verbinding</string>
+  <string name="label_only_trusted_keyserver">Alleen vertrouwde keyserver</string>
+  <string name="label_enter_keyserver_url">URL</string>
   <string name="label_keyserver_dialog_delete">Sleutelserver verwijderen</string>
   <string name="label_theme">Thema</string>
   <string name="pref_keyserver">OpenPGP-sleutelservers</string>
   <string name="pref_keyserver_summary">Zoek sleutels op geselecteerde OpenPGP-sleutelservers (HKP-protocol)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Zoek sleutels op keybase.io</string>
+  <string name="pref_facebook">Facebook</string>
+  <string name="pref_facebook_summary">Zoek naar sleutels op Facebook op basis van gebruikersnaam</string>
+  <string name="label_sync_settings_keyserver_title">Automatische sleutelupdates</string>
+  <string name="label_sync_settings_keyserver_summary_on">Sleutels worden geüpdatet elke drie dagen vanaf de keyserver van voorkeur</string>
+  <string name="label_sync_settings_keyserver_summary_off">Sleutels worden niet automatisch geüpdatet</string>
+  <string name="label_sync_settings_wifi_title">Synchroniseer aleen op Wi-Fi</string>
+  <string name="label_sync_settings_contacts_title">Koppel sleutels aan contacten</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="label_experimental_settings_desc_title">Waarschuwing</string>
+  <string name="label_experimental_settings_desc_summary">Deze functies zijn nog niet afgemaakt of resultaten van gebruikerservaringen/beveiligingsonderzoek. Vertrouw daarom niet op hun beveiliging en rapporteer geen problemen die je ervaart!</string>
+  <string name="label_experimental_settings_word_confirm_title">Bevestig met zin</string>
+  <string name="label_experimental_settings_word_confirm_summary">Bevestig sleutels met zinnen in plaats van hexadecimale vingerafdrukken</string>
+  <string name="label_experimental_settings_linked_identities_summary">Koppel sleutels aan Twitter, GitHub, websites of DNS (vergelijkbaar met keybase.io maar dan gedecentraliseerd)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor aanzetten</string>
   <string name="pref_proxy_tor_summary">Vereist dat Orbot geïnstalleerd is</string>
@@ -152,16 +202,20 @@
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">Gebruik Tor niet</string>
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_title">Orbot installeren om Tor te gebruiken?</string>
   <string name="orbot_install_dialog_install">Installeren</string>
   <string name="orbot_install_dialog_content">Orbot moet geïnstalleerd en ingesteld zijn om verkeer erdoor te proxyen. Wil je het installeren?</string>
   <string name="orbot_install_dialog_cancel">Annuleren?</string>
+  <string name="orbot_install_dialog_ignore_tor">Gebruik Tor niet</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Orbot starten?</string>
+  <string name="orbot_start_dialog_content">Het lijkt erop dat Orbot niet draait. Wil je het opstarten en verbinden met Tor?</string>
   <string name="orbot_start_btn">Orbot starten</string>
   <string name="orbot_start_dialog_start">Orbot starten</string>
   <string name="orbot_start_dialog_cancel">Annuleren</string>
+  <string name="orbot_start_dialog_ignore_tor">Gebruik Tor niet</string>
   <plurals name="n_keys">
     <item quantity="one">1 sleutel</item>
     <item quantity="other">%d sleutels</item>
@@ -185,16 +239,35 @@
   <string name="choice_4hours">4 uur</string>
   <string name="choice_8hours">8 uur</string>
   <string name="choice_forever">voor altijd</string>
+  <string name="choice_select_cert">Selecteer een sleutel</string>
   <string name="filemanager_title_open">Openen…</string>
+  <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_2048_description_html">kleinere bestandsgrootte, wordt beschouwt als veilig tot 2030</string>
+  <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_3072_description_html">aangeraden, wordt beschouwt als veilig tot 2040</string>
+  <string name="rsa_4096">RSA 4096</string>
+  <string name="rsa_4096_description_html">grotere bestandsgrootte, wordt als veilig beschouwt tot na 2040</string>
+  <string name="ecc_p256">ECC P-256</string>
+  <string name="ecc_p256_description_html">heel kleine bestandsgrootte, wordt beschouwt als veilig tot 2040 &lt;br/&gt; &lt;u&gt; experimenteel en niet ondersteund door alle implementaties&lt;/u&gt;</string>
+  <string name="ecc_p521">ECC P-521</string>
+  <string name="ecc_p521_description_html">kleine bestandsgrootte, wordt beschouwt als veilig tot na 2040 &lt;br/&gt; &lt;u&gt; experimenteel en niet ondersteund door alle implementaties&lt;/u&gt;</string>
+  <string name="usage_sign">Teken</string>
+  <string name="usage_encrypt">Versleutel</string>
+  <string name="usage_sign_and_encrypt">Teken en versleutel</string>
   <string name="error">Fout</string>
   <string name="error_message">Fout: %s</string>
+  <string name="theme_dark">Donker</string>
+  <string name="theme_light">Licht</string>
   <!--sentences-->
   <string name="wrong_passphrase">Wachtwoord verkeerd.</string>
   <string name="no_filemanager_installed">Geen compatibele bestandsbeheerder geïnstalleerd.</string>
   <string name="passphrases_do_not_match">De wachtwoorden komen niet overeen.</string>
   <string name="passphrase_must_not_be_empty">Geef een wachtwoord in.</string>
+  <string name="passphrase_for_symmetric_encryption">Voer wachtwoord in</string>
+  <string name="passphrase_for_backup">Voer exporteercode in</string>
   <string name="passphrase_for">Voer het wachtwoord in voor \'%s\'</string>
   <string name="pin_for">Voer PIN in voor \'%s\'</string>
+  <string name="security_token_pin_for">Voeg PIN in om toegang te krijgen tot beveligingscode voor \'%s\'</string>
   <string name="file_delete_confirmation_title">Oorspronkelijke bestanden verwijderen?</string>
   <string name="file_delete_confirmation">De volgende bestanden zullen worden verwijderd:%s</string>
   <string name="file_delete_successful">%1$d van %2$d bestanden zijn verwijderd.%3$s</string>

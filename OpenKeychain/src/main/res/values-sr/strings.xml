@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">Шифровање</string>
   <string name="title_decrypt">Дешифровање</string>
   <string name="title_add_subkey">Додај поткључ</string>
+  <string name="title_change_master_key">Измени главни кључ</string>
   <string name="title_edit_key">Уреди кључ</string>
   <string name="title_linked_create">Направи повезани идентитет</string>
   <string name="title_preferences">Поставке</string>
@@ -35,6 +36,7 @@
   <string name="title_advanced_key_info">Напредно</string>
   <string name="title_delete_secret_key">Обрисати ВАШ кључ „%s“?</string>
   <string name="title_manage_my_keys">Управљање мојим кључевима</string>
+  <string name="title_alert_strip">Оголи овај поткључ</string>
   <!--section-->
   <string name="section_user_ids">Идентитети</string>
   <string name="section_linked_system_contact">Повезани контакт</string>
@@ -152,6 +154,7 @@
   <string name="label_keyservers">Изаберите ОпенПГП сервере кључева</string>
   <string name="label_key_id">ИД кључа</string>
   <string name="label_key_created">Кључ направљен %s</string>
+  <string name="label_key_type">Тип</string>
   <string name="label_creation">Створен</string>
   <string name="label_expiry">Истиче</string>
   <string name="label_usage">Употреба</string>
@@ -185,6 +188,7 @@
   <string name="label_sync_settings_keyserver_title">Аутоматско ажурирање кључева</string>
   <string name="label_sync_settings_keyserver_summary_on">Кључеви се ажурирају са пожељног сервера кључева свака три дана</string>
   <string name="label_sync_settings_keyserver_summary_off">Кључеви се не ажурирају аутоматски</string>
+  <string name="label_sync_settings_wifi_title">Синхронизација само на бежичном</string>
   <string name="label_sync_settings_contacts_title">Повежи кључеве са контактима</string>
   <string name="label_sync_settings_contacts_summary_on">Повезивање кључева са контактима на основу имена и е-адреса. Одвија се у потпуности ван везе на вашем уређају.</string>
   <string name="label_sync_settings_contacts_summary_off">Нови кључеви неће бити повезани са контактима</string>
@@ -256,12 +260,21 @@
   <string name="choice_select_cert">Изаберите кључ</string>
   <string name="filemanager_title_open">Отвори…</string>
   <string name="rsa_2048">РСА 2048</string>
+  <string name="rsa_2048_description_html">мања величина фајла, сматра се безбедним до 2030</string>
   <string name="rsa_3072">РСА 3072</string>
+  <string name="rsa_3072_description_html">препоручљиво, сматра се безбедним до 2040</string>
   <string name="rsa_4096">РСА 4096</string>
+  <string name="rsa_4096_description_html">већа величина фајла, сматра се безбедним до 2040+</string>
+  <string name="ecc_p256">ЕЦЦ П-256</string>
+  <string name="ecc_p521">ЕЦЦ П-521</string>
+  <string name="usage_sign">Потпиши</string>
+  <string name="usage_encrypt">Шифруј</string>
+  <string name="usage_sign_and_encrypt">Потпиши и шифруј</string>
   <string name="error">Грешка</string>
   <string name="error_message">Грешка: %s</string>
   <string name="theme_dark">Тамна</string>
   <string name="theme_light">Светла</string>
+  <string name="strip">Оголи</string>
   <!--sentences-->
   <string name="wrong_passphrase">Погрешна лозинка.</string>
   <string name="no_filemanager_installed">Нема подесног менаџера фајлова.</string>
@@ -313,6 +326,7 @@
   <string name="error_file_delete_failed">нису обрисани. Обришите их ручно!</string>
   <string name="error_file_added_already">„%s“ је већ додат.</string>
   <string name="error_file_not_found">фајл није нађен</string>
+  <string name="error_bad_data">Лоши подаци!</string>
   <string name="error_no_secret_key_found">одговарајући тајни кључ није нађен</string>
   <string name="error_external_storage_not_ready">спољашње складиште није спремно</string>
   <string name="error_key_size_minimum512bit">величина кључа мора да буде најмање 512 бита</string>
@@ -679,6 +693,7 @@
     <item>Премести поткључ у безбедносни токен</item>
   </string-array>
   <string name="edit_key_new_subkey">нови поткључ</string>
+  <string name="edit_key_select_usage">Одредите коришћење кључа!</string>
   <string name="edit_key_error_add_identity">Додајте бар један идентитет!</string>
   <string name="edit_key_error_add_subkey">Додајте бар један поткључ!</string>
   <!--Create key-->

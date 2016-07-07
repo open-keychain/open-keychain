@@ -722,7 +722,7 @@
   <string name="create_key_custom">(произвольная конфигурация ключа)</string>
   <string name="create_key_name_text">Выберите имя для данного ключа. Это может быть полное имя, например, \'Иван Петров\', или сокращенно, как например, \'Ванька\'.</string>
   <string name="create_key_email_text">Введите ваш главный адрес эл. почты, используемый для безопасной переписки.</string>
-  <string name="create_key_passphrase_text">Выберите надежный пароль. Он защитит ваш ключ, в случае кражи вашего устройства.</string>
+  <string name="create_key_passphrase_text">Выберите надёжный пароль. Он защитит ваш ключ в случае кражи устройства.</string>
   <string name="create_key_hint_full_name">Полное имя или псевдоним</string>
   <string name="create_key_edit">Изменить конфигурацию ключа</string>
   <string name="create_key_add_email">Введите адрес эл. почты</string>
@@ -1099,9 +1099,13 @@
   <string name="msg_ed_fetching">Извлечение ключа для изменения (%s)</string>
   <string name="msg_ed_success">Операция с ключом успешна!</string>
   <!--Promote key-->
+  <string name="msg_pr">Представить публичный ключ секретному ключу</string>
+  <string name="msg_pr_all">Представить все доп. ключи</string>
   <string name="msg_pr_error_key_not_found">Ключ не найден!</string>
   <string name="msg_pr_fetching">Извлечение ключа для изменения (%s)</string>
+  <string name="msg_pr_subkey_match">Представить доп. ключ: %s</string>
   <string name="msg_pr_subkey_nomatch">Доп. ключ не в токене безопасности: %s</string>
+  <string name="msg_pr_success">Ключ успешно аннулирован.</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_dummy">Невозможно редактировать связку с отделённым основным ключом!</string>
   <string name="msg_ek_error_not_found">Ключ не найден!</string>
@@ -1124,6 +1128,7 @@
   <string name="msg_dc_clear_signature_check">Проверка подписи данных</string>
   <string name="msg_dc_clear_signature_ok">Проверка подписи ПРОЙДЕНА</string>
   <string name="msg_dc_clear_signature">Сохранение данных подписи</string>
+  <string name="msg_dc_clear">Обработка текстовых данных</string>
   <string name="msg_dc_error_bad_passphrase">Ошибка разблокировки ключа, неправильный пароль!</string>
   <string name="msg_dc_error_sym_passphrase">Ошибка расшифровки данных! (Неправильная ключевая фраза?)</string>
   <string name="msg_dc_error_corrupt_data">Данные повреждены!</string>
@@ -1197,6 +1202,7 @@
   <string name="msg_pse_pending_nfc">Требуется NFC-токен, жду действий пользователя...</string>
   <string name="msg_pse_pending_passphrase">Требуется пароль, жду действий пользователя...</string>
   <string name="msg_pse_signing">Подписывание данных (без шифрования)</string>
+  <string name="msg_pse_signing_cleartext">Создание текстовой подписи</string>
   <string name="msg_pse_signing_detached">Создание отделённой подписи</string>
   <string name="msg_pse_sigcrypting">Шифрование данных с подписыванием</string>
   <string name="msg_pse">Подпись и/или шифрование начаты</string>
@@ -1366,6 +1372,7 @@
   <string name="msg_keybase_error_no_prover">Не найдено проверки доказательства для %s</string>
   <string name="msg_keybase_error_fetching_evidence">Проблема с извлечением доказательства</string>
   <string name="msg_keybase_error_key_mismatch">Отпечаток ключа не совпадает с опубликованным доказательством</string>
+  <string name="msg_keybase_error_dns_fail">Сбой получения записи DNS TXT</string>
   <string name="msg_keybase_error_specific">%s</string>
   <string name="msg_keybase_error_msg_payload_mismatch">Расшифрованное опубликованное доказательство не совпадает с ожидаемым значением</string>
   <!--Messages for Mime parsing operation-->

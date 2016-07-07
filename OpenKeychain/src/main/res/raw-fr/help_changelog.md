@@ -2,8 +2,8 @@
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
-  * Allow password changing of stripped keys
+  * Prise en charge expérimentale des jetons de sécurité par USB
+  * Autoriser le changement de mot de passe des clés dépouillées
 
 ## 3.9
 

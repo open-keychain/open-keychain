@@ -2,8 +2,8 @@
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
-  * Allow password changing of stripped keys
+  * Експериментална подршка за безбедносне токене преко УСБ-а
+  * Мењање лозинке огољених кључева
 
 ## 3.9
 

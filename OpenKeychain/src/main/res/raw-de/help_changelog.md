@@ -2,8 +2,8 @@
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
-  * Allow password changing of stripped keys
+  * Experimentelle Unterstützung für Smartcards über USB
+  * Erlaube Passwortänderung von gekürzten Schlüsseln
 
 ## 3.9
 

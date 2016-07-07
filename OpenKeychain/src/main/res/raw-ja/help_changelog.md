@@ -2,8 +2,8 @@
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
-  * Allow password changing of stripped keys
+  * USB でのセキュリティトークンの実験的なサポート
+  * ストリップした鍵のパスワード変更が可能
 
 ## 3.9
 

@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">Kryptera</string>
   <string name="title_decrypt">Dekryptera</string>
   <string name="title_add_subkey">Lägg till undernyckel</string>
+  <string name="title_change_master_key">Ändra masternyckel</string>
   <string name="title_edit_key">Redigera nyckel</string>
   <string name="title_linked_create">Skapa en länkad identitet</string>
   <string name="title_preferences">Inställningar</string>
@@ -37,6 +38,7 @@
   <string name="title_manage_my_keys">Hantera mina nycklar</string>
   <!--section-->
   <string name="section_user_ids">Identiteter</string>
+  <string name="section_security_token">Säkerhetstoken</string>
   <string name="section_linked_system_contact">Länkade systemkontakten</string>
   <string name="section_keybase_proofs">Keybase.io-bevis</string>
   <string name="section_should_you_trust">Skulle du lita på denna nyckel?</string>
@@ -44,8 +46,9 @@
   <string name="section_keys">Undernycklar</string>
   <string name="section_cloud_search">Nyckelsökning</string>
   <string name="section_cloud_search_summary">Nyckelserver, keybase.io</string>
-  <string name="section_passphrase_cache">Lösenord och pin-koder</string>
+  <string name="section_passphrase_cache">Lösenord och PIN-koder</string>
   <string name="section_passphrase_cache_summary">Hantering, användargränssnitt, kom ihåg tid</string>
+  <string name="section_proxy_settings">Nätverksanonymitet</string>
   <string name="section_proxy_settings_summary">Tor, proxyinställningar</string>
   <string name="section_gui">Gränssnitt</string>
   <string name="section_sync_settings_summary">Automatiska nyckel uppdateringar, kontakt länkning</string>
@@ -129,6 +132,7 @@
   <string name="label_file_ascii_armor">Aktivera ASCII-format</string>
   <string name="label_write_version_header">Låt andra se att du använder OpenKeychain</string>
   <string name="label_write_version_header_summary">Skriver \'OpenKeychain v2.7\' till OpenPGP-signaturer, chiffertext och exporterade nycklar.</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Använd sifferknapparna för säkerhetstoken PIN</string>
   <string name="label_asymmetric_from">Signera med:</string>
   <string name="label_to">Kryptera till</string>
   <string name="label_delete_after_encryption">Radera filer efter kryptering</string>
@@ -169,6 +173,7 @@
   <string name="pref_facebook">Facebook</string>
   <string name="label_sync_settings_keyserver_title">Automatiska nyckel uppdateringar</string>
   <string name="label_sync_settings_keyserver_summary_off">Nycklar uppdateras inte automatiskt</string>
+  <string name="label_sync_settings_wifi_title">Synkronisera bara på Wifi</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="keyserver_sync_settings_title">Automatiska nyckel uppdateringar</string>
   <string name="label_experimental_settings_desc_title">Varning</string>
@@ -177,6 +182,10 @@
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Aktivera Tor</string>
   <string name="pref_proxy_tor_summary">Kräver att Orbot är installerat</string>
+  <string name="pref_proxy_normal_title">Aktivera annan proxy</string>
+  <string name="pref_proxy_host_title">Proxy värd</string>
+  <string name="pref_proxy_host_err_invalid">Proxy värd kan inte vara tom</string>
+  <string name="pref_proxy_port_title">Proxy port</string>
   <string name="pref_proxy_type_title">Proxytyp</string>
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
@@ -244,6 +253,9 @@
   <string name="error_no_encryption_or_signature_key">Välj åtminstone en krypteringsnyckel eller en signaturnyckel.</string>
   <string name="specify_file_to_encrypt_to">Ange vilken fil du vill kryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över!</string>
   <string name="specify_file_to_decrypt_to">Ange vilken fil du vill kryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över!</string>
+  <string name="specify_backup_dest">En säkerhetskopia med undantag för dina nycklar kommer att göras, ange en destinationsfil. \nVarning: Fil kommer att skrivas över om den finns!</string>
+  <string name="specify_backup_dest_secret_single">En fullständig säkerhetskopia av din nyckel kommer att göras, ange en destinationsfil \nVarning: Fil kommer att skrivas över om den finns!</string>
+  <string name="specify_backup_dest_secret">En fullständig säkerhetskopia av alla nycklar inklusive er, kommer att göras, ange en destinationsfil.\nVarning: Fil kommer att skrivas över om den finns!</string>
   <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade nycklar?</string>
   <string name="secret_key_deletion_confirmation">Efter radering kommer du inte att kunna dekryptera meddelanden/filer som krypterats med den här nyckeln och förlorar alla viktiga bekräftelser gjorda med den!</string>
   <string name="public_key_deletetion_confirmation">Radera nyckel \'%s\'?</string>
@@ -579,7 +591,7 @@
   <string name="create_key_email_invalid_email">Formatet på e-postadressen är ogiltigt</string>
   <string name="create_key_yubi_key_pin_text">Välj en PIN-kod med 6 siffror.</string>
   <string name="create_key_yubi_key_pin">PIN</string>
-  <string name="create_key_yubi_key_admin_pin">Admin-PIN</string>
+  <string name="create_key_yubi_key_admin_pin">Administratör PIN</string>
   <string name="create_key_yubi_key_pin_repeat">Upprepa PIN</string>
   <string name="create_key_yubi_key_pin_not_correct">PIN är inte korrekt!</string>
   <!--View key-->
@@ -600,7 +612,7 @@
   <string name="nav_encrypt_decrypt">Kryptera/dekryptera</string>
   <string name="nav_apps">Appar</string>
   <string name="my_keys">Mina nycklar</string>
-  <string name="nav_backup">Säkerhetskopiera/återställ</string>
+  <string name="nav_backup">Säkerhetskopiera/återställa</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Skriv text</string>
   <!--certs-->
@@ -880,6 +892,17 @@
   <string name="msg_import_error">Importoperation misslyckades!</string>
   <string name="msg_import_partial">Importoperation lyckades, med fel!</string>
   <string name="msg_import_success">Importoperation lyckades!</string>
+  <plurals name="msg_backup">
+    <item quantity="one">Säkerhetskopiering med en nycklel</item>
+    <item quantity="other">Säkerhetskopiering med %d nycklar</item>
+  </plurals>
+  <string name="msg_backup_all">Säkerhetskopiering med alla nycklar</string>
+  <string name="msg_backup_public">Skapa säkerhetskopia av publik nyckel %s</string>
+  <string name="msg_backup_secret">Skapa säkerhetskopia av hemlig nyckel %s</string>
+  <string name="msg_backup_success">Säkerhetskopieringen lyckades</string>
+  <string name="msg_upload_proxy_direct">Använder proxy: Ingen</string>
+  <string name="msg_upload_proxy_tor">Använder proxy: TOR</string>
+  <string name="msg_upload_proxy">Använder proxy: %s</string>
   <string name="msg_del_error_empty">Inget att radera!</string>
   <string name="msg_del_error_multi_secret">Privata nycklar kan bara raderas var för sig!</string>
   <plurals name="msg_del">
@@ -916,13 +939,17 @@
   <string name="first_time_create_key">Skapa min nyckel</string>
   <string name="first_time_import_key">Importera nyckel från fil</string>
   <string name="first_time_skip">Hoppa över inställning</string>
+  <string name="backup_text">Säkerhetskopior som innehåller dina egna nycklar får aldrig delas med andra människor!</string>
   <string name="backup_all">Alla nycklar + dina egna nycklar</string>
   <string name="backup_public_keys">Alla nycklar</string>
+  <string name="backup_section">Säkerhetskopiering</string>
+  <string name="restore_section">Återställa</string>
   <!--unsorted-->
   <string name="section_cert">Certifikatinformation</string>
   <string name="label_user_id">Identitet</string>
   <string name="empty_certs">Inga certifikat för den här nyckeln</string>
   <string name="section_uids_to_certify">Identiteter för</string>
+  <string name="certify_text">Nycklarna du importerar innehåller \"identiteter\": namn och e-postadresser. Välja exakt de för bekräftelse som matchar vad du förväntade dig.</string>
   <string name="label_revocation">Anledning till återkallelse</string>
   <string name="label_cert_type">Typ</string>
   <string name="error_key_not_found">Nyckel hittades inte!</string>
@@ -937,15 +964,22 @@
   <string name="contact_show_key">Visa nyckel (%s)</string>
   <string name="swipe_to_update">Dra nedåt för att uppdatera från nyckelserver</string>
   <string name="error_no_file_selected">Välj åtminstone en fil att kryptera!</string>
+  <string name="error_multi_files">Spara flera filer stöds inte. Detta är en begränsning på nuvarande Android.</string>
   <string name="error_multi_clipboard">Kryptering av flera filer till urklipp stöds inte.</string>
   <string name="error_empty_text">Skriv text att kryptera!</string>
+  <string name="error_log_share_internal">Internt fel under förberedning av logg!</string>
   <string name="key_colon">Nyckel:</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
+  <string name="account_privacy_title">Integritet</string>
+  <string name="account_privacy_text">OpenKeychain synkroniserar inte dina kontakter med Internet. Den länkar bara kontakter med nycklar baserade på namn och e-postadresser. Detta sker offline på enheten.</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Skriv lösenord</string>
+  <string name="passphrase">Lösenord</string>
+  <string name="noPassphrase">Inget lösenord</string>
+  <string name="passphrase_saved">Lösenord sparat</string>
   <string name="passphrase_again">Igen</string>
   <string name="lockpattern">Låsmönster</string>
   <string name="lockpatternNFC">NFC + Låsmönster</string>
@@ -963,6 +997,7 @@
   <string name="btn_delete_original">Radera ursprunglig fil</string>
   <string name="snack_encrypt_filenames_on">Filnamn <b>är</b> krypterad.</string>
   <string name="snack_encrypt_filenames_off">Filnamn <b>är inte</b> krypterade.</string>
+  <string name="filename_keys">Nyckel säkerhetskopiering (rör för att importera)</string>
   <string name="intent_show">Visa krypterat/signerat innehåll</string>
   <string name="intent_share">Dela krypterat/signerat innehåll</string>
   <string name="view_internal">Visa i OpenKeychain</string>
@@ -974,6 +1009,8 @@
   <string name="linked_title_twitter">Twitter</string>
   <string name="linked_button_verify">Verifiera</string>
   <string name="linked_text_confirming">Bekräftar…</string>
+  <string name="backup_code_explanation">Säkerhetskopian kommer att säkras med en säkerhetskod. Skriv ner den innan du fortsätter!</string>
+  <string name="backup_code_enter">Ange säkerhetskopieringskod:</string>
   <string name="btn_backup_share">Dela säkerhetskopia</string>
   <string name="btn_backup_save">Spara säkerhetskopia</string>
   <string name="snack_backup_saved">Säkerhetskopia sparad</string>

@@ -81,15 +81,116 @@
   <string name="btn_no">Nei</string>
   <string name="btn_share_encrypted_signed">Krypter/signer og del tekst</string>
   <string name="btn_copy_encrypted_signed">Krypter/signer og kopier tekst</string>
+  <string name="btn_create_key">Opprett nøkkel</string>
+  <string name="btn_add_files">Legg til fil(er)</string>
+  <string name="btn_share_decrypted_text">Del</string>
+  <string name="btn_open_with">Åpne med…</string>
+  <string name="btn_copy_decrypted_text">Kopier til utklippstavle</string>
+  <string name="btn_decrypt_clipboard">Les fra utklippstavle</string>
+  <string name="btn_decrypt_files">Velg inndata-fil</string>
+  <string name="btn_encrypt_files">Krypter filer</string>
+  <string name="btn_encrypt_text">Krypter tekst</string>
+  <string name="btn_add_email">Legg til ytterligere e-postadresse</string>
+  <string name="btn_unlock">Lås opp</string>
+  <string name="btn_add_keyserver">Legg til</string>
+  <string name="btn_save_default">Lagre som forvalg</string>
+  <string name="btn_saved">Lagret!</string>
+  <string name="btn_not_matching">Samsvarer ikke</string>
   <!--Content Description-->
+  <string name="cd_encrypt_files">Krypter filer</string>
+  <string name="cd_exchange_keys">Utveksle nøkler</string>
+  <string name="cd_encrypt_text">Krypter tekst</string>
+  <string name="cd_share_nfc">Del via NFC</string>
   <!--menu-->
+  <string name="menu_preferences">Innstillinger</string>
+  <string name="menu_help">Hjelp</string>
+  <string name="menu_export_key">Sikkerhetskopier nøkkel</string>
+  <string name="menu_delete_key">Slett nøkkel</string>
+  <string name="menu_manage_keys">Behandle mine nøkler</string>
+  <string name="menu_search">Søk</string>
+  <string name="menu_nfc_preferences">NFC-innstillinger</string>
+  <string name="menu_encrypt_to">Krypter til…</string>
+  <string name="menu_select_all">Velg alt</string>
+  <string name="menu_export_all_keys">Eksporter alle nøkler</string>
+  <string name="menu_update_all_keys">Oppdater alle nøkler</string>
+  <string name="menu_advanced">Avansert</string>
+  <string name="menu_certify_fingerprint">Bekreft med fingeravtrykk</string>
+  <string name="menu_certify_fingerprint_phrases">Bekfreft med passordsekvenser</string>
+  <string name="menu_share_log">Del logg</string>
+  <string name="menu_change_password">Endre passord</string>
+  <string name="menu_keyserver_add">Legg til</string>
   <!--label-->
+  <string name="label_message">Tekst</string>
+  <string name="label_file">Fil</string>
+  <string name="label_files">Fil(er)</string>
+  <string name="label_file_colon">Fil:</string>
+  <string name="label_no_passphrase">Inget passord</string>
+  <string name="label_passphrase">Passord</string>
+  <string name="label_pin">PIN</string>
+  <string name="label_unlock">Låser opp…</string>
+  <string name="label_passphrase_again">Gjenta passord</string>
+  <string name="label_show_passphrase">Vis passord</string>
+  <string name="label_algorithm">Algoritme</string>
+  <string name="label_write_version_header">La andre få vite at du bruker OpenKeychain</string>
+  <string name="label_key_type">Type</string>
+  <string name="label_creation">Opprettet</string>
+  <string name="label_expiry">Utløper</string>
+  <string name="label_usage">Bruk</string>
+  <string name="label_key_size">Nøkkelstørrelse</string>
+  <string name="label_ecc_curve">Elliptisk kurve</string>
+  <string name="label_main_user_id">Hovedidentitet</string>
+  <string name="label_name">Navn</string>
+  <string name="label_email">E-post</string>
+  <string name="label_fingerprint">Fingeravtrykk</string>
+  <string name="expiry_date_dialog_title">Sett utløpsdato</string>
+  <string name="label_keyservers_title">Nøkkeltjenere</string>
+  <string name="label_keyserver_settings_hint">Dra for å endre rekkefølge, trykk for å redigere/slette</string>
+  <string name="label_selected_keyserver_title">Valgt nøkkeltjener</string>
+  <string name="label_preferred">foretrukket</string>
+  <string name="label_enable_compression">Skru på komprimering</string>
+  <string name="label_encrypt_filenames">Krypter filnavn</string>
+  <string name="label_hidden_recipients">Gjem mottakere</string>
+  <string name="label_verify_keyserver_connection">Test forbindelse</string>
+  <string name="label_only_trusted_keyserver">Bare tiltrodd nøkkeltjener</string>
+  <string name="label_enter_keyserver_url">Nettadresse</string>
+  <string name="label_keyserver_dialog_delete">Slett nøkkeltjener</string>
+  <string name="label_theme">Drakt</string>
+  <string name="pref_keyserver">OpenPGP-nøkkeltjenere</string>
+  <string name="pref_keybase">keybase.io</string>
+  <string name="pref_keybase_summary">Del nøkler på keybase.io</string>
+  <string name="pref_facebook">Facebook</string>
+  <string name="pref_facebook_summary">Del nøkler på Facebook etter brukernavn</string>
+  <string name="label_sync_settings_keyserver_title">Automatiske nøkkeloppdateringer</string>
+  <string name="label_sync_settings_wifi_title">Bare synkroniser på Wi-Fi</string>
+  <string name="label_sync_settings_contacts_title">Lenk nøkler til kontakter</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="keyserver_sync_settings_title">Automatiske nøkkeloppdateringer</string>
+  <string name="label_experimental_settings_desc_title">Advarsel</string>
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">Ikke bruk Tor</string>
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_title">Installer Orbot eller bruk Tor?</string>
+  <string name="orbot_install_dialog_install">Installer</string>
+  <string name="orbot_install_dialog_content">Du må ha Orbot installert og aktivert for å mellomtjene trafikk gjennom det. Ønsker du å installere Orbot?</string>
+  <string name="orbot_install_dialog_cancel">Avbryt</string>
+  <string name="orbot_install_dialog_ignore_tor">Ikke bruk Tor</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_title">Start Orbot?</string>
+  <string name="orbot_start_dialog_content">Orbot later ikke til å kjøre. Ønsker du å starte det og koble til Tor?</string>
+  <string name="orbot_start_btn">Start Orbot?</string>
+  <string name="orbot_start_dialog_start">Start Orbot</string>
+  <string name="orbot_start_dialog_cancel">Avbryt</string>
+  <string name="orbot_start_dialog_ignore_tor">Ikke bruk Tor</string>
+  <plurals name="n_keys">
+    <item quantity="one">én nøkkel</item>
+    <item quantity="other">%d nøkler</item>
+  </plurals>
+  <plurals name="n_keyservers">
+    <item quantity="one">%d nøkkeltjener</item>
+    <item quantity="other">%d nøkkeltjenere</item>
+  </plurals>
   <string name="secret_key">Hemmelig nøkkel:</string>
   <!--choice-->
   <string name="choice_none">Ingen</string>

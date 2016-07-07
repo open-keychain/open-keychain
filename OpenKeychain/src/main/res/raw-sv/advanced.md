@@ -4,6 +4,6 @@ Advanced screen allows you to
 * share key in non-recommended ways
 * redigera identiteter
 * redigera undernycklar
-* examine certificates in detail
+* undersöka certifikat i detalj
 
-Only proceed if you know what you are doing!
+Fortsätt endast om du vet vad du gör!

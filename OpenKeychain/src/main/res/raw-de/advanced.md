@@ -1,9 +1,9 @@
 [//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
-Erweiterte Einstellungen erlauben dir Folgendes
-* Teile Schlüßel auf nicht empfohlene Art
-* Identitäten bearbeiten
-* Unterschlüssel bearbeiten
-* Zertifikate im Detail prüfen
+Erweiterte Einstellungen erlauben dir Folgendes:
+* Schlüssel auf nicht empfohlene Art zu teilen
+* Identitäten zu bearbeiten
+* Unterschlüssel zu bearbeiten
+* Beglaubigungen im Detail prüfen
 
-Mache nur weiter, wenn du weißt was du tust
+Mach nur weiter, wenn du weißt was du tust!

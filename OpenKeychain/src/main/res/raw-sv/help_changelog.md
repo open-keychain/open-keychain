@@ -3,37 +3,37 @@
 ## 4.0
 
   * Experimental support for Security Tokens over USB
-  * Allow password changing of stripped keys
+  * Tillåt lösenord byte av avskalade nycklar
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Detektering och hantering av textdata
+  * Prestandaförbättringar 
+  * UI förbättringar för säkerhetstoken hantering
 
 
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
+  * Omgjort nyckel redigering
+  * Välj kom ihåg tid individuellt när du skriver lösenord
   * Facebook nyckelimport
 
 
 ## 3.7
 
-  * Improved Android 6 support (permissions, integration into text selection)
+  * Förbättrad Android 6 stöd (behörigheter, integration i textmarkeringen )
   * API: Version 10
 
 
 ## 3.6
 
   * Krypterade säkerhetskopior
-  * Security fixes based on external security audit
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
+  * Säkerhets korrigeringar baserade på extern säkerhetsrevision
+  * YubiKey NEO guide för att skapa nyckel
+  * Grundläggande internt MIME stöd
+  * Automatisk nyckelsynkronisering
   * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
+  * Experimentell funktion: nyckel bekräftelse via fraser
   * Experimental feature: dark theme
   * API: Version 9
 
@@ -48,8 +48,8 @@
 
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
+  * Anonym nyckelhämtning över Tor
+  * Proxy stöd
   * Better YubiKey error handling
 
 

@@ -3,7 +3,7 @@
 ## Oppsett av nøkkel
 Without confirmation, you cannot be sure if a key really corresponds to a specific person.
 Den enkleste måten å bekrefte en nøkkel er ved å skanne QR-koden eller bytte via NFC.
-For bekreftelse av nøkler mellom fler enn to personer seg imellom anbefaler vi nøkkelutvekslingsmetoden tilgjengelig for deres nøkler.
+For bekreftelse av nøkler mellom fler enn to personer seg imellom anbefaler vi nøkkelutvekslingsmetoden tilgjengelig for dine nøkler.
 
 ## Status for nøkkel
 

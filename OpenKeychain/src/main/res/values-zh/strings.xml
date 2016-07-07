@@ -162,7 +162,7 @@
   <string name="label_usage">用途</string>
   <string name="label_key_size">密钥大小</string>
   <string name="label_ecc_curve">椭圆曲线</string>
-  <string name="label_main_user_id">用户名</string>
+  <string name="label_main_user_id">主要标识</string>
   <string name="label_name">姓名</string>
   <string name="label_comment">注解</string>
   <string name="label_email">电子邮件</string>
@@ -235,10 +235,10 @@
   <string name="user_id_no_name"><![CDATA[<no name>]]></string>
   <string name="none"><![CDATA[<none>]]></string>
   <plurals name="n_keys">
-    <item quantity="other">%d 密匙</item>
+    <item quantity="other">%d 个密钥</item>
   </plurals>
   <plurals name="n_keyservers">
-    <item quantity="other">%d 密匙服务器</item>
+    <item quantity="other">%d 密钥服务器</item>
   </plurals>
   <string name="secret_key">私钥</string>
   <!--choice-->
@@ -337,7 +337,7 @@
   <string name="error_key_size_minimum512bit">密钥的大小必须至少512位</string>
   <string name="error_unknown_algorithm_choice">位置的算法选择</string>
   <string name="error_user_id_no_email">没有找到</string>
-  <string name="error_key_needs_a_user_id">至少需要一个身份</string>
+  <string name="error_key_needs_a_user_id">至少需要一个用户标识</string>
   <string name="error_no_signature_passphrase">没有给出密码</string>
   <string name="error_no_signature_key">没有提供签名密钥</string>
   <string name="error_invalid_data">加密或签名的OpenPGP联系人无效！</string>
@@ -552,7 +552,7 @@
   <string name="api_settings_settings">设置</string>
   <string name="api_settings_key">账户密钥</string>
   <string name="api_settings_accounts_empty">该应用未加入任何账户</string>
-  <string name="api_create_account_text">没有为此账户配置密匙。请从已有的密匙中选择或者新建一个。\n应用只能使用这里选定的密钥进行解密或签名操作！</string>
+  <string name="api_create_account_text">没有为此账户配置密钥。请从已有的密钥中选择或者新建一个。\n应用只能使用这里选定的密钥进行解密或签名操作！</string>
   <string name="api_update_account_text">为此账户配置的密钥已被删除，请重新选择一个！\n应用只能使用这里选定的密钥进行解密或签名操作！</string>
   <string name="api_register_text">以下应用希望解密或加密信息以及以你的名义来签名。\n是否允许？\n\n警告：如果你不清楚为何出现这个问题，请选择拒绝！另外你也可以在已注册应用列表那里吊销访问权限。</string>
   <string name="api_register_allow">允许访问</string>
@@ -574,7 +574,7 @@
   <string name="retry_up_dialog_btn_reupload">重试</string>
   <string name="retry_up_dialog_btn_cancel">取消操作</string>
   <!--Delete or revoke private key dialog-->
-  <string name="del_rev_dialog_message">如果不再使用该密匙，你应该吊销它并上传。如果不想在OpenKeychain里使用，但希望在其他地方继续使用它，必须选择“仅删除”</string>
+  <string name="del_rev_dialog_message">如果不再使用该密钥，你应该吊销它并上传。如果不想在OpenKeychain里使用，但希望在其他地方继续使用它，必须选择“仅删除”</string>
   <string name="del_rev_dialog_title">吊销或删除密钥 \'%s\'</string>
   <string name="del_rev_dialog_btn_revoke">吊销并上传</string>
   <string name="del_rev_dialog_btn_delete">仅删除</string>
@@ -586,7 +586,7 @@
     <item quantity="other">已选择 %d 个密钥</item>
   </plurals>
   <string name="key_list_empty_text1">未发现密钥！</string>
-  <string name="key_list_filter_show_all">显示所有密匙</string>
+  <string name="key_list_filter_show_all">显示所有密钥</string>
   <string name="key_list_filter_show_certified">仅显示验证过的密钥</string>
   <string name="key_list_fab_qr_code">扫描二维码</string>
   <string name="key_list_fab_search">搜索密钥</string>
@@ -682,9 +682,9 @@
   <string name="create_key_custom">手动设置密钥</string>
   <string name="create_key_name_text">选择一个关联到此密钥的名字，可以是全名，例如‘John Doe’，或者一个妮称‘Johnny’。</string>
   <string name="create_key_email_text">输入你用来加密通信的主邮箱地址</string>
-  <string name="create_key_passphrase_text">选择一个强壮密码.在你的设备丢失时它能保护你的密匙.</string>
+  <string name="create_key_passphrase_text">选择一个强壮密码.在你的设备丢失时它能保护你的密钥.</string>
   <string name="create_key_hint_full_name">全名或昵称</string>
-  <string name="create_key_edit">更改密匙配置</string>
+  <string name="create_key_edit">更改密钥配置</string>
   <string name="create_key_add_email">添加电子邮件地址</string>
   <string name="create_key_add_email_text">其它能用此密钥通信的邮件地址</string>
   <string name="create_key_email_already_exists_text">电子邮件地址已经被添加</string>
@@ -756,7 +756,7 @@
   <string name="msg_ip_master">正在处理主密钥 %s</string>
   <string name="msg_ip_master_expired">密钥环过期于 %s</string>
   <string name="msg_ip_master_expires">密钥环过期于 %s</string>
-  <string name="msg_ip_master_flags_unspecified">主标志：未指定的(假定全部 )</string>
+  <string name="msg_ip_master_flags_unspecified">主密钥用途：未指定(假定为全部 )</string>
   <string name="msg_ip_master_flags_cesa">主密钥用途：认证，加密，签名，授权</string>
   <string name="msg_ip_master_flags_cesx">主密钥用途：认证，加密，签名</string>
   <string name="msg_ip_master_flags_cexa">主密钥用途：认证，加密，授权</string>
@@ -765,20 +765,20 @@
   <string name="msg_ip_master_flags_cxsx">主密钥用途：认证，签名</string>
   <string name="msg_ip_master_flags_cxxa">主密钥用途：认证，授权</string>
   <string name="msg_ip_master_flags_cxxx">主密钥用途：认证</string>
-  <string name="msg_ip_master_flags_xesa">主标志：加密，签名，验证</string>
-  <string name="msg_ip_master_flags_xesx">主标志：加密，签名</string>
-  <string name="msg_ip_master_flags_xexa">主标志：加密，验证</string>
-  <string name="msg_ip_master_flags_xexx">主标志：加密</string>
-  <string name="msg_ip_master_flags_xxsa">主标志：签名，验证</string>
-  <string name="msg_ip_master_flags_xxsx">主标志：签名</string>
-  <string name="msg_ip_master_flags_xxxa">主标志：验证</string>
-  <string name="msg_ip_master_flags_xxxx">主标志：无</string>
+  <string name="msg_ip_master_flags_xesa">主密钥用途：加密，签名，授权</string>
+  <string name="msg_ip_master_flags_xesx">主密钥用途：加密，签名</string>
+  <string name="msg_ip_master_flags_xexa">主密钥用途：加密，授权</string>
+  <string name="msg_ip_master_flags_xexx">主密钥用途：加密</string>
+  <string name="msg_ip_master_flags_xxsa">主密钥用途：签名，授权</string>
+  <string name="msg_ip_master_flags_xxsx">主密钥用途：签名</string>
+  <string name="msg_ip_master_flags_xxxa">主密钥用途：授权</string>
+  <string name="msg_ip_master_flags_xxxx">主密钥用途：无</string>
   <string name="msg_ip_merge_public">正在合并已导入的数据到现有的公钥密钥环</string>
   <string name="msg_ip_merge_secret">正在合并已导入的数据到现有的私钥密钥环</string>
   <string name="msg_ip_subkey">正在处理子密钥 %s</string>
   <string name="msg_ip_subkey_expired">子密钥过期于 %s</string>
   <string name="msg_ip_subkey_expires">子密钥过期于 %s</string>
-  <string name="msg_ip_subkey_flags_unspecified">子密钥标志：未指定的（假设所有）</string>
+  <string name="msg_ip_subkey_flags_unspecified">子密钥用途：未指定(假定为全部 )</string>
   <string name="msg_ip_subkey_flags_cesa">子密钥用途：认证，加密，签名，授权</string>
   <string name="msg_ip_subkey_flags_cesx">子密钥用途：认证，加密，签名</string>
   <string name="msg_ip_subkey_flags_cexa">子密钥用途：认证，加密，授权</string>
@@ -787,14 +787,14 @@
   <string name="msg_ip_subkey_flags_cxsx">子密钥用途：认证，签名</string>
   <string name="msg_ip_subkey_flags_cxxa">子密钥用途：认证，授权</string>
   <string name="msg_ip_subkey_flags_cxxx">子密钥用途：认证</string>
-  <string name="msg_ip_subkey_flags_xesa">子密钥标志：加密，签名，验证</string>
-  <string name="msg_ip_subkey_flags_xesx">子密钥标志：加密，签名</string>
-  <string name="msg_ip_subkey_flags_xexa">子密钥标志：加密，验证</string>
-  <string name="msg_ip_subkey_flags_xexx">子密钥标志：加密</string>
-  <string name="msg_ip_subkey_flags_xxsa">子密钥标志：签名，验证</string>
-  <string name="msg_ip_subkey_flags_xxsx">子密钥标志：签名</string>
-  <string name="msg_ip_subkey_flags_xxxa">子密钥标志：验证</string>
-  <string name="msg_ip_subkey_flags_xxxx">子密钥标志：无</string>
+  <string name="msg_ip_subkey_flags_xesa">子密钥用途：加密，签名，授权</string>
+  <string name="msg_ip_subkey_flags_xesx">子密钥用途：加密，签名</string>
+  <string name="msg_ip_subkey_flags_xexa">子密钥用途：加密，授权</string>
+  <string name="msg_ip_subkey_flags_xexx">子密钥用途：加密</string>
+  <string name="msg_ip_subkey_flags_xxsa">子密钥用途：签名，授权</string>
+  <string name="msg_ip_subkey_flags_xxsx">子密钥用途：签名</string>
+  <string name="msg_ip_subkey_flags_xxxa">子密钥用途：授权</string>
+  <string name="msg_ip_subkey_flags_xxxx">子密钥用途：无</string>
   <string name="msg_ip_success">成功导入公钥密钥环</string>
   <string name="msg_ip_success_identical">密钥环不包含任何新的数据，无动作</string>
   <string name="msg_ip_reinsert_secret">重新插入私钥</string>
@@ -877,6 +877,13 @@
   <string name="msg_kc_sub_primary_bad">由于主密钥绑定认证无效，移除子密钥绑定认证</string>
   <string name="msg_kc_sub_primary_bad_err">由于主密钥绑定认证损坏，移除子密钥绑定认证</string>
   <string name="msg_kc_sub_primary_none">由于主密钥绑定认证未找到，移除子密钥绑定认证</string>
+  <string name="msg_kc_sub_no_cert">%s 没有有效认证，从密钥环中移除</string>
+  <string name="msg_kc_sub_revoke_bad_err">移除损坏的子密钥吊销认证</string>
+  <string name="msg_kc_sub_revoke_bad">移除损坏的子密钥吊销认证</string>
+  <string name="msg_kc_sub_revoke_dup">移除多余的子密钥吊销认证</string>
+  <string name="msg_kc_sub_unknown_algo">子密钥使用了一个未知算法，未被导入...</string>
+  <string name="msg_kc_sub_algo_bad_encrpyt">子密钥标记为加密用途，但使用的算法不适合加密。</string>
+  <string name="msg_kc_sub_algo_bad_sign">子密钥标记为签名用途，但使用的算法不适合签名。</string>
   <string name="msg_kc_success">密钥环格式化成功，没有更改</string>
   <plurals name="msg_kc_success_bad">
     <item quantity="other">密钥环格式化成功，移除 %d 个错误签名</item>
@@ -885,8 +892,14 @@
   <plurals name="msg_kc_success_redundant">
     <item quantity="other">密钥环格式化成功，移除 %d 个多余签名</item>
   </plurals>
+  <string name="msg_kc_uid_bad_err">移除损坏的用户ID \'%s\' 的自我认证</string>
+  <string name="msg_kc_uid_bad_local">正在移除标记为\'local\'的用户ID认证</string>
   <string name="msg_kc_uat_unknown">正在处理未知类型的用户属性</string>
+  <string name="msg_kc_uat_bad_local">正在移除标记为\'local\'的用户属性认证</string>
+  <string name="msg_kc_uat_remove">移除无效的用户属性</string>
   <!--Keyring merging log entries-->
+  <string name="msg_mg_public">正在并入公钥密钥环 %s</string>
+  <string name="msg_mg_secret">正在并入私钥密钥环 %s</string>
   <string name="msg_mg_new_subkey">正在添加新的子密钥 %s</string>
   <string name="msg_mg_found_new">在密钥环中发布 %s 个新的认证</string>
   <string name="msg_mg_unchanged">无物可合并</string>
@@ -894,7 +907,8 @@
   <string name="msg_cr">正在生成新的主密钥</string>
   <string name="msg_cr_error_no_master">未指定主密钥选项！</string>
   <string name="msg_cr_error_no_user_id">密钥链至少需要一个用户ID才能创建！</string>
-  <string name="msg_cr_error_no_certify">主密钥必须包含认证标记！</string>
+  <string name="msg_cr_error_no_certify">主密钥必须包含认证用途！</string>
+  <string name="msg_cr_error_null_expiry">在密钥创建过程中不允许过期时间为“与之前相同”。这是一个编程错误，请发送错误报告！</string>
   <string name="msg_cr_error_keysize_2048">密钥的大小不能小于2048位！</string>
   <string name="msg_cr_error_no_curve">没有指定密钥大小！这是一个编程错误，请发送错误报告！</string>
   <string name="msg_cr_error_no_keysize">未指定椭圆曲线！这是一个编程错误，请发送错误报告！</string>
@@ -932,6 +946,7 @@
   <string name="msg_mf_pin">正在变更安全令牌PIN码</string>
   <string name="msg_mf_admin_pin">正在变更安全令牌管理员PIN码</string>
   <string name="msg_mf_passphrase_key">用新密码重新加密子密钥%s</string>
+  <string name="msg_mf_passphrase_empty_retry">设置新密码失败，正在尝试旧的空密钥</string>
   <string name="msg_mf_passphrase_fail">无法更改子密钥的密码！(其密码与其他密钥不一致吗？)</string>
   <string name="msg_mf_subkey_change">正在修改子密钥 %s</string>
   <string name="msg_mf_require_divert">正在将用于加解密操作的密钥转移到安全令牌中</string>
@@ -956,12 +971,14 @@
   <string name="msg_con_error_secret">重新导入私有密钥时出错</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed_error_key_not_found">未找到密钥</string>
+  <string name="msg_ed_success">密钥操作成功</string>
   <!--Promote key-->
   <string name="msg_pr_error_key_not_found">未找到密钥</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_dummy">主密钥已剥离时无法编辑密钥环！</string>
   <string name="msg_ek_error_not_found">未找到密钥</string>
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_clear_meta_mime">MIME 类型：%s</string>
   <string name="msg_dc_clear_meta_size">文件大小：%s</string>
   <string name="msg_dc_clear_meta_size_unknown">文件大小未知</string>
   <string name="msg_dc">正在开始解密操作...</string>
@@ -1004,19 +1021,53 @@
   <string name="msg_crt">正在为密钥环签名...</string>
   <string name="msg_crt_saving">保存密钥环中....</string>
   <string name="msg_crt_unlock">正在解锁主密钥</string>
+  <string name="msg_crt_success">成功认证了用户标识</string>
   <string name="msg_crt_warn_not_found">未找到密钥</string>
+  <string name="msg_crt_warn_cert_failed">认证生成失败！</string>
+  <string name="msg_crt_warn_save_failed">保存操作失败！</string>
+  <string name="msg_crt_warn_upload_failed">上传操作失败！</string>
+  <string name="msg_crt_upload_success">已成功将密钥上传到服务器</string>
+  <string name="msg_import_fetch_keyserver_ok">密钥取回成功</string>
+  <string name="msg_import_error">导入操作失败！</string>
+  <string name="msg_import_error_io">由于i/o异常，导入操作失败</string>
+  <string name="msg_import_partial">导入操作成功，但有错误！</string>
+  <string name="msg_import_success">导入操作成功！</string>
   <string name="msg_backup_error_db">数据库错误！</string>
+  <string name="msg_backup_success">备份操作成功</string>
   <string name="msg_upload_error_not_found">未找到密钥</string>
+  <string name="msg_upload_success">上传到密钥服务器成功</string>
   <string name="msg_del_error_empty">无物可删！</string>
   <string name="msg_del_error_multi_secret">密钥只能逐个删除！</string>
+  <string name="msg_del_key_fail">不能成功删除密钥 %s</string>
+  <plurals name="msg_del_ok">
+    <item quantity="other">成功删除 %d 个密钥</item>
+  </plurals>
+  <plurals name="msg_del_fail">
+    <item quantity="other">不能成功删除%d个密钥 </item>
+  </plurals>
   <string name="msg_revoke_error_empty">无物可吊销！</string>
+  <string name="msg_revoke_key_fail">不能成功吊销密钥</string>
+  <string name="msg_revoke_ok">吊销密钥成功</string>
   <!--Linked Identity verification-->
+  <string name="msg_lv">正在验证关联用户标识...</string>
+  <string name="msg_lv_fetch_ok">获取成功 (HTTP %s)</string>
   <string name="msg_data">正在输入数据</string>
+  <string name="msg_data_mime_bad">无法作为 MIME 数据解析</string>
+  <string name="msg_data_mime_from_extension">从扩展名猜测 MIME 类型</string>
+  <string name="msg_data_mime">解析 MIME 数据结构</string>
+  <string name="msg_data_mime_none">没有找到 MIME 结构</string>
+  <string name="msg_data_mime_part">正在处理 MIME 部分</string>
+  <string name="msg_data_ok">数据处理成功</string>
+  <string name="msg_data_skip_mime">跳过 MIME 解析</string>
+  <string name="msg_get_success">下载成功！</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_error_key_mismatch">证明内容与该密钥指纹不匹配</string>
   <string name="msg_keybase_error_dns_fail">取回 DNS 的 TXT 记录失败</string>
   <string name="msg_keybase_error_msg_payload_mismatch">证明内容匹配失败</string>
   <!--Messages for Mime parsing operation-->
+  <string name="msg_mime_parsing_start">正在解析 MIME 结构</string>
+  <string name="msg_mime_parsing_error">MIME 解析成功！</string>
+  <string name="msg_mime_parsing_success">MIME 解析成功！</string>
   <!--PassphraseCache-->
   <!--Keyserver sync-->
   <string name="keyserver_sync_orbot_notif_start">打开Orbot</string>
@@ -1028,23 +1079,26 @@
   <string name="first_time_blank_security_token_yes">使用该安全令牌</string>
   <string name="backup_text">含有您私钥的备份在任何情况下都不能分享给其他人！</string>
   <string name="backup_all">所有密钥 + 您自己的密钥</string>
-  <string name="backup_public_keys">所有密匙</string>
+  <string name="backup_public_keys">所有密钥</string>
   <string name="backup_section">备份</string>
   <string name="restore_section">恢复</string>
   <!--unsorted-->
+  <string name="label_user_id">用户标识</string>
   <string name="certs_text">此处仅显示自认证及被您的密钥所验证的凭证。</string>
   <string name="label_revocation">吊销原因</string>
   <string name="label_cert_type">输入</string>
   <string name="error_key_not_found">未找到密钥</string>
-  <string name="error_key_processing">处理密匙出现错误！</string>
+  <string name="error_key_processing">处理密钥出现错误！</string>
   <string name="key_stripped">已剥离</string>
-  <string name="key_divert">转移到安全令牌</string>
+  <string name="key_divert">已移至安全令牌</string>
   <string name="key_no_passphrase">没有密码</string>
   <string name="key_unavailable">不可用</string>
   <string name="secret_cannot_multiple">只能逐个删除您的密钥！</string>
   <string name="title_view_cert">查看认证详情</string>
   <string name="unknown_algorithm">未知</string>
   <string name="can_sign_not">无法签署</string>
+  <string name="exchange_description">在开始密钥交换之前，在右侧指定参与者的数量，然后点击“开始交换”按钮。\n\n您将被要求回答两个问题以确认由正确的参与者参与交换过程，并且他们的指纹是正确的。</string>
+  <string name="btn_start_exchange">开始交换</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
   <!--Passphrase wizard-->
@@ -1104,12 +1158,13 @@
   <string name="snack_armor_off">编码输出为二进制</string>
   <string name="snack_compression_on">压缩 <b>启用</b>.</string>
   <string name="snack_compression_off">压缩 <b>禁用</b>.</string>
-  <string name="error_loading_keys">加载密匙出现错误！</string>
+  <string name="error_loading_keys">加载密钥出现错误！</string>
   <string name="error_empty_log">(错误，空日志)</string>
   <string name="error_reading_text">解密时无法读取输入！</string>
+  <string name="error_reading_aosp">读取数据失败，这是 Android 邮件客户端的一个错误 !（错误 #290）</string>
   <string name="filename_unknown">未知文件名(触摸打开)</string>
   <string name="filename_unknown_text">文本(触摸显示)</string>
-  <string name="filename_keys">密匙备份(触摸导出)</string>
+  <string name="filename_keys">密钥备份(触摸导出)</string>
   <string name="intent_show">显示 签名/加密 内容</string>
   <string name="intent_share">分享 签名/加密 内容</string>
   <string name="view_internal">在 OpenKeychain 中查看</string>
@@ -1123,9 +1178,19 @@
   <string name="file_delete_exception">无法删除原始文件！</string>
   <string name="error_clipboard_empty">剪贴板为空！</string>
   <string name="error_clipboard_copy">复制到剪贴板时出现错误！</string>
+  <string name="linked_create_https_1_1">通过创建一个该类型的关联用户标识，您可以将您的密钥连接到您控制的一个网站。</string>
+  <string name="linked_create_https_1_2">请在您的网站上发布一个文本文档，然后再创建一个链接到它的关联用户标识。</string>
   <string name="linked_create_https_1_4">范例:https://example.com/pgpkey.txt</string>
+  <string name="linked_create_https_2_4">验证成功之后，触摸完成按钮将关联用户标识加入您的密钥环，从而完成操作。</string>
+  <string name="linked_create_twitter_1_1">通过创建一个该类型的关联用户标识，您可以将您的密钥连接到您控制的一个Twitter账号。</string>
+  <string name="linked_create_twitter_1_2">请在您的时间线上发布一条指定推文，然后再创建一个链接到该推文的关联用户标识。</string>
+  <string name="linked_create_twitter_2_4">验证成功之后，触摸完成按钮将关联用户标识加入您的密钥环，从而完成操作。</string>
   <string name="linked_create_verify">校验</string>
+  <plurals name="linked_id_expand">
+    <item quantity="other">共有 %d 个以上未知的用户标识类型</item>
+  </plurals>
   <!--Other Linked Identity strings-->
+  <string name="linked_select_1">\'关联用户标识\' 将您的 PGP 密钥关联到网络资源上。</string>
   <string name="linked_select_2">请选择一个类型:</string>
   <string name="linked_verifying">正在校验…</string>
   <string name="linked_verify_success">已通过验证！</string>
@@ -1139,7 +1204,7 @@
   <string name="linked_title_dns">域名(DNS)</string>
   <string name="linked_title_github">GitHub</string>
   <string name="linked_title_twitter">Twitter</string>
-  <string name="card_linked_identity">关联身份</string>
+  <string name="card_linked_identity">关联用户标识</string>
   <string name="linked_button_verify">校验</string>
   <string name="linked_button_retry">重试</string>
   <string name="linked_button_retry_step">重试上一步骤</string>
@@ -1148,7 +1213,8 @@
   <string name="linked_text_verifying">正在校验…</string>
   <string name="linked_text_error">错误</string>
   <string name="linked_text_confirming">确认中...</string>
-  <string name="title_linked_id_create">创建关联身份</string>
+  <string name="linked_ids_more_unknown">%d 个以上未知用户标识类型</string>
+  <string name="title_linked_id_create">创建关联用户标识</string>
   <string name="linked_github_text">本操作将关联您的密钥到 GitHub 账户。\n触摸按钮以继续。</string>
   <string name="linked_progress_auth_github">使用 GitHub 授权…</string>
   <string name="linked_progress_post_gist">提交摘要...</string>
@@ -1159,7 +1225,7 @@
   <string name="linked_error_network">网络错误！</string>
   <string name="linked_error_http">通讯错误:%s</string>
   <string name="linked_webview_title_github">GitHub授权</string>
-  <string name="linked_gist_description">OpenKeychain 关联身份</string>
+  <string name="linked_gist_description">OpenKeychain 关联用户标识</string>
   <string name="linked_empty">关联您的密钥到 GitHub，Twitter 或其它网站！</string>
   <string name="snack_btn_overwrite">重写</string>
   <string name="backup_code_explanation">备份将使用代码加密。请在继续操作前将其抄写下来！</string>
