@@ -126,7 +126,7 @@ public class OpenPgpSignatureResultBuilder {
             if (mSenderAddress != null) {
                 if (userIdListContainsAddress(mSenderAddress, confirmedUserIds)) {
                     setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_CONFIRMED);
-                } else if (allUserIds.contains(mSenderAddress)) {
+                } else if (userIdListContainsAddress(mSenderAddress, allUserIds)) {
                     setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_UNCONFIRMED);
                 } else {
                     setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_MISSING);
