@@ -19,12 +19,11 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,6 +31,11 @@ import android.widget.TextView;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
+import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
+import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -49,11 +53,16 @@ import java.util.Map;
 public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder> {
 
     private Context mContext;
+    private ImportKeysListener mListener;
     private boolean mNonInteractive;
+
+    private LoaderState mLoaderState;
     private List<ImportKeysListEntry> mData;
 
-    public ImportKeysAdapter(Context mContext, boolean mNonInteractive) {
+    public ImportKeysAdapter(Context mContext, ImportKeysListener listener, boolean mNonInteractive) {
+
         this.mContext = mContext;
+        this.mListener = listener;
         this.mNonInteractive = mNonInteractive;
     }
 
@@ -68,6 +77,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         public ImageView status;
         public View userIdsDivider;
         public LinearLayout userIdsList;
+        public Button importButton;
 
         public ViewHolder(View container) {
             super(container);
@@ -78,6 +88,10 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     public void clearData() {
         mData = null;
         notifyDataSetChanged();
+    }
+
+    public void setLoaderState(LoaderState loaderState) {
+        this.mLoaderState = loaderState;
     }
 
     public void setData(List<ImportKeysListEntry> data) {
@@ -119,6 +133,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         vh.status = (ImageView) v.findViewById(R.id.import_item_status);
         vh.userIdsDivider = v.findViewById(R.id.import_item_status_divider);
         vh.userIdsList = (LinearLayout) v.findViewById(R.id.import_item_user_ids_list);
+        vh.importButton = (Button) v.findViewById(R.id.import_item_button);
 
         return vh;
     }
@@ -126,8 +141,19 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final ImportKeysListEntry entry = mData.get(position);
-        Highlighter highlighter = new Highlighter(mContext, entry.getQuery());
 
+        holder.importButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mLoaderState instanceof BytesLoaderState) {
+                    mListener.importKey(new ParcelableKeyRing(entry.getEncodedRing()));
+                } else if (mLoaderState instanceof CloudLoaderState) {
+                    //TODO
+                }
+            }
+        });
+
+        Highlighter highlighter = new Highlighter(mContext, entry.getQuery());
         // main user id
         String userId = entry.getUserIds().get(0);
         OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);

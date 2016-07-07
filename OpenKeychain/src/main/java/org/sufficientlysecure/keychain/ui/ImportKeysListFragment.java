@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListCloudLoader;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListLoader;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -70,6 +71,7 @@ public class ImportKeysListFragment extends Fragment implements
     public static final String ARG_CLOUD_SEARCH_PREFS = "cloud_search_prefs";
 
     private FragmentActivity mActivity;
+    private ImportKeysListener mCallback;
 
     private ImportKeysListFragmentBinding binding;
     private ParcelableProxy mParcelableProxy;
@@ -200,7 +202,7 @@ public class ImportKeysListFragment extends Fragment implements
         mRecyclerView.setLayoutManager(layoutManager);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new ImportKeysAdapter(mActivity, nonInteractive);
+        mAdapter = new ImportKeysAdapter(mActivity, mCallback, nonInteractive);
         mRecyclerView.setAdapter(mAdapter);
 
         if (dataUri != null || bytes != null) {
@@ -220,6 +222,18 @@ public class ImportKeysListFragment extends Fragment implements
         }
 
         return view;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mCallback = (ImportKeysListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement ImportKeysListener");
+        }
     }
 
     @Override
@@ -297,6 +311,8 @@ public class ImportKeysListFragment extends Fragment implements
     ) {
         ArrayList<ImportKeysListEntry> result = data.getResult();
         binding.setStatus(result.size() > 0 ? STATUS_LOADED : STATUS_EMPTY);
+
+        mAdapter.setLoaderState(mLoaderState);
         mAdapter.setData(result);
 
         // free old cached key data

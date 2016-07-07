@@ -37,6 +37,7 @@ import java.util.HashSet;
 public class ImportKeysListEntry implements Serializable, Parcelable {
     private static final long serialVersionUID = -7797972103284992662L;
 
+    private byte[] mEncodedRing;
     private ArrayList<String> mUserIds;
     private HashMap<String, HashSet<String>> mMergedUserIds;
     private long mKeyId;
@@ -138,6 +139,10 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setExpired(boolean expired) {
         mExpired = expired;
+    }
+
+    public byte[] getEncodedRing() {
+        return mEncodedRing;
     }
 
     public long getKeyId() {
@@ -272,7 +277,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
      * Constructor based on key object, used for import from NFC, QR Codes, files
      */
     @SuppressWarnings("unchecked")
-    public ImportKeysListEntry(Context context, UncachedKeyRing ring) {
+    public ImportKeysListEntry(Context context, UncachedKeyRing ring, byte[] encodedRing) {
+        mEncodedRing = encodedRing;
         mSecretKey = ring.isSecret();
         UncachedPublicKey key = ring.getPublicKey();
 

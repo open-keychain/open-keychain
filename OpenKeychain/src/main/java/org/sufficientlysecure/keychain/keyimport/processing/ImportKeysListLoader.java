@@ -18,13 +18,6 @@
 package org.sufficientlysecure.keychain.keyimport.processing;
 
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.AsyncTaskLoader;
@@ -43,6 +36,13 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 public class ImportKeysListLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
@@ -117,7 +117,9 @@ public class ImportKeysListLoader
         return mParcelableRings;
     }
 
-    /** Reads all PGPKeyRing objects from the bytes of an InputData object. */
+    /**
+     * Reads all PGPKeyRing objects from the bytes of an InputData object.
+     */
     private void generateListOfKeyrings(InputData inputData) {
         PositionAwareInputStream progressIn = new PositionAwareInputStream(
                 inputData.getInputStream());
@@ -131,9 +133,10 @@ public class ImportKeysListLoader
             IteratorWithIOThrow<UncachedKeyRing> it = UncachedKeyRing.fromStream(bufferedInput);
             while (it.hasNext()) {
                 UncachedKeyRing ring = it.next();
-                ImportKeysListEntry item = new ImportKeysListEntry(getContext(), ring);
+                byte[] encodedRing = ring.getEncoded();
+                ImportKeysListEntry item = new ImportKeysListEntry(getContext(), ring, encodedRing);
                 mData.add(item);
-                mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(ring.getEncoded()));
+                mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(encodedRing));
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException on parsing key file! Return NoValidKeysException!", e);
