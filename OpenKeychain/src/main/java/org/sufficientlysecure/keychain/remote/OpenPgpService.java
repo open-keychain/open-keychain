@@ -467,11 +467,8 @@ public class OpenPgpService extends Service {
                 cryptoInput.mPassphrase =
                         new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
             }
-            if (data.hasExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT_WRAPPER)) {
-                // this is wrapped in a Bundle to avoid ClassLoader problems
-                Bundle wrapperBundle = data.getBundleExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT_WRAPPER);
-                wrapperBundle.setClassLoader(getClassLoader());
-                OpenPgpDecryptionResult decryptionResult = wrapperBundle.getParcelable(OpenPgpApi.EXTRA_DECRYPTION_RESULT);
+            if (data.hasExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT)) {
+                OpenPgpDecryptionResult decryptionResult = data.getParcelableExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT);
                 if (decryptionResult != null && decryptionResult.hasDecryptedSessionKey()) {
                     cryptoInput.addCryptoData(decryptionResult.getSessionKey(), decryptionResult.getDecryptedSessionKey());
                 }
@@ -915,6 +912,9 @@ public class OpenPgpService extends Service {
             @NonNull Intent data,
             @Nullable InputStream inputStream,
             @Nullable OutputStream outputStream) {
+
+        // We need to be able to load our own parcelables
+        data.setExtrasClassLoader(getClassLoader());
 
         Intent errorResult = checkRequirements(data);
         if (errorResult != null) {
