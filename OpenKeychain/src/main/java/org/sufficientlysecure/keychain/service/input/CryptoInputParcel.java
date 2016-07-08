@@ -17,17 +17,16 @@
 
 package org.sufficientlysecure.keychain.service.input;
 
-
-import java.nio.ByteBuffer;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Passphrase;
+
+import java.nio.ByteBuffer;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is a base class for the input of crypto operations.

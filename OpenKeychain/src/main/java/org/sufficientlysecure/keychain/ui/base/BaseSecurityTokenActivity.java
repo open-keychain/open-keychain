@@ -67,6 +67,8 @@ import nordpol.android.TagDispatcher;
 public abstract class BaseSecurityTokenActivity extends BaseActivity
         implements OnDiscoveredTagListener, UsbConnectionDispatcher.OnDiscoveredUsbDeviceListener {
     public static final int REQUEST_CODE_PIN = 1;
+    public static final int REQUEST_KEYRING_PASSPHRASE_FOR_PIN = 2;
+    public static final int REQUEST_KEYRING_PASSPHRASE_FOR_MOVE_TO_CARD = 3;
 
     public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";
 
@@ -389,19 +391,31 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         mNfcTagDispatcher.enableExclusiveNfc();
     }
 
-    protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput) {
+    protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput, Passphrase keyringPassphrase) {
 
         try {
-            Passphrase passphrase = PassphraseCacheService.getCachedSubkeyPassphrase(this,
+            Passphrase pinPassphrase = PassphraseCacheService.getCachedSubkeyPassphrase(this,
                     requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
-            if (passphrase != null) {
-                mSecurityTokenHelper.setPin(passphrase);
+            if (pinPassphrase != null) {
+                mSecurityTokenHelper.setPin(pinPassphrase);
                 return;
+            }
+
+            if (keyringPassphrase == null) {
+                keyringPassphrase =
+                        PassphraseCacheService.getCachedPassphrase(
+                        this, requiredInput.getMasterKeyId());
+            }
+            if (keyringPassphrase == null) {
+                Intent intent = new Intent(this, PassphraseDialogActivity.class);
+                intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
+                        RequiredInputParcel.createRequiredKeyringPassphrase(requiredInput));
+                startActivityForResult(intent, REQUEST_KEYRING_PASSPHRASE_FOR_PIN);
             }
 
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
-                    RequiredInputParcel.createRequiredSubkeyPassphrase(requiredInput));
+                    RequiredInputParcel.createRequiredSubkeyPassphrase(requiredInput, keyringPassphrase));
             startActivityForResult(intent, REQUEST_CODE_PIN);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
             throw new AssertionError(
@@ -414,17 +428,31 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CODE_PIN: {
-                if (resultCode != Activity.RESULT_OK) {
-                    setResult(resultCode);
-                    finish();
-                    return;
-                }
+                finishUponBadResult(resultCode);
                 CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
                 mSecurityTokenHelper.setPin(input.getPassphrase());
-                break;
+                return;
+            }
+            case REQUEST_KEYRING_PASSPHRASE_FOR_PIN: {
+                finishUponBadResult(resultCode);
+                CryptoInputParcel cryptoInput = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                RequiredInputParcel requiredInput = data.getParcelableExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT);
+                obtainSecurityTokenPin(requiredInput, cryptoInput.getPassphrase());
+                return;
+            }
+            case REQUEST_KEYRING_PASSPHRASE_FOR_MOVE_TO_CARD: {
+                // implemented in the activities that use this request code
+                return;
             }
             default:
                 super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void finishUponBadResult(int resultCode) {
+        if (resultCode != Activity.RESULT_OK) {
+            setResult(resultCode);
+            finish();
         }
     }
 

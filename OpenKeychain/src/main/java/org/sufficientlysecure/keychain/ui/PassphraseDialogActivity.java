@@ -267,7 +267,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     }
                     case PASSPHRASE_KEYRING_UNLOCK: {
                         CachedPublicKeyRing cachedPublicKeyRing = helper.getCachedPublicKeyRing(
-                                KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getSubKeyId()));
+                                KeychainContract.KeyRings.buildUnifiedKeyRingUri(mRequiredInput.getMasterKeyId()));
 
                         String mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
                         OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);

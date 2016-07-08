@@ -143,10 +143,12 @@ public class RequiredInputParcel implements Parcelable {
     }
 
     public static RequiredInputParcel createRequiredSubkeyPassphrase(
-            RequiredInputParcel req) {
-        //TODO: wip, WHAT DO TO WITH THIS?
+            RequiredInputParcel req, Passphrase keyringPassphrase) {
+        if (keyringPassphrase == null) {
+            throw new IllegalArgumentException("keyring's passphrase is null");
+        }
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK,
-                null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId, req.mKeyringPassphrase, null);
+                null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId, keyringPassphrase, null);
     }
 
     public static RequiredInputParcel createRequiredSignPassphrase(
@@ -186,6 +188,11 @@ public class RequiredInputParcel implements Parcelable {
     public static RequiredInputParcel createRequiredKeyringPassphrase(long masterKeyId) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_KEYRING_UNLOCK,
                 null, null, null, masterKeyId, masterKeyId, null, null);
+    }
+
+    public static RequiredInputParcel createRequiredKeyringPassphrase(RequiredInputParcel req) {
+        return new RequiredInputParcel(RequiredInputType.PASSPHRASE_KEYRING_UNLOCK,
+                null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId, null, null);
     }
 
     @Override

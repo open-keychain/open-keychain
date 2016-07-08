@@ -55,9 +55,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
-        // obtain keyring passphrase
         if (!cryptoInput.hasPassphrase()) {
-            // TODO: wip check cache first
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, 2);
             return new PgpEditKeyResult(log,
                     RequiredInputParcel.createRequiredKeyringPassphrase(unlockParcel.mMasterKeyId),
