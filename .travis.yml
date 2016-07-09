@@ -1,10 +1,5 @@
 language: android
 jdk: openjdk7
-# env:
-    # global:
-        # - ANDROID_API_LEVEL=21
-          # - ANDROID_ABI=armeabi-v7a
-          # - ADB_INSTALL_TIMEOUT=8 # minutes (2 minutes by default)
 
 # force non-container build
 sudo: required
@@ -21,14 +16,11 @@ before_install:
     - cat /etc/hosts # optionally check the content *after*
 android:
     components:
-        - tools
-        - build-tools-23.0.2
-        - build-tools-23.0.1
-        - android-23
         - android-22
-        - android-21
-        - android-19
+        - android-23
+        - tools
         - platform-tools
+        - build-tools-23.0.2
         - extra-android-support
         - extra-android-m2repository
     licenses:
@@ -36,13 +28,5 @@ android:
         - 'android-sdk-license-.+'
         - 'google-gdk-license-.+'
 
-# doesn't work, travis is just too slow
-# before_script:
-# - echo no | android create avd --force -n test -t android-$ANDROID_API_LEVEL --abi $ANDROID_ABI
-# - emulator -avd test -no-skin -no-audio -no-window &
-# - ./tools/android-wait-for-emulator
-# - adb shell input keyevent 82 &
-
 script:
-    # - ./gradlew connectedAndroidTest
     - ./gradlew --stacktrace testDebug jacocoTestReport coveralls
