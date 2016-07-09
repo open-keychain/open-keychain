@@ -40,6 +40,8 @@ import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItem
 @LargeTest
 public class OpenPgpServiceTest {
 
+    public static final int ACTIVITY_WAIT_TIME = 2;
+
     @Rule
     public final ServiceTestRule mServiceRule = new ServiceTestRule();
 
@@ -79,7 +81,7 @@ public class OpenPgpServiceTest {
             PendingIntent pi = result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
             pi.send();
 
-            Thread.sleep(1 * 1000); // Wait for activity to start
+            Thread.sleep(ACTIVITY_WAIT_TIME * 1000); // Wait for activity to start
             onView(withText(R.string.api_register_allow)).perform(click());
         }
 
@@ -118,7 +120,7 @@ public class OpenPgpServiceTest {
             PendingIntent pi = result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
             pi.send();
 
-            Thread.sleep(1 * 1000); // Wait for activity to start
+            Thread.sleep(ACTIVITY_WAIT_TIME * 1000); // Wait for activity to start
             onData(withKeyItemId(0x9D604D2F310716A3L))
                     .inAdapterView(isAssignableFrom(AdapterView.class))
                     .perform(click());
@@ -141,7 +143,7 @@ public class OpenPgpServiceTest {
             PendingIntent pi = result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
             pi.send();
 
-            Thread.sleep(1 * 1000); // Wait for activity to start
+            Thread.sleep(ACTIVITY_WAIT_TIME * 1000); // Wait for activity to start
             onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
 
             // Needed to correctly execute test on Travis
