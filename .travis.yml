@@ -1,11 +1,8 @@
 language: android
 jdk: openjdk7
 env:
-  matrix:
-    - ANDROID_TARGET=android-21 ANDROID_ABI=armeabi-v7a
-  global:
-    # wait up to 10 minutes for adb to connect to emulator
-    - ADB_INSTALL_TIMEOUT=10
+  - TEST=unit
+  - TEST=android ANDROID_TARGET=android-21 ANDROID_ABI=armeabi-v7a ADB_INSTALL_TIMEOUT=10
 
 # force non-container build
 sudo: required
@@ -16,33 +13,36 @@ sudo: required
 #    hostname: short-hostname
 # workaround from https://github.com/travis-ci/travis-ci/issues/5227#issuecomment-165131913
 before_install:
-    - cat /etc/hosts # optionally check the content *before*
-    - sudo hostname "$(hostname | cut -c1-63)"
-    - sed -e "s/^\\(127\\.0\\.0\\.1.*\\)/\\1 $(hostname | cut -c1-63)/" /etc/hosts | sudo tee /etc/hosts
-    - cat /etc/hosts # optionally check the content *after*
-android:
-    components:
-        - android-22
-        - android-23
-        - tools
-        - platform-tools
-        - build-tools-23.0.2
-        - extra-android-support
-        - extra-android-m2repository
-        - sys-img-armeabi-v7a-android-21
-    licenses:
-        - 'android-sdk-preview-license-52d11cd2'
-        - 'android-sdk-license-.+'
-        - 'google-gdk-license-.+'
+  - cat /etc/hosts # optionally check the content *before*
+  - sudo hostname "$(hostname | cut -c1-63)"
+  - sed -e "s/^\\(127\\.0\\.0\\.1.*\\)/\\1 $(hostname | cut -c1-63)/" /etc/hosts | sudo tee /etc/hosts
+  - cat /etc/hosts # optionally check the content *after*
 
-before_script:
-    - echo no | android create avd --force --name test --target $ANDROID_TARGET --abi $ANDROID_ABI
-    - emulator -avd test -no-skin -no-audio -no-window &
-    - android-wait-for-emulator
-    - adb devices
-    - adb shell input keyevent 82 &
-    - adb shell svc power stayon true
+android:
+  components:
+    - android-22
+    - android-23
+    - tools
+    - platform-tools
+    - build-tools-23.0.2
+    - extra-android-support
+    - extra-android-m2repository
+    - sys-img-armeabi-v7a-android-21
+  licenses:
+    - 'android-sdk-preview-license-52d11cd2'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
 
 script:
-    - ./gradlew --stacktrace connectedFdroidDebugAndroidTest -i
-    - ./gradlew --stacktrace testDebug jacocoTestReport coveralls
+  - if [ ${TEST} == "unit" ]; then
+    ./gradlew --stacktrace testDebug jacocoTestReport coveralls;
+    fi
+  - if [ ${TEST} == "android" ]; then
+    echo no | android create avd --force --name test --target $ANDROID_TARGET --abi $ANDROID_ABI;
+    emulator -avd test -no-skin -no-audio -no-window &
+    android-wait-for-emulator;
+    adb devices;
+    adb shell svc power stayon true;
+    adb shell input keyevent 82;
+    ./gradlew --stacktrace connectedFdroidDebugAndroidTest -i;
+    fi
