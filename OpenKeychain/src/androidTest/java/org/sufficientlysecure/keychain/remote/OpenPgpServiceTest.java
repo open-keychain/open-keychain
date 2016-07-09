@@ -22,6 +22,7 @@ import org.sufficientlysecure.keychain.R;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import static android.support.test.espresso.Espresso.closeSoftKeyboard;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -78,6 +79,7 @@ public class OpenPgpServiceTest {
             PendingIntent pi = result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
             pi.send();
 
+            Thread.sleep(1 * 1000); // Wait for activity to start
             onView(withText(R.string.api_register_allow)).perform(click());
         }
 
@@ -141,6 +143,11 @@ public class OpenPgpServiceTest {
 
             Thread.sleep(1 * 1000); // Wait for activity to start
             onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
+
+            // Needed to correctly execute test on Travis
+            closeSoftKeyboard();
+            Thread.sleep(1 * 1000);
+
             onView(withText(R.string.btn_unlock)).perform(click());
         }
 
