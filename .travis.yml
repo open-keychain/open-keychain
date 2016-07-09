@@ -1,5 +1,11 @@
 language: android
 jdk: openjdk7
+env:
+  matrix:
+    - ANDROID_TARGET=android-21 ANDROID_ABI=armeabi-v7a
+  global:
+    # wait up to 10 minutes for adb to connect to emulator
+    - ADB_INSTALL_TIMEOUT=10
 
 # force non-container build
 sudo: required
@@ -23,10 +29,20 @@ android:
         - build-tools-23.0.2
         - extra-android-support
         - extra-android-m2repository
+        - sys-img-armeabi-v7a-android-21
     licenses:
         - 'android-sdk-preview-license-52d11cd2'
         - 'android-sdk-license-.+'
         - 'google-gdk-license-.+'
 
+before_script:
+    - echo no | android create avd --force --name test --target $ANDROID_TARGET --abi $ANDROID_ABI
+    - emulator -avd test -no-skin -no-audio -no-window &
+    - android-wait-for-emulator
+    - adb devices
+    - adb shell input keyevent 82 &
+    - adb shell svc power stayon true
+
 script:
+    - ./gradlew --stacktrace connectedFdroidDebugAndroidTest -i
     - ./gradlew --stacktrace testDebug jacocoTestReport coveralls
