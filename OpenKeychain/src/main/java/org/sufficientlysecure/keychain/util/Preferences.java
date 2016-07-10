@@ -206,6 +206,12 @@ public class Preferences {
         editor.commit();
     }
 
+    public void setUseNumKeypadForSecurityTokenPin(boolean useNumKeypad) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN, useNumKeypad);
+        editor.commit();
+    }
+
     public boolean getUseArmor() {
         return mSharedPreferences.getBoolean(Pref.USE_ARMOR, false);
     }

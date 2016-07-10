@@ -23,15 +23,32 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:text="@string/enter_passphrase" />
 
-        <EditText
-            android:id="@+id/passphrase_passphrase"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:imeOptions="actionDone"
-            android:hint="@string/label_passphrase"
-            android:ems="10"
-            android:layout_gravity="center_horizontal" />
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/passphrase_passphrase"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:imeOptions="actionDone"
+                android:hint="@string/label_passphrase"
+                android:ems="10"
+                android:layout_weight="1"
+                android:layout_gravity="center_horizontal" />
+
+            <ImageButton
+                android:id="@+id/passphrase_keyboard"
+                android:src="@drawable/ic_numeric_black_24dp"
+                style="@style/MaterialFlatButton"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical" />
+
+        </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="wrap_content"

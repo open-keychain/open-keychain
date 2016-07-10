@@ -7,8 +7,4 @@
         android:defaultValue="false"
         android:key="passphraseCacheSubs"
         android:title="@string/label_passphrase_cache_subs" />
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="useNumKeypadForYubikeyPin"
-        android:title="@string/label_use_num_keypad_for_security_token_pin" />
 </PreferenceScreen>

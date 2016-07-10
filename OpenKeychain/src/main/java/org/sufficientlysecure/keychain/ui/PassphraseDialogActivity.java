@@ -31,6 +31,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.Layout;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.view.ContextThemeWrapper;
@@ -42,6 +43,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
@@ -286,12 +288,46 @@ public class PassphraseDialogActivity extends FragmentActivity {
             mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
             mPassphraseEditText.setOnEditorActionListener(this);
 
-            if ((keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForSecurityTokenPin())
-                    || keyType == CanonicalizedSecretKey.SecretKeyType.PIN) {
+            final ImageButton keyboard = (ImageButton) mLayout.findViewById(R.id.passphrase_keyboard);
+
+            if (keyType == CanonicalizedSecretKey.SecretKeyType.PIN) {
                 mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                keyboard.setVisibility(View.GONE);
+            } else if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD) {
+                if (Preferences.getPreferences(activity).useNumKeypadForSecurityTokenPin()) {
+                    mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    keyboard.setImageResource(R.drawable.ic_alphabetical_black_24dp);
+                    keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_alpha));
+                } else {
+                    mPassphraseEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                    keyboard.setImageResource(R.drawable.ic_numeric_black_24dp);
+                    keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_numeric));
+                }
+
+                keyboard.setVisibility(View.VISIBLE);
+                keyboard.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Preferences prefs = Preferences.getPreferences(activity);
+                        if (prefs.useNumKeypadForSecurityTokenPin()) {
+                            prefs.setUseNumKeypadForSecurityTokenPin(false);
+
+                            mPassphraseEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                            keyboard.setImageResource(R.drawable.ic_numeric_black_24dp);
+                            keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_alpha));
+                        } else {
+                            prefs.setUseNumKeypadForSecurityTokenPin(true);
+
+                            mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                            keyboard.setImageResource(R.drawable.ic_alphabetical_black_24dp);
+                            keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_numeric));
+                        }
+                    }
+                });
+
             } else {
-                mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                mPassphraseEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                keyboard.setVisibility(View.GONE);
             }
 
             mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
@@ -358,7 +394,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             }
         }
-
 
         @Override
         public void onStart() {
