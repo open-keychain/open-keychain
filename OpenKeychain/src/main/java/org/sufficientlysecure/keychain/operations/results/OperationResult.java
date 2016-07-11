@@ -525,7 +525,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_KC_UAT_REMOVE (LogLevel.DEBUG, R.string.msg_kc_uat_remove),
         MSG_KC_UAT_WARN_ENCODING (LogLevel.WARN, R.string.msg_kc_uat_warn_encoding),
 
-
         // keyring consolidation
         MSG_MG_ERROR_SECRET_DUMMY(LogLevel.ERROR, R.string.msg_mg_error_secret_dummy),
         MSG_MG_ERROR_ENCODE(LogLevel.ERROR, R.string.msg_mg_error_encode),
@@ -535,6 +534,16 @@ public abstract class OperationResult implements Parcelable {
         MSG_MG_NEW_SUBKEY (LogLevel.DEBUG, R.string.msg_mg_new_subkey),
         MSG_MG_FOUND_NEW (LogLevel.OK, R.string.msg_mg_found_new),
         MSG_MG_UNCHANGED (LogLevel.OK, R.string.msg_mg_unchanged),
+
+        // keyring change unlock
+        MSG_CU (LogLevel.START, R.string.msg_cu),
+        MSG_CU_ERROR_DECRYPT_KEYRING (LogLevel.ERROR, R.string.msg_cu_error_decrypt_keyring),
+        MSG_CU_ERROR_INCORRECT_PASSPHRASE (LogLevel.ERROR, R.string.msg_cu_error_incorrect_passphrase),
+        MSG_CU_ERROR_KEYRING_NOT_FOUND (LogLevel.ERROR, R.string.msg_cu_error_keyring_not_found),
+        MSG_CU_ERROR_NO_PARCEL (LogLevel.ERROR, R.string.msg_cu_error_no_parcel),
+        MSG_CU_FETCHING_KEYRING (LogLevel.DEBUG, R.string.msg_cu_fetching_keyring),
+        MSG_CU_REQUIRE_KEYRING_PASSPHRASE (LogLevel.OK, R.string.msg_cu_require_keyring_passphrase),
+        MSG_CU_SUCCESS (LogLevel.OK, R.string.msg_cu_success),
 
         // secret key create
         MSG_CR (LogLevel.START, R.string.msg_cr),

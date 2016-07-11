@@ -1064,6 +1064,16 @@
     <string name="msg_mg_found_new">"Found %s new certificates in keyring"</string>
     <string name="msg_mg_unchanged">"Nothing to merge"</string>
 
+    <!-- Keyring change unlock -->
+    <string name="msg_cu">"Changing password for keyring"</string>
+    <string name="msg_cu_error_decrypt_keyring">"Error decrypting secret keyring! (this is a bug, please report)"</string>
+    <string name="msg_cu_error_incorrect_passphrase">"Decrypt secret keyring failed due to incorrect password! (this is a bug, please report)"</string>
+    <string name="msg_cu_error_keyring_not_found">"Keyring not found!"</string>
+    <string name="msg_cu_error_no_parcel">"Missing ChangeUnlockParcel! (this is a bug, please report)"</string>
+    <string name="msg_cu_fetching_keyring">"Fetching keyring for modification"</string>
+    <string name="msg_cu_require_keyring_passphrase">"Keyring password required, requesting user input…"</string>
+    <string name="msg_cu_success">"Successfully changed keyring's password"</string>
+
     <!-- createSecretKeyRing -->
     <string name="msg_cr">"Generating new master key"</string>
     <string name="msg_cr_error_no_master">"No master key options specified!"</string>
@@ -1189,11 +1199,11 @@
     <string name="msg_ed_error_no_parcel">"Missing SaveKeyringParcel! (this is a bug, please report)"</string>
     <string name="msg_ed_error_key_not_found">"Key not found!"</string>
     <string name="msg_ed_error_keyring_not_found">"Keyring not found!"</string>
-    <string name="msg_ed_error_decrypt_keyring">"Error encrypting/decrypting secret keyring! (this is a bug, please report)"</string>
+    <string name="msg_ed_error_decrypt_keyring">"Error decrypting secret keyring! (this is a bug, please report)"</string>
     <string name="msg_ed_error_extract_public_upload">"Error extracting public key for upload!"</string>
-    <string name="msg_ed_error_incorrect_passphrase">"Decrypt secret keyring failed due to incorrect passphrase! (this is a bug, please report)"</string>
+    <string name="msg_ed_error_incorrect_passphrase">"Decrypt secret keyring failed due to incorrect password! (this is a bug, please report)"</string>
     <string name="msg_ed_fetching">"Fetching key to modify (%s)"</string>
-    <string name="msg_ed_require_keyring_passphrase">"Keyring password required, requesting user input..."</string>
+    <string name="msg_ed_require_keyring_passphrase">"Keyring password required, requesting user input…"</string>
     <string name="msg_ed_success">"Key operation successful"</string>
 
     <!-- Promote key -->

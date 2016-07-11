@@ -48,16 +48,15 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
     @NonNull
     public OperationResult execute(ChangeUnlockParcel unlockParcel, CryptoInputParcel cryptoInput) {
         OperationResult.OperationLog log = new OperationResult.OperationLog();
-        // TODO: add a new log event for change unlock
-        log.add(LogType.MSG_ED, 0);
+        log.add(LogType.MSG_CU, 0);
 
         if (unlockParcel == null || unlockParcel.mMasterKeyId == null) {
-            log.add(LogType.MSG_ED_ERROR_NO_PARCEL, 1);
+            log.add(LogType.MSG_CU_ERROR_NO_PARCEL, 1);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
         if (!cryptoInput.hasPassphrase()) {
-            log.add(LogType.MSG_MF_REQUIRE_SUBKEY_PASSPHRASE, 2);
+            log.add(LogType.MSG_CU_REQUIRE_KEYRING_PASSPHRASE, 2);
             return new PgpEditKeyResult(log,
                     RequiredInputParcel.createRequiredKeyringPassphrase(unlockParcel.mMasterKeyId),
                     cryptoInput);
@@ -70,20 +69,20 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         CanonicalizedSecretKeyRing retrievedRing;
         {
             try {
-                log.add(LogType.MSG_ED_FETCHING, 1,
+                log.add(LogType.MSG_CU_FETCHING_KEYRING, 1,
                         KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
                 retrievedRing = mProviderHelper.getCanonicalizedSecretKeyRing(
                         unlockParcel.mMasterKeyId,
                         cryptoInput.getPassphrase()
                 );
             } catch (ProviderHelper.NotFoundException e) {
-                log.add(LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
+                log.add(LogType.MSG_CU_ERROR_KEYRING_NOT_FOUND, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             } catch (ByteArrayEncryptor.EncryptDecryptException e) {
-                log.add(LogType.MSG_ED_ERROR_DECRYPT_KEYRING, 2);
+                log.add(LogType.MSG_CU_ERROR_DECRYPT_KEYRING, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
-                log.add(LogType.MSG_ED_ERROR_INCORRECT_PASSPHRASE, 2);
+                log.add(LogType.MSG_CU_ERROR_INCORRECT_PASSPHRASE, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
         }
@@ -105,7 +104,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         PassphraseCacheService.clearCachedPassphrase(mContext, retrievedRing.getMasterKeyId());
 
         updateProgress(R.string.progress_done, 100, 100);
-        log.add(LogType.MSG_ED_SUCCESS, 0);
+        log.add(LogType.MSG_CU_SUCCESS, 0);
         return new EditKeyResult(EditKeyResult.RESULT_OK, log, retrievedRing.getMasterKeyId());
 
     }
