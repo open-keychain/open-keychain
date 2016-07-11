@@ -20,9 +20,11 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.TaskStackBuilder;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -270,11 +272,23 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
 
     @Override
     public void finish() {
+        finishWithFirstTimeHandling(null);
+    }
+
+    public void finishWithFirstTimeHandling(@Nullable Intent intentToLaunch) {
         if (mFirstTime) {
             Preferences prefs = Preferences.getPreferences(this);
             prefs.setFirstTime(false);
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+
+            TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
+            Intent mainActivityIntent = new Intent(this, MainActivity.class);
+            taskStackBuilder.addNextIntent(mainActivityIntent);
+            if (intentToLaunch != null) {
+                taskStackBuilder.addNextIntent(intentToLaunch);
+            }
+            taskStackBuilder.startActivities();
+        } else if (intentToLaunch != null) {
+            startActivity(intentToLaunch);
         }
 
         super.finish();

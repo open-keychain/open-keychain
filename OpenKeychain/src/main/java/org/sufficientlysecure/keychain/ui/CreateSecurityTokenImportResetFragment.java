@@ -281,15 +281,20 @@ public class CreateSecurityTokenImportResetFragment
         // null-protected from Queueing*Fragment
         Activity activity = getActivity();
 
-        Intent intent = new Intent(activity, ViewKeyActivity.class);
+        Intent viewKeyIntent = new Intent(activity, ViewKeyActivity.class);
         // use the imported masterKeyId, not the one from the token, because
         // that one might* just have been a subkey of the imported key
-        intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyIds[0]));
-        intent.putExtra(ViewKeyActivity.EXTRA_DISPLAY_RESULT, result);
-        intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mTokenAid);
-        intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mTokenUserId);
-        intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mTokenFingerprints);
-        startActivity(intent);
-        activity.finish();
+        viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyIds[0]));
+        viewKeyIntent.putExtra(ViewKeyActivity.EXTRA_DISPLAY_RESULT, result);
+        viewKeyIntent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mTokenAid);
+        viewKeyIntent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mTokenUserId);
+        viewKeyIntent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mTokenFingerprints);
+
+        if (activity instanceof CreateKeyActivity) {
+            ((CreateKeyActivity) activity).finishWithFirstTimeHandling(viewKeyIntent);
+        } else {
+            activity.startActivity(viewKeyIntent);
+            activity.finish();
+        }
     }
 }
