@@ -105,7 +105,7 @@ public class BackupOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snips");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase1));
+            parcel.mPassphrase = mKeyPhrase1;
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             assertTrue("initial test key creation must succeed", result.success());
@@ -123,7 +123,7 @@ public class BackupOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snails");
-            parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase("1234")));
+            parcel.mPassphrase = new Passphrase("1234");
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             assertTrue("initial test key creation must succeed", result.success());

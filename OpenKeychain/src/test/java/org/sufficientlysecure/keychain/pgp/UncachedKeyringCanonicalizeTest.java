@@ -24,7 +24,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.Before;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.bouncycastle.bcpg.BCPGInputStream;
@@ -53,7 +52,6 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBu
 import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.bouncycastle.util.Strings;
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -117,7 +115,7 @@ public class UncachedKeyringCanonicalizeTest {
         }
 
         // passphrase is tested in PgpKeyOperationTest, just use empty here
-        parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));
+        parcel.mPassphrase = new Passphrase();
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         PgpEditKeyResult result = op.createSecretKeyRing(parcel);

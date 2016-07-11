@@ -108,7 +108,9 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                 } catch (NotFoundException e) {
                     log.add(LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
-                } catch (ByteArrayEncryptor.EncryptDecryptException | ByteArrayEncryptor.IncorrectPassphraseException e) {
+                } catch (ByteArrayEncryptor.EncryptDecryptException e) {
+                    // TODO: wip
+                } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
                     // TODO: wip
                 }
             } else {
@@ -165,8 +167,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
             }
         }
 
-        // TODO: wip
-        KeyringPassphrases passphrases = new KeyringPassphrases(ring.getMasterKeyId(), null);
+        KeyringPassphrases passphrases = new KeyringPassphrases(ring.getMasterKeyId(), saveParcel.mPassphrase);
 
         // Save the new keyring.
         SaveKeyringResult saveResult = mProviderHelper

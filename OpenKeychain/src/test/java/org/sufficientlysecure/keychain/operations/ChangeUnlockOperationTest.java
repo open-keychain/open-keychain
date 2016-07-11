@@ -14,7 +14,6 @@ import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
@@ -27,7 +26,6 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import java.io.PrintStream;
-import java.security.Provider;
 import java.security.Security;
 
 import static org.junit.Assert.assertTrue;
@@ -60,7 +58,7 @@ public class ChangeUnlockOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     SaveKeyringParcel.Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snips");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mPassphrase));
+            parcel.mPassphrase = mPassphrase;
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             assertTrue("initial test key creation must succeed", result.success());

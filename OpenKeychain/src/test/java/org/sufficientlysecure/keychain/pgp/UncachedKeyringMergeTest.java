@@ -24,7 +24,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.bouncycastle.bcpg.BCPGInputStream;
@@ -34,7 +33,6 @@ import org.bouncycastle.bcpg.SecretKeyPacket;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.Strings;
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
@@ -114,7 +112,7 @@ public class UncachedKeyringMergeTest {
             }
 
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));
+            parcel.mPassphrase = new Passphrase();
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();
@@ -131,7 +129,7 @@ public class UncachedKeyringMergeTest {
 
             parcel.mAddUserIds.add("shy");
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));
+            parcel.mPassphrase = new Passphrase();
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();

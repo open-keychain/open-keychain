@@ -83,7 +83,7 @@ public class CertifyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("derp");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase1));
+            parcel.mPassphrase = mKeyPhrase1;
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -107,7 +107,7 @@ public class CertifyOperationTest {
             parcel.mAddUserAttribute.add(
                     WrappedUserAttribute.fromSubpacket(random.nextInt(100)+1, uatdata));
 
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase2));
+            parcel.mPassphrase = mKeyPhrase2;
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
