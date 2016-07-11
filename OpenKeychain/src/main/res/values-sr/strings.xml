@@ -1013,7 +1013,7 @@
   <string name="msg_mf_primary_new">Генеришем нови сертификат за нови примарни кориснички ИД</string>
   <string name="msg_mf_restricted_mode">Пребацујем на ограничени режим рада</string>
   <string name="msg_mf_subkey_change">Модификујем поткључ %s</string>
-  <string name="msg_mf_require_passphrase">Потребна је лозинка за извршење радњи</string>
+  <string name="msg_mf_require_subkey_passphrase">Потребна је лозинка за извршење радњи</string>
   <string name="msg_mf_subkey_new">Додајем нови поткључ типа %s</string>
   <string name="msg_mf_subkey_new_id">ИД новог поткључа: %s</string>
   <string name="msg_mf_error_past_expiry">Датум истицања не може бити у прошлости!</string>

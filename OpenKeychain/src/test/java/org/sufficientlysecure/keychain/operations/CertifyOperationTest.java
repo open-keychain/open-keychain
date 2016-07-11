@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -60,7 +61,6 @@ public class CertifyOperationTest {
 
     static UncachedKeyRing mStaticRing1, mStaticRing2;
     static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
-    static Passphrase mKeyPhrase2 = TestingUtils.genPassphrase(true);
 
     static PrintStream oldShadowStream;
 
@@ -83,7 +83,6 @@ public class CertifyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("derp");
-            parcel.mPassphrase = mKeyPhrase1;
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -107,8 +106,6 @@ public class CertifyOperationTest {
             parcel.mAddUserAttribute.add(
                     WrappedUserAttribute.fromSubpacket(random.nextInt(100)+1, uatdata));
 
-            parcel.mPassphrase = mKeyPhrase2;
-
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
@@ -125,11 +122,8 @@ public class CertifyOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRing(
-                mStaticRing1,
-                TestingUtils.generateImportPassphrases(mStaticRing1, mKeyPhrase1, mKeyPhrase1),
-                new ProgressScaler()
-        );
+        providerHelper.saveSecretKeyRing(mStaticRing1,
+                new KeyringPassphrases(mStaticRing1.getMasterKeyId(), mKeyPhrase1), new ProgressScaler());
         providerHelper.savePublicKeyRing(mStaticRing2.extractPublicKeyRing());
 
         // ok NOW log verbosely!

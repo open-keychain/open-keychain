@@ -62,7 +62,9 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -84,7 +86,7 @@ public class BackupOperationTest {
 
     static UncachedKeyRing mStaticRing1, mStaticRing2;
     static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
-    static Passphrase mKeyPhrase2 = TestingUtils.genPassphrase(true);
+    static Passphrase mKeyPhrase2 = new Passphrase("1234");
 
     static PrintStream oldShadowStream;
 
@@ -105,7 +107,6 @@ public class BackupOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snips");
-            parcel.mPassphrase = mKeyPhrase1;
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             assertTrue("initial test key creation must succeed", result.success());
@@ -123,7 +124,6 @@ public class BackupOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snails");
-            parcel.mPassphrase = new Passphrase("1234");
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             assertTrue("initial test key creation must succeed", result.success());
@@ -142,13 +142,16 @@ public class BackupOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRingForTest(mStaticRing1);
-        providerHelper.saveSecretKeyRingForTest(mStaticRing2);
+        providerHelper.saveSecretKeyRing(mStaticRing1,
+                new KeyringPassphrases(mStaticRing1.getMasterKeyId(), mKeyPhrase1), new ProgressScaler());
+        providerHelper.saveSecretKeyRing(mStaticRing2,
+                new KeyringPassphrases(mStaticRing2.getMasterKeyId(), mKeyPhrase2), new ProgressScaler());
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
     }
 
+    // TODO: wip, backup testing
     @Test
     public void testExportAllLocalStripped() throws Exception {
         BackupOperation op = new BackupOperation(RuntimeEnvironment.application,

@@ -1009,8 +1009,8 @@
   <string name="msg_mf_restricted_mode">Wechsle zu eingeschränktem Vorgangsmodus</string>
   <string name="msg_mf_subkey_change">Unterschlüssel %s wird verändert</string>
   <string name="msg_mf_require_divert">Kryptographische Vorgänge werden auf Security-Token umgeleitet</string>
-  <string name="msg_mf_require_passphrase">Für die Vorgänge ist ein Passwort erforderlich</string>
-  <string name="msg_mf_subkey_new">Neue Unterschlüssel vom Typ %s werden hinzugefügt</string>
+  <string name="msg_mf_require_subkey_passphrase">Für die Vorgänge ist ein Passwort erforderlich</string>
+  <string name="msg_mf_subkey_new">Neuen Unterschlüssel vom Typ %s werden hinzugefügt</string>
   <string name="msg_mf_subkey_new_id">Neue Unterschlüsselkennung: %s</string>
   <string name="msg_mf_error_past_expiry">Ablaufdatum kann nicht in der Vergangenheit liegen!</string>
   <string name="msg_mf_subkey_revoke">Unterschlüssel %s wird widerrufen</string>

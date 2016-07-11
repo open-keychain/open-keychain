@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -45,6 +46,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 /**
@@ -83,39 +85,79 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
+        Long masterKeyId = saveParcel.mMasterKeyId;
+        boolean isNewKey = masterKeyId == null;
+        Passphrase keyringPassphrase;
+
+        // get the keyring's passphrase
+        if (isNewKey) {
+            keyringPassphrase = saveParcel.mPassphrase;
+        } else {
+            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
+            keyringPassphrase = cryptoInput.getPassphrase();
+
+            if (keyringPassphrase == null) {
+                log.add(LogType.MSG_ED_REQUIRE_KEYRING_PASSPHRASE, 2);
+                return new EditKeyResult(log,
+                        RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId), cryptoInput);
+            }
+
+            // store the master key's passphrase instead & pass it to key modification ops
+            try {
+                switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
+                    case DIVERT_TO_CARD:
+                    case GNU_DUMMY: {
+                        cryptoInput.mPassphrase = null;
+                        break;
+                    }
+                    case PASSPHRASE_EMPTY: {
+                        cryptoInput.mPassphrase = new Passphrase();
+                        break;
+                    }
+                    default: {
+                        // other types of subkeys should not exist
+                        log.add(LogType.MSG_CRT_ERROR_UNLOCK_MASTER, 2);
+                        return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                    }
+                }
+            } catch (NotFoundException e) {
+                log.add(LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+            }
+        }
+
         // Perform actual modification (or creation)
         PgpEditKeyResult modifyResult = null;
         {
             PgpKeyOperation keyOperations =
                     new PgpKeyOperation(new ProgressScaler(mProgressable, 10, 60, 100), mCancelled);
 
-            // If a key id is specified, fetch and edit
-            if (saveParcel.mMasterKeyId != null) {
+            if (isNewKey) {
+                modifyResult = keyOperations.createSecretKeyRing(saveParcel);
+            } else {
                 try {
-
                     log.add(LogType.MSG_ED_FETCHING, 1,
                             KeyFormattingUtils.convertKeyIdToHex(saveParcel.mMasterKeyId));
-                    // TODO: wip
+
                     CanonicalizedSecretKeyRing secRing =
-                            mProviderHelper.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId, null);
+                            mProviderHelper.getCanonicalizedSecretKeyRing(
+                                    saveParcel.mMasterKeyId, keyringPassphrase);
 
                     modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
                     if (modifyResult.isPending()) {
                         log.add(modifyResult, 1);
                         return new EditKeyResult(log, modifyResult);
                     }
-
                 } catch (NotFoundException e) {
-                    log.add(LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
+                    log.add(LogType.MSG_ED_ERROR_KEYRING_NOT_FOUND, 2);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 } catch (ByteArrayEncryptor.EncryptDecryptException e) {
-                    // TODO: wip
+                    log.add(LogType.MSG_ED_ERROR_DECRYPT_KEYRING, 2);
+                    return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
-                    // TODO: wip
+                    log.add(LogType.MSG_ED_ERROR_INCORRECT_PASSPHRASE, 2);
+                    return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
-            } else {
-                // otherwise, create new one
-                modifyResult = keyOperations.createSecretKeyRing(saveParcel);
             }
         }
 
@@ -167,7 +209,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
             }
         }
 
-        KeyringPassphrases passphrases = new KeyringPassphrases(ring.getMasterKeyId(), saveParcel.mPassphrase);
+        KeyringPassphrases passphrases = new KeyringPassphrases(ring.getMasterKeyId(), keyringPassphrase);
 
         // Save the new keyring.
         SaveKeyringResult saveResult = mProviderHelper

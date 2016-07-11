@@ -907,7 +907,7 @@
   <string name="msg_mf_primary_new">Bezig met aanmaken van nieuw certificaat voor nieuwe primaire gebruikers-ID</string>
   <string name="msg_mf_restricted_mode">Veranderen naar beperkte bewerkingsmodus</string>
   <string name="msg_mf_subkey_change">Bezig met wijzigen van subsleutel %s</string>
-  <string name="msg_mf_require_passphrase">Wachtwoord vereist voor bewerkingen</string>
+  <string name="msg_mf_require_subkey_passphrase">Wachtwoord vereist voor bewerkingen</string>
   <string name="msg_mf_subkey_new">Bezig met toevoegen van nieuwe subsleutel of type %s</string>
   <string name="msg_mf_subkey_new_id">Nieuwe subsleutel-ID: %s</string>
   <string name="msg_mf_error_past_expiry">Verloopdatum kan niet in het verleden zijn!</string>

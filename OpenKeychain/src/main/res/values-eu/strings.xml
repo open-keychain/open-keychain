@@ -935,7 +935,7 @@
   <string name="msg_mf_primary_new">Egiaztagiri berria sortzen lehen erabiltzaile ID berriarentzat</string>
   <string name="msg_mf_restricted_mode">Eragiketa modu murriztura aldatzen</string>
   <string name="msg_mf_subkey_change">%s azpigiltza aldatzen</string>
-  <string name="msg_mf_require_passphrase">Sarhitza behar da eragiketetarako</string>
+  <string name="msg_mf_require_subkey_passphrase">Sarhitza behar da eragiketetarako</string>
   <string name="msg_mf_subkey_new">%s motako azpigiltza berria gehitzen</string>
   <string name="msg_mf_subkey_new_id">Azpigiltza berriaren ID-a: %s</string>
   <string name="msg_mf_error_past_expiry">Iraungitze eguna ezin da iraganean izan!</string>

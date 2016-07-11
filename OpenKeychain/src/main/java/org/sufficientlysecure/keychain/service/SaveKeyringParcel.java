@@ -119,7 +119,7 @@ public class SaveKeyringParcel implements Parcelable {
         return isRestrictedOnly() && mChangeSubKeys.isEmpty();
     }
 
-    /** Returns true iff this parcel does not contain any operations which require a passphrase. */
+    /** Returns true iff this parcel does not contain any operations which require a master key & its passphrase. */
     public boolean isRestrictedOnly() {
         if (mPassphrase != null || !mAddUserIds.isEmpty() || !mAddUserAttribute.isEmpty()
                 || !mAddSubKeys.isEmpty() || mChangePrimaryUserId != null || !mRevokeUserIds.isEmpty()

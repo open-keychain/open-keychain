@@ -995,7 +995,7 @@
   <string name="msg_mf_restricted_mode">制限操作モードへ変更</string>
   <string name="msg_mf_subkey_change">副鍵 %s を変更中</string>
   <string name="msg_mf_require_divert">セキュリティトークンでの暗号化操作に切り替えます</string>
-  <string name="msg_mf_require_passphrase">操作にパスワードが必要です</string>
+  <string name="msg_mf_require_subkey_passphrase">操作にパスワードが必要です</string>
   <string name="msg_mf_subkey_new">種類%sの新しい副鍵を追加</string>
   <string name="msg_mf_subkey_new_id">新しい副鍵 ID: %s</string>
   <string name="msg_mf_error_past_expiry">期限切れ日を過去にはできません!</string>

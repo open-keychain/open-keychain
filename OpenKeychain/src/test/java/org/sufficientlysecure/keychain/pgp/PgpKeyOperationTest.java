@@ -46,7 +46,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
@@ -80,7 +79,7 @@ import java.util.Random;
 public class PgpKeyOperationTest {
 
     static UncachedKeyRing staticRing;
-    final static Passphrase passphrase = TestingUtils.genPassphrase();
+    final static Passphrase passphrase = new Passphrase();
 
     UncachedKeyRing ring;
     PgpKeyOperation op;
@@ -113,7 +112,6 @@ public class PgpKeyOperationTest {
             parcel.mAddUserAttribute.add(uat);
         }
 
-        parcel.mPassphrase = passphrase;
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         PgpEditKeyResult result = op.createSecretKeyRing(parcel);
@@ -153,7 +151,6 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.RSA, new Random().nextInt(256)+255, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
-            parcel.mPassphrase = passphrase;
 
             assertFailure("creating ring with < 2048 bit keysize should fail", parcel,
                     LogType.MSG_CR_ERROR_KEYSIZE_2048);
@@ -164,7 +161,6 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ELGAMAL, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
-            parcel.mPassphrase = passphrase;
 
             assertFailure("creating ring with ElGamal master key should fail", parcel,
                     LogType.MSG_CR_ERROR_FLAGS_ELGAMAL);
@@ -175,7 +171,6 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddUserIds.add("lotus");
-            parcel.mPassphrase = passphrase;
 
             assertFailure("creating master key with null expiry should fail", parcel,
                     LogType.MSG_CR_ERROR_NULL_EXPIRY);
@@ -186,7 +181,6 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddUserIds.add("shy");
-            parcel.mPassphrase = passphrase;
 
             assertFailure("creating ring with non-certifying master key should fail", parcel,
                     LogType.MSG_CR_ERROR_NO_CERTIFY);
@@ -196,7 +190,6 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mPassphrase = passphrase;
 
             assertFailure("creating ring without user ids should fail", parcel,
                     LogType.MSG_CR_ERROR_NO_USER_ID);
@@ -205,7 +198,6 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddUserIds.add("shy");
-            parcel.mPassphrase = passphrase;
 
             assertFailure("creating ring with no master key should fail", parcel,
                     LogType.MSG_CR_ERROR_NO_MASTER);
@@ -324,17 +316,6 @@ public class PgpKeyOperationTest {
 
             assertModifyFailure("keyring modification with null fingerprint should fail",
                     ring, parcel, LogType.MSG_MF_ERROR_FINGERPRINT);
-        }
-
-        {
-            Passphrase badphrase = new Passphrase();
-            if (badphrase.equals(passphrase)) {
-                badphrase = new Passphrase("a");
-            }
-            parcel.mAddUserIds.add("allure");
-
-            assertModifyFailure("keyring modification with bad passphrase should fail",
-                    ring, parcel, new CryptoInputParcel(badphrase), LogType.MSG_MF_UNLOCK_ERROR);
         }
 
         {
@@ -809,7 +790,7 @@ public class PgpKeyOperationTest {
         long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
         UncachedKeyRing modified;
 
-        { // we should be able to change the stripped status of subkeys without passphrase
+        { // we should be able to change the stripped status of subkeys without a subkey passphrase
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
             modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, new CryptoInputParcel());
@@ -1097,6 +1078,7 @@ public class PgpKeyOperationTest {
 
         // applying the same modification AGAIN should not add more certifications but drop those
         // as duplicates
+        //noinspection UnusedAssignment, we're only interested in the side effects
         modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB,
                 new CryptoInputParcel(new Date(), passphrase), true, false);
 
@@ -1109,7 +1091,6 @@ public class PgpKeyOperationTest {
         Assert.assertTrue("new packet must be signature", p instanceof SignaturePacket);
 
     }
-
 
     @Test
     public void testUserIdPrimary() throws Exception {
@@ -1144,7 +1125,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             //noinspection SpellCheckingInspection
             parcel.mChangePrimaryUserId = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-            if (parcel.mChangePrimaryUserId.equals(passphrase)) {
+            if (parcel.mChangePrimaryUserId.equals(passphrase.toStringUnsafe())) {
                 parcel.mChangePrimaryUserId += "A";
             }
 
@@ -1156,7 +1137,7 @@ public class PgpKeyOperationTest {
 
     }
 
-    @Test
+    // Subkey passphrase change no longer supported
     public void testPassphraseChange() throws Exception {
 
         // change passphrase to empty
@@ -1183,7 +1164,7 @@ public class PgpKeyOperationTest {
                 3, onlyB.size());
 
         { // quick check to make sure no two secret keys have the same IV
-            HashSet<ByteBuffer> ivs = new HashSet<ByteBuffer>();
+            HashSet<ByteBuffer> ivs = new HashSet<>();
             for (int i = 0; i < 3; i++) {
                 SecretKeyPacket p = (SecretKeyPacket) new BCPGInputStream(
                         new ByteArrayInputStream(onlyB.get(i).buf)).readPacket();
@@ -1234,7 +1215,7 @@ public class PgpKeyOperationTest {
 
     }
 
-    @Test
+    // Subkey passphrase change no longer supported
     public void testRemovePassphrases() {
         // change passphrase to non-empty passphrase
         Passphrase nonEmptyPassphrase = TestingUtils.genPassphrase(true);
@@ -1300,7 +1281,6 @@ public class PgpKeyOperationTest {
 
     @Test
     public void testRestricted() throws Exception {
-
         CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
 
         parcel.mAddUserIds.add("discord");
@@ -1376,8 +1356,8 @@ public class PgpKeyOperationTest {
         CanonicalizedKeyRing canonicalized = inputKeyRing.canonicalize(new OperationLog(), 0);
         Assert.assertNotNull("canonicalization must succeed", canonicalized);
 
-        ArrayList onlyA = new ArrayList<RawPacket>();
-        ArrayList onlyB = new ArrayList<RawPacket>();
+        ArrayList onlyA = new ArrayList<>();
+        ArrayList onlyB = new ArrayList<>();
         //noinspection unchecked
         Assert.assertTrue("keyrings differ", !KeyringTestingHelper.diffKeyrings(
                 expectedKeyRing.getEncoded(), expectedKeyRing.getEncoded(), onlyA, onlyB));

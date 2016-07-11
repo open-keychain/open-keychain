@@ -1122,7 +1122,7 @@
     <string name="msg_mf_restricted_mode">"Changing to restricted operation mode"</string>
     <string name="msg_mf_subkey_change">"Modifying subkey %s"</string>
     <string name="msg_mf_require_divert">"Using Security Token for crypto operations"</string>
-    <string name="msg_mf_require_passphrase">"Password required for operations"</string>
+    <string name="msg_mf_require_subkey_passphrase">"Password required for operations"</string>
     <string name="msg_mf_subkey_new">"Adding new subkey of type %s"</string>
     <string name="msg_mf_subkey_new_id">"New subkey ID: %s"</string>
     <string name="msg_mf_error_past_expiry">"Expiry date cannot be in the past!"</string>
@@ -1188,10 +1188,12 @@
     <string name="msg_ed_caching_new">"Caching new password"</string>
     <string name="msg_ed_error_no_parcel">"Missing SaveKeyringParcel! (this is a bug, please report)"</string>
     <string name="msg_ed_error_key_not_found">"Key not found!"</string>
-    <string name="msg_ed_error_encrypt_decrypt">"Error encrypting/decrypting secret keyring! (this is a bug, please report)"</string>
+    <string name="msg_ed_error_keyring_not_found">"Keyring not found!"</string>
+    <string name="msg_ed_error_decrypt_keyring">"Error encrypting/decrypting secret keyring! (this is a bug, please report)"</string>
     <string name="msg_ed_error_extract_public_upload">"Error extracting public key for upload!"</string>
     <string name="msg_ed_error_incorrect_passphrase">"Decrypt secret keyring failed due to incorrect passphrase! (this is a bug, please report)"</string>
     <string name="msg_ed_fetching">"Fetching key to modify (%s)"</string>
+    <string name="msg_ed_require_keyring_passphrase">"Keyring password required, requesting user input..."</string>
     <string name="msg_ed_success">"Key operation successful"</string>
 
     <!-- Promote key -->

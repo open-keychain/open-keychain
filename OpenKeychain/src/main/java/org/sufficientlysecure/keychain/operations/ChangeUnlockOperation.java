@@ -48,6 +48,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
     @NonNull
     public OperationResult execute(ChangeUnlockParcel unlockParcel, CryptoInputParcel cryptoInput) {
         OperationResult.OperationLog log = new OperationResult.OperationLog();
+        // TODO: add a new log event for change unlock
         log.add(LogType.MSG_ED, 0);
 
         if (unlockParcel == null || unlockParcel.mMasterKeyId == null) {
@@ -56,7 +57,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         }
 
         if (!cryptoInput.hasPassphrase()) {
-            log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, 2);
+            log.add(LogType.MSG_MF_REQUIRE_SUBKEY_PASSPHRASE, 2);
             return new PgpEditKeyResult(log,
                     RequiredInputParcel.createRequiredKeyringPassphrase(unlockParcel.mMasterKeyId),
                     cryptoInput);
@@ -79,7 +80,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
                 log.add(LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             } catch (ByteArrayEncryptor.EncryptDecryptException e) {
-                log.add(LogType.MSG_ED_ERROR_ENCRYPT_DECRYPT, 2);
+                log.add(LogType.MSG_ED_ERROR_DECRYPT_KEYRING, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
                 log.add(LogType.MSG_ED_ERROR_INCORRECT_PASSPHRASE, 2);

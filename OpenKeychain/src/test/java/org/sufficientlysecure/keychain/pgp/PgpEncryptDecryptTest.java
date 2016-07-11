@@ -62,6 +62,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.Require
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -102,7 +103,6 @@ public class PgpEncryptDecryptTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("bloom");
-            parcel.mPassphrase = mKeyPhrase1;
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -120,7 +120,6 @@ public class PgpEncryptDecryptTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("belle");
-            parcel.mPassphrase = mKeyPhrase2;
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -159,16 +158,18 @@ public class PgpEncryptDecryptTest {
 
         providerHelper.saveSecretKeyRing(
                 mStaticRing1,
-                TestingUtils.generateImportPassphrases(mStaticRing1, mKeyPhrase1, mKeyPhrase1),
+                new KeyringPassphrases(mStaticRing1.getMasterKeyId(), mKeyPhrase1),
                 new ProgressScaler());
         providerHelper.saveSecretKeyRing(
                 mStaticRing2,
-                TestingUtils.generateImportPassphrases(mStaticRing2, mKeyPhrase2, mKeyPhrase2),
+                new KeyringPassphrases(mStaticRing2.getMasterKeyId(), mKeyPhrase2),
                 new ProgressScaler());
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
     }
+
+    // TODO: WIP, haven't gotten tests working yet
 
     @Test
     public void testSymmetricEncryptDecrypt() {

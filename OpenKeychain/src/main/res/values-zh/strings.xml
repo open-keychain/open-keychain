@@ -950,7 +950,7 @@
   <string name="msg_mf_passphrase_fail">无法更改子密钥的密码！(其密码与其他密钥不一致吗？)</string>
   <string name="msg_mf_subkey_change">正在修改子密钥 %s</string>
   <string name="msg_mf_require_divert">正在将用于加解密操作的密钥转移到安全令牌中</string>
-  <string name="msg_mf_require_passphrase">需要为操作提供密码</string>
+  <string name="msg_mf_require_subkey_passphrase">需要为操作提供密码</string>
   <string name="msg_mf_subkey_new">正在新建 %s 类型子密钥</string>
   <string name="msg_mf_subkey_new_id">新建子密钥ID：%s</string>
   <string name="msg_mf_error_past_expiry">过期时间不能设置为过去！</string>

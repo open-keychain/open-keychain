@@ -73,7 +73,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
-import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
@@ -381,7 +380,6 @@ public class PgpKeyOperation {
          * 4a. For each subkey change, generate new subkey binding certificate
          * 4b. For each subkey revocation, generate new subkey revocation certificate
          * 5. Generate and add new subkeys
-         * 6. If requested, change passphrase
          */
 
         log.add(LogType.MSG_MF, indent,
@@ -473,15 +471,6 @@ public class PgpKeyOperation {
             return internalRestricted(sKR, saveParcel, log, indent + 1);
         }
 
-        // TODO: wip
-        // Do we require a subkey passphrase? If so, pass it along
-        if (!isDivertToCard(masterSecretKey) && !cryptoInput.hasPassphrase()) {
-            log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
-            return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                    masterSecretKey.getKeyID(), masterSecretKey.getKeyID(), null,
-                    cryptoInput.getSignatureTime()), cryptoInput);
-        }
-
         // read masterKeyFlags, and use the same as before.
         // since this is the master key, this contains at least CERTIFY_OTHER
         PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
@@ -521,6 +510,10 @@ public class PgpKeyOperation {
             progress(R.string.progress_modify_unlock, 10);
             log.add(LogType.MSG_MF_UNLOCK, indent);
             {
+                if (!cryptoInput.hasPassphrase())  {
+                    log.add(LogType.MSG_MF_UNLOCK_ERROR, indent + 1);
+                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                }
                 try {
                     PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                             Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(cryptoInput.getPassphrase().getCharArray());
@@ -1056,24 +1049,7 @@ public class PgpKeyOperation {
                 return new PgpEditKeyResult(PgpEditKeyResult.RESULT_CANCELLED, log, null);
             }
 
-            // 6. If requested, change passphrase
-            // TODO: WIP, i think we still need this, verify
-            if (saveParcel.mPassphrase != null) {
-                progress(R.string.progress_modify_passphrase, 90);
-                log.add(LogType.MSG_MF_PASSPHRASE, indent);
-                indent += 1;
-
-                sKR = applyNewPassphrase(sKR, masterPublicKey, cryptoInput.getPassphrase(),
-                        saveParcel.mPassphrase, log, indent);
-                if (sKR == null) {
-                    // The error has been logged above, just return a bad state
-                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-                }
-
-                indent -= 1;
-            }
-
-            // 7. if requested, change PIN and/or Admin PIN on security token
+            // 6. if requested, change PIN and/or Admin PIN on security token
             if (saveParcel.mSecurityTokenPin != null) {
                 progress(R.string.progress_modify_pin, 90);
                 log.add(LogType.MSG_MF_PIN, indent);
@@ -1130,7 +1106,7 @@ public class PgpKeyOperation {
     }
 
     /** This method does the actual modifications in a keyring just like internal, except it
-     * supports only the subset of operations which require no passphrase, and will error
+     * supports only the subset of operations which does not require a master key, and will error
      * otherwise.
      */
     private PgpEditKeyResult internalRestricted(PGPSecretKeyRing sKR, SaveKeyringParcel saveParcel,

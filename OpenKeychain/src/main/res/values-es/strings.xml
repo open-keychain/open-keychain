@@ -941,7 +941,7 @@
   <string name="msg_mf_primary_new">Generando nuevo certificado para nueva identidad principal de usuario</string>
   <string name="msg_mf_restricted_mode">Cambiando al modo de operación restringido</string>
   <string name="msg_mf_subkey_change">Modificando subclave %s</string>
-  <string name="msg_mf_require_passphrase">Contraseña requerida para operaciones</string>
+  <string name="msg_mf_require_subkey_passphrase">Contraseña requerida para operaciones</string>
   <string name="msg_mf_subkey_new">Añadiendo nueva subclave de tipo %s</string>
   <string name="msg_mf_subkey_new_id">Nueva identidad de subclave: %s</string>
   <string name="msg_mf_error_past_expiry">¡La fecha de caducidad no puede ser del pasado!</string>

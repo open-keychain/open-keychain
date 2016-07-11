@@ -1038,7 +1038,7 @@
   <string name="msg_mf_restricted_mode">Переход в ограниченный режим работы</string>
   <string name="msg_mf_subkey_change">Изменение доп. ключа %s</string>
   <string name="msg_mf_require_divert">Отвлечение на токен безопасности для криптографических операций</string>
-  <string name="msg_mf_require_passphrase">Для действий необходим пароль</string>
+  <string name="msg_mf_require_subkey_passphrase">Для действий необходим пароль</string>
   <string name="msg_mf_subkey_new">Добавление нового доп. ключа типа %s</string>
   <string name="msg_mf_subkey_new_id">Идентификатор нового доп. ключа: %s</string>
   <string name="msg_mf_error_past_expiry">Срок годности не может быть в прошлом!</string>

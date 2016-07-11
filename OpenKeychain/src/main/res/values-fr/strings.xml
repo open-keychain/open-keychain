@@ -1009,7 +1009,7 @@
   <string name="msg_mf_restricted_mode">Changement vers le mode opérationnel restreint</string>
   <string name="msg_mf_subkey_change">Modification de la sous-clef %s</string>
   <string name="msg_mf_require_divert">Déviation vers le jeton de sécurité pour les opérations de chiffrement</string>
-  <string name="msg_mf_require_passphrase">Mot de passe exigé pour les opérations</string>
+  <string name="msg_mf_require_subkey_passphrase">Mot de passe exigé pour les opérations</string>
   <string name="msg_mf_subkey_new">Ajout d\'une nouvelle sous-clef de type %s</string>
   <string name="msg_mf_subkey_new_id">Nouvelle ID de sous-clef : %s</string>
   <string name="msg_mf_error_past_expiry">La date d\'expiration ne peut pas être dans le passé !</string>

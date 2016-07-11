@@ -21,6 +21,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -39,7 +40,6 @@ public class ChangeUnlockOperationTest {
 
     static PrintStream oldShadowStream;
 
-    // TODO: WIP, write helper method for static ring generation. used in BackupOp & keyop too.
     @BeforeClass
     public static void setup() throws Exception {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
@@ -58,7 +58,6 @@ public class ChangeUnlockOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     SaveKeyringParcel.Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snips");
-            parcel.mPassphrase = mPassphrase;
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             assertTrue("initial test key creation must succeed", result.success());
@@ -76,7 +75,7 @@ public class ChangeUnlockOperationTest {
         ShadowLog.stream = oldShadowStream;
 
         providerHelper.saveSecretKeyRing(mStaticRing,
-                TestingUtils.generateImportPassphrases(mStaticRing, mPassphrase, mPassphrase), new ProgressScaler());
+                new KeyringPassphrases(mStaticRing.getMasterKeyId(), mPassphrase), new ProgressScaler());
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
     }
