@@ -343,9 +343,10 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
 
         String keyserver = null;
         ArrayList<ParcelableKeyRing> keyList = null;
-        LoaderState loaderState = listFragment.getState();
 
         Log.d(Constants.TAG, "importKey started");
+
+        LoaderState loaderState = listFragment.getState();
         if (loaderState instanceof BytesLoaderState) {
             // instead of giving the entries by Intent extra, cache them into a
             // file to prevent Java Binder problems on heavy imports
@@ -362,13 +363,15 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 return;
             }
         } else if (loaderState instanceof CloudLoaderState) {
-            //TODO
+            ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
+            keys.add(keyRing);
+
+            keyList = keys;
+            keyserver = ((CloudLoaderState) loaderState).mCloudPrefs.keyserver;
         }
 
         ImportKeysOperationCallback callback = new ImportKeysOperationCallback(this, keyserver, keyList);
-        mOperationHelper = new CryptoOperationHelper(1, this, callback, R.string.progress_importing);
-
-        mOperationHelper.cryptoOperation();
+        new CryptoOperationHelper(1, this, callback, R.string.progress_importing).cryptoOperation();
     }
 
     @Override
@@ -381,48 +384,24 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
             return;
         }
 
-        String keyserver = null;
-        ArrayList<ParcelableKeyRing> keyList = null;
-        LoaderState loaderState = listFragment.getState();
-
         Log.d(Constants.TAG, "importKeys started");
-        if (loaderState instanceof BytesLoaderState) {
-            // instead of giving the entries by Intent extra, cache them into a
-            // file to prevent Java Binder problems on heavy imports
-            // read FileImportCache for more info.
-            try {
-                // We parcel this iteratively into a file - anything we can
-                // display here, we should be able to import.
-                ParcelableFileCache<ParcelableKeyRing> cache =
-                        new ParcelableFileCache<>(this, ImportOperation.CACHE_FILE_NAME);
-                cache.writeCache(listFragment.getData());
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Problem writing cache file", e);
-                Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR).show();
-                return;
-            }
-        } else if (loaderState instanceof CloudLoaderState) {
-            //TODO This need to be removed because it makes no sense to import "all" from cloud
-            CloudLoaderState sls = (CloudLoaderState) loaderState;
-
-            // get selected key entries
-            ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
-
-            // change the format into ParcelableKeyRing
-            List<ImportKeysListEntry> entries = listFragment.getEntries();
-            for (ImportKeysListEntry entry : entries) {
-                keys.add(new ParcelableKeyRing(entry.getFingerprintHex(),
-                        entry.getKeyIdHex(), entry.getKeybaseName(), entry.getFbUsername()));
-            }
-
-            keyList = keys;
-            keyserver = sls.mCloudPrefs.keyserver;
+        // instead of giving the entries by Intent extra, cache them into a
+        // file to prevent Java Binder problems on heavy imports
+        // read FileImportCache for more info.
+        try {
+            // We parcel this iteratively into a file - anything we can
+            // display here, we should be able to import.
+            ParcelableFileCache<ParcelableKeyRing> cache =
+                    new ParcelableFileCache<>(this, ImportOperation.CACHE_FILE_NAME);
+            cache.writeCache(listFragment.getData());
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Problem writing cache file", e);
+            Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR).show();
+            return;
         }
 
-        ImportKeysOperationCallback callback = new ImportKeysOperationCallback(this, keyserver, keyList);
-        mOperationHelper = new CryptoOperationHelper(1, this, callback, R.string.progress_importing);
-
-        mOperationHelper.cryptoOperation();
+        ImportKeysOperationCallback callback = new ImportKeysOperationCallback(this, null, null);
+        new CryptoOperationHelper(1, this, callback, R.string.progress_importing).cryptoOperation();
     }
 
     @Override

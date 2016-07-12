@@ -141,23 +141,10 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final ImportKeysListEntry entry = mData.get(position);
-
-        holder.importButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mLoaderState instanceof BytesLoaderState) {
-                    mListener.importKey(new ParcelableKeyRing(entry.getEncodedRing()));
-                } else if (mLoaderState instanceof CloudLoaderState) {
-                    //TODO
-                }
-            }
-        });
-
-        Highlighter highlighter = new Highlighter(mContext, entry.getQuery());
-        // main user id
-        String userId = entry.getUserIds().get(0);
+        String userId = entry.getUserIds().get(0); // main user id
         OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
 
+        Highlighter highlighter = new Highlighter(mContext, entry.getQuery());
         // name
         if (userIdSplit.name != null) {
             // show red user id if it is a secret key
@@ -283,6 +270,18 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 }
             }
         }
+
+        holder.importButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mLoaderState instanceof BytesLoaderState) {
+                    mListener.importKey(new ParcelableKeyRing(entry.getEncodedRing()));
+                } else if (mLoaderState instanceof CloudLoaderState) {
+                    mListener.importKey(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(),
+                            entry.getKeybaseName(), entry.getFbUsername()));
+                }
+            }
+        });
     }
 
     @Override
