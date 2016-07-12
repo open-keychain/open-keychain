@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import de.measite.minidns.record.A;
+import junit.framework.Assert;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -32,7 +34,7 @@ import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -83,17 +85,32 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
 
             CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
-            // TODO: wip, db check
+
             // get keyring passphrase
-            Passphrase keyringPassphrase = cryptoInput.getPassphrase();
-            if (keyringPassphrase == null) {
-                try {
-                    keyringPassphrase = getCachedPassphrase(masterKeyId);
-                } catch (NoSecretKeyException ignored) {
-                    // treat as a cache miss for error handling purposes
+            Passphrase keyringPassphrase;
+            switch (cachedPublicKeyRing.getSecretKeyringType()) {
+                case PASSPHRASE_EMPTY: {
+                    keyringPassphrase = new Passphrase();
+                    break;
                 }
-                if (keyringPassphrase == null) {
-                    return new CertifyResult(log, RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId), cryptoInput);
+                case PASSPHRASE: {
+                    keyringPassphrase = cryptoInput.getPassphrase();
+                    if (keyringPassphrase == null) {
+                        try {
+                            keyringPassphrase = getCachedPassphrase(masterKeyId);
+                        } catch (NoSecretKeyException ignored) {
+                            // treat as a cache miss for error handling purposes
+                        }
+                        if (keyringPassphrase == null) {
+                            return new CertifyResult(log,
+                                    RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
+                                    cryptoInput);
+                        }
+                    }
+                    break;
+                }
+                default: {
+                    throw new AssertionError("Unsupported keyring type");
                 }
             }
 

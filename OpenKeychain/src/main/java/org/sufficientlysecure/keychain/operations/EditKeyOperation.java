@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import de.measite.minidns.record.A;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -32,6 +33,7 @@ import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -93,17 +95,34 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         if (isNewKey) {
             keyringPassphrase = saveParcel.mPassphrase;
         } else {
-            // TODO: wip, db check
             CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
-            keyringPassphrase = cryptoInput.getPassphrase();
 
-            if (keyringPassphrase == null) {
-                log.add(LogType.MSG_ED_REQUIRE_KEYRING_PASSPHRASE, 2);
-                return new EditKeyResult(log,
-                        RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId), cryptoInput);
+            try {
+                switch (cachedPublicKeyRing.getSecretKeyringType()) {
+                    case PASSPHRASE_EMPTY: {
+                        keyringPassphrase = new Passphrase();
+                        break;
+                    }
+                    case PASSPHRASE: {
+                        keyringPassphrase = cryptoInput.getPassphrase();
+                        if (keyringPassphrase == null) {
+                            log.add(LogType.MSG_ED_REQUIRE_KEYRING_PASSPHRASE, 2);
+                            return new EditKeyResult(log,
+                                    RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
+                                    cryptoInput);
+                        }
+                        break;
+                    }
+                    default: {
+                        throw new AssertionError("Unsupported keyring type");
+                    }
+                }
+            } catch (NotFoundException e) {
+                log.add(LogType.MSG_ED_ERROR_KEYRING_NOT_FOUND, 2);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
-            // store the master key's passphrase instead & pass it to key modification ops
+            // store the master key's passphrase & pass it to key modification ops
             try {
                 switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
                     case DIVERT_TO_CARD:
@@ -128,7 +147,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         }
 
         // Perform actual modification (or creation)
-        PgpEditKeyResult modifyResult = null;
+        PgpEditKeyResult modifyResult;
         {
             PgpKeyOperation keyOperations =
                     new PgpKeyOperation(new ProgressScaler(mProgressable, 10, 60, 100), mCancelled);

@@ -67,6 +67,7 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
@@ -617,23 +618,38 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         continue;
                     }
 
-                    // TODO: wip, db check
-                    Passphrase keyringPassphrase = cryptoInput.getPassphrase();
-                    if (keyringPassphrase == null) {
-                        try {
-                            keyringPassphrase = getCachedPassphrase(masterKeyId);
-                            log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
-                        } catch (NoSecretKeyException ignored) {
-                            log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
-                            return result.with(new DecryptVerifyResult(
-                                    DecryptVerifyResult.RESULT_ERROR, log
-                            ));
+                    SecretKeyRingType secretKeyRingType = cachedPublicKeyRing.getSecretKeyringType();
+
+                    // get keyring passphrase
+                    Passphrase keyringPassphrase;
+                    switch (secretKeyRingType) {
+                        case PASSPHRASE_EMPTY: {
+                            keyringPassphrase = new Passphrase();
+                            break;
                         }
-                        if (keyringPassphrase == null) {
-                            log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
-                            return result.with(new DecryptVerifyResult(log,
-                                    RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
-                                    cryptoInput));
+                        case PASSPHRASE: {
+                            keyringPassphrase = cryptoInput.getPassphrase();
+                            if (keyringPassphrase == null) {
+                                try {
+                                    keyringPassphrase = getCachedPassphrase(masterKeyId);
+                                    log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
+                                } catch (NoSecretKeyException ignored) {
+                                    log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
+                                    return result.with(new DecryptVerifyResult(
+                                            DecryptVerifyResult.RESULT_ERROR, log
+                                    ));
+                                }
+                                if (keyringPassphrase == null) {
+                                    log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
+                                    return result.with(new DecryptVerifyResult(log,
+                                            RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
+                                            cryptoInput));
+                                }
+                            }
+                            break;
+                        }
+                        default: {
+                            throw new AssertionError("Unsupported keyring type");
                         }
                     }
 

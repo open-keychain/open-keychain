@@ -23,6 +23,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import de.measite.minidns.record.A;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.BCPGOutputStream;
 import org.bouncycastle.bcpg.CompressionAlgorithmTags;
@@ -43,8 +44,11 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -223,25 +227,43 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 long signingMasterKeyId = data.getSignatureMasterKeyId();
                 long signingSubKeyId = data.getSignatureSubKeyId();
 
+                CachedPublicKeyRing cachedPublicKeyRing =
+                        mProviderHelper.getCachedPublicKeyRing(signingMasterKeyId);
+
+                SecretKeyRingType secretKeyRingType = cachedPublicKeyRing.getSecretKeyringType();
+
                 // get keyring passphrase
-                // TODO: wip, db check
-                Passphrase keyringPassphrase = cryptoInput.getPassphrase();
-                if (keyringPassphrase == null) {
-                    try {
-                        keyringPassphrase = getCachedPassphrase(signingMasterKeyId);
-                    } catch (NoSecretKeyException ignored) {
-                        // treat as a cache miss for error handling purposes
+                Passphrase keyringPassphrase;
+                switch (secretKeyRingType) {
+                    case PASSPHRASE_EMPTY: {
+                        keyringPassphrase = new Passphrase();
+                        break;
                     }
-                    if (keyringPassphrase == null) {
-                        log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
-                        return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredKeyringPassphrase(signingMasterKeyId), cryptoInput);
+                    case PASSPHRASE: {
+                        keyringPassphrase = cryptoInput.getPassphrase();
+                        if (keyringPassphrase == null) {
+                            try {
+                                keyringPassphrase = getCachedPassphrase(signingMasterKeyId);
+                            } catch (NoSecretKeyException ignored) {
+                                // treat as a cache miss for error handling purposes
+                            }
+                            if (keyringPassphrase == null) {
+                                log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
+                                return new PgpSignEncryptResult(log,
+                                        RequiredInputParcel.createRequiredKeyringPassphrase(signingMasterKeyId),
+                                        cryptoInput);
+                            }
+                        }
+                        break;
+                    }
+                    default: {
+                        throw new AssertionError("Unsupported keyring type");
                     }
                 }
 
                 CanonicalizedSecretKeyRing signingKeyRing =
                         mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId, keyringPassphrase);
                 signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
-
 
                 // Make sure key is not expired or revoked
                 if (signingKeyRing.isExpired() || signingKeyRing.isRevoked()
@@ -256,12 +278,13 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                     return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
 
-                switch (mProviderHelper.getCachedPublicKeyRing(signingMasterKeyId).getSecretKeyType(signingSubKeyId)) {
+                switch (cachedPublicKeyRing.getSecretKeyType(signingSubKeyId)) {
                     case DIVERT_TO_CARD:
                     case PASSPHRASE_EMPTY: {
                         if (!signingKey.unlock(new Passphrase())) {
                             throw new AssertionError(
-                                    "PASSPHRASE_EMPTY/DIVERT_TO_CARD keyphrase not unlocked with empty passphrase."
+                                    "PASSPHRASE_EMPTY/DIVERT_TO_CARD "
+                                            + "keyphrase not unlocked with empty passphrase."
                                             + " This is a programming error!");
                         }
                         break;

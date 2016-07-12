@@ -54,7 +54,9 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -112,40 +114,48 @@ public class PassphraseDialogActivity extends FragmentActivity {
         RequiredInputParcel requiredInput = getIntent().getParcelableExtra(EXTRA_REQUIRED_INPUT);
 
 
-        switch (requiredInput.mType) {
-            case PASSPHRASE_KEYRING_UNLOCK:
-            case PASSPHRASE_IMPORT_KEY:
-            case PASSPHRASE_SYMMETRIC:
-            case BACKUP_CODE:
-                return;
-            case PASSPHRASE_SUBKEY_UNLOCK: {
-                if (!requiredInput.hasKeyringPassphrase()) {
-                    throw new AssertionError("No keyring passphrase passed! (Should not happen)");
-                }
-
-                // TODO: wip do the same for keyrings after we add column to db
-                // handle empty passphrases by directly returning an empty crypto input parcel
-                try {
+        // handle empty passphrases by directly returning an empty crypto input parcel to activity
+        try {
+            switch (requiredInput.mType) {
+                case PASSPHRASE_IMPORT_KEY:
+                case PASSPHRASE_SYMMETRIC:
+                case BACKUP_CODE:
+                    return;
+                case PASSPHRASE_KEYRING_UNLOCK: {
                     CachedPublicKeyRing pubRing =
                             new ProviderHelper(this).getCachedPublicKeyRing(requiredInput.getMasterKeyId());
-                    if (pubRing.getSecretKeyType(requiredInput.getSubKeyId()) == CanonicalizedSecretKey.SecretKeyType.PASSPHRASE_EMPTY) {
-                        // return empty passphrase back to activity
+                    if (pubRing.getSecretKeyringType() == SecretKeyRingType.PASSPHRASE_EMPTY) {
                         Intent returnIntent = new Intent();
                         cryptoInputParcel.mPassphrase = new Passphrase("");
                         returnIntent.putExtra(RESULT_CRYPTO_INPUT, cryptoInputParcel);
                         setResult(RESULT_OK, returnIntent);
                         finish();
                     }
-                } catch (ProviderHelper.NotFoundException e) {
-                    Log.e(Constants.TAG, "Key not found?!", e);
-                    setResult(RESULT_CANCELED);
-                    finish();
+                    return;
                 }
-                return;
+                case PASSPHRASE_SUBKEY_UNLOCK: {
+                    if (!requiredInput.hasKeyringPassphrase()) {
+                        throw new AssertionError("No keyring passphrase passed! (Should not happen)");
+                    }
+                    CachedPublicKeyRing pubRing =
+                            new ProviderHelper(this).getCachedPublicKeyRing(requiredInput.getMasterKeyId());
+                    if (pubRing.getSecretKeyType(requiredInput.getSubKeyId()) == SecretKeyType.PASSPHRASE_EMPTY) {
+                        Intent returnIntent = new Intent();
+                        cryptoInputParcel.mPassphrase = new Passphrase("");
+                        returnIntent.putExtra(RESULT_CRYPTO_INPUT, cryptoInputParcel);
+                        setResult(RESULT_OK, returnIntent);
+                        finish();
+                    }
+                    return;
+                }
+                default: {
+                    throw new AssertionError("Unhandled input type! (Should not happen)");
+                }
             }
-            default: {
-                throw new AssertionError("Unhandled input type! (Should not happen)");
-            }
+        } catch (ProviderHelper.NotFoundException e) {
+            Log.e(Constants.TAG, "Key not found?!", e);
+            setResult(RESULT_CANCELED);
+            finish();
         }
 
     }

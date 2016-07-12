@@ -39,7 +39,6 @@ import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -279,7 +278,6 @@ public class PassphraseCacheService extends Service {
 
         // return keyring passphrase || subkey passphrase
         if (subKeyId == Constants.key.none) {
-            // TODO: wip, implement after adding col to db
             SecretKeyRingType keyType = keyRing.getSecretKeyringType();
             switch (keyType) {
                 case PASSPHRASE_EMPTY:
