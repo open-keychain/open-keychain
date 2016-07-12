@@ -618,6 +618,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         continue;
                     }
 
+                    // TODO: wip, db check
                     // get actual subkey which has been used for this encryption packet
                     //TODO: wip
                     CanonicalizedSecretKeyRing canonicalizedSecretKeyRing = mProviderHelper

@@ -57,7 +57,6 @@ import java.util.Date;
  * The passphrase cache service works with master key ids. The master key id is used to
  * retrieve relevant keyring info from the database, including passphrases for subkeys.
  * It is assumed that all subkeys from the same master key will use the same passphrase.
- * TODO: may not be the case security token related operations become more robust
  */
 public class PassphraseCacheService extends Service {
 

@@ -93,6 +93,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         if (isNewKey) {
             keyringPassphrase = saveParcel.mPassphrase;
         } else {
+            // TODO: wip, db check
             CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
             keyringPassphrase = cryptoInput.getPassphrase();
 

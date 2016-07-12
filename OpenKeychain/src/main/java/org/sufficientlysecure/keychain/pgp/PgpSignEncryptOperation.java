@@ -224,6 +224,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 long signingSubKeyId = data.getSignatureSubKeyId();
 
                 // get keyring passphrase
+                // TODO: wip, db check
                 Passphrase keyringPassphrase = cryptoInput.getPassphrase();
                 if (keyringPassphrase == null) {
                     try {

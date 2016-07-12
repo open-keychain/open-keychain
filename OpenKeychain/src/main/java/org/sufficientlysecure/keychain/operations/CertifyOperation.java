@@ -83,7 +83,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
 
             CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
-
+            // TODO: wip, db check
             // get keyring passphrase
             Passphrase keyringPassphrase = cryptoInput.getPassphrase();
             if (keyringPassphrase == null) {
