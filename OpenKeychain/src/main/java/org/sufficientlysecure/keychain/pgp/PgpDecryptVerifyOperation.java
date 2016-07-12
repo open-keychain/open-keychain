@@ -563,9 +563,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         CanonicalizedSecretKey decryptionKey = null;
         CachingDataDecryptorFactory cachedKeyDecryptorFactory = new CachingDataDecryptorFactory(
                 Constants.BOUNCY_CASTLE_PROVIDER_NAME, cryptoInput.getCryptoData());
-        ;
 
-        Passphrase passphrase = null;
+        Passphrase decryptionPassphrase = null;
 
         Iterator<?> it = enc.getEncryptedDataObjects();
 
@@ -619,40 +618,50 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     }
 
                     // TODO: wip, db check
+                    Passphrase keyringPassphrase = cryptoInput.getPassphrase();
+                    if (keyringPassphrase == null) {
+                        try {
+                            keyringPassphrase = getCachedPassphrase(masterKeyId);
+                            log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
+                        } catch (NoSecretKeyException ignored) {
+                            log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
+                            return result.with(new DecryptVerifyResult(
+                                    DecryptVerifyResult.RESULT_ERROR, log
+                            ));
+                        }
+                        if (keyringPassphrase == null) {
+                            log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
+                            return result.with(new DecryptVerifyResult(log,
+                                    RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
+                                    cryptoInput));
+                        }
+                    }
+
                     // get actual subkey which has been used for this encryption packet
-                    //TODO: wip
-                    CanonicalizedSecretKeyRing canonicalizedSecretKeyRing = mProviderHelper
-                            .getCanonicalizedSecretKeyRing(masterKeyId, null);
-                    CanonicalizedSecretKey candidateDecryptionKey = canonicalizedSecretKeyRing.getSecretKey(subKeyId);
+                    CanonicalizedSecretKeyRing canonicalizedSecretKeyRing =
+                            mProviderHelper.getCanonicalizedSecretKeyRing(masterKeyId, keyringPassphrase);
+                    CanonicalizedSecretKey candidateDecryptionKey =
+                            canonicalizedSecretKeyRing.getSecretKey(subKeyId);
 
                     if (!candidateDecryptionKey.canEncrypt()) {
                         log.add(LogType.MSG_DC_ASKIP_BAD_FLAGS, indent + 1);
                         continue;
                     }
 
-                    if (secretKeyType == SecretKeyType.DIVERT_TO_CARD) {
-                        passphrase = null;
-                    } else if (secretKeyType == SecretKeyType.PASSPHRASE_EMPTY) {
-                        passphrase = new Passphrase("");
-                    } else if (cryptoInput.hasPassphrase()) {
-                        passphrase = cryptoInput.getPassphrase();
-                    } else {
-                        // if no passphrase was explicitly set try to get it from the cache service
-                        try {
-                            // returns "" if key has no passphrase
-                            passphrase = getCachedPassphrase(subKeyId);
-                            log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
-                        } catch (PassphraseCacheInterface.NoSecretKeyException e) {
-                            log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
-                            return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
+                    switch (secretKeyType) {
+                        case DIVERT_TO_CARD: {
+                            decryptionPassphrase = null;
+                            break;
                         }
-
-                        // if passphrase was not cached, return here indicating that a passphrase is missing!
-                        if (passphrase == null) {
-                            log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
-                            return result.with(new DecryptVerifyResult(log,
-                                    RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, subKeyId, null),
-                                    cryptoInput));
+                        case PASSPHRASE_EMPTY: {
+                            decryptionPassphrase = new Passphrase();
+                            break;
+                        }
+                        default: {
+                            // other types of subkeys should not exist
+                            log.add(LogType.MSG_DC_ERROR_UNLOCK_SUBKEY, indent + 1);
+                            return result.with(new DecryptVerifyResult(
+                                    DecryptVerifyResult.RESULT_ERROR, log));
                         }
                     }
 
@@ -671,8 +680,14 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     // continue with the next packet in the while loop
                     log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
                     continue;
-                } catch (ByteArrayEncryptor.EncryptDecryptException | ByteArrayEncryptor.IncorrectPassphraseException e) {
-                    //TODO: wip
+                } catch (ByteArrayEncryptor.EncryptDecryptException e) {
+                    log.add(LogType.MSG_DC_ERROR_DECRYPT_KEYRING, indent);
+                    return result.with(
+                            new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
+                } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
+                    log.add(LogType.MSG_DC_ERROR_UNLOCK_KEYRING, indent);
+                    return result.with(
+                            new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
                 }
 
                 // break out of while, only decrypt the first packet where we have a key
@@ -701,13 +716,13 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 if (!cryptoInput.hasPassphrase()) {
 
                     try {
-                        passphrase = getCachedPassphrase(key.symmetric);
+                        decryptionPassphrase = getCachedPassphrase(key.symmetric);
                         log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
                     } catch (PassphraseCacheInterface.NoSecretKeyException e) {
                         // nvm
                     }
 
-                    if (passphrase == null) {
+                    if (decryptionPassphrase == null) {
                         log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
                         RequiredInputParcel requiredInputParcel = useBackupCode ?
                                 RequiredInputParcel.createRequiredBackupCode() :
@@ -718,7 +733,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     }
 
                 } else {
-                    passphrase = cryptoInput.getPassphrase();
+                    decryptionPassphrase = cryptoInput.getPassphrase();
                 }
 
                 // break out of while, only decrypt the first packet
@@ -747,7 +762,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build();
             PBEDataDecryptorFactory decryptorFactory = new JcePBEDataDecryptorFactoryBuilder(
                     digestCalcProvider).setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                    passphrase.getCharArray());
+                    decryptionPassphrase.getCharArray());
 
             try {
                 result.cleartextStream = encryptedDataSymmetric.getDataStream(decryptorFactory);
@@ -769,7 +784,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             } else {
                 try {
                     log.add(LogType.MSG_DC_UNLOCKING, indent + 1);
-                    if (!decryptionKey.unlock(passphrase)) {
+                    if (!decryptionKey.unlock(decryptionPassphrase)) {
                         log.add(LogType.MSG_DC_ERROR_BAD_PASSPHRASE, indent + 1);
                         return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
                     }
