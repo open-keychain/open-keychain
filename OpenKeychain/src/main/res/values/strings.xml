@@ -1391,6 +1391,9 @@
     <string name="msg_backup_secret">"Creating backup of secret key %s"</string>
     <string name="msg_backup_error_uri_open">"Error opening URI stream!"</string>
     <string name="msg_backup_error_db">"Database error!"</string>
+    <string name="msg_backup_error_decrypt">"Keyring decryption error!"</string>
+    <string name="msg_backup_error_missing_passphrase">"No passphrase provided for decrypt this keyring!"</string>
+    <string name="msg_backup_error_incorrect_passphrase">"Incorrect passphrase for decrypting keyring!"</string>
     <string name="msg_backup_error_io">"Input/output error!"</string>
     <string name="msg_backup_success">"Backup operation successful"</string>
 

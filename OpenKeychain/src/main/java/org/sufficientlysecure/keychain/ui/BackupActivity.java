@@ -26,11 +26,15 @@ import android.view.MenuItem;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.util.ParcelableHashMap;
+import org.sufficientlysecure.keychain.util.ParcelableLong;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 
 public class BackupActivity extends BaseActivity {
 
     public static final String EXTRA_MASTER_KEY_IDS = "master_key_ids";
+    public static final String EXTRA_PASSPHRASES = "passphrases";
     public static final String EXTRA_SECRET = "export_secret";
 
     @Override
@@ -49,8 +53,11 @@ public class BackupActivity extends BaseActivity {
             Intent intent = getIntent();
             boolean exportSecret = intent.getBooleanExtra(EXTRA_SECRET, false);
             long[] masterKeyIds = intent.getLongArrayExtra(EXTRA_MASTER_KEY_IDS);
+            ParcelableHashMap<ParcelableLong, Passphrase> passphrases
+                    = intent.getParcelableExtra(EXTRA_PASSPHRASES);
 
-            Fragment frag = BackupCodeFragment.newInstance(masterKeyIds, exportSecret, true);
+            Fragment frag = BackupCodeFragment.newInstance(
+                    masterKeyIds, exportSecret, passphrases, true);
 
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction()

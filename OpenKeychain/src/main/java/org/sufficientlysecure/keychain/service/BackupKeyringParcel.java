@@ -23,6 +23,8 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.util.ParcelableHashMap;
+import org.sufficientlysecure.keychain.util.ParcelableLong;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 
@@ -33,12 +35,15 @@ public class BackupKeyringParcel implements Parcelable {
     public final boolean mIsEncrypted;
     public final long mMasterKeyIds[];
     public final Uri mOutputUri;
+    public final ParcelableHashMap<ParcelableLong, Passphrase> mParcelablePassphrases;
 
-    public BackupKeyringParcel(long[] masterKeyIds, boolean exportSecret, boolean isEncrypted, Uri outputUri) {
+    public BackupKeyringParcel(long[] masterKeyIds, boolean exportSecret, boolean isEncrypted, Uri outputUri,
+                               ParcelableHashMap<ParcelableLong, Passphrase> parcelablePassphrases) {
         mMasterKeyIds = masterKeyIds;
         mExportSecret = exportSecret;
         mOutputUri = outputUri;
         mIsEncrypted = isEncrypted;
+        mParcelablePassphrases = parcelablePassphrases;
     }
 
     protected BackupKeyringParcel(Parcel in) {
@@ -47,6 +52,7 @@ public class BackupKeyringParcel implements Parcelable {
         mOutputUri = (Uri) in.readValue(Uri.class.getClassLoader());
         mMasterKeyIds = in.createLongArray();
         mIsEncrypted = in.readInt() != 0;
+        mParcelablePassphrases = in.readParcelable(ParcelableHashMap.class.getClassLoader());
     }
 
     @Override
@@ -61,6 +67,7 @@ public class BackupKeyringParcel implements Parcelable {
         dest.writeValue(mOutputUri);
         dest.writeLongArray(mMasterKeyIds);
         dest.writeInt(mIsEncrypted ? 1 : 0);
+        dest.writeParcelable(mParcelablePassphrases, 0);
     }
 
     public static final Parcelable.Creator<BackupKeyringParcel> CREATOR = new Parcelable.Creator<BackupKeyringParcel>() {

@@ -832,9 +832,12 @@ public abstract class OperationResult implements Parcelable {
         MSG_BACKUP_PUBLIC(LogLevel.DEBUG, R.string.msg_backup_public),
         MSG_BACKUP_SECRET(LogLevel.DEBUG, R.string.msg_backup_secret),
         MSG_BACKUP_ALL(LogLevel.START, R.string.msg_backup_all),
-        MSG_BACKUP_ERROR_URI_OPEN(LogLevel.ERROR, R.string.msg_backup_error_uri_open),
         MSG_BACKUP_ERROR_DB(LogLevel.ERROR, R.string.msg_backup_error_db),
+        MSG_BACKUP_ERROR_DECRYPT(LogLevel.ERROR, R.string.msg_backup_error_decrypt),
+        MSG_BACKUP_ERROR_MISSING_PASSPHRASE(LogLevel.ERROR, R.string.msg_backup_error_missing_passphrase),
+        MSG_BACKUP_ERROR_INCORRECT_PASSPHRASE(LogLevel.ERROR, R.string.msg_backup_error_incorrect_passphrase),
         MSG_BACKUP_ERROR_IO(LogLevel.ERROR, R.string.msg_backup_error_io),
+        MSG_BACKUP_ERROR_URI_OPEN(LogLevel.ERROR, R.string.msg_backup_error_uri_open),
         MSG_BACKUP_SUCCESS(LogLevel.OK, R.string.msg_backup_success),
 
         MSG_UPLOAD(LogLevel.START, R.string.msg_upload),

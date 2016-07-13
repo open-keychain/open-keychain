@@ -46,9 +46,9 @@ public class RemoteBackupActivity extends BackupActivity {
             boolean exportSecret = intent.getBooleanExtra(EXTRA_SECRET, false);
             long[] masterKeyIds = intent.getLongArrayExtra(EXTRA_MASTER_KEY_IDS);
             mPendingIntentData = getIntent().getParcelableExtra(EXTRA_DATA);
-
+            // TODO: wip, need to put passphrases in here for secret key backup, null for now. look at remote passphrase dialog
             // NOTE: return backup!
-            Fragment frag = BackupCodeFragment.newInstance(masterKeyIds, exportSecret, false);
+            Fragment frag = BackupCodeFragment.newInstance(masterKeyIds, exportSecret, null, false);
 
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction()

@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -51,6 +52,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -61,6 +63,8 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.CountingOutputStream;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableHashMap;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 
 /**
@@ -131,8 +135,11 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             }
 
             CountingOutputStream outStream = new CountingOutputStream(new BufferedOutputStream(plainOut));
+
+            HashMap<Long, Passphrase> passphrases =
+                    ParcelableHashMap.toHashMap(backupInput.mParcelablePassphrases);
             boolean backupSuccess = exportKeysToStream(
-                    log, backupInput.mMasterKeyIds, backupInput.mExportSecret, outStream);
+                    log, backupInput.mMasterKeyIds, backupInput.mExportSecret, passphrases, outStream);
 
             if (!backupSuccess) {
                 // if there was an error, it will be in the log so we just have to return
@@ -207,7 +214,8 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
         return signEncryptOperation.execute(inputParcel, new CryptoInputParcel(), inputData, outStream);
     }
 
-    boolean exportKeysToStream(OperationLog log, long[] masterKeyIds, boolean exportSecret, OutputStream outStream) {
+    boolean exportKeysToStream(OperationLog log, long[] masterKeyIds, boolean exportSecret,
+                               HashMap<Long, Passphrase> passphrases, OutputStream outStream) {
         // noinspection unused TODO use these in a log entry
         int okSecret = 0, okPublic = 0;
 
@@ -239,7 +247,11 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                     boolean hasSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) > 0;
                     if (exportSecret && hasSecret) {
                         log.add(LogType.MSG_BACKUP_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
-                        if (writeSecretKeyToStream(log, outStream, cursor)) {
+                        if (!passphrases.containsKey(keyId)) {
+                            log.add(LogType.MSG_BACKUP_ERROR_MISSING_PASSPHRASE, 3);
+                            continue;
+                        }
+                        if (writeSecretKeyToStream(log, outStream, cursor, passphrases.get(keyId))) {
                             okSecret += 1;
                         }
                     }
@@ -254,6 +266,12 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
         } catch (IOException e) {
             log.add(LogType.MSG_BACKUP_ERROR_IO, 1);
             return false; // new ExportResult(ExportResult.RESULT_ERROR, log);
+        } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
+            log.add(LogType.MSG_BACKUP_ERROR_INCORRECT_PASSPHRASE, 1);
+            return false;
+        } catch (ByteArrayEncryptor.EncryptDecryptException e) {
+            log.add(LogType.MSG_BACKUP_ERROR_DECRYPT, 1);
+            return false;
         } finally {
             // Make sure the stream is closed
             if (outStream != null) try {
@@ -287,16 +305,17 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
         return true;
     }
 
-    private boolean writeSecretKeyToStream(OperationLog log, OutputStream outStream, Cursor cursor)
-            throws IOException {
+    private boolean writeSecretKeyToStream(OperationLog log, OutputStream outStream,
+                                           Cursor cursor, Passphrase passphrase) throws IOException,
+            ByteArrayEncryptor.IncorrectPassphraseException, ByteArrayEncryptor.EncryptDecryptException {
         ArmoredOutputStream arOutStream = null;
 
         try {
             arOutStream = new ArmoredOutputStream(outStream);
             byte[] data = cursor.getBlob(INDEX_SECKEY_DATA);
+            data = ByteArrayEncryptor.decryptByteArray(data, passphrase.getCharArray());
             CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
             ring.encode(arOutStream);
-
         } catch (PgpGeneralException e) {
             log.add(LogType.MSG_UPLOAD_ERROR_IO, 2);
         } finally {

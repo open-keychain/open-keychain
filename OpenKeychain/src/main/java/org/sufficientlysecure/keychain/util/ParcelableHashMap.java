@@ -2,6 +2,7 @@ package org.sufficientlysecure.keychain.util;
 
 
 import java.util.HashMap;
+import java.util.Set;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -32,6 +33,31 @@ public class ParcelableHashMap <K extends Parcelable, V extends Parcelable> impl
 
     public HashMap<K,V> getMap() {
         return mInner;
+    }
+
+    public static ParcelableHashMap<ParcelableLong, Passphrase> toParcelableHashMap(HashMap<Long, Passphrase> hashMap) {
+        if (hashMap == null) {
+            return null;
+        }
+        HashMap<ParcelableLong, Passphrase> forParceling = new HashMap<>();
+        Set<Long> keys = hashMap.keySet();
+        for (Long key : keys) {
+            forParceling.put(new ParcelableLong(key), hashMap.get(key));
+        }
+        return new ParcelableHashMap<>(forParceling);
+    }
+
+    public static HashMap<Long, Passphrase> toHashMap(ParcelableHashMap<ParcelableLong, Passphrase> parcelableHashMap) {
+        if (parcelableHashMap == null) {
+            return null;
+        }
+        HashMap<ParcelableLong, Passphrase> toProcess = parcelableHashMap.getMap();
+        HashMap<Long, Passphrase> result = new HashMap<>();
+        Set<ParcelableLong> keys = toProcess.keySet();
+        for (ParcelableLong key : keys) {
+            result.put(key.mValue, toProcess.get(key));
+        }
+        return result;
     }
 
     @Override

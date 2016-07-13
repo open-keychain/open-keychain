@@ -24,7 +24,6 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -60,6 +59,8 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 import org.sufficientlysecure.keychain.util.FileHelper;
+import org.sufficientlysecure.keychain.util.ParcelableHashMap;
+import org.sufficientlysecure.keychain.util.ParcelableLong;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.File;
@@ -79,6 +80,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     public static final String ARG_EXECUTE_BACKUP_OPERATION = "execute_backup_operation";
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
     public static final String ARG_CURRENT_STATE = "current_state";
+    public static final String ARG_PARCELABLE_PASSPHRASES = "parcelable_passphrases";
 
 
     public static final int REQUEST_SAVE = 1;
@@ -96,6 +98,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     private long[] mMasterKeyIds;
     String mBackupCode;
     private boolean mExecuteBackupOperation;
+    private ParcelableHashMap<ParcelableLong, Passphrase> mParcelablePassphrases;
 
     private EditText[] mCodeEditText;
 
@@ -107,6 +110,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     private boolean mDebugModeAcceptAnyCode;
 
     public static BackupCodeFragment newInstance(long[] masterKeyIds, boolean exportSecret,
+                                                 ParcelableHashMap<ParcelableLong, Passphrase> passphrases,
                                                  boolean executeBackupOperation) {
         BackupCodeFragment frag = new BackupCodeFragment();
 
@@ -115,6 +119,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         args.putLongArray(ARG_MASTER_KEY_IDS, masterKeyIds);
         args.putBoolean(ARG_EXPORT_SECRET, exportSecret);
         args.putBoolean(ARG_EXECUTE_BACKUP_OPERATION, executeBackupOperation);
+        args.putParcelable(ARG_PARCELABLE_PASSPHRASES, passphrases);
         frag.setArguments(args);
 
         return frag;
@@ -260,6 +265,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         mMasterKeyIds = args.getLongArray(ARG_MASTER_KEY_IDS);
         mExportSecret = args.getBoolean(ARG_EXPORT_SECRET);
         mExecuteBackupOperation = args.getBoolean(ARG_EXECUTE_BACKUP_OPERATION, true);
+        mParcelablePassphrases = args.getParcelable(ARG_PARCELABLE_PASSPHRASES);
 
         mCodeEditText = new EditText[6];
         mCodeEditText[0] = (EditText) view.findViewById(R.id.backup_code_1);
@@ -606,7 +612,9 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     @Nullable
     @Override
     public BackupKeyringParcel createOperationInput() {
-        return new BackupKeyringParcel(mMasterKeyIds, mExportSecret, true, mCachedBackupUri);
+        return new BackupKeyringParcel(mMasterKeyIds,
+                mExportSecret, true, mCachedBackupUri,
+                mParcelablePassphrases);
     }
 
     @Override

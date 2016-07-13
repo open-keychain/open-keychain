@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
@@ -74,7 +75,7 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -84,6 +85,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -100,6 +102,8 @@ import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
+import org.sufficientlysecure.keychain.util.ParcelableHashMap;
+import org.sufficientlysecure.keychain.util.ParcelableLong;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -533,26 +537,21 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         if (keyHasPassphrase()) {
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
-            // TODO: WIP parcel
             RequiredInputParcel requiredInput =
-                    RequiredInputParcel.createRequiredDecryptPassphrase(mMasterKeyId, mMasterKeyId, null);
+                    RequiredInputParcel.createRequiredKeyringPassphrase(mMasterKeyId);
             requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
             startActivityForResult(intent, requestCode);
         } else {
-            startBackupActivity();
+            startBackupActivity(mMasterKeyId, null);
         }
     }
 
     private boolean keyHasPassphrase() {
         try {
-            SecretKeyType secretKeyType =
-                    mProviderHelper.getCachedPublicKeyRing(mMasterKeyId).getSecretKeyType(mMasterKeyId);
-            switch (secretKeyType) {
-                // all of these make no sense to ask
-                case PASSPHRASE_EMPTY:
-                case GNU_DUMMY:
-                case DIVERT_TO_CARD:
+            SecretKeyRingType secretKeyRingType =
+                    mProviderHelper.getCachedPublicKeyRing(mMasterKeyId).getSecretKeyringType();
+            switch (secretKeyRingType) {
                 case UNAVAILABLE:
                     return false;
                 default:
@@ -563,9 +562,16 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         }
     }
 
-    private void startBackupActivity() {
+    private void startBackupActivity(long masterKeyId, Passphrase passphrase) {
+        HashMap<Long, Passphrase> passphrases = new HashMap<>();
+        if (passphrase != null) {
+            passphrases.put(masterKeyId, passphrase);
+        }
+        ParcelableHashMap<ParcelableLong, Passphrase> parcelablePassphrases =
+                ParcelableHashMap.toParcelableHashMap(passphrases);
         Intent intent = new Intent(this, BackupActivity.class);
         intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[] { mMasterKeyId });
+        intent.putExtra(BackupActivity.EXTRA_PASSPHRASES, parcelablePassphrases);
         intent.putExtra(BackupActivity.EXTRA_SECRET, true);
         startActivity(intent);
     }
@@ -623,7 +629,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
 
             case REQUEST_BACKUP: {
-                startBackupActivity();
+                CryptoInputParcel cryptoResult = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                startBackupActivity(mMasterKeyId, cryptoResult.getPassphrase());
                 return;
             }
 

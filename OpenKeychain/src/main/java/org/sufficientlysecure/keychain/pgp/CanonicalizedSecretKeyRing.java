@@ -61,8 +61,8 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
                     return PIN;
                 case 4:
                     return PATTERN;
-                // if this case happens, it's probably a check from a database value
                 default:
+                    // no secret keyring
                     return UNAVAILABLE;
             }
         }

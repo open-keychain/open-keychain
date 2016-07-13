@@ -2,11 +2,9 @@ package org.sufficientlysecure.keychain.util;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import org.bouncycastle.jcajce.provider.asymmetric.rsa.AlgorithmParametersSpi;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 
 public class KeyringPassphrases implements Parcelable {
 
@@ -57,25 +55,6 @@ public class KeyringPassphrases implements Parcelable {
         }
     }
 
-    private static ParcelableHashMap<ParcelableLong, Passphrase> toParcelableHashMap(HashMap<Long, Passphrase> hashMap) {
-        HashMap<ParcelableLong, Passphrase> forParceling = new HashMap<>();
-        Set<Long> keys = hashMap.keySet();
-        for (Long key : keys) {
-            forParceling.put(new ParcelableLong(key), hashMap.get(key));
-        }
-        return new ParcelableHashMap<>(forParceling);
-    }
-
-    private static HashMap<Long, Passphrase> fromParcelableHashMap(ParcelableHashMap<ParcelableLong, Passphrase> parcelableHashMap) {
-        HashMap<ParcelableLong, Passphrase> toProcess = parcelableHashMap.getMap();
-        HashMap<Long, Passphrase> result = new HashMap<>();
-        Set<ParcelableLong> keys = toProcess.keySet();
-        for (ParcelableLong key : keys) {
-            result.put(key.mValue, toProcess.get(key));
-        }
-        return result;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -85,7 +64,7 @@ public class KeyringPassphrases implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeLong(mMasterKeyId);
         parcel.writeParcelable(mKeyringPassphrase, flags);
-        parcel.writeParcelable(toParcelableHashMap(mSubkeyPassphrases), flags);
+        parcel.writeParcelable(ParcelableHashMap.toParcelableHashMap(mSubkeyPassphrases), flags);
     }
 
     private KeyringPassphrases(Parcel source) {
@@ -93,7 +72,7 @@ public class KeyringPassphrases implements Parcelable {
         mKeyringPassphrase = source.readParcelable(Passphrase.class.getClassLoader());
         ParcelableHashMap<ParcelableLong, Passphrase> parcelableHashMap =
                 source.readParcelable(ParcelableHashMap.class.getClassLoader());
-        mSubkeyPassphrases = fromParcelableHashMap(parcelableHashMap);
+        mSubkeyPassphrases = ParcelableHashMap.toHashMap(parcelableHashMap);
     }
 
     public static final Creator<KeyringPassphrases> CREATOR =

@@ -24,6 +24,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.security.Security;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import android.app.Application;
@@ -57,12 +58,13 @@ import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
-import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
+import org.sufficientlysecure.keychain.util.ParcelableHashMap;
+import org.sufficientlysecure.keychain.util.ParcelableLong;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -82,11 +84,11 @@ import static org.mockito.Mockito.when;
 @Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
 public class BackupOperationTest {
 
-    static Passphrase mPassphrase = TestingUtils.genPassphrase(true);
-
     static UncachedKeyRing mStaticRing1, mStaticRing2;
     static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
     static Passphrase mKeyPhrase2 = new Passphrase("1234");
+    static HashMap<Long, Passphrase> mHasPassphrases = new HashMap<>();
+    static HashMap<Long, Passphrase> mNoPassphrases = new HashMap<>();
 
     static PrintStream oldShadowStream;
 
@@ -130,9 +132,11 @@ public class BackupOperationTest {
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
             mStaticRing2 = result.getRing();
-            mStaticRing2 = UncachedKeyRing.forTestingOnlyAddDummyLocalSignature(mStaticRing2, "1234");
+            mStaticRing2 = UncachedKeyRing.forTestingOnlyAddDummyLocalSignature(mStaticRing2, "");
         }
 
+        mHasPassphrases.put(mStaticRing1.getMasterKeyId(), mKeyPhrase1);
+        mHasPassphrases.put(mStaticRing2.getMasterKeyId(), mKeyPhrase2);
     }
 
     @Before
@@ -151,7 +155,6 @@ public class BackupOperationTest {
         ShadowLog.stream = System.out;
     }
 
-    // TODO: wip, backup testing
     @Test
     public void testExportAllLocalStripped() throws Exception {
         BackupOperation op = new BackupOperation(RuntimeEnvironment.application,
@@ -161,7 +164,7 @@ public class BackupOperationTest {
         assertTrue("second keyring has local certification", checkForLocal(mStaticRing2));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        boolean result = op.exportKeysToStream(new OperationLog(), null, false, out);
+        boolean result = op.exportKeysToStream(new OperationLog(), null, false, mNoPassphrases, out);
 
         assertTrue("export must be a success", result);
 
@@ -198,7 +201,7 @@ public class BackupOperationTest {
         }
 
         out = new ByteArrayOutputStream();
-        result = op.exportKeysToStream(new OperationLog(), null, true, out);
+        result = op.exportKeysToStream(new OperationLog(), null, true, mHasPassphrases, out);
 
         assertTrue("export must be a success", result);
 
@@ -256,8 +259,11 @@ public class BackupOperationTest {
         BackupOperation op = new BackupOperation(spyApplication,
                 new ProviderHelper(RuntimeEnvironment.application), null);
 
+        ParcelableHashMap<ParcelableLong, Passphrase> parcelablePassphrases =
+                ParcelableHashMap.toParcelableHashMap(mNoPassphrases);
         BackupKeyringParcel parcel = new BackupKeyringParcel(
-                new long[] { mStaticRing1.getMasterKeyId() }, false, false, fakeOutputUri);
+                new long[] { mStaticRing1.getMasterKeyId() },
+                false, false, fakeOutputUri, parcelablePassphrases);
 
         ExportResult result = op.execute(parcel, null);
 
@@ -313,8 +319,12 @@ public class BackupOperationTest {
             BackupOperation op = new BackupOperation(spyApplication,
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
+            ParcelableHashMap<ParcelableLong, Passphrase> parcelablePassphrases =
+                    ParcelableHashMap.toParcelableHashMap(mNoPassphrases);
+
             BackupKeyringParcel parcel = new BackupKeyringParcel(
-                    new long[] { mStaticRing1.getMasterKeyId() }, false, true, fakeOutputUri);
+                    new long[] { mStaticRing1.getMasterKeyId() },
+                    false, true, fakeOutputUri, parcelablePassphrases);
             CryptoInputParcel inputParcel = new CryptoInputParcel(passphrase);
             ExportResult result = op.execute(parcel, inputParcel);
 
