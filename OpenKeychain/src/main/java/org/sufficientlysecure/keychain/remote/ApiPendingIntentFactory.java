@@ -56,7 +56,7 @@ public class ApiPendingIntentFactory {
             case SECURITY_TOKEN_SIGN: {
                 return createSecurityTokenOperationPendingIntent(data, requiredInput, cryptoInput);
             }
-
+            case PASSPHRASE_KEYRING_UNLOCK:
             case PASSPHRASE_SUBKEY_UNLOCK: {
                 return createPassphrasePendingIntent(data, requiredInput, cryptoInput);
             }
@@ -125,10 +125,11 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createBackupPendingIntent(Intent data, long[] masterKeyIds, boolean backupSecret) {
+    PendingIntent createBackupPendingIntent(Intent data, long[] masterKeyIds, boolean backupSecret, CryptoInputParcel cryptoInput) {
         Intent intent = new Intent(mContext, RemoteBackupActivity.class);
         intent.putExtra(RemoteBackupActivity.EXTRA_MASTER_KEY_IDS, masterKeyIds);
         intent.putExtra(RemoteBackupActivity.EXTRA_SECRET, backupSecret);
+        intent.putExtra(RemoteBackupActivity.EXTRA_CRYPTO_INPUT, cryptoInput);
 
         return createInternal(data, intent);
     }

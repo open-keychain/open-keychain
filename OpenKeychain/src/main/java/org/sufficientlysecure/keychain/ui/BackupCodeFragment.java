@@ -530,7 +530,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
         // if we don't want to execute the actual operation outside of this activity, drop out here
         if (!mExecuteBackupOperation) {
-            ((BackupActivity) getActivity()).handleBackupOperation(new CryptoInputParcel(passphrase));
+            ((BackupActivity) getActivity()).handleBackupOperation(passphrase);
             return;
         }
 

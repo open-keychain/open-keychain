@@ -20,6 +20,8 @@ package org.sufficientlysecure.keychain.service.input;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.util.ParcelableHashMap;
+import org.sufficientlysecure.keychain.util.ParcelableLong;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -38,6 +40,9 @@ public class CryptoInputParcel implements Parcelable {
 
     public Passphrase mPassphrase;
 
+    // used for backing up of secret keys
+    private final HashMap<Long, Passphrase> mPassphrases;
+
     // used to supply an explicit proxy to operations that require it
     // this is not final so it can be added to an existing CryptoInputParcel
     // (e.g) CertifyOperation with upload might require both passphrase and orbot to be enabled
@@ -54,6 +59,7 @@ public class CryptoInputParcel implements Parcelable {
         mSignatureTime = null;
         mPassphrase = null;
         mCachePassphrase = true;
+        mPassphrases = null;
     }
 
     public CryptoInputParcel(Date signatureTime, Passphrase passphrase) {
@@ -61,11 +67,17 @@ public class CryptoInputParcel implements Parcelable {
         mSignatureTime = signatureTime == null ? new Date() : signatureTime;
         mPassphrase = passphrase;
         mCachePassphrase = true;
+        mPassphrases = null;
     }
 
     public CryptoInputParcel(Passphrase passphrase) {
         mPassphrase = passphrase;
         mCachePassphrase = true;
+        mPassphrases = null;
+    }
+
+    public CryptoInputParcel(HashMap<Long, Passphrase> parcelablePassphrases) {
+        mPassphrases = parcelablePassphrases;
     }
 
     public CryptoInputParcel(Date signatureTime) {
@@ -73,6 +85,7 @@ public class CryptoInputParcel implements Parcelable {
         mSignatureTime = signatureTime == null ? new Date() : signatureTime;
         mPassphrase = null;
         mCachePassphrase = true;
+        mPassphrases = null;
     }
 
     public CryptoInputParcel(ParcelableProxy parcelableProxy) {
@@ -85,10 +98,12 @@ public class CryptoInputParcel implements Parcelable {
         mSignatureTime = signatureTime == null ? new Date() : signatureTime;
         mPassphrase = null;
         mCachePassphrase = cachePassphrase;
+        mPassphrases = null;
     }
 
     public CryptoInputParcel(boolean cachePassphrase) {
         mCachePassphrase = cachePassphrase;
+        mPassphrases = null;
     }
 
     protected CryptoInputParcel(Parcel source) {
@@ -109,7 +124,9 @@ public class CryptoInputParcel implements Parcelable {
                 mCryptoData.put(ByteBuffer.wrap(key), value);
             }
         }
-
+        ParcelableHashMap<ParcelableLong, Passphrase> parcelablePassphrases =
+                source.readParcelable(ParcelableHashMap.class.getClassLoader());
+        mPassphrases = ParcelableHashMap.toHashMap(parcelablePassphrases);
     }
 
     @Override
@@ -132,6 +149,7 @@ public class CryptoInputParcel implements Parcelable {
             dest.writeByteArray(entry.getKey().array());
             dest.writeByteArray(entry.getValue());
         }
+        dest.writeParcelable(ParcelableHashMap.toParcelableHashMap(mPassphrases), 0);
     }
 
     public void addParcelableProxy(ParcelableProxy parcelableProxy) {
@@ -170,6 +188,10 @@ public class CryptoInputParcel implements Parcelable {
         return mPassphrase;
     }
 
+    public HashMap<Long, Passphrase> getPassphrases() {
+        return mPassphrases;
+    }
+
     public static final Creator<CryptoInputParcel> CREATOR = new Creator<CryptoInputParcel>() {
         public CryptoInputParcel createFromParcel(final Parcel source) {
             return new CryptoInputParcel(source);
@@ -186,7 +208,10 @@ public class CryptoInputParcel implements Parcelable {
         b.append("CryptoInput: { ");
         b.append(mSignatureTime).append(" ");
         if (mPassphrase != null) {
-            b.append("passphrase");
+            b.append("passphrase ");
+        }
+        if (mPassphrases != null) {
+            b.append("passphrases ");
         }
         if (mCryptoData != null) {
             b.append(mCryptoData.size());

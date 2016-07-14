@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -82,6 +83,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableHashMap;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -740,16 +742,41 @@ public class OpenPgpService extends Service {
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
+                inputParcel = new CryptoInputParcel(new HashMap<Long, Passphrase>());
+            }
+
+            HashMap<Long, Passphrase> passphrases = inputParcel.getPassphrases();
+
+            for (long masterKeyId : masterKeyIds) {
+                if (!passphrases.containsKey(masterKeyId)) {
+                    if (inputParcel.hasPassphrase()) {
+                        // we have already obtained the passphrase, remember to clear it after saving
+                        inputParcel.getPassphrases().put(masterKeyId, inputParcel.mPassphrase);
+                        inputParcel.mPassphrase = null;
+                    } else {
+                        // obtain a passphrase from the client
+                        PendingIntent pIntent = piFactory.requiredInputPi(data,
+                                RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
+                                inputParcel);
+                        Intent result = new Intent();
+                        result.putExtra(OpenPgpApi.RESULT_INTENT, pIntent);
+                        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                        return result;
+                    }
+                }
+            }
+
+            if (!inputParcel.hasPassphrase()) {
                 Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createBackupPendingIntent(data, masterKeyIds, backupSecret));
+                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createBackupPendingIntent(data, masterKeyIds, backupSecret, inputParcel));
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                 return result;
             }
             // after user interaction with RemoteBackupActivity,
             // the backup code is cached in CryptoInputParcelCacheService, now we can proceed
 
-            // TODO: wip, openpgp, backup op, don't use null for passphrases
-            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, null, null);
+            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, null,
+                    ParcelableHashMap.toParcelableHashMap(passphrases));
             BackupOperation op = new BackupOperation(this, mProviderHelper, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 
@@ -874,7 +901,8 @@ public class OpenPgpService extends Service {
     private Intent databaseIsUpToDateOrReturnIntent(Intent data) {
         Preferences pref = Preferences.getPreferences(getApplicationContext());
 
-        if(pref.isUsingS2k()) {
+        // TODO:wip, testing
+        if(false && pref.isUsingS2k()) {
             // main app has not updated to using symmetric key blocks
             // prompt user to start app and commence update
             ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(this);

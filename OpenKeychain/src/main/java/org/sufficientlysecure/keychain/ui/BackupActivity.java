@@ -24,7 +24,6 @@ import android.support.v4.app.FragmentManager;
 import android.view.MenuItem;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.util.ParcelableHashMap;
 import org.sufficientlysecure.keychain.util.ParcelableLong;
@@ -85,7 +84,7 @@ public class BackupActivity extends BaseActivity {
     /**
      * Overridden in RemoteBackupActivity
      */
-    public void handleBackupOperation(CryptoInputParcel inputParcel) {
+    public void handleBackupOperation(Passphrase passphrase) {
         // only used for RemoteBackupActivity
     }
 

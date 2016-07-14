@@ -27,12 +27,15 @@ import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.BackupActivity;
 import org.sufficientlysecure.keychain.ui.BackupCodeFragment;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class RemoteBackupActivity extends BackupActivity {
 
     public static final String EXTRA_DATA = "data";
+    public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
     private Intent mPendingIntentData;
+    private CryptoInputParcel mCryptoInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +48,12 @@ public class RemoteBackupActivity extends BackupActivity {
             Intent intent = getIntent();
             boolean exportSecret = intent.getBooleanExtra(EXTRA_SECRET, false);
             long[] masterKeyIds = intent.getLongArrayExtra(EXTRA_MASTER_KEY_IDS);
+
             mPendingIntentData = getIntent().getParcelableExtra(EXTRA_DATA);
-            // TODO: wip, need to put passphrases in here for secret key backup, null for now. look at remote passphrase dialog
+            mCryptoInput = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
             // NOTE: return backup!
+
+            // passphrases are not used by the fragment when executeBackupOperation is false
             Fragment frag = BackupCodeFragment.newInstance(masterKeyIds, exportSecret, null, false);
 
             FragmentManager fragMan = getSupportFragmentManager();
@@ -60,11 +66,15 @@ public class RemoteBackupActivity extends BackupActivity {
     }
 
     @Override
-    public void handleBackupOperation(CryptoInputParcel inputParcel) {
+    public void handleBackupOperation(Passphrase passphrase) {
         // instead of handling the operation here directly,
         // cache inputParcel containing the backup code and return to client
         // Next time, the actual operation is directly executed.
-        CryptoInputParcelCacheService.addCryptoInputParcel(this, mPendingIntentData, inputParcel);
+        if (mCryptoInput == null) {
+            mCryptoInput = new CryptoInputParcel();
+        }
+        mCryptoInput.mPassphrase = passphrase;
+        CryptoInputParcelCacheService.addCryptoInputParcel(this, mPendingIntentData, mCryptoInput);
         setResult(RESULT_OK, mPendingIntentData);
         finish();
     }
