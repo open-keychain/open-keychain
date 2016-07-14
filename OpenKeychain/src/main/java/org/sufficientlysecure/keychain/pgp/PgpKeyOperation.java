@@ -78,7 +78,6 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenKeyToCardOperationsBuilder;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -1172,6 +1171,40 @@ public class PgpKeyOperation {
 
     }
 
+    public PgpEditKeyResult addS2kToSubKeys(CanonicalizedSecretKeyRing wsKR,
+                                            Passphrase newPassphrase) {
+
+        OperationLog log = new OperationLog();
+        int indent = 0;
+
+        log.add(LogType.MSG_MF, indent,
+                KeyFormattingUtils.convertKeyIdToHex(wsKR.getMasterKeyId()));
+        indent += 1;
+        progress(R.string.progress_building_key, 0);
+
+        PGPSecretKeyRing sKR = wsKR.getRing();
+        PGPSecretKey masterSecretKey = sKR.getSecretKey();
+        PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
+
+        log.add(LogType.MSG_MF_ADD_S2K_ENCRYPTION, indent);
+        indent += 1;
+
+        try {
+            sKR = applyNewPassphrase(sKR, masterPublicKey, new Passphrase(), newPassphrase, log, indent);
+            if (sKR == null) {
+                // The error has been logged above, just return a bad state
+                return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+            }
+        } catch (PGPException e) {
+            throw new UnsupportedOperationException("Failed to build encryptor/decryptor!");
+        }
+
+        indent -= 1;
+        progress(R.string.progress_done, 100);
+        log.add(LogType.MSG_MF_SUCCESS, indent);
+        return new PgpEditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
+    }
+
     /** This method returns true iff the provided keyring has a local direct key signature
      * with notation data.
      */
@@ -1207,7 +1240,7 @@ public class PgpKeyOperation {
         PGPSecretKeyRing sKR = wsKR.getRing();
 
         progress(R.string.progress_modify_passphrase, 50);
-        log.add(LogType.MSG_MF_PASSPHRASE, indent);
+        log.add(LogType.MSG_MF_ADD_S2K_ENCRYPTION, indent);
         indent += 1;
 
         try {

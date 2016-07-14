@@ -563,6 +563,7 @@ public abstract class OperationResult implements Parcelable {
 
         // secret key modify
         MSG_MF (LogLevel.START, R.string.msg_mr),
+        MSG_MF_ADD_S2K_ENCRYPTION(LogLevel.INFO, R.string.msg_mf_add_s2k_encryption),
         MSG_MF_DIVERT (LogLevel.DEBUG, R.string.msg_mf_divert),
         MSG_MF_ERROR_ALL_KEYS_STRIPPED (LogLevel.ERROR, R.string.msg_mf_error_all_keys_stripped),
         MSG_MF_ERROR_DIVERT_NEWSUB (LogLevel.ERROR, R.string.msg_mf_error_divert_newsub),
@@ -594,7 +595,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_BAD_SECURITY_TOKEN_SIZE(LogLevel.ERROR, R.string.edit_key_error_bad_security_token_size),
         MSG_MF_ERROR_BAD_SECURITY_TOKEN_STRIPPED(LogLevel.ERROR, R.string.edit_key_error_bad_security_token_stripped),
         MSG_MF_MASTER (LogLevel.DEBUG, R.string.msg_mf_master),
-        MSG_MF_PASSPHRASE (LogLevel.INFO, R.string.msg_mf_passphrase),
         MSG_MF_PIN (LogLevel.INFO, R.string.msg_mf_pin),
         MSG_MF_ADMIN_PIN (LogLevel.INFO, R.string.msg_mf_admin_pin),
         MSG_MF_PASSPHRASE_KEY (LogLevel.DEBUG, R.string.msg_mf_passphrase_key),

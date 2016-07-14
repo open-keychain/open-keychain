@@ -1092,6 +1092,7 @@
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
+    <string name="msg_mf_add_s2k_encryption">"Changing password for keyring"</string>
     <string name="msg_mf_divert">"Will use Security Token for crypto operations"</string>
     <string name="msg_mf_error_all_keys_stripped">All keys are stripped!</string>
     <string name="msg_mf_error_divert_newsub">"Creation of new subkeys is not supported for primary keys on Security Tokens!"</string>
@@ -1121,7 +1122,6 @@
     <string name="msg_mf_missing_passphrase">"Password for subkey cannot be changed. (Is it stripped or revoked?)"</string>
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
     <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
-    <string name="msg_mf_passphrase">"Changing password for keyring"</string>
     <string name="msg_mf_pin">"Changing PIN on card"</string>
     <string name="msg_mf_admin_pin">"Changing Admin PIN on card"</string>
     <string name="msg_mf_passphrase_key">"Re-encrypting subkey %s with new password"</string>

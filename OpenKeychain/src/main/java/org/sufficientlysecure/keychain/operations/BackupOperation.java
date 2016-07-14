@@ -44,8 +44,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
@@ -312,10 +315,20 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
         try {
             arOutStream = new ArmoredOutputStream(outStream);
+
+            // decrypt ring
             byte[] data = cursor.getBlob(INDEX_SECKEY_DATA);
             data = ByteArrayEncryptor.decryptByteArray(data, passphrase.getCharArray());
             CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
-            ring.encode(arOutStream);
+            // add s2k
+            PgpKeyOperation op = new PgpKeyOperation(mProgressable, mCancelled);
+            PgpEditKeyResult result = op.addS2kToSubKeys((CanonicalizedSecretKeyRing) ring, passphrase);
+            log.add(result, 2);
+            if (!result.success()) {
+                // just indicate a failure, details have already been logged
+                return false;
+            }
+            result.getRing().encode(arOutStream);
         } catch (PgpGeneralException e) {
             log.add(LogType.MSG_UPLOAD_ERROR_IO, 2);
         } finally {

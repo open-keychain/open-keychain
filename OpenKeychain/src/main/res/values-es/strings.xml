@@ -931,7 +931,7 @@
   <string name="msg_mf_master">Modificando certificaciones maestras</string>
   <string name="msg_mf_notation_empty">Añadiendo paquete de notación vacío</string>
   <string name="msg_mf_notation_pin">Añadiendo paquete de notación de PIN</string>
-  <string name="msg_mf_passphrase">Cambiando contraseña para el juego de claves</string>
+  <string name="msg_mf_add_s2k_encryption">Cambiando contraseña para el juego de claves</string>
   <string name="msg_mf_pin">Cambiando el PIN en la tarjeta</string>
   <string name="msg_mf_admin_pin">Cambiando el PIN de Admin en la tarjeta</string>
   <string name="msg_mf_passphrase_key">Re-cifrando subclave %s con la nueva contraseña</string>

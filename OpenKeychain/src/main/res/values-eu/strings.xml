@@ -925,7 +925,7 @@
   <string name="msg_mf_master">Maisu egiaztagiriak aldatzen</string>
   <string name="msg_mf_notation_empty">Ohar pakete hutsa gehitzen</string>
   <string name="msg_mf_notation_pin">PIN jakinarazpen paketea gehitzen</string>
-  <string name="msg_mf_passphrase">Giltza-uztaiaren sarhitza aldatzen</string>
+  <string name="msg_mf_add_s2k_encryption">Giltza-uztaiaren sarhitza aldatzen</string>
   <string name="msg_mf_pin">PIN-a aldatzen txartelean</string>
   <string name="msg_mf_admin_pin">Administrari PIN-a aldatzen txartelean</string>
   <string name="msg_mf_passphrase_key">%s azpigiltza ber-enkriptatzen sarhitz berriarekin</string>

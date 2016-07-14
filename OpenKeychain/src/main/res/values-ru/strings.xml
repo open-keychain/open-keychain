@@ -1027,7 +1027,7 @@
   <string name="msg_mf_master">Изменение основного сертификата</string>
   <string name="msg_mf_notation_empty">Добавление пустого пакета примечаний</string>
   <string name="msg_mf_notation_pin">Добавление пакета примечаний с PIN-кодом</string>
-  <string name="msg_mf_passphrase">Изменение пароля для связки ключей</string>
+  <string name="msg_mf_add_s2k_encryption">Изменение пароля для связки ключей</string>
   <string name="msg_mf_pin">Изменение PIN-кода карты</string>
   <string name="msg_mf_admin_pin">Изменение PIN-кода администратора карты</string>
   <string name="msg_mf_passphrase_key">Перешифровка доп. ключа %s с новым паролем</string>

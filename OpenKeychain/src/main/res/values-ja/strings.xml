@@ -984,7 +984,7 @@
   <string name="msg_mf_master">マスター認証を変更</string>
   <string name="msg_mf_notation_empty">空のノーテーションパケットを追加</string>
   <string name="msg_mf_notation_pin">PINノーテーションパケットを追加</string>
-  <string name="msg_mf_passphrase">鍵輪のパスワードを変更中</string>
+  <string name="msg_mf_add_s2k_encryption">鍵輪のパスワードを変更中</string>
   <string name="msg_mf_pin">カードのPINを変更</string>
   <string name="msg_mf_admin_pin">カードの管理者PINを変更</string>
   <string name="msg_mf_passphrase_key">副鍵 %s を新しいパスワードで再暗号化</string>

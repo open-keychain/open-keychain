@@ -897,7 +897,7 @@
   <string name="msg_mf_master">Bezig met wijzigen van hoofdcertificaten</string>
   <string name="msg_mf_notation_empty">Bezig met toevoegen van leeg notatiepakket</string>
   <string name="msg_mf_notation_pin">Bezig met toevoegen van PIN-notatiepakket</string>
-  <string name="msg_mf_passphrase">Bezig met wijzigen van wachtwoord voor sleutelbos</string>
+  <string name="msg_mf_add_s2k_encryption">Bezig met wijzigen van wachtwoord voor sleutelbos</string>
   <string name="msg_mf_pin">Bezig met veranderen van PIN op kaart</string>
   <string name="msg_mf_admin_pin">Bezig met veranderen van administrator-PIN op kaart</string>
   <string name="msg_mf_passphrase_key">Bezig met opnieuw versleutelen van subsleutel %s met nieuw wachtwoord</string>

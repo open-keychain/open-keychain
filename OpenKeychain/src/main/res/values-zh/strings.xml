@@ -942,7 +942,7 @@
   <string name="msg_mf_error_duplicate_keytocard_for_slot">智能卡仅支持每存储位一密钥的规格。</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">安全令牌密钥的标签不正确。</string>
   <string name="msg_mf_master">正在修改主密钥认证</string>
-  <string name="msg_mf_passphrase">正在更改密钥环密码</string>
+  <string name="msg_mf_add_s2k_encryption">正在更改密钥环密码</string>
   <string name="msg_mf_pin">正在变更安全令牌PIN码</string>
   <string name="msg_mf_admin_pin">正在变更安全令牌管理员PIN码</string>
   <string name="msg_mf_passphrase_key">用新密码重新加密子密钥%s</string>

@@ -998,7 +998,7 @@
   <string name="msg_mf_master">Hauptbeglaubigungen werden verändert</string>
   <string name="msg_mf_notation_empty">Leeres Vermerk-Paket wird hinzugefügt</string>
   <string name="msg_mf_notation_pin">PIN-Vermerk-Paket wird hinzugefügt</string>
-  <string name="msg_mf_passphrase">Passwort für Schlüsselbund wird geändert</string>
+  <string name="msg_mf_add_s2k_encryption">Passwort für Schlüsselbund wird geändert</string>
   <string name="msg_mf_pin">PIN des Security-Tokens wird geändert</string>
   <string name="msg_mf_admin_pin">Admin-PIN des Security-Tokens wird geändert</string>
   <string name="msg_mf_passphrase_key">Erneute Verschlüsselung des Unterschlüssels %s mit neuem Passwort</string>

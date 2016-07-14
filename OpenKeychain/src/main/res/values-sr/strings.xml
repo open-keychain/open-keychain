@@ -1003,7 +1003,7 @@
   <string name="msg_mf_master">Модификујем главне сертификате</string>
   <string name="msg_mf_notation_empty">Додајем празни пакет нотације</string>
   <string name="msg_mf_notation_pin">Додајем ПИН пакет нотације</string>
-  <string name="msg_mf_passphrase">Мењам лозинку за привезак</string>
+  <string name="msg_mf_add_s2k_encryption">Мењам лозинку за привезак</string>
   <string name="msg_mf_pin">Мењам ПИН на картици</string>
   <string name="msg_mf_admin_pin">Мењам администраторски ПИН на картици</string>
   <string name="msg_mf_passphrase_key">Поново шифрујем поткључ %s новом лозинком</string>
