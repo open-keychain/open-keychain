@@ -125,11 +125,10 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createBackupPendingIntent(Intent data, long[] masterKeyIds, boolean backupSecret, CryptoInputParcel cryptoInput) {
+    PendingIntent createBackupPendingIntent(Intent data, long[] masterKeyIds, boolean backupSecret) {
         Intent intent = new Intent(mContext, RemoteBackupActivity.class);
         intent.putExtra(RemoteBackupActivity.EXTRA_MASTER_KEY_IDS, masterKeyIds);
         intent.putExtra(RemoteBackupActivity.EXTRA_SECRET, backupSecret);
-        intent.putExtra(RemoteBackupActivity.EXTRA_CRYPTO_INPUT, cryptoInput);
 
         return createInternal(data, intent);
     }

@@ -3,6 +3,7 @@ package org.sufficientlysecure.keychain.service.input;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import android.support.annotation.NonNull;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -143,34 +144,13 @@ public class RequiredInputParcel implements Parcelable {
     }
 
     public static RequiredInputParcel createRequiredSubkeyPassphrase(
-            RequiredInputParcel req, Passphrase keyringPassphrase) {
-        if (keyringPassphrase == null) {
-            throw new IllegalArgumentException("keyring's passphrase is null");
-        }
+            RequiredInputParcel req, @NonNull Passphrase keyringPassphrase) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK,
                 null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId, keyringPassphrase, null);
     }
 
-    public static RequiredInputParcel createRequiredSignPassphrase(
-            long masterKeyId, long subKeyId, Passphrase keyringPassphrase, Date signatureTime) {
-        if (keyringPassphrase == null) {
-            throw new IllegalArgumentException("keyring's passphrase is null");
-        }
-        return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK,
-                null, null, signatureTime, masterKeyId, subKeyId, keyringPassphrase, null);
-    }
-
-    public static RequiredInputParcel createRequiredDecryptPassphrase(
-            long masterKeyId, long subKeyId, Passphrase keyringPassphrase) {
-        if (keyringPassphrase == null) {
-            throw new IllegalArgumentException("keyring's passphrase is null");
-        }
-        return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK,
-                null, null, null, masterKeyId, subKeyId, keyringPassphrase, null);
-    }
-
     public static RequiredInputParcel createRequiredImportKeyPassphrase(
-            long masterKeyId, long subKeyId, ParcelableKeyRing parcelableKeyRing) {
+            long masterKeyId, long subKeyId, @NonNull ParcelableKeyRing parcelableKeyRing) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_IMPORT_KEY,
                 null, null, null, masterKeyId, subKeyId, null, parcelableKeyRing);
     }

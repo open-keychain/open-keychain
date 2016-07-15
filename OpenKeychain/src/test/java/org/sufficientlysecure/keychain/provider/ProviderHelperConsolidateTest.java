@@ -61,7 +61,7 @@ public class ProviderHelperConsolidateTest {
                 KeyRings.buildUnifiedKeyRingsUri(), null, null);
     }
 
-    // Test consolidate with basic configuration of an ordinary gpg key
+    // Test consolidate with a basic gpg key (master key with certify & sign, 1 subkey with encrypt)
     @Test
     public void testConsolidateBasicConfig() throws Exception {
         // insert secret key, should succeed

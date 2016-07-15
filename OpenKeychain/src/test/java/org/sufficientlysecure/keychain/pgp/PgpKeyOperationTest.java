@@ -45,7 +45,6 @@ import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
@@ -1215,78 +1214,31 @@ public class PgpKeyOperationTest {
 
     }
 
-    // Subkey passphrase change no longer supported
-    public void testRemovePassphrases() {
-        // change passphrase to non-empty passphrase
-        Passphrase nonEmptyPassphrase = TestingUtils.genPassphrase(true);
-        parcel.mPassphrase = nonEmptyPassphrase;
-        ring = applyModificationWithChecks(parcel, ring, onlyA, onlyB, cryptoInput);
+    @Test
+    public void testPartialEncryptionRemoval() throws Exception {
         CanonicalizedSecretKeyRing cskr = (CanonicalizedSecretKeyRing) ring.canonicalize(new OperationLog(), 0);
         long masterKeyId = cskr.getMasterKeyId();
 
-        // set-up KeyringPassphrases without passphrase for master key
+        // remove all encryption except master key's
         KeyringPassphrases passphrases = new KeyringPassphrases(masterKeyId, null);
         HashMap<Long, Passphrase> subkeyPassphrases = passphrases.mSubkeyPassphrases;
         for (CanonicalizedSecretKey secretKey : cskr.secretKeyIterator()) {
             if(secretKey.getKeyId() != masterKeyId) {
-                subkeyPassphrases.put(secretKey.getKeyId(), nonEmptyPassphrase);
+                subkeyPassphrases.put(secretKey.getKeyId(), passphrase);
             }
         }
-
-        // remove all passphrases except master key's
         PgpEditKeyResult result = op.removeEncryption(cskr, passphrases);
         Assert.assertTrue("removing passphrases must succeed", result.success());
 
-        // test all keys (expect unlock to fail only for masterkey)
-        {
-            UncachedKeyRing modified = result.getRing();
-            cskr = (CanonicalizedSecretKeyRing) modified.canonicalize(new OperationLog(), 0);
-            for (CanonicalizedSecretKey secretKey : cskr.secretKeyIterator()) {
-                try {
-                    boolean unlocked = secretKey.unlock(new Passphrase());
-                    if (secretKey.getKeyId() != masterKeyId && !unlocked) {
-                        Assert.fail(KeyFormattingUtils.convertKeyIdToHex(secretKey.getKeyId()) + " does not have an empty passphrase");
-                    }
-                } catch (PgpGeneralException e) {
-                    Assert.fail("Error occured when unlocking key");
-                }
+        // test all keys, expecting unlock to fail only for master key
+        UncachedKeyRing modified = result.getRing();
+        cskr = (CanonicalizedSecretKeyRing) modified.canonicalize(new OperationLog(), 0);
+        for (CanonicalizedSecretKey secretKey : cskr.secretKeyIterator()) {
+            boolean unlocked = secretKey.unlock(null);
+            if (secretKey.getKeyId() != masterKeyId && !unlocked) {
+                Assert.fail(KeyFormattingUtils.convertKeyIdToHex(secretKey.getKeyId()) + " is still encrypted ");
             }
         }
-
-        // set-up KeyringPassphrases with only master key
-        passphrases = new KeyringPassphrases(masterKeyId, null);
-        passphrases.mSubkeyPassphrases.put(masterKeyId, nonEmptyPassphrase);
-
-        // remove only master passphrase
-        result = op.removeEncryption(cskr, passphrases);
-        Assert.assertTrue("removing passphrases must succeed", result.success());
-
-        // test all keys (unlock should succeed for all)
-        {
-            UncachedKeyRing modified = result.getRing();
-            cskr = (CanonicalizedSecretKeyRing) modified.canonicalize(new OperationLog(), 0);
-            for (CanonicalizedSecretKey secretKey : cskr.secretKeyIterator()) {
-                try {
-                    boolean unlocked = secretKey.unlock(new Passphrase());
-                    if(!unlocked) {
-                        Assert.fail(KeyFormattingUtils.convertKeyIdToHex(secretKey.getKeyId()) + " does not have an empty passphrase");
-                    }
-                } catch (PgpGeneralException e) {
-                    Assert.fail("Error occured when unlocking key");
-                }
-            }
-
-        }
-    }
-
-    @Test
-    public void testRestricted() throws Exception {
-        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-
-        parcel.mAddUserIds.add("discord");
-        PgpKeyOperation op = new PgpKeyOperation(null);
-        PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Date()), parcel);
-        Assert.assertFalse("non-restricted operations should fail without passphrase", result.success());
     }
 
     public static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,

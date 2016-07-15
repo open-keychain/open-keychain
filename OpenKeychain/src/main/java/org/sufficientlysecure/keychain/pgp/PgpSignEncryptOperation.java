@@ -23,7 +23,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import de.measite.minidns.record.A;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.BCPGOutputStream;
 import org.bouncycastle.bcpg.CompressionAlgorithmTags;
@@ -45,7 +44,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -290,7 +288,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                         break;
                     }
                     default: {
-                        // other key types should not exist
+                        // other key types should not reach this point
                         log.add(LogType.MSG_PSE_ERROR_UNLOCK_SUBKEY, indent);
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                     }

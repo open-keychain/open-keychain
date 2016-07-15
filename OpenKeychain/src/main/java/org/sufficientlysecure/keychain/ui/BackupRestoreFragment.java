@@ -47,15 +47,10 @@ import org.sufficientlysecure.keychain.util.ParcelableLong;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class BackupRestoreFragment extends Fragment {
-    private static final int REQUEST_REPEAT_PASSPHRASE = 0x00007002;
     private static final int REQUEST_CODE_INPUT = 0x00007003;
-
-    private Iterator<Long> mIdsForRepeatAskPassphrase;
-    private HashMap<Long, Passphrase> mPassphrases;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mPassphrases = new HashMap<>();
         View view = inflater.inflate(R.layout.backup_restore_fragment, container, false);
 
         View backupAll = view.findViewById(R.id.backup_all);
@@ -92,112 +87,12 @@ public class BackupRestoreFragment extends Fragment {
             return;
         }
 
-        if (!includeSecretKeys) {
-            startBackup(false, mPassphrases);
-            return;
-        }
-
-        new AsyncTask<ContentResolver, Void, ArrayList<Long>>() {
-            @Override
-            protected ArrayList<Long> doInBackground(ContentResolver... resolver) {
-                ArrayList<Long> askPassphraseIds = new ArrayList<>();
-                Cursor cursor = resolver[0].query(
-                        KeyRings.buildUnifiedKeyRingsUri(), new String[]{
-                                KeyRings.MASTER_KEY_ID,
-                                KeyRings.HAS_SECRET,
-                        }, KeyRings.HAS_SECRET + " != 0", null, null);
-                try {
-                    if (cursor != null) {
-                        while (cursor.moveToNext()) {
-                            // TODO: wip, grab value directly when new db col is added
-                            long masterKeyId = cursor.getLong(0);
-                            SecretKeyRingType secretKeyRingType = SecretKeyRingType.PASSPHRASE;
-                            switch (secretKeyRingType) {
-                                // all of these make no sense to ask
-                                case PASSPHRASE_EMPTY: {
-                                    mPassphrases.put(masterKeyId, new Passphrase());
-                                    continue;
-                                }
-                                case PASSPHRASE: {
-                                    askPassphraseIds.add(masterKeyId);
-                                    continue;
-                                }
-                                default: {
-                                    throw new AssertionError("Unhandled keyring type");
-                                }
-                            }
-                        }
-                    }
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
-                }
-                return askPassphraseIds;
-            }
-
-            @Override
-            protected void onPostExecute(ArrayList<Long> askPassphraseIds) {
-                super.onPostExecute(askPassphraseIds);
-                FragmentActivity activity = getActivity();
-                if (activity == null) {
-                    return;
-                }
-
-                mIdsForRepeatAskPassphrase = askPassphraseIds.iterator();
-
-                if (mIdsForRepeatAskPassphrase.hasNext()) {
-                    startPassphraseActivity();
-                    return;
-                }
-
-                startBackup(true, mPassphrases);
-            }
-
-        }.execute(activity.getContentResolver());
-    }
-
-    private void startPassphraseActivity() {
-        Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-
-        Intent intent = new Intent(activity, PassphraseDialogActivity.class);
-        long masterKeyId = mIdsForRepeatAskPassphrase.next();
-        RequiredInputParcel requiredInput =
-                RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId);
-        requiredInput.mSkipCaching = true;
-        intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-        startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
+        startBackup(includeSecretKeys);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_REPEAT_PASSPHRASE: {
-                if (resultCode != Activity.RESULT_OK) {
-                    return;
-                }
-
-                // save the returned passphrase
-                RequiredInputParcel requiredInput =
-                        data.getParcelableExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT);
-                CryptoInputParcel cryptoResult =
-                        data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                mPassphrases.put(requiredInput.getMasterKeyId(), cryptoResult.getPassphrase());
-
-                // continue asking for passphrases
-                if (mIdsForRepeatAskPassphrase.hasNext()) {
-                    startPassphraseActivity();
-                    return;
-                }
-
-                startBackup(true, mPassphrases);
-
-                break;
-            }
-
             case REQUEST_CODE_INPUT: {
                 if (resultCode != Activity.RESULT_OK || data == null) {
                     return;
@@ -222,12 +117,9 @@ public class BackupRestoreFragment extends Fragment {
         }
     }
 
-    private void startBackup(boolean exportSecret, HashMap<Long, Passphrase> passphrases) {
-        ParcelableHashMap<ParcelableLong, Passphrase> parcelablePassphrases =
-                ParcelableHashMap.toParcelableHashMap(passphrases);
+    private void startBackup(boolean exportSecret) {
         Intent intent = new Intent(getActivity(), BackupActivity.class);
         intent.putExtra(BackupActivity.EXTRA_SECRET, exportSecret);
-        intent.putExtra(BackupActivity.EXTRA_PASSPHRASES, parcelablePassphrases);
         startActivity(intent);
     }
 

@@ -24,17 +24,17 @@ import android.util.Pair;
 import java.util.ArrayList;
 
 /**
- * Parcelable representation of an encrypted keyring block as raw data,
+ * Parcelable representation of an encrypted secret keyring block as raw data,
  * with associated fields for convenience.
  */
-public class ParcelableEncryptedKeyRing implements Parcelable{
+public class EncryptedSecretKeyRing implements Parcelable{
 
     public final byte[] mBytes;
     public final long mMasterKeyId;
     public final ArrayList<Pair<Long, Integer>> mSubKeyIdsAndType;
 
-    public ParcelableEncryptedKeyRing(byte[] bytes, long keyId,
-                                      ArrayList<Pair<Long, Integer>> subKeysAndType) {
+    public EncryptedSecretKeyRing(byte[] bytes, long keyId,
+                                  ArrayList<Pair<Long, Integer>> subKeysAndType) {
         mBytes = bytes;
         mMasterKeyId = keyId;
         mSubKeyIdsAndType = (subKeysAndType == null) ? new ArrayList<Pair<Long, Integer>>()
@@ -57,7 +57,7 @@ public class ParcelableEncryptedKeyRing implements Parcelable{
         }
     }
 
-    private ParcelableEncryptedKeyRing(Parcel source) {
+    private EncryptedSecretKeyRing(Parcel source) {
         mBytes = source.createByteArray();
         mMasterKeyId = source.readLong();
         mSubKeyIdsAndType = new ArrayList<>();
@@ -68,14 +68,14 @@ public class ParcelableEncryptedKeyRing implements Parcelable{
         }
     }
 
-    public static final Creator<ParcelableEncryptedKeyRing> CREATOR =
-            new Creator<ParcelableEncryptedKeyRing>() {
-        public ParcelableEncryptedKeyRing createFromParcel(final Parcel source) {
-            return new ParcelableEncryptedKeyRing(source);
+    public static final Creator<EncryptedSecretKeyRing> CREATOR =
+            new Creator<EncryptedSecretKeyRing>() {
+        public EncryptedSecretKeyRing createFromParcel(final Parcel source) {
+            return new EncryptedSecretKeyRing(source);
         }
 
-        public ParcelableEncryptedKeyRing[] newArray(final int size) {
-            return new ParcelableEncryptedKeyRing[size];
+        public EncryptedSecretKeyRing[] newArray(final int size) {
+            return new EncryptedSecretKeyRing[size];
         }
     };
 }

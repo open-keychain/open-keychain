@@ -68,6 +68,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 
@@ -98,19 +99,19 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     private long[] mMasterKeyIds;
     String mBackupCode;
     private boolean mExecuteBackupOperation;
-    private ParcelableHashMap<ParcelableLong, Passphrase> mParcelablePassphrases;
 
     private EditText[] mCodeEditText;
 
     private ToolableViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
     private Integer mBackStackLevel;
 
+    private HashMap<Long, Passphrase> mPassphrases;
     private Uri mCachedBackupUri;
     private boolean mShareNotSave;
     private boolean mDebugModeAcceptAnyCode;
 
     public static BackupCodeFragment newInstance(long[] masterKeyIds, boolean exportSecret,
-                                                 ParcelableHashMap<ParcelableLong, Passphrase> passphrases,
+                                                 HashMap<Long, Passphrase> passphrases,
                                                  boolean executeBackupOperation) {
         BackupCodeFragment frag = new BackupCodeFragment();
 
@@ -119,7 +120,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         args.putLongArray(ARG_MASTER_KEY_IDS, masterKeyIds);
         args.putBoolean(ARG_EXPORT_SECRET, exportSecret);
         args.putBoolean(ARG_EXECUTE_BACKUP_OPERATION, executeBackupOperation);
-        args.putParcelable(ARG_PARCELABLE_PASSPHRASES, passphrases);
+        args.putParcelable(ARG_PARCELABLE_PASSPHRASES, ParcelableHashMap.toParcelableHashMap(passphrases));
         frag.setArguments(args);
 
         return frag;
@@ -265,7 +266,8 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         mMasterKeyIds = args.getLongArray(ARG_MASTER_KEY_IDS);
         mExportSecret = args.getBoolean(ARG_EXPORT_SECRET);
         mExecuteBackupOperation = args.getBoolean(ARG_EXECUTE_BACKUP_OPERATION, true);
-        mParcelablePassphrases = args.getParcelable(ARG_PARCELABLE_PASSPHRASES);
+        ParcelableHashMap<ParcelableLong, Passphrase> parcelablePassphrases = args.getParcelable(ARG_PARCELABLE_PASSPHRASES);
+        mPassphrases = ParcelableHashMap.toHashMap(parcelablePassphrases);
 
         mCodeEditText = new EditText[6];
         mCodeEditText[0] = (EditText) view.findViewById(R.id.backup_code_1);
@@ -530,7 +532,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
         // if we don't want to execute the actual operation outside of this activity, drop out here
         if (!mExecuteBackupOperation) {
-            ((BackupActivity) getActivity()).handleBackupOperation(passphrase);
+            ((BackupActivity) getActivity()).handleBackupOperation(passphrase, mPassphrases);
             return;
         }
 
@@ -614,7 +616,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     public BackupKeyringParcel createOperationInput() {
         return new BackupKeyringParcel(mMasterKeyIds,
                 mExportSecret, true, mCachedBackupUri,
-                mParcelablePassphrases);
+                ParcelableHashMap.toParcelableHashMap(mPassphrases));
     }
 
     @Override

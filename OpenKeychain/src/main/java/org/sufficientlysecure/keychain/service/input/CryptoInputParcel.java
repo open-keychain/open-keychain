@@ -76,7 +76,8 @@ public class CryptoInputParcel implements Parcelable {
         mPassphrases = null;
     }
 
-    public CryptoInputParcel(HashMap<Long, Passphrase> parcelablePassphrases) {
+    public CryptoInputParcel(Passphrase passphrase, HashMap<Long, Passphrase> parcelablePassphrases) {
+        mPassphrase = passphrase;
         mPassphrases = parcelablePassphrases;
     }
 

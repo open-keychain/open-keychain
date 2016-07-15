@@ -742,33 +742,8 @@ public class OpenPgpService extends Service {
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
-                inputParcel = new CryptoInputParcel(new HashMap<Long, Passphrase>());
-            }
-
-            HashMap<Long, Passphrase> passphrases = inputParcel.getPassphrases();
-
-            for (long masterKeyId : masterKeyIds) {
-                if (!passphrases.containsKey(masterKeyId)) {
-                    if (inputParcel.hasPassphrase()) {
-                        // we have already obtained the passphrase, remember to clear it after saving
-                        inputParcel.getPassphrases().put(masterKeyId, inputParcel.mPassphrase);
-                        inputParcel.mPassphrase = null;
-                    } else {
-                        // obtain a passphrase from the client
-                        PendingIntent pIntent = piFactory.requiredInputPi(data,
-                                RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
-                                inputParcel);
-                        Intent result = new Intent();
-                        result.putExtra(OpenPgpApi.RESULT_INTENT, pIntent);
-                        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-                        return result;
-                    }
-                }
-            }
-
-            if (!inputParcel.hasPassphrase()) {
                 Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createBackupPendingIntent(data, masterKeyIds, backupSecret, inputParcel));
+                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createBackupPendingIntent(data, masterKeyIds, backupSecret));
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                 return result;
             }
@@ -776,7 +751,7 @@ public class OpenPgpService extends Service {
             // the backup code is cached in CryptoInputParcelCacheService, now we can proceed
 
             BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, null,
-                    ParcelableHashMap.toParcelableHashMap(passphrases));
+                    ParcelableHashMap.toParcelableHashMap(inputParcel.getPassphrases()));
             BackupOperation op = new BackupOperation(this, mProviderHelper, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 

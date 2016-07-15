@@ -29,54 +29,42 @@ import org.sufficientlysecure.keychain.ui.BackupActivity;
 import org.sufficientlysecure.keychain.ui.BackupCodeFragment;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
+import java.util.HashMap;
+
 public class RemoteBackupActivity extends BackupActivity {
 
     public static final String EXTRA_DATA = "data";
-    public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
     private Intent mPendingIntentData;
-    private CryptoInputParcel mCryptoInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // noinspection ConstantConditions, we know this activity has an action bar
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         if (savedInstanceState == null) {
-            Intent intent = getIntent();
-            boolean exportSecret = intent.getBooleanExtra(EXTRA_SECRET, false);
-            long[] masterKeyIds = intent.getLongArrayExtra(EXTRA_MASTER_KEY_IDS);
-
             mPendingIntentData = getIntent().getParcelableExtra(EXTRA_DATA);
-            mCryptoInput = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
-            // NOTE: return backup!
-
-            // passphrases are not used by the fragment when executeBackupOperation is false
-            Fragment frag = BackupCodeFragment.newInstance(masterKeyIds, exportSecret, null, false);
-
-            FragmentManager fragMan = getSupportFragmentManager();
-            fragMan.beginTransaction()
-                    .setCustomAnimations(0, 0)
-                    .replace(R.id.content_frame, frag)
-                    .commit();
         }
-
     }
 
     @Override
-    public void handleBackupOperation(Passphrase passphrase) {
+    public void handleBackupOperation(Passphrase symmetricPassphrase, HashMap<Long, Passphrase> keyRingPassphrases) {
         // instead of handling the operation here directly,
-        // cache inputParcel containing the backup code and return to client
+        // cache the backup code & keyring passphrases and return to client
         // Next time, the actual operation is directly executed.
-        if (mCryptoInput == null) {
-            mCryptoInput = new CryptoInputParcel();
-        }
-        mCryptoInput.mPassphrase = passphrase;
-        CryptoInputParcelCacheService.addCryptoInputParcel(this, mPendingIntentData, mCryptoInput);
+        CryptoInputParcelCacheService.addCryptoInputParcel(this,
+                mPendingIntentData,
+                new CryptoInputParcel(symmetricPassphrase, keyRingPassphrases));
         setResult(RESULT_OK, mPendingIntentData);
         finish();
     }
 
+    @Override
+    public void showBackupCodeFragment(long[] masterKeyIds, boolean exportSecret, HashMap<Long, Passphrase> passphrases) {
+        Fragment frag = BackupCodeFragment.newInstance(masterKeyIds, exportSecret, passphrases, false);
+        FragmentManager fragMan = getSupportFragmentManager();
+        fragMan.beginTransaction()
+                .setCustomAnimations(0, 0)
+                .add(R.id.content_frame, frag)
+                .commit();
+    }
 }

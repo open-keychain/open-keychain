@@ -121,29 +121,6 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                 log.add(LogType.MSG_ED_ERROR_KEYRING_NOT_FOUND, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
-
-            // store the master key's passphrase & pass it to key modification ops
-            try {
-                switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
-                    case DIVERT_TO_CARD:
-                    case GNU_DUMMY: {
-                        cryptoInput.mPassphrase = null;
-                        break;
-                    }
-                    case PASSPHRASE_EMPTY: {
-                        cryptoInput.mPassphrase = new Passphrase();
-                        break;
-                    }
-                    default: {
-                        // other types of subkeys should not exist
-                        log.add(LogType.MSG_CRT_ERROR_UNLOCK_MASTER, 2);
-                        return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
-                    }
-                }
-            } catch (NotFoundException e) {
-                log.add(LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
-                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
-            }
         }
 
         // Perform actual modification (or creation)

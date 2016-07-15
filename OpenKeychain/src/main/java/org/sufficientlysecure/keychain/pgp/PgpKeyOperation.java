@@ -315,18 +315,8 @@ public class PgpKeyOperation {
 
             progress(R.string.progress_building_master_key, 40);
 
-            // Build key encrypter and decrypter based on passphrase
-            PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder()
-                    .build().get(PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_HASH_ALGO);
-            PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                    PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO,
-                    encryptorHashCalc, PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
-
-            PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
-                    .build().get(PgpSecurityConstants.SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO);
             PGPSecretKey masterSecretKey = new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
-                    sha1Calc, true, keyEncryptor);
+                    null, true, null);
 
             PGPSecretKeyRing sKR = new PGPSecretKeyRing(
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
@@ -509,14 +499,8 @@ public class PgpKeyOperation {
             progress(R.string.progress_modify_unlock, 10);
             log.add(LogType.MSG_MF_UNLOCK, indent);
             {
-                if (!cryptoInput.hasPassphrase())  {
-                    log.add(LogType.MSG_MF_UNLOCK_ERROR, indent + 1);
-                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-                }
                 try {
-                    PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                            Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(cryptoInput.getPassphrase().getCharArray());
-                    masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
+                    masterPrivateKey = masterSecretKey.extractPrivateKey(null);
                 } catch (PGPException e) {
                     log.add(LogType.MSG_MF_UNLOCK_ERROR, indent + 1);
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
@@ -901,10 +885,7 @@ public class PgpKeyOperation {
 
                 PGPPrivateKey subPrivateKey;
                 if (!isDivertToCard(sKey)) {
-                    PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                    cryptoInput.getPassphrase().getCharArray());
-                    subPrivateKey = sKey.extractPrivateKey(keyDecryptor);
+                    subPrivateKey = sKey.extractPrivateKey(null);
                     // super special case: subkey is allowed to sign, but isn't available
                     if (subPrivateKey == null) {
                         log.add(LogType.MSG_MF_ERROR_SUB_STRIPPED,
@@ -1019,20 +1000,7 @@ public class PgpKeyOperation {
                     nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
                 }
 
-                PGPSecretKey sKey; {
-                    // Build key encrypter and decrypter based on passphrase
-                    PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder()
-                            .build().get(PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_HASH_ALGO);
-                    PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                            PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
-                            PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                    cryptoInput.getPassphrase().getCharArray());
-
-                    PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
-                            .build().get(PgpSecurityConstants.SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO);
-                    sKey = new PGPSecretKey(keyPair.getPrivateKey(), pKey, sha1Calc, false, keyEncryptor);
-                }
+                PGPSecretKey sKey = new PGPSecretKey(keyPair.getPrivateKey(), pKey, null, false, null);
 
                 log.add(LogType.MSG_MF_SUBKEY_NEW_ID,
                         indent+1, KeyFormattingUtils.convertKeyIdToHex(sKey.getKeyID()));
@@ -1113,7 +1081,7 @@ public class PgpKeyOperation {
 
         progress(R.string.progress_modify, 0);
 
-        // Make sure the saveParcel includes only operations available without passphrase!
+        // Make sure the saveParcel includes only restricted operations
         if (!saveParcel.isRestrictedOnly()) {
             log.add(LogType.MSG_MF_ERROR_RESTRICTED, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);

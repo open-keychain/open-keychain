@@ -34,7 +34,7 @@ import android.util.Pair;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ParcelableEncryptedKeyRing;
+import org.sufficientlysecure.keychain.keyimport.EncryptedSecretKeyRing;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult.WriteKeyRingsResult;
@@ -1284,13 +1284,7 @@ public class ProviderHelper {
             log.add(LogType.MSG_CON_SAVE_SECRET, indent);
             indent += 1;
 
-            final Cursor cursor = mContentResolver.query(
-                    KeyRingData.buildSecretKeyRingUri(),
-                    new String[]{KeyRingData.KEY_RING_DATA, KeyRingData.MASTER_KEY_ID},
-                    null, null, null);
-            cacheSecretKeyRings(cursor, 0, "consolidate_secret.pcl");
-            //noinspection ConstantConditions, null is caught below
-            cursor.close();
+            cacheAllSecretKeyRingData("consolidate_secret.pcl");
 
         } catch (NullPointerException e) {
             log.add(LogType.MSG_CON_ERROR_DB, indent);
@@ -1379,50 +1373,63 @@ public class ProviderHelper {
         });
     }
 
+
     /**
-     * Caches secret keyrings with subkey related data obtainable only by
-     * reading the secret keyrings
+     * Caches all secret keyrings, with subkey related data obtainable only
+     * by reading the secret keyrings
      */
-    private void cacheSecretKeyRings(final Cursor cursor, final int keyRingPosition, String fileName)
-            throws IOException, NullPointerException {
+    private boolean cacheAllSecretKeyRingData(String fileName)
+            throws IOException, NullPointerException{
         // No keys existing might be a legitimate option, we write an empty file in that case
-        cursor.moveToFirst();
-        ParcelableFileCache<ParcelableEncryptedKeyRing> cache = new ParcelableFileCache<>(mContext, fileName);
+        final Cursor cursor = mContentResolver.query(KeyRingData.buildSecretKeyRingUri(),
+                new String[]{KeyRingData.KEY_RING_DATA, KeyRingData.MASTER_KEY_ID},
+                null, null, null);
 
-        cache.writeCache(cursor.getCount(), new Iterator<ParcelableEncryptedKeyRing>() {
-            ParcelableEncryptedKeyRing ring;
+        if (cursor == null) {
+            return false;
+        } else {
+            cursor.moveToFirst();
+            ParcelableFileCache<EncryptedSecretKeyRing> cache = new ParcelableFileCache<>(mContext, fileName);
 
-            @Override
-            public boolean hasNext() {
-                if (ring != null) {
+            cache.writeCache(cursor.getCount(), new Iterator<EncryptedSecretKeyRing>() {
+                EncryptedSecretKeyRing ring;
+
+                @Override
+                public boolean hasNext() {
+                    if (ring != null) {
+                        return true;
+                    }
+                    if (cursor.isAfterLast()) {
+                        return false;
+                    }
+                    long masterKeyId = cursor.getLong(1);
+                    ArrayList<Pair<Long, Integer>> subKeyIdsAndType = getSubKeyIdsAndType(masterKeyId);
+                    ring = new EncryptedSecretKeyRing(cursor.getBlob(0), masterKeyId, subKeyIdsAndType);
+                    cursor.moveToNext();
                     return true;
                 }
-                if (cursor.isAfterLast()) {
-                    return false;
+
+                @Override
+                public EncryptedSecretKeyRing next() {
+                    try {
+                        return ring;
+                    } finally {
+                        ring = null;
+                    }
                 }
-                long masterKeyId = cursor.getLong(1);
-                ArrayList<Pair<Long, Integer>> subKeyIdsAndType = getSubKeyIdsAndType(masterKeyId);
-                ring = new ParcelableEncryptedKeyRing(cursor.getBlob(keyRingPosition), masterKeyId, subKeyIdsAndType);
-                cursor.moveToNext();
-                return true;
-            }
 
-            @Override
-            public ParcelableEncryptedKeyRing next() {
-                try {
-                    return ring;
-                } finally {
-                    ring = null;
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
                 }
-            }
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
+            });
 
-        });
+            cursor.close();
+            return true;
+        }
     }
+
 
     private ArrayList<Pair<Long, Integer>> getSubKeyIdsAndType(long masterKeyId) {
         ArrayList<Pair<Long, Integer>> idsAndType = new ArrayList<>();
@@ -1505,7 +1512,7 @@ public class ProviderHelper {
             mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
             ParcelableFileCache<ParcelableKeyRing> cacheOwnPublic, cacheAllPublic;
-            ParcelableFileCache<ParcelableEncryptedKeyRing> cacheSecret;
+            ParcelableFileCache<EncryptedSecretKeyRing> cacheSecret;
 
             // Set flag that we have a cached consolidation here
             try {
@@ -1538,7 +1545,7 @@ public class ProviderHelper {
 
             try {
                 cacheSecret = new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
-                IteratorWithSize<ParcelableEncryptedKeyRing> itSecrets = cacheSecret.readCache(false);
+                IteratorWithSize<EncryptedSecretKeyRing> itSecrets = cacheSecret.readCache(false);
                 int numSecret = itSecrets.getSize();
                 log.add(LogType.MSG_CON_REIMPORT_SECRET, indent, numSecret);
                 indent += 1;
@@ -1642,10 +1649,10 @@ public class ProviderHelper {
     }
 
     /**
-     * Writes encrypted keyring block and related data directly into db, throws error if writing fails.
-     * Parcels are trusted to be valid. There is no way to verify the contents.
+     * Writes encrypted keyring block and related data directly into db, returning error on failure
+     * EncryptedSecretKeyRings are trusted to be valid.
      */
-    private WriteKeyRingsResult writeSecretKeyRingsToDb(Iterator<ParcelableEncryptedKeyRing> it, int num) {
+    private WriteKeyRingsResult writeSecretKeyRingsToDb(Iterator<EncryptedSecretKeyRing> it, int num) {
         OperationLog log = new OperationLog();
         int indent = 0;
         ContentResolver contentResolver = mContext.getContentResolver();
@@ -1653,7 +1660,7 @@ public class ProviderHelper {
 
         indent += 1;
         while(it.hasNext()) {
-            ParcelableEncryptedKeyRing encryptedRing = it.next();
+            EncryptedSecretKeyRing encryptedRing = it.next();
             long masterKeyId = encryptedRing.mMasterKeyId;
             log.add(LogType.MSG_WS, indent, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
             indent += 1;

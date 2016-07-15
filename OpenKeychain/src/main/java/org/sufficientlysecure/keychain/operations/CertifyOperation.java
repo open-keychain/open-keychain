@@ -24,8 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import de.measite.minidns.record.A;
-import junit.framework.Assert;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -34,7 +32,6 @@ import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -133,7 +130,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                     break;
                 }
                 default: {
-                    // other types of subkeys should not exist
+                    // other types of subkeys should not reach this point
                     log.add(LogType.MSG_CRT_ERROR_UNLOCK_MASTER, 2);
                     return new CertifyResult(CertifyResult.RESULT_ERROR, log);
                 }

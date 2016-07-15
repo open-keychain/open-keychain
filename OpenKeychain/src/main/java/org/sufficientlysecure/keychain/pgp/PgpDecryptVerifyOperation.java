@@ -566,6 +566,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 Constants.BOUNCY_CASTLE_PROVIDER_NAME, cryptoInput.getCryptoData());
 
         Passphrase decryptionPassphrase = null;
+        Passphrase keyringPassphrase = null;
 
         Iterator<?> it = enc.getEncryptedDataObjects();
 
@@ -621,7 +622,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     SecretKeyRingType secretKeyRingType = cachedPublicKeyRing.getSecretKeyringType();
 
                     // get keyring passphrase
-                    Passphrase keyringPassphrase;
                     switch (secretKeyRingType) {
                         case PASSPHRASE_EMPTY: {
                             keyringPassphrase = new Passphrase();
@@ -665,16 +665,13 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     }
 
                     switch (secretKeyType) {
-                        case DIVERT_TO_CARD: {
-                            decryptionPassphrase = null;
-                            break;
-                        }
+                        case DIVERT_TO_CARD:
                         case PASSPHRASE_EMPTY: {
                             decryptionPassphrase = new Passphrase();
                             break;
                         }
                         default: {
-                            // other types of subkeys should not exist
+                            // other types of subkeys should not reach this point
                             log.add(LogType.MSG_DC_ERROR_UNLOCK_SUBKEY, indent + 1);
                             return result.with(new DecryptVerifyResult(
                                     DecryptVerifyResult.RESULT_ERROR, log));
