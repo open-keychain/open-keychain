@@ -243,8 +243,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             mPassphraseText = (TextView) mLayout.findViewById(R.id.passphrase_text);
             mPassphraseEditText = (EditText) mLayout.findViewById(R.id.passphrase_passphrase);
 
-            // as above in PassphraseDialogActivity.create(), empty passphrases are never cached
-            // we hide caching details if the keyring passphrase is already cached
+            // we hide details about caching if passphrases for this key are already cached
             boolean alreadyCached =
                     mRequiredInput.mType == RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK &&
                     !mRequiredInput.getKeyringPassphrase().isEmpty();
@@ -354,13 +353,16 @@ public class PassphraseDialogActivity extends FragmentActivity {
             } catch (ByteArrayEncryptor.IncorrectPassphraseException | ByteArrayEncryptor.EncryptDecryptException e) {
                 throw new AssertionError("Cannot decrypt || Given passphrase is wrong (programming error)");
             } catch (IOException | PgpGeneralException | PgpKeyNotFoundException | ProviderHelper.NotFoundException e) {
+                mLayout.setVisibility(View.GONE);
                 alert.setTitle(R.string.title_key_not_found);
                 alert.setMessage(getString(R.string.key_not_found, mRequiredInput.getSubKeyId()));
-                alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dismiss();
                     }
                 });
+                // hide the positive button whose OnClickListener is overridden in onStart()
+                alert.setPositiveButton(null, null);
                 alert.setCancelable(false);
                 return alert.create();
             }
