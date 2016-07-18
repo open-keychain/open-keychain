@@ -35,6 +35,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -42,6 +43,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
+import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -49,6 +51,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -63,8 +66,6 @@ import java.util.ArrayList;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
 public class InteropTest {
-    // TODO: wip
-    /*
     @BeforeClass
     public static void setUpOnce() throws Exception {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
@@ -99,20 +100,24 @@ public class InteropTest {
     private void runTest(File base) throws Exception {
         JSONObject config = new JSONObject(asString(base));
         String testType = config.getString("type");
-        if (testType.equals("import")) {
-            runImportTest(config, base);
-        } else if (testType.equals("decrypt")) {
-            runDecryptTest(config, base);
-        } else {
-            Assert.fail(base + ": unexpected test type");
+        switch (testType) {
+            case "import":
+                runImportTest(config, base);
+                break;
+            case "decrypt":
+                runDecryptTest(config, base);
+                break;
+            default:
+                Assert.fail(base + ": unexpected test type");
+                break;
         }
     }
 
-    private static final String asString(File json) throws Exception {
+    private static String asString(File json) throws Exception {
         return new String(asBytes(json), "utf-8");
     }
 
-    private static final byte[] asBytes(File f) throws Exception {
+    private static byte[] asBytes(File f) throws Exception {
         FileInputStream fin = null;
         try {
             fin = new FileInputStream(f);
@@ -135,16 +140,19 @@ public class InteropTest {
             verify = null;
         }
 
+        Passphrase pass = new Passphrase(config.getString("passphrase"));
         CanonicalizedSecretKeyRing decrypt = (CanonicalizedSecretKeyRing)
                 readRingFromFile(new File(root, config.getString("decryptKey")));
+        PgpKeyOperation keyOp = new PgpKeyOperation(null);
+        PgpEditKeyResult editResult = keyOp.removeEncryption(decrypt,
+                TestingUtils.generateImportPassphrases(decrypt.getUncachedKeyRing(), pass, pass));
+        decrypt = (CanonicalizedSecretKeyRing) editResult.getRing().canonicalize(new OperationLog(), 0);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayInputStream in =
                 new ByteArrayInputStream(asBytes(new File(root, baseName + ".asc")));
 
         InputData data = new InputData(in, in.available());
-
-        Passphrase pass = new Passphrase(config.getString("passphrase"));
 
         PgpDecryptVerifyOperation op = makeOperation(base.toString(), pass, decrypt, verify);
         PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
@@ -176,7 +184,7 @@ public class InteropTest {
                 readRingFromFile(new File(root, baseName + ".asc"));
 
         // Check we have the correct uids.
-        ArrayList<String> expected = new ArrayList<String>();
+        ArrayList<String> expected = new ArrayList<>();
         JSONArray uids = config.getJSONArray("expected_uids");
         for (int i = 0; i < uids.length(); i++) {
             expected.add(uids.getString(i));
@@ -192,7 +200,7 @@ public class InteropTest {
                 expected.add(subkeys.getJSONObject(i).getString("expected_fingerprint"));
             }
         }
-        ArrayList<String> actual = new ArrayList<String>();
+        ArrayList<String> actual = new ArrayList<>();
         for (CanonicalizedPublicKey pk: pkr.publicKeyIterator()) {
             if (pk.isValid()) {
                 actual.add(KeyFormattingUtils.convertFingerprintToHex(pk.getFingerprint()));
@@ -224,7 +232,7 @@ public class InteropTest {
         return ukr.canonicalize(log, 0);
     }
 
-    private  static final void close(Closeable v) {
+    private static void close(Closeable v) {
         if (v != null) {
             try {
                 v.close();
@@ -233,12 +241,12 @@ public class InteropTest {
         }
     }
 
-    private static final String getBaseName(File base) {
+    private static String getBaseName(File base) {
         String name = base.getName();
         return name.substring(0, name.length() - ".json".length());
     }
 
-    private PgpDecryptVerifyOperation makeOperation(final String msg, final Passphrase passphrase,
+    private PgpDecryptVerifyOperation makeOperation(final String msg, final Passphrase opPassphrase,
             final CanonicalizedSecretKeyRing decrypt, final CanonicalizedPublicKeyRing verify)
             throws Exception {
 
@@ -272,35 +280,32 @@ public class InteropTest {
                 return verify;
             }
 
-            // TODO: wip
             @Override
-            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri q)
+            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri q, Passphrase passphrase)
                     throws NotFoundException {
                 Assert.assertEquals(msg + ": query should be for the decryption key", q, decryptUri);
+                Assert.assertEquals(msg + ": passphrase should be for the secret key", opPassphrase, passphrase);
                 return decrypt;
             }
 
-            // TODO: wip
             @Override
-            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long masterKeyId)
+            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long masterKeyId, Passphrase passphrase)
                     throws NotFoundException {
                 Assert.assertEquals(msg + ": query should be for the decryption key",
                         masterKeyId, decrypt.getMasterKeyId());
+                Assert.assertEquals(msg + ": passphrase should be for the secret key", opPassphrase, passphrase);
                 return decrypt;
             }
         };
 
         return new PgpDecryptVerifyOperation(RuntimeEnvironment.application, helper, null) {
             @Override
-            public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
+            public Passphrase getCachedPassphrase(long masterKeyId)
                     throws NoSecretKeyException {
                 Assert.assertEquals(msg + ": passphrase should be for the secret key",
                         masterKeyId, decrypt.getMasterKeyId());
-                Assert.assertEquals(msg + ": passphrase should refer to the decryption subkey",
-                        subKeyId, decryptId);
-                return passphrase;
+                return opPassphrase;
             }
         };
     }
-    */
 }
