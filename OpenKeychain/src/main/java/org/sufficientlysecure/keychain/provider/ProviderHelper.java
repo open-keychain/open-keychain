@@ -327,7 +327,7 @@ public class ProviderHelper {
 
     private CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRingHelper(Uri uri, Passphrase passphrase, boolean isEncrypted)
             throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
-        if (passphrase == null) {
+        if (passphrase == null && isEncrypted) {
             throw new IllegalArgumentException("passphrase is null");
         }
         Cursor cursor = mContentResolver.query(uri,
