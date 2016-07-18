@@ -19,6 +19,9 @@ public class Highlighter {
     }
 
     public Spannable highlight(String text) {
+        if (text == null)
+            return null;
+
         Spannable highlight = Spannable.Factory.getInstance().newSpannable(text);
 
         if (mQuery == null) {

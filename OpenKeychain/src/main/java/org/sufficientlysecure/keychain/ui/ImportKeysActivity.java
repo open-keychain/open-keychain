@@ -31,7 +31,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
-import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
@@ -51,7 +50,6 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ImportKeysActivity extends BaseActivity implements ImportKeysListener {
 
@@ -83,7 +81,6 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     public static final String TAG_FRAG_TOP = "frag_top";
 
     private boolean mFreshIntent;
-
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
 
     @Override
@@ -370,8 +367,9 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
             keyserver = ((CloudLoaderState) loaderState).mCloudPrefs.keyserver;
         }
 
-        ImportKeysOperationCallback callback = new ImportKeysOperationCallback(this, keyserver, keyList);
-        new CryptoOperationHelper(1, this, callback, R.string.progress_importing).cryptoOperation();
+        ImportKeysOperationCallback cb = new ImportKeysOperationCallback(this, keyserver, keyList);
+        mOperationHelper = new CryptoOperationHelper(1, this, cb, R.string.progress_importing);
+        mOperationHelper.cryptoOperation();
     }
 
     @Override

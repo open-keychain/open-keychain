@@ -18,18 +18,18 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.databinding.ImportKeysListItemBinding;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
@@ -60,28 +60,17 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     private List<ImportKeysListEntry> mData;
 
     public ImportKeysAdapter(Context mContext, ImportKeysListener listener, boolean mNonInteractive) {
-
         this.mContext = mContext;
         this.mListener = listener;
         this.mNonInteractive = mNonInteractive;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public View container;
+        public ImportKeysListItemBinding binding;
 
-        public TextView mainUserId;
-        public TextView mainUserIdRest;
-        public TextView keyId;
-        public TextView fingerprint;
-        public TextView algorithm;
-        public ImageView status;
-        public View userIdsDivider;
-        public LinearLayout userIdsList;
-        public Button importButton;
-
-        public ViewHolder(View container) {
-            super(container);
-            this.container = container;
+        public ViewHolder(View view) {
+            super(view);
+            binding = DataBindingUtil.bind(view);
         }
     }
 
@@ -122,99 +111,69 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.import_keys_list_item, parent, false);
-
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        View v = inflater.inflate(R.layout.import_keys_list_item, parent, false);
         ViewHolder vh = new ViewHolder(v);
-        vh.mainUserId = (TextView) v.findViewById(R.id.import_item_user_id);
-        vh.mainUserIdRest = (TextView) v.findViewById(R.id.import_item_user_id_email);
-        vh.keyId = (TextView) v.findViewById(R.id.import_item_key_id);
-        vh.fingerprint = (TextView) v.findViewById(R.id.import_item_fingerprint);
-        vh.algorithm = (TextView) v.findViewById(R.id.import_item_algorithm);
-        vh.status = (ImageView) v.findViewById(R.id.import_item_status);
-        vh.userIdsDivider = v.findViewById(R.id.import_item_status_divider);
-        vh.userIdsList = (LinearLayout) v.findViewById(R.id.import_item_user_ids_list);
-        vh.importButton = (Button) v.findViewById(R.id.import_item_button);
-
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
+        final ImportKeysListItemBinding b = holder.binding;
         final ImportKeysListEntry entry = mData.get(position);
+
+        Resources resources = mContext.getResources();
+        Highlighter highlighter = new Highlighter(mContext, entry.getQuery());
+        b.setStandardColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
+        b.setRevokedExpiredColor(resources.getColor(R.color.key_flag_gray));
+        b.setSecretColor(Color.RED);
+        b.setHighlighter(highlighter);
+
+        b.setSecret(entry.isSecretKey());
+        b.setExpired(entry.isExpired());
+        b.setRevoked(entry.isRevoked());
+
         String userId = entry.getUserIds().get(0); // main user id
         OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
 
-        Highlighter highlighter = new Highlighter(mContext, entry.getQuery());
-        // name
-        if (userIdSplit.name != null) {
-            // show red user id if it is a secret key
-            if (entry.isSecretKey()) {
-                holder.mainUserId.setText(mContext.getString(R.string.secret_key) + " " + userIdSplit.name);
-            } else {
-                holder.mainUserId.setText(highlighter.highlight(userIdSplit.name));
-            }
-        } else {
-            holder.mainUserId.setText(R.string.user_id_no_name);
-        }
-
-        // email
-        if (userIdSplit.email != null) {
-            holder.mainUserIdRest.setVisibility(View.VISIBLE);
-            holder.mainUserIdRest.setText(highlighter.highlight(userIdSplit.email));
-        } else {
-            holder.mainUserIdRest.setVisibility(View.GONE);
-        }
-
-        holder.keyId.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(mContext, entry.getKeyIdHex()));
-
-        // don't show full fingerprint on key import
-        holder.fingerprint.setVisibility(View.GONE);
-
-        if (entry.getAlgorithm() != null) {
-            holder.algorithm.setText(entry.getAlgorithm());
-            holder.algorithm.setVisibility(View.VISIBLE);
-        } else {
-            holder.algorithm.setVisibility(View.GONE);
-        }
+        b.setAlgorithm(entry.getAlgorithm());
+        b.setUserId(userIdSplit.name);
+        b.setUserIdEmail(userIdSplit.email);
+        b.setKeyId(KeyFormattingUtils.beautifyKeyIdWithPrefix(mContext, entry.getKeyIdHex()));
 
         if (entry.isRevoked()) {
-            KeyFormattingUtils.setStatusImage(mContext, holder.status, null, State.REVOKED, R.color.key_flag_gray);
+            KeyFormattingUtils.setStatusImage(mContext, b.status, null, State.REVOKED, R.color.key_flag_gray);
         } else if (entry.isExpired()) {
-            KeyFormattingUtils.setStatusImage(mContext, holder.status, null, State.EXPIRED, R.color.key_flag_gray);
+            KeyFormattingUtils.setStatusImage(mContext, b.status, null, State.EXPIRED, R.color.key_flag_gray);
         }
 
-        if (entry.isRevoked() || entry.isExpired()) {
-            holder.status.setVisibility(View.VISIBLE);
-
-            // no more space for algorithm display
-            holder.algorithm.setVisibility(View.GONE);
-
-            holder.mainUserId.setTextColor(mContext.getResources().getColor(R.color.key_flag_gray));
-            holder.mainUserIdRest.setTextColor(mContext.getResources().getColor(R.color.key_flag_gray));
-            holder.keyId.setTextColor(mContext.getResources().getColor(R.color.key_flag_gray));
-        } else {
-            holder.status.setVisibility(View.GONE);
-            holder.algorithm.setVisibility(View.VISIBLE);
-
-            if (entry.isSecretKey()) {
-                holder.mainUserId.setTextColor(Color.RED);
-            } else {
-                holder.mainUserId.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
+        b.importKey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mLoaderState instanceof BytesLoaderState) {
+                    mListener.importKey(new ParcelableKeyRing(entry.getEncodedRing()));
+                } else if (mLoaderState instanceof CloudLoaderState) {
+                    mListener.importKey(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(),
+                            entry.getKeybaseName(), entry.getFbUsername()));
+                }
             }
-
-            holder.mainUserIdRest.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
-            holder.keyId.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
-        }
+        });
+        b.expand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean hidden = b.extraContainer.getVisibility() == View.GONE;
+                b.extraContainer.setVisibility(hidden ? View.VISIBLE : View.GONE);
+                b.expand.animate().rotation(hidden ? 180 : 0).start();
+            }
+        });
 
         if (entry.getUserIds().size() == 1) {
-            holder.userIdsList.setVisibility(View.GONE);
-            holder.userIdsDivider.setVisibility(View.GONE);
+            b.userIdsList.setVisibility(View.GONE);
         } else {
-            holder.userIdsList.setVisibility(View.VISIBLE);
-            holder.userIdsDivider.setVisibility(View.VISIBLE);
+            b.userIdsList.setVisibility(View.VISIBLE);
 
             // destroyLoader view from holder
-            holder.userIdsList.removeAllViews();
+            b.userIdsList.removeAllViews();
 
             // we want conventional gpg UserIDs first, then Keybase ”proofs”
             HashMap<String, HashSet<String>> mergedUserIds = entry.getMergedUserIds();
@@ -250,7 +209,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                     uidView.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
                 }
 
-                holder.userIdsList.addView(uidView);
+                b.userIdsList.addView(uidView);
 
                 for (String email : cEmails) {
                     TextView emailView = (TextView) inflater.inflate(
@@ -266,22 +225,10 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                         emailView.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
                     }
 
-                    holder.userIdsList.addView(emailView);
+                    b.userIdsList.addView(emailView);
                 }
             }
         }
-
-        holder.importButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mLoaderState instanceof BytesLoaderState) {
-                    mListener.importKey(new ParcelableKeyRing(entry.getEncodedRing()));
-                } else if (mLoaderState instanceof CloudLoaderState) {
-                    mListener.importKey(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(),
-                            entry.getKeybaseName(), entry.getFbUsername()));
-                }
-            }
-        });
     }
 
     @Override
