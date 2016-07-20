@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-    Based on https://github.com/Yubico/yubikey-personalization/blob/master/ykcore/ykdef.h
+    Based on
+    https://github.com/Yubico/yubikey-personalization/blob/master/ykcore/ykdef.h
+    https://www.nitrokey.com/de/documentation/installation#p:nitrokey-pro&os:linux
+
     Note that values are decimal.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
@@ -23,5 +26,13 @@
     <usb-device class="11" vendor-id="4176" product-id="1030"/>
     <!-- Yubikey 4 OTP + U2F + CCID-->
     <usb-device class="11" vendor-id="4176" product-id="1031"/>
+
+
+    <!-- Nitrokey Pro-->
+    <usb-device class="11" vendor-id="8352" product-id="16648"/>
+    <!-- Nitrokey Storage-->
+    <usb-device class="11" vendor-id="8352" product-id="16649"/>
+    <!-- Nitrokey Start-->
+    <usb-device class="11" vendor-id="8352" product-id="16913"/>
 
 </resources>
