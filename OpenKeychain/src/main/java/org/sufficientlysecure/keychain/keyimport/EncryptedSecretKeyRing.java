@@ -30,15 +30,17 @@ import java.util.ArrayList;
 public class EncryptedSecretKeyRing implements Parcelable{
 
     public final byte[] mBytes;
+    public boolean mAwaitingMerge;
     public final long mMasterKeyId;
     public final ArrayList<Pair<Long, Integer>> mSubKeyIdsAndType;
 
-    public EncryptedSecretKeyRing(byte[] bytes, long keyId,
+    public EncryptedSecretKeyRing(byte[] bytes, long keyId, boolean awaitingMerge,
                                   ArrayList<Pair<Long, Integer>> subKeysAndType) {
         mBytes = bytes;
         mMasterKeyId = keyId;
         mSubKeyIdsAndType = (subKeysAndType == null) ? new ArrayList<Pair<Long, Integer>>()
                                                      : subKeysAndType;
+        mAwaitingMerge = awaitingMerge;
     }
 
     @Override
@@ -55,6 +57,7 @@ public class EncryptedSecretKeyRing implements Parcelable{
             parcel.writeLong(idTypePair.first);
             parcel.writeInt(idTypePair.second);
         }
+        parcel.writeInt(mAwaitingMerge ? 1 : 0);
     }
 
     private EncryptedSecretKeyRing(Parcel source) {
@@ -66,6 +69,7 @@ public class EncryptedSecretKeyRing implements Parcelable{
             mSubKeyIdsAndType.add(new Pair<>(source.readLong(),
                                             source.readInt()));
         }
+        mAwaitingMerge = source.readInt() == 1;
     }
 
     public static final Creator<EncryptedSecretKeyRing> CREATOR =

@@ -32,7 +32,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputType;
-import android.text.Layout;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.view.ContextThemeWrapper;
@@ -256,8 +255,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 }
             });
 
-            CanonicalizedSecretKeyRing.SecretKeyRingType keyRingType =
-                    CanonicalizedSecretKeyRing.SecretKeyRingType.PASSPHRASE;
+            SecretKeyRingType keyRingType = SecretKeyRingType.PASSPHRASE;
             String message;
             String hint;
             ProviderHelper helper = new ProviderHelper(activity);
@@ -537,7 +535,10 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                     case PASSPHRASE_KEYRING_UNLOCK: {
                                         try {
                                             CanonicalizedSecretKeyRing secretKeyRing =
-                                                    helper.getCanonicalizedSecretKeyRing(mRequiredInput.getMasterKeyId(), passphrase);
+                                                    helper.getCanonicalizedSecretKeyRing(
+                                                            mRequiredInput.getMasterKeyId(),
+                                                            passphrase
+                                                    );
                                             unlockSucceeded = true;
                                             // required to indicate a successful unlock
                                             mSecretKeyToUnlock = secretKeyRing.getSecretKey(mRequiredInput.getMasterKeyId());

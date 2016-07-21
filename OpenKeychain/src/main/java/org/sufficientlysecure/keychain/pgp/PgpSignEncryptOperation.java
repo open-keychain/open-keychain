@@ -260,7 +260,8 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 }
 
                 CanonicalizedSecretKeyRing signingKeyRing =
-                        mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId, keyringPassphrase);
+                        mProviderHelper.getCanonicalizedSecretKeyRingWithMerge(
+                                signingMasterKeyId, keyringPassphrase);
                 signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
 
                 // Make sure key is not expired or revoked
@@ -306,6 +307,9 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             } catch (ByteArrayEncryptor.EncryptDecryptException e) {
                 log.add(LogType.MSG_PSE_ERROR_DECRYPT_KEYRING, indent);
+                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+            } catch (ProviderHelper.FailedMergeException e) {
+                log.add(LogType.MSG_PSE_ERROR_MERGE_KEYRING, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             }
 

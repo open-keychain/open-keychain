@@ -852,6 +852,7 @@
     <string name="msg_ip_encode_fail">"Operation failed due to encoding error"</string>
     <string name="msg_ip_error_io_exc">"Operation failed due to i/o error"</string>
     <string name="msg_ip_error_op_exc">"Operation failed due to database error"</string>
+    <string name="msg_ip_error_passphrase_cache">"Operation failed due to passphrase cache error"</string>
     <string name="msg_ip_error_remote_ex">"Operation failed due to internal error"</string>
     <string name="msg_ip">"Importing public keyring %s"</string>
     <string name="msg_ip_fingerprint_error">"Fingerprint of importing key does not match expected!"</string>
@@ -1513,6 +1514,9 @@
     <string name="msg_mime_parsing_start">"Parsing the MIME structure"</string>
     <string name="msg_mime_parsing_error">"MIME parsing failed"</string>
     <string name="msg_mime_parsing_success">"MIME parsing successfully!"</string>
+
+    <!--generic error msg for operations -->
+    <string name="msg_op_error_merge_keyring">"Previous keyring update has led to an error. Keyring's last working state is restored. Please try again!"</string>
 
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_touch_to_clear">"Touch to clear passwords."</string>

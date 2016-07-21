@@ -28,6 +28,7 @@ public class KeychainContract {
     interface KeyRingsColumns {
         String MASTER_KEY_ID = "master_key_id"; // not a database id
         String KEY_RING_DATA = "key_ring_data"; // PGPPublicKeyRing / PGPSecretKeyRing blob
+        String AWAITING_MERGE = "awaiting_merge"; // waiting to merge public key into secret
     }
 
     interface KeysColumns {
@@ -138,6 +139,7 @@ public class KeychainContract {
         public static final String HAS_DUPLICATE_USER_ID = "has_duplicate_user_id";
         public static final String PUBKEY_DATA = "pubkey_data";
         public static final String PRIVKEY_DATA = "privkey_data";
+        public static final String AWAITING_MERGE = "awaiting_merge";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();

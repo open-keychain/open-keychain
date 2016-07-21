@@ -319,7 +319,10 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             // decrypt ring
             byte[] data = cursor.getBlob(INDEX_SECKEY_DATA);
             data = ByteArrayEncryptor.decryptByteArray(data, passphrase.getCharArray());
+
+            // don't bother merging secret keyring with public, it will occur when importing backup
             CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
+
             // add s2k
             PgpKeyOperation op = new PgpKeyOperation(mProgressable, mCancelled);
             PgpEditKeyResult result = op.addS2kToSubKeys((CanonicalizedSecretKeyRing) ring, passphrase);

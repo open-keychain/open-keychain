@@ -67,6 +67,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
@@ -130,6 +131,15 @@ public class ProviderHelper {
         }
 
         public NotFoundException(String name) {
+            super(name);
+        }
+    }
+
+    public static class FailedMergeException extends Exception {
+        public FailedMergeException() {
+        }
+
+        public FailedMergeException(String name) {
             super(name);
         }
     }
@@ -311,22 +321,35 @@ public class ProviderHelper {
     }
 
     public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRingForTest(long id)
-        throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
-        return getCanonicalizedSecretKeyRingHelper(KeyRings.buildUnifiedKeyRingUri(id), null, false);
+        throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException, FailedMergeException {
+        return getCanonicalizedSecretKeyRingHelper(KeyRings.buildUnifiedKeyRingUri(id), null, false, false);
+    }
+
+    /**
+     * Retrieves and merges a canonicalized secret keyring with its updated public counterpart if flagged for a merge
+     */
+    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRingWithMerge(long id, Passphrase passphrase)
+            throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException, FailedMergeException {
+        return getCanonicalizedSecretKeyRingHelper(KeyRings.buildUnifiedKeyRingUri(id), passphrase, true, false);
+    }
+
+    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri uri, Passphrase passphrase)
+            throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException, FailedMergeException {
+        return getCanonicalizedSecretKeyRingHelper(uri, passphrase, true, true);
     }
 
     public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long id, Passphrase passphrase)
             throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
-        return getCanonicalizedSecretKeyRing(KeyRings.buildUnifiedKeyRingUri(id), passphrase);
+        try {
+            return getCanonicalizedSecretKeyRingHelper(KeyRings.buildUnifiedKeyRingUri(id), passphrase, true, true);
+        } catch (FailedMergeException ignored) {
+            return null;
+        }
     }
 
-    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri uri, Passphrase passphrase)
-            throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
-        return getCanonicalizedSecretKeyRingHelper(uri, passphrase, true);
-    }
-
-    private CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRingHelper(Uri uri, Passphrase passphrase, boolean isEncrypted)
-            throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
+    private CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRingHelper(Uri uri, Passphrase passphrase,
+                                                                           boolean isEncrypted, boolean skipMerge)
+            throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException, FailedMergeException {
         if (passphrase == null && isEncrypted) {
             throw new IllegalArgumentException("passphrase is null");
         }
@@ -334,8 +357,10 @@ public class ProviderHelper {
                 new String[]{
                         // we pick from cache only information that is not easily available from keyrings
                         KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED,
-                        // and of course, ring data
-                        KeyRings.PRIVKEY_DATA
+                        // and of course, ring data and data for merging
+                        KeyRings.PRIVKEY_DATA, KeyRings.AWAITING_MERGE,
+                        // TODO: move pub data collection into merge block to improve performance?
+                        KeyRings.PUBKEY_DATA
                 }, null, null, null
         );
         try {
@@ -343,14 +368,61 @@ public class ProviderHelper {
 
                 boolean hasAnySecret = cursor.getInt(0) > 0;
                 int verified = cursor.getInt(1);
-                byte[] blob = cursor.getBlob(2);
+                byte[] secBlob = cursor.getBlob(2);
+                boolean awaitingMerge = cursor.getInt(3) == 1;
                 if (!hasAnySecret) {
                     throw new NotFoundException("Secret key not available!");
                 }
                 if (isEncrypted) {
-                    blob = ByteArrayEncryptor.decryptByteArray(blob, passphrase.getCharArray());
+                    secBlob = ByteArrayEncryptor.decryptByteArray(secBlob, passphrase.getCharArray());
                 }
-                return new CanonicalizedSecretKeyRing(blob, true, verified);
+
+                CanonicalizedSecretKeyRing canSecretKey = new CanonicalizedSecretKeyRing(secBlob, true, verified);
+
+                if (skipMerge || !awaitingMerge) {
+                    return canSecretKey;
+                } else {
+                    byte[] pubBlob = cursor.getBlob(4);
+                    long masterKeyId = canSecretKey.getMasterKeyId();
+                    KeyringPassphrases passphrases = new KeyringPassphrases(masterKeyId, passphrase);
+
+                    try {
+                        // merge public into secret
+                        UncachedKeyRing secretKey = canSecretKey.getUncachedKeyRing();
+                        UncachedKeyRing publicKey = new CanonicalizedPublicKeyRing(pubBlob, verified).getUncachedKeyRing();
+                        secretKey = secretKey.merge(publicKey, new OperationLog(), 0);
+                        if (secretKey == null) {
+                            throw new FailedMergeException();
+                        }
+
+                        // canonicalize merged key
+                        CanonicalizedSecretKeyRing mergedCanSecret =
+                                (CanonicalizedSecretKeyRing) secretKey.canonicalize(new OperationLog(), 0);
+                        if (mergedCanSecret == null) {
+                            throw new FailedMergeException();
+                        }
+
+                        // save canonicalized key
+                        int result = saveCanonicalizedSecretKeyRing(mergedCanSecret, passphrases, false);
+                        if ((result & SaveKeyringResult.SAVED_SECRET)!= SaveKeyringResult.SAVED_SECRET) {
+                            throw new FailedMergeException();
+                        }
+                        return mergedCanSecret;
+
+                    } catch (FailedMergeException e) {
+                        // wipe all existing keyring data from db & reload data using secret keyring
+                        // should succeed as the secret keyring was saved before
+
+                        mContentResolver.delete(KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
+                        SaveKeyringResult saveResult = saveSecretKeyRing(canSecretKey.getUncachedKeyRing(),
+                                passphrases, new ProgressScaler());
+                        if (!saveResult.success()) {
+                            throw new RuntimeException("Unrecoverable error, io/bad secret key");
+                        } else {
+                            throw new FailedMergeException("Merge failed but key was successfully restored");
+                        }
+                    }
+                }
             } else {
                 throw new NotFoundException("Key not found!");
             }
@@ -842,7 +914,8 @@ public class ProviderHelper {
     }
 
     /**
-     * Saves an UncachedKeyRing of the secret variant into the db.
+     * Saves an UncachedKeyRing of the secret variant into the db,
+     * overriding any existing data for the keyring.
      * This method will fail if no corresponding public keyring is in the database!
      */
     private int saveCanonicalizedSecretKeyRing(CanonicalizedSecretKeyRing keyRing,
@@ -904,13 +977,15 @@ public class ProviderHelper {
                 }
             }
 
-            // save secret keyring
+            // insert secret keyring
             {
                 ContentValues values = new ContentValues();
                 values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
                 values.put(KeyRingData.KEY_RING_DATA, keyData);
-                // insert new version of this keyRing
+                values.put(KeyRingData.AWAITING_MERGE, 0);
                 Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
+                // delete whatever lies there first
+                mContentResolver.delete(uri, null, null);
                 if (mContentResolver.insert(uri, values) == null) {
                     log(LogType.MSG_IS_DB_EXCEPTION);
                     return SaveKeyringResult.RESULT_ERROR;
@@ -1041,34 +1116,7 @@ public class ProviderHelper {
                 if (canPublicRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
-
             }
-
-            // If there is a secret key, merge new data (if any) and save the key for later
-            CanonicalizedSecretKeyRing canSecretRing = null;
-            /*
-            // TODO: WIP differ implementation for now.. can merge during other key ops which require passphrase instead
-
-            try {
-                UncachedKeyRing secretRing = getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId())
-                        .getUncachedKeyRing();
-
-                // Merge data from new public ring into secret one
-                log(LogType.MSG_IP_MERGE_SECRET);
-                secretRing = secretRing.merge(publicRing, mLog, mIndent);
-                if (secretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
-                }
-                // This has always been a secret key ring, this is a safe cast
-                canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
-                if (canSecretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
-                }
-
-            } catch (NotFoundException e) {
-                // No secret key available (this is what happens most of the time)
-                canSecretRing = null;
-            }*/
 
             // If we have an expected fingerprint, make sure it matches
             if (expectedFingerprint != null) {
@@ -1080,28 +1128,94 @@ public class ProviderHelper {
                 }
             }
 
-            int result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);
+            boolean hasSecretKeyRing = hasSecretKeyRing(publicRing.getMasterKeyId());
 
-            // TODO: WIP differ for now... as above
-            // Save the saved keyring (if any)
-            /*
-            if (canSecretRing != null) {
+            if (!hasSecretKeyRing) {
+                // No secret key available (this is what happens most of the time)
+                // simply save the public one and return
+                int result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, false);
+                return new SaveKeyringResult(result, mLog, null);
+
+            } else {
+                // Get the secret key data & place it back later
+                // if we have the passphrase to decode the secret key, merge new data
+                // else, schedule a merge to occur when the secret key is next retrieved
+
+                Passphrase passphrase = null;
+                UncachedKeyRing secretRing = null;
+                CanonicalizedSecretKeyRing canSecretRing = null;
+                EncryptedSecretKeyRing secretKeyData = null;
+                try {
+                    passphrase = PassphraseCacheService.getCachedPassphrase(mContext,
+                            publicRing.getMasterKeyId());
+                    secretRing = getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId(), passphrase)
+                            .getUncachedKeyRing();
+                } catch (PassphraseCacheService.KeyNotFoundException | NotFoundException ignored) {}
+
+                if (secretRing != null) {
+                    // we got our secret ring, merge data from new public ring into secret one
+                    log(LogType.MSG_IP_MERGE_SECRET);
+                    secretRing = secretRing.merge(publicRing, mLog, mIndent);
+                    if (secretRing == null) {
+                        return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
+                    }
+
+                    // This has always been a secret key ring, this is a safe cast
+                    canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
+                    if (canSecretRing == null) {
+                        return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
+                    }
+                } else {
+                    // set a flag so merge will occur the next time we retrieve secret keyring
+                    secretKeyData = getSecretKeyringData(masterKeyId);
+                    secretKeyData.mAwaitingMerge = true;
+                }
+
+                // save the public key
+                int result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, true);
                 progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
-                int secretResult = saveCanonicalizedSecretKeyRing(canSecretRing);
+
+                // reinsert previous secret data || save merged secret key
+                int secretResult = (secretRing == null)
+                        ? writeSecretKeyRingToDb(secretKeyData).getResult()
+                        : saveCanonicalizedSecretKeyRing(canSecretRing,
+                            new KeyringPassphrases(masterKeyId, passphrase), false);
+
                 if ((secretResult & SaveKeyringResult.RESULT_ERROR) != SaveKeyringResult.RESULT_ERROR) {
                     result |= SaveKeyringResult.SAVED_SECRET;
                 }
-            }*/
-
-            return new SaveKeyringResult(result, mLog, canSecretRing);
+                return new SaveKeyringResult(result, mLog, canSecretRing);
+            }
 
         } catch (IOException e) {
             log(LogType.MSG_IP_ERROR_IO_EXC);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
+        } catch (EncryptDecryptException e) {
+            log(LogType.MSG_IP_ERROR_IO_EXC);
+            return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
+        } catch (IncorrectPassphraseException e) {
+            log(LogType.MSG_IP_ERROR_PASSPHRASE_CACHE);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
         } finally {
             mIndent -= 1;
         }
 
+    }
+
+    private boolean hasSecretKeyRing(long masterKeyId) {
+
+        Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingUri(masterKeyId),
+                new String[]{ KeyRings.HAS_ANY_SECRET },
+                null, null, null
+        );
+
+        if (cursor != null && cursor.moveToFirst()) {
+            boolean hasSecret = cursor.getInt(0) > 0;
+            cursor.close();
+            return hasSecret;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -1129,66 +1243,22 @@ public class ProviderHelper {
                 return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
-            CanonicalizedSecretKeyRing canSecretRing;
+            CanonicalizedSecretKeyRing canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
 
-            // If there is an old secret key, merge it.
-            try {
-                // TODO: WIP differ. need passphrase to do merge. can we remove this?
-                throw new NotFoundException();
-                /*
-                UncachedKeyRing oldSecretRing = getCanonicalizedSecretKeyRing(masterKeyId).getUncachedKeyRing();
-
-                // Merge data from new secret ring into old one
-                log(LogType.MSG_IS_MERGE_SECRET);
-                secretRing = secretRing.merge(oldSecretRing, mLog, mIndent);
-
-                // If this is null, there is an error in the log so we can just return
-                if (secretRing == null) {
+            if (canSecretRing == null) {
+                // Special case: If keyring canonicalization failed, try again after adding
+                // all self-certificates from the public key.
+                try {
+                    log(LogType.MSG_IS_MERGE_SPECIAL);
+                    UncachedKeyRing oldPublicRing = getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
+                    secretRing = secretRing.merge(oldPublicRing, mLog, mIndent);
+                    canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
+                } catch (NotFoundException e2) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
-
-                // Canonicalize this keyring, to assert a number of assumptions made about it.
-                // This is a safe cast, because we made sure this is a secret ring above
-                canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
-                if (canSecretRing == null) {
-                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
-                }
-
-                // Early breakout if nothing changed
-                if (Arrays.hashCode(secretRing.getEncoded())
-                        == Arrays.hashCode(oldSecretRing.getEncoded())) {
-                    log(LogType.MSG_IS_SUCCESS_IDENTICAL,
-                            KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
-                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
-                }
-                */
-            } catch (NotFoundException e) {
-                // Not an issue, just means we are dealing with a new keyring
-
-                // Canonicalize this keyring, to assert a number of assumptions made about it.
-                // This is a safe cast, because we made sure this is a secret ring above
-                canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
-                if (canSecretRing == null) {
-
-                    // Special case: If keyring canonicalization failed, try again after adding
-                    // all self-certificates from the public key.
-                    try {
-                        log(LogType.MSG_IS_MERGE_SPECIAL);
-                        UncachedKeyRing oldPublicRing = getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
-                        secretRing = secretRing.merge(oldPublicRing, mLog, mIndent);
-                        canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mLog, mIndent);
-                    } catch (NotFoundException e2) {
-                        // nothing, this is handled right in the next line
-                    }
-
-                    if (canSecretRing == null) {
-                        return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
-                    }
-                }
-
             }
 
-            // Merge new data into public keyring as well, if there is any
+            // Merge new data into public keyring, if there is any
             UncachedKeyRing publicRing;
             try {
                 UncachedKeyRing oldPublicRing = getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
@@ -1373,61 +1443,52 @@ public class ProviderHelper {
         });
     }
 
-
     /**
-     * Caches all secret keyrings, with subkey related data obtainable only
+     * Caches all secret keyrings owned to a file, together with subkey related data obtainable only
      * by reading the secret keyrings
      */
     private boolean cacheAllSecretKeyRingData(String fileName)
             throws IOException, NullPointerException{
         // No keys existing might be a legitimate option, we write an empty file in that case
         final Cursor cursor = mContentResolver.query(KeyRingData.buildSecretKeyRingUri(),
-                new String[]{KeyRingData.KEY_RING_DATA, KeyRingData.MASTER_KEY_ID},
-                null, null, null);
+                new String[]{KeyRings.MASTER_KEY_ID}, null, null, null);
 
         if (cursor == null) {
             return false;
         } else {
-            cursor.moveToFirst();
-            ParcelableFileCache<EncryptedSecretKeyRing> cache = new ParcelableFileCache<>(mContext, fileName);
+            ParcelableFileCache<EncryptedSecretKeyRing> cache =
+                    new ParcelableFileCache<>(mContext, fileName);
 
-            cache.writeCache(cursor.getCount(), new Iterator<EncryptedSecretKeyRing>() {
-                EncryptedSecretKeyRing ring;
-
-                @Override
-                public boolean hasNext() {
-                    if (ring != null) {
-                        return true;
-                    }
-                    if (cursor.isAfterLast()) {
-                        return false;
-                    }
-                    long masterKeyId = cursor.getLong(1);
-                    ArrayList<Pair<Long, Integer>> subKeyIdsAndType = getSubKeyIdsAndType(masterKeyId);
-                    ring = new EncryptedSecretKeyRing(cursor.getBlob(0), masterKeyId, subKeyIdsAndType);
-                    cursor.moveToNext();
-                    return true;
-                }
-
-                @Override
-                public EncryptedSecretKeyRing next() {
-                    try {
-                        return ring;
-                    } finally {
-                        ring = null;
-                    }
-                }
-
-                @Override
-                public void remove() {
-                    throw new UnsupportedOperationException();
-                }
-
-            });
-
+            ArrayList<EncryptedSecretKeyRing> secretKeys = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                long masterKeyId = cursor.getLong(0);
+                secretKeys.add(getSecretKeyringData(masterKeyId));
+            }
             cursor.close();
+            cache.writeCache(cursor.getCount(),secretKeys.iterator());
             return true;
         }
+
+    }
+
+    private EncryptedSecretKeyRing getSecretKeyringData(long masterKeyId) {
+        EncryptedSecretKeyRing data = null;
+        final int INDEX_SECRET_KEY_BLOB = 0;
+        final int INDEX_AWAITING_MERGE_INT = 1;
+        Cursor secretKeyCursor = mContentResolver.query(
+                KeyRingData.buildSecretKeyRingUri(masterKeyId),
+                new String[]{ KeyRingData.KEY_RING_DATA, KeyRingData.AWAITING_MERGE },
+                null, null, null);
+        if (secretKeyCursor != null && secretKeyCursor.moveToNext()) {
+            data = new EncryptedSecretKeyRing(
+                    secretKeyCursor.getBlob(INDEX_SECRET_KEY_BLOB),
+                    masterKeyId,
+                    secretKeyCursor.getInt(INDEX_AWAITING_MERGE_INT) == 1,
+                    getSubKeyIdsAndType(masterKeyId)
+            );
+            secretKeyCursor.close();
+        }
+        return data;
     }
 
 
@@ -1436,19 +1497,15 @@ public class ProviderHelper {
         Cursor cursor = mContentResolver.query(KeychainContract.Keys.buildKeysUri(masterKeyId),
                                                 new String[] {Keys.KEY_ID, Keys.HAS_SECRET,},
                                                 Keys.HAS_SECRET + " !=0", null, null);
-        try {
-            if (cursor != null) {
-                while(cursor.moveToNext()) {
-                    long subKeyId = cursor.getLong(0);
-                    int subKeyType = cursor.getInt(1);
-                    idsAndType.add(new Pair<>(subKeyId, subKeyType));
-                }
+        if (cursor != null) {
+            while(cursor.moveToNext()) {
+                long subKeyId = cursor.getLong(0);
+                int subKeyType = cursor.getInt(1);
+                idsAndType.add(new Pair<>(subKeyId, subKeyType));
             }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+            cursor.close();
         }
+
         return idsAndType;
     }
 
@@ -1648,15 +1705,21 @@ public class ProviderHelper {
 
     }
 
+    private WriteKeyRingsResult writeSecretKeyRingToDb(@NonNull EncryptedSecretKeyRing data) {
+        ArrayList<EncryptedSecretKeyRing> container = new ArrayList<>();
+        container.add(data);
+        return writeSecretKeyRingsToDb(container.iterator(), container.size());
+    }
+
     /**
      * Writes encrypted keyring block and related data directly into db, returning error on failure
      * EncryptedSecretKeyRings are trusted to be valid.
      */
-    private WriteKeyRingsResult writeSecretKeyRingsToDb(Iterator<EncryptedSecretKeyRing> it, int num) {
+    private WriteKeyRingsResult writeSecretKeyRingsToDb(Iterator<EncryptedSecretKeyRing> it, int numRings) {
         OperationLog log = new OperationLog();
         int indent = 0;
         ContentResolver contentResolver = mContext.getContentResolver();
-        log.add(LogType.MSG_WRITE, indent, num);
+        log.add(LogType.MSG_WRITE, indent, numRings);
 
         indent += 1;
         while(it.hasNext()) {
@@ -1669,6 +1732,7 @@ public class ProviderHelper {
             ContentValues values = new ContentValues();
             values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
             values.put(KeyRingData.KEY_RING_DATA, encryptedRing.mBytes);
+            values.put(KeyRingData.AWAITING_MERGE, encryptedRing.mAwaitingMerge);
             Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
             if (contentResolver.insert(uri, values) == null) {
                 log.add(LogType.MSG_WS_DB_EXCEPTION, indent);

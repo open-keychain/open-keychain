@@ -71,7 +71,9 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
             try {
                 log.add(LogType.MSG_CU_FETCHING_KEYRING, 1,
                         KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
-                retrievedRing = mProviderHelper.getCanonicalizedSecretKeyRing(
+
+                // update the keyring along the way
+                retrievedRing = mProviderHelper.getCanonicalizedSecretKeyRingWithMerge(
                         unlockParcel.mMasterKeyId,
                         cryptoInput.getPassphrase()
                 );
@@ -83,6 +85,9 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
                 log.add(LogType.MSG_CU_ERROR_INCORRECT_PASSPHRASE, 2);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+            } catch (ProviderHelper.FailedMergeException e) {
+                log.add(LogType.MSG_CU_ERROR_MERGE_KEYRING, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
         }

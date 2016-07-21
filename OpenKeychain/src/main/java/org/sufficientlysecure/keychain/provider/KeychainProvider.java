@@ -32,6 +32,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
@@ -328,6 +329,9 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.PRIVKEY_DATA,
                         Tables.KEY_RINGS_SECRET + "." + KeyRingData.KEY_RING_DATA
                                 + " AS " + KeyRings.PRIVKEY_DATA);
+                projectionMap.put(KeyRings.AWAITING_MERGE,
+                        Tables.KEY_RINGS_SECRET + "." + KeyRingData.AWAITING_MERGE
+                                + " AS " + KeyRings.AWAITING_MERGE);
                 projectionMap.put(KeyRings.HAS_SECRET, Tables.KEYS + "." + KeyRings.HAS_SECRET);
                 projectionMap.put(KeyRings.HAS_ANY_SECRET,
                         "(" + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NOT NULL)" +
@@ -372,7 +376,8 @@ public class KeychainProvider extends ContentProvider {
                                 + " = "
                                     + Tables.KEY_RINGS_PUBLIC + "." + KeyRingData.MASTER_KEY_ID
                                 + ")" : "")
-                        + (plist.contains(KeyRings.PRIVKEY_DATA) || plist.contains(KeyRings.HAS_ANY_SECRET) ?
+                        + (plist.contains(KeyRings.PRIVKEY_DATA) || plist.contains(KeyRings.HAS_ANY_SECRET)
+                            || plist.contains(KeyRings.AWAITING_MERGE) ?
                             " LEFT JOIN " + Tables.KEY_RINGS_SECRET + " ON ("
                                     + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
@@ -591,6 +596,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_SECRET + ".oid AS _id");
                 projectionMap.put(KeyRingData.MASTER_KEY_ID, KeyRingData.MASTER_KEY_ID);
                 projectionMap.put(KeyRingData.KEY_RING_DATA, KeyRingData.KEY_RING_DATA);
+                projectionMap.put(KeyRingData.AWAITING_MERGE, KeyRingData.AWAITING_MERGE);
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(Tables.KEY_RINGS_SECRET);
@@ -947,6 +953,19 @@ public class KeychainProvider extends ContentProvider {
         try {
             final int match = mUriMatcher.match(uri);
             switch (match) {
+                case KEY_RING_SECRET: {
+                    if (values.size() != 1 || !values.containsKey(KeyRingData.AWAITING_MERGE)) {
+                        throw new UnsupportedOperationException(
+                                "Only awaiting_merge column may be updated!");
+                    }
+                    Long mkid = Long.parseLong(uri.getPathSegments().get(1));
+                    String actualSelection = Keys.MASTER_KEY_ID + " = " + Long.toString(mkid);
+                    if (!TextUtils.isEmpty(selection)) {
+                        actualSelection += " AND (" + selection + ")";
+                    }
+                    count = db.update(Tables.KEY_RINGS_SECRET, values, actualSelection, selectionArgs);
+                    break;
+                }
                 case KEY_RING_KEYS: {
                     if (values.size() != 1 || !values.containsKey(Keys.HAS_SECRET)) {
                         throw new UnsupportedOperationException(

@@ -54,7 +54,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 17;
+    private static final int DATABASE_VERSION = 18;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -80,6 +80,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS keyrings_secret ("
                     + KeyRingsColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY,"
                     + KeyRingsColumns.KEY_RING_DATA + " BLOB, "
+                    + KeyRingsColumns.AWAITING_MERGE + " INTEGER, "
                     + "FOREIGN KEY(" + KeyRingsColumns.MASTER_KEY_ID + ") "
                         + "REFERENCES keyrings_public(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
             + ")";
@@ -318,6 +319,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     // no consolidate necessary
                     return;
                 }
+            case 16:
+            case 17:
+                db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN awaiting_merge INTEGER");
+
+
         }
 
         // always do consolidate after upgrade

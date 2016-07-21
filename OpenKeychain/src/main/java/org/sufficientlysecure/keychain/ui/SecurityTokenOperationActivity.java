@@ -249,7 +249,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
-                    secretKeyRing = providerHelper.getCanonicalizedSecretKeyRing(
+                    secretKeyRing = providerHelper.getCanonicalizedSecretKeyRingWithMerge(
                             mRequiredInput.getMasterKeyId(), mInputParcel.getPassphrase());
                 } catch (ProviderHelper.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
@@ -257,6 +257,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException("Error decrypting keyring.");
                 } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
                     throw new IOException("Bad keyring passphrase.");
+                } catch (ProviderHelper.FailedMergeException e) {
+                    throw new IOException(getString(R.string.msg_op_error_merge_keyring));
                 }
 
                 byte[] newPin = mRequiredInput.mInputData[0];

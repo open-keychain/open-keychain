@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import de.measite.minidns.record.A;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -33,7 +32,6 @@ import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -136,8 +134,9 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                     log.add(LogType.MSG_ED_FETCHING, 1,
                             KeyFormattingUtils.convertKeyIdToHex(saveParcel.mMasterKeyId));
 
+                    // update the keyring along the way
                     CanonicalizedSecretKeyRing secRing =
-                            mProviderHelper.getCanonicalizedSecretKeyRing(
+                            mProviderHelper.getCanonicalizedSecretKeyRingWithMerge(
                                     saveParcel.mMasterKeyId, keyringPassphrase);
 
                     modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
@@ -153,6 +152,9 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
                     log.add(LogType.MSG_ED_ERROR_INCORRECT_PASSPHRASE, 2);
+                    return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                } catch (ProviderHelper.FailedMergeException e) {
+                    log.add(LogType.MSG_ED_ERROR_MERGE_KEYRING, 2);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
             }

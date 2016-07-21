@@ -110,11 +110,13 @@ public class ChangeUnlockOperationTest {
         assertTrue("change unlock should succeed", result.success());
 
         try {
-            providerHelper.getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId(), newPassphrase);
+            providerHelper.getCanonicalizedSecretKeyRingWithMerge(mStaticRing.getMasterKeyId(), newPassphrase);
         } catch (ProviderHelper.NotFoundException | ByteArrayEncryptor.EncryptDecryptException e) {
             Assert.fail("IO error when retrieving key!");
         } catch (ByteArrayEncryptor.IncorrectPassphraseException e){
             Assert.fail("Keyring has an unknown passphrase!");
+        } catch (ProviderHelper.FailedMergeException e) {
+            Assert.fail("merge should not fail (if any)");
         }
     }
 }

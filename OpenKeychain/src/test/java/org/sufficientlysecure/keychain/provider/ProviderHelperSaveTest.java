@@ -18,6 +18,8 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,12 +39,16 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -208,7 +214,7 @@ public class ProviderHelperSaveTest {
         CanonicalizedPublicKeyRing ring = mProviderHelper.getCanonicalizedPublicKeyRing(keyId);
         boolean found = false;
         byte[] badUserId = Hex.decode("436c61757320467261656e6b656c203c436c6175732e4672e46e6b656c4068616c696661782e727774682d61616368656e2e64653e");
-        for (byte[] rawUserId : new IterableIterator<byte[]>(
+        for (byte[] rawUserId : new IterableIterator<>(
                 ring.getUnorderedRawUserIds().iterator())) {
             if (Arrays.equals(rawUserId, badUserId)) {
                 found = true;
@@ -251,23 +257,81 @@ public class ProviderHelperSaveTest {
     }
 
     @Test
-    public void testImportAndEncrypt() throws Exception {
+    public void testImportAndRetrieve() throws Exception {
         Passphrase keyringPassphrase = TestingUtils.genPassphrase();
 
         // save key
-        UncachedKeyRing secKey = readRingFromResource("/test-keys/passwordless-gpg-sec.asc");
+        UncachedKeyRing secKey = readRingFromResource("/test-keys/basickey/empty-passphrase-gpg-sec.asc");
         CanonicalizedSecretKeyRing canSecKeyRing = (CanonicalizedSecretKeyRing) secKey.canonicalize(new OperationLog(), 0);
         KeyringPassphrases passphrases = TestingUtils.generateImportPassphrases(secKey, new Passphrase(), keyringPassphrase);
         OperationResult saveResult = mProviderHelper.saveSecretKeyRing(secKey, passphrases, new ProgressScaler());
         Assert.assertTrue("Failed to insert secret key", saveResult.success());
 
         // retrieve key
-        CanonicalizedSecretKeyRing retrievedSecKeyRing = mProviderHelper.getCanonicalizedSecretKeyRing(secKey.getMasterKeyId(), keyringPassphrase);
+        CanonicalizedSecretKeyRing retrievedSecKeyRing =
+                mProviderHelper.getCanonicalizedSecretKeyRing(secKey.getMasterKeyId(), keyringPassphrase);
 
-        // TODO: better test for verifying retrieved keyring?
         for (CanonicalizedSecretKey key : canSecKeyRing.secretKeyIterator()) {
-            Assert.assertNotNull("did not manage to save a key", retrievedSecKeyRing.getSecretKey(key.getKeyId()));
+            Assert.assertNotNull("Failed to save a key & re-encrypt",
+                    retrievedSecKeyRing.getSecretKey(key.getKeyId()).unlock(new Passphrase()));
         }
+    }
+
+    @Test
+    public void testImportPublicWithDelayedMerge() throws Exception {
+        Passphrase keyringPassphrase = TestingUtils.genPassphrase();
+
+        UncachedKeyRing secKey = readRingFromResource("/test-keys/basickey/empty-passphrase-gpg-sec.asc");
+        KeyringPassphrases passphrases = TestingUtils.generateImportPassphrases(secKey, new Passphrase(), keyringPassphrase);
+        OperationResult saveResult = mProviderHelper.saveSecretKeyRing(secKey, passphrases, new ProgressScaler());
+        Assert.assertTrue("Failed to insert secret key", saveResult.success());
+
+        long masterKeyId = secKey.getMasterKeyId();
+
+        UncachedKeyRing updatedPubKey = readRingFromResource("/test-keys/basickey/with-new-key.pub.asc");
+        SaveKeyringResult pubSaveResult = mProviderHelper.savePublicKeyRing(updatedPubKey);
+        int resultCode = pubSaveResult.getResult();
+
+        Assert.assertTrue("Failed to insert public key",
+                (resultCode & SaveKeyringResult.SAVED_PUBLIC) == SaveKeyringResult.SAVED_PUBLIC);
+        Assert.assertTrue("Failed to insert secret key",
+                (resultCode & SaveKeyringResult.SAVED_SECRET) == SaveKeyringResult.SAVED_SECRET);
+
+        ContentResolver resolver = RuntimeEnvironment.application.getContentResolver();
+
+        // Check if key types are as expected, should have 2 passphrase_empty & 1 dummy
+        Cursor cursor = resolver.query(Keys.buildKeysUri(masterKeyId),
+                new String[]{ Keys.HAS_SECRET }, null, null, null);
+        ArrayList<SecretKeyType> expectedKeyTypes = new ArrayList<>();
+        expectedKeyTypes.add(SecretKeyType.PASSPHRASE_EMPTY);
+        expectedKeyTypes.add(SecretKeyType.PASSPHRASE_EMPTY);
+        expectedKeyTypes.add(SecretKeyType.GNU_DUMMY);
+
+        Assert.assertTrue("Incomplete import of secret data", cursor != null);
+        while (cursor.moveToNext()) {
+            SecretKeyType keyType = SecretKeyType.fromNum(cursor.getInt(0));
+            Assert.assertTrue("Incomplete import of secret data", expectedKeyTypes.contains(keyType));
+            expectedKeyTypes.remove(keyType);
+        }
+        cursor.close();
+
+        // Check if the merge flag is set
+        cursor = resolver.query( KeyRingData.buildSecretKeyRingUri(masterKeyId),
+                new String[]{ KeyRingData.AWAITING_MERGE }, null, null, null);
+        Assert.assertTrue("Incomplete import of secret data", cursor != null);
+        Assert.assertTrue("Failed to set pending merge flag", cursor.moveToFirst() && cursor.getInt(0) == 1);
+        cursor.close();
+
+        // Force the merge by retrieving secret key
+        CanonicalizedSecretKeyRing mergedSecRing =
+                mProviderHelper.getCanonicalizedSecretKeyRingWithMerge(masterKeyId, keyringPassphrase);
+
+        int keyCount = 0;
+        Iterator<UncachedPublicKey> keys = mergedSecRing.getUncachedKeyRing().getPublicKeys();
+        for (; keys.hasNext(); keys.next()) {
+            keyCount++;
+        }
+        Assert.assertTrue("Merge has failed", keyCount == 3);
     }
 
     UncachedKeyRing readRingFromResource(String name) throws Exception {
