@@ -76,7 +76,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text='@{userIdEmail != null ? "Key ID: " + userIdEmail : ""}'
+                            android:text='@{keyId != null ? "Key ID: " + keyId : ""}'
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="@{revoked || expired ? revokedExpiredColor : standardColor}" />
 

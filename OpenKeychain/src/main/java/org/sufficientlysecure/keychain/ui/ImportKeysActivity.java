@@ -32,8 +32,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
-import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysOperationCallback;
 import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
@@ -49,7 +47,6 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class ImportKeysActivity extends BaseActivity implements ImportKeysListener {
 
@@ -334,53 +331,9 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     }
 
     @Override
-    public void importKey(ParcelableKeyRing keyRing) {
-        FragmentManager fM = getSupportFragmentManager();
-        ImportKeysListFragment listFragment = (ImportKeysListFragment) fM.findFragmentByTag(TAG_FRAG_LIST);
-
-        String keyserver = null;
-        ArrayList<ParcelableKeyRing> keyList = null;
-
-        Log.d(Constants.TAG, "importKey started");
-
-        LoaderState loaderState = listFragment.getState();
-        if (loaderState instanceof BytesLoaderState) {
-            // instead of giving the entries by Intent extra, cache them into a
-            // file to prevent Java Binder problems on heavy imports
-            // read FileImportCache for more info.
-            try {
-                // We parcel this iteratively into a file - anything we can
-                // display here, we should be able to import.
-                ParcelableFileCache<ParcelableKeyRing> cache =
-                        new ParcelableFileCache<>(this, ImportOperation.CACHE_FILE_NAME);
-                cache.writeCache(keyRing);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Problem writing cache file", e);
-                Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR).show();
-                return;
-            }
-        } else if (loaderState instanceof CloudLoaderState) {
-            ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
-            keys.add(keyRing);
-
-            keyList = keys;
-            keyserver = ((CloudLoaderState) loaderState).mCloudPrefs.keyserver;
-        }
-
-        ImportKeysOperationCallback cb = new ImportKeysOperationCallback(this, keyserver, keyList);
-        mOperationHelper = new CryptoOperationHelper(1, this, cb, R.string.progress_importing);
-        mOperationHelper.cryptoOperation();
-    }
-
-    @Override
     public void importKeys() {
         FragmentManager fM = getSupportFragmentManager();
         ImportKeysListFragment listFragment = (ImportKeysListFragment) fM.findFragmentByTag(TAG_FRAG_LIST);
-
-        if (listFragment.getEntries().size() == 0) {
-            Notify.create(this, R.string.error_nothing_import_selected, Notify.Style.ERROR).show();
-            return;
-        }
 
         Log.d(Constants.TAG, "importKeys started");
         // instead of giving the entries by Intent extra, cache them into a
@@ -398,8 +351,10 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
             return;
         }
 
-        ImportKeysOperationCallback callback = new ImportKeysOperationCallback(this, null, null);
-        new CryptoOperationHelper(1, this, callback, R.string.progress_importing).cryptoOperation();
+        ImportKeyringParcel inputParcel = new ImportKeyringParcel(null, null);
+        ImportKeysOperationCallback callback = new ImportKeysOperationCallback(this, inputParcel);
+        mOperationHelper = new CryptoOperationHelper(1, this, callback, R.string.progress_importing);
+        mOperationHelper.cryptoOperation();
     }
 
     @Override

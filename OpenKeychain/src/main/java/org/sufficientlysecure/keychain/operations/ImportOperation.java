@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -78,8 +79,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * not include self certificates for user ids in the secret keyring. The import
  * method here will generally import keyrings in the order given by the
  * iterator, so this should be ensured beforehand.
- *
- * @see org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter#getSelectedEntries()
  */
 public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
@@ -99,20 +98,20 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     // Overloaded functions for using progressable supplied in constructor during import
     public ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
-                                               String keyServerUri, Proxy proxy) {
-        return serialKeyRingImport(entries, num, keyServerUri, mProgressable, proxy);
+                                               String keyServerUri, Proxy proxy, boolean skipSave) {
+        return serialKeyRingImport(entries, num, keyServerUri, mProgressable, proxy, skipSave);
     }
 
     @NonNull
     private ImportKeyResult serialKeyRingImport(ParcelableFileCache<ParcelableKeyRing> cache,
-                                                String keyServerUri, Proxy proxy) {
+                                                String keyServerUri, Proxy proxy, boolean skipSave) {
 
         // get entries from cached file
         try {
             IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
             int numEntries = it.getSize();
 
-            return serialKeyRingImport(it, numEntries, keyServerUri, mProgressable, proxy);
+            return serialKeyRingImport(it, numEntries, keyServerUri, mProgressable, proxy, skipSave);
         } catch (IOException e) {
 
             // Special treatment here, we need a lot
@@ -138,7 +137,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     @NonNull
     private ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
                                                 String keyServerUri, Progressable progressable,
-                                                @NonNull Proxy proxy) {
+                                                @NonNull Proxy proxy, boolean skipSave) {
         if (progressable != null) {
             progressable.setProgress(R.string.progress_importing, 0, 100);
         }
@@ -153,6 +152,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
         int newKeys = 0, updatedKeys = 0, badKeys = 0, secret = 0;
         ArrayList<Long> importedMasterKeyIds = new ArrayList<>();
+
+        ArrayList<CanonicalizedKeyRing> canKeyRings = new ArrayList<>();
 
         boolean cancelled = false;
         int position = 0;
@@ -315,14 +316,14 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                 // and https://github.com/open-keychain/open-keychain/issues/1480
                 synchronized (mProviderHelper) {
                     mProviderHelper.clearLog();
+                    ProgressScaler progressScaler = new ProgressScaler(progressable, (int) (position * progSteps),
+                            (int) ((position + 1) * progSteps), 100);
                     if (key.isSecret()) {
-                        result = mProviderHelper.saveSecretKeyRing(key,
-                                new ProgressScaler(progressable, (int) (position * progSteps),
-                                        (int) ((position + 1) * progSteps), 100));
+                        result = mProviderHelper.saveSecretKeyRing(key, progressScaler,
+                                canKeyRings, skipSave);
                     } else {
-                        result = mProviderHelper.savePublicKeyRing(key,
-                                new ProgressScaler(progressable, (int) (position * progSteps),
-                                        (int) ((position + 1) * progSteps), 100), entry.mExpectedFingerprint);
+                        result = mProviderHelper.savePublicKeyRing(key, progressScaler,
+                                entry.mExpectedFingerprint, canKeyRings, skipSave);
                     }
                 }
                 if (!result.success()) {
@@ -361,7 +362,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         // synchronized on mProviderHelper to prevent
         // https://github.com/open-keychain/open-keychain/issues/1221 since a consolidate deletes
         // and re-inserts keys, which could conflict with a parallel db key update
-        if (secret > 0) {
+        if (!skipSave && secret > 0) {
             setPreventCancel();
             ConsolidateResult result;
             synchronized (mProviderHelper) {
@@ -419,8 +420,11 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             }
         }
 
-        return new ImportKeyResult(resultType, log, newKeys, updatedKeys, badKeys, secret,
+        ImportKeyResult result = new ImportKeyResult(resultType, log, newKeys, updatedKeys, badKeys, secret,
                 importedMasterKeyIdsArray);
+
+        result.setCanonicalizedKeyRings(canKeyRings);
+        return result;
     }
 
     @NonNull
@@ -428,13 +432,13 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     public ImportKeyResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
         ArrayList<ParcelableKeyRing> keyList = importInput.mKeyList;
         String keyServer = importInput.mKeyserver;
+        boolean skipSave = importInput.mSkipSave;
 
         ImportKeyResult result;
-
         if (keyList == null) {// import from file, do serially
             ParcelableFileCache<ParcelableKeyRing> cache =
                     new ParcelableFileCache<>(mContext, CACHE_FILE_NAME);
-            result = serialKeyRingImport(cache, null, null);
+            result = serialKeyRingImport(cache, null, null, skipSave);
         } else {
             Proxy proxy;
             if (cryptoInput.getParcelableProxy() == null) {
@@ -449,7 +453,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                 proxy = cryptoInput.getParcelableProxy().getProxy();
             }
 
-            result = multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer, proxy);
+            result = multiThreadedKeyImport(keyList, keyServer, proxy, skipSave);
         }
 
         ContactSyncAdapterService.requestContactsSync();
@@ -457,44 +461,43 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     }
 
     @NonNull
-    private ImportKeyResult multiThreadedKeyImport(@NonNull Iterator<ParcelableKeyRing> keyListIterator,
-                                                   int totKeys, final String keyServer,
-                                                   final Proxy proxy) {
-        Log.d(Constants.TAG, "Multi-threaded key import starting");
-        KeyImportAccumulator accumulator = new KeyImportAccumulator(totKeys, mProgressable);
+    private ImportKeyResult multiThreadedKeyImport(ArrayList<ParcelableKeyRing> keyList,
+                                                   final String keyServer, final Proxy proxy,
+                                                   final boolean skipSave) {
 
-        final ProgressScaler ignoreProgressable = new ProgressScaler();
+        Log.d(Constants.TAG, "Multi-threaded key import starting");
+
+        final Iterator<ParcelableKeyRing> keyListIterator = keyList.iterator();
+        final int totKeys = keyList.size();
 
         ExecutorService importExecutor = new ThreadPoolExecutor(0, MAX_THREADS, 30L, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>());
-
         ExecutorCompletionService<ImportKeyResult> importCompletionService =
                 new ExecutorCompletionService<>(importExecutor);
 
         while (keyListIterator.hasNext()) { // submit all key rings to be imported
-
-            final ParcelableKeyRing pkRing = keyListIterator.next();
-
             Callable<ImportKeyResult> importOperationCallable = new Callable<ImportKeyResult>
                     () {
 
                 @Override
                 public ImportKeyResult call() {
-
                     if (checkCancelled()) {
                         return null;
                     }
 
                     ArrayList<ParcelableKeyRing> list = new ArrayList<>();
-                    list.add(pkRing);
+                    list.add(keyListIterator.next());
+                    ProgressScaler ignoreProgressable = new ProgressScaler();
 
-                    return serialKeyRingImport(list.iterator(), 1, keyServer, ignoreProgressable, proxy);
+                    return serialKeyRingImport(list.iterator(), 1, keyServer, ignoreProgressable,
+                            proxy, skipSave);
                 }
             };
 
             importCompletionService.submit(importOperationCallable);
         }
 
+        KeyImportAccumulator accumulator = new KeyImportAccumulator(totKeys, mProgressable);
         while (!accumulator.isImportFinished()) { // accumulate the results of each import
             try {
                 accumulator.accumulateKeyImport(importCompletionService.take().get());
@@ -511,7 +514,6 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             }
         }
         return accumulator.getConsolidatedResult();
-
     }
 
     /**
@@ -519,16 +521,18 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
      */
     public static class KeyImportAccumulator {
         private OperationResult.OperationLog mImportLog = new OperationResult.OperationLog();
-        Progressable mProgressable;
+        private Progressable mProgressable;
         private int mTotalKeys;
         private int mImportedKeys = 0;
-        ArrayList<Long> mImportedMasterKeyIds = new ArrayList<>();
+        private ArrayList<Long> mImportedMasterKeyIds = new ArrayList<>();
         private int mBadKeys = 0;
         private int mNewKeys = 0;
         private int mUpdatedKeys = 0;
         private int mSecret = 0;
         private int mResultType = 0;
         private boolean mHasCancelledResult;
+
+        public ArrayList<CanonicalizedKeyRing> mCanonicalizedKeyRings;
 
         /**
          * Accumulates keyring imports and updates the progressable whenever a new key is imported.
@@ -544,6 +548,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             if (mProgressable != null) {
                 mProgressable.setProgress(0, totalKeys);
             }
+
+            mCanonicalizedKeyRings = new ArrayList<>();
         }
 
         public void accumulateKeyImport(ImportKeyResult result) {
@@ -574,6 +580,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             for (long masterKeyId : masterKeyIds) {
                 mImportedMasterKeyIds.add(masterKeyId);
             }
+
+            mCanonicalizedKeyRings.addAll(result.mCanonicalizedKeyRings);
 
             // if any key import has been cancelled, set result type to cancelled
             // resultType is added to in getConsolidatedKayImport to account for remaining factors
@@ -614,8 +622,11 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                 masterKeyIds[i] = mImportedMasterKeyIds.get(i);
             }
 
-            return new ImportKeyResult(mResultType, mImportLog, mNewKeys, mUpdatedKeys, mBadKeys,
-                    mSecret, masterKeyIds);
+            ImportKeyResult result = new ImportKeyResult(mResultType, mImportLog, mNewKeys,
+                    mUpdatedKeys, mBadKeys, mSecret, masterKeyIds);
+
+            result.setCanonicalizedKeyRings(mCanonicalizedKeyRings);
+            return result;
         }
 
         public boolean isImportFinished() {

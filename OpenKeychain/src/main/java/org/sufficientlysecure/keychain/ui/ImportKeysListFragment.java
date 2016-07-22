@@ -126,7 +126,7 @@ public class ImportKeysListFragment extends Fragment implements
         };
     }
 
-    public List<ImportKeysListEntry> getEntries() {
+    private List<ImportKeysListEntry> getEntries() {
         if (mAdapter != null) {
             return mAdapter.getEntries();
         } else {

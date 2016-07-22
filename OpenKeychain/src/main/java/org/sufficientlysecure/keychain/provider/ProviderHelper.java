@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -904,7 +905,7 @@ public class ProviderHelper {
     }
 
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
-        return savePublicKeyRing(keyRing, new ProgressScaler(), null);
+        return savePublicKeyRing(keyRing, new ProgressScaler(), null, null, false);
     }
 
     /**
@@ -913,7 +914,10 @@ public class ProviderHelper {
      * This is a high level method, which takes care of merging all new information into the old and
      * keep public and secret keyrings in sync.
      */
-    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, Progressable progress, String expectedFingerprint) {
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, Progressable progress,
+                                               String expectedFingerprint,
+                                               ArrayList<CanonicalizedKeyRing> canKeyRings,
+                                               boolean skipSave) {
 
         try {
             long masterKeyId = publicRing.getMasterKeyId();
@@ -997,12 +1001,21 @@ public class ProviderHelper {
                 }
             }
 
-            int result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);
+            int result = SaveKeyringResult.SAVED_PUBLIC;
+            if (!skipSave) {
+                result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);
+            }
+            if (canKeyRings != null) canKeyRings.add(canPublicRing);
 
             // Save the saved keyring (if any)
             if (canSecretRing != null) {
                 progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
-                int secretResult = saveCanonicalizedSecretKeyRing(canSecretRing);
+
+                int secretResult = SaveKeyringResult.SAVED_SECRET;
+                if (!skipSave) {
+                    saveCanonicalizedSecretKeyRing(canSecretRing);
+                }
+
                 if ((secretResult & SaveKeyringResult.RESULT_ERROR) != SaveKeyringResult.RESULT_ERROR) {
                     result |= SaveKeyringResult.SAVED_SECRET;
                 }
@@ -1020,6 +1033,12 @@ public class ProviderHelper {
     }
 
     public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing, Progressable progress) {
+        return saveSecretKeyRing(secretRing, progress, null, false);
+    }
+
+    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing, Progressable progress,
+                                               ArrayList<CanonicalizedKeyRing> canKeyRings,
+                                               boolean skipSave) {
 
         try {
             long masterKeyId = secretRing.getMasterKeyId();
@@ -1109,15 +1128,22 @@ public class ProviderHelper {
                 return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
-            int result;
+            int publicResult = SaveKeyringResult.SAVED_PUBLIC;
+            if (!skipSave) {
+                publicResult = saveCanonicalizedPublicKeyRing(canPublicRing, progress, true);
+            }
 
-            result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, true);
-            if ((result & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
+            if ((publicResult & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
                 return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
             progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
-            result = saveCanonicalizedSecretKeyRing(canSecretRing);
+
+            int result = SaveKeyringResult.SAVED_SECRET;
+            if (!skipSave) {
+                result = saveCanonicalizedSecretKeyRing(canSecretRing);
+            }
+            if (canKeyRings != null) canKeyRings.add(canSecretRing);
 
             return new SaveKeyringResult(result, mLog, canSecretRing);
 
@@ -1350,7 +1376,7 @@ public class ProviderHelper {
 
                     ImportKeyResult result = new ImportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
-                            .serialKeyRingImport(itSecrets, numSecrets, null, null);
+                            .serialKeyRingImport(itSecrets, numSecrets, null, null, false);
                     log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_SECRET_SKIP, indent);
@@ -1378,7 +1404,7 @@ public class ProviderHelper {
 
                     ImportKeyResult result = new ImportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
-                            .serialKeyRingImport(itPublics, numPublics, null, null);
+                            .serialKeyRingImport(itPublics, numPublics, null, null, false);
                     log.add(result, indent);
                     // re-insert our backed up list of updated key times
                     // TODO: can this cause issues in case a public key re-import failed?

@@ -419,6 +419,7 @@
     <string name="progress_done">"Done."</string>
     <string name="progress_cancel">"Cancel"</string>
     <string name="progress_cancelling">"cancelling…"</string>
+    <string name="progress_downloading">"downloading…"</string>
     <string name="progress_saving">"saving…"</string>
     <string name="progress_importing">"importing…"</string>
     <string name="progress_benchmarking">"benchmarking…"</string>

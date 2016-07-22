@@ -17,10 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListItemBinding;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
@@ -35,14 +36,24 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysOperationCallback;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysResultListener;
 import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,33 +61,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder> {
+public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder> implements ImportKeysResultListener {
 
-    private Context mContext;
-    private ImportKeysListener mListener;
+    private FragmentActivity mActivity;
+    private ImportKeysResultListener mListener;
     private boolean mNonInteractive;
 
     private LoaderState mLoaderState;
     private List<ImportKeysListEntry> mData;
 
-    public ImportKeysAdapter(Context mContext, ImportKeysListener listener, boolean mNonInteractive) {
-        this.mContext = mContext;
+    public ImportKeysAdapter(FragmentActivity activity, ImportKeysListener listener, boolean mNonInteractive) {
+        this.mActivity = activity;
         this.mListener = listener;
         this.mNonInteractive = mNonInteractive;
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ImportKeysListItemBinding binding;
-
-        public ViewHolder(View view) {
-            super(view);
-            binding = DataBindingUtil.bind(view);
-        }
-    }
-
-    public void clearData() {
-        mData = null;
-        notifyDataSetChanged();
     }
 
     public void setLoaderState(LoaderState loaderState) {
@@ -85,6 +82,11 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     public void setData(List<ImportKeysListEntry> data) {
         this.mData = data;
+        notifyDataSetChanged();
+    }
+
+    public void clearData() {
+        mData = null;
         notifyDataSetChanged();
     }
 
@@ -109,22 +111,31 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         return result;
     }
 
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public ImportKeysListItemBinding binding;
+
+        public ViewHolder(View view) {
+            super(view);
+            binding = DataBindingUtil.bind(view);
+        }
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(mContext);
+        LayoutInflater inflater = LayoutInflater.from(mActivity);
         View v = inflater.inflate(R.layout.import_keys_list_item, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         final ImportKeysListItemBinding b = holder.binding;
         final ImportKeysListEntry entry = mData.get(position);
 
-        Resources resources = mContext.getResources();
-        Highlighter highlighter = new Highlighter(mContext, entry.getQuery());
-        b.setStandardColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
+        Resources resources = mActivity.getResources();
+        Highlighter highlighter = new Highlighter(mActivity, entry.getQuery());
+        b.setStandardColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
         b.setRevokedExpiredColor(resources.getColor(R.color.key_flag_gray));
         b.setSecretColor(Color.RED);
         b.setHighlighter(highlighter);
@@ -139,94 +150,101 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.setAlgorithm(entry.getAlgorithm());
         b.setUserId(userIdSplit.name);
         b.setUserIdEmail(userIdSplit.email);
-        b.setKeyId(KeyFormattingUtils.beautifyKeyIdWithPrefix(mContext, entry.getKeyIdHex()));
+        b.setKeyId(KeyFormattingUtils.beautifyKeyIdWithPrefix(mActivity, entry.getKeyIdHex()));
 
         if (entry.isRevoked()) {
-            KeyFormattingUtils.setStatusImage(mContext, b.status, null, State.REVOKED, R.color.key_flag_gray);
+            KeyFormattingUtils.setStatusImage(mActivity, b.status, null,
+                    State.REVOKED, R.color.key_flag_gray);
         } else if (entry.isExpired()) {
-            KeyFormattingUtils.setStatusImage(mContext, b.status, null, State.EXPIRED, R.color.key_flag_gray);
+            KeyFormattingUtils.setStatusImage(mActivity, b.status, null,
+                    State.EXPIRED, R.color.key_flag_gray);
         }
 
         b.importKey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mLoaderState instanceof BytesLoaderState) {
-                    mListener.importKey(new ParcelableKeyRing(entry.getEncodedRing()));
+                    importKey(new ParcelableKeyRing(entry.getEncodedRing()));
                 } else if (mLoaderState instanceof CloudLoaderState) {
-                    mListener.importKey(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(),
+                    importKey(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(),
                             entry.getKeybaseName(), entry.getFbUsername()));
                 }
             }
         });
+
         b.expand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean hidden = b.extraContainer.getVisibility() == View.GONE;
                 b.extraContainer.setVisibility(hidden ? View.VISIBLE : View.GONE);
                 b.expand.animate().rotation(hidden ? 180 : 0).start();
+
+                if (hidden) {
+                    if (mLoaderState instanceof BytesLoaderState) {
+                        getKey(new ParcelableKeyRing(entry.getEncodedRing()));
+                    } else if (mLoaderState instanceof CloudLoaderState) {
+                        getKey(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(),
+                                entry.getKeybaseName(), entry.getFbUsername()));
+                    }
+                }
             }
         });
 
-        if (entry.getUserIds().size() == 1) {
-            b.userIdsList.setVisibility(View.GONE);
-        } else {
-            b.userIdsList.setVisibility(View.VISIBLE);
+        b.userIdsList.setVisibility(entry.getUserIds().size() == 1 ? View.GONE : View.VISIBLE);
+        // destroyLoader view from holder
+        b.userIdsList.removeAllViews();
 
-            // destroyLoader view from holder
-            b.userIdsList.removeAllViews();
+        // we want conventional gpg UserIDs first, then Keybase ”proofs”
+        HashMap<String, HashSet<String>> mergedUserIds = entry.getMergedUserIds();
+        ArrayList<Map.Entry<String, HashSet<String>>> sortedIds = new ArrayList<Map.Entry<String, HashSet<String>>>(mergedUserIds.entrySet());
+        Collections.sort(sortedIds, new java.util.Comparator<Map.Entry<String, HashSet<String>>>() {
+            @Override
+            public int compare(Map.Entry<String, HashSet<String>> entry1, Map.Entry<String, HashSet<String>> entry2) {
 
-            // we want conventional gpg UserIDs first, then Keybase ”proofs”
-            HashMap<String, HashSet<String>> mergedUserIds = entry.getMergedUserIds();
-            ArrayList<Map.Entry<String, HashSet<String>>> sortedIds = new ArrayList<Map.Entry<String, HashSet<String>>>(mergedUserIds.entrySet());
-            Collections.sort(sortedIds, new java.util.Comparator<Map.Entry<String, HashSet<String>>>() {
-                @Override
-                public int compare(Map.Entry<String, HashSet<String>> entry1, Map.Entry<String, HashSet<String>> entry2) {
-
-                    // sort keybase UserIds after non-Keybase
-                    boolean e1IsKeybase = entry1.getKey().contains(":");
-                    boolean e2IsKeybase = entry2.getKey().contains(":");
-                    if (e1IsKeybase != e2IsKeybase) {
-                        return (e1IsKeybase) ? 1 : -1;
-                    }
-                    return entry1.getKey().compareTo(entry2.getKey());
+                // sort keybase UserIds after non-Keybase
+                boolean e1IsKeybase = entry1.getKey().contains(":");
+                boolean e2IsKeybase = entry2.getKey().contains(":");
+                if (e1IsKeybase != e2IsKeybase) {
+                    return (e1IsKeybase) ? 1 : -1;
                 }
-            });
+                return entry1.getKey().compareTo(entry2.getKey());
+            }
+        });
 
-            for (Map.Entry<String, HashSet<String>> pair : sortedIds) {
-                String cUserId = pair.getKey();
-                HashSet<String> cEmails = pair.getValue();
+        for (Map.Entry<String, HashSet<String>> pair : sortedIds) {
+            String cUserId = pair.getKey();
+            HashSet<String> cEmails = pair.getValue();
 
-                LayoutInflater inflater = LayoutInflater.from(mContext);
+            LayoutInflater inflater = LayoutInflater.from(mActivity);
 
-                TextView uidView = (TextView) inflater.inflate(
+            TextView uidView = (TextView) inflater.inflate(
+                    R.layout.import_keys_list_entry_user_id, null);
+            uidView.setText(highlighter.highlight(cUserId));
+            uidView.setPadding(0, 0, FormattingUtils.dpToPx(mActivity, 8), 0);
+
+            if (entry.isRevoked() || entry.isExpired()) {
+                uidView.setTextColor(mActivity.getResources().getColor(R.color.key_flag_gray));
+            } else {
+                uidView.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
+            }
+
+            b.userIdsList.addView(uidView);
+
+            for (String email : cEmails) {
+                TextView emailView = (TextView) inflater.inflate(
                         R.layout.import_keys_list_entry_user_id, null);
-                uidView.setText(highlighter.highlight(cUserId));
-                uidView.setPadding(0, 0, FormattingUtils.dpToPx(mContext, 8), 0);
+                emailView.setPadding(
+                        FormattingUtils.dpToPx(mActivity, 16), 0,
+                        FormattingUtils.dpToPx(mActivity, 8), 0);
+                emailView.setText(highlighter.highlight(email));
 
                 if (entry.isRevoked() || entry.isExpired()) {
-                    uidView.setTextColor(mContext.getResources().getColor(R.color.key_flag_gray));
+                    emailView.setTextColor(mActivity.getResources().getColor(R.color.key_flag_gray));
                 } else {
-                    uidView.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
+                    emailView.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
                 }
 
-                b.userIdsList.addView(uidView);
-
-                for (String email : cEmails) {
-                    TextView emailView = (TextView) inflater.inflate(
-                            R.layout.import_keys_list_entry_user_id, null);
-                    emailView.setPadding(
-                            FormattingUtils.dpToPx(mContext, 16), 0,
-                            FormattingUtils.dpToPx(mContext, 8), 0);
-                    emailView.setText(highlighter.highlight(email));
-
-                    if (entry.isRevoked() || entry.isExpired()) {
-                        emailView.setTextColor(mContext.getResources().getColor(R.color.key_flag_gray));
-                    } else {
-                        emailView.setTextColor(FormattingUtils.getColorFromAttr(mContext, R.attr.colorText));
-                    }
-
-                    b.userIdsList.addView(emailView);
-                }
+                b.userIdsList.addView(emailView);
             }
         }
     }
@@ -234,6 +252,70 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     @Override
     public int getItemCount() {
         return mData != null ? mData.size() : 0;
+    }
+
+    public void importKey(ParcelableKeyRing keyRing) {
+        ImportKeyringParcel inputParcel = prepareKeyOperation(keyRing, false);
+        ImportKeysOperationCallback cb = new ImportKeysOperationCallback(mListener, inputParcel);
+        CryptoOperationHelper operationHelper = new CryptoOperationHelper(1, mActivity, cb, R.string.progress_importing);
+        operationHelper.cryptoOperation();
+    }
+
+    public void getKey(ParcelableKeyRing keyRing) {
+        ImportKeyringParcel inputParcel = prepareKeyOperation(keyRing, true);
+        ImportKeysOperationCallback cb = new ImportKeysOperationCallback(this, inputParcel);
+        CryptoOperationHelper operationHelper = new CryptoOperationHelper(1, mActivity, cb, R.string.progress_downloading);
+        operationHelper.cryptoOperation();
+    }
+
+    private ImportKeyringParcel prepareKeyOperation(ParcelableKeyRing keyRing, boolean skipSave) {
+        Log.d(Constants.TAG, "prepareKey started");
+
+        ArrayList<ParcelableKeyRing> keysList = null;
+        String keyserver = null;
+
+        if (mLoaderState instanceof BytesLoaderState) {
+            // instead of giving the entries by Intent extra, cache them into a
+            // file to prevent Java Binder problems on heavy imports
+            // read FileImportCache for more info.
+            try {
+                // We parcel this iteratively into a file - anything we can
+                // display here, we should be able to import.
+                ParcelableFileCache<ParcelableKeyRing> cache =
+                        new ParcelableFileCache<>(mActivity, ImportOperation.CACHE_FILE_NAME);
+                cache.writeCache(keyRing);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Problem writing cache file", e);
+                Notify.create(mActivity, "Problem writing cache file!", Notify.Style.ERROR).show();
+            }
+        } else if (mLoaderState instanceof CloudLoaderState) {
+            ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
+            keys.add(keyRing);
+
+            keysList = keys;
+            keyserver = ((CloudLoaderState) mLoaderState).mCloudPrefs.keyserver;
+        }
+
+        ImportKeyringParcel keyringParcel = new ImportKeyringParcel(keysList, keyserver, skipSave);
+        return keyringParcel;
+    }
+
+    @Override
+    public void handleResult(ImportKeyResult result) {
+        boolean resultStatus = result.isOkBoth();
+        Log.e(Constants.TAG, "getKey result: " + resultStatus);
+        if (resultStatus) {
+            ArrayList<CanonicalizedKeyRing> canKeyRings = result.mCanonicalizedKeyRings;
+            int retrievedNumber = canKeyRings.size();
+
+            if (retrievedNumber == 1) {
+                CanonicalizedKeyRing keyRing = canKeyRings.get(0);
+                Log.e(Constants.TAG, "Key ID: " + keyRing.getMasterKeyId() +
+                        "| isRev: " + keyRing.isRevoked() + "| isExp: " + keyRing.isExpired());
+            } else {
+                throw new RuntimeException("getKey retrieved more than one key.");
+            }
+        }
     }
 
 }

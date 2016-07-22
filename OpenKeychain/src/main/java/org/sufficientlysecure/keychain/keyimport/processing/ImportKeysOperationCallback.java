@@ -1,32 +1,26 @@
 package org.sufficientlysecure.keychain.keyimport.processing;
 
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 
-import java.util.ArrayList;
-
 public class ImportKeysOperationCallback implements
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
-    private ImportKeysListener mResultListener;
-    private String mKeyserver;
-    private ArrayList<ParcelableKeyRing> mKeyList;
+    private ImportKeysResultListener mResultListener;
+    private ImportKeyringParcel mKeyringParcel;
 
     public ImportKeysOperationCallback(
-            ImportKeysListener resultListener,
-            String keyserver,
-            ArrayList<ParcelableKeyRing> keyList
+            ImportKeysResultListener resultListener,
+            ImportKeyringParcel inputParcel
     ) {
         this.mResultListener = resultListener;
-        this.mKeyserver = keyserver;
-        this.mKeyList = keyList;
+        this.mKeyringParcel = inputParcel;
     }
 
     @Override
     public ImportKeyringParcel createOperationInput() {
-        return new ImportKeyringParcel(mKeyList, mKeyserver);
+        return mKeyringParcel;
     }
 
     @Override
