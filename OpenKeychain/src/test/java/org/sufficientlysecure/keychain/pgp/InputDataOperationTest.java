@@ -62,6 +62,7 @@ import static org.mockito.Mockito.when;
 @Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class InputDataOperationTest {
 
+    public static final Uri FAKE_CONTENT_INPUT_URI_1 = Uri.parse("content://fake/1");
     static PrintStream oldShadowStream;
 
     @BeforeClass
@@ -263,6 +264,29 @@ public class InputDataOperationTest {
                 result.getLog().containsType(LogType.MSG_DATA_MIME_CHARSET_GUESS));
     }
 
+    @Test
+    public void testMimeDecodingWithNoContentTypeHeader() throws Exception {
+
+        String mimeContent = "Some-Header: dummy\n" +
+                "\n" +
+                "some message text\n";
+
+        InputDataResult result = runSimpleDataInputOperation(mimeContent.getBytes());
+
+        // must be successful, no verification, have two output URIs
+        Assert.assertTrue(result.success());
+        Assert.assertNull(result.mDecryptVerifyResult);
+
+        OpenPgpMetadata metadata = result.mMetadata.get(0);
+        Assert.assertNull(null, metadata.getMimeType());
+
+        Assert.assertTrue("should not be mime parsed",
+                result.getLog().containsType(LogType.MSG_DATA_MIME_NONE));
+
+        Assert.assertEquals("output uri should simply be passed-through input uri",
+                result.getOutputUris().get(0), FAKE_CONTENT_INPUT_URI_1);
+    }
+
     private InputDataResult runSimpleDataInputOperation(byte[] mimeContentBytes) throws FileNotFoundException {
         ByteArrayOutputStream outStream1 = new ByteArrayOutputStream();
         ByteArrayOutputStream outStream2 = new ByteArrayOutputStream();
@@ -273,8 +297,7 @@ public class InputDataOperationTest {
                 .thenReturn(outStream1, outStream2);
 
         // fake openInputStream
-        Uri fakeInputUri = Uri.parse("content://fake/1");
-        when(mockResolver.openInputStream(fakeInputUri)).thenReturn(
+        when(mockResolver.openInputStream(FAKE_CONTENT_INPUT_URI_1)).thenReturn(
                 new ByteArrayInputStream(mimeContentBytes));
 
         Uri fakeOutputUri1 = Uri.parse("content://fake/out/1");
@@ -288,7 +311,7 @@ public class InputDataOperationTest {
         InputDataOperation op = new InputDataOperation(spyApplication,
                 new ProviderHelper(RuntimeEnvironment.application), null);
 
-        InputDataParcel input = new InputDataParcel(fakeInputUri, null);
+        InputDataParcel input = new InputDataParcel(FAKE_CONTENT_INPUT_URI_1, null);
         return op.execute(input, new CryptoInputParcel());
     }
 

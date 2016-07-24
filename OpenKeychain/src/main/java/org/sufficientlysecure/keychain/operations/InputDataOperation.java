@@ -35,6 +35,7 @@ import android.webkit.MimeTypeMap;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.codec.DecodeMonitor;
 import org.apache.james.mime4j.dom.field.ContentDispositionField;
+import org.apache.james.mime4j.dom.field.ContentTypeField;
 import org.apache.james.mime4j.field.DefaultFieldParser;
 import org.apache.james.mime4j.parser.AbstractContentHandler;
 import org.apache.james.mime4j.parser.MimeStreamParser;
@@ -166,7 +167,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
         parser.setContentDecoding(true);
         parser.setRecurse();
         parser.setContentHandler(new AbstractContentHandler() {
-            private boolean mFoundHeaderWithFields = false;
+            private boolean mFoundContentTypeHeader = false;
             private Uri uncheckedSignedDataUri;
             String mFilename;
 
@@ -224,7 +225,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
             @Override
             public void endHeader() throws MimeException {
-                if ( ! mFoundHeaderWithFields) {
+                if (!mFoundContentTypeHeader) {
                     parser.stop();
                 }
             }
@@ -235,7 +236,9 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 if (field instanceof ContentDispositionField) {
                     mFilename = ((ContentDispositionField) field).getFilename();
                 }
-                mFoundHeaderWithFields = true;
+                if (field instanceof ContentTypeField) {
+                    mFoundContentTypeHeader = true;
+                }
             }
 
             private void bodySignature(BodyDescriptor bd, InputStream is) throws MimeException, IOException {
