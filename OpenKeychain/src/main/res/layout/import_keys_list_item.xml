@@ -4,6 +4,8 @@
         <import type="android.view.View" />
         <import type="org.sufficientlysecure.keychain.ui.util.Highlighter" />
 
+        <variable name="nonInteractive" type="boolean" />
+
         <variable name="standardColor" type="int" />
         <variable name="revokedExpiredColor" type="int" />
         <variable name="secretColor" type="int" />
@@ -97,7 +99,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:visibility="@{nonInteractive ? View.GONE : View.VISIBLE}">
 
                 <Button
                     android:id="@+id/import_key"

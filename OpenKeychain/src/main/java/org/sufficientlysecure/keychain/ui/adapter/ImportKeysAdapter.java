@@ -114,12 +114,13 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         return result;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public ImportKeysListItemBinding binding;
 
         public ViewHolder(View view) {
             super(view);
             binding = DataBindingUtil.bind(view);
+            binding.setNonInteractive(mNonInteractive);
         }
     }
 
@@ -178,7 +179,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.expand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean downloaded =  mDownloaded[position] = !mDownloaded[position];
+                boolean downloaded = mDownloaded[position] = !mDownloaded[position];
                 b.extraContainer.setVisibility(downloaded ? View.VISIBLE : View.GONE);
                 b.expand.animate().rotation(downloaded ? 180 : 0).start();
 
