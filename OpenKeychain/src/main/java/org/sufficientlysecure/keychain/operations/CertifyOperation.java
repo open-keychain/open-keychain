@@ -143,10 +143,10 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             log.add(LogType.MSG_CRT_ERROR_MASTER_NOT_FOUND, 2);
             return new CertifyResult(CertifyResult.RESULT_ERROR, log);
         } catch (ByteArrayEncryptor.EncryptDecryptException e) {
-            log.add(LogType.MSG_CRT_ERROR_UNLOCK_KEYRING, 2);
+            log.add(LogType.MSG_CRT_ERROR_DECRYPT_KEYRING, 2);
             return new CertifyResult(CertifyResult.RESULT_ERROR, log);
         } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
-            log.add(LogType.MSG_CRT_ERROR_DECRYPT_KEYRING, 2);
+            log.add(LogType.MSG_CRT_ERROR_UNLOCK_KEYRING, 2);
             return new CertifyResult(CertifyResult.RESULT_ERROR, log);
         }
 
