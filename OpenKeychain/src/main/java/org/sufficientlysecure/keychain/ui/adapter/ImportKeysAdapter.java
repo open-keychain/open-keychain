@@ -69,6 +69,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     private LoaderState mLoaderState;
     private List<ImportKeysListEntry> mData;
+    private boolean[] mDownloaded;
 
     public ImportKeysAdapter(FragmentActivity activity, ImportKeysListener listener, boolean mNonInteractive) {
         this.mActivity = activity;
@@ -82,11 +83,13 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     public void setData(List<ImportKeysListEntry> data) {
         this.mData = data;
+        this.mDownloaded = new boolean[data.size()];
         notifyDataSetChanged();
     }
 
     public void clearData() {
         mData = null;
+        mDownloaded = null;
         notifyDataSetChanged();
     }
 
@@ -175,11 +178,11 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.expand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean hidden = b.extraContainer.getVisibility() == View.GONE;
-                b.extraContainer.setVisibility(hidden ? View.VISIBLE : View.GONE);
-                b.expand.animate().rotation(hidden ? 180 : 0).start();
+                boolean downloaded =  mDownloaded[position] = !mDownloaded[position];
+                b.extraContainer.setVisibility(downloaded ? View.VISIBLE : View.GONE);
+                b.expand.animate().rotation(downloaded ? 180 : 0).start();
 
-                if (hidden) {
+                if (downloaded) {
                     if (mLoaderState instanceof BytesLoaderState) {
                         getKey(new ParcelableKeyRing(entry.getEncodedRing()));
                     } else if (mLoaderState instanceof CloudLoaderState) {
@@ -189,6 +192,9 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 }
             }
         });
+
+        b.extraContainer.setVisibility(mDownloaded[position] ? View.VISIBLE : View.GONE);
+        b.expand.setRotation(mDownloaded[position] ? 180 : 0);
 
         b.userIdsList.setVisibility(entry.getUserIds().size() == 1 ? View.GONE : View.VISIBLE);
         // destroyLoader view from holder
@@ -302,7 +308,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     @Override
     public void handleResult(ImportKeyResult result) {
-        boolean resultStatus = result.isOkBoth();
+        boolean resultStatus = result.success();
         Log.e(Constants.TAG, "getKey result: " + resultStatus);
         if (resultStatus) {
             ArrayList<CanonicalizedKeyRing> canKeyRings = result.mCanonicalizedKeyRings;
