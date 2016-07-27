@@ -1440,6 +1440,7 @@
     <string name="msg_get_too_many_responses">"Key search query returned too many candidates. Please refine your query!"</string>
     <string name="msg_get_query_too_short">"Search query too short. Please refine your query!"</string>
     <string name="msg_get_query_too_short_or_too_many_responses">"Either no keys or too many have been found. Please improve your query!"</string>
+    <string name="msg_get_no_enabled_source">"Enable at least one source for downloading!"</string>
 
     <string name="msg_download_query_failed">"An error occurred when searching for keys."</string>
 

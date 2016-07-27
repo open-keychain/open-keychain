@@ -64,6 +64,10 @@ public abstract class Keyserver {
         private static final long serialVersionUID = 2703768928624654518L;
     }
 
+    public static class QueryNoEnabledSourceException extends QueryNeedsRepairException {
+        private static final long serialVersionUID = 2703768928624654519L;
+    }
+
     public static class AddKeyException extends Exception {
         private static final long serialVersionUID = -507574859137295530L;
     }

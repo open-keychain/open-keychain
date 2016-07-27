@@ -175,6 +175,9 @@ public class ImportKeysListCloudLoader
             } else if (e instanceof Keyserver.QueryTooShortOrTooManyResponsesException) {
                 error = GetKeyResult.RESULT_ERROR_TOO_SHORT_OR_TOO_MANY_RESPONSES;
                 logType = OperationResult.LogType.MSG_GET_QUERY_TOO_SHORT_OR_TOO_MANY_RESPONSES;
+            } else if (e instanceof Keyserver.QueryNoEnabledSourceException) {
+                error = GetKeyResult.RESULT_ERROR_NO_ENABLED_SOURCE;
+                logType = OperationResult.LogType.MSG_GET_NO_ENABLED_SOURCE;
             }
             OperationResult.OperationLog log = new OperationResult.OperationLog();
             log.add(logType, 0);
