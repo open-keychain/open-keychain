@@ -56,6 +56,7 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -69,7 +70,10 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     private LoaderState mLoaderState;
     private List<ImportKeysListEntry> mData;
-    private boolean[] mDownloaded;
+
+    private HashMap<Integer, CanonicalizedKeyRing> mDownloadedKeyRings;
+    private boolean mCurrentAnimated = true;
+    private int mCurrent;
 
     public ImportKeysAdapter(FragmentActivity activity, ImportKeysListener listener, boolean mNonInteractive) {
         this.mActivity = activity;
@@ -83,13 +87,13 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     public void setData(List<ImportKeysListEntry> data) {
         this.mData = data;
-        this.mDownloaded = new boolean[data.size()];
+        this.mDownloadedKeyRings = new HashMap<>();
         notifyDataSetChanged();
     }
 
     public void clearData() {
         mData = null;
-        mDownloaded = null;
+        mDownloadedKeyRings = null;
         notifyDataSetChanged();
     }
 
@@ -164,6 +168,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                     State.EXPIRED, R.color.key_flag_gray);
         }
 
+        final boolean downloaded = mDownloadedKeyRings.get(position) != null;
+
         b.importKey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -179,79 +185,84 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.expand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean downloaded = mDownloaded[position] = !mDownloaded[position];
-                b.extraContainer.setVisibility(downloaded ? View.VISIBLE : View.GONE);
-                b.expand.animate().rotation(downloaded ? 180 : 0).start();
-
-                if (downloaded) {
-                    if (mLoaderState instanceof BytesLoaderState) {
-                        getKey(new ParcelableKeyRing(entry.getEncodedRing()));
-                    } else if (mLoaderState instanceof CloudLoaderState) {
-                        getKey(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(),
-                                entry.getKeybaseName(), entry.getFbUsername()));
-                    }
+                mCurrent = position;
+                if (!downloaded) {
+                    getKey(entry);
+                } else {
+                    removeKey();
                 }
             }
         });
 
-        b.extraContainer.setVisibility(mDownloaded[position] ? View.VISIBLE : View.GONE);
-        b.expand.setRotation(mDownloaded[position] ? 180 : 0);
+        float rotation = downloaded ? 180 : 0;
+        if ((mCurrent == position) && (!mCurrentAnimated)) {
+            mCurrentAnimated = !mCurrentAnimated;
+            float oldRotation = !downloaded ? 180 : 0;
+            b.expand.setRotation(oldRotation);
+            b.expand.animate().rotation(rotation).start();
+        } else {
+            b.expand.setRotation(rotation);
+        }
+        b.extraContainer.setVisibility(downloaded ? View.VISIBLE : View.GONE);
 
-        b.userIdsList.setVisibility(entry.getUserIds().size() == 1 ? View.GONE : View.VISIBLE);
-        // destroyLoader view from holder
         b.userIdsList.removeAllViews();
+        if (downloaded) {
+            // we want conventional gpg UserIDs first, then Keybase ”proofs”
+            ArrayList<String> realUserIdsPlusKeybase = entry.getKeybaseUserIds();
+            CanonicalizedKeyRing keyRing = mDownloadedKeyRings.get(position);
+            realUserIdsPlusKeybase.addAll(keyRing.getUnorderedUserIds());
+            entry.setUserIds(realUserIdsPlusKeybase);
 
-        // we want conventional gpg UserIDs first, then Keybase ”proofs”
-        HashMap<String, HashSet<String>> mergedUserIds = entry.getMergedUserIds();
-        ArrayList<Map.Entry<String, HashSet<String>>> sortedIds = new ArrayList<Map.Entry<String, HashSet<String>>>(mergedUserIds.entrySet());
-        Collections.sort(sortedIds, new java.util.Comparator<Map.Entry<String, HashSet<String>>>() {
-            @Override
-            public int compare(Map.Entry<String, HashSet<String>> entry1, Map.Entry<String, HashSet<String>> entry2) {
-
-                // sort keybase UserIds after non-Keybase
-                boolean e1IsKeybase = entry1.getKey().contains(":");
-                boolean e2IsKeybase = entry2.getKey().contains(":");
-                if (e1IsKeybase != e2IsKeybase) {
-                    return (e1IsKeybase) ? 1 : -1;
+            HashMap<String, HashSet<String>> mergedUserIds = entry.getMergedUserIds();
+            ArrayList<Map.Entry<String, HashSet<String>>> sortedIds = new ArrayList<>(mergedUserIds.entrySet());
+            Collections.sort(sortedIds, new Comparator<Map.Entry<String, HashSet<String>>>() {
+                @Override
+                public int compare(Map.Entry<String, HashSet<String>> entry1, Map.Entry<String, HashSet<String>> entry2) {
+                    // sort keybase UserIds after non-Keybase
+                    boolean e1IsKeybase = entry1.getKey().contains(":");
+                    boolean e2IsKeybase = entry2.getKey().contains(":");
+                    if (e1IsKeybase != e2IsKeybase) {
+                        return (e1IsKeybase) ? 1 : -1;
+                    }
+                    return entry1.getKey().compareTo(entry2.getKey());
                 }
-                return entry1.getKey().compareTo(entry2.getKey());
-            }
-        });
+            });
 
-        for (Map.Entry<String, HashSet<String>> pair : sortedIds) {
-            String cUserId = pair.getKey();
-            HashSet<String> cEmails = pair.getValue();
+            for (Map.Entry<String, HashSet<String>> pair : sortedIds) {
+                String cUserId = pair.getKey();
+                HashSet<String> cEmails = pair.getValue();
 
-            LayoutInflater inflater = LayoutInflater.from(mActivity);
+                LayoutInflater inflater = LayoutInflater.from(mActivity);
 
-            TextView uidView = (TextView) inflater.inflate(
-                    R.layout.import_keys_list_entry_user_id, null);
-            uidView.setText(highlighter.highlight(cUserId));
-            uidView.setPadding(0, 0, FormattingUtils.dpToPx(mActivity, 8), 0);
-
-            if (entry.isRevoked() || entry.isExpired()) {
-                uidView.setTextColor(mActivity.getResources().getColor(R.color.key_flag_gray));
-            } else {
-                uidView.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
-            }
-
-            b.userIdsList.addView(uidView);
-
-            for (String email : cEmails) {
-                TextView emailView = (TextView) inflater.inflate(
+                TextView uidView = (TextView) inflater.inflate(
                         R.layout.import_keys_list_entry_user_id, null);
-                emailView.setPadding(
-                        FormattingUtils.dpToPx(mActivity, 16), 0,
-                        FormattingUtils.dpToPx(mActivity, 8), 0);
-                emailView.setText(highlighter.highlight(email));
+                uidView.setText(highlighter.highlight(cUserId));
+                uidView.setPadding(0, 0, FormattingUtils.dpToPx(mActivity, 8), 0);
 
                 if (entry.isRevoked() || entry.isExpired()) {
-                    emailView.setTextColor(mActivity.getResources().getColor(R.color.key_flag_gray));
+                    uidView.setTextColor(mActivity.getResources().getColor(R.color.key_flag_gray));
                 } else {
-                    emailView.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
+                    uidView.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
                 }
 
-                b.userIdsList.addView(emailView);
+                b.userIdsList.addView(uidView);
+
+                for (String email : cEmails) {
+                    TextView emailView = (TextView) inflater.inflate(
+                            R.layout.import_keys_list_entry_user_id, null);
+                    emailView.setPadding(
+                            FormattingUtils.dpToPx(mActivity, 16), 0,
+                            FormattingUtils.dpToPx(mActivity, 8), 0);
+                    emailView.setText(highlighter.highlight(email));
+
+                    if (entry.isRevoked() || entry.isExpired()) {
+                        emailView.setTextColor(mActivity.getResources().getColor(R.color.key_flag_gray));
+                    } else {
+                        emailView.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
+                    }
+
+                    b.userIdsList.addView(emailView);
+                }
             }
         }
     }
@@ -268,7 +279,15 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         operationHelper.cryptoOperation();
     }
 
-    public void getKey(ParcelableKeyRing keyRing) {
+    public void getKey(ImportKeysListEntry entry) {
+        ParcelableKeyRing keyRing = null;
+        if (mLoaderState instanceof BytesLoaderState) {
+            keyRing = new ParcelableKeyRing(entry.getEncodedRing());
+        } else if (mLoaderState instanceof CloudLoaderState) {
+            keyRing = new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(),
+                    entry.getKeybaseName(), entry.getFbUsername());
+        }
+
         ImportKeyringParcel inputParcel = prepareKeyOperation(keyRing, true);
         ImportKeysOperationCallback cb = new ImportKeysOperationCallback(this, inputParcel);
         CryptoOperationHelper operationHelper = new CryptoOperationHelper(1, mActivity, cb, R.string.progress_downloading);
@@ -276,8 +295,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     }
 
     private ImportKeyringParcel prepareKeyOperation(ParcelableKeyRing keyRing, boolean skipSave) {
-        Log.d(Constants.TAG, "prepareKey started");
-
         ArrayList<ParcelableKeyRing> keysList = null;
         String keyserver = null;
 
@@ -296,15 +313,18 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 Notify.create(mActivity, "Problem writing cache file!", Notify.Style.ERROR).show();
             }
         } else if (mLoaderState instanceof CloudLoaderState) {
-            ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
-            keys.add(keyRing);
-
-            keysList = keys;
+            keysList = new ArrayList<>();
+            keysList.add(keyRing);
             keyserver = ((CloudLoaderState) mLoaderState).mCloudPrefs.keyserver;
         }
 
-        ImportKeyringParcel keyringParcel = new ImportKeyringParcel(keysList, keyserver, skipSave);
-        return keyringParcel;
+        return new ImportKeyringParcel(keysList, keyserver, skipSave);
+    }
+
+    public void removeKey() {
+        mCurrentAnimated = false;
+        mDownloadedKeyRings.remove(mCurrent);
+        notifyItemChanged(mCurrent);
     }
 
     @Override
@@ -313,12 +333,13 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         Log.e(Constants.TAG, "getKey result: " + resultStatus);
         if (resultStatus) {
             ArrayList<CanonicalizedKeyRing> canKeyRings = result.mCanonicalizedKeyRings;
-            int retrievedNumber = canKeyRings.size();
-
-            if (retrievedNumber == 1) {
+            if (canKeyRings.size() == 1) {
                 CanonicalizedKeyRing keyRing = canKeyRings.get(0);
                 Log.e(Constants.TAG, "Key ID: " + keyRing.getMasterKeyId() +
                         "| isRev: " + keyRing.isRevoked() + "| isExp: " + keyRing.isExpired());
+                mCurrentAnimated = false;
+                mDownloadedKeyRings.put(mCurrent, keyRing);
+                notifyItemChanged(mCurrent);
             } else {
                 throw new RuntimeException("getKey retrieved more than one key.");
             }

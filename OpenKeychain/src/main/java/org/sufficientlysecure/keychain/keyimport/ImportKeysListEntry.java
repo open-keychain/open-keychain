@@ -333,4 +333,13 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         }
     }
 
+    public ArrayList<String> getKeybaseUserIds() {
+        ArrayList<String> keybaseUserIds = new ArrayList<>();
+        for (String s : mUserIds) {
+            if (s.contains(":"))
+                keybaseUserIds.add(s);
+        }
+        return keybaseUserIds;
+    }
+
 }
