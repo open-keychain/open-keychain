@@ -91,23 +91,15 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
             }
         }
 
-        ArrayList<String> incomingIDs = incoming.getUserIds();
-        ArrayList<String> existingIDs = existing.getUserIds();
-        for (String incomingID : incomingIDs) {
-            if (!existingIDs.contains(incomingID)) {
-                // prepend  HKP server results to the start of the list,
-                // so that the UI (for cloud key search, which is picking the first list item)
-                // shows the right main email address, as mail addresses returned by HKP servers
-                // are preferred over keybase.io IDs
-                if (incomingFromHkpServer) {
-                    existingIDs.add(0, incomingID);
-                } else {
-                    existingIDs.add(incomingID);
-                }
-                modified = true;
-            }
+        if (incomingFromHkpServer) {
+            // Mail addresses returned by HKP servers are preferred over keybase.io IDs
+            existing.setPrimaryUserId(incoming.getPrimaryUserId());
+            modified = true;
         }
-        existing.updateMergedUserIds();
+
+        if (existing.addUserIds(incoming.getUserIds()))
+            modified = true;
+
         return modified;
     }
 

@@ -23,10 +23,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -39,11 +35,14 @@ import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.io.IOException;
 import java.net.Proxy;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class FacebookKeyserver extends Keyserver {
 
@@ -157,10 +156,7 @@ public class FacebookKeyserver extends Keyserver {
 
         UncachedPublicKey key = ring.getPublicKey();
 
-        entry.setPrimaryUserId(key.getPrimaryUserIdWithFallback());
         entry.setUserIds(key.getUnorderedUserIds());
-        entry.updateMergedUserIds();
-
         entry.setPrimaryUserId(key.getPrimaryUserIdWithFallback());
 
         entry.setKeyId(key.getKeyId());

@@ -22,7 +22,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
@@ -30,9 +29,13 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public class ImportKeysListEntry implements Serializable, Parcelable {
     private static final long serialVersionUID = -7797972103284992662L;
@@ -40,6 +43,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private byte[] mEncodedRing;
     private ArrayList<String> mUserIds;
     private HashMap<String, HashSet<String>> mMergedUserIds;
+    private ArrayList<Map.Entry<String, HashSet<String>>> mSortedUserIds;
+
     private long mKeyId;
     private String mKeyIdHex;
     private boolean mRevoked;
@@ -209,15 +214,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mSecretKey = secretKey;
     }
 
-    public ArrayList<String> getUserIds() {
-        return mUserIds;
-    }
-
-    public void setUserIds(ArrayList<String> userIds) {
-        mUserIds = userIds;
-        updateMergedUserIds();
-    }
-
     public String getPrimaryUserId() {
         return mPrimaryUserId;
     }
@@ -258,8 +254,45 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mOrigins.add(origin);
     }
 
-    public HashMap<String, HashSet<String>> getMergedUserIds() {
-        return mMergedUserIds;
+    public List<String> getUserIds() {
+        // To ensure choerency, use methods of this class to edit the list
+        return Collections.unmodifiableList(mUserIds);
+    }
+
+    public ArrayList<Map.Entry<String, HashSet<String>>> getSortedUserIds() {
+        if (mSortedUserIds == null)
+            sortMergedUserIds();
+
+        return mSortedUserIds;
+    }
+
+    public void setUserIds(ArrayList<String> userIds) {
+        mUserIds = userIds;
+        updateMergedUserIds();
+    }
+
+    public boolean addUserIds(List<String> userIds) {
+        boolean modified = false;
+        for (String uid : userIds) {
+            if (!mUserIds.contains(uid)) {
+                mUserIds.add(uid);
+                modified = true;
+            }
+        }
+
+        if (modified)
+            updateMergedUserIds();
+
+        return modified;
+    }
+
+    public ArrayList<String> getKeybaseUserIds() {
+        ArrayList<String> keybaseUserIds = new ArrayList<>();
+        for (String s : mUserIds) {
+            if (s.contains(":"))
+                keybaseUserIds.add(s);
+        }
+        return keybaseUserIds;
     }
 
     /**
@@ -288,11 +321,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mUserIds = key.getUnorderedUserIds();
         updateMergedUserIds();
 
-        // if there was no user id flagged as primary, use the first one
-        if (mPrimaryUserId == null) {
-            mPrimaryUserId = context.getString(R.string.user_id_none);
-        }
-
         mKeyId = key.getKeyId();
         mKeyIdHex = KeyFormattingUtils.convertKeyIdToHex(mKeyId);
 
@@ -306,7 +334,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mAlgorithm = KeyFormattingUtils.getAlgorithmInfo(context, algorithm, mBitStrength, mCurveOid);
     }
 
-    public void updateMergedUserIds() {
+    private void updateMergedUserIds() {
         mMergedUserIds = new HashMap<>();
         for (String userId : mUserIds) {
             OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
@@ -331,15 +359,27 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
                 mMergedUserIds.put(userId, new HashSet<String>());
             }
         }
+
+        mSortedUserIds = null;
     }
 
-    public ArrayList<String> getKeybaseUserIds() {
-        ArrayList<String> keybaseUserIds = new ArrayList<>();
-        for (String s : mUserIds) {
-            if (s.contains(":"))
-                keybaseUserIds.add(s);
-        }
-        return keybaseUserIds;
+    private void sortMergedUserIds() {
+        mSortedUserIds = new ArrayList<>(mMergedUserIds.entrySet());
+
+        Collections.sort(mSortedUserIds, new Comparator<Map.Entry<String, HashSet<String>>>() {
+            @Override
+            public int compare(Map.Entry<String, HashSet<String>> entry1,
+                               Map.Entry<String, HashSet<String>> entry2) {
+
+                // sort keybase UserIds after non-Keybase
+                boolean e1IsKeybase = entry1.getKey().contains(":");
+                boolean e2IsKeybase = entry2.getKey().contains(":");
+                if (e1IsKeybase != e2IsKeybase) {
+                    return (e1IsKeybase) ? 1 : -1;
+                }
+                return entry1.getKey().compareTo(entry2.getKey());
+            }
+        });
     }
 
 }

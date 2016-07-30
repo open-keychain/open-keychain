@@ -55,8 +55,6 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -152,7 +150,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.setExpired(entry.isExpired());
         b.setRevoked(entry.isRevoked());
 
-        String userId = entry.getUserIds().get(0); // main user id
+        String userId = entry.getPrimaryUserId(); // main user id
         OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
 
         b.setAlgorithm(entry.getAlgorithm());
@@ -213,21 +211,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             realUserIdsPlusKeybase.addAll(keyRing.getUnorderedUserIds());
             entry.setUserIds(realUserIdsPlusKeybase);
 
-            HashMap<String, HashSet<String>> mergedUserIds = entry.getMergedUserIds();
-            ArrayList<Map.Entry<String, HashSet<String>>> sortedIds = new ArrayList<>(mergedUserIds.entrySet());
-            Collections.sort(sortedIds, new Comparator<Map.Entry<String, HashSet<String>>>() {
-                @Override
-                public int compare(Map.Entry<String, HashSet<String>> entry1, Map.Entry<String, HashSet<String>> entry2) {
-                    // sort keybase UserIds after non-Keybase
-                    boolean e1IsKeybase = entry1.getKey().contains(":");
-                    boolean e2IsKeybase = entry2.getKey().contains(":");
-                    if (e1IsKeybase != e2IsKeybase) {
-                        return (e1IsKeybase) ? 1 : -1;
-                    }
-                    return entry1.getKey().compareTo(entry2.getKey());
-                }
-            });
-
+            ArrayList<Map.Entry<String, HashSet<String>>> sortedIds = entry.getSortedUserIds();
             for (Map.Entry<String, HashSet<String>> pair : sortedIds) {
                 String cUserId = pair.getKey();
                 HashSet<String> cEmails = pair.getValue();
