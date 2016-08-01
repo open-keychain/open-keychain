@@ -19,12 +19,12 @@
 package org.sufficientlysecure.keychain.keyimport;
 
 
-
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -310,7 +310,17 @@ public class HkpKeyserver extends Keyserver {
             }
 
             try {
-                entry.setRevoked(matcher.group(6).contains("r"));
+                boolean expired = false;
+                String expiration = matcher.group(5);
+                if (!expiration.isEmpty()) {
+                    final GregorianCalendar currentGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                    final long expirationDate = Long.parseLong(expiration);
+                    final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                    tmpGreg.setTimeInMillis(expirationDate * 1000);
+                    expired = currentGreg.compareTo(tmpGreg) >= 0;
+                }
+
+                entry.setRevoked(expired || matcher.group(6).contains("r"));
                 entry.setExpired(matcher.group(6).contains("e"));
             } catch (NullPointerException e) {
                 Log.e(Constants.TAG, "Check for revocation or expiry failed.", e);
