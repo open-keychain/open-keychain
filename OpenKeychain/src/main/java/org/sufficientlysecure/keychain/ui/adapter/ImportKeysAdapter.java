@@ -55,7 +55,6 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -69,8 +68,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     private LoaderState mLoaderState;
     private List<ImportKeysListEntry> mData;
 
-    private HashMap<Integer, CanonicalizedKeyRing> mDownloadedKeyRings;
-    private boolean mCurrentAnimated = true;
+    private KeyState[] mKeyStates;
     private int mCurrent;
 
     public ImportKeysAdapter(FragmentActivity activity, ImportKeysListener listener, boolean mNonInteractive) {
@@ -85,13 +83,16 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     public void setData(List<ImportKeysListEntry> data) {
         this.mData = data;
-        this.mDownloadedKeyRings = new HashMap<>();
+        this.mKeyStates = new KeyState[data.size()];
+        for (int i = 0; i < mKeyStates.length; i++) {
+            mKeyStates[i] = new KeyState();
+        }
         notifyDataSetChanged();
     }
 
     public void clearData() {
         mData = null;
-        mDownloadedKeyRings = null;
+        mKeyStates = null;
         notifyDataSetChanged();
     }
 
@@ -166,7 +167,9 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                     State.EXPIRED, R.color.key_flag_gray);
         }
 
-        final boolean downloaded = mDownloadedKeyRings.get(position) != null;
+        final KeyState keyState = mKeyStates[position];
+        final boolean downloaded = keyState.mDownloaded;
+        final boolean showed = keyState.mShowed;
 
         b.importKey.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,33 +187,28 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             @Override
             public void onClick(View v) {
                 mCurrent = position;
-                if (!downloaded) {
+                if (!showed && !downloaded) {
                     getKey(entry);
                 } else {
-                    removeKey();
+                    changeState(position, !showed);
                 }
             }
         });
 
-        float rotation = downloaded ? 180 : 0;
-        if ((mCurrent == position) && (!mCurrentAnimated)) {
-            mCurrentAnimated = !mCurrentAnimated;
-            float oldRotation = !downloaded ? 180 : 0;
+        float rotation = showed ? 180 : 0;
+        if (!keyState.mAnimated) {
+            keyState.mAnimated = true;
+            float oldRotation = !showed ? 180 : 0;
             b.expand.setRotation(oldRotation);
             b.expand.animate().rotation(rotation).start();
         } else {
             b.expand.setRotation(rotation);
         }
-        b.extraContainer.setVisibility(downloaded ? View.VISIBLE : View.GONE);
 
-        b.userIdsList.removeAllViews();
-        if (downloaded) {
+        b.extraContainer.setVisibility(showed ? View.VISIBLE : View.GONE);
+        if (showed) {
+            b.userIdsList.removeAllViews();
             // we want conventional gpg UserIDs first, then Keybase ”proofs”
-            ArrayList<String> realUserIdsPlusKeybase = entry.getKeybaseUserIds();
-            CanonicalizedKeyRing keyRing = mDownloadedKeyRings.get(position);
-            realUserIdsPlusKeybase.addAll(keyRing.getUnorderedUserIds());
-            entry.setUserIds(realUserIdsPlusKeybase);
-
             ArrayList<Map.Entry<String, HashSet<String>>> sortedIds = entry.getSortedUserIds();
             for (Map.Entry<String, HashSet<String>> pair : sortedIds) {
                 String cUserId = pair.getKey();
@@ -228,7 +226,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 } else {
                     uidView.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
                 }
-
                 b.userIdsList.addView(uidView);
 
                 for (String email : cEmails) {
@@ -244,7 +241,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                     } else {
                         emailView.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
                     }
-
                     b.userIdsList.addView(emailView);
                 }
             }
@@ -305,12 +301,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         return new ImportKeyringParcel(keysList, keyserver, skipSave);
     }
 
-    public void removeKey() {
-        mCurrentAnimated = false;
-        mDownloadedKeyRings.remove(mCurrent);
-        notifyItemChanged(mCurrent);
-    }
-
     @Override
     public void handleResult(ImportKeyResult result) {
         boolean resultStatus = result.success();
@@ -321,13 +311,32 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 CanonicalizedKeyRing keyRing = canKeyRings.get(0);
                 Log.e(Constants.TAG, "Key ID: " + keyRing.getMasterKeyId() +
                         "| isRev: " + keyRing.isRevoked() + "| isExp: " + keyRing.isExpired());
-                mCurrentAnimated = false;
-                mDownloadedKeyRings.put(mCurrent, keyRing);
-                notifyItemChanged(mCurrent);
+
+                ImportKeysListEntry entry = mData.get(mCurrent);
+
+                ArrayList<String> realUserIdsPlusKeybase = keyRing.getUnorderedUserIds();
+                realUserIdsPlusKeybase.addAll(entry.getKeybaseUserIds());
+                entry.setUserIds(realUserIdsPlusKeybase);
+
+                mKeyStates[mCurrent].mDownloaded = true;
+                changeState(mCurrent, true);
             } else {
                 throw new RuntimeException("getKey retrieved more than one key.");
             }
         }
+    }
+
+    private class KeyState {
+        public boolean mDownloaded = false;
+        public boolean mShowed = false;
+        public boolean mAnimated = true;
+    }
+
+    private void changeState(int position, boolean showed) {
+        KeyState keyState = mKeyStates[position];
+        keyState.mShowed = showed;
+        keyState.mAnimated = true;
+        notifyItemChanged(position);
     }
 
 }
