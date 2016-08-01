@@ -339,7 +339,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         }
                         importedMasterKeyIds.add(key.getMasterKeyId());
                     }
-                    if (entry.mBytes == null) {
+                    if (!skipSave && (entry.mBytes == null)) {
                         // synonymous to isDownloadFromKeyserver.
                         // If no byte data was supplied, import from keyserver took place
                         // this prevents file imports being noted as keyserver imports
@@ -362,7 +362,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         // synchronized on mProviderHelper to prevent
         // https://github.com/open-keychain/open-keychain/issues/1221 since a consolidate deletes
         // and re-inserts keys, which could conflict with a parallel db key update
-        if (!skipSave && secret > 0) {
+        if (!skipSave && (secret > 0)) {
             setPreventCancel();
             ConsolidateResult result;
             synchronized (mProviderHelper) {
