@@ -19,11 +19,7 @@
 package org.sufficientlysecure.keychain.keyimport;
 
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -47,12 +43,15 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.support.annotation.NonNull;
-
 import de.measite.minidns.Client;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
 import de.measite.minidns.record.SRV;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class HkpKeyserver extends Keyserver {
     private static class HttpError extends Exception {
@@ -299,10 +298,10 @@ public class HkpKeyserver extends Keyserver {
                 int algorithmId = Integer.decode(matcher.group(2));
                 entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitSize, null));
 
-                final long creationDate = Long.parseLong(matcher.group(4));
-                final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-                tmpGreg.setTimeInMillis(creationDate * 1000);
-                entry.setDate(tmpGreg.getTime());
+                long creationDate = Long.parseLong(matcher.group(4));
+                GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                calendar.setTimeInMillis(creationDate * 1000);
+                entry.setDate(calendar.getTime());
             } catch (NumberFormatException e) {
                 Log.e(Constants.TAG, "Conversation for bit size, algorithm, or creation date failed.", e);
                 // skip this key
@@ -310,18 +309,19 @@ public class HkpKeyserver extends Keyserver {
             }
 
             try {
-                boolean expired = false;
-                String expiration = matcher.group(5);
-                if (!expiration.isEmpty()) {
-                    final GregorianCalendar currentGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-                    final long expirationDate = Long.parseLong(expiration);
-                    final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-                    tmpGreg.setTimeInMillis(expirationDate * 1000);
-                    expired = currentGreg.compareTo(tmpGreg) >= 0;
-                }
+                entry.setRevoked(matcher.group(6).contains("r"));
+                boolean expired = matcher.group(6).contains("e");
 
-                entry.setRevoked(expired || matcher.group(6).contains("r"));
-                entry.setExpired(matcher.group(6).contains("e"));
+                // It may be expired even without flag, thus check expiration date
+                String expiration;
+                if (!expired && !(expiration = matcher.group(5)).isEmpty()) {
+                    long expirationDate = Long.parseLong(expiration);
+                    TimeZone timeZoneUTC = TimeZone.getTimeZone("UTC");
+                    GregorianCalendar calendar = new GregorianCalendar(timeZoneUTC);
+                    calendar.setTimeInMillis(expirationDate * 1000);
+                    expired = new GregorianCalendar(timeZoneUTC).compareTo(calendar) >= 0;
+                }
+                entry.setExpired(expired);
             } catch (NullPointerException e) {
                 Log.e(Constants.TAG, "Check for revocation or expiry failed.", e);
                 // skip this key
