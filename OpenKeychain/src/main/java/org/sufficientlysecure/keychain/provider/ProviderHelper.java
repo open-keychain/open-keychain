@@ -904,10 +904,6 @@ public class ProviderHelper {
 
     }
 
-    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
-        return savePublicKeyRing(keyRing, new ProgressScaler(), null, null, false);
-    }
-
     /**
      * Save a public keyring into the database.
      * <p/>
@@ -1029,11 +1025,15 @@ public class ProviderHelper {
         } finally {
             mIndent -= 1;
         }
-
     }
 
-    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing, Progressable progress) {
-        return saveSecretKeyRing(secretRing, progress, null, false);
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, Progressable progress,
+                                               String expectedFingerprint) {
+        return savePublicKeyRing(publicRing, progress, expectedFingerprint, null, false);
+    }
+
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
+        return savePublicKeyRing(keyRing, new ProgressScaler(), null);
     }
 
     public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing, Progressable progress,
@@ -1153,7 +1153,10 @@ public class ProviderHelper {
         } finally {
             mIndent -= 1;
         }
+    }
 
+    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing, Progressable progress) {
+        return saveSecretKeyRing(secretRing, progress, null, false);
     }
 
     @NonNull
