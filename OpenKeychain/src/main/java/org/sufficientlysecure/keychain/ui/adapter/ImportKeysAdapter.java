@@ -321,7 +321,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 mKeyStates[mCurrent].mDownloaded = true;
                 changeState(mCurrent, true);
             } else {
-                throw new RuntimeException("getKey retrieved more than one key.");
+                throw new RuntimeException("getKey retrieved more than one key ("
+                        + canKeyRings.size() + ")");
             }
         }
     }

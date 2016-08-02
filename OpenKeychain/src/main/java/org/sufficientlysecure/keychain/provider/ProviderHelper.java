@@ -945,6 +945,7 @@ public class ProviderHelper {
                 if (canPublicRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
+                if (canKeyRings != null) canKeyRings.add(canPublicRing);
 
                 // Early breakout if nothing changed
                 if (Arrays.hashCode(publicRing.getEncoded())
@@ -960,7 +961,7 @@ public class ProviderHelper {
                 if (canPublicRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
-
+                if (canKeyRings != null) canKeyRings.add(canPublicRing);
             }
 
             // If there is a secret key, merge new data (if any) and save the key for later
@@ -1001,7 +1002,6 @@ public class ProviderHelper {
             if (!skipSave) {
                 result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);
             }
-            if (canKeyRings != null) canKeyRings.add(canPublicRing);
 
             // Save the saved keyring (if any)
             if (canSecretRing != null) {
@@ -1071,6 +1071,7 @@ public class ProviderHelper {
                 if (canSecretRing == null) {
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 }
+                if (canKeyRings != null) canKeyRings.add(canSecretRing);
 
                 // Early breakout if nothing changed
                 if (Arrays.hashCode(secretRing.getEncoded())
@@ -1102,7 +1103,7 @@ public class ProviderHelper {
                         return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                     }
                 }
-
+                if (canKeyRings != null) canKeyRings.add(canSecretRing);
             }
 
             // Merge new data into public keyring as well, if there is any
@@ -1143,7 +1144,6 @@ public class ProviderHelper {
             if (!skipSave) {
                 result = saveCanonicalizedSecretKeyRing(canSecretRing);
             }
-            if (canKeyRings != null) canKeyRings.add(canSecretRing);
 
             return new SaveKeyringResult(result, mLog, canSecretRing);
 
