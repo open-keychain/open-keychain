@@ -324,6 +324,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 throw new RuntimeException("getKey retrieved more than one key ("
                         + canKeyRings.size() + ")");
             }
+        } else {
+            result.createNotify(mActivity).show();
         }
     }
 
