@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.res.Resources;
+import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
@@ -25,6 +26,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
@@ -115,12 +117,18 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public ImportKeysListItemBinding binding;
+        public ImportKeysListItemBinding b;
 
         public ViewHolder(View view) {
             super(view);
-            binding = DataBindingUtil.bind(view);
-            binding.setNonInteractive(mNonInteractive);
+            b = DataBindingUtil.bind(view);
+
+            b.setNonInteractive(mNonInteractive);
+
+            Resources resources = mActivity.getResources();
+            b.setStandardColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
+            b.setRevokedExpiredColor(resources.getColor(R.color.key_flag_gray));
+            b.setSecretColor(Color.RED);
         }
     }
 
@@ -134,27 +142,18 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final ImportKeysListItemBinding b = holder.binding;
+        final ImportKeysListItemBinding b = holder.b;
         final ImportKeysListEntry entry = mData.get(position);
 
-        Resources resources = mActivity.getResources();
         Highlighter highlighter = new Highlighter(mActivity, entry.getQuery());
-        b.setStandardColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
-        b.setRevokedExpiredColor(resources.getColor(R.color.key_flag_gray));
-        b.setSecretColor(Color.RED);
         b.setHighlighter(highlighter);
-
-        b.setSecret(entry.isSecretKey());
-        b.setExpired(entry.isExpired());
-        b.setRevoked(entry.isRevoked());
 
         String userId = entry.getPrimaryUserId();
         OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
 
-        b.setAlgorithm(entry.getAlgorithm());
+        b.setEntry(entry);
         b.setUserId(userIdSplit.name);
         b.setUserIdEmail(userIdSplit.email);
-        b.setKeyId(KeyFormattingUtils.beautifyKeyIdWithPrefix(mActivity, entry.getKeyIdHex()));
 
         if (entry.isRevoked()) {
             KeyFormattingUtils.setStatusImage(mActivity, b.status, null,
@@ -206,6 +205,11 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             b.extraUserIds.setEntry(entry);
         }
         b.extraContainer.setVisibility(showed ? View.VISIBLE : View.GONE);
+    }
+
+    @BindingAdapter("app:keyId")
+    public static void setKeyId(TextView textView, String keyId) {
+        textView.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(keyId));
     }
 
     @Override

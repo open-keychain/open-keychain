@@ -1,58 +1,22 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <import type="android.view.View" />
-
         <import type="org.sufficientlysecure.keychain.ui.util.Highlighter" />
+        <import type="org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry" />
 
-        <variable
-            name="nonInteractive"
-            type="boolean" />
+        <variable name="nonInteractive" type="boolean" />
 
-        <variable
-            name="standardColor"
-            type="int" />
+        <variable name="standardColor" type="int" />
+        <variable name="revokedExpiredColor" type="int" />
+        <variable name="secretColor" type="int" />
 
-        <variable
-            name="revokedExpiredColor"
-            type="int" />
+        <variable name="highlighter" type="Highlighter" />
 
-        <variable
-            name="secretColor"
-            type="int" />
-
-        <variable
-            name="highlighter"
-            type="Highlighter" />
-
-        <variable
-            name="secret"
-            type="boolean" />
-
-        <variable
-            name="revoked"
-            type="boolean" />
-
-        <variable
-            name="expired"
-            type="boolean" />
-
-        <variable
-            name="algorithm"
-            type="String" />
-
-        <variable
-            name="userId"
-            type="String" />
-
-        <variable
-            name="userIdEmail"
-            type="String" />
-
-        <variable
-            name="keyId"
-            type="String" />
+        <variable name="entry" type="ImportKeysListEntry" />
+        <variable name="userId" type="String" />
+        <variable name="userIdEmail" type="String" />
     </data>
 
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -91,15 +55,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{algorithm}"
+                            android:text="@{entry.algorithm}"
                             android:textAppearance="?android:attr/textAppearanceSmall" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text='@{secret ? @string/secret_key + " " + (userId ?? @string/user_id_no_name) : highlighter.highlight(userId ?? @string/user_id_no_name)}'
+                            android:text='@{entry.secretKey ? @string/secret_key + " " + (userId ?? @string/user_id_no_name) : highlighter.highlight(userId ?? @string/user_id_no_name)}'
                             android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@{revoked || expired ? revokedExpiredColor : (secret ? secretColor : standardColor)}" />
+                            android:textColor="@{entry.revoked || entry.expired ? revokedExpiredColor : (entry.secretKey ? secretColor : standardColor)}" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -107,14 +71,14 @@
                             android:layout_marginTop="4dp"
                             android:text="@{highlighter.highlight(userIdEmail)}"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="@{revoked || expired ? revokedExpiredColor : standardColor}" />
+                            android:textColor="@{entry.revoked || entry.expired ? revokedExpiredColor : standardColor}" />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text='@{keyId != null ? "Key ID: " + keyId : ""}'
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="@{revoked || expired ? revokedExpiredColor : standardColor}" />
+                            android:textColor="@{entry.revoked || entry.expired ? revokedExpiredColor : standardColor}"
+                            app:keyId='@{entry.keyIdHex ?? ""}' />
 
                     </LinearLayout>
 
@@ -124,7 +88,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:visibility="@{revoked || expired ? View.VISIBLE : View.GONE}" />
+                        android:visibility="@{entry.revoked || entry.expired ? View.VISIBLE : View.GONE}" />
 
                 </RelativeLayout>
 

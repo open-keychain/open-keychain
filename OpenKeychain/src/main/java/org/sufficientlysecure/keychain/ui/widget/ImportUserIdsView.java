@@ -19,6 +19,7 @@ public class ImportUserIdsView extends LinearLayout {
 
     public ImportUserIdsView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
         setOrientation(VERTICAL);
     }
 

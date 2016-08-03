@@ -312,12 +312,12 @@ public class KeyFormattingUtils {
         return beautifyKeyId(convertKeyIdToHex(keyId));
     }
 
-    public static String beautifyKeyIdWithPrefix(Context context, String idHex) {
+    public static String beautifyKeyIdWithPrefix(String idHex) {
         return "Key ID: " + beautifyKeyId(idHex);
     }
 
-    public static String beautifyKeyIdWithPrefix(Context context, long keyId) {
-        return beautifyKeyIdWithPrefix(context, convertKeyIdToHex(keyId));
+    public static String beautifyKeyIdWithPrefix(long keyId) {
+        return beautifyKeyIdWithPrefix(convertKeyIdToHex(keyId));
     }
 
     public static SpannableStringBuilder colorizeFingerprint(String fingerprint) {
