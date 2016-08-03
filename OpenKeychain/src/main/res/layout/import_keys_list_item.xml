@@ -1,24 +1,58 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
+
         <import type="android.view.View" />
+
         <import type="org.sufficientlysecure.keychain.ui.util.Highlighter" />
 
-        <variable name="nonInteractive" type="boolean" />
+        <variable
+            name="nonInteractive"
+            type="boolean" />
 
-        <variable name="standardColor" type="int" />
-        <variable name="revokedExpiredColor" type="int" />
-        <variable name="secretColor" type="int" />
-        <variable name="highlighter" type="Highlighter" />
+        <variable
+            name="standardColor"
+            type="int" />
 
-        <variable name="secret" type="boolean" />
-        <variable name="revoked" type="boolean" />
-        <variable name="expired" type="boolean" />
+        <variable
+            name="revokedExpiredColor"
+            type="int" />
 
-        <variable name="algorithm" type="String" />
-        <variable name="userId" type="String" />
-        <variable name="userIdEmail" type="String" />
-        <variable name="keyId" type="String" />
+        <variable
+            name="secretColor"
+            type="int" />
+
+        <variable
+            name="highlighter"
+            type="Highlighter" />
+
+        <variable
+            name="secret"
+            type="boolean" />
+
+        <variable
+            name="revoked"
+            type="boolean" />
+
+        <variable
+            name="expired"
+            type="boolean" />
+
+        <variable
+            name="algorithm"
+            type="String" />
+
+        <variable
+            name="userId"
+            type="String" />
+
+        <variable
+            name="userIdEmail"
+            type="String" />
+
+        <variable
+            name="keyId"
+            type="String" />
     </data>
 
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -139,11 +173,11 @@
                 android:paddingTop="16dp"
                 android:visibility="gone">
 
-                <LinearLayout
-                    android:id="@+id/user_ids_list"
+                <org.sufficientlysecure.keychain.ui.widget.ImportUserIdsView
+                    android:id="@+id/extra_user_ids"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical" />
+                    android:layout_height="wrap_content" />
+
             </LinearLayout>
 
         </LinearLayout>

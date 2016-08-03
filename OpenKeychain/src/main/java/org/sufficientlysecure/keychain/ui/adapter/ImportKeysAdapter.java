@@ -25,7 +25,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
@@ -55,9 +54,7 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder> implements ImportKeysResultListener {
 
@@ -151,7 +148,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.setExpired(entry.isExpired());
         b.setRevoked(entry.isRevoked());
 
-        String userId = entry.getPrimaryUserId(); // main user id
+        String userId = entry.getPrimaryUserId();
         OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
 
         b.setAlgorithm(entry.getAlgorithm());
@@ -205,46 +202,10 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             b.expand.setRotation(rotation);
         }
 
-        b.extraContainer.setVisibility(showed ? View.VISIBLE : View.GONE);
         if (showed) {
-            b.userIdsList.removeAllViews();
-            // we want conventional gpg UserIDs first, then Keybase ”proofs”
-            ArrayList<Map.Entry<String, HashSet<String>>> sortedIds = entry.getSortedUserIds();
-            for (Map.Entry<String, HashSet<String>> pair : sortedIds) {
-                String cUserId = pair.getKey();
-                HashSet<String> cEmails = pair.getValue();
-
-                LayoutInflater inflater = LayoutInflater.from(mActivity);
-
-                TextView uidView = (TextView) inflater.inflate(
-                        R.layout.import_keys_list_entry_user_id, null);
-                uidView.setText(highlighter.highlight(cUserId));
-                uidView.setPadding(0, 0, FormattingUtils.dpToPx(mActivity, 8), 0);
-
-                if (entry.isRevoked() || entry.isExpired()) {
-                    uidView.setTextColor(mActivity.getResources().getColor(R.color.key_flag_gray));
-                } else {
-                    uidView.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
-                }
-                b.userIdsList.addView(uidView);
-
-                for (String email : cEmails) {
-                    TextView emailView = (TextView) inflater.inflate(
-                            R.layout.import_keys_list_entry_user_id, null);
-                    emailView.setPadding(
-                            FormattingUtils.dpToPx(mActivity, 16), 0,
-                            FormattingUtils.dpToPx(mActivity, 8), 0);
-                    emailView.setText(highlighter.highlight(email));
-
-                    if (entry.isRevoked() || entry.isExpired()) {
-                        emailView.setTextColor(mActivity.getResources().getColor(R.color.key_flag_gray));
-                    } else {
-                        emailView.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
-                    }
-                    b.userIdsList.addView(emailView);
-                }
-            }
+            b.extraUserIds.setEntry(entry);
         }
+        b.extraContainer.setVisibility(showed ? View.VISIBLE : View.GONE);
     }
 
     @Override
