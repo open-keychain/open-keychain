@@ -95,7 +95,7 @@ public class EmailKeyHelper {
         Set<ImportKeysListEntry> keys = new HashSet<>();
         try {
             for (ImportKeysListEntry key : keyServer.search(mail)) {
-                if (key.isRevoked() || key.isExpired()) continue;
+                if (key.isRevokedOrExpired()) continue;
                 for (String userId : key.getUserIds()) {
                     if (userId.toLowerCase().contains(mail.toLowerCase(Locale.ENGLISH))) {
                         keys.add(key);

@@ -160,10 +160,7 @@ public class FacebookKeyserver extends Keyserver {
         entry.setPrimaryUserId(key.getPrimaryUserIdWithFallback());
 
         entry.setKeyId(key.getKeyId());
-        entry.setKeyIdHex(KeyFormattingUtils.convertKeyIdToHex(key.getKeyId()));
-
-        entry.setFingerprintHex(KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint()));
-
+        entry.setFingerprint(key.getFingerprint());
 
         try {
             if (key.isEC()) { // unsupported key format (ECDH or ECDSA)

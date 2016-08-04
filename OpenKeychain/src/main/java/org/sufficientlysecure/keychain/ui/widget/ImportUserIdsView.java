@@ -42,7 +42,7 @@ public class ImportUserIdsView extends LinearLayout {
             uidView.setText(highlighter.highlight(cUserId));
             uidView.setPadding(0, 0, FormattingUtils.dpToPx(context, 8), 0);
 
-            if (entry.isRevoked() || entry.isExpired()) {
+            if (entry.isRevokedOrExpired()) {
                 uidView.setTextColor(context.getResources().getColor(R.color.key_flag_gray));
             } else {
                 uidView.setTextColor(FormattingUtils.getColorFromAttr(context, R.attr.colorText));
@@ -57,7 +57,7 @@ public class ImportUserIdsView extends LinearLayout {
                         FormattingUtils.dpToPx(context, 8), 0);
                 emailView.setText(highlighter.highlight(email));
 
-                if (entry.isRevoked() || entry.isExpired()) {
+                if (entry.isRevokedOrExpired()) {
                     emailView.setTextColor(context.getResources().getColor(R.color.key_flag_gray));
                 } else {
                     emailView.setTextColor(FormattingUtils.getColorFromAttr(context, R.attr.colorText));

@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListItemBinding;
@@ -43,7 +42,6 @@ import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -135,9 +133,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mActivity);
-        View v = inflater.inflate(R.layout.import_keys_list_item, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        return new ViewHolder(inflater.inflate(R.layout.import_keys_list_item, parent, false));
     }
 
     @Override
@@ -148,12 +144,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         Highlighter highlighter = new Highlighter(mActivity, entry.getQuery());
         b.setHighlighter(highlighter);
 
-        String userId = entry.getPrimaryUserId();
-        OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
-
         b.setEntry(entry);
-        b.setUserId(userIdSplit.name);
-        b.setUserIdEmail(userIdSplit.email);
 
         if (entry.isRevoked()) {
             KeyFormattingUtils.setStatusImage(mActivity, b.status, null,

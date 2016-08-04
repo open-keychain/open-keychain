@@ -21,7 +21,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
+import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
@@ -45,7 +45,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private HashMap<String, HashSet<String>> mMergedUserIds;
     private ArrayList<Map.Entry<String, HashSet<String>>> mSortedUserIds;
 
-    private long mKeyId;
     private String mKeyIdHex;
     private boolean mRevoked;
     private boolean mExpired;
@@ -55,7 +54,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private String mCurveOid;
     private String mAlgorithm;
     private boolean mSecretKey;
-    private String mPrimaryUserId;
+    private UserId mPrimaryUserId;
     private String mKeybaseName;
     private String mFbUsername;
     private String mQuery;
@@ -68,10 +67,9 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mPrimaryUserId);
+        dest.writeSerializable(mPrimaryUserId);
         dest.writeStringList(mUserIds);
         dest.writeSerializable(mMergedUserIds);
-        dest.writeLong(mKeyId);
         dest.writeByte((byte) (mRevoked ? 1 : 0));
         dest.writeByte((byte) (mExpired ? 1 : 0));
         dest.writeInt(mDate == null ? 0 : 1);
@@ -94,11 +92,10 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
         public ImportKeysListEntry createFromParcel(final Parcel source) {
             ImportKeysListEntry vr = new ImportKeysListEntry();
-            vr.mPrimaryUserId = source.readString();
+            vr.mPrimaryUserId = (UserId) source.readSerializable();
             vr.mUserIds = new ArrayList<>();
             source.readStringList(vr.mUserIds);
             vr.mMergedUserIds = (HashMap<String, HashSet<String>>) source.readSerializable();
-            vr.mKeyId = source.readLong();
             vr.mRevoked = source.readByte() == 1;
             vr.mExpired = source.readByte() == 1;
             vr.mDate = source.readInt() != 0 ? new Date(source.readLong()) : null;
@@ -138,6 +135,14 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         return mKeyIdHex;
     }
 
+    public void setKeyIdHex(String keyIdHex) {
+        mKeyIdHex = keyIdHex;
+    }
+
+    public void setKeyId(long keyId) {
+        mKeyIdHex = KeyFormattingUtils.convertKeyIdToHex(keyId);
+    }
+
     public boolean isExpired() {
         return mExpired;
     }
@@ -146,28 +151,20 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mExpired = expired;
     }
 
-    public byte[] getEncodedRing() {
-        return mEncodedRing;
-    }
-
-    public long getKeyId() {
-        return mKeyId;
-    }
-
-    public void setKeyId(long keyId) {
-        mKeyId = keyId;
-    }
-
-    public void setKeyIdHex(String keyIdHex) {
-        mKeyIdHex = keyIdHex;
-    }
-
     public boolean isRevoked() {
         return mRevoked;
     }
 
     public void setRevoked(boolean revoked) {
         mRevoked = revoked;
+    }
+
+    public boolean isRevokedOrExpired() {
+        return mRevoked || mExpired;
+    }
+
+    public byte[] getEncodedRing() {
+        return mEncodedRing;
     }
 
     public Date getDate() {
@@ -184,6 +181,10 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setFingerprintHex(String fingerprintHex) {
         mFingerprintHex = fingerprintHex;
+    }
+
+    public void setFingerprint(byte[] fingerprint) {
+        mFingerprintHex = KeyFormattingUtils.convertFingerprintToHex(fingerprint);
     }
 
     public Integer getBitStrength() {
@@ -214,12 +215,16 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mSecretKey = secretKey;
     }
 
-    public String getPrimaryUserId() {
+    public UserId getPrimaryUserId() {
         return mPrimaryUserId;
     }
 
-    public void setPrimaryUserId(String uid) {
-        mPrimaryUserId = uid;
+    public void setPrimaryUserId(String userId) {
+        mPrimaryUserId = KeyRing.splitUserId(userId);
+    }
+
+    public void setPrimaryUserId(UserId primaryUserId) {
+        mPrimaryUserId = primaryUserId;
     }
 
     public String getKeybaseName() {
@@ -317,27 +322,26 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
         mHashCode = key.hashCode();
 
-        mPrimaryUserId = key.getPrimaryUserIdWithFallback();
-        mUserIds = key.getUnorderedUserIds();
-        updateMergedUserIds();
-
-        mKeyId = key.getKeyId();
-        mKeyIdHex = KeyFormattingUtils.convertKeyIdToHex(mKeyId);
+        setPrimaryUserId(key.getPrimaryUserIdWithFallback());
+        setKeyId(key.getKeyId());
+        setFingerprint(key.getFingerprint());
 
         // NOTE: Dont use maybe methods for now, they can be wrong.
         mRevoked = false; //key.isMaybeRevoked();
         mExpired = false; //key.isMaybeExpired();
-        mFingerprintHex = KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint());
+
         mBitStrength = key.getBitStrength();
         mCurveOid = key.getCurveOid();
         final int algorithm = key.getAlgorithm();
         mAlgorithm = KeyFormattingUtils.getAlgorithmInfo(context, algorithm, mBitStrength, mCurveOid);
+
+        setUserIds(key.getUnorderedUserIds());
     }
 
     private void updateMergedUserIds() {
         mMergedUserIds = new HashMap<>();
         for (String userId : mUserIds) {
-            OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
+            UserId userIdSplit = KeyRing.splitUserId(userId);
 
             // TODO: comment field?
 
