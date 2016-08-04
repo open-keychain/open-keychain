@@ -83,13 +83,21 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return getRing().getPublicKey().isRevoked();
     }
 
+    public Date getCreationDate() {
+        return getPublicKey().getCreationTime();
+    }
+
+    public Date getExpirationDate() {
+        return getPublicKey().getExpiryTime();
+    }
+
     public boolean isExpired() {
         // Is the master key expired?
-        Date creationDate = getPublicKey().getCreationTime();
-        Date expiryDate = getPublicKey().getExpiryTime();
+        Date creationDate = getCreationDate();
+        Date expirationDate = getExpirationDate();
 
         Date now = new Date();
-        return creationDate.after(now) || (expiryDate != null && expiryDate.before(now));
+        return creationDate.after(now) || (expirationDate != null && expirationDate.before(now));
     }
 
     public boolean canCertify() throws PgpKeyNotFoundException {

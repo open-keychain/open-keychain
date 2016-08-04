@@ -99,7 +99,7 @@ public class KeyFormattingUtils {
 
             default: {
                 if (context != null) {
-                    algorithmStr = context.getResources().getString(R.string.unknown_algorithm);
+                    algorithmStr = context.getResources().getString(R.string.unknown);
                 } else {
                     algorithmStr = "unknown";
                 }
@@ -154,7 +154,7 @@ public class KeyFormattingUtils {
 
             default: {
                 if (context != null) {
-                    algorithmStr = context.getResources().getString(R.string.unknown_algorithm);
+                    algorithmStr = context.getResources().getString(R.string.unknown);
                 } else {
                     algorithmStr = "unknown";
                 }
@@ -189,7 +189,7 @@ public class KeyFormattingUtils {
             */
         }
         if (context != null) {
-            return context.getResources().getString(R.string.unknown_algorithm);
+            return context.getResources().getString(R.string.unknown);
         } else {
             return "unknown";
         }
@@ -208,7 +208,7 @@ public class KeyFormattingUtils {
             return name;
         }
         if (context != null) {
-            return context.getResources().getString(R.string.unknown_algorithm);
+            return context.getResources().getString(R.string.unknown);
         } else {
             return "unknown";
         }

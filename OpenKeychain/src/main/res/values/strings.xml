@@ -167,9 +167,11 @@
     <string name="label_file_compression">"File compression"</string>
     <string name="label_keyservers">"Manage OpenPGP keyservers"</string>
     <string name="label_key_id">"Key ID"</string>
+    <string name="label_key_id_colon">"Key ID:"</string>
     <string name="label_key_created">"Key created %s"</string>
     <string name="label_key_type">"Type"</string>
     <string name="label_creation">"Creation"</string>
+    <string name="label_creation_colon">"Creation:"</string>
     <string name="label_expiry">"Expiry"</string>
     <string name="label_usage">"Usage"</string>
     <string name="label_key_size">"Key Size"</string>
@@ -254,7 +256,6 @@
     <string name="orbot_start_dialog_start">"Start Orbot"</string>
     <string name="orbot_start_dialog_cancel">"Cancel"</string>
     <string name="orbot_start_dialog_ignore_tor">"Don't use Tor"</string>
-
 
     <string name="user_id_no_name"><![CDATA[<no name>]]></string>
     <string name="none"><![CDATA[<none>]]></string>
@@ -1512,7 +1513,7 @@
     <string name="key_unavailable">"unavailable"</string>
     <string name="secret_cannot_multiple">"Your own keys can only be deleted individually!"</string>
     <string name="title_view_cert">"View Certificate Details"</string>
-    <string name="unknown_algorithm">"unknown"</string>
+    <string name="unknown">"unknown"</string>
     <string name="can_sign_not">"cannot sign"</string>
     <string name="error_no_encrypt_subkey">"No encryption subkey available!"</string>
     <string name="contact_show_key">"Show key (%s)"</string>

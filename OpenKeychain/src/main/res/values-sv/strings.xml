@@ -958,7 +958,7 @@
   <string name="key_unavailable">otillgänglig</string>
   <string name="secret_cannot_multiple">Dina egna nycklar kan bara raderas var för sig!</string>
   <string name="title_view_cert">Visa certifikatinformation</string>
-  <string name="unknown_algorithm">okänd</string>
+  <string name="unknown">okänd</string>
   <string name="can_sign_not">kan inte signera</string>
   <string name="error_no_encrypt_subkey">Ingen krypteringsundernyckel tillgänglig!</string>
   <string name="contact_show_key">Visa nyckel (%s)</string>
