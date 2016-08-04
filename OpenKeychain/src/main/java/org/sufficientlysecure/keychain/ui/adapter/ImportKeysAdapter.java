@@ -166,9 +166,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             b.expand.setRotation(rotation);
         }
 
-        if (showed) {
-            b.extraUserIds.setEntry(entry);
-        }
         b.extraContainer.setVisibility(showed ? View.VISIBLE : View.GONE);
     }
 

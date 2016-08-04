@@ -6,7 +6,6 @@
         <import type="org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry" />
 
         <variable name="nonInteractive" type="boolean" />
-
         <variable name="entry" type="ImportKeysListEntry" />
     </data>
 
@@ -67,13 +66,6 @@
                             app:keyUserEmail="@{entry.primaryUserId.email}"
                             app:query="@{entry.query}" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            app:keyId="@{entry.keyIdHex}"
-                            app:keyRevokedOrExpired="@{entry.revokedOrExpired}" />
-
                     </LinearLayout>
 
                     <ImageView
@@ -133,10 +125,12 @@
                 android:paddingTop="16dp"
                 android:visibility="gone">
 
-                <org.sufficientlysecure.keychain.ui.widget.ImportUserIdsView
-                    android:id="@+id/extra_user_ids"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                <include
+                    layout="@layout/import_keys_list_item_extra"
+                    app:keyIdHex="@{entry.keyIdHex}"
+                    app:keyUserIds="@{entry.sortedUserIds}"
+                    app:query="@{entry.query}"
+                    app:revokedOrExpired="@{entry.revokedOrExpired}" />
 
             </LinearLayout>
 

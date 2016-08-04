@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.ui.adapter;
+package org.sufficientlysecure.keychain.ui.bindings;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -8,12 +8,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.LruCache;
 
-public class ImportKeysAdapterBinding {
+public class ImportKeysBindings {
 
     @BindingAdapter({"app:keyUserId", "app:keySecret", "app:keyRevokedOrExpired", "app:query"})
     public static void setUserId(TextView textView, CharSequence userId, boolean secret,
@@ -28,11 +26,11 @@ public class ImportKeysAdapterBinding {
         if (secret) {
             userId = resources.getString(R.string.secret_key) + " " + userId;
         } else {
-            Highlighter highlighter = getHighlighter(context, query);
+            Highlighter highlighter = ImportKeysBindingsUtils.getHighlighter(context, query);
             userId = highlighter.highlight(userId);
         }
         textView.setText(userId);
-        textView.setTextColor(getColor(context, revokedOrExpired));
+        textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpired));
 
         if (secret) {
             textView.setTextColor(Color.RED);
@@ -48,28 +46,9 @@ public class ImportKeysAdapterBinding {
         if (userEmail == null)
             userEmail = "";
 
-        Highlighter highlighter = getHighlighter(context, query);
+        Highlighter highlighter = ImportKeysBindingsUtils.getHighlighter(context, query);
         textView.setText(highlighter.highlight(userEmail));
-        textView.setTextColor(getColor(context, revokedOrExpired));
-    }
-
-    @BindingAdapter({"app:keyId", "app:keyRevokedOrExpired"})
-    public static void setKeyId(TextView textView, String keyId, boolean revokedOrExpired) {
-        Context context = textView.getContext();
-
-        if (keyId == null)
-            keyId = "";
-
-        textView.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(keyId));
-        textView.setTextColor(getColor(context, revokedOrExpired));
-    }
-
-    private static int getColor(Context context, boolean revokedOrExpired) {
-        if (revokedOrExpired) {
-            return context.getResources().getColor(R.color.key_flag_gray);
-        } else {
-            return FormattingUtils.getColorFromAttr(context, R.attr.colorText);
-        }
+        textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpired));
     }
 
     @BindingAdapter({"app:keyRevoked", "app:keyExpired"})
@@ -83,18 +62,6 @@ public class ImportKeysAdapterBinding {
             KeyFormattingUtils.setStatusImage(context, imageView, null,
                     KeyFormattingUtils.State.EXPIRED, R.color.key_flag_gray);
         }
-    }
-
-    private static LruCache<String, Highlighter> highlighterCache = new LruCache<>(1);
-
-    private static Highlighter getHighlighter(Context context, String query) {
-        Highlighter highlighter = highlighterCache.get(query);
-        if (highlighter == null) {
-            highlighter = new Highlighter(context, query);
-            highlighterCache.put(query, highlighter);
-        }
-
-        return highlighter;
     }
 
 }
