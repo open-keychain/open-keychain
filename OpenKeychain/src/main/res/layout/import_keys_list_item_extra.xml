@@ -2,12 +2,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="java.util.ArrayList" />
+        <import type="org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry" />
 
-        <variable name="keyIdHex" type="String" />
-        <variable name="keyUserIds" type="ArrayList" />
-        <variable name="query" type="String" />
-        <variable name="revokedOrExpired" type="boolean" />
+        <variable name="entry" type="ImportKeysListEntry" />
     </data>
 
     <LinearLayout
@@ -19,17 +16,38 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            app:keyId="@{keyIdHex}"
-            app:keyRevokedOrExpired="@{revokedOrExpired}" />
+            android:textColor="?attr/colorText"
+            app:keyId="@{entry.keyIdHex}" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:orientation="vertical"
-            app:keyRevokedOrExpired="@{revokedOrExpired}"
-            app:keyUserIds="@{keyUserIds}"
-            app:query="@{query}" />
+            app:keyUserIds="@{entry.sortedUserIds}"
+            app:query="@{entry.query}" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_algorithm_colon"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorText" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="@{entry.algorithm}"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorText" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

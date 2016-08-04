@@ -17,20 +17,16 @@ import java.util.Map;
 
 public class ImportKeysExtraBindings {
 
-    @BindingAdapter({"app:keyId", "app:keyRevokedOrExpired"})
-    public static void setKeyId(TextView textView, String keyId, boolean revokedOrExpired) {
-        Context context = textView.getContext();
-
+    @BindingAdapter({"app:keyId"})
+    public static void setKeyId(TextView textView, String keyId) {
         if (keyId == null)
             keyId = "";
 
         textView.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(keyId));
-        textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpired));
     }
 
-    @BindingAdapter({"app:keyUserIds", "app:keyRevokedOrExpired", "app:query"})
-    public static void setUserIds(LinearLayout linearLayout, ArrayList userIds,
-                                  boolean revokedOrExpired, String query) {
+    @BindingAdapter({"app:keyUserIds", "app:query"})
+    public static void setUserIds(LinearLayout linearLayout, ArrayList userIds, String query) {
 
         linearLayout.removeAllViews();
 
@@ -49,12 +45,7 @@ public class ImportKeysExtraBindings {
                         R.layout.import_keys_list_entry_user_id, null);
                 uidView.setText(highlighter.highlight(name));
                 uidView.setPadding(0, 0, FormattingUtils.dpToPx(context, 8), 0);
-
-                if (revokedOrExpired) {
-                    uidView.setTextColor(context.getResources().getColor(R.color.key_flag_gray));
-                } else {
-                    uidView.setTextColor(FormattingUtils.getColorFromAttr(context, R.attr.colorText));
-                }
+                uidView.setTextColor(FormattingUtils.getColorFromAttr(context, R.attr.colorText));
                 linearLayout.addView(uidView);
 
                 for (String email : emails) {
@@ -64,12 +55,7 @@ public class ImportKeysExtraBindings {
                             FormattingUtils.dpToPx(context, 16), 0,
                             FormattingUtils.dpToPx(context, 8), 0);
                     emailView.setText(highlighter.highlight(email));
-
-                    if (revokedOrExpired) {
-                        emailView.setTextColor(context.getResources().getColor(R.color.key_flag_gray));
-                    } else {
-                        emailView.setTextColor(FormattingUtils.getColorFromAttr(context, R.attr.colorText));
-                    }
+                    emailView.setTextColor(FormattingUtils.getColorFromAttr(context, R.attr.colorText));
                     linearLayout.addView(emailView);
                 }
             }

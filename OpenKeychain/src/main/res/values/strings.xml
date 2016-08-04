@@ -149,6 +149,7 @@
     <string name="label_passphrase_again">"Repeat Password"</string>
     <string name="label_show_passphrase">"Show Password"</string>
     <string name="label_algorithm">"Algorithm"</string>
+    <string name="label_algorithm_colon">"Algorithm:"</string>
     <string name="label_ascii_armor">"File ASCII Armor"</string>
     <string name="label_file_ascii_armor">"Enable ASCII Armor"</string>
     <string name="label_write_version_header">"Let others know that you're using OpenKeychain"</string>

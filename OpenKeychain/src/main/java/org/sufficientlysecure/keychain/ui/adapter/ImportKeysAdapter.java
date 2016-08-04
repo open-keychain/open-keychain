@@ -236,6 +236,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
                 ImportKeysListEntry entry = mData.get(mCurrent);
 
+                entry.setKeyId(keyRing.getMasterKeyId());
+
                 ArrayList<String> realUserIdsPlusKeybase = keyRing.getUnorderedUserIds();
                 realUserIdsPlusKeybase.addAll(entry.getKeybaseUserIds());
                 entry.setUserIds(realUserIdsPlusKeybase);

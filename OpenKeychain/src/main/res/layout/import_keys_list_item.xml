@@ -45,12 +45,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{entry.algorithm}"
-                            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
                             app:keySecret="@{entry.secretKey}"
@@ -127,10 +121,7 @@
 
                 <include
                     layout="@layout/import_keys_list_item_extra"
-                    app:keyIdHex="@{entry.keyIdHex}"
-                    app:keyUserIds="@{entry.sortedUserIds}"
-                    app:query="@{entry.query}"
-                    app:revokedOrExpired="@{entry.revokedOrExpired}" />
+                    app:entry="@{entry}" />
 
             </LinearLayout>
 
