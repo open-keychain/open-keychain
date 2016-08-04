@@ -108,7 +108,7 @@ public class ImportKeysCloudFragment extends Fragment {
         searchButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                search(mQueryEditText.getText().toString());
+                search(mQueryEditText.getText().toString().trim());
             }
         });
 
@@ -116,7 +116,7 @@ public class ImportKeysCloudFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    search(mQueryEditText.getText().toString());
+                    search(mQueryEditText.getText().toString().trim());
 
                     // Don't return true to let the keyboard close itself after pressing search
                     return false;
