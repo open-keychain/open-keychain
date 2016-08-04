@@ -53,7 +53,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="?attr/colorText"
                             app:query="@{entry.query}"
                             app:revokedOrExpired="@{entry.revokedOrExpired}"
                             app:secret="@{entry.secretKey}"
@@ -64,7 +63,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="?attr/colorText"
                             app:query="@{entry.query}"
                             app:revokedOrExpired="@{entry.revokedOrExpired}"
                             app:userEmail="@{entry.primaryUserId.email}" />
@@ -73,7 +71,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="?attr/colorText"
                             app:keyId="@{entry.keyIdHex}"
                             app:revokedOrExpired="@{entry.revokedOrExpired}" />
 

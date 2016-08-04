@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.LruCache;
@@ -30,10 +31,9 @@ public class ImportKeysAdapterBinding {
             userId = highlighter.highlight(userId);
         }
         textView.setText(userId);
+        textView.setTextColor(getColor(context, revokedOrExpired));
 
-        if (revokedOrExpired) {
-            textView.setTextColor(resources.getColor(R.color.key_flag_gray));
-        } else if (secret) {
+        if (secret) {
             textView.setTextColor(Color.RED);
         }
     }
@@ -49,11 +49,7 @@ public class ImportKeysAdapterBinding {
 
         Highlighter highlighter = getHighlighter(context, query);
         textView.setText(highlighter.highlight(userEmail));
-
-        if (revokedOrExpired) {
-            Resources resources = context.getResources();
-            textView.setTextColor(resources.getColor(R.color.key_flag_gray));
-        }
+        textView.setTextColor(getColor(context, revokedOrExpired));
     }
 
     @BindingAdapter({"app:keyId", "app:revokedOrExpired"})
@@ -63,11 +59,16 @@ public class ImportKeysAdapterBinding {
         if (keyId == null)
             keyId = "";
 
-        if (revokedOrExpired) {
-            Resources resources = context.getResources();
-            textView.setTextColor(resources.getColor(R.color.key_flag_gray));
-        }
         textView.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(keyId));
+        textView.setTextColor(getColor(context, revokedOrExpired));
+    }
+
+    private static int getColor(Context context, boolean revokedOrExpired) {
+        if (revokedOrExpired) {
+            return context.getResources().getColor(R.color.key_flag_gray);
+        } else {
+            return FormattingUtils.getColorFromAttr(context, R.attr.colorText);
+        }
     }
 
     private static LruCache<String, Highlighter> highlighterCache = new LruCache<>(1);
