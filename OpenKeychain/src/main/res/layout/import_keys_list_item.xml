@@ -53,26 +53,26 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceMedium"
-                            app:query="@{entry.query}"
-                            app:revokedOrExpired="@{entry.revokedOrExpired}"
-                            app:secret="@{entry.secretKey}"
-                            app:userId="@{entry.primaryUserId.name}" />
+                            app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
+                            app:keySecret="@{entry.secretKey}"
+                            app:keyUserId="@{entry.primaryUserId.name}"
+                            app:query="@{entry.query}" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            app:query="@{entry.query}"
-                            app:revokedOrExpired="@{entry.revokedOrExpired}"
-                            app:userEmail="@{entry.primaryUserId.email}" />
+                            app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
+                            app:keyUserEmail="@{entry.primaryUserId.email}"
+                            app:query="@{entry.query}" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             app:keyId="@{entry.keyIdHex}"
-                            app:revokedOrExpired="@{entry.revokedOrExpired}" />
+                            app:keyRevokedOrExpired="@{entry.revokedOrExpired}" />
 
                     </LinearLayout>
 
@@ -82,7 +82,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:visibility="@{entry.revokedOrExpired ? View.VISIBLE : View.GONE}" />
+                        android:visibility="@{entry.revokedOrExpired ? View.VISIBLE : View.GONE}"
+                        app:keyExpired="@{entry.expired}"
+                        app:keyRevoked="@{entry.revoked}" />
 
                 </RelativeLayout>
 

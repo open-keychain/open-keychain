@@ -40,8 +40,6 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
@@ -129,14 +127,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         final ImportKeysListItemBinding b = holder.b;
         final ImportKeysListEntry entry = mData.get(position);
         b.setEntry(entry);
-
-        if (entry.isRevoked()) {
-            KeyFormattingUtils.setStatusImage(mActivity, b.status, null,
-                    State.REVOKED, R.color.key_flag_gray);
-        } else if (entry.isExpired()) {
-            KeyFormattingUtils.setStatusImage(mActivity, b.status, null,
-                    State.EXPIRED, R.color.key_flag_gray);
-        }
 
         final KeyState keyState = mKeyStates[position];
         final boolean downloaded = keyState.mDownloaded;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
 import android.graphics.Color;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
@@ -14,7 +15,7 @@ import org.sufficientlysecure.keychain.util.LruCache;
 
 public class ImportKeysAdapterBinding {
 
-    @BindingAdapter({"app:userId", "app:secret", "app:revokedOrExpired", "app:query"})
+    @BindingAdapter({"app:keyUserId", "app:keySecret", "app:keyRevokedOrExpired", "app:query"})
     public static void setUserId(TextView textView, CharSequence userId, boolean secret,
                                  boolean revokedOrExpired, String query) {
 
@@ -38,7 +39,7 @@ public class ImportKeysAdapterBinding {
         }
     }
 
-    @BindingAdapter({"app:userEmail", "app:revokedOrExpired", "app:query"})
+    @BindingAdapter({"app:keyUserEmail", "app:keyRevokedOrExpired", "app:query"})
     public static void setUserEmail(TextView textView, CharSequence userEmail,
                                     boolean revokedOrExpired, String query) {
 
@@ -52,7 +53,7 @@ public class ImportKeysAdapterBinding {
         textView.setTextColor(getColor(context, revokedOrExpired));
     }
 
-    @BindingAdapter({"app:keyId", "app:revokedOrExpired"})
+    @BindingAdapter({"app:keyId", "app:keyRevokedOrExpired"})
     public static void setKeyId(TextView textView, String keyId, boolean revokedOrExpired) {
         Context context = textView.getContext();
 
@@ -68,6 +69,19 @@ public class ImportKeysAdapterBinding {
             return context.getResources().getColor(R.color.key_flag_gray);
         } else {
             return FormattingUtils.getColorFromAttr(context, R.attr.colorText);
+        }
+    }
+
+    @BindingAdapter({"app:keyRevoked", "app:keyExpired"})
+    public static void setStatus(ImageView imageView, boolean revoked, boolean expired) {
+        Context context = imageView.getContext();
+
+        if (revoked) {
+            KeyFormattingUtils.setStatusImage(context, imageView, null,
+                    KeyFormattingUtils.State.REVOKED, R.color.key_flag_gray);
+        } else if (expired) {
+            KeyFormattingUtils.setStatusImage(context, imageView, null,
+                    KeyFormattingUtils.State.EXPIRED, R.color.key_flag_gray);
         }
     }
 
