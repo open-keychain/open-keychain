@@ -3,16 +3,9 @@
 
     <data>
         <import type="android.view.View" />
-        <import type="org.sufficientlysecure.keychain.ui.util.Highlighter" />
         <import type="org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry" />
 
         <variable name="nonInteractive" type="boolean" />
-
-        <variable name="standardColor" type="int" />
-        <variable name="revokedExpiredColor" type="int" />
-        <variable name="secretColor" type="int" />
-
-        <variable name="highlighter" type="Highlighter" />
 
         <variable name="entry" type="ImportKeysListEntry" />
     </data>
@@ -59,24 +52,30 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text='@{entry.secretKey ? @string/secret_key + " " + (entry.primaryUserId.name ?? @string/user_id_no_name) : highlighter.highlight(entry.primaryUserId.name ?? @string/user_id_no_name)}'
                             android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@{entry.revokedOrExpired ? revokedExpiredColor : (entry.secretKey ? secretColor : standardColor)}" />
+                            android:textColor="?attr/colorText"
+                            app:query="@{entry.query}"
+                            app:revokedOrExpired="@{entry.revokedOrExpired}"
+                            app:secret="@{entry.secretKey}"
+                            app:userId="@{entry.primaryUserId.name}" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="@{highlighter.highlight(entry.primaryUserId.email)}"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="@{entry.revokedOrExpired ? revokedExpiredColor : standardColor}" />
+                            android:textColor="?attr/colorText"
+                            app:query="@{entry.query}"
+                            app:revokedOrExpired="@{entry.revokedOrExpired}"
+                            app:userEmail="@{entry.primaryUserId.email}" />
 
                         <TextView
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="@{entry.revokedOrExpired ? revokedExpiredColor : standardColor}"
-                            app:keyId='@{entry.keyIdHex ?? ""}' />
+                            android:textColor="?attr/colorText"
+                            app:keyId="@{entry.keyIdHex}"
+                            app:revokedOrExpired="@{entry.revokedOrExpired}" />
 
                     </LinearLayout>
 

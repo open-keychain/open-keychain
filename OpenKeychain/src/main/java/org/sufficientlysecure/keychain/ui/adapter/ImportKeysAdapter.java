@@ -17,16 +17,12 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import android.content.res.Resources;
-import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -44,8 +40,6 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -120,13 +114,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         public ViewHolder(View view) {
             super(view);
             b = DataBindingUtil.bind(view);
-
             b.setNonInteractive(mNonInteractive);
-
-            Resources resources = mActivity.getResources();
-            b.setStandardColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
-            b.setRevokedExpiredColor(resources.getColor(R.color.key_flag_gray));
-            b.setSecretColor(Color.RED);
         }
     }
 
@@ -140,10 +128,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final ImportKeysListItemBinding b = holder.b;
         final ImportKeysListEntry entry = mData.get(position);
-
-        Highlighter highlighter = new Highlighter(mActivity, entry.getQuery());
-        b.setHighlighter(highlighter);
-
         b.setEntry(entry);
 
         if (entry.isRevoked()) {
@@ -196,11 +180,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             b.extraUserIds.setEntry(entry);
         }
         b.extraContainer.setVisibility(showed ? View.VISIBLE : View.GONE);
-    }
-
-    @BindingAdapter("app:keyId")
-    public static void setKeyId(TextView textView, String keyId) {
-        textView.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(keyId));
     }
 
     @Override
