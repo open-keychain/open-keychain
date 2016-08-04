@@ -9,6 +9,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.LruCache;
 
 public class ImportKeysAdapterBinding {
 
@@ -25,7 +26,7 @@ public class ImportKeysAdapterBinding {
         if (secret) {
             userId = resources.getString(R.string.secret_key) + " " + userId;
         } else {
-            Highlighter highlighter = new Highlighter(context, query);
+            Highlighter highlighter = getHighlighter(context, query);
             userId = highlighter.highlight(userId);
         }
         textView.setText(userId);
@@ -46,7 +47,7 @@ public class ImportKeysAdapterBinding {
         if (userEmail == null)
             userEmail = "";
 
-        Highlighter highlighter = new Highlighter(context, query);
+        Highlighter highlighter = getHighlighter(context, query);
         textView.setText(highlighter.highlight(userEmail));
 
         if (revokedOrExpired) {
@@ -67,6 +68,18 @@ public class ImportKeysAdapterBinding {
             textView.setTextColor(resources.getColor(R.color.key_flag_gray));
         }
         textView.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(keyId));
+    }
+
+    private static LruCache<String, Highlighter> highlighterCache = new LruCache<>(1);
+
+    private static Highlighter getHighlighter(Context context, String query) {
+        Highlighter highlighter = highlighterCache.get(query);
+        if (highlighter == null) {
+            highlighter = new Highlighter(context, query);
+            highlighterCache.put(query, highlighter);
+        }
+
+        return highlighter;
     }
 
 }
