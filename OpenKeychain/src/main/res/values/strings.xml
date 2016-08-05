@@ -31,6 +31,7 @@
     <string name="title_export_key">"Backup Key"</string>
     <string name="title_export_keys">"Backup Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
+    <string name="title_migrate_symmetric">"Changes to OpenKeychain"</string>
     <string name="title_send_key">"Upload to Keyserver"</string>
     <string name="title_backup">"Backup Key"</string>
     <string name="title_certify_key">"Confirm Key"</string>
@@ -1544,6 +1545,27 @@
     <string name="first_time_blank_security_token">"Would you like to use this blank Security Token with OpenKeychain?\n\nPlease take away the Security Token now, you will be prompted when it is needed again!"</string>
     <string name="first_time_blank_security_token_yes">"Use this Security Token"</string>
 
+    <!-- Migrate to Symmetric Encryption -->
+    <string name="msg_mi">"Migrating to symmetric encryption"</string>
+    <string name="msg_mi_cache_secret">"Caching secret keys"</string>
+    <string name="msg_mi_error_db">"Error accessing database"</string>
+    <string name="msg_mi_error_decode_cache">"Error decoding keys from cache"</string>
+    <string name="msg_mi_reimport_secret">"Re-importing secret keys from cache"</string>
+    <string name="msg_mi_success">"Successful migration to symmetrically encrypted keyring blocks"</string>
+
+    <string name="progress_migrate_cache_keys">"migrate: saving to cache…"</string>
+    <string name="progress_migrating">"migrating…"</string>
+
+    <string name="migrate_cancelled_dialog">"Please complete the migration, or clear the application data to start importing keys."</string>
+    <!-- TODO: edit the migration text -->
+    <string name="migrate_changes_to_app">"OpenKeychain has been updated to use a new encryption system for your keys. View the FAQ for more details. You will be prompted to enter passwords for your keys after this screen. \n\nNote: Usage of subkeys with separate passwords is no longer supported. Such subkeys will be modified to use the password of the first present subkey in the keyring."</string>
+    <string name="migrate_error_accessing_cache">"Error, unable to access cached keys. Please try again…"</string>
+    <string name="migrate_error_cache_keys">"Critical error, unable to read/write to device. Please try again later."</string>
+    <string name="migrate_error_cancelled">"Unknown error has occurred. Please contact the developers…"</string>
+    <string name="migrate_error_consolidating">"Error consolidating. Please try again…"</string>
+    <string name="migrate_error_migrating">"Error migrating. Please try again…"</string>
+
+    <!-- Backup/Restore -->
     <string name="backup_text">"Backups that include your own keys must never be shared with other people!"</string>
     <string name="backup_all">"All keys + your own keys"</string>
     <string name="backup_public_keys">"All keys"</string>

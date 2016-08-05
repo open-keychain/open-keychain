@@ -2,6 +2,7 @@ package org.sufficientlysecure.keychain.util;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -99,4 +100,15 @@ public class KeyringPassphrases implements Parcelable {
         return null;
     }
 
+    public static class SubKeyInfo {
+        public final long mMasterKeyId;
+        public final long mSubKeyId;
+        public final ParcelableKeyRing mKeyRing;
+
+        public SubKeyInfo(long masterKeyId, long subKeyId, ParcelableKeyRing keyRing) {
+            mMasterKeyId = masterKeyId;
+            mSubKeyId = subKeyId;
+            mKeyRing = keyRing;
+        }
+    }
 }

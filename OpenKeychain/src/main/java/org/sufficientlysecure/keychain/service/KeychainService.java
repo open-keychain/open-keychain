@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.KeybaseVerificationOperation;
 import org.sufficientlysecure.keychain.operations.InputDataOperation;
 import org.sufficientlysecure.keychain.operations.ChangeUnlockOperation;
+import org.sufficientlysecure.keychain.operations.MigrateSymmetricOperation;
 import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
 import org.sufficientlysecure.keychain.operations.RevokeOperation;
 import org.sufficientlysecure.keychain.operations.SignEncryptOperation;
@@ -141,6 +142,11 @@ public class KeychainService extends Service implements Progressable {
                     op = new InputDataOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else if (inputParcel instanceof BenchmarkInputParcel) {
                     op = new BenchmarkOperation(outerThis, new ProviderHelper(outerThis), outerThis);
+                } else if (inputParcel instanceof MigrateSymmetricInputParcel) {
+                    op = new MigrateSymmetricOperation(outerThis, new ProviderHelper(outerThis), outerThis);
+                } else if (inputParcel instanceof MigrateSymmetricInputParcel.CreateSecretCacheParcel) {
+                    op = new MigrateSymmetricOperation.CreateSecretCacheOperation(outerThis,
+                            new ProviderHelper(outerThis), outerThis);
                 } else {
                     throw new AssertionError("Unrecognized input parcel in KeychainService!");
                 }

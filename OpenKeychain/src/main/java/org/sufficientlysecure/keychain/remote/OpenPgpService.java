@@ -876,8 +876,7 @@ public class OpenPgpService extends Service {
     private Intent databaseIsUpToDateOrReturnIntent(Intent data) {
         Preferences pref = Preferences.getPreferences(getApplicationContext());
 
-        // TODO:wip, testing
-        if(false && pref.isUsingS2k()) {
+        if(pref.isUsingS2k()) {
             // main app has not updated to using symmetric key blocks
             // prompt user to start app and commence update
             ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(this);

@@ -658,6 +658,14 @@ public abstract class OperationResult implements Parcelable {
         MSG_CON_WARN_DELETE_OWN_PUBLIC (LogLevel.WARN, R.string.msg_con_warn_delete_own_public),
         MSG_CON_WARN_DELETE_SECRET (LogLevel.WARN, R.string.msg_con_warn_delete_secret),
 
+        // migrate
+        MSG_MI(LogLevel.START, R.string.msg_mi),
+        MSG_MI_CACHE_SECRET(LogLevel.DEBUG, R.string.msg_mi_cache_secret),
+        MSG_MI_ERROR_DB (LogLevel.ERROR, R.string.msg_mi_error_db),
+        MSG_MI_ERROR_DECODE_CACHE(LogLevel.DEBUG, R.string.msg_mi_error_decode_cache),
+        MSG_MI_REIMPORT_SECRET (LogLevel.DEBUG, R.string.msg_mi_reimport_secret),
+        MSG_MI_SUCCESS (LogLevel.OK, R.string.msg_mi_success),
+
         // edit key (higher level operation than modify)
         MSG_ED (LogLevel.START, R.string.msg_ed),
         MSG_ED_CACHING_NEW (LogLevel.DEBUG, R.string.msg_ed_caching_new),

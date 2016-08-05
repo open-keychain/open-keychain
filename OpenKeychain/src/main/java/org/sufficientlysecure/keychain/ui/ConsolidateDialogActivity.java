@@ -72,19 +72,20 @@ public class ConsolidateDialogActivity extends FragmentActivity
 
     @Override
     public void onCryptoOperationSuccess(ConsolidateResult result) {
-        // don't care about result (for now?)
-        ConsolidateDialogActivity.this.finish();
+        setResult(RESULT_OK);
+        finish();
     }
 
     @Override
     public void onCryptoOperationCancelled() {
-
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     @Override
     public void onCryptoOperationError(ConsolidateResult result) {
-        // don't care about result (for now?)
-        ConsolidateDialogActivity.this.finish();
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     @Override

@@ -36,8 +36,11 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
+import org.sufficientlysecure.keychain.ui.MigrateSymmetricActivity;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -315,22 +318,31 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 15:
                 db.execSQL("CREATE INDEX uids_by_name ON user_packets (name COLLATE NOCASE)");
                 db.execSQL("CREATE INDEX uids_by_email ON user_packets (email COLLATE NOCASE)");
-                if (oldVersion == 14) {
-                    // no consolidate necessary
-                    return;
-                }
             case 16:
+                // fall through for migrate
             case 17:
+                PassphraseCacheService.clearAllCachedPassphrases(mContext);
+                Preferences.getPreferences(mContext).setUsingS2k(true);
                 db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN awaiting_merge INTEGER");
-
-
+                // TODO: wip, db to set all unmigrated keyring type to passphrase by default
         }
 
-        // always do consolidate after upgrade
-        Intent consolidateIntent = new Intent(mContext.getApplicationContext(), ConsolidateDialogActivity.class);
-        consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
-        consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.getApplicationContext().startActivity(consolidateIntent);
+
+        if (oldVersion <= 17) {
+            // migrate to symmetrically encrypted keyring blocks
+            // consolidate is handled by migration to prevent progress bar bugs
+            Intent migrateIntent = new Intent(mContext.getApplicationContext(), MigrateSymmetricActivity.class);
+            migrateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.getApplicationContext().startActivity(migrateIntent);
+
+        } else {
+
+            // always do consolidate after upgrade
+            Intent consolidateIntent = new Intent(mContext.getApplicationContext(), ConsolidateDialogActivity.class);
+            consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
+            consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.getApplicationContext().startActivity(consolidateIntent);
+        }
     }
 
     @Override

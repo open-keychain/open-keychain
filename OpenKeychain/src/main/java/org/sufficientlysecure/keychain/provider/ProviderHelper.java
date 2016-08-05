@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult.WriteKeyRingsResult;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.MigrateSymmetricResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -377,7 +378,7 @@ public class ProviderHelper {
                     secBlob = ByteArrayEncryptor.decryptByteArray(secBlob, passphrase.getCharArray());
                 }
 
-                CanonicalizedSecretKeyRing canSecretKey = new CanonicalizedSecretKeyRing(secBlob, true, verified);
+                CanonicalizedSecretKeyRing canSecretKey = new CanonicalizedSecretKeyRing(secBlob, false, verified);
 
                 if (skipMerge || !awaitingMerge) {
                     return canSecretKey;
@@ -1303,6 +1304,64 @@ public class ProviderHelper {
     }
 
 
+    @NonNull
+    public MigrateSymmetricResult createSecretKeyRingCache(Progressable progress, String fileName) {
+        OperationLog log = new OperationLog();
+        int indent = 0;
+        log.add(LogType.MSG_MI, indent);
+        progress.setPreventCancel();
+        progress.setProgress(R.string.progress_migrate_cache_keys, 0, 100);
+
+        try {
+            log.add(LogType.MSG_MI_CACHE_SECRET, indent);
+            indent += 1;
+
+            Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(),
+                    new String[]{KeyRings.PRIVKEY_DATA, KeyRings.HAS_ANY_SECRET},
+                    KeyRings.HAS_ANY_SECRET + "!=0", null, null);
+            cacheKeyRings(cursor, 0, fileName);
+            //noinspection ConstantConditions, null is caught below
+            cursor.close();
+
+        } catch (NullPointerException | IOException e) {
+            log.add(LogType.MSG_MI_ERROR_DB, indent + 1);
+            return new MigrateSymmetricResult(MigrateSymmetricResult.RESULT_ERROR, log);
+        }
+
+        return new MigrateSymmetricResult(MigrateSymmetricResult.RESULT_OK, log);
+    }
+
+    @NonNull
+    public MigrateSymmetricResult migrateSymmetricOperation(Progressable progress, String fileName,
+                                                            List<KeyringPassphrases> passphrasesList) {
+        OperationLog log = new OperationLog();
+        int indent = 0;
+        ParcelableFileCache<ParcelableKeyRing> secRings;
+
+        try {
+            secRings = new ParcelableFileCache<>(mContext, fileName);
+            IteratorWithSize<ParcelableKeyRing> itSecrets = secRings.readCache(false);
+            int numSecret = itSecrets.getSize();
+
+            log.add(LogType.MSG_MI_REIMPORT_SECRET, indent, numSecret);
+            indent += 1;
+
+            ImportOperation op = new ImportOperation(mContext, this, progress);
+            ImportKeyResult result = op.serialKeyRingImport(itSecrets, numSecret, null, null, passphrasesList);
+            log.add(result, indent);
+
+            secRings.delete();
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "error decoding secret keys from cache", e);
+            log.add(LogType.MSG_MI_ERROR_DECODE_CACHE, indent);
+            return new MigrateSymmetricResult(MigrateSymmetricResult.RESULT_ERROR, log);
+        } finally {
+            indent -= 1;
+        }
+
+        log.add(LogType.MSG_MI_SUCCESS, indent);
+        return new MigrateSymmetricResult(MigrateSymmetricResult.RESULT_OK, log);
+    }
 
     @NonNull
     public ConsolidateResult consolidateDatabaseStep1(Progressable progress) {
@@ -1330,7 +1389,7 @@ public class ProviderHelper {
             Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(),
                     new String[]{KeyRings.PUBKEY_DATA, KeyRings.HAS_ANY_SECRET},
                     KeyRings.HAS_ANY_SECRET + "!=0", null, null);
-            cachePublicKeyRings(cursor, 0, "consolidate_own_public.pcl");
+            cacheKeyRings(cursor, 0, "consolidate_own_public.pcl");
             //noinspection ConstantConditions, null is caught below
             cursor.close();
 
@@ -1381,7 +1440,7 @@ public class ProviderHelper {
             Cursor cursor = mContentResolver.query(
                     KeyRingData.buildPublicKeyRingUri(),
                     new String[]{KeyRingData.KEY_RING_DATA}, null, null, null);
-            cachePublicKeyRings(cursor, 0, "consolidate_foreign_public.pcl");
+            cacheKeyRings(cursor, 0, "consolidate_foreign_public.pcl");
             //noinspection ConstantConditions, null is caught below
             cursor.close();
 
@@ -1404,7 +1463,7 @@ public class ProviderHelper {
         return consolidateDatabaseStep2(log, indent, progress, false);
     }
 
-    private void cachePublicKeyRings(final Cursor cursor, final int keyRingPosition, String fileName)
+    private void cacheKeyRings(final Cursor cursor, final int keyRingPosition, String fileName)
             throws IOException, NullPointerException {
         // No keys existing might be a legitimate option, we write an empty file in that case
         cursor.moveToFirst();
@@ -1799,6 +1858,17 @@ public class ProviderHelper {
         indent -= 1;
         log.add(LogType.MSG_WRITE_SUCCESS, indent);
         return new WriteKeyRingsResult(OperationResult.RESULT_OK, log);
+    }
+
+    public boolean hasSecretKeys() {
+        Uri uri = KeychainContract.KeyRingData.buildSecretKeyRingUri();
+        Cursor cursor = mContentResolver.query(uri, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            cursor.close();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

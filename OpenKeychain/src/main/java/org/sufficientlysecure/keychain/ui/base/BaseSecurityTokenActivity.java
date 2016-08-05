@@ -66,9 +66,7 @@ import nordpol.android.TagDispatcher;
 
 public abstract class BaseSecurityTokenActivity extends BaseActivity
         implements OnDiscoveredTagListener, UsbConnectionDispatcher.OnDiscoveredUsbDeviceListener {
-    public static final int REQUEST_CODE_PIN = 1;
-    public static final int REQUEST_KEYRING_PASSPHRASE_FOR_PIN = 2;
-    public static final int REQUEST_KEYRING_PASSPHRASE_FOR_MOVE_TO_CARD = 3;
+    // request codes are defined in base class
 
     public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";
 
@@ -438,10 +436,6 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
                 CryptoInputParcel cryptoInput = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
                 RequiredInputParcel requiredInput = data.getParcelableExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT);
                 obtainSecurityTokenPin(requiredInput, cryptoInput.getPassphrase());
-                return;
-            }
-            case REQUEST_KEYRING_PASSPHRASE_FOR_MOVE_TO_CARD: {
-                // implemented in the activities that use this request code
                 return;
             }
             default:

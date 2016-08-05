@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases.SubKeyInfo;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
@@ -366,7 +367,7 @@ public class ImportKeysActivity extends BaseActivity
 
             // get passphrase for each secret subkey
             ArrayList<SubKeyInfo> secretSubKeyInfos =
-                    getSecretSubKeyInfo(keyListFragment.getSelectedData());
+                    getAllSubKeyInfo(keyListFragment.getSelectedData());
             mSubKeysForRepeatAskPassphrase = secretSubKeyInfos.iterator();
             if(mSubKeysForRepeatAskPassphrase.hasNext()) {
                 startPassphraseActivity();
@@ -399,7 +400,7 @@ public class ImportKeysActivity extends BaseActivity
     }
 
 
-    private ArrayList<SubKeyInfo> getSecretSubKeyInfo(Iterator<ParcelableKeyRing> keyRingIterator) {
+    private ArrayList<SubKeyInfo> getAllSubKeyInfo(Iterator<ParcelableKeyRing> keyRingIterator) {
         ArrayList<SubKeyInfo> subKeyInfos = new ArrayList<>();
         while(keyRingIterator.hasNext()) {
             try {
@@ -580,15 +581,4 @@ public class ImportKeysActivity extends BaseActivity
         return false;
     }
 
-    private static class SubKeyInfo {
-        public final long mMasterKeyId;
-        public final long mSubKeyId;
-        public final ParcelableKeyRing mKeyRing;
-
-        public SubKeyInfo(long masterKeyId, long subKeyId, ParcelableKeyRing keyRing) {
-            mMasterKeyId = masterKeyId;
-            mSubKeyId = subKeyId;
-            mKeyRing = keyRing;
-        }
-    }
 }

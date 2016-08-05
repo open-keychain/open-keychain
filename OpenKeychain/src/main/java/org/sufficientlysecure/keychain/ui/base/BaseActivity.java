@@ -44,6 +44,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected View mStatusBar;
     protected ThemeChanger mThemeChanger;
 
+    public static final int REQUEST_CODE_PIN = 1;
+    public static final int REQUEST_KEYRING_PASSPHRASE_FOR_PIN = 2;
+    public static final int REQUEST_KEYRING_PASSPHRASE_FOR_MOVE_TO_CARD = 3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

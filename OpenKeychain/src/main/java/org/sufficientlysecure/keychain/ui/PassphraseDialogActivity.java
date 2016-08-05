@@ -111,6 +111,13 @@ public class PassphraseDialogActivity extends FragmentActivity {
             getIntent().putExtra(EXTRA_CRYPTO_INPUT, cryptoInputParcel);
         }
 
+        // blocks key usage before migration is completed
+        boolean usingS2k = Preferences.getPreferences(this).isUsingS2k();
+        if (requiredInput.mType != RequiredInputType.PASSPHRASE_IMPORT_KEY && usingS2k) {
+            setResult(RESULT_CANCELED);
+            finish();
+        }
+
         // directly return an empty passphrase if appropriate
         try {
             switch (requiredInput.mType) {

@@ -758,7 +758,7 @@
                 <data android:scheme="OpenPGP4fpr" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".ui.MigrateSymmetricActivity"/>
 
         <activity
             android:name=".ui.LogDisplayActivity"

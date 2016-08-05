@@ -34,7 +34,6 @@ import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-import org.sufficientlysecure.keychain.util.orbot.OrbotStatusReceiver;
 
 import java.io.Serializable;
 import java.net.Proxy;
@@ -128,12 +127,22 @@ public class Preferences {
     }
 
     public boolean isUsingS2k() {
-        return mSharedPreferences.getBoolean(Constants.Pref.USING_S2K, true);
+        return mSharedPreferences.getBoolean(Constants.Pref.USING_S2K, false);
     }
 
     public void setUsingS2k(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Constants.Pref.USING_S2K, value);
+        editor.commit();
+    }
+
+    public boolean isPartiallyMigrated() {
+        return mSharedPreferences.getBoolean(Pref.PARTIALLY_MIGRATED, false);
+    }
+
+    public void setPartiallyMigrated(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.PARTIALLY_MIGRATED, value);
         editor.commit();
     }
 

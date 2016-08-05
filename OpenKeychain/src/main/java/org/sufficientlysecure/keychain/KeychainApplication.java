@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -26,16 +27,20 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
+import org.sufficientlysecure.keychain.ui.MigrateSymmetricActivity;
+import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
@@ -105,14 +110,16 @@ public class KeychainApplication extends Application {
             KeyserverSyncAdapterService.enableKeyserverSync(this);
         }
 
+        Preferences prefs = Preferences.getPreferences(this);
+
         // if first time, enable keyserver and contact sync
-        if (Preferences.getPreferences(this).isFirstTime()) {
+        if (prefs.isFirstTime()) {
             KeyserverSyncAdapterService.enableKeyserverSync(this);
             ContactSyncAdapterService.enableContactsSync(this);
         }
 
         // Update keyserver list as needed
-        Preferences.getPreferences(this).upgradePreferences(this);
+        prefs.upgradePreferences(this);
 
         TlsHelper.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
         TlsHelper.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
@@ -124,6 +131,58 @@ public class KeychainApplication extends Application {
             // force DB upgrade, https://github.com/open-keychain/open-keychain/issues/1334
             new KeychainDatabase(this).getReadableDatabase().close();
         }
+
+        // migrate is first attempted when upgrading the db
+        // if migrate isn't completed, try again when any activity is created
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            Preferences mPreferences = Preferences.getPreferences(getApplicationContext());
+
+            @Override
+            public void onActivityCreated(Activity activity, Bundle bundle) {
+                if (mPreferences.isUsingS2k() &&
+                        !(activity instanceof MigrateSymmetricActivity
+                                || activity instanceof PassphraseDialogActivity
+                                || activity instanceof ConsolidateDialogActivity)) {
+                    if (new ProviderHelper(activity).hasSecretKeys()) {
+                        Intent intent = new Intent(activity, MigrateSymmetricActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        activity.startActivity(intent);
+                    } else {
+                        mPreferences.setUsingS2k(false);
+                    }
+                }
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+
+            }
+        });
     }
 
     /**
