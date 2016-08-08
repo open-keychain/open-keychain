@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
@@ -236,7 +237,7 @@ public class InteropTest {
         if (v != null) {
             try {
                 v.close();
-            } catch (Throwable any) {
+            } catch (Throwable ignored) {
             }
         }
     }
@@ -269,6 +270,11 @@ public class InteropTest {
                     @Override
                     public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
                         return decrypt.getSecretKey(keyId).getSecretKeyTypeSuperExpensive();
+                    }
+
+                    @Override
+                    public SecretKeyRingType getSecretKeyringType() throws NotFoundException {
+                        return SecretKeyRingType.PASSPHRASE;
                     }
                 };
             }

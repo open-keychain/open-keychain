@@ -280,6 +280,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(mRequiredInput.getMasterKeyId()));
                         // no need to set mSecretKeyToUnlock, as we are unlocking a keyring
 
+                        keyRingType = cachedPublicKeyRing.getSecretKeyringType();
                         String mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
                         OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
                         String userId = (mainUserIdSplit.name == null)
@@ -376,8 +377,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
             mPassphraseEditText.setOnEditorActionListener(this);
 
             final ImageButton keyboard = (ImageButton) mLayout.findViewById(R.id.passphrase_keyboard);
-
-            // TODO: wip, set this up after adding keyring type to db
 
             if (mRequiredInput.mType == RequiredInputType.PASSPHRASE_SUBKEY_UNLOCK) {
                 if (Preferences.getPreferences(activity).useNumKeypadForSecurityTokenPin()) {

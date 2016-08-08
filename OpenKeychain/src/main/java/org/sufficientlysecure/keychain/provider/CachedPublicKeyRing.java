@@ -206,7 +206,10 @@ public class CachedPublicKeyRing extends KeyRing {
     }
 
     public SecretKeyRingType getSecretKeyringType() throws NotFoundException {
-        // TODO: wip, implement after adding col to db
-        return SecretKeyRingType.PASSPHRASE;
+        Object data = mProviderHelper.getGenericData(KeyRings.buildUnifiedKeyRingUri(mUri),
+                KeyRings.SECRET_RING_TYPE,
+                Cursor.FIELD_TYPE_INTEGER);
+
+        return SecretKeyRingType.fromNum(((Long) data).intValue());
     }
 }

@@ -31,13 +31,15 @@ public class EncryptedSecretKeyRing implements Parcelable{
 
     public final byte[] mBytes;
     public boolean mAwaitingMerge;
+    public final int mKeyRingType;
     public final long mMasterKeyId;
     public final ArrayList<Pair<Long, Integer>> mSubKeyIdsAndType;
 
-    public EncryptedSecretKeyRing(byte[] bytes, long keyId, boolean awaitingMerge,
+    public EncryptedSecretKeyRing(byte[] bytes, long keyId, boolean awaitingMerge, int keyRingType,
                                   ArrayList<Pair<Long, Integer>> subKeysAndType) {
         mBytes = bytes;
         mMasterKeyId = keyId;
+        mKeyRingType = keyRingType;
         mSubKeyIdsAndType = (subKeysAndType == null) ? new ArrayList<Pair<Long, Integer>>()
                                                      : subKeysAndType;
         mAwaitingMerge = awaitingMerge;
@@ -52,6 +54,7 @@ public class EncryptedSecretKeyRing implements Parcelable{
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeByteArray(mBytes);
         parcel.writeLong(mMasterKeyId);
+        parcel.writeInt(mKeyRingType);
         parcel.writeInt(mSubKeyIdsAndType.size());
         for (Pair<Long, Integer> idTypePair : mSubKeyIdsAndType) {
             parcel.writeLong(idTypePair.first);
@@ -63,6 +66,7 @@ public class EncryptedSecretKeyRing implements Parcelable{
     private EncryptedSecretKeyRing(Parcel source) {
         mBytes = source.createByteArray();
         mMasterKeyId = source.readLong();
+        mKeyRingType = source.readInt();
         mSubKeyIdsAndType = new ArrayList<>();
         int arrayCount = source.readInt();
         for (int i = 0; i < arrayCount; i++) {

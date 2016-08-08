@@ -83,6 +83,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS keyrings_secret ("
                     + KeyRingsColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY,"
                     + KeyRingsColumns.KEY_RING_DATA + " BLOB, "
+                    + KeyRingsColumns.SECRET_RING_TYPE + " INTEGER, "
                     + KeyRingsColumns.AWAITING_MERGE + " INTEGER, "
                     + "FOREIGN KEY(" + KeyRingsColumns.MASTER_KEY_ID + ") "
                         + "REFERENCES keyrings_public(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
@@ -324,7 +325,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 PassphraseCacheService.clearAllCachedPassphrases(mContext);
                 Preferences.getPreferences(mContext).setUsingS2k(true);
                 db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN awaiting_merge INTEGER");
-                // TODO: wip, db to set all unmigrated keyring type to passphrase by default
+                db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN secret_ring_type INTEGER");
         }
 
 

@@ -51,6 +51,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -931,6 +932,9 @@ public class ProviderHelper {
             // IF this is successful, it's a secret key
             int result = SaveKeyringResult.SAVED_SECRET;
 
+            // decide what sort of keyring this is as well
+            SecretKeyRingType keyRingType = SecretKeyRingType.PASSPHRASE;
+
             byte[] keyData;
 
             // skip re-encryption for tests
@@ -968,6 +972,10 @@ public class ProviderHelper {
                     passphrase = (passphrase == null) ? new Passphrase() : passphrase;
                 }
 
+                if (passphrase.isEmpty()) {
+                    keyRingType = SecretKeyRingType.PASSPHRASE_EMPTY;
+                }
+
                 // encrypt secret keyring block
                 try {
                     keyData = ByteArrayEncryptor.encryptByteArray(keyRing.getEncoded(), passphrase.getCharArray());
@@ -983,6 +991,7 @@ public class ProviderHelper {
                 ContentValues values = new ContentValues();
                 values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
                 values.put(KeyRingData.KEY_RING_DATA, keyData);
+                values.put(KeyRingData.SECRET_RING_TYPE, keyRingType.getNum());
                 values.put(KeyRingData.AWAITING_MERGE, 0);
                 Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
                 // delete whatever lies there first
@@ -1020,11 +1029,6 @@ public class ProviderHelper {
                                 break;
                             case PASSPHRASE_EMPTY:
                                 log(LogType.MSG_IS_SUBKEY_EMPTY,
-                                        KeyFormattingUtils.convertKeyIdToHex(id)
-                                );
-                                break;
-                            case PIN:
-                                log(LogType.MSG_IS_SUBKEY_PIN,
                                         KeyFormattingUtils.convertKeyIdToHex(id)
                                 );
                                 break;
@@ -1534,15 +1538,19 @@ public class ProviderHelper {
         EncryptedSecretKeyRing data = null;
         final int INDEX_SECRET_KEY_BLOB = 0;
         final int INDEX_AWAITING_MERGE_INT = 1;
+        final int INDEX_HAS_SECRET_RING = 2;
         Cursor secretKeyCursor = mContentResolver.query(
                 KeyRingData.buildSecretKeyRingUri(masterKeyId),
-                new String[]{ KeyRingData.KEY_RING_DATA, KeyRingData.AWAITING_MERGE },
+                new String[]{ KeyRingData.KEY_RING_DATA,
+                        KeyRingData.AWAITING_MERGE,
+                        KeyRingData.SECRET_RING_TYPE},
                 null, null, null);
         if (secretKeyCursor != null && secretKeyCursor.moveToNext()) {
             data = new EncryptedSecretKeyRing(
                     secretKeyCursor.getBlob(INDEX_SECRET_KEY_BLOB),
                     masterKeyId,
                     secretKeyCursor.getInt(INDEX_AWAITING_MERGE_INT) == 1,
+                    secretKeyCursor.getInt(INDEX_HAS_SECRET_RING),
                     getSubKeyIdsAndType(masterKeyId)
             );
             secretKeyCursor.close();
@@ -1792,6 +1800,7 @@ public class ProviderHelper {
             values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
             values.put(KeyRingData.KEY_RING_DATA, encryptedRing.mBytes);
             values.put(KeyRingData.AWAITING_MERGE, encryptedRing.mAwaitingMerge);
+            values.put(KeyRingData.SECRET_RING_TYPE, encryptedRing.mKeyRingType);
             Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
             if (contentResolver.insert(uri, values) == null) {
                 log.add(LogType.MSG_WS_DB_EXCEPTION, indent);
