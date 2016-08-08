@@ -1,4 +1,4 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (ПРИМЕЧАНИЕ: пожалуйста, помещайте каждое предложение в свою собственную строку, Transifex помещает каждую строку в свою область перевода!)
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
@@ -6,7 +6,7 @@
 
 Лицензия: GPLv3+
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (ПРИМЕЧАНИЕ: в алфавитном порядке)
 
 ## Ведущие разработчики
   * Dominik Schürmann (Ведущий разработчик)
@@ -51,7 +51,7 @@
   * Sreeram Boyapati
   * 'steelman'
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (ПРИМЕЧАНИЕ: в алфавитном порядке)
 
 ## Используемые библиотеки
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)

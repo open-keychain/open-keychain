@@ -1,9 +1,15 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.1
+
+  * Better detection of emails and other content when opened
+
+
 ## 4.0
 
   * Experimental support for Security Tokens over USB
   * Allow password changing of stripped keys
+
 
 ## 3.9
 
@@ -267,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * 기본적인 키서버 지원
   * App2sd 지원
   * 암호구 캐시 시간 설정: 1, 2, 4, 8시간
-  * 번역: 노르웨이어 (Sander Danielsen씨 감사합니다), 중국어 (Zhang Fredrick씨 감사합니다)
+  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
   * 버그 수정
   * 최적화
 

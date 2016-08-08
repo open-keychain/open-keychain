@@ -1,9 +1,15 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.1
+
+  * Better detection of emails and other content when opened
+
+
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
+  * Эксперементальная поддержка для токена безопасности через USB
   * Allow password changing of stripped keys
+
 
 ## 3.9
 
@@ -267,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Basic keyserver support
   * App2sd
   * More choices for passphrase cache: 1, 2, 4, 8, hours
-  * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
   * Bugfixes
   * Optimizations
 
@@ -323,9 +329,9 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.0
 
-  * K-9 Mail integration, APG supporting beta build of K-9 Mail
-  * Support of more file managers (including ASTRO)
-  * Slovenian translation
-  * New database, much faster, less memory usage
+  * K-9 Mail интеграция, APG поддерживает beta-версию K-9 Mail
+  * Поддержка большего количества файловых менеджеров (включая ASTRO)
+  * Словенский перевод
+  Новая база данных, намного быстрее и компактнее
   * Defined Intents and content provider for other apps
   * Bugfixes

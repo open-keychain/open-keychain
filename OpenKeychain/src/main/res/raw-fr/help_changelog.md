@@ -1,9 +1,15 @@
 [//] : # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 4.1
+
+  * Better detection of emails and other content when opened
+
+
 ## 4.0
 
   * Prise en charge expérimentale des jetons de sécurité par USB
   * Autoriser le changement de mot de passe des clés dépouillées
+
 
 ## 3.9
 
@@ -114,7 +120,7 @@
   * Accepter et afficher les drapeaux d'authentification des clefs
   * Interface utilisateur pour générer des clefs personnalisées
   * Corrigé - Certificats de révocation des ID utilisateurs
-  * Nouvelle recherche nuagique (dans les serveurs traditionnels et dans keybase.io)
+  * Nouvelle recherche nuagique (sur les serveurs de clefs habituels et dans keybase.io)
   * Prise en charge du dépouillement des clefs dans OpenKeychain
   * Prise en charge expérimentale de la YubiKey : prise en charge de la génération de signature et le déchiffrement
 
@@ -267,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Prise en charge de base du serveur de clefs
   * App2sd
   * Plus de choix pour le cache de la phrase de passe : 1, 2, 4, 8 heures
-  * Traductions : norvégien (merci Sander Danielsen), chinois (merci Zhang Fredrick)
+  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
   * Correctifs de bogues
   * Optimisations
 

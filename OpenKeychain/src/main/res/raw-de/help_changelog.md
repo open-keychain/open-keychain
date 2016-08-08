@@ -1,9 +1,15 @@
 [//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
+## 4.1
+
+  * Better detection of emails and other content when opened
+
+
 ## 4.0
 
   * Experimentelle Unterstützung für Smartcards über USB
   * Erlaube Passwortänderung von gekürzten Schlüsseln
+
 
 ## 3.9
 
@@ -267,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Grundlegende Schlüsselserverunterstützung
   * App2SD
   * Mehr Auswahlmöglichkeiten für den Passwortzwischenspeicher: 1, 2, 4, 8, Stunden
-  * Übersetzungen: Norwegisch (Dank an Sander Danielsen), Chinesisch (Dank an Zhang Fredrick)
+  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
   * Fehlerbehebungen
   * Optimierungen
 

@@ -1,9 +1,15 @@
 [//]: #
 
+## 4.1
+
+  * Better detection of emails and other content when opened
+
+
 ## 4.0
 
   * Експериментална подршка за безбедносне токене преко УСБ-а
   * Мењање лозинке огољених кључева
+
 
 ## 3.9
 
@@ -267,7 +273,7 @@
   * Основна подршка за сервер кључева
   * App2sd
   * Још избора за кеш лозинке: 1, 2, 4, 8 сати
-  * Преводи: норвешки (Сандер Даниелсен (Sander Danielsen)), кинески (Жанг Фредрик (Zhang Fredrick))
+  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
   * Поправке грешака
   * Оптимизације
 

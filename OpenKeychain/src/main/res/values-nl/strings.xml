@@ -39,6 +39,7 @@
   <string name="title_alert_strip">Strip deze subsluetel</string>
   <!--section-->
   <string name="section_user_ids">Identiteiten</string>
+  <string name="section_security_token">Beveiligingscode</string>
   <string name="section_linked_system_contact">Verbonden systeemcontact</string>
   <string name="section_keybase_proofs">Keybase.io Bewijzen</string>
   <string name="section_should_you_trust">Zou je deze sleutel vertrouwen?</string>
@@ -47,16 +48,19 @@
   <string name="section_cloud_search">Zoek naar sleutels</string>
   <string name="section_cloud_search_summary">Keyserver, keybase.io</string>
   <string name="section_passphrase_cache">Wachtwoorden en PIN\'s</string>
+  <string name="section_passphrase_cache_summary">Afhandeling, gebruikersinterface, herrineringstijd</string>
   <string name="section_proxy_settings">Netwerkanonimiteit</string>
   <string name="section_proxy_settings_summary">Tor, Proxy-instellingen</string>
   <string name="section_gui">Interface</string>
   <string name="section_sync_settings">Synchronizatie</string>
+  <string name="section_sync_settings_summary">Automatische sleutelupdates, toevoegen aan contacten</string>
   <string name="section_experimental_features">Experimentele Functies</string>
   <string name="section_certify">Bevestigen</string>
   <string name="section_actions">Acties</string>
   <string name="section_share_key">Sleutel</string>
   <string name="section_key_server">Sleutelserver</string>
   <string name="section_fingerprint">Vingerafdruk</string>
+  <string name="section_phrases">Zinnen</string>
   <string name="section_encrypt">Versleutelen</string>
   <string name="section_decrypt">Ontsleutelen / verifiëren</string>
   <string name="section_current_expiry">Huidige verloopdatum</string>
@@ -77,6 +81,7 @@
   <string name="btn_back">Terug</string>
   <string name="btn_no">Nee</string>
   <string name="btn_match">Vingerafdrukken komen overeen</string>
+  <string name="btn_match_phrases">Zinnen komen overeen</string>
   <string name="btn_share_encrypted_signed">Versleutel/teken en deel tekst</string>
   <string name="btn_copy_encrypted_signed">Versleutel/teken en kopieër tekst</string>
   <string name="btn_paste_encrypted_signed">Versleutel/teken en plak tekst</string>
@@ -85,6 +90,7 @@
   <string name="btn_add_files">Bestand(en) toevoegen</string>
   <string name="btn_share_decrypted_text">Deel</string>
   <string name="btn_open_with">Open met...</string>
+  <string name="btn_copy_decrypted_text">Kopieer naar klembord</string>
   <string name="btn_decrypt_clipboard">Lezen van klembord</string>
   <string name="btn_decrypt_files">Kies invoerbestand</string>
   <string name="btn_encrypt_files">Bestanden versleutelen</string>
@@ -94,6 +100,7 @@
   <string name="btn_add_keyserver">Toevoegen</string>
   <string name="btn_save_default">Opslaan als standaard</string>
   <string name="btn_saved">Opgeslagen!</string>
+  <string name="btn_not_matching">Niet gelijk</string>
   <!--Content Description-->
   <string name="cd_encrypt_files">Versleutel bestanden</string>
   <string name="cd_exchange_keys">Wissel sleutels uit</string>
@@ -134,6 +141,7 @@
   <string name="label_file_ascii_armor">ASCII Armor aanzetten</string>
   <string name="label_write_version_header">Laat anderen weten dat je OpenKeychain gebruikt</string>
   <string name="label_write_version_header_summary">Voegt \'OpenKeychain v2.7\' toe aan OpenPGP ondertekeningen, cijfertekst en geëxporteerde sleutels</string>
+  <string name="label_use_num_keypad_for_security_token_pin">Gebruik numeriek toetsenbord voor beveilingscode PIN</string>
   <string name="label_asymmetric_from">Ondertekenen met:</string>
   <string name="label_to">Versleutelen naar</string>
   <string name="label_delete_after_encryption">Verwijder bestanden na versleuteling</string>
@@ -141,6 +149,7 @@
   <string name="label_encryption_algorithm">Versleutelingsalgoritme</string>
   <string name="label_hash_algorithm">Hashalgoritme</string>
   <string name="label_symmetric">Versleutelen met wachtwoord</string>
+  <string name="label_passphrase_cache_ttl">Pas \'Onthoud\' keuzes aan</string>
   <string name="label_passphrase_cache_subs">Onthou wachtwoorden per subsleutel</string>
   <string name="label_message_compression">Tekstcompressie</string>
   <string name="label_file_compression">Bestandscompressie</string>
@@ -183,12 +192,19 @@
   <string name="label_sync_settings_keyserver_summary_off">Sleutels worden niet automatisch geüpdatet</string>
   <string name="label_sync_settings_wifi_title">Synchroniseer aleen op Wi-Fi</string>
   <string name="label_sync_settings_contacts_title">Koppel sleutels aan contacten</string>
+  <string name="label_sync_settings_contacts_summary_on">Koppel sleutels aan contacten gebaseerd op namen en E-mailadressen. Dit gebeurt volledig offline op je apparaat.</string>
+  <string name="label_sync_settings_contacts_summary_off">Nieuwe sleutels zullen niet worden gekoppeld aan contacten</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="keyserver_sync_settings_title">Automatische sleutelupdates</string>
   <string name="label_experimental_settings_desc_title">Waarschuwing</string>
   <string name="label_experimental_settings_desc_summary">Deze functies zijn nog niet afgemaakt of resultaten van gebruikerservaringen/beveiligingsonderzoek. Vertrouw daarom niet op hun beveiliging en rapporteer geen problemen die je ervaart!</string>
   <string name="label_experimental_settings_word_confirm_title">Bevestig met zin</string>
   <string name="label_experimental_settings_word_confirm_summary">Bevestig sleutels met zinnen in plaats van hexadecimale vingerafdrukken</string>
+  <string name="label_experimental_settings_linked_identities_title">Gekoppelde identiteiten</string>
   <string name="label_experimental_settings_linked_identities_summary">Koppel sleutels aan Twitter, GitHub, websites of DNS (vergelijkbaar met keybase.io maar dan gedecentraliseerd)</string>
+  <string name="label_experimental_settings_keybase_title">Keybase.io bewijzen</string>
+  <string name="label_experimental_settings_keybase_summary">Maak contact met keybase.io voor bevestigingen van sleutels en weergeef dit elke keer als een sleutel wordt weer gegeven</string>
+  <string name="label_experimental_settings_theme_summary">(De iconnen en veel schermen zijn nog niet geoptimalizeerd voor het donkere thema)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor aanzetten</string>
   <string name="pref_proxy_tor_summary">Vereist dat Orbot geïnstalleerd is</string>
@@ -251,6 +267,7 @@
   <string name="ecc_p256_description_html">heel kleine bestandsgrootte, wordt beschouwt als veilig tot 2040 &lt;br/&gt; &lt;u&gt; experimenteel en niet ondersteund door alle implementaties&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">kleine bestandsgrootte, wordt beschouwt als veilig tot na 2040 &lt;br/&gt; &lt;u&gt; experimenteel en niet ondersteund door alle implementaties&lt;/u&gt;</string>
+  <string name="usage_none">Geen (alleen binden aan subsleutel)</string>
   <string name="usage_sign">Teken</string>
   <string name="usage_encrypt">Versleutel</string>
   <string name="usage_sign_and_encrypt">Teken en versleutel</string>

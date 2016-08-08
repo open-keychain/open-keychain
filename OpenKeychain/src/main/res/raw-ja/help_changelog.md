@@ -1,9 +1,15 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.1
+
+  * Better detection of emails and other content when opened
+
+
 ## 4.0
 
   * USB でのセキュリティトークンの実験的なサポート
   * ストリップした鍵のパスワード変更が可能
+
 
 ## 3.9
 
@@ -267,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * 鍵サーバの基本サポート
   * App2SD
   * パスフレーズのキャッシュ時間についての選択肢追加: 1,2,4,8時間
-  * 翻訳: ノルウェー語 (ありがとう、Sander Danielsen)、中国語 (ありがとう、Zhang Fredrick) 追加
+  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
   * バグ修正
   * 最適化
 

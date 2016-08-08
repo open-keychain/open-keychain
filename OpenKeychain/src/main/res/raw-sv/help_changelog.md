@@ -1,9 +1,15 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
+## 4.1
+
+  * Better detection of emails and other content when opened
+
+
 ## 4.0
 
   * Experimental support for Security Tokens over USB
   * Tillåt lösenord byte av avskalade nycklar
+
 
 ## 3.9
 
@@ -267,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Basic keyserver support
   * App2sd
   * More choices for passphrase cache: 1, 2, 4, 8, hours
-  * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
   * Bugfixes
   * Optimizations
 

@@ -182,7 +182,7 @@
   <string name="label_keyserver_dialog_delete">Supprimer le serveur de clefs</string>
   <string name="label_theme">Thème</string>
   <string name="pref_keyserver">Serveurs de clefs OpenPGP</string>
-  <string name="pref_keyserver_summary">Rechercher les clefs dans les serveurs de clefs OpenPGP choisis (protocole HKP)</string>
+  <string name="pref_keyserver_summary">Rechercher les clefs sur les serveurs de clefs OpenPGP choisis (protocole HKP)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Rechercher les clefs sur keybase.io</string>
   <string name="pref_facebook">Facebook</string>
@@ -197,7 +197,7 @@
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="keyserver_sync_settings_title">Mises à jour automatiques des clefs</string>
   <string name="label_experimental_settings_desc_title">Avertissement</string>
-  <string name="label_experimental_settings_desc_summary">Ces fonctions ne sont pas encore terminées et n\'ont pas fait l\'objet de recherche sur leur convivialité, ni leur sécurité. Par conséquent, ne vous fiez pas à leur sécurité et veuillez ne pas rapporter les problèmes que vous rencontrez.</string>
+  <string name="label_experimental_settings_desc_summary">Ces fonctions ne sont pas encore terminées et n\'ont pas fait l\'objet de recherche sur leur convivialité ni leur sécurité. Par conséquent, ne vous fiez pas à leur sécurité et veuillez ne pas signaler les problèmes que vous rencontrez.</string>
   <string name="label_experimental_settings_word_confirm_title">Confirmer par des phrases</string>
   <string name="label_experimental_settings_word_confirm_summary">Confirmer les clefs par des phrases au lieu d\'empreintes hexadécimales</string>
   <string name="label_experimental_settings_linked_identities_title">Identités reliées</string>

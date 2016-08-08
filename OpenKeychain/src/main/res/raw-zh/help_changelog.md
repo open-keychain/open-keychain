@@ -1,9 +1,15 @@
 [//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
+## 4.1
+
+  * Better detection of emails and other content when opened
+
+
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
+  USB安全令牌的试验性支持
   * Allow password changing of stripped keys
+
 
 ## 3.9
 
@@ -267,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * 基本密钥服务器支持
   *  APP2SD
   * 密码缓存时间提供更多的选择：1，2，4，8，小时
-  * 翻译：挪威（感谢，Sander Danielsen），中国（感谢，Zhang Fredrick）
+  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
   *  Bug修复
   * 优化
 

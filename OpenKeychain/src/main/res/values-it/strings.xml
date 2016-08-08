@@ -14,6 +14,7 @@
   <string name="title_preferences">Impostazioni</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">Server chiavi OpenPGP</string>
+  <string name="title_cache_ttl_preference">Cambia le scelte da \'Ricordare\'</string>
   <string name="title_change_passphrase">Cambia la password</string>
   <string name="title_share_fingerprint_with">Condivi impronta con...</string>
   <string name="title_share_key">Condividi chiave con...</string>
@@ -630,13 +631,30 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">È presente su Twitter come %s</string>
   <string name="keybase_narrative_github">È presente su GitHub come %s</string>
+  <string name="keybase_narrative_dns">Controlla il/i nome/i dominio %s</string>
+  <string name="keybase_narrative_web_site">Può postare sul/i sito/i %s</string>
   <string name="keybase_narrative_reddit">È presente su Reddit come %s</string>
   <string name="keybase_narrative_coinbase">È presente su CoinBase come %s</string>
   <string name="keybase_narrative_hackernews">È presente su Hacker News come %s</string>
+  <string name="keybase_narrative_unknown">Tipo della prova sconosciuto %s</string>
+  <string name="keybase_proof_failure">Purtroppo questa prova non può essere verificata.</string>
+  <string name="keybase_unknown_proof_failure">Problema non riconosciuto nel controllo di prove</string>
   <string name="keybase_problem_fetching_evidence">Errore durante la verifica</string>
+  <string name="keybase_key_mismatch">L\'impronta della chiave non corrisponde con quella della prova</string>
+  <string name="keybase_dns_query_failure">Recupero DNS TXT Record fallito</string>
+  <string name="keybase_no_prover_found">Nessun controllo di prove trovato per</string>
+  <string name="keybase_message_payload_mismatch">La prova decifrata non corrisponde con il valore previsto</string>
+  <string name="keybase_message_fetching_data">Recupero della prova</string>
+  <string name="keybase_proof_succeeded">Questa prova è stata verificata!</string>
+  <string name="keybase_a_post">Un post</string>
+  <string name="keybase_fetched_from">recuperato da</string>
+  <string name="keybase_for_the_domain">per il dominio</string>
+  <string name="keybase_contained_signature">contiene un messaggio che può essere stato creato solo dal proprietario di questa chiave.</string>
   <string name="keybase_twitter_proof">Un tweet</string>
+  <string name="keybase_dns_proof">Un DNS TXT record</string>
   <string name="keybase_web_site_proof">Un file di testo</string>
   <string name="keybase_reddit_proof">Un file JSON</string>
+  <string name="keybase_reddit_attribution">attribuito da Reddit a</string>
   <string name="keybase_verify">Verifica</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Cambio password</string>
@@ -653,34 +671,61 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="edit_key_edit_user_id_revoked">Questa identità è stata revocata. Ciò non può essere annullato.</string>
   <string name="edit_key_edit_subkey_title">Seleziona un azione!</string>
   <string name="edit_key_new_subkey">nuova sottochiave</string>
+  <string name="edit_key_select_usage">Seleziona l\'uso della chiave!</string>
   <string name="edit_key_error_add_identity">Aggiungi almeno una identità</string>
   <string name="edit_key_error_add_subkey">Aggiungi almeno una sottochiave!</string>
+  <string name="edit_key_error_bad_security_token_algo">Algoritmo non supportato dal Token di Sicurezza!</string>
+  <string name="edit_key_error_bad_security_token_size">Dimensione chiave non supportata dal Token di Sicurezza!</string>
   <!--Create key-->
+  <string name="create_key_upload">Sincronizza con internet</string>
   <string name="create_key_empty">Questo campo è necessario</string>
   <string name="create_key_passphrases_not_equal">Le password non sono identiche</string>
   <string name="create_key_final_text">Hai inserito la seguente identità:</string>
   <string name="create_key_final_robot_text">La creazione di una chiave richiede un po\' di tempo, prendi un caffè nel frattempo...</string>
   <string name="create_key_rsa">(3 sottochiavi, RSA, 4096 bit)</string>
   <string name="create_key_custom">(personalizza la configurazione della chiave)</string>
+  <string name="create_key_name_text">Scegli un nome da associare alla chiave. Può essere un nome proprio, es. \'Mario Rossi\', o un soprannome, es. \'Mariuccio\'.</string>
+  <string name="create_key_email_text">Inserisci la tua email primaria usata per comunicazioni sicure.</string>
+  <string name="create_key_passphrase_text">Scegli una password complessa. Protegge la tua chiave quando il dispositivo viene rubato.</string>
   <string name="create_key_hint_full_name">Nome o nick</string>
   <string name="create_key_edit">Cambia configurazione della chiave</string>
   <string name="create_key_add_email">Aggiungi indirizzo email</string>
+  <string name="create_key_add_email_text">Anche altri inidirizzi email sono associati a questa chiave e possono essere usati per comunicazioni sicure.</string>
+  <string name="create_key_email_already_exists_text">L\'indirizzo email è già stato aggiunto.</string>
+  <string name="create_key_email_invalid_email">Il formato dell\'indirizzo email non è valido</string>
+  <string name="create_key_yubi_key_pin_text">Scegli un PIN con 6 numeri.</string>
+  <string name="create_key_yubi_key_admin_pin_text">Annota l\'Admin PIN e conservalo in un posto sicuro (richiesto quando inserisci 3 volte un PIN errato).</string>
   <string name="create_key_yubi_key_pin">PIN</string>
+  <string name="create_key_yubi_key_admin_pin">Admin PIN</string>
   <string name="create_key_yubi_key_pin_repeat">Ripeti il PIN</string>
   <string name="create_key_yubi_key_pin_not_correct">Il PIN è errato!</string>
   <string name="create_key_yubi_key_pin_too_short">Il PIN dovrebbe essere composto almeno da 6 numeri.</string>
+  <string name="create_key_yubi_key_pin_insecure">Scegli un PIN sicuro, non 000000, 123456 o combinazioni simili.</string>
   <!--View key-->
+  <string name="view_key_revoked">Revocata: la chiave non deve più essere usata!</string>
+  <string name="view_key_expired">Scaduta: il contatto deve estendere la validità della chiave!</string>
+  <string name="view_key_expired_secret">Scaduta: puoi estendere la validità della chiave modificandola!</string>
+  <string name="view_key_my_key">Mia chiave</string>
+  <string name="view_key_verified">Chiave confermata</string>
+  <string name="view_key_unverified">Non confermata: scansiona il codice QR per confermare la chiave!</string>
+  <string name="view_key_fragment_no_system_contact">&lt;nessuno&gt;</string>
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Aggiungi server delle chiavi</string>
+  <string name="edit_keyserver_dialog_title">Modifica server delle chiavi</string>
   <string name="add_keyserver_connection_verified">Connessione verificata.</string>
+  <string name="add_keyserver_without_verification">Server delle chiavi aggiunto senza verifica.</string>
   <string name="add_keyserver_invalid_url">URL non valido!</string>
+  <string name="add_keyserver_connection_failed">Connessione al server chiavi fallita. Controlla l\'URL e la tua connessione internet.</string>
   <string name="keyserver_preference_deleted">%s cancellato</string>
+  <string name="keyserver_preference_cannot_delete_last">Impossibile eliminare il server chiavi. Ne serve almeno uno!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Chiavi</string>
+  <string name="nav_encrypt_decrypt">Codifica/Decodifica</string>
   <string name="nav_apps">Apps</string>
   <string name="drawer_open">Apri drawer di navigazione</string>
   <string name="drawer_close">Chiudi drawer di navigazione</string>
   <string name="my_keys">Le Mie Chiavi</string>
+  <string name="nav_backup">Backup/Ripristina</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Digita testo</string>
   <!--certs-->
@@ -706,6 +751,8 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_ip_error_op_exc">Operazione fallita a causa di un errore della banca dati</string>
   <string name="msg_ip_error_remote_ex">Operazione fallita a causa di un errore interno</string>
   <string name="msg_ip">Importazione portachiavi pubblico %s</string>
+  <string name="msg_ip_fingerprint_error">L\'impronta della chiave importata non corrispondente!</string>
+  <string name="msg_ip_fingerprint_ok">Controllo impronta OK</string>
   <string name="msg_ip_insert_keyring">Codifica dati del portachiavi</string>
   <string name="msg_ip_insert_keys">Elaborazione chiavi</string>
   <string name="msg_ip_prepare">Preparazione operazioni banca dati</string>
@@ -729,6 +776,8 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_ip_master_flags_xxsx">Caratteristiche chiave principale: firma</string>
   <string name="msg_ip_master_flags_xxxa">Caratteristiche chiave principale: autentica</string>
   <string name="msg_ip_master_flags_xxxx">Caratteristiche chiave principale: nessuna</string>
+  <string name="msg_ip_merge_public">Fusione dati importati nel portachiavi pubblico esistente</string>
+  <string name="msg_ip_merge_secret">Fusione dati importati nel portachiavi segreto esistente</string>
   <string name="msg_ip_subkey">Elaborazione sottochiave %s</string>
   <string name="msg_ip_subkey_expired">Sottochiave scaduta il %s</string>
   <string name="msg_ip_subkey_expires">La sottochiave scade il %s</string>
@@ -763,6 +812,27 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
     <item quantity="one">Ignoro un certificato rilasciato da chiavi pubbliche sconosciute</item>
     <item quantity="other">Ignoro %s certificati rilasciati da chiavi pubbliche sconosciute</item>
   </plurals>
+  <string name="msg_ip_uid_classifying_zero">Classificazione ID utenti (nessuna chiave fidata disponibile)</string>
+  <plurals name="msg_ip_uid_classifying">
+    <item quantity="one">Classificazione ID utenti (usando una chiave fidata)</item>
+    <item quantity="other">Classificazione ID utenti (usando %s chiavi fidate)</item>
+  </plurals>
+  <string name="msg_ip_uid_reorder">Riordino ID utente</string>
+  <string name="msg_ip_uid_processing">Elaborazione ID utente %s</string>
+  <string name="msg_ip_uid_revoked">ID utente revocato</string>
+  <string name="msg_ip_uat_cert_bad">Riscontrato certificato sbagliato!</string>
+  <string name="msg_ip_uat_cert_error">Errore elaborazione certificato!</string>
+  <string name="msg_ip_uat_cert_nonrevoke">Hai già un certificato non revocabile, proseguo.</string>
+  <string name="msg_ip_uat_cert_old">Il certificato è più vecchio del precedente, proseguo.</string>
+  <string name="msg_ip_uat_cert_new">Il certificato è più recente, sostituzione del precedente.</string>
+  <string name="msg_ip_uat_cert_good">Trovato buon certificato da %1$s</string>
+  <string name="msg_ip_uat_cert_good_revoke">Trovato buon certificato di revoca da %1$s</string>
+  <plurals name="msg_ip_uat_certs_unknown">
+    <item quantity="one">Ignoro un certificato rilasciato da una chiave pubblica sconosciuta</item>
+    <item quantity="other">Ignoro %s certificati rilasciati da chiavi pubbliche sconosciute</item>
+  </plurals>
+  <string name="msg_ip_uat_classifying">Classificazione attributi utente</string>
+  <string name="msg_ip_uat_revoked">Attributo utente revocato</string>
   <string name="msg_is_bad_type_public">Ho cercato di importare portachiavi pubblico come privato. Questo è un bug, per cortesia inviateci un rapporto!</string>
   <string name="msg_is_bad_type_uncanon">Tentativo di importare un portachiavi senza canonicalizzazione. Questo è un bug, per cortesia inviateci un rapporto!</string>
   <!--Import Secret log entries-->

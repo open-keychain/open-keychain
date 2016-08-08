@@ -1,9 +1,15 @@
 [//]: # (NOTA: ¡Por favor ponga cada frase en su propia línea, Transifex pone cada línea en su propio campo de traducción!)
 
+## 4.1
+
+  * Better detection of emails and other content when opened
+
+
 ## 4.0
 
   * Experimental support for Security Tokens over USB
   * Allow password changing of stripped keys
+
 
 ## 3.9
 
@@ -267,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Soporte para servidor de claves básico
   * App2sd
   * Más opciones para la caché de frase-contraseña: 1,2,4,8 horas
-  * Traducciones: Noruego (gracias, Sander Danielsen), Chino (gracias, Zhang Fredrick)
+  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
   * Reparaciones de fallos
   * Optimizaciones
 

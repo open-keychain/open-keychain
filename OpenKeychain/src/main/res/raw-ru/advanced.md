@@ -1,4 +1,4 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (ПРИМЕЧАНИЕ: пожалуйста, помещайте каждое предложение в свою собственную строку, Transifex помещает каждую строку в свою область перевода!)
 
 Дополнительный экран позволяет
 * публиковать ключ нерекомендуемыми способами

@@ -154,7 +154,7 @@
   <string name="label_message_compression">Compressão de texto</string>
   <string name="label_file_compression">Compressão de arquivo</string>
   <string name="label_keyservers">Selecionar servidores de chaves OpenPGP</string>
-  <string name="label_key_id">ID de chave</string>
+  <string name="label_key_id">ID da chave</string>
   <string name="label_key_created">Chave criada %s</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_creation">Criação</string>

@@ -684,7 +684,9 @@
   <string name="keybase_contained_signature">содержит сообщение, которое могло быть создано только владельцем этого ключа.</string>
   <string name="keybase_dns_proof">Запись DNS TXT</string>
   <string name="keybase_web_site_proof">Текстовый файл</string>
+  <string name="keybase_github_proof">Gist</string>
   <string name="keybase_reddit_proof">JSON file</string>
+  <string name="keybase_reddit_attribution">помечено Reddit для</string>
   <string name="keybase_verify">Подтвердить</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Изменить пароль</string>
@@ -1318,6 +1320,7 @@
   <string name="msg_lv_error_twitter_handle">Дескриптор учётной записи Twitter не соответствует ответному!</string>
   <string name="msg_lv_error_twitter_response">Неожиданный ответ от API сервиса Twitter!</string>
   <string name="msg_lv_error_github_handle">Дескриптор учётной записи GitHub не соответствует ответному!</string>
+  <string name="msg_lv_error_github_not_found">Gist не содержит соответствующие файлы!</string>
   <string name="msg_lv_fetch">URL извлечения \'%s\'</string>
   <string name="msg_lv_fetch_redir">Следование перенаправлению на \'%s\'</string>
   <string name="msg_lv_fetch_ok">Успешно извлечено (HTTP %s)</string>
@@ -1425,6 +1428,7 @@
   <string name="error_key_not_found">Ключ не найден!</string>
   <string name="error_key_processing">Ошибка обработки ключа!</string>
   <string name="key_stripped">отделено</string>
+  <string name="key_divert">отклонить токен безопасности</string>
   <string name="key_no_passphrase">без пароля</string>
   <string name="key_unavailable">недоступно</string>
   <string name="secret_cannot_multiple">Ваши собственные ключи можно удалять только по одному!</string>
@@ -1606,6 +1610,7 @@
   <string name="title_linked_id_create">Создать связанный идентификатор</string>
   <string name="linked_github_text">Эта операция связывает ключ с вашей учётной записью GitHub.\nПросто нажмите кнопку для продолжения.</string>
   <string name="linked_progress_auth_github">Авторизация при помощи GitHub...</string>
+  <string name="linked_progress_post_gist">Отправить gist…</string>
   <string name="linked_progress_update_key">Обновить ключ...</string>
   <string name="linked_button_start">Ссылка на аккаунт GitHub</string>
   <string name="linked_error_auth_failed">Авторизация не удалась!</string>
@@ -1662,4 +1667,13 @@
   <string name="prompt_fidesmo_app_install_button_positive">Установить</string>
   <string name="prompt_fidesmo_app_install_button_negative">Отмена</string>
   <string name="help_donation_paypal_item">Пожертвование на OpenKeychain</string>
+  <string-array name="help_donation_google_catalog_values">
+    <item>1 EUR</item>
+    <item>2 EUR</item>
+    <item>3 EUR</item>
+    <item>5 EUR</item>
+    <item>10 EUR</item>
+    <item>50 EUR</item>
+    <item>100 EUR</item>
+  </string-array>
 </resources>
