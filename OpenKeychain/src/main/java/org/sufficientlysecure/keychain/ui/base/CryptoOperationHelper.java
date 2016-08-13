@@ -41,7 +41,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
+import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.RetryUploadDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -140,7 +140,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 return;
             }
 
-            case PASSPHRASE_SUBKEY_UNLOCK:
+            case PASSPHRASE_TOKEN_UNLOCK:
             case PASSPHRASE_IMPORT_KEY:
             case PASSPHRASE_KEYRING_UNLOCK:
             case PASSPHRASE_SYMMETRIC:

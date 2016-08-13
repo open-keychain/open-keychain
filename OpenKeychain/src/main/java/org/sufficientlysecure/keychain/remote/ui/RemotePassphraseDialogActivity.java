@@ -22,7 +22,7 @@ import android.os.Bundle;
 
 import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
+import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 
 public class RemotePassphraseDialogActivity extends PassphraseDialogActivity {
 

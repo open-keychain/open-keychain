@@ -57,7 +57,7 @@ public class ApiPendingIntentFactory {
                 return createSecurityTokenOperationPendingIntent(data, requiredInput, cryptoInput);
             }
             case PASSPHRASE_KEYRING_UNLOCK:
-            case PASSPHRASE_SUBKEY_UNLOCK: {
+            case PASSPHRASE_TOKEN_UNLOCK: {
                 return createPassphrasePendingIntent(data, requiredInput, cryptoInput);
             }
 

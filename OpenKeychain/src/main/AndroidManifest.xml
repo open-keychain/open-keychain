@@ -768,7 +768,7 @@
             android:name=".ui.ConsolidateDialogActivity"
             android:theme="@style/Theme.Keychain.Transparent" />
         <activity
-            android:name=".ui.PassphraseDialogActivity"
+            android:name=".ui.passphrasedialog.PassphraseDialogActivity"
             android:theme="@style/Theme.Keychain.Transparent" />
         <activity
             android:name=".ui.RetryUploadDialogActivity"

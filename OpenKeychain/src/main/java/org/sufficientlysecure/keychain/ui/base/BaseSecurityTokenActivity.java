@@ -49,7 +49,7 @@ import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.util.UsbConnectionDispatcher;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
+import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.dialog.FidesmoInstallDialog;
 import org.sufficientlysecure.keychain.ui.dialog.FidesmoPgpInstallDialog;
@@ -413,7 +413,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
-                    RequiredInputParcel.createRequiredSubkeyPassphrase(requiredInput, keyringPassphrase));
+                    RequiredInputParcel.createRequiredTokenPassphrase(requiredInput, keyringPassphrase));
             startActivityForResult(intent, REQUEST_CODE_PIN);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
             throw new AssertionError(
