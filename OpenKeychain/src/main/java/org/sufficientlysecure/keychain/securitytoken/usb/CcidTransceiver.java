@@ -152,7 +152,7 @@ public class CcidTransceiver {
         }
     }
 
-    private byte getStatus(byte[] bytes) {
+    private static byte getStatus(byte[] bytes) {
         return (byte) ((bytes[7] >> 6) & 0x03);
     }
 
@@ -163,7 +163,7 @@ public class CcidTransceiver {
         }
     }
 
-    private boolean isDataBlockNotReady(byte[] bytes) {
+    private static boolean isDataBlockNotReady(byte[] bytes) {
         return getStatus(bytes) == 2;
     }
 }

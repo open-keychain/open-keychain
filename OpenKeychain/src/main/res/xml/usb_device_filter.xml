@@ -32,6 +32,9 @@
     <usb-device class="11" vendor-id="8352" product-id="16648"/>
     <!-- Nitrokey Storage-->
     <usb-device class="11" vendor-id="8352" product-id="16649"/>
+
+    <!--GNUK based device are not supported right now-->
+    
     <!-- Nitrokey Start-->
     <!--<usb-device class="11" vendor-id="8352" product-id="16913"/>-->
     <!-- Default GNUK vid/pid-->

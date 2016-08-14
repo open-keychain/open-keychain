@@ -56,6 +56,7 @@ public class SecurityTokenHelper {
     private static final int MAX_APDU_NE_EXT = 65536;
 
     private static final int APDU_SW_SUCCESS = 0x9000;
+    private static final int APDU_SW1_RESPONSE_AVAILABLE = 0x61;
 
     private static final int MASK_CLA_CHAINING = 1 << 4;
 
@@ -530,7 +531,7 @@ public class SecurityTokenHelper {
         result.write(lastResponse.getData());
 
         // Receive
-        while (lastResponse.getSW1() == 0x61) {
+        while (lastResponse.getSW1() == APDU_SW1_RESPONSE_AVAILABLE) {
             // GET RESPONSE ISO/IEC 7816-4 par.7.6.1
             CommandAPDU getResponse = new CommandAPDU(0x00, 0xC0, 0x00, 0x00, lastResponse.getSW2());
             lastResponse = mTransport.transceive(getResponse);
