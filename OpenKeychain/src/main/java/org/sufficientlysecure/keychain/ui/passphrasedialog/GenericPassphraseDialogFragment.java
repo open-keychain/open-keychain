@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
@@ -98,7 +99,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
 
                     }
                     case PASSPHRASE_KEYRING_UNLOCK: {
-                        CachedPublicKeyRing cachedPublicKeyRing = helper.getCachedPublicKeyRing(
+                        CachedPublicKeyRing cachedPublicKeyRing = helper.mReader.getCachedPublicKeyRing(
                                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(mRequiredInput.getMasterKeyId()));
 
                         // no need to set mSecretKeyToUnlock, as we are unlocking a keyring
@@ -138,7 +139,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                     }
                     case PASSPHRASE_TOKEN_UNLOCK: {
 
-                        CanonicalizedSecretKeyRing secretKeyRing = helper.getCanonicalizedSecretKeyRing(
+                        CanonicalizedSecretKeyRing secretKeyRing = helper.mReader.getCanonicalizedSecretKeyRing(
                                 mRequiredInput.getMasterKeyId(),
                                 mRequiredInput.getKeyringPassphrase()
                         );
@@ -146,7 +147,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                         mSecretKeyToUnlock = secretKeyRing.getSecretKey(subKeyId);
 
                         // cached key operations are less expensive
-                        CachedPublicKeyRing cachedPublicKeyRing = helper.getCachedPublicKeyRing(
+                        CachedPublicKeyRing cachedPublicKeyRing = helper.mReader.getCachedPublicKeyRing(
                                 KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
                         String mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
                         OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
@@ -175,7 +176,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                     ByteArrayEncryptor.EncryptDecryptException e) {
                 throw new AssertionError("Cannot decrypt || Given passphrase is wrong (programming error)");
             } catch (IOException | PgpGeneralException | PgpKeyNotFoundException |
-                    ProviderHelper.NotFoundException e) {
+                    ProviderReader.NotFoundException e) {
                 mLayout.setVisibility(View.GONE);
                 alert.setTitle(R.string.title_key_not_found);
                 alert.setMessage(getString(R.string.key_not_found, mRequiredInput.getSubKeyId()));
@@ -318,7 +319,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                                 case PASSPHRASE_KEYRING_UNLOCK: {
                                     try {
                                         CanonicalizedSecretKeyRing secretKeyRing =
-                                                helper.getCanonicalizedSecretKeyRing(
+                                                helper.mReader.getCanonicalizedSecretKeyRing(
                                                         mRequiredInput.getMasterKeyId(),
                                                         passphrase
                                                 );
@@ -351,7 +352,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                             }
 
                             return unlockSucceeded ? mSecretKeyToUnlock : null;
-                        } catch (PgpGeneralException | ProviderHelper.NotFoundException |
+                        } catch (PgpGeneralException | ProviderReader.NotFoundException |
                                 ByteArrayEncryptor.EncryptDecryptException e) {
                             Toast.makeText(getActivity(), R.string.error_could_not_extract_private_key,
                                     Toast.LENGTH_SHORT).show();

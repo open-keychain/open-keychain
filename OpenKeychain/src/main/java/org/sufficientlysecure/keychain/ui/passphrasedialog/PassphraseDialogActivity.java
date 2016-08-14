@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
@@ -87,7 +88,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     return;
                 case PASSPHRASE_KEYRING_UNLOCK: {
                     CachedPublicKeyRing pubRing =
-                            new ProviderHelper(this).getCachedPublicKeyRing(requiredInput.getMasterKeyId());
+                            new ProviderHelper(this).mReader.getCachedPublicKeyRing(requiredInput.getMasterKeyId());
                     if (pubRing.getSecretKeyringType() == SecretKeyRingType.PASSPHRASE_EMPTY) {
                         returnWithEmptyPassphrase(cryptoInputParcel);
                     }
@@ -98,7 +99,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         throw new AssertionError("No keyring passphrase passed! (Should not happen)");
                     }
                     CachedPublicKeyRing pubRing =
-                            new ProviderHelper(this).getCachedPublicKeyRing(requiredInput.getMasterKeyId());
+                            new ProviderHelper(this).mReader.getCachedPublicKeyRing(requiredInput.getMasterKeyId());
                     if (pubRing.getSecretKeyType(requiredInput.getSubKeyId()) == SecretKeyType.PASSPHRASE_EMPTY) {
                         returnWithEmptyPassphrase(cryptoInputParcel);
                     }
@@ -108,7 +109,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     throw new AssertionError("Unhandled input type! (Should not happen)");
                 }
             }
-        } catch (ProviderHelper.NotFoundException e) {
+        } catch (ProviderReader.NotFoundException e) {
             Log.e(Constants.TAG, "Key not found?!", e);
             setResult(RESULT_CANCELED);
             finish();

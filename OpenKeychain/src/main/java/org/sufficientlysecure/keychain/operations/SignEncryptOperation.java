@@ -81,7 +81,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
         if (data.getSignatureMasterKeyId() != Constants.key.none
                 && data.getSignatureSubKeyId() == null) {
             try {
-                long signKeyId = mProviderHelper.getCachedPublicKeyRing(
+                long signKeyId = mProviderHelper.mReader.getCachedPublicKeyRing(
                         data.getSignatureMasterKeyId()).getSecretSignId();
                 data.setSignatureSubKeyId(signKeyId);
             } catch (PgpKeyNotFoundException e) {

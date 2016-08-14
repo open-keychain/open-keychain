@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.operations.results.RevokeResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -91,7 +92,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         if (mMasterKeyIds.length == 1 && mHasSecret) {
             // if mMasterKeyIds.length == 0 we let the DeleteOperation respond
             try {
-                HashMap<String, Object> data = new ProviderHelper(this).getUnifiedData(
+                HashMap<String, Object> data = new ProviderHelper(this).mReader.getUnifiedData(
                         mMasterKeyIds[0], new String[]{
                                 KeychainContract.KeyRings.USER_ID,
                                 KeychainContract.KeyRings.IS_REVOKED
@@ -115,7 +116,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 } else {
                     showRevokeDeleteDialog(name);
                 }
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (ProviderReader.NotFoundException e) {
                 Log.e(Constants.TAG,
                         "Secret key to delete not found at DeleteKeyDialogActivity for "
                                 + mMasterKeyIds[0], e);
@@ -272,7 +273,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 long masterKeyId = masterKeyIds[0];
 
                 try {
-                    HashMap<String, Object> data = new ProviderHelper(activity).getUnifiedData(
+                    HashMap<String, Object> data = new ProviderHelper(activity).mReader.getUnifiedData(
                             masterKeyId, new String[]{
                                     KeychainContract.KeyRings.USER_ID,
                                     KeychainContract.KeyRings.HAS_ANY_SECRET
@@ -297,7 +298,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                     } else {
                         mMainMessage.setText(getString(R.string.public_key_deletetion_confirmation, name));
                     }
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (ProviderReader.NotFoundException e) {
                     dismiss();
                     return null;
                 }

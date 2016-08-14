@@ -415,7 +415,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
         final SaveKeyringParcel changeKeyringParcel;
         CachedPublicKeyRing key = (new ProviderHelper(activity))
-                .getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
+                .mReader.getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
         try {
             changeKeyringParcel = new SaveKeyringParcel(key.getMasterKeyId(), key.getFingerprint());
         } catch (PgpKeyNotFoundException e) {

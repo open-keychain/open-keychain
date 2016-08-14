@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -104,7 +105,7 @@ public class SafeSlingerActivity extends BaseActivity
         // retrieve public key blob and start SafeSlinger
         Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId);
         try {
-            byte[] keyBlob = (byte[]) new ProviderHelper(this).getGenericData(
+            byte[] keyBlob = (byte[]) new ProviderHelper(this).mReader.getGenericData(
                     uri, KeychainContract.KeyRingData.KEY_RING_DATA, Cursor.FIELD_TYPE_BLOB);
 
             Intent slingerIntent = new Intent(this, ExchangeActivity.class);
@@ -113,7 +114,7 @@ public class SafeSlingerActivity extends BaseActivity
             slingerIntent.putExtra(ExchangeConfig.extra.USER_DATA, keyBlob);
             slingerIntent.putExtra(ExchangeConfig.extra.HOST_NAME, Constants.SAFESLINGER_SERVER);
             startActivityForResult(slingerIntent, REQUEST_CODE_SAFE_SLINGER);
-        } catch (ProviderHelper.NotFoundException e) {
+        } catch (ProviderReader.NotFoundException e) {
             Log.e(Constants.TAG, "personal key not found", e);
         }
     }

@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -226,7 +227,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 long signingSubKeyId = data.getSignatureSubKeyId();
 
                 CachedPublicKeyRing cachedPublicKeyRing =
-                        mProviderHelper.getCachedPublicKeyRing(signingMasterKeyId);
+                        mProviderHelper.mReader.getCachedPublicKeyRing(signingMasterKeyId);
 
                 SecretKeyRingType secretKeyRingType = cachedPublicKeyRing.getSecretKeyringType();
 
@@ -260,7 +261,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 }
 
                 CanonicalizedSecretKeyRing signingKeyRing =
-                        mProviderHelper.getCanonicalizedSecretKeyRingWithMerge(
+                        mProviderHelper.mReader.getCanonicalizedSecretKeyRingWithMerge(
                                 signingMasterKeyId, keyringPassphrase);
                 signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
 
@@ -296,7 +297,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
 
                 }
 
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (ProviderReader.NotFoundException e) {
                 log.add(LogType.MSG_PSE_ERROR_SIGN_KEY, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             } catch (PgpGeneralException e) {
@@ -308,7 +309,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             } catch (ByteArrayEncryptor.EncryptDecryptException e) {
                 log.add(LogType.MSG_PSE_ERROR_DECRYPT_KEYRING, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-            } catch (ProviderHelper.FailedMergeException e) {
+            } catch (ProviderReader.FailedMergeException e) {
                 log.add(LogType.MSG_PSE_ERROR_MERGE_KEYRING, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             }
@@ -350,7 +351,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 // Asymmetric encryption
                 for (long id : data.getEncryptionMasterKeyIds()) {
                     try {
-                        CanonicalizedPublicKeyRing keyRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                        CanonicalizedPublicKeyRing keyRing = mProviderHelper.mReader.getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(id));
                         Set<Long> encryptSubKeyIds = keyRing.getEncryptIds();
                         for (Long subKeyId : encryptSubKeyIds) {
@@ -369,7 +370,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                             log.add(LogType.MSG_PSE_ERROR_REVOKED_OR_EXPIRED, indent);
                             return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                         }
-                    } catch (ProviderHelper.NotFoundException e) {
+                    } catch (ProviderReader.NotFoundException e) {
                         log.add(LogType.MSG_PSE_KEY_UNKNOWN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);

@@ -146,9 +146,9 @@ public class BackupOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRing(mStaticRing1,
+        providerHelper.mWriter.saveSecretKeyRing(mStaticRing1,
                 new KeyringPassphrases(mStaticRing1.getMasterKeyId(), mKeyPhrase1), new ProgressScaler());
-        providerHelper.saveSecretKeyRing(mStaticRing2,
+        providerHelper.mWriter.saveSecretKeyRing(mStaticRing2,
                 new KeyringPassphrases(mStaticRing2.getMasterKeyId(), mKeyPhrase2), new ProgressScaler());
 
         // ok NOW log verbosely!

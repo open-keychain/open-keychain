@@ -39,7 +39,7 @@ public abstract class CustomActions {
 
     public static ViewAction tokenEncryptViewAddToken(long keyId) throws Exception {
         CanonicalizedPublicKeyRing ring =
-                new ProviderHelper(getTargetContext()).getCanonicalizedPublicKeyRing(keyId);
+                new ProviderHelper(getTargetContext()).mReader.getCanonicalizedPublicKeyRing(keyId);
         final Object item = new KeyAdapter.KeyItem(ring);
 
         return new ViewAction() {

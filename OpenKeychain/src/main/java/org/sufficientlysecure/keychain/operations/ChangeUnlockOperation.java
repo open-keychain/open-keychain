@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -73,11 +74,11 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
                         KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
 
                 // update the keyring along the way
-                retrievedRing = mProviderHelper.getCanonicalizedSecretKeyRingWithMerge(
+                retrievedRing = mProviderHelper.mReader.getCanonicalizedSecretKeyRingWithMerge(
                         unlockParcel.mMasterKeyId,
                         cryptoInput.getPassphrase()
                 );
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (ProviderReader.NotFoundException e) {
                 log.add(LogType.MSG_CU_ERROR_KEYRING_NOT_FOUND, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             } catch (ByteArrayEncryptor.EncryptDecryptException e) {
@@ -86,14 +87,14 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
             } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
                 log.add(LogType.MSG_CU_ERROR_INCORRECT_PASSPHRASE, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
-            } catch (ProviderHelper.FailedMergeException e) {
+            } catch (ProviderReader.FailedMergeException e) {
                 log.add(LogType.MSG_CU_ERROR_MERGE_KEYRING, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
         }
 
         SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(
+                .mWriter.saveSecretKeyRing(
                         retrievedRing.getUncachedKeyRing(),
                         new KeyringPassphrases(retrievedRing.getMasterKeyId(), unlockParcel.mNewPassphrase),
                         new ProgressScaler(mProgressable, 0, 95, 100)

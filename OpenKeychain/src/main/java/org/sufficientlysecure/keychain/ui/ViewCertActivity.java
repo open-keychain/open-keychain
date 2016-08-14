@@ -185,7 +185,7 @@ public class ViewCertActivity extends BaseActivity
 
                 try {
                     ProviderHelper providerHelper = new ProviderHelper(ViewCertActivity.this);
-                    long signerMasterKeyId = providerHelper.getCachedPublicKeyRing(
+                    long signerMasterKeyId = providerHelper.mReader.getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mCertifierKeyId)).getMasterKeyId();
                     viewIntent.setData(KeyRings.buildGenericKeyRingUri(signerMasterKeyId));
                     startActivity(viewIntent);

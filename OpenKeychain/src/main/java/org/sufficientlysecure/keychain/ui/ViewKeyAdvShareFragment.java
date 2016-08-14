@@ -60,6 +60,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -202,7 +203,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         long keyId = 0;
         try {
             keyId = new ProviderHelper(getActivity())
-                    .getCachedPublicKeyRing(dataUri)
+                    .mReader.getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
@@ -220,7 +221,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         ProviderHelper providerHelper = new ProviderHelper(activity);
 
         try {
-            String content = providerHelper.getKeyRingAsArmoredString(
+            String content = providerHelper.mWriter.getKeyRingAsArmoredString(
                     KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri));
 
             if (toClipboard) {
@@ -274,7 +275,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
-        } catch (ProviderHelper.NotFoundException e) {
+        } catch (ProviderReader.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
             Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
         }
@@ -459,7 +460,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         long keyId;
         try {
             keyId = new ProviderHelper(getActivity())
-                    .getCachedPublicKeyRing(mDataUri)
+                    .mReader.getCachedPublicKeyRing(mDataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);

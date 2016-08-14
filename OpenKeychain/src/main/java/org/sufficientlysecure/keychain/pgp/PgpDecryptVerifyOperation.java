@@ -74,6 +74,7 @@ import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -592,7 +593,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 CachedPublicKeyRing cachedPublicKeyRing;
                 try {
                     // get actual keyring object based on master key id
-                    cachedPublicKeyRing = mProviderHelper.getCachedPublicKeyRing(
+                    cachedPublicKeyRing = mProviderHelper.mReader.getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId)
                     );
                     long masterKeyId = cachedPublicKeyRing.getMasterKeyId();
@@ -656,7 +657,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     // get actual subkey which has been used for this encryption packet
                     // retrieve without merging to reduce complexity / speed up operation
                     CanonicalizedSecretKeyRing canonicalizedSecretKeyRing =
-                            mProviderHelper.getCanonicalizedSecretKeyRing(masterKeyId, keyringPassphrase);
+                            mProviderHelper.mReader.getCanonicalizedSecretKeyRing(masterKeyId, keyringPassphrase);
                     CanonicalizedSecretKey candidateDecryptionKey =
                             canonicalizedSecretKeyRing.getSecretKey(subKeyId);
 
@@ -690,7 +691,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     encryptedDataAsymmetric = encData;
                     decryptionKey = candidateDecryptionKey;
 
-                } catch (PgpKeyNotFoundException | ProviderHelper.NotFoundException e) {
+                } catch (PgpKeyNotFoundException | ProviderReader.NotFoundException e) {
                     // continue with the next packet in the while loop
                     log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
                     continue;

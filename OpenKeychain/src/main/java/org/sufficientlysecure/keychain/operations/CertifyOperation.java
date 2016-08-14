@@ -40,7 +40,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderReader.NotFoundException;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -81,7 +81,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
 
-            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
+            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.mReader.getCachedPublicKeyRing(masterKeyId);
 
             // get keyring passphrase
             Passphrase keyringPassphrase;
@@ -112,7 +112,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             }
 
             CanonicalizedSecretKeyRing secretKeyRing =
-                    mProviderHelper.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId, keyringPassphrase);
+                    mProviderHelper.mReader.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId, keyringPassphrase);
             certificationKey = secretKeyRing.getSecretKey();
 
             log.add(LogType.MSG_CRT_UNLOCK, 1);
@@ -177,7 +177,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                 }
 
                 CanonicalizedPublicKeyRing publicRing =
-                        mProviderHelper.getCanonicalizedPublicKeyRing(action.mMasterKeyId);
+                        mProviderHelper.mReader.getCanonicalizedPublicKeyRing(action.mMasterKeyId);
 
                 PgpCertifyOperation op = new PgpCertifyOperation();
                 PgpCertifyResult result = op.certify(certificationKey, publicRing,
@@ -235,7 +235,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                     KeyFormattingUtils.convertKeyIdToHex(certifiedKey.getMasterKeyId()));
             // store the signed key in our local cache
             mProviderHelper.clearLog();
-            SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
+            SaveKeyringResult result = mProviderHelper.mWriter.savePublicKeyRing(certifiedKey);
 
             if (uploadOperation != null) {
                 UploadKeyringParcel uploadInput =

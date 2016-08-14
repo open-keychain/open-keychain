@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -130,7 +131,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
             if (hasMasterKeyId) {
                 log.add(LogType.MSG_UPLOAD_KEY, 0, KeyFormattingUtils.convertKeyIdToHex(uploadInput.mMasterKeyId));
-                return mProviderHelper.getCanonicalizedPublicKeyRing(uploadInput.mMasterKeyId);
+                return mProviderHelper.mReader.getCanonicalizedPublicKeyRing(uploadInput.mMasterKeyId);
             }
 
             CanonicalizedKeyRing canonicalizedRing =
@@ -142,7 +143,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             log.add(LogType.MSG_UPLOAD_KEY, 0, KeyFormattingUtils.convertKeyIdToHex(canonicalizedRing.getMasterKeyId()));
             return (CanonicalizedPublicKeyRing) canonicalizedRing;
 
-        } catch (ProviderHelper.NotFoundException e) {
+        } catch (ProviderReader.NotFoundException e) {
             log.add(LogType.MSG_UPLOAD_ERROR_NOT_FOUND, 1);
             return null;
         } catch (IOException | PgpGeneralException e) {

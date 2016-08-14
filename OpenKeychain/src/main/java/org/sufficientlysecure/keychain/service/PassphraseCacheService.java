@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -245,7 +246,7 @@ public class PassphraseCacheService extends Service {
     /**
      * Internal implementation to get cached passphrase.
      */
-    private Passphrase getCachedPassphraseImpl(long masterKeyId, long subKeyId) throws ProviderHelper.NotFoundException {
+    private Passphrase getCachedPassphraseImpl(long masterKeyId, long subKeyId) throws ProviderReader.NotFoundException {
         // on "none" key, just do nothing
         if (masterKeyId == Constants.key.none) {
             return null;
@@ -265,7 +266,7 @@ public class PassphraseCacheService extends Service {
         Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId " + masterKeyId);
 
         // get the type of key (from the database)
-        CachedPublicKeyRing keyRing = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
+        CachedPublicKeyRing keyRing = new ProviderHelper(this).mReader.getCachedPublicKeyRing(masterKeyId);
 
 
         // get cached passphrases
@@ -283,7 +284,7 @@ public class PassphraseCacheService extends Service {
                 case PASSPHRASE_EMPTY:
                     return new Passphrase();
                 case UNAVAILABLE:
-                    throw new ProviderHelper.NotFoundException("secret key data for this keyring is not available");
+                    throw new ProviderReader.NotFoundException("secret key data for this keyring is not available");
             }
             return cachedPassphrases.mKeyringPassphrase;
         } else {
@@ -292,9 +293,9 @@ public class PassphraseCacheService extends Service {
                 case PASSPHRASE_EMPTY:
                     return new Passphrase();
                 case GNU_DUMMY:
-                    throw new ProviderHelper.NotFoundException("secret key for stripped subkey is not available");
+                    throw new ProviderReader.NotFoundException("secret key for stripped subkey is not available");
                 case UNAVAILABLE:
-                    throw new ProviderHelper.NotFoundException("secret key data for this subkey is not available");
+                    throw new ProviderReader.NotFoundException("secret key data for this subkey is not available");
             }
             return cachedPassphrases.mSubkeyPassphrase;
         }
@@ -436,7 +437,7 @@ public class PassphraseCacheService extends Service {
                     Bundle bundle = new Bundle();
                     bundle.putParcelable(EXTRA_PASSPHRASE, passphrase);
                     msg.setData(bundle);
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (ProviderReader.NotFoundException e) {
                     Log.e(Constants.TAG, "PassphraseCacheService: Passphrases for unknown key was requested!");
                     msg.what = MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND;
                 }

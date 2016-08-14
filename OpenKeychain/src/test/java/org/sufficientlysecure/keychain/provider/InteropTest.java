@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.net.Uri;
 
 import org.json.JSONArray;
@@ -251,58 +253,17 @@ public class InteropTest {
             final CanonicalizedSecretKeyRing decrypt, final CanonicalizedPublicKeyRing verify)
             throws Exception {
 
-        final long decryptId = decrypt.getEncryptId();
-        final Uri decryptUri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(decryptId);
-        final Uri verifyUri =  verify != null ?
+        long decryptId = decrypt.getEncryptId();
+        this.msg = msg;
+        this.opPassphrase = opPassphrase;
+        this.decrypt = decrypt;
+        this.verify = verify;
+        this.decryptUri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(decryptId);
+        this.verifyUri =  verify != null ?
                 KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(verify.getMasterKeyId()) : null;
 
-        ProviderHelper helper = new ProviderHelper(RuntimeEnvironment.application) {
-
-            @Override
-            public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {
-                Assert.assertEquals(msg + ": query should be for the decryption key", queryUri, decryptUri);
-                return new CachedPublicKeyRing(this, queryUri) {
-                    @Override
-                    public long getMasterKeyId() throws PgpKeyNotFoundException {
-                        return decrypt.getMasterKeyId();
-                    }
-
-                    @Override
-                    public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
-                        return decrypt.getSecretKey(keyId).getSecretKeyTypeSuperExpensive();
-                    }
-
-                    @Override
-                    public SecretKeyRingType getSecretKeyringType() throws NotFoundException {
-                        return SecretKeyRingType.PASSPHRASE;
-                    }
-                };
-            }
-
-            @Override
-            public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri q)
-                    throws NotFoundException {
-                Assert.assertEquals(msg + ": query should be for verification key", q, verifyUri);
-                return verify;
-            }
-
-            @Override
-            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri q, Passphrase passphrase)
-                    throws NotFoundException {
-                Assert.assertEquals(msg + ": query should be for the decryption key", q, decryptUri);
-                Assert.assertEquals(msg + ": passphrase should be for the secret key", opPassphrase, passphrase);
-                return decrypt;
-            }
-
-            @Override
-            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long masterKeyId, Passphrase passphrase)
-                    throws NotFoundException {
-                Assert.assertEquals(msg + ": query should be for the decryption key",
-                        masterKeyId, decrypt.getMasterKeyId());
-                Assert.assertEquals(msg + ": passphrase should be for the secret key", opPassphrase, passphrase);
-                return decrypt;
-            }
-        };
+        Context context = RuntimeEnvironment.application;
+        ProviderHelper helper = ProviderHelper.useCustomReaderForTest(context, this, CustomReader.class);
 
         return new PgpDecryptVerifyOperation(RuntimeEnvironment.application, helper, null) {
             @Override
@@ -314,4 +275,66 @@ public class InteropTest {
             }
         };
     }
+
+    String msg;
+    Passphrase opPassphrase;
+    CanonicalizedSecretKeyRing decrypt;
+    CanonicalizedPublicKeyRing verify;
+    Uri decryptUri;
+    Uri verifyUri;
+
+    private class CustomReader extends ProviderReader {
+        private ProviderHelper mProviderHelper;
+
+        public CustomReader(ProviderHelper helper, ContentResolver resolver) {
+            super(helper, resolver);
+            mProviderHelper = helper;
+        }
+
+        @Override
+        public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {
+            Assert.assertEquals(msg + ": query should be for the decryption key", queryUri, decryptUri);
+            return new CachedPublicKeyRing(mProviderHelper, queryUri) {
+                @Override
+                public long getMasterKeyId() throws PgpKeyNotFoundException {
+                    return decrypt.getMasterKeyId();
+                }
+
+                @Override
+                public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
+                    return decrypt.getSecretKey(keyId).getSecretKeyTypeSuperExpensive();
+                }
+
+                @Override
+                public SecretKeyRingType getSecretKeyringType() throws NotFoundException {
+                    return SecretKeyRingType.PASSPHRASE;
+                }
+            };
+        }
+
+        @Override
+        public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri q)
+                throws ProviderReader.NotFoundException {
+            Assert.assertEquals(msg + ": query should be for verification key", q, verifyUri);
+            return verify;
+        }
+
+        @Override
+        public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri q, Passphrase passphrase)
+                throws ProviderReader.NotFoundException {
+            Assert.assertEquals(msg + ": query should be for the decryption key", q, decryptUri);
+            Assert.assertEquals(msg + ": passphrase should be for the secret key", opPassphrase, passphrase);
+            return decrypt;
+        }
+
+        @Override
+        public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long masterKeyId, Passphrase passphrase)
+                throws ProviderReader.NotFoundException {
+            Assert.assertEquals(msg + ": query should be for the decryption key",
+                    masterKeyId, decrypt.getMasterKeyId());
+            Assert.assertEquals(msg + ": passphrase should be for the secret key", opPassphrase, passphrase);
+            return decrypt;
+        }
+    }
+
 }

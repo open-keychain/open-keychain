@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.lang.ref.WeakReference;
@@ -129,11 +130,11 @@ public class NfcHelper {
                                 try {
                                     Uri blobUri =
                                             KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                                    mNfcKeyringBytes = (byte[]) mProviderHelper.getGenericData(
+                                    mNfcKeyringBytes = (byte[]) mProviderHelper.mReader.getGenericData(
                                             blobUri,
                                             KeychainContract.KeyRingData.KEY_RING_DATA,
                                             Cursor.FIELD_TYPE_BLOB);
-                                } catch (ProviderHelper.NotFoundException e) {
+                                } catch (ProviderReader.NotFoundException e) {
                                     Log.e(Constants.TAG, "key not found!", e);
                                 }
 

@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
@@ -118,7 +119,7 @@ public class BackupActivity extends BaseActivity {
         for (long masterKeyId : masterKeyIds) {
             try {
                 SecretKeyRingType secretKeyRingType =
-                        providerHelper.getCachedPublicKeyRing(masterKeyId).getSecretKeyringType();
+                        providerHelper.mReader.getCachedPublicKeyRing(masterKeyId).getSecretKeyringType();
                 switch (secretKeyRingType) {
                     case PASSPHRASE_EMPTY: {
                         mPassphrases.put(masterKeyId, new Passphrase());
@@ -135,7 +136,7 @@ public class BackupActivity extends BaseActivity {
                         throw new AssertionError("Unhandled keyring type");
                     }
                 }
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (ProviderReader.NotFoundException e) {
                 Toast.makeText(getApplicationContext(), R.string.msg_backup_error_db, Toast.LENGTH_SHORT).show();
                 this.finish();
             }

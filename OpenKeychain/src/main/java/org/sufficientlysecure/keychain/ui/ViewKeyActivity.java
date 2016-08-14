@@ -80,6 +80,7 @@ import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
@@ -392,7 +393,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             case R.id.menu_key_view_refresh: {
                 try {
                     updateFromKeyserver(mDataUri, mProviderHelper);
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (ProviderReader.NotFoundException e) {
                     Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
                 }
                 return true;
@@ -621,7 +622,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         try {
 
             // if the security token matches a subkey in any key
-            CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(
+            CachedPublicKeyRing ring = mProviderHelper.mReader.getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(tokenId));
             byte[] candidateFp = ring.getFingerprint();
 
@@ -695,7 +696,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         }
         try {
             long keyId = new ProviderHelper(this)
-                    .getCachedPublicKeyRing(dataUri)
+                    .mReader.getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
             long[] encryptionKeyIds = new long[]{keyId};
             Intent intent;
@@ -719,7 +720,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         long keyId = 0;
         try {
             keyId = new ProviderHelper(this)
-                    .getCachedPublicKeyRing(dataUri)
+                    .mReader.getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
@@ -1051,14 +1052,14 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
 
     private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
-            throws ProviderHelper.NotFoundException {
+            throws ProviderReader.NotFoundException {
 
         mIsRefreshing = true;
         mRefreshItem.setEnabled(false);
         mRefreshItem.setActionView(mRefresh);
         mRefresh.startAnimation(mRotate);
 
-        byte[] blob = (byte[]) providerHelper.getGenericData(
+        byte[] blob = (byte[]) providerHelper.mReader.getGenericData(
                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
                 KeychainContract.Keys.FINGERPRINT, Cursor.FIELD_TYPE_BLOB);
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);

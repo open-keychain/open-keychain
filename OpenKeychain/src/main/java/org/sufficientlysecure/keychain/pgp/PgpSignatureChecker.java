@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.util.Log;
 
 
@@ -150,7 +151,7 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                CanonicalizedPublicKeyRing signingRing = mProviderHelper.mReader.getCanonicalizedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
@@ -161,7 +162,7 @@ class PgpSignatureChecker {
                 signingKey = keyCandidate;
                 onePassSignature = sigList.get(i);
                 return;
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (ProviderReader.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found, trying next signature...");
             }
         }
@@ -173,7 +174,7 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                CanonicalizedPublicKeyRing signingRing = mProviderHelper.mReader.getCanonicalizedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
@@ -184,7 +185,7 @@ class PgpSignatureChecker {
                 signingKey = keyCandidate;
                 signature = sigList.get(i);
                 return;
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (ProviderReader.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found, trying next signature...");
             }
         }

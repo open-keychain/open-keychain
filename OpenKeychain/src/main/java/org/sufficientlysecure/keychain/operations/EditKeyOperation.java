@@ -38,7 +38,8 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
+import org.sufficientlysecure.keychain.provider.ProviderReader.NotFoundException;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
@@ -93,7 +94,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         if (isNewKey) {
             keyringPassphrase = saveParcel.mPassphrase;
         } else {
-            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
+            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.mReader.getCachedPublicKeyRing(masterKeyId);
 
             try {
                 switch (cachedPublicKeyRing.getSecretKeyringType()) {
@@ -136,7 +137,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
 
                     // update the keyring along the way
                     CanonicalizedSecretKeyRing secRing =
-                            mProviderHelper.getCanonicalizedSecretKeyRingWithMerge(
+                            mProviderHelper.mReader.getCanonicalizedSecretKeyRingWithMerge(
                                     saveParcel.mMasterKeyId, keyringPassphrase);
 
                     modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
@@ -153,7 +154,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                 } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
                     log.add(LogType.MSG_ED_ERROR_INCORRECT_PASSPHRASE, 2);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
-                } catch (ProviderHelper.FailedMergeException e) {
+                } catch (ProviderReader.FailedMergeException e) {
                     log.add(LogType.MSG_ED_ERROR_MERGE_KEYRING, 2);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
@@ -212,7 +213,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
 
         // Save the new keyring.
         SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(ring, passphrases, new ProgressScaler(mProgressable, 60, 95, 100));
+                .mWriter.saveSecretKeyRing(ring, passphrases, new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here

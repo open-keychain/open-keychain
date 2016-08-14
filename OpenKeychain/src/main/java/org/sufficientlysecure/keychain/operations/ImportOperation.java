@@ -321,11 +321,11 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     if (key.isSecret()) {
                         KeyringPassphrases passphrases = KeyringPassphrases.getKeyringPassphrases(keyringPassphrasesList,
                                                                                         key.getMasterKeyId());
-                        result = mProviderHelper.saveSecretKeyRing(key, passphrases,
+                        result = mProviderHelper.mWriter.saveSecretKeyRing(key, passphrases,
                                 new ProgressScaler(progressable, (int) (position * progSteps),
                                         (int) ((position + 1) * progSteps), 100));
                     } else {
-                        result = mProviderHelper.savePublicKeyRing(key,
+                        result = mProviderHelper.mWriter.savePublicKeyRing(key,
                                 new ProgressScaler(progressable, (int) (position * progSteps),
                                         (int) ((position + 1) * progSteps), 100), entry.mExpectedFingerprint);
                     }
@@ -347,7 +347,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         // synonymous to isDownloadFromKeyserver.
                         // If no byte data was supplied, import from keyserver took place
                         // this prevents file imports being noted as keyserver imports
-                        mProviderHelper.renewKeyLastUpdatedTime(key.getMasterKeyId(),
+                        mProviderHelper.mWriter.renewKeyLastUpdatedTime(key.getMasterKeyId(),
                                 GregorianCalendar.getInstance().getTimeInMillis(),
                                 TimeUnit.MILLISECONDS);
                     }

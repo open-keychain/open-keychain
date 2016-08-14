@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -62,7 +63,7 @@ public class RevokeOperation extends BaseOperation<RevokeKeyringParcel> {
         try {
 
             Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(masterKeyId);
-            CachedPublicKeyRing keyRing = mProviderHelper.getCachedPublicKeyRing(secretUri);
+            CachedPublicKeyRing keyRing = mProviderHelper.mReader.getCachedPublicKeyRing(secretUri);
 
             // check if this is a master secret key we can work with
             switch (keyRing.getSecretKeyType(masterKeyId)) {
@@ -97,7 +98,7 @@ public class RevokeOperation extends BaseOperation<RevokeKeyringParcel> {
                 return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);
             }
 
-        } catch (PgpKeyNotFoundException | ProviderHelper.NotFoundException e) {
+        } catch (PgpKeyNotFoundException | ProviderReader.NotFoundException e) {
             Log.e(Constants.TAG, "could not find key to revoke", e);
             log.add(OperationResult.LogType.MSG_REVOKE_ERROR_KEY_FAIL, 1);
             return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);

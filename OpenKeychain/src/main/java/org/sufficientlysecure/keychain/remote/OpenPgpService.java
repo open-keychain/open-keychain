@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -36,7 +35,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -78,6 +76,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -231,7 +230,7 @@ public class OpenPgpService extends Service {
 
                 // get first usable subkey capable of signing
                 try {
-                    long signSubKeyId = mProviderHelper.getCachedPublicKeyRing(
+                    long signSubKeyId = mProviderHelper.mReader.getCachedPublicKeyRing(
                             pgpData.getSignatureMasterKeyId()).getSecretSignId();
                     pgpData.setSignatureSubKeyId(signSubKeyId);
                 } catch (PgpKeyNotFoundException e) {
@@ -371,7 +370,7 @@ public class OpenPgpService extends Service {
 
                     // get first usable subkey capable of signing
                     try {
-                        long signSubKeyId = mProviderHelper.getCachedPublicKeyRing(
+                        long signSubKeyId = mProviderHelper.mReader.getCachedPublicKeyRing(
                                 pgpData.getSignatureMasterKeyId()).getSecretSignId();
                         pgpData.setSignatureSubKeyId(signSubKeyId);
                     } catch (PgpKeyNotFoundException e) {
@@ -627,7 +626,7 @@ public class OpenPgpService extends Service {
             try {
                 // try to find key, throws NotFoundException if not in db!
                 CanonicalizedPublicKeyRing keyRing =
-                        mProviderHelper.getCanonicalizedPublicKeyRing(
+                        mProviderHelper.mReader.getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(masterKeyId));
 
                 Intent result = new Intent();
@@ -656,7 +655,7 @@ public class OpenPgpService extends Service {
                         piFactory.createShowKeyPendingIntent(data, masterKeyId));
 
                 return result;
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (ProviderReader.NotFoundException e) {
                 // If keys are not in db we return an additional PendingIntent
                 // to retrieve the missing key
                 Intent result = new Intent();

@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderReader.NotFoundException;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -72,7 +72,7 @@ public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
                 log.add(LogType.MSG_PR_FETCHING, 1,
                         KeyFormattingUtils.convertKeyIdToHex(promoteKeyringParcel.mKeyRingId));
                 CanonicalizedPublicKeyRing pubRing =
-                        mProviderHelper.getCanonicalizedPublicKeyRing(promoteKeyringParcel.mKeyRingId);
+                        mProviderHelper.mReader.getCanonicalizedPublicKeyRing(promoteKeyringParcel.mKeyRingId);
 
                 if (promoteKeyringParcel.mSubKeyIds == null) {
                     log.add(LogType.MSG_PR_ALL, 1);
@@ -118,7 +118,7 @@ public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
         // Save the new keyring.
         // TODO: passphrase is empty for now, change when migrating to single passphrase for app
         SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(promotedRing,
+                .mWriter.saveSecretKeyRing(promotedRing,
                         new KeyringPassphrases(promotedRing.getMasterKeyId(), new Passphrase()),
                         new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);

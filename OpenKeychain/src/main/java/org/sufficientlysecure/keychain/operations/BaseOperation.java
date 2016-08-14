@@ -22,17 +22,14 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
-import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-import java.security.Key;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class BaseOperation <T extends Parcelable> implements PassphraseCacheInterface {

@@ -26,7 +26,7 @@ import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderReader.NotFoundException;
 import org.sufficientlysecure.keychain.util.Log;
 
 /**
@@ -120,7 +120,7 @@ public class OpenPgpSignatureResultBuilder {
 
         try {
             ArrayList<String> allUserIds = signingRing.getUnorderedUserIds();
-            ArrayList<String> confirmedUserIds = mProviderHelper.getConfirmedUserIds(signingRing.getMasterKeyId());
+            ArrayList<String> confirmedUserIds = mProviderHelper.mReader.getConfirmedUserIds(signingRing.getMasterKeyId());
             setUserIds(allUserIds, confirmedUserIds);
 
             if (mSenderAddress != null) {

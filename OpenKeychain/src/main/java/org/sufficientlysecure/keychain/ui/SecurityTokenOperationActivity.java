@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -250,15 +251,15 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
-                    secretKeyRing = providerHelper.getCanonicalizedSecretKeyRingWithMerge(
+                    secretKeyRing = providerHelper.mReader.getCanonicalizedSecretKeyRingWithMerge(
                             mRequiredInput.getMasterKeyId(), mInputParcel.getPassphrase());
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (ProviderReader.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 } catch (ByteArrayEncryptor.EncryptDecryptException e) {
                     throw new IOException("Error decrypting keyring.");
                 } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
                     throw new IOException("Bad keyring passphrase.");
-                } catch (ProviderHelper.FailedMergeException e) {
+                } catch (ProviderReader.FailedMergeException e) {
                     throw new IOException(getString(R.string.msg_op_error_merge_keyring));
                 }
 
