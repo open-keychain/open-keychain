@@ -19,7 +19,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package org.sufficientlysecure.keychain.securitytoken;
 
 import android.support.annotation.NonNull;
@@ -30,16 +29,19 @@ import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import javax.smartcardio.CommandAPDU;
+import javax.smartcardio.ResponseAPDU;
+import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.SecurityTokenUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.interfaces.RSAPrivateCrtKey;
-
-import nordpol.Apdu;
 
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
@@ -47,16 +49,27 @@ import nordpol.Apdu;
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
 public class SecurityTokenHelper {
-    private static final int MAX_APDU_DATAFIELD_SIZE = 254;
+    private static final int MAX_APDU_NC = 255;
+    private static final int MAX_APDU_NC_EXT = 65535;
+
+    private static final int MAX_APDU_NE = 256;
+    private static final int MAX_APDU_NE_EXT = 65536;
+
+    private static final int APDU_SW_SUCCESS = 0x9000;
+    private static final int APDU_SW1_RESPONSE_AVAILABLE = 0x61;
+
+    private static final int MASK_CLA_CHAINING = 1 << 4;
+
     // Fidesmo constants
     private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
 
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private Transport mTransport;
+    private CardCapabilities mCardCapabilities;
+    private OpenPgpCapabilities mOpenPgpCapabilities;
 
     private Passphrase mPin;
     private Passphrase mAdminPin;
-    private boolean mPw1ValidForMultipleSignatures;
     private boolean mPw1ValidatedForSignature;
     private boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
     private boolean mPw3Validated;
@@ -68,20 +81,9 @@ public class SecurityTokenHelper {
         return LazyHolder.SECURITY_TOKEN_HELPER;
     }
 
-    private static String getHex(byte[] raw) {
-        return new String(Hex.encode(raw));
-    }
-
-    private String getHolderName(String name) {
+    private String getHolderName(byte[] name) {
         try {
-            String slength;
-            int ilength;
-            name = name.substring(6);
-            slength = name.substring(0, 2);
-            ilength = Integer.parseInt(slength, 16) * 2;
-            name = name.substring(2, ilength + 2);
-            name = (new String(Hex.decode(name))).replace('<', ' ');
-            return name;
+            return (new String(name, 4, name[3])).replace('<', ' ');
         } catch (IndexOutOfBoundsException e) {
             // try-catch for https://github.com/FluffyKaon/OpenPGP-Card
             // Note: This should not happen, but happens with
@@ -126,8 +128,8 @@ public class SecurityTokenHelper {
                     keyType.toString()));
         }
 
-        putKey(keyType.getmSlot(), secretKey, passphrase);
-        putData(keyType.getmFingerprintObjectId(), secretKey.getFingerprint());
+        putKey(keyType, secretKey, passphrase);
+        putData(keyType.getFingerprintObjectId(), secretKey.getFingerprint());
         putData(keyType.getTimestampObjectId(), timestampBytes);
     }
 
@@ -150,51 +152,25 @@ public class SecurityTokenHelper {
      */
     public void connectToDevice() throws IOException {
         // Connect on transport layer
+        mCardCapabilities = new CardCapabilities();
+
         mTransport.connect();
 
         // Connect on smartcard layer
-
-        // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
-        // See specification, page 51
-        String accepted = "9000";
-
         // Command APDU (page 51) for SELECT FILE command (page 29)
-        String opening =
-                "00" // CLA
-                        + "A4" // INS
-                        + "04" // P1
-                        + "00" // P2
-                        + "06" // Lc (number of bytes)
-                        + "D27600012401" // Data (6 bytes)
-                        + "00"; // Le
-        String response = communicate(opening);  // activate connection
-        if (!response.endsWith(accepted)) {
-            throw new CardException("Initialization failed!", parseCardStatus(response));
+        CommandAPDU select = new CommandAPDU(0x00, 0xA4, 0x04, 0x00, Hex.decode("D27600012401"));
+        ResponseAPDU response = communicate(select);  // activate connection
+
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Initialization failed!", response.getSW());
         }
 
-        byte[] pwStatusBytes = getPwStatusBytes();
-        mPw1ValidForMultipleSignatures = (pwStatusBytes[0] == 1);
+        mOpenPgpCapabilities = new OpenPgpCapabilities(getData(0x00, 0x6E));
+        mCardCapabilities = new CardCapabilities(mOpenPgpCapabilities.getHistoricalBytes());
+
         mPw1ValidatedForSignature = false;
         mPw1ValidatedForDecrypt = false;
         mPw3Validated = false;
-    }
-
-    /**
-     * Parses out the status word from a JavaCard response string.
-     *
-     * @param response A hex string with the response from the card
-     * @return A short indicating the SW1/SW2, or 0 if a status could not be determined.
-     */
-    private short parseCardStatus(String response) {
-        if (response.length() < 4) {
-            return 0; // invalid input
-        }
-
-        try {
-            return Short.parseShort(response.substring(response.length() - 4), 16);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
     }
 
     /**
@@ -230,16 +206,11 @@ public class SecurityTokenHelper {
         }
 
         // Command APDU for CHANGE REFERENCE DATA command (page 32)
-        String changeReferenceDataApdu = "00" // CLA
-                + "24" // INS
-                + "00" // P1
-                + String.format("%02x", pw) // P2
-                + String.format("%02x", pin.length + newPin.length) // Lc
-                + getHex(pin)
-                + getHex(newPin);
-        String response = communicate(changeReferenceDataApdu); // change PIN
-        if (!response.equals("9000")) {
-            throw new CardException("Failed to change PIN", parseCardStatus(response));
+        CommandAPDU changePin = new CommandAPDU(0x00, 0x24, 0x00, pw, Arrays.concatenate(pin, newPin));
+        ResponseAPDU response = communicate(changePin);
+
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Failed to change PIN", response.getSW());
         }
     }
 
@@ -254,38 +225,20 @@ public class SecurityTokenHelper {
             verifyPin(0x82); // (Verify PW1 with mode 82 for decryption)
         }
 
-        int offset = 1; // Skip first byte
-        String response = "", status = "";
-
         // Transmit
-        while (offset < encryptedSessionKey.length) {
-            boolean isLastCommand = offset + MAX_APDU_DATAFIELD_SIZE < encryptedSessionKey.length;
-            String cla = isLastCommand ? "10" : "00";
-
-            int len = Math.min(MAX_APDU_DATAFIELD_SIZE, encryptedSessionKey.length - offset);
-            response = communicate(cla + "2a8086" + Hex.toHexString(new byte[]{(byte) len})
-                            + Hex.toHexString(encryptedSessionKey, offset, len));
-            status = response.substring(response.length() - 4);
-
-            if (!isLastCommand && !response.endsWith("9000")) {
-                throw new CardException("Deciphering with Security token failed on transmit", parseCardStatus(response));
-            }
-
-            offset += MAX_APDU_DATAFIELD_SIZE;
+        byte[] data = Arrays.copyOfRange(encryptedSessionKey, 2, encryptedSessionKey.length);
+        if (data[0] != 0) {
+            data = Arrays.prepend(data, (byte) 0x00);
         }
 
-        // Receive
-        String result = getDataField(response);
-        while (response.endsWith("61")) {
-            response = communicate("00C00000" + status.substring(2));
-            status = response.substring(response.length() - 4);
-            result += getDataField(response);
-        }
-        if (!status.equals("9000")) {
-            throw new CardException("Deciphering with Security token failed on receive", parseCardStatus(response));
+        CommandAPDU command = new CommandAPDU(0x00, 0x2A, 0x80, 0x86, data, MAX_APDU_NE_EXT);
+        ResponseAPDU response = communicate(command);
+
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Deciphering with Security token failed on receive", response.getSW());
         }
 
-        return Hex.decode(result);
+        return response.getData();
     }
 
     /**
@@ -304,12 +257,9 @@ public class SecurityTokenHelper {
                 pin = mPin.toStringUnsafe().getBytes();
             }
 
-            // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
-            // See specification, page 51
-            String accepted = "9000";
-            String response = tryPin(mode, pin); // login
-            if (!response.equals(accepted)) {
-                throw new CardException("Bad PIN!", parseCardStatus(response));
+            ResponseAPDU response = tryPin(mode, pin);// login
+            if (response.getSW() != APDU_SW_SUCCESS) {
+                throw new CardException("Bad PIN!", response.getSW());
             }
 
             if (mode == 0x81) {
@@ -342,16 +292,11 @@ public class SecurityTokenHelper {
             verifyPin(0x83); // (Verify PW3)
         }
 
-        String putDataApdu = "00" // CLA
-                + "DA" // INS
-                + String.format("%02x", (dataObject & 0xFF00) >> 8) // P1
-                + String.format("%02x", dataObject & 0xFF) // P2
-                + String.format("%02x", data.length) // Lc
-                + getHex(data);
+        CommandAPDU command = new CommandAPDU(0x00, 0xDA, (dataObject & 0xFF00) >> 8, dataObject & 0xFF, data);
+        ResponseAPDU response = communicate(command); // put data
 
-        String response = communicate(putDataApdu); // put data
-        if (!response.equals("9000")) {
-            throw new CardException("Failed to put data.", parseCardStatus(response));
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Failed to put data.", response.getSW());
         }
     }
 
@@ -363,12 +308,8 @@ public class SecurityTokenHelper {
      *             0xB8: Decipherment Key
      *             0xA4: Authentication Key
      */
-    private void putKey(int slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
+    private void putKey(KeyType slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
             throws IOException {
-        if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
-            throw new IOException("Invalid key slot");
-        }
-
         RSAPrivateCrtKey crtSecretKey;
         try {
             secretKey.unlock(passphrase);
@@ -391,80 +332,17 @@ public class SecurityTokenHelper {
             verifyPin(0x83); // (Verify PW3 with mode 83)
         }
 
-        byte[] header = Hex.decode(
-                "4D82" + "03A2"      // Extended header list 4D82, length of 930 bytes. (page 23)
-                        + String.format("%02x", slot) + "00" // CRT to indicate targeted key, no length
-                        + "7F48" + "15"      // Private key template 0x7F48, length 21 (decimal, 0x15 hex)
-                        + "9103"             // Public modulus, length 3
-                        + "928180"           // Prime P, length 128
-                        + "938180"           // Prime Q, length 128
-                        + "948180"           // Coefficient (1/q mod p), length 128
-                        + "958180"           // Prime exponent P (d mod (p - 1)), length 128
-                        + "968180"           // Prime exponent Q (d mod (1 - 1)), length 128
-                        + "97820100"         // Modulus, length 256, last item in private key template
-                        + "5F48" + "820383");// DO 5F48; 899 bytes of concatenated key data will follow
-        byte[] dataToSend = new byte[934];
-        byte[] currentKeyObject;
-        int offset = 0;
-
-        System.arraycopy(header, 0, dataToSend, offset, header.length);
-        offset += header.length;
-        currentKeyObject = crtSecretKey.getPublicExponent().toByteArray();
-        System.arraycopy(currentKeyObject, 0, dataToSend, offset, 3);
-        offset += 3;
-        // NOTE: For a 2048-bit key, these lengths are fixed. However, bigint includes a leading 0
-        // in the array to represent sign, so we take care to set the offset to 1 if necessary.
-        currentKeyObject = crtSecretKey.getPrimeP().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte) 0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getPrimeQ().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte) 0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getCrtCoefficient().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte) 0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getPrimeExponentP().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte) 0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getPrimeExponentQ().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte) 0);
-        offset += 128;
-        currentKeyObject = crtSecretKey.getModulus().toByteArray();
-        System.arraycopy(currentKeyObject, currentKeyObject.length - 256, dataToSend, offset, 256);
-
-        String putKeyCommand = "10DB3FFF";
-        String lastPutKeyCommand = "00DB3FFF";
 
         // Now we're ready to communicate with the token.
-        offset = 0;
-        String response;
-        while (offset < dataToSend.length) {
-            int dataRemaining = dataToSend.length - offset;
-            if (dataRemaining > 254) {
-                response = communicate(
-                        putKeyCommand + "FE" + Hex.toHexString(dataToSend, offset, 254)
-                );
-                offset += 254;
-            } else {
-                int length = dataToSend.length - offset;
-                response = communicate(
-                        lastPutKeyCommand + String.format("%02x", length)
-                                + Hex.toHexString(dataToSend, offset, length));
-                offset += length;
-            }
+        byte[] bytes = SecurityTokenUtils.createPrivKeyTemplate(crtSecretKey, slot,
+                mOpenPgpCapabilities.getFormatForKeyType(slot));
 
-            if (!response.endsWith("9000")) {
-                throw new CardException("Key export to Security Token failed", parseCardStatus(response));
-            }
+        CommandAPDU apdu = new CommandAPDU(0x00, 0xDB, 0x3F, 0xFF, bytes);
+        ResponseAPDU response = communicate(apdu);
+
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Key export to Security Token failed", response.getSW());
         }
-
-        // Clear array with secret data before we return.
-        Arrays.fill(dataToSend, (byte) 0);
     }
 
     /**
@@ -474,17 +352,29 @@ public class SecurityTokenHelper {
      * @return The fingerprints of all subkeys in a contiguous byte array.
      */
     public byte[] getFingerprints() throws IOException {
-        String data = "00CA006E00";
-        byte[] buf = mTransport.transceive(Hex.decode(data));
+        CommandAPDU apdu = new CommandAPDU(0x00, 0xCA, 0x00, 0x6E, MAX_APDU_NE_EXT);
+        ResponseAPDU response = communicate(apdu);
 
-        Iso7816TLV tlv = Iso7816TLV.readSingle(buf, true);
-        Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlv.prettyPrint());
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Failed to get fingerprints", response.getSW());
+        }
 
-        Iso7816TLV fptlv = Iso7816TLV.findRecursive(tlv, 0xc5);
-        if (fptlv == null) {
+        Iso7816TLV[] tlvList = Iso7816TLV.readList(response.getData(), true);
+        Iso7816TLV fingerPrintTlv = null;
+
+        for (Iso7816TLV tlv : tlvList) {
+            Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlv.prettyPrint());
+
+            Iso7816TLV matchingTlv = Iso7816TLV.findRecursive(tlv, 0xc5);
+            if (matchingTlv != null) {
+                fingerPrintTlv = matchingTlv;
+            }
+        }
+
+        if (fingerPrintTlv == null) {
             return null;
         }
-        return fptlv.mV;
+        return fingerPrintTlv.mV;
     }
 
     /**
@@ -493,18 +383,23 @@ public class SecurityTokenHelper {
      * @return Seven bytes in fixed format, plus 0x9000 status word at the end.
      */
     private byte[] getPwStatusBytes() throws IOException {
-        String data = "00CA00C400";
-        return mTransport.transceive(Hex.decode(data));
+        return getData(0x00, 0xC4);
     }
 
     public byte[] getAid() throws IOException {
-        String info = "00CA004F00";
-        return mTransport.transceive(Hex.decode(info));
+        return getData(0x00, 0x4F);
     }
 
     public String getUserId() throws IOException {
-        String info = "00CA006500";
-        return getHolderName(communicate(info));
+        return getHolderName(getData(0x00, 0x65));
+    }
+
+    private byte[] getData(int p1, int p2) throws IOException {
+        ResponseAPDU response = communicate(new CommandAPDU(0x00, 0xCA, p1, p2, MAX_APDU_NE_EXT));
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Failed to get pw status bytes", response.getSW());
+        }
+        return response.getData();
     }
 
     /**
@@ -518,8 +413,7 @@ public class SecurityTokenHelper {
             verifyPin(0x81); // (Verify PW1 with mode 81 for signing)
         }
 
-        // dsi, including Lc
-        String dsi;
+        byte[] dsi;
 
         Log.i(Constants.TAG, "Hash: " + hashAlgo);
         switch (hashAlgo) {
@@ -527,95 +421,127 @@ public class SecurityTokenHelper {
                 if (hash.length != 20) {
                     throw new IOException("Bad hash length (" + hash.length + ", expected 10!");
                 }
-                dsi = "23" // Lc
-                        + "3021" // Tag/Length of Sequence, the 0x21 includes all following 33 bytes
+                dsi = Arrays.concatenate(Hex.decode(
+                        "3021" // Tag/Length of Sequence, the 0x21 includes all following 33 bytes
                         + "3009" // Tag/Length of Sequence, the 0x09 are the following header bytes
                         + "0605" + "2B0E03021A" // OID of SHA1
                         + "0500" // TLV coding of ZERO
-                        + "0414" + getHex(hash); // 0x14 are 20 hash bytes
+                        + "0414"), hash); // 0x14 are 20 hash bytes
                 break;
             case HashAlgorithmTags.RIPEMD160:
                 if (hash.length != 20) {
                     throw new IOException("Bad hash length (" + hash.length + ", expected 20!");
                 }
-                dsi = "233021300906052B2403020105000414" + getHex(hash);
+                dsi = Arrays.concatenate(Hex.decode("3021300906052B2403020105000414"), hash);
                 break;
             case HashAlgorithmTags.SHA224:
                 if (hash.length != 28) {
                     throw new IOException("Bad hash length (" + hash.length + ", expected 28!");
                 }
-                dsi = "2F302D300D06096086480165030402040500041C" + getHex(hash);
+                dsi = Arrays.concatenate(Hex.decode("302D300D06096086480165030402040500041C"), hash);
                 break;
             case HashAlgorithmTags.SHA256:
                 if (hash.length != 32) {
                     throw new IOException("Bad hash length (" + hash.length + ", expected 32!");
                 }
-                dsi = "333031300D060960864801650304020105000420" + getHex(hash);
+                dsi = Arrays.concatenate(Hex.decode("3031300D060960864801650304020105000420"), hash);
                 break;
             case HashAlgorithmTags.SHA384:
                 if (hash.length != 48) {
                     throw new IOException("Bad hash length (" + hash.length + ", expected 48!");
                 }
-                dsi = "433041300D060960864801650304020205000430" + getHex(hash);
+                dsi = Arrays.concatenate(Hex.decode("3041300D060960864801650304020205000430"), hash);
                 break;
             case HashAlgorithmTags.SHA512:
                 if (hash.length != 64) {
                     throw new IOException("Bad hash length (" + hash.length + ", expected 64!");
                 }
-                dsi = "533051300D060960864801650304020305000440" + getHex(hash);
+                dsi = Arrays.concatenate(Hex.decode("3051300D060960864801650304020305000440"), hash);
                 break;
             default:
                 throw new IOException("Not supported hash algo!");
         }
 
         // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
-        String apdu =
-                "002A9E9A" // CLA, INS, P1, P2
-                        + dsi // digital signature input
-                        + "00"; // Le
+        CommandAPDU command = new CommandAPDU(0x00, 0x2A, 0x9E, 0x9A, dsi, MAX_APDU_NE_EXT);
+        ResponseAPDU response = communicate(command);
 
-        String response = communicate(apdu);
-
-        if (response.length() < 4) {
-            throw new CardException("Bad response", (short) 0);
-        }
-        // split up response into signature and status
-        String status = response.substring(response.length() - 4);
-        String signature = response.substring(0, response.length() - 4);
-
-        // while we are getting 0x61 status codes, retrieve more data
-        while (status.substring(0, 2).equals("61")) {
-            Log.d(Constants.TAG, "requesting more data, status " + status);
-            // Send GET RESPONSE command
-            response = communicate("00C00000" + status.substring(2));
-            status = response.substring(response.length() - 4);
-            signature += response.substring(0, response.length() - 4);
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Failed to sign", response.getSW());
         }
 
-        Log.d(Constants.TAG, "final response:" + status);
-
-        if (!mPw1ValidForMultipleSignatures) {
+        if (!mOpenPgpCapabilities.isPw1ValidForMultipleSignatures()) {
             mPw1ValidatedForSignature = false;
         }
 
-        if (!"9000".equals(status)) {
-            throw new CardException("Bad NFC response code: " + status, parseCardStatus(response));
-        }
+        byte[] signature = response.getData();
 
         // Make sure the signature we received is actually the expected number of bytes long!
-        if (signature.length() != 256 && signature.length() != 512
-                && signature.length() != 768 && signature.length() != 1024) {
-            throw new IOException("Bad signature length! Expected 128/256/384/512 bytes, got " + signature.length() / 2);
+        if (signature.length != 128 && signature.length != 256
+                && signature.length != 384 && signature.length != 512) {
+            throw new IOException("Bad signature length! Expected 128/256/384/512 bytes, got " + signature.length);
         }
 
-        return Hex.decode(signature);
+        return signature;
     }
 
+
     /**
-     * Transceive data via NFC encoded as Hex
+     * Transceives APDU
+     * Splits extended APDU into short APDUs and chains them if necessary
+     * Performs GET RESPONSE command(ISO/IEC 7816-4 par.7.6.1) on retrieving if necessary
+     * @param apdu short or extended APDU to transceive
+     * @return response from the card
+     * @throws IOException
      */
-    private String communicate(String apdu) throws IOException {
-        return getHex(mTransport.transceive(Hex.decode(apdu)));
+    private ResponseAPDU communicate(CommandAPDU apdu) throws IOException {
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+
+        ResponseAPDU lastResponse = null;
+        // Transmit
+        if (mCardCapabilities.hasExtended()) {
+            lastResponse = mTransport.transceive(apdu);
+        } else if (apdu.getData().length <= MAX_APDU_NC) {
+            int ne = Math.min(apdu.getNe(), MAX_APDU_NE);
+            lastResponse = mTransport.transceive(new CommandAPDU(apdu.getCLA(), apdu.getINS(),
+                    apdu.getP1(), apdu.getP2(), apdu.getData(), ne));
+        } else if (apdu.getData().length > MAX_APDU_NC && mCardCapabilities.hasChaining()) {
+            int offset = 0;
+            byte[] data = apdu.getData();
+            int ne = Math.min(apdu.getNe(), MAX_APDU_NE);
+            while (offset < data.length) {
+                int curLen = Math.min(MAX_APDU_NC, data.length - offset);
+                boolean last = offset + curLen >= data.length;
+                int cla = apdu.getCLA() + (last ? 0 : MASK_CLA_CHAINING);
+
+                lastResponse = mTransport.transceive(new CommandAPDU(cla, apdu.getINS(), apdu.getP1(),
+                        apdu.getP2(), Arrays.copyOfRange(data, offset, offset + curLen), ne));
+
+                if (!last && lastResponse.getSW() != APDU_SW_SUCCESS) {
+                    throw new UsbTransportException("Failed to chain apdu");
+                }
+
+                offset += curLen;
+            }
+        }
+        if (lastResponse == null) {
+            throw new UsbTransportException("Can't transmit command");
+        }
+
+        result.write(lastResponse.getData());
+
+        // Receive
+        while (lastResponse.getSW1() == APDU_SW1_RESPONSE_AVAILABLE) {
+            // GET RESPONSE ISO/IEC 7816-4 par.7.6.1
+            CommandAPDU getResponse = new CommandAPDU(0x00, 0xC0, 0x00, 0x00, lastResponse.getSW2());
+            lastResponse = mTransport.transceive(getResponse);
+            result.write(lastResponse.getData());
+        }
+
+        result.write(lastResponse.getSW1());
+        result.write(lastResponse.getSW2());
+
+        return new ResponseAPDU(result.toByteArray());
     }
 
     public Transport getTransport() {
@@ -631,9 +557,8 @@ public class SecurityTokenHelper {
             try {
                 // By trying to select any apps that have the Fidesmo AID prefix we can
                 // see if it is a Fidesmo device or not
-                byte[] mSelectResponse = mTransport.transceive(Apdu.select(FIDESMO_APPS_AID_PREFIX));
-                // Compare the status returned by our select with the OK status code
-                return Apdu.hasStatus(mSelectResponse, Apdu.OK_APDU);
+                CommandAPDU apdu = new CommandAPDU(0x00, 0xA4, 0x04, 0x00, Hex.decode(FIDESMO_APPS_AID_PREFIX));
+                return communicate(apdu).getSW() == APDU_SW_SUCCESS;
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Card communication failed!", e);
             }
@@ -664,38 +589,19 @@ public class SecurityTokenHelper {
             verifyPin(0x83); // (Verify PW3 with mode 83)
         }
 
-        String generateKeyApdu = "0047800002" + String.format("%02x", slot) + "0000";
-        String getResponseApdu = "00C00000";
+        CommandAPDU apdu = new CommandAPDU(0x00, 0x47, 0x80, 0x00, new byte[]{(byte) slot, 0x00}, MAX_APDU_NE_EXT);
+        ResponseAPDU response = communicate(apdu);
 
-        String first = communicate(generateKeyApdu);
-        String second = communicate(getResponseApdu);
-
-        if (!second.endsWith("9000")) {
+        if (response.getSW() != APDU_SW_SUCCESS) {
             throw new IOException("On-card key generation failed");
         }
 
-        String publicKeyData = getDataField(first) + getDataField(second);
-
-        Log.d(Constants.TAG, "Public Key Data Objects: " + publicKeyData);
-
-        return Hex.decode(publicKeyData);
+        return response.getData();
     }
 
-    private String getDataField(String output) {
-        return output.substring(0, output.length() - 4);
-    }
-
-    private String tryPin(int mode, byte[] pin) throws IOException {
+    private ResponseAPDU tryPin(int mode, byte[] pin) throws IOException {
         // Command APDU for VERIFY command (page 32)
-        String login =
-                "00" // CLA
-                        + "20" // INS
-                        + "00" // P1
-                        + String.format("%02x", mode) // P2
-                        + String.format("%02x", pin.length) // Lc
-                        + Hex.toHexString(pin);
-
-        return communicate(login);
+        return communicate(new CommandAPDU(0x00, 0x20, 0x00, mode, pin));
     }
 
     /**
@@ -704,35 +610,37 @@ public class SecurityTokenHelper {
      * Afterwards, the token is reactivated.
      */
     public void resetAndWipeToken() throws IOException {
-        String accepted = "9000";
-
         // try wrong PIN 4 times until counter goes to C0
         byte[] pin = "XXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
-            String response = tryPin(0x81, pin);
-            if (response.equals(accepted)) { // Should NOT accept!
-                throw new CardException("Should never happen, XXXXXX has been accepted!", parseCardStatus(response));
+            ResponseAPDU response = tryPin(0x81, pin);
+            if (response.getSW() == APDU_SW_SUCCESS) { // Should NOT accept!
+                throw new CardException("Should never happen, XXXXXX has been accepted!", response.getSW());
             }
         }
 
         // try wrong Admin PIN 4 times until counter goes to C0
         byte[] adminPin = "XXXXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
-            String response = tryPin(0x83, adminPin);
-            if (response.equals(accepted)) { // Should NOT accept!
-                throw new CardException("Should never happen, XXXXXXXX has been accepted", parseCardStatus(response));
+            ResponseAPDU response = tryPin(0x83, adminPin);
+            if (response.getSW() == APDU_SW_SUCCESS) { // Should NOT accept!
+                throw new CardException("Should never happen, XXXXXXXX has been accepted", response.getSW());
             }
         }
 
         // reactivate token!
-        String reactivate1 = "00" + "e6" + "00" + "00";
-        String reactivate2 = "00" + "44" + "00" + "00";
-        String response1 = communicate(reactivate1);
-        String response2 = communicate(reactivate2);
-        if (!response1.equals(accepted) || !response2.equals(accepted)) {
-            throw new CardException("Reactivating failed!", parseCardStatus(response1));
+        // NOTE: keep the order here! First execute _both_ reactivate commands. Before checking _both_ responses
+        // If a token is in a bad state and reactivate1 fails, it could still be reactivated with reactivate2
+        CommandAPDU reactivate1 = new CommandAPDU(0x00, 0xE6, 0x00, 0x00);
+        CommandAPDU reactivate2 = new CommandAPDU(0x00, 0x44, 0x00, 0x00);
+        ResponseAPDU response1 = communicate(reactivate1);
+        ResponseAPDU response2 = communicate(reactivate2);
+        if (response1.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Reactivating failed!", response1.getSW());
         }
-
+        if (response2.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Reactivating failed!", response2.getSW());
+        }
     }
 
     /**

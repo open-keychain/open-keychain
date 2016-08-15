@@ -15,29 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.securitytoken;
+package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
-import java.io.IOException;
+import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
-public class CardException extends IOException {
-    private short mResponseCode;
+public enum BlockChecksumType {
+    LRC(1), CRC(2);
 
-    public CardException(String detailMessage, short responseCode) {
-        super(detailMessage);
-        mResponseCode = responseCode;
+    private int mLength;
+
+    BlockChecksumType(int length) {
+        mLength = length;
     }
 
-    public CardException(String detailMessage, int responseCode) {
-        super(detailMessage);
-        mResponseCode = (short) responseCode;
+    public byte[] computeChecksum(byte[] data, int offset, int len) throws UsbTransportException {
+        if (this == LRC) {
+            byte res = 0;
+            for (int i = offset; i < len; i++) {
+                res ^= data[i];
+            }
+            return new byte[]{res};
+        } else {
+            throw new UsbTransportException("CRC checksum is not implemented");
+        }
     }
 
-    public CardException(String s) {
-        this(s, -1);
+    public int getLength() {
+        return mLength;
     }
-
-    public short getResponseCode() {
-        return mResponseCode;
-    }
-
 }

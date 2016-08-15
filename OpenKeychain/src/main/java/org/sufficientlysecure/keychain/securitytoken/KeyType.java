@@ -51,7 +51,7 @@ public enum KeyType {
         return mIdx;
     }
 
-    public int getmSlot() {
+    public int getSlot() {
         return mSlot;
     }
 
@@ -59,7 +59,7 @@ public enum KeyType {
         return mTimestampObjectId;
     }
 
-    public int getmFingerprintObjectId() {
+    public int getFingerprintObjectId() {
         return mFingerprintObjectId;
     }
 }

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.securitytoken;
+package org.sufficientlysecure.keychain.securitytoken.usb;
 
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
@@ -27,9 +27,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Pair;
 
-import org.bouncycastle.util.Arrays;
-import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.Transport;
+import javax.smartcardio.CommandAPDU;
+import javax.smartcardio.ResponseAPDU;
+import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1TpduProtocol;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
@@ -42,8 +44,15 @@ import java.nio.ByteOrder;
  * Implements small subset of these features
  */
 public class UsbTransport implements Transport {
-    private static final int USB_CLASS_SMARTCARD = 11;
-    private static final int TIMEOUT = 20 * 1000; // 20s
+    private static final int PROTOCOLS_OFFSET = 6;
+    private static final int FEATURES_OFFSET = 40;
+    private static final short MASK_T1_PROTO = 2;
+
+    // dwFeatures Masks
+    private static final int MASK_TPDU = 0x10000;
+    private static final int MASK_SHORT_APDU = 0x20000;
+    private static final int MASK_EXTENDED_APDU = 0x40000;
+
 
     private final UsbManager mUsbManager;
     private final UsbDevice mUsbDevice;
@@ -51,37 +60,12 @@ public class UsbTransport implements Transport {
     private UsbEndpoint mBulkIn;
     private UsbEndpoint mBulkOut;
     private UsbDeviceConnection mConnection;
-    private byte mCounter;
+    private CcidTransceiver mTransceiver;
+    private CcidTransportProtocol mProtocol;
 
     public UsbTransport(UsbDevice usbDevice, UsbManager usbManager) {
         mUsbDevice = usbDevice;
         mUsbManager = usbManager;
-    }
-
-
-    /**
-     * Manage ICC power, Yubikey requires to power on ICC
-     * Spec: 6.1.1 PC_to_RDR_IccPowerOn; 6.1.2 PC_to_RDR_IccPowerOff
-     *
-     * @param on true to turn ICC on, false to turn it off
-     * @throws UsbTransportException
-     */
-    private void setIccPower(boolean on) throws UsbTransportException {
-        final byte[] iccPowerCommand = {
-                (byte) (on ? 0x62 : 0x63),
-                0x00, 0x00, 0x00, 0x00,
-                0x00,
-                mCounter++,
-                0x00,
-                0x00, 0x00
-        };
-
-        sendRaw(iccPowerCommand);
-        byte[] bytes;
-        do {
-            bytes = receive();
-        } while (isDataBlockNotReady(bytes));
-        checkDataBlockResponse(bytes);
     }
 
     /**
@@ -94,7 +78,7 @@ public class UsbTransport implements Transport {
     private static UsbInterface getSmartCardInterface(UsbDevice device) {
         for (int i = 0; i < device.getInterfaceCount(); i++) {
             UsbInterface anInterface = device.getInterface(i);
-            if (anInterface.getInterfaceClass() == USB_CLASS_SMARTCARD) {
+            if (anInterface.getInterfaceClass() == UsbConstants.USB_CLASS_CSCID) {
                 return anInterface;
             }
         }
@@ -165,7 +149,6 @@ public class UsbTransport implements Transport {
      */
     @Override
     public void connect() throws IOException {
-        mCounter = 0;
         mUsbInterface = getSmartCardInterface(mUsbDevice);
         if (mUsbInterface == null) {
             // Shouldn't happen as we whitelist only class 11 devices
@@ -189,8 +172,56 @@ public class UsbTransport implements Transport {
             throw new UsbTransportException("USB error - failed to claim interface");
         }
 
-        setIccPower(true);
-        Log.d(Constants.TAG, "Usb transport connected");
+        mTransceiver = new CcidTransceiver(mConnection, mBulkIn, mBulkOut);
+
+
+
+        configureProtocol();
+    }
+
+    private void configureProtocol() throws UsbTransportException {
+        byte[] desc = mConnection.getRawDescriptors();
+        int dwProtocols = 0, dwFeatures = 0;
+        boolean hasCcidDescriptor = false;
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(desc).order(ByteOrder.LITTLE_ENDIAN);
+
+        while (byteBuffer.hasRemaining()) {
+            byteBuffer.mark();
+            byte len = byteBuffer.get(), type = byteBuffer.get();
+
+            if (type == 0x21 && len == 0x36) {
+                byteBuffer.reset();
+
+                byteBuffer.position(byteBuffer.position() + PROTOCOLS_OFFSET);
+                dwProtocols = byteBuffer.getInt();
+
+                byteBuffer.reset();
+
+                byteBuffer.position(byteBuffer.position() + FEATURES_OFFSET);
+                dwFeatures = byteBuffer.getInt();
+                hasCcidDescriptor = true;
+                break;
+            } else {
+                byteBuffer.position(byteBuffer.position() + len - 2);
+            }
+        }
+
+        if (!hasCcidDescriptor) {
+            throw new UsbTransportException("CCID descriptor not found");
+        }
+
+        if ((dwProtocols & MASK_T1_PROTO) == 0) {
+            throw new UsbTransportException("T=0 protocol is not supported");
+        }
+
+        if ((dwFeatures & MASK_TPDU) != 0) {
+            mProtocol = new T1TpduProtocol(mTransceiver);
+        } else if (((dwFeatures & MASK_SHORT_APDU) != 0) || ((dwFeatures & MASK_EXTENDED_APDU) != 0)) {
+            mProtocol = new T1ShortApduProtocol(mTransceiver);
+        } else {
+            throw new UsbTransportException("Character level exchange is not supported");
+        }
     }
 
     /**
@@ -200,87 +231,8 @@ public class UsbTransport implements Transport {
      * @throws UsbTransportException
      */
     @Override
-    public byte[] transceive(byte[] data) throws UsbTransportException {
-        sendXfrBlock(data);
-        byte[] bytes;
-        do {
-            bytes = receive();
-        } while (isDataBlockNotReady(bytes));
-
-        checkDataBlockResponse(bytes);
-        // Discard header
-        return Arrays.copyOfRange(bytes, 10, bytes.length);
-    }
-
-    /**
-     * Transmits XfrBlock
-     * 6.1.4 PC_to_RDR_XfrBlock
-     * @param payload payload to transmit
-     * @throws UsbTransportException
-     */
-    private void sendXfrBlock(byte[] payload) throws UsbTransportException {
-        int l = payload.length;
-        byte[] data = Arrays.concatenate(new byte[]{
-                        0x6f,
-                        (byte) l, (byte) (l >> 8), (byte) (l >> 16), (byte) (l >> 24),
-                        0x00,
-                        mCounter++,
-                        0x00,
-                        0x00, 0x00},
-                payload);
-
-        int send = 0;
-        while (send < data.length) {
-            final int len = Math.min(mBulkIn.getMaxPacketSize(), data.length - send);
-            sendRaw(Arrays.copyOfRange(data, send, send + len));
-            send += len;
-        }
-    }
-
-    private byte[] receive() throws UsbTransportException {
-        byte[] buffer = new byte[mBulkIn.getMaxPacketSize()];
-        byte[] result = null;
-        int readBytes = 0, totalBytes = 0;
-
-        do {
-            int res = mConnection.bulkTransfer(mBulkIn, buffer, buffer.length, TIMEOUT);
-            if (res < 0) {
-                throw new UsbTransportException("USB error - failed to receive response " + res);
-            }
-            if (result == null) {
-                if (res < 10) {
-                    throw new UsbTransportException("USB-CCID error - failed to receive CCID header");
-                }
-                totalBytes = ByteBuffer.wrap(buffer, 1, 4).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get() + 10;
-                result = new byte[totalBytes];
-            }
-            System.arraycopy(buffer, 0, result, readBytes, res);
-            readBytes += res;
-        } while (readBytes < totalBytes);
-
-        return result;
-    }
-
-    private void sendRaw(final byte[] data) throws UsbTransportException {
-        final int tr1 = mConnection.bulkTransfer(mBulkOut, data, data.length, TIMEOUT);
-        if (tr1 != data.length) {
-            throw new UsbTransportException("USB error - failed to transmit data " + tr1);
-        }
-    }
-
-    private byte getStatus(byte[] bytes) {
-        return (byte) ((bytes[7] >> 6) & 0x03);
-    }
-
-    private void checkDataBlockResponse(byte[] bytes) throws UsbTransportException {
-        final byte status = getStatus(bytes);
-        if (status != 0) {
-            throw new UsbTransportException("USB-CCID error - status " + status + " error code: " + Hex.toHexString(bytes, 8, 1));
-        }
-    }
-
-    private boolean isDataBlockNotReady(byte[] bytes) {
-        return getStatus(bytes) == 2;
+    public ResponseAPDU transceive(CommandAPDU data) throws UsbTransportException {
+        return new ResponseAPDU(mProtocol.transceive(data.getBytes()));
     }
 
     @Override

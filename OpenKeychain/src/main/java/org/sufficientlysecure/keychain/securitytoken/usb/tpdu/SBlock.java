@@ -15,29 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.securitytoken;
+package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
-import java.io.IOException;
+public class SBlock extends Block {
+    public static final byte MASK_SBLOCK = (byte) 0b11000000;
+    public static final byte MASK_VALUE_SBLOCK = (byte) 0b11000000;
 
-public class CardException extends IOException {
-    private short mResponseCode;
-
-    public CardException(String detailMessage, short responseCode) {
-        super(detailMessage);
-        mResponseCode = responseCode;
+    public SBlock(Block baseBlock) {
+        super(baseBlock);
     }
-
-    public CardException(String detailMessage, int responseCode) {
-        super(detailMessage);
-        mResponseCode = (short) responseCode;
-    }
-
-    public CardException(String s) {
-        this(s, -1);
-    }
-
-    public short getResponseCode() {
-        return mResponseCode;
-    }
-
 }
