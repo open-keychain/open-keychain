@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.ScrollView;
 
 import org.markdown4j.Markdown4jProcessor;
+import org.sufficientlysecure.htmltextview.HtmlLocalImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
@@ -68,7 +69,7 @@ public class HelpMarkdownFragment extends Fragment {
         try {
             String html = new Markdown4jProcessor().process(
                     getActivity().getResources().openRawResource(mHtmlFile));
-            text.setHtmlFromString(html, new HtmlTextView.LocalImageGetter());
+            text.setHtml(html, new HtmlLocalImageGetter(text));
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
         }

@@ -57,7 +57,7 @@ import org.sufficientlysecure.keychain.util.TestingUtils;
 
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
+@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
 public class BenchmarkOperationTest {
 
     static PrintStream oldShadowStream;

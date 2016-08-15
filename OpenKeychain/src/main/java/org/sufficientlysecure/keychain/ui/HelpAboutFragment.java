@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.markdown4j.Markdown4jProcessor;
+import org.sufficientlysecure.htmltextview.HtmlLocalImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -51,7 +52,7 @@ public class HelpAboutFragment extends Fragment {
         try {
             String html = new Markdown4jProcessor().process(
                     getActivity().getResources().openRawResource(R.raw.help_about));
-            aboutTextView.setHtmlFromString(html, new HtmlTextView.LocalImageGetter());
+            aboutTextView.setHtml(html, new HtmlLocalImageGetter(aboutTextView));
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
         }
