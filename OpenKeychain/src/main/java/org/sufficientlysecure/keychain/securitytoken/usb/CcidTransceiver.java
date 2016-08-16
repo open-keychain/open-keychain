@@ -90,7 +90,7 @@ public class CcidTransceiver {
         }
 
         if (atr == null) {
-            throw new UsbTransportException("Couldn't power up Security Token");
+            throw new UsbTransportException("Couldn't power up ICC");
         }
 
         return atr;
