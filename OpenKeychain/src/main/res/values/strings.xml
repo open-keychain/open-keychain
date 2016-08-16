@@ -128,6 +128,7 @@
     <string name="menu_select_all">"Select all"</string>
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_update_all_keys">"Update all keys"</string>
+    <string name="menu_basic">"Basic"</string>
     <string name="menu_advanced">"Advanced"</string>
     <string name="menu_certify_fingerprint">"Confirm with fingerprint"</string>
     <string name="menu_certify_fingerprint_phrases">"Confirm with phrases"</string>

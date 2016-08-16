@@ -268,6 +268,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
      */
     private void startListFragment(byte[] bytes, Uri dataUri, String serverQuery,
                                    Preferences.CloudSearchPrefs cloudSearchPrefs) {
+
         Fragment listFragment =
                 ImportKeysListFragment.newInstance(bytes, dataUri, serverQuery, false,
                         cloudSearchPrefs);

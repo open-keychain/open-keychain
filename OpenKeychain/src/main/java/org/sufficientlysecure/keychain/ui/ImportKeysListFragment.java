@@ -32,8 +32,12 @@ import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -55,6 +59,7 @@ import org.sufficientlysecure.keychain.util.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.Preferences.CloudSearchPrefs;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.util.ArrayList;
@@ -78,6 +83,7 @@ public class ImportKeysListFragment extends Fragment implements
 
     private RecyclerView mRecyclerView;
     private ImportKeysAdapter mAdapter;
+    private boolean mAdvanced;
 
     private LoaderState mLoaderState;
 
@@ -148,7 +154,8 @@ public class ImportKeysListFragment extends Fragment implements
      * @return fragment with arguments set based on passed parameters
      */
     public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri, String serverQuery,
-                                                     Preferences.CloudSearchPrefs cloudSearchPrefs) {
+                                                     CloudSearchPrefs cloudSearchPrefs) {
+
         return newInstance(bytes, dataUri, serverQuery, false, cloudSearchPrefs);
     }
 
@@ -168,8 +175,7 @@ public class ImportKeysListFragment extends Fragment implements
                                                      Uri dataUri,
                                                      String serverQuery,
                                                      boolean nonInteractive,
-                                                     Preferences.CloudSearchPrefs cloudSearchPrefs) {
-        ImportKeysListFragment frag = new ImportKeysListFragment();
+                                                     CloudSearchPrefs cloudSearchPrefs) {
 
         Bundle args = new Bundle();
         args.putByteArray(ARG_BYTES, bytes);
@@ -178,13 +184,13 @@ public class ImportKeysListFragment extends Fragment implements
         args.putBoolean(ARG_NON_INTERACTIVE, nonInteractive);
         args.putParcelable(ARG_CLOUD_SEARCH_PREFS, cloudSearchPrefs);
 
+        ImportKeysListFragment frag = new ImportKeysListFragment();
         frag.setArguments(args);
-
         return frag;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         binding = DataBindingUtil.inflate(inflater, R.layout.import_keys_list_fragment, container, false);
         binding.setStatus(STATUS_FIRST);
         View view = binding.getRoot();
@@ -208,7 +214,7 @@ public class ImportKeysListFragment extends Fragment implements
         if (dataUri != null || bytes != null) {
             mLoaderState = new BytesLoaderState(bytes, dataUri);
         } else if (query != null) {
-            Preferences.CloudSearchPrefs cloudSearchPrefs
+            CloudSearchPrefs cloudSearchPrefs
                     = args.getParcelable(ARG_CLOUD_SEARCH_PREFS);
             if (cloudSearchPrefs == null) {
                 cloudSearchPrefs = Preferences.getPreferences(mActivity).getCloudSearchPrefs();
@@ -220,6 +226,16 @@ public class ImportKeysListFragment extends Fragment implements
         if (dataUri == null || PermissionsUtil.checkAndRequestReadPermission(mActivity, dataUri)) {
             restartLoaders();
         }
+
+        setHasOptionsMenu(true);
+
+        TextView importAllKeys = (TextView) view.findViewById(R.id.import_keys);
+        importAllKeys.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCallback.importKeys();
+            }
+        });
 
         return view;
     }
@@ -234,6 +250,38 @@ public class ImportKeysListFragment extends Fragment implements
             throw new ClassCastException(activity.toString()
                     + " must implement ImportKeysListener");
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.import_keys_list_fragment, menu);
+
+        menu.findItem(R.id.basic).setVisible(mAdvanced);
+        menu.findItem(R.id.advanced).setVisible(!mAdvanced);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.basic:
+                mAdvanced = false;
+                mAdapter.setAdvanced(false);
+                mActivity.invalidateOptionsMenu();
+
+                binding.setAdvanced(mAdvanced);
+                return true;
+            case R.id.advanced:
+                mAdvanced = true;
+                mAdapter.setAdvanced(true);
+                mActivity.invalidateOptionsMenu();
+                
+                binding.setAdvanced(mAdvanced);
+                return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -263,6 +311,8 @@ public class ImportKeysListFragment extends Fragment implements
                     !PermissionsUtil.checkAndRequestReadPermission(mActivity, ls.mDataUri)) {
                 return;
             }
+        } else if (mLoaderState instanceof CloudLoaderState) {
+
         }
 
         restartLoaders();

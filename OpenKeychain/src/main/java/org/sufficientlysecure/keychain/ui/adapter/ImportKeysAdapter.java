@@ -52,7 +52,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     private FragmentActivity mActivity;
     private ImportKeysResultListener mListener;
-    private boolean mNonInteractive;
+    private boolean mAdvanced, mNonInteractive;
 
     private LoaderState mLoaderState;
     private List<ImportKeysListEntry> mData;
@@ -60,14 +60,22 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     private KeyState[] mKeyStates;
     private int mCurrent;
 
-    public ImportKeysAdapter(FragmentActivity activity, ImportKeysListener listener, boolean mNonInteractive) {
+    public ImportKeysAdapter(FragmentActivity activity, ImportKeysListener listener,
+                             boolean nonInteractive) {
+
         this.mActivity = activity;
         this.mListener = listener;
-        this.mNonInteractive = mNonInteractive;
+        this.mNonInteractive = nonInteractive;
+    }
+
+    public void setAdvanced(boolean advanced) {
+        this.mAdvanced = advanced;
+        notifyDataSetChanged();
     }
 
     public void setLoaderState(LoaderState loaderState) {
         this.mLoaderState = loaderState;
+        notifyDataSetChanged();
     }
 
     public void setData(List<ImportKeysListEntry> data) {
@@ -127,6 +135,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         final ImportKeysListItemBinding b = holder.b;
         final ImportKeysListEntry entry = mData.get(position);
         b.setEntry(entry);
+
+        b.setAdvanced(mAdvanced);
 
         final KeyState keyState = mKeyStates[position];
         final boolean downloaded = keyState.mDownloaded;

@@ -5,6 +5,7 @@
         <import type="android.view.View" />
         <import type="org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry" />
 
+        <variable name="advanced" type="boolean" />
         <variable name="nonInteractive" type="boolean" />
         <variable name="entry" type="ImportKeysListEntry" />
     </data>
@@ -76,11 +77,17 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:visibility="@{(!advanced || nonInteractive) ? View.VISIBLE : View.GONE}" />
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:visibility="@{nonInteractive ? View.GONE : View.VISIBLE}">
+                android:visibility="@{(!advanced || nonInteractive) ? View.GONE : View.VISIBLE}">
 
                 <Button
                     android:id="@+id/import_key"
@@ -109,20 +116,27 @@
             </RelativeLayout>
 
             <LinearLayout
-                android:id="@+id/extra_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical"
-                android:paddingBottom="24dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="16dp"
-                android:visibility="gone">
+                android:visibility="@{advanced ? View.VISIBLE : View.GONE}">
 
-                <include
-                    layout="@layout/import_keys_list_item_extra"
-                    app:entry="@{entry}" />
+                <LinearLayout
+                    android:id="@+id/extra_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
+                    android:orientation="vertical"
+                    android:paddingBottom="24dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="16dp"
+                    android:visibility="gone">
+
+                    <include
+                        layout="@layout/import_keys_list_item_extra"
+                        app:entry="@{entry}" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
