@@ -131,7 +131,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
             if (hasMasterKeyId) {
                 log.add(LogType.MSG_UPLOAD_KEY, 0, KeyFormattingUtils.convertKeyIdToHex(uploadInput.mMasterKeyId));
-                return mProviderHelper.mReader.getCanonicalizedPublicKeyRing(uploadInput.mMasterKeyId);
+                return mProviderHelper.read().getCanonicalizedPublicKeyRing(uploadInput.mMasterKeyId);
             }
 
             CanonicalizedKeyRing canonicalizedRing =

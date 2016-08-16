@@ -74,17 +74,17 @@ public class ProviderHelperSaveTest {
         SaveKeyringResult result;
 
         // insert both keys, second should fail
-        result = new ProviderHelper(RuntimeEnvironment.application).mWriter.savePublicKeyRing(first);
+        result = new ProviderHelper(RuntimeEnvironment.application).write().savePublicKeyRing(first);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = new ProviderHelper(RuntimeEnvironment.application).mWriter.savePublicKeyRing(second);
+        result = new ProviderHelper(RuntimeEnvironment.application).write().savePublicKeyRing(second);
         Assert.assertFalse("second keyring import should fail", result.success());
 
         new KeychainDatabase(RuntimeEnvironment.application).clearDatabase();
 
         // and the other way around
-        result = new ProviderHelper(RuntimeEnvironment.application).mWriter.savePublicKeyRing(second);
+        result = new ProviderHelper(RuntimeEnvironment.application).write().savePublicKeyRing(second);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = new ProviderHelper(RuntimeEnvironment.application).mWriter.savePublicKeyRing(first);
+        result = new ProviderHelper(RuntimeEnvironment.application).write().savePublicKeyRing(first);
         Assert.assertFalse("second keyring import should fail", result.success());
 
     }
@@ -103,13 +103,13 @@ public class ProviderHelperSaveTest {
         SaveKeyringResult result;
 
         // insert secret, this should fail because of missing self-cert
-        result = new ProviderHelper(RuntimeEnvironment.application).mWriter.saveSecretKeyRingForTest(seckey);
+        result = new ProviderHelper(RuntimeEnvironment.application).write().saveSecretKeyRingForTest(seckey);
         Assert.assertFalse("secret keyring import before pubring import should fail", result.success());
 
         // insert pubkey, then seckey - both should succeed
-        result = new ProviderHelper(RuntimeEnvironment.application).mWriter.savePublicKeyRing(pubkey);
+        result = new ProviderHelper(RuntimeEnvironment.application).write().savePublicKeyRing(pubkey);
         Assert.assertTrue("public keyring import should succeed", result.success());
-        result = new ProviderHelper(RuntimeEnvironment.application).mWriter.saveSecretKeyRingForTest(seckey);
+        result = new ProviderHelper(RuntimeEnvironment.application).write().saveSecretKeyRingForTest(seckey);
         Assert.assertTrue("secret keyring import after pubring import should succeed", result.success());
 
     }
@@ -121,10 +121,10 @@ public class ProviderHelperSaveTest {
         Assert.assertEquals("key flags should be zero",
                 0, (long) pub.canonicalize(new OperationLog(), 0).getPublicKey().getKeyUsage());
 
-        mProviderHelper.mWriter.savePublicKeyRing(pub);
+        mProviderHelper.write().savePublicKeyRing(pub);
 
-        CachedPublicKeyRing cachedRing = mProviderHelper.mReader.getCachedPublicKeyRing(keyId);
-        CanonicalizedPublicKeyRing pubRing = mProviderHelper.mReader.getCanonicalizedPublicKeyRing(keyId);
+        CachedPublicKeyRing cachedRing = mProviderHelper.read().getCachedPublicKeyRing(keyId);
+        CanonicalizedPublicKeyRing pubRing = mProviderHelper.read().getCanonicalizedPublicKeyRing(keyId);
 
         Assert.assertEquals("master key should be encryption key", keyId, pubRing.getEncryptId());
         Assert.assertEquals("master key should be encryption key (cached)", keyId, cachedRing.getEncryptId());
@@ -144,13 +144,13 @@ public class ProviderHelperSaveTest {
 
         SaveKeyringResult result;
 
-        result = mProviderHelper.mWriter.saveSecretKeyRingForTest(sec);
+        result = mProviderHelper.write().saveSecretKeyRingForTest(sec);
         Assert.assertTrue("import of secret keyring should succeed", result.success());
 
         // make sure both the CanonicalizedSecretKeyRing as well as the CachedPublicKeyRing correctly
         // indicate the secret key type
-        CachedPublicKeyRing cachedRing = mProviderHelper.mReader.getCachedPublicKeyRing(keyId);
-        CanonicalizedSecretKeyRing secRing = mProviderHelper.mReader.getCanonicalizedSecretKeyRingForTest(keyId);
+        CachedPublicKeyRing cachedRing = mProviderHelper.read().getCachedPublicKeyRing(keyId);
+        CanonicalizedSecretKeyRing secRing = mProviderHelper.read().getCanonicalizedSecretKeyRingForTest(keyId);
 
         Iterator<CanonicalizedSecretKey> it = secRing.secretKeyIterator().iterator();
 
@@ -208,10 +208,10 @@ public class ProviderHelperSaveTest {
 
         SaveKeyringResult result;
 
-        result = mProviderHelper.mWriter.savePublicKeyRing(key);
+        result = mProviderHelper.write().savePublicKeyRing(key);
         Assert.assertTrue("import of keyring should succeed", result.success());
 
-        CanonicalizedPublicKeyRing ring = mProviderHelper.mReader.getCanonicalizedPublicKeyRing(keyId);
+        CanonicalizedPublicKeyRing ring = mProviderHelper.read().getCanonicalizedPublicKeyRing(keyId);
         boolean found = false;
         byte[] badUserId = Hex.decode("436c61757320467261656e6b656c203c436c6175732e4672e46e6b656c4068616c696661782e727774682d61616368656e2e64653e");
         for (byte[] rawUserId : new IterableIterator<>(
@@ -235,22 +235,22 @@ public class ProviderHelperSaveTest {
 
         SaveKeyringResult result;
 
-        result = mProviderHelper.mWriter.saveSecretKeyRingForTest(key);
+        result = mProviderHelper.write().saveSecretKeyRingForTest(key);
         Assert.assertTrue("import of keyring should succeed", result.success());
 
         long signId;
         {
-            CanonicalizedSecretKeyRing ring = mProviderHelper.mReader.getCanonicalizedSecretKeyRingForTest(masterKeyId);
+            CanonicalizedSecretKeyRing ring = mProviderHelper.read().getCanonicalizedSecretKeyRingForTest(masterKeyId);
             Assert.assertTrue("master key should have sign flag", ring.getPublicKey().canSign());
             Assert.assertTrue("master key should have encrypt flag", ring.getPublicKey().canEncrypt());
 
-            signId = mProviderHelper.mReader.getCachedPublicKeyRing(masterKeyId).getSecretSignId();
+            signId = mProviderHelper.read().getCachedPublicKeyRing(masterKeyId).getSecretSignId();
             Assert.assertNotEquals("encrypt id should not be 0", 0, signId);
             Assert.assertNotEquals("encrypt key should be different from master key", masterKeyId, signId);
         }
 
         {
-            CachedPublicKeyRing ring = mProviderHelper.mReader.getCachedPublicKeyRing(masterKeyId);
+            CachedPublicKeyRing ring = mProviderHelper.read().getCachedPublicKeyRing(masterKeyId);
             Assert.assertEquals("signing key should be same id cached as uncached", signId, ring.getSecretSignId());
         }
 
@@ -264,12 +264,12 @@ public class ProviderHelperSaveTest {
         UncachedKeyRing secKey = readRingFromResource("/test-keys/basickey/empty-passphrase-gpg-sec.asc");
         CanonicalizedSecretKeyRing canSecKeyRing = (CanonicalizedSecretKeyRing) secKey.canonicalize(new OperationLog(), 0);
         KeyringPassphrases passphrases = TestingUtils.generateImportPassphrases(secKey, new Passphrase(), keyringPassphrase);
-        OperationResult saveResult = mProviderHelper.mWriter.saveSecretKeyRing(secKey, passphrases, new ProgressScaler());
+        OperationResult saveResult = mProviderHelper.write().saveSecretKeyRing(secKey, passphrases, new ProgressScaler());
         Assert.assertTrue("Failed to insert secret key", saveResult.success());
 
         // retrieve key
         CanonicalizedSecretKeyRing retrievedSecKeyRing =
-                mProviderHelper.mReader.getCanonicalizedSecretKeyRing(secKey.getMasterKeyId(), keyringPassphrase);
+                mProviderHelper.read().getCanonicalizedSecretKeyRing(secKey.getMasterKeyId(), keyringPassphrase);
 
         for (CanonicalizedSecretKey key : canSecKeyRing.secretKeyIterator()) {
             Assert.assertNotNull("Failed to save a key & re-encrypt",
@@ -283,13 +283,13 @@ public class ProviderHelperSaveTest {
 
         UncachedKeyRing secKey = readRingFromResource("/test-keys/basickey/empty-passphrase-gpg-sec.asc");
         KeyringPassphrases passphrases = TestingUtils.generateImportPassphrases(secKey, new Passphrase(), keyringPassphrase);
-        OperationResult saveResult = mProviderHelper.mWriter.saveSecretKeyRing(secKey, passphrases, new ProgressScaler());
+        OperationResult saveResult = mProviderHelper.write().saveSecretKeyRing(secKey, passphrases, new ProgressScaler());
         Assert.assertTrue("Failed to insert secret key", saveResult.success());
 
         long masterKeyId = secKey.getMasterKeyId();
 
         UncachedKeyRing updatedPubKey = readRingFromResource("/test-keys/basickey/with-new-key.pub.asc");
-        SaveKeyringResult pubSaveResult = mProviderHelper.mWriter.savePublicKeyRing(updatedPubKey);
+        SaveKeyringResult pubSaveResult = mProviderHelper.write().savePublicKeyRing(updatedPubKey);
         int resultCode = pubSaveResult.getResult();
 
         Assert.assertTrue("Failed to insert public key",
@@ -324,7 +324,7 @@ public class ProviderHelperSaveTest {
 
         // Force the merge by retrieving secret key
         CanonicalizedSecretKeyRing mergedSecRing =
-                mProviderHelper.mReader.getCanonicalizedSecretKeyRingWithMerge(masterKeyId, keyringPassphrase);
+                mProviderHelper.read().getCanonicalizedSecretKeyRingWithMerge(masterKeyId, keyringPassphrase);
 
         int keyCount = 0;
         Iterator<UncachedPublicKey> keys = mergedSecRing.getUncachedKeyRing().getPublicKeys();

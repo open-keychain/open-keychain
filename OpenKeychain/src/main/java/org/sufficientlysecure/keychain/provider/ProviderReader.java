@@ -235,7 +235,7 @@ public class ProviderReader {
                             throw new ProviderReader.FailedMergeException();
                         }
 
-                        SaveKeyringResult saveResult = mProviderHelper.mWriter.saveSecretKeyRing(secretKey,
+                        SaveKeyringResult saveResult = mProviderHelper.write().saveSecretKeyRing(secretKey,
                                 passphrases, new ProgressScaler());
 
                         if (saveResult.success()) {
@@ -249,7 +249,7 @@ public class ProviderReader {
                         // should succeed as the secret keyring was saved before
 
                         mContentResolver.delete(KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
-                        SaveKeyringResult saveResult = mProviderHelper.mWriter.saveSecretKeyRing(canSecretKey.getUncachedKeyRing(),
+                        SaveKeyringResult saveResult = mProviderHelper.write().saveSecretKeyRing(canSecretKey.getUncachedKeyRing(),
                                 passphrases, new ProgressScaler());
                         if (!saveResult.success()) {
                             throw new RuntimeException("Unrecoverable error, io/bad secret key");

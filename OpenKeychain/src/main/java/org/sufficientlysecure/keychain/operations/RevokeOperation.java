@@ -63,7 +63,7 @@ public class RevokeOperation extends BaseOperation<RevokeKeyringParcel> {
         try {
 
             Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(masterKeyId);
-            CachedPublicKeyRing keyRing = mProviderHelper.mReader.getCachedPublicKeyRing(secretUri);
+            CachedPublicKeyRing keyRing = mProviderHelper.read().getCachedPublicKeyRing(secretUri);
 
             // check if this is a master secret key we can work with
             switch (keyRing.getSecretKeyType(masterKeyId)) {

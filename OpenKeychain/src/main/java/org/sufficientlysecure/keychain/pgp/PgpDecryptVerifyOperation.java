@@ -593,7 +593,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 CachedPublicKeyRing cachedPublicKeyRing;
                 try {
                     // get actual keyring object based on master key id
-                    cachedPublicKeyRing = mProviderHelper.mReader.getCachedPublicKeyRing(
+                    cachedPublicKeyRing = mProviderHelper.read().getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId)
                     );
                     long masterKeyId = cachedPublicKeyRing.getMasterKeyId();
@@ -657,7 +657,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     // get actual subkey which has been used for this encryption packet
                     // retrieve without merging to reduce complexity / speed up operation
                     CanonicalizedSecretKeyRing canonicalizedSecretKeyRing =
-                            mProviderHelper.mReader.getCanonicalizedSecretKeyRing(masterKeyId, keyringPassphrase);
+                            mProviderHelper.read().getCanonicalizedSecretKeyRing(masterKeyId, keyringPassphrase);
                     CanonicalizedSecretKey candidateDecryptionKey =
                             canonicalizedSecretKeyRing.getSecretKey(subKeyId);
 

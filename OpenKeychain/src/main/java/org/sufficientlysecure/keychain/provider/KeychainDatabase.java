@@ -417,7 +417,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     byte[] data = cursor.getBlob(0);
                     try {
                         UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
-                        providerHelper.mWriter.savePublicKeyRing(ring);
+                        providerHelper.write().savePublicKeyRing(ring);
                     } catch(PgpGeneralException e) {
                         Log.e(Constants.TAG, "Error decoding keyring blob!");
                     }
@@ -441,7 +441,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     byte[] data = cursor.getBlob(0);
                     try {
                         UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
-                        providerHelper.mWriter.savePublicKeyRing(ring);
+                        providerHelper.write().savePublicKeyRing(ring);
                     } catch(PgpGeneralException e) {
                         Log.e(Constants.TAG, "Error decoding keyring blob!");
                     }

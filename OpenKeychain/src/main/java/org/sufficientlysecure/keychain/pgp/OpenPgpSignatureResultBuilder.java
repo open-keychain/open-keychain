@@ -120,7 +120,7 @@ public class OpenPgpSignatureResultBuilder {
 
         try {
             ArrayList<String> allUserIds = signingRing.getUnorderedUserIds();
-            ArrayList<String> confirmedUserIds = mProviderHelper.mReader.getConfirmedUserIds(signingRing.getMasterKeyId());
+            ArrayList<String> confirmedUserIds = mProviderHelper.read().getConfirmedUserIds(signingRing.getMasterKeyId());
             setUserIds(allUserIds, confirmedUserIds);
 
             if (mSenderAddress != null) {

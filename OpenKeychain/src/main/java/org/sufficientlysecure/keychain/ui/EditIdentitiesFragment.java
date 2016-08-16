@@ -169,7 +169,7 @@ public class EditIdentitiesFragment extends Fragment
         try {
             Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
             CachedPublicKeyRing keyRing =
-                    new ProviderHelper(getActivity()).mReader.getCachedPublicKeyRing(secretUri);
+                    new ProviderHelper(getActivity()).read().getCachedPublicKeyRing(secretUri);
             long masterKeyId = keyRing.getMasterKeyId();
 
             // check if this is a master secret key we can work with

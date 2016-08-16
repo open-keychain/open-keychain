@@ -59,12 +59,12 @@ public class KeyringTestingHelper {
         // Should throw an exception; key is not yet saved
         retrieveKeyAndExpectNotFound(providerHelper, masterKeyId);
 
-        SaveKeyringResult saveKeyringResult = providerHelper.mWriter.savePublicKeyRing(ring);
+        SaveKeyringResult saveKeyringResult = providerHelper.write().savePublicKeyRing(ring);
 
         boolean saveSuccess = saveKeyringResult.success();
 
         // Now re-retrieve the saved key. Should not throw an exception.
-        providerHelper.mReader.getCanonicalizedPublicKeyRing(masterKeyId);
+        providerHelper.read().getCanonicalizedPublicKeyRing(masterKeyId);
 
         // A different ID should still fail
         retrieveKeyAndExpectNotFound(providerHelper, masterKeyId - 1);
@@ -347,7 +347,7 @@ public class KeyringTestingHelper {
 
     private void retrieveKeyAndExpectNotFound(ProviderHelper providerHelper, long masterKeyId) {
         try {
-            providerHelper.mReader.getCanonicalizedPublicKeyRing(masterKeyId);
+            providerHelper.read().getCanonicalizedPublicKeyRing(masterKeyId);
             throw new AssertionError("Was expecting the previous call to fail!");
         } catch (ProviderReader.NotFoundException expectedException) {
             // good

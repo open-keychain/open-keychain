@@ -155,11 +155,11 @@ public class PgpEncryptDecryptTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.mWriter.saveSecretKeyRing(
+        providerHelper.write().saveSecretKeyRing(
                 mStaticRing1,
                 new KeyringPassphrases(mStaticRing1.getMasterKeyId(), mKeyPhrase1),
                 new ProgressScaler());
-        providerHelper.mWriter.saveSecretKeyRing(
+        providerHelper.write().saveSecretKeyRing(
                 mStaticRing2,
                 new KeyringPassphrases(mStaticRing2.getMasterKeyId(), mKeyPhrase2),
                 new ProgressScaler());
@@ -635,7 +635,7 @@ public class PgpEncryptDecryptTest {
                     new CryptoInputParcel(new Date(), new Passphrase()));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.mWriter.saveSecretKeyRing(
+            providerHelper.write().saveSecretKeyRing(
                     modified, new KeyringPassphrases(modified.getMasterKeyId(), mKeyPhrase1), new ProgressScaler());
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
@@ -658,7 +658,7 @@ public class PgpEncryptDecryptTest {
                     new CryptoInputParcel(new Date(), new Passphrase()));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.mWriter.saveSecretKeyRing(
+            providerHelper.write().saveSecretKeyRing(
                     modified, new KeyringPassphrases(modified.getMasterKeyId(), mKeyPhrase1), new ProgressScaler());
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
@@ -686,7 +686,7 @@ public class PgpEncryptDecryptTest {
                     new CryptoInputParcel(new Date(), new Passphrase()));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.mWriter.saveSecretKeyRing(
+            providerHelper.write().saveSecretKeyRing(
                     modified, new KeyringPassphrases(modified.getMasterKeyId(), mKeyPhrase1), new ProgressScaler());
         }
 

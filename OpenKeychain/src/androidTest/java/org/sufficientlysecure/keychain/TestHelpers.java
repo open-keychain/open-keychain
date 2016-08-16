@@ -100,9 +100,9 @@ public class TestHelpers {
         while(stream.hasNext()) {
             UncachedKeyRing ring = stream.next();
             if (ring.isSecret()) {
-                helper.mWriter.saveSecretKeyRingForTest(ring);
+                helper.write().saveSecretKeyRingForTest(ring);
             } else {
-                helper.mWriter.savePublicKeyRing(ring);
+                helper.write().savePublicKeyRing(ring);
             }
         }
 

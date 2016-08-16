@@ -266,7 +266,7 @@ public class PassphraseCacheService extends Service {
         Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId " + masterKeyId);
 
         // get the type of key (from the database)
-        CachedPublicKeyRing keyRing = new ProviderHelper(this).mReader.getCachedPublicKeyRing(masterKeyId);
+        CachedPublicKeyRing keyRing = new ProviderHelper(this).read().getCachedPublicKeyRing(masterKeyId);
 
 
         // get cached passphrases

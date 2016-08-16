@@ -92,7 +92,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         if (mMasterKeyIds.length == 1 && mHasSecret) {
             // if mMasterKeyIds.length == 0 we let the DeleteOperation respond
             try {
-                HashMap<String, Object> data = new ProviderHelper(this).mReader.getUnifiedData(
+                HashMap<String, Object> data = new ProviderHelper(this).read().getUnifiedData(
                         mMasterKeyIds[0], new String[]{
                                 KeychainContract.KeyRings.USER_ID,
                                 KeychainContract.KeyRings.IS_REVOKED
@@ -273,7 +273,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 long masterKeyId = masterKeyIds[0];
 
                 try {
-                    HashMap<String, Object> data = new ProviderHelper(activity).mReader.getUnifiedData(
+                    HashMap<String, Object> data = new ProviderHelper(activity).read().getUnifiedData(
                             masterKeyId, new String[]{
                                     KeychainContract.KeyRings.USER_ID,
                                     KeychainContract.KeyRings.HAS_ANY_SECRET

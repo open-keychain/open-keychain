@@ -134,7 +134,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     private void preselectKeys(Long signatureKeyId, long[] encryptionKeyIds) {
         if (signatureKeyId != null) {
             try {
-                CachedPublicKeyRing keyring = mProviderHelper.mReader.getCachedPublicKeyRing(
+                CachedPublicKeyRing keyring = mProviderHelper.read().getCachedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingUri(signatureKeyId));
                 if (keyring.hasAnySecret()) {
                     mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
@@ -148,7 +148,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
             for (long preselectedId : encryptionKeyIds) {
                 try {
                     CanonicalizedPublicKeyRing ring =
-                            mProviderHelper.mReader.getCanonicalizedPublicKeyRing(preselectedId);
+                            mProviderHelper.read().getCanonicalizedPublicKeyRing(preselectedId);
                     mEncryptKeyView.addObject(new KeyItem(ring));
                 } catch (NotFoundException e) {
                     Log.e(Constants.TAG, "key not found!", e);

@@ -94,7 +94,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         if (isNewKey) {
             keyringPassphrase = saveParcel.mPassphrase;
         } else {
-            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.mReader.getCachedPublicKeyRing(masterKeyId);
+            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.read().getCachedPublicKeyRing(masterKeyId);
 
             try {
                 switch (cachedPublicKeyRing.getSecretKeyringType()) {
@@ -137,7 +137,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
 
                     // update the keyring along the way
                     CanonicalizedSecretKeyRing secRing =
-                            mProviderHelper.mReader.getCanonicalizedSecretKeyRingWithMerge(
+                            mProviderHelper.read().getCanonicalizedSecretKeyRingWithMerge(
                                     saveParcel.mMasterKeyId, keyringPassphrase);
 
                     modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
@@ -213,7 +213,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
 
         // Save the new keyring.
         SaveKeyringResult saveResult = mProviderHelper
-                .mWriter.saveSecretKeyRing(ring, passphrases, new ProgressScaler(mProgressable, 60, 95, 100));
+                .write().saveSecretKeyRing(ring, passphrases, new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here

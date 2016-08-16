@@ -622,7 +622,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         try {
 
             // if the security token matches a subkey in any key
-            CachedPublicKeyRing ring = mProviderHelper.mReader.getCachedPublicKeyRing(
+            CachedPublicKeyRing ring = mProviderHelper.read().getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(tokenId));
             byte[] candidateFp = ring.getFingerprint();
 
@@ -696,7 +696,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         }
         try {
             long keyId = new ProviderHelper(this)
-                    .mReader.getCachedPublicKeyRing(dataUri)
+                    .read().getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
             long[] encryptionKeyIds = new long[]{keyId};
             Intent intent;
@@ -720,7 +720,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         long keyId = 0;
         try {
             keyId = new ProviderHelper(this)
-                    .mReader.getCachedPublicKeyRing(dataUri)
+                    .read().getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
@@ -1059,7 +1059,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         mRefreshItem.setActionView(mRefresh);
         mRefresh.startAnimation(mRotate);
 
-        byte[] blob = (byte[]) providerHelper.mReader.getGenericData(
+        byte[] blob = (byte[]) providerHelper.read().getGenericData(
                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
                 KeychainContract.Keys.FINGERPRINT, Cursor.FIELD_TYPE_BLOB);
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);

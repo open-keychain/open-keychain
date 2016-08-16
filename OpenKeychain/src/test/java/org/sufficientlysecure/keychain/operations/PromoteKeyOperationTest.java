@@ -96,7 +96,7 @@ public class PromoteKeyOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.mWriter.savePublicKeyRing(mStaticRing.extractPublicKeyRing());
+        providerHelper.write().savePublicKeyRing(mStaticRing.extractPublicKeyRing());
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -113,7 +113,7 @@ public class PromoteKeyOperationTest {
 
         {
             CachedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .mReader.getCachedPublicKeyRing(mStaticRing.getMasterKeyId());
+                    .read().getCachedPublicKeyRing(mStaticRing.getMasterKeyId());
             Assert.assertTrue("key must have a secret now", ring.hasAnySecret());
 
             Iterator<UncachedPublicKey> it = mStaticRing.getPublicKeys();
@@ -139,7 +139,7 @@ public class PromoteKeyOperationTest {
 
         {
             CanonicalizedSecretKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .mReader.getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId(), new Passphrase());
+                    .read().getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId(), new Passphrase());
 
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
                 Assert.assertEquals("all subkeys must be divert-to-card",
@@ -169,7 +169,7 @@ public class PromoteKeyOperationTest {
 
         {
             CanonicalizedSecretKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .mReader.getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId(), new Passphrase());
+                    .read().getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId(), new Passphrase());
 
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
                 if (key.getKeyId() == keyId) {

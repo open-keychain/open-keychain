@@ -81,7 +81,7 @@ public class CertifyKeyFragment
             if (certifyKeyId != Constants.key.none) {
                 try {
                     CachedPublicKeyRing key = (new ProviderHelper(getActivity()))
-                            .mReader.getCachedPublicKeyRing(certifyKeyId);
+                            .read().getCachedPublicKeyRing(certifyKeyId);
                     if (key.canCertify()) {
                         mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
                     }

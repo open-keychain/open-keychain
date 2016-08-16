@@ -143,7 +143,7 @@ public class KeychainApplication extends Application {
                         !(activity instanceof MigrateSymmetricActivity
                                 || activity instanceof PassphraseDialogActivity
                                 || activity instanceof ConsolidateDialogActivity)) {
-                    if (new ProviderHelper(activity).mWriter.hasSecretKeys()) {
+                    if (new ProviderHelper(activity).write().hasSecretKeys()) {
                         Intent intent = new Intent(activity, MigrateSymmetricActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         activity.startActivity(intent);

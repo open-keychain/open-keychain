@@ -151,7 +151,7 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mProviderHelper.mReader.getCanonicalizedPublicKeyRing(
+                CanonicalizedPublicKeyRing signingRing = mProviderHelper.read().getCanonicalizedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
@@ -174,7 +174,7 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mProviderHelper.mReader.getCanonicalizedPublicKeyRing(
+                CanonicalizedPublicKeyRing signingRing = mProviderHelper.read().getCanonicalizedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);

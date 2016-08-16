@@ -203,7 +203,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         long keyId = 0;
         try {
             keyId = new ProviderHelper(getActivity())
-                    .mReader.getCachedPublicKeyRing(dataUri)
+                    .read().getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
@@ -221,7 +221,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         ProviderHelper providerHelper = new ProviderHelper(activity);
 
         try {
-            String content = providerHelper.mWriter.getKeyRingAsArmoredString(
+            String content = providerHelper.write().getKeyRingAsArmoredString(
                     KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri));
 
             if (toClipboard) {
@@ -460,7 +460,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         long keyId;
         try {
             keyId = new ProviderHelper(getActivity())
-                    .mReader.getCachedPublicKeyRing(mDataUri)
+                    .read().getCachedPublicKeyRing(mDataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);

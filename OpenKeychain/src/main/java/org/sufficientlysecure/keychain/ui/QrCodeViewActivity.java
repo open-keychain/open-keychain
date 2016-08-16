@@ -78,7 +78,7 @@ public class QrCodeViewActivity extends BaseActivity {
 
         ProviderHelper providerHelper = new ProviderHelper(this);
         try {
-            byte[] blob = (byte[]) providerHelper.mReader.getGenericData(
+            byte[] blob = (byte[]) providerHelper.read().getGenericData(
                     KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
                     KeychainContract.KeyRings.FINGERPRINT, Cursor.FIELD_TYPE_BLOB);
             if (blob == null) {

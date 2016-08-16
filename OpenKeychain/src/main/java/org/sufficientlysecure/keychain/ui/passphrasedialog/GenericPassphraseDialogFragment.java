@@ -99,7 +99,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
 
                     }
                     case PASSPHRASE_KEYRING_UNLOCK: {
-                        CachedPublicKeyRing cachedPublicKeyRing = helper.mReader.getCachedPublicKeyRing(
+                        CachedPublicKeyRing cachedPublicKeyRing = helper.read().getCachedPublicKeyRing(
                                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(mRequiredInput.getMasterKeyId()));
 
                         // no need to set mSecretKeyToUnlock, as we are unlocking a keyring
@@ -139,7 +139,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                     }
                     case PASSPHRASE_TOKEN_UNLOCK: {
 
-                        CanonicalizedSecretKeyRing secretKeyRing = helper.mReader.getCanonicalizedSecretKeyRing(
+                        CanonicalizedSecretKeyRing secretKeyRing = helper.read().getCanonicalizedSecretKeyRing(
                                 mRequiredInput.getMasterKeyId(),
                                 mRequiredInput.getKeyringPassphrase()
                         );
@@ -147,7 +147,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                         mSecretKeyToUnlock = secretKeyRing.getSecretKey(subKeyId);
 
                         // cached key operations are less expensive
-                        CachedPublicKeyRing cachedPublicKeyRing = helper.mReader.getCachedPublicKeyRing(
+                        CachedPublicKeyRing cachedPublicKeyRing = helper.read().getCachedPublicKeyRing(
                                 KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
                         String mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
                         OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
@@ -319,7 +319,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                                 case PASSPHRASE_KEYRING_UNLOCK: {
                                     try {
                                         CanonicalizedSecretKeyRing secretKeyRing =
-                                                helper.mReader.getCanonicalizedSecretKeyRing(
+                                                helper.read().getCanonicalizedSecretKeyRing(
                                                         mRequiredInput.getMasterKeyId(),
                                                         passphrase
                                                 );

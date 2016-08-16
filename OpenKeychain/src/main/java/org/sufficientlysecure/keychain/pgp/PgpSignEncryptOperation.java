@@ -227,7 +227,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 long signingSubKeyId = data.getSignatureSubKeyId();
 
                 CachedPublicKeyRing cachedPublicKeyRing =
-                        mProviderHelper.mReader.getCachedPublicKeyRing(signingMasterKeyId);
+                        mProviderHelper.read().getCachedPublicKeyRing(signingMasterKeyId);
 
                 SecretKeyRingType secretKeyRingType = cachedPublicKeyRing.getSecretKeyringType();
 
@@ -261,7 +261,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 }
 
                 CanonicalizedSecretKeyRing signingKeyRing =
-                        mProviderHelper.mReader.getCanonicalizedSecretKeyRingWithMerge(
+                        mProviderHelper.read().getCanonicalizedSecretKeyRingWithMerge(
                                 signingMasterKeyId, keyringPassphrase);
                 signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
 
@@ -351,7 +351,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 // Asymmetric encryption
                 for (long id : data.getEncryptionMasterKeyIds()) {
                     try {
-                        CanonicalizedPublicKeyRing keyRing = mProviderHelper.mReader.getCanonicalizedPublicKeyRing(
+                        CanonicalizedPublicKeyRing keyRing = mProviderHelper.read().getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(id));
                         Set<Long> encryptSubKeyIds = keyRing.getEncryptIds();
                         for (Long subKeyId : encryptSubKeyIds) {

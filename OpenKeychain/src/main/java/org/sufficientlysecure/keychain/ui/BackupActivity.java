@@ -119,7 +119,7 @@ public class BackupActivity extends BaseActivity {
         for (long masterKeyId : masterKeyIds) {
             try {
                 SecretKeyRingType secretKeyRingType =
-                        providerHelper.mReader.getCachedPublicKeyRing(masterKeyId).getSecretKeyringType();
+                        providerHelper.read().getCachedPublicKeyRing(masterKeyId).getSecretKeyringType();
                 switch (secretKeyRingType) {
                     case PASSPHRASE_EMPTY: {
                         mPassphrases.put(masterKeyId, new Passphrase());

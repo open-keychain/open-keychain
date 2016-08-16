@@ -88,7 +88,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     return;
                 case PASSPHRASE_KEYRING_UNLOCK: {
                     CachedPublicKeyRing pubRing =
-                            new ProviderHelper(this).mReader.getCachedPublicKeyRing(requiredInput.getMasterKeyId());
+                            new ProviderHelper(this).read().getCachedPublicKeyRing(requiredInput.getMasterKeyId());
                     if (pubRing.getSecretKeyringType() == SecretKeyRingType.PASSPHRASE_EMPTY) {
                         returnWithEmptyPassphrase(cryptoInputParcel);
                     }
@@ -99,7 +99,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         throw new AssertionError("No keyring passphrase passed! (Should not happen)");
                     }
                     CachedPublicKeyRing pubRing =
-                            new ProviderHelper(this).mReader.getCachedPublicKeyRing(requiredInput.getMasterKeyId());
+                            new ProviderHelper(this).read().getCachedPublicKeyRing(requiredInput.getMasterKeyId());
                     if (pubRing.getSecretKeyType(requiredInput.getSubKeyId()) == SecretKeyType.PASSPHRASE_EMPTY) {
                         returnWithEmptyPassphrase(cryptoInputParcel);
                     }

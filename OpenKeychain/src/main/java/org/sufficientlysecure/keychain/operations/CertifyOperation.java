@@ -81,7 +81,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
 
-            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.mReader.getCachedPublicKeyRing(masterKeyId);
+            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.read().getCachedPublicKeyRing(masterKeyId);
 
             // get keyring passphrase
             Passphrase keyringPassphrase;
@@ -112,7 +112,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             }
 
             CanonicalizedSecretKeyRing secretKeyRing =
-                    mProviderHelper.mReader.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId, keyringPassphrase);
+                    mProviderHelper.read().getCanonicalizedSecretKeyRing(parcel.mMasterKeyId, keyringPassphrase);
             certificationKey = secretKeyRing.getSecretKey();
 
             log.add(LogType.MSG_CRT_UNLOCK, 1);
@@ -177,7 +177,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                 }
 
                 CanonicalizedPublicKeyRing publicRing =
-                        mProviderHelper.mReader.getCanonicalizedPublicKeyRing(action.mMasterKeyId);
+                        mProviderHelper.read().getCanonicalizedPublicKeyRing(action.mMasterKeyId);
 
                 PgpCertifyOperation op = new PgpCertifyOperation();
                 PgpCertifyResult result = op.certify(certificationKey, publicRing,
@@ -235,7 +235,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                     KeyFormattingUtils.convertKeyIdToHex(certifiedKey.getMasterKeyId()));
             // store the signed key in our local cache
             mProviderHelper.clearLog();
-            SaveKeyringResult result = mProviderHelper.mWriter.savePublicKeyRing(certifiedKey);
+            SaveKeyringResult result = mProviderHelper.write().savePublicKeyRing(certifiedKey);
 
             if (uploadOperation != null) {
                 UploadKeyringParcel uploadInput =

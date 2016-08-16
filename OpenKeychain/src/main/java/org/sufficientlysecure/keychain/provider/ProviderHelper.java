@@ -63,8 +63,8 @@ import java.util.List;
  * method is called to start a new one specifically.
  */
 public class ProviderHelper {
-    public final ProviderReader mReader;
-    public final ProviderWriter mWriter;
+    private final ProviderReader mReader;
+    private final ProviderWriter mWriter;
     protected final Context mContext;
     private final ContentResolver mContentResolver;
     private OperationLog mLog;
@@ -133,6 +133,14 @@ public class ProviderHelper {
 
     public ContentResolver getContentResolver() {
         return mContentResolver;
+    }
+
+    public ProviderReader read() {
+        return mReader;
+    }
+
+    public ProviderWriter write() {
+        return mWriter;
     }
 
     @NonNull

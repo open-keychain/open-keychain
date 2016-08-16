@@ -726,7 +726,7 @@ public class ProviderWriter {
 
             // If there is an old keyring, merge it
             try {
-                UncachedKeyRing oldPublicRing = mProviderHelper.mReader.getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
+                UncachedKeyRing oldPublicRing = mProviderHelper.read().getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new public ring into the old one
                 mProviderHelper.log(LogType.MSG_IP_MERGE_PUBLIC);
@@ -789,7 +789,7 @@ public class ProviderWriter {
                 try {
                     passphrase = PassphraseCacheService.getCachedPassphrase(mContext,
                             publicRing.getMasterKeyId());
-                    secretRing = mProviderHelper.mReader.getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId(), passphrase)
+                    secretRing = mProviderHelper.read().getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId(), passphrase)
                             .getUncachedKeyRing();
                 } catch (PassphraseCacheService.KeyNotFoundException | ProviderReader.NotFoundException ignored) {}
 
@@ -928,7 +928,7 @@ public class ProviderWriter {
                 // all self-certificates from the public key.
                 try {
                     mProviderHelper.log(LogType.MSG_IS_MERGE_SPECIAL);
-                    UncachedKeyRing oldPublicRing = mProviderHelper.mReader.getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
+                    UncachedKeyRing oldPublicRing = mProviderHelper.read().getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
                     secretRing = secretRing.merge(oldPublicRing, mProviderHelper.getLog(), mProviderHelper.mIndent);
                     canSecretRing = (CanonicalizedSecretKeyRing) secretRing.canonicalize(mProviderHelper.getLog(), mProviderHelper.mIndent);
                 } catch (ProviderReader.NotFoundException e2) {
@@ -939,7 +939,7 @@ public class ProviderWriter {
             // Merge new data into public keyring, if there is any
             UncachedKeyRing publicRing;
             try {
-                UncachedKeyRing oldPublicRing = mProviderHelper.mReader.getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
+                UncachedKeyRing oldPublicRing = mProviderHelper.read().getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
 
                 // Merge data from new secret ring into public one
                 mProviderHelper.log(LogType.MSG_IS_MERGE_PUBLIC);
@@ -1024,7 +1024,7 @@ public class ProviderWriter {
 
     public String getKeyRingAsArmoredString(Uri uri)
             throws ProviderReader.NotFoundException, IOException, PgpGeneralException {
-        byte[] data = (byte[]) mProviderHelper.mReader.getGenericData(
+        byte[] data = (byte[]) mProviderHelper.read().getGenericData(
                 uri, KeyRingData.KEY_RING_DATA, Cursor.FIELD_TYPE_BLOB);
         return getKeyRingAsArmoredString(data);
     }

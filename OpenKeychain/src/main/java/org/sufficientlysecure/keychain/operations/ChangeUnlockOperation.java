@@ -74,7 +74,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
                         KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
 
                 // update the keyring along the way
-                retrievedRing = mProviderHelper.mReader.getCanonicalizedSecretKeyRingWithMerge(
+                retrievedRing = mProviderHelper.read().getCanonicalizedSecretKeyRingWithMerge(
                         unlockParcel.mMasterKeyId,
                         cryptoInput.getPassphrase()
                 );
@@ -94,7 +94,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         }
 
         SaveKeyringResult saveResult = mProviderHelper
-                .mWriter.saveSecretKeyRing(
+                .write().saveSecretKeyRing(
                         retrievedRing.getUncachedKeyRing(),
                         new KeyringPassphrases(retrievedRing.getMasterKeyId(), unlockParcel.mNewPassphrase),
                         new ProgressScaler(mProgressable, 0, 95, 100)

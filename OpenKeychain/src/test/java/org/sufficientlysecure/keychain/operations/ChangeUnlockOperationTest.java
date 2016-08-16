@@ -75,7 +75,7 @@ public class ChangeUnlockOperationTest {
         // don't log verbosely yet, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.mWriter.saveSecretKeyRing(mStaticRing,
+        providerHelper.write().saveSecretKeyRing(mStaticRing,
                 new KeyringPassphrases(mStaticRing.getMasterKeyId(), mPassphrase), new ProgressScaler());
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -111,7 +111,7 @@ public class ChangeUnlockOperationTest {
         assertTrue("change unlock should succeed", result.success());
 
         try {
-            providerHelper.mReader.getCanonicalizedSecretKeyRingWithMerge(mStaticRing.getMasterKeyId(), newPassphrase);
+            providerHelper.read().getCanonicalizedSecretKeyRingWithMerge(mStaticRing.getMasterKeyId(), newPassphrase);
         } catch (ProviderReader.NotFoundException | ByteArrayEncryptor.EncryptDecryptException e) {
             Assert.fail("IO error when retrieving key!");
         } catch (ByteArrayEncryptor.IncorrectPassphraseException e){

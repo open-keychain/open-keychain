@@ -230,7 +230,7 @@ public class OpenPgpService extends Service {
 
                 // get first usable subkey capable of signing
                 try {
-                    long signSubKeyId = mProviderHelper.mReader.getCachedPublicKeyRing(
+                    long signSubKeyId = mProviderHelper.read().getCachedPublicKeyRing(
                             pgpData.getSignatureMasterKeyId()).getSecretSignId();
                     pgpData.setSignatureSubKeyId(signSubKeyId);
                 } catch (PgpKeyNotFoundException e) {
@@ -370,7 +370,7 @@ public class OpenPgpService extends Service {
 
                     // get first usable subkey capable of signing
                     try {
-                        long signSubKeyId = mProviderHelper.mReader.getCachedPublicKeyRing(
+                        long signSubKeyId = mProviderHelper.read().getCachedPublicKeyRing(
                                 pgpData.getSignatureMasterKeyId()).getSecretSignId();
                         pgpData.setSignatureSubKeyId(signSubKeyId);
                     } catch (PgpKeyNotFoundException e) {
@@ -626,7 +626,7 @@ public class OpenPgpService extends Service {
             try {
                 // try to find key, throws NotFoundException if not in db!
                 CanonicalizedPublicKeyRing keyRing =
-                        mProviderHelper.mReader.getCanonicalizedPublicKeyRing(
+                        mProviderHelper.read().getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(masterKeyId));
 
                 Intent result = new Intent();

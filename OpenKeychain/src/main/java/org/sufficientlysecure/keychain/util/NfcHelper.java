@@ -130,7 +130,7 @@ public class NfcHelper {
                                 try {
                                     Uri blobUri =
                                             KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                                    mNfcKeyringBytes = (byte[]) mProviderHelper.mReader.getGenericData(
+                                    mNfcKeyringBytes = (byte[]) mProviderHelper.read().getGenericData(
                                             blobUri,
                                             KeychainContract.KeyRingData.KEY_RING_DATA,
                                             Cursor.FIELD_TYPE_BLOB);

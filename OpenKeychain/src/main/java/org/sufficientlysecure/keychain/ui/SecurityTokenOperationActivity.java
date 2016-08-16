@@ -251,7 +251,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
-                    secretKeyRing = providerHelper.mReader.getCanonicalizedSecretKeyRingWithMerge(
+                    secretKeyRing = providerHelper.read().getCanonicalizedSecretKeyRingWithMerge(
                             mRequiredInput.getMasterKeyId(), mInputParcel.getPassphrase());
                 } catch (ProviderReader.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
