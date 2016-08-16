@@ -91,7 +91,8 @@
                     android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:padding="8dp"
-                    android:text="@string/btn_import" />
+                    android:text="@string/btn_import"
+                    android:textColor="@color/card_view_button" />
 
                 <ImageButton
                     android:id="@+id/expand"
