@@ -47,19 +47,30 @@ public class CreateSecurityTokenPinFragment extends Fragment {
     View mBackButton;
     View mNextButton;
 
+    // top 20 according to http://datagenetics.com/blog/september32012/index.html
+    // extended from 4 digits to 6 for our use case
     private static HashSet<String> sPinBlacklist = new HashSet<>(Arrays.asList(
-            "000000",
+            "123456",
             "111111",
-            "222222",
-            "333333",
+            "000000",
+            "121212",
+            "777777",
+            // "1004", makes no sense as "100004", see blog post
+            "200000",
             "444444",
+            "222222",
+            "696969",
+            "999999",
+            "333333",
             "555555",
             "666666",
-            "777777",
+            "111222",
+            "131313",
             "888888",
-            "999999",
-            "123456",
-            "XXXXXX"
+            "654321",
+            "200001",
+            "101010",
+            "XXXXXX" // additional: should not be used, as this PIN is entered for resetting the card
     ));
 
     /**

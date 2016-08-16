@@ -791,7 +791,7 @@
     <string name="create_key_yubi_key_pin_repeat">"Repeat PIN"</string>
     <string name="create_key_yubi_key_pin_not_correct">"PIN is not correct!"</string>
     <string name="create_key_yubi_key_pin_too_short">"PIN must be at least 6 numbers long!"</string>
-    <string name="create_key_yubi_key_pin_insecure">"Please choose a secure PIN, not 000000, 123456 or similar combinations."</string>
+    <string name="create_key_yubi_key_pin_insecure">"Please choose a secure PIN, not 000000, 123456 or similar combinations (the top 20 most chosen PINs are not allowed)"</string>
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
