@@ -145,12 +145,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.importKey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mLoaderState instanceof BytesLoaderState) {
-                    importKey(new ParcelableKeyRing(entry.getEncodedRing()));
-                } else if (mLoaderState instanceof CloudLoaderState) {
-                    importKey(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(),
-                            entry.getKeybaseName(), entry.getFbUsername()));
-                }
+                getKey(getParcelableKeyRing(entry), false);
             }
         });
 
@@ -159,7 +154,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             public void onClick(View v) {
                 mCurrent = position;
                 if (!showed && !downloaded) {
-                    getKey(entry);
+                    getKey(getParcelableKeyRing(entry), true);
                 } else {
                     changeState(position, !showed);
                 }
@@ -184,14 +179,16 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         return mData != null ? mData.size() : 0;
     }
 
-    public void importKey(ParcelableKeyRing keyRing) {
-        ImportKeyringParcel inputParcel = prepareKeyOperation(keyRing, false);
-        ImportKeysOperationCallback cb = new ImportKeysOperationCallback(mListener, inputParcel);
-        CryptoOperationHelper operationHelper = new CryptoOperationHelper(1, mActivity, cb, R.string.progress_importing);
-        operationHelper.cryptoOperation();
+    public void getKey(ParcelableKeyRing keyRing, boolean skipSave) {
+        ImportKeyringParcel inputParcel = prepareKeyOperation(keyRing, skipSave);
+        ImportKeysResultListener listener = skipSave ? this : mListener;
+        ImportKeysOperationCallback cb = new ImportKeysOperationCallback(listener, inputParcel);
+        int message = skipSave ? R.string.progress_downloading : R.string.progress_importing;
+        CryptoOperationHelper opHelper = new CryptoOperationHelper(1, mActivity, cb, message);
+        opHelper.cryptoOperation();
     }
 
-    public void getKey(ImportKeysListEntry entry) {
+    private ParcelableKeyRing getParcelableKeyRing(ImportKeysListEntry entry) {
         ParcelableKeyRing keyRing = null;
         if (mLoaderState instanceof BytesLoaderState) {
             keyRing = new ParcelableKeyRing(entry.getEncodedRing());
@@ -199,11 +196,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             keyRing = new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(),
                     entry.getKeybaseName(), entry.getFbUsername());
         }
-
-        ImportKeyringParcel inputParcel = prepareKeyOperation(keyRing, true);
-        ImportKeysOperationCallback cb = new ImportKeysOperationCallback(this, inputParcel);
-        CryptoOperationHelper operationHelper = new CryptoOperationHelper(1, mActivity, cb, R.string.progress_downloading);
-        operationHelper.cryptoOperation();
+        return keyRing;
     }
 
     private ImportKeyringParcel prepareKeyOperation(ParcelableKeyRing keyRing, boolean skipSave) {

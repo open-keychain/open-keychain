@@ -36,8 +36,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -196,6 +196,7 @@ public class ImportKeysListFragment extends Fragment implements
         View view = binding.getRoot();
 
         mActivity = getActivity();
+        setHasOptionsMenu(true);
 
         Bundle args = getArguments();
         Uri dataUri = args.getParcelable(ARG_DATA_URI);
@@ -203,13 +204,10 @@ public class ImportKeysListFragment extends Fragment implements
         String query = args.getString(ARG_SERVER_QUERY);
         boolean nonInteractive = args.getBoolean(ARG_NON_INTERACTIVE, false);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mActivity);
-        mRecyclerView.setLayoutManager(layoutManager);
-
         // Create an empty adapter we will use to display the loaded data.
         mAdapter = new ImportKeysAdapter(mActivity, mCallback, nonInteractive);
-        mRecyclerView.setAdapter(mAdapter);
+        binding.recyclerView.setAdapter(mAdapter);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
 
         if (dataUri != null || bytes != null) {
             loadState(new BytesLoaderState(bytes, dataUri));
@@ -226,10 +224,7 @@ public class ImportKeysListFragment extends Fragment implements
             restartLoaders();
         }
 
-        setHasOptionsMenu(true);
-
-        TextView importAllKeys = (TextView) view.findViewById(R.id.import_keys);
-        importAllKeys.setOnClickListener(new View.OnClickListener() {
+        binding.importKeys.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 mCallback.importKeys();
@@ -267,7 +262,8 @@ public class ImportKeysListFragment extends Fragment implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+        int itemId = item.getItemId();
+        switch (itemId) {
             case R.id.basic:
                 setAdvanced(false);
                 return true;
@@ -275,7 +271,6 @@ public class ImportKeysListFragment extends Fragment implements
                 setAdvanced(true);
                 return true;
         }
-
         return false;
     }
 
@@ -314,8 +309,6 @@ public class ImportKeysListFragment extends Fragment implements
                     !PermissionsUtil.checkAndRequestReadPermission(mActivity, ls.mDataUri)) {
                 return;
             }
-        } else if (mLoaderState instanceof CloudLoaderState) {
-
         }
 
         if (!mLoaderState.isBasicModeSupported()) {
@@ -338,9 +331,8 @@ public class ImportKeysListFragment extends Fragment implements
 
     @Override
     public Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> onCreateLoader(
-            int id,
-            Bundle args
-    ) {
+            int id, Bundle args) {
+
         Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader = null;
         switch (id) {
             case LOADER_ID_BYTES: {
@@ -446,15 +438,10 @@ public class ImportKeysListFragment extends Fragment implements
     }
 
     @Override
-    public void onLoaderReset(Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader) {
-        switch (loader.getId()) {
-            case LOADER_ID_BYTES:
-            case LOADER_ID_CLOUD:
-                mAdapter.clearData();
-                break;
-            default:
-                break;
-        }
+    public void onLoaderReset(
+            Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader) {
+
+        mAdapter.clearData();
     }
 
 }
