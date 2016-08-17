@@ -20,18 +20,15 @@ package org.sufficientlysecure.keychain.securitytoken.usb;
 import java.io.IOException;
 
 public class UsbTransportException extends IOException {
-    public UsbTransportException() {
-    }
-
-    public UsbTransportException(final String detailMessage) {
+    public UsbTransportException(String detailMessage) {
         super(detailMessage);
     }
 
-    public UsbTransportException(final String message, final Throwable cause) {
+    public UsbTransportException(String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public UsbTransportException(final Throwable cause) {
+    public UsbTransportException(Throwable cause) {
         super(cause);
     }
 }

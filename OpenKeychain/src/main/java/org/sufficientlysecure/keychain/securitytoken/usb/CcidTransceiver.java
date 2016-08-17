@@ -34,6 +34,7 @@ import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 
+
 public class CcidTransceiver {
     private static final int CCID_HEADER_LENGTH = 10;
 
@@ -55,15 +56,18 @@ public class CcidTransceiver {
     private final UsbDeviceConnection usbConnection;
     private final UsbEndpoint usbBulkIn;
     private final UsbEndpoint usbBulkOut;
+    private final CcidDescription usbCcidDescription;
     private final byte[] inputBuffer;
 
     private byte currentSequenceNumber;
 
 
-    CcidTransceiver(UsbDeviceConnection connection, UsbEndpoint bulkIn, UsbEndpoint bulkOut) {
+    CcidTransceiver(UsbDeviceConnection connection, UsbEndpoint bulkIn, UsbEndpoint bulkOut,
+            CcidDescription ccidDescription) {
         usbConnection = connection;
         usbBulkIn = bulkIn;
         usbBulkOut = bulkOut;
+        usbCcidDescription = ccidDescription;
 
         inputBuffer = new byte[usbBulkIn.getMaxPacketSize()];
     }
@@ -79,25 +83,58 @@ public class CcidTransceiver {
 
         skipAvailableInput();
 
+        CcidDataBlock response = null;
+        for (CcidDescription.Voltage v : usbCcidDescription.getVoltages()) {
+            Log.v(Constants.TAG, "CCID: attempting to power on with voltage " + v.toString());
+            response = iccPowerOnVoltage(v.powerOnValue);
+
+            if (response.getStatus() == 1 && response.getError() == 7) { // Power select error
+                Log.v(Constants.TAG, "CCID: failed to power on with voltage " + v.toString());
+                iccPowerOff();
+                Log.v(Constants.TAG, "CCID: powered off");
+            } else {
+                break;
+            }
+        }
+        if (response == null) {
+            throw new UsbTransportException("Couldn't power up ICC2");
+        }
+
+        long elapsedTime = SystemClock.elapsedRealtime() - startTime;
+
+        Log.d(Constants.TAG, "Usb transport connected, took " + elapsedTime + "ms, ATR=" +
+                Hex.toHexString(response.getData()));
+
+        return response;
+    }
+
+    private CcidDataBlock iccPowerOnVoltage(byte voltage) throws UsbTransportException {
         byte sequenceNumber = currentSequenceNumber++;
         final byte[] iccPowerCommand = {
                 MESSAGE_TYPE_PC_TO_RDR_ICC_POWER_ON,
                 0x00, 0x00, 0x00, 0x00,
                 SLOT_NUMBER,
                 sequenceNumber,
-                0x00, // voltage select = auto
+                voltage,
                 0x00, 0x00 // reserved for future use
         };
 
         sendRaw(iccPowerCommand, 0, iccPowerCommand.length);
-        CcidDataBlock response = receiveDataBlock(sequenceNumber);
 
-        long elapsedTime = SystemClock.elapsedRealtime() - startTime;
+        return receiveDataBlock(sequenceNumber);
+    }
 
-        Log.d(Constants.TAG, "Usb transport connected  T1/TPDU, took " + elapsedTime + "ms, ATR=" +
-                Hex.toHexString(response.getData()));
+    private void iccPowerOff() throws UsbTransportException {
+        byte sequenceNumber = currentSequenceNumber++;
+        final byte[] iccPowerCommand = {
+                0x63,
+                0x00, 0x00, 0x00, 0x00,
+                0x00,
+                sequenceNumber,
+                0x00
+        };
 
-        return response;
+        sendRaw(iccPowerCommand, 0, iccPowerCommand.length);
     }
 
     /**
