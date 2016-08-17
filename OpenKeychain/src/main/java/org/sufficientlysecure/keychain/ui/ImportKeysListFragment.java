@@ -212,15 +212,14 @@ public class ImportKeysListFragment extends Fragment implements
         mRecyclerView.setAdapter(mAdapter);
 
         if (dataUri != null || bytes != null) {
-            mLoaderState = new BytesLoaderState(bytes, dataUri);
+            loadState(new BytesLoaderState(bytes, dataUri));
         } else if (query != null) {
             CloudSearchPrefs cloudSearchPrefs
                     = args.getParcelable(ARG_CLOUD_SEARCH_PREFS);
             if (cloudSearchPrefs == null) {
                 cloudSearchPrefs = Preferences.getPreferences(mActivity).getCloudSearchPrefs();
             }
-
-            mLoaderState = new CloudLoaderState(query, cloudSearchPrefs);
+            loadState(new CloudLoaderState(query, cloudSearchPrefs));
         }
 
         if (dataUri == null || PermissionsUtil.checkAndRequestReadPermission(mActivity, dataUri)) {
@@ -254,10 +253,14 @@ public class ImportKeysListFragment extends Fragment implements
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.import_keys_list_fragment, menu);
+        if (mLoaderState != null) {
+            inflater.inflate(R.menu.import_keys_list_fragment, menu);
 
-        menu.findItem(R.id.basic).setVisible(mAdvanced);
-        menu.findItem(R.id.advanced).setVisible(!mAdvanced);
+            MenuItem basicMenuItem = menu.findItem(R.id.basic);
+            basicMenuItem.setVisible(mAdvanced && mLoaderState.isBasicModeSupported());
+            MenuItem advancedMenuItem = menu.findItem(R.id.advanced);
+            advancedMenuItem.setVisible(!mAdvanced);
+        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -314,6 +317,11 @@ public class ImportKeysListFragment extends Fragment implements
         } else if (mLoaderState instanceof CloudLoaderState) {
 
         }
+
+        if (!mLoaderState.isBasicModeSupported()) {
+            mAdvanced = true;
+        }
+        setAdvanced(mAdvanced);
 
         restartLoaders();
     }

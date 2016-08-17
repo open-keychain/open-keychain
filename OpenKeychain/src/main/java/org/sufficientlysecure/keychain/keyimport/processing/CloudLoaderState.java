@@ -12,4 +12,9 @@ public class CloudLoaderState implements LoaderState {
         mCloudPrefs = cloudPrefs;
     }
 
+    @Override
+    public boolean isBasicModeSupported() {
+        return false;
+    }
+
 }

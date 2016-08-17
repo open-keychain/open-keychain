@@ -12,4 +12,9 @@ public class BytesLoaderState implements LoaderState {
         mDataUri = dataUri;
     }
 
+    @Override
+    public boolean isBasicModeSupported() {
+        return true;
+    }
+
 }
