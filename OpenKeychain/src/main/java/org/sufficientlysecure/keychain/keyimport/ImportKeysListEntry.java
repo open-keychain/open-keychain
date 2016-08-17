@@ -61,7 +61,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private String mKeybaseName;
     private String mFbUsername;
     private String mQuery;
-    private ArrayList<String> mOrigins;
     private Integer mHashCode = null;
 
     public ParcelableKeyRing getParcelableKeyRing() {
@@ -203,14 +202,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mQuery = query;
     }
 
-    public ArrayList<String> getOrigins() {
-        return mOrigins;
-    }
-
-    public void addOrigin(String origin) {
-        mOrigins.add(origin);
-    }
-
     public int hashCode() {
         return mHashCode != null ? mHashCode : super.hashCode();
     }
@@ -264,7 +255,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mSecretKey = false;
 
         mUserIds = new ArrayList<>();
-        mOrigins = new ArrayList<>();
     }
 
     /**
@@ -367,12 +357,12 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeByte((byte) (mSecretKey ? 1 : 0));
         dest.writeString(mKeybaseName);
         dest.writeString(mFbUsername);
-        dest.writeStringList(mOrigins);
     }
 
     public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
         public ImportKeysListEntry createFromParcel(final Parcel source) {
             ImportKeysListEntry vr = new ImportKeysListEntry();
+
             vr.mParcelableKeyRing = source.readParcelable(ParcelableKeyRing.class.getClassLoader());
             vr.mPrimaryUserId = (UserId) source.readSerializable();
             vr.mUserIds = new ArrayList<>();
@@ -388,8 +378,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mSecretKey = source.readByte() == 1;
             vr.mKeybaseName = source.readString();
             vr.mFbUsername = source.readString();
-            vr.mOrigins = new ArrayList<>();
-            source.readStringList(vr.mOrigins);
 
             return vr;
         }

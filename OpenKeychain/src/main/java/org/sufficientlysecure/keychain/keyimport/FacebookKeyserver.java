@@ -51,10 +51,6 @@ public class FacebookKeyserver extends Keyserver {
     private static final String FB_HOST = "facebook.com";
     private static final String FB_HOST_WWW = "www." + FB_HOST;
 
-    public static final String FB_URL = "https://" + FB_HOST_WWW;
-
-    public static final String ORIGIN = FB_URL;
-
     private final Proxy mProxy;
 
     public FacebookKeyserver(Proxy proxy) {
@@ -148,7 +144,6 @@ public class FacebookKeyserver extends Keyserver {
             throws UnsupportedOperationException {
         ImportKeysListEntry entry = new ImportKeysListEntry();
         entry.setSecretKey(false); // keys imported from Facebook must be public
-        entry.addOrigin(ORIGIN);
 
         // so we can query for the Facebook username directly, and to identify the source to
         // download the key from

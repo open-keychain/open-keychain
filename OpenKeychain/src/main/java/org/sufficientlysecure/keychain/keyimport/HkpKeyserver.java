@@ -54,6 +54,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class HkpKeyserver extends Keyserver {
+
     private static class HttpError extends Exception {
         private static final long serialVersionUID = 1718783705229428893L;
         private int mCode;
@@ -274,7 +275,6 @@ public class HkpKeyserver extends Keyserver {
         while (matcher.find()) {
             final ImportKeysListEntry entry = new ImportKeysListEntry();
             entry.setQuery(query);
-            entry.addOrigin(getUrlPrefix() + mHost + ":" + mPort);
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff

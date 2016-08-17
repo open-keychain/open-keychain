@@ -72,32 +72,17 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
 
         if (incoming.getKeyserver() != null) {
             existing.setKeyserver(incoming.getKeyserver());
-        }
-
-        // keep track if this key result is from a HKP keyserver
-        boolean incomingFromHkpServer = true;
-        // we’re going to want to try to fetch the key from everywhere we found it, so remember
-        //  all the origins
-        for (String origin : incoming.getOrigins()) {
-            existing.addOrigin(origin);
-
-            // to work properly, Keybase-sourced/Facebook-sourced entries need to pass along the
-            // identifying name/id
-            if (incoming.getKeybaseName() != null) {
-                existing.setKeybaseName(incoming.getKeybaseName());
-                // one of the origins is not a HKP keyserver
-                incomingFromHkpServer = false;
-            }
-            if (incoming.getFbUsername() != null) {
-                existing.setFbUsername(incoming.getFbUsername());
-                // one of the origins is not a HKP keyserver
-                incomingFromHkpServer = false;
-            }
-        }
-
-        if (incomingFromHkpServer) {
             // Mail addresses returned by HKP servers are preferred over keybase.io IDs
             existing.setPrimaryUserId(incoming.getPrimaryUserId());
+
+            modified = true;
+        } else if (incoming.getKeybaseName() != null) {
+            // to work properly, Keybase-sourced/Facebook-sourced entries need to pass along the
+            // identifying name/id
+            existing.setKeybaseName(incoming.getKeybaseName());
+            modified = true;
+        } else if (incoming.getFbUsername() != null) {
+            existing.setFbUsername(incoming.getFbUsername());
             modified = true;
         }
 
