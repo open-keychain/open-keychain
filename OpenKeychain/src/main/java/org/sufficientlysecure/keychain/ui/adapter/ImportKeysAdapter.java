@@ -29,12 +29,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListItemBinding;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
-import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysOperationCallback;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysResultListener;
-import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
@@ -54,7 +51,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     private ImportKeysResultListener mListener;
     private boolean mAdvanced, mNonInteractive;
 
-    private LoaderState mLoaderState;
     private List<ImportKeysListEntry> mData;
 
     private KeyState[] mKeyStates;
@@ -70,11 +66,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     public void setAdvanced(boolean advanced) {
         this.mAdvanced = advanced;
-        notifyDataSetChanged();
-    }
-
-    public void setLoaderState(LoaderState loaderState) {
-        this.mLoaderState = loaderState;
         notifyDataSetChanged();
     }
 
@@ -145,7 +136,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.importKey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getKey(getParcelableKeyRing(entry), false);
+                getKey(entry, false);
             }
         });
 
@@ -154,7 +145,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             public void onClick(View v) {
                 mCurrent = position;
                 if (!showed && !downloaded) {
-                    getKey(getParcelableKeyRing(entry), true);
+                    getKey(entry, true);
                 } else {
                     changeState(position, !showed);
                 }
@@ -179,8 +170,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         return mData != null ? mData.size() : 0;
     }
 
-    public void getKey(ParcelableKeyRing keyRing, boolean skipSave) {
-        ImportKeyringParcel inputParcel = prepareKeyOperation(keyRing, skipSave);
+    public void getKey(ImportKeysListEntry entry, boolean skipSave) {
+        ImportKeyringParcel inputParcel = prepareKeyOperation(entry, skipSave);
         ImportKeysResultListener listener = skipSave ? this : mListener;
         ImportKeysOperationCallback cb = new ImportKeysOperationCallback(listener, inputParcel);
         int message = skipSave ? R.string.progress_downloading : R.string.progress_importing;
@@ -188,22 +179,12 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         opHelper.cryptoOperation();
     }
 
-    private ParcelableKeyRing getParcelableKeyRing(ImportKeysListEntry entry) {
-        ParcelableKeyRing keyRing = null;
-        if (mLoaderState instanceof BytesLoaderState) {
-            keyRing = new ParcelableKeyRing(entry.getEncodedRing());
-        } else if (mLoaderState instanceof CloudLoaderState) {
-            keyRing = new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(),
-                    entry.getKeybaseName(), entry.getFbUsername());
-        }
-        return keyRing;
-    }
-
-    private ImportKeyringParcel prepareKeyOperation(ParcelableKeyRing keyRing, boolean skipSave) {
+    private ImportKeyringParcel prepareKeyOperation(ImportKeysListEntry entry, boolean skipSave) {
         ArrayList<ParcelableKeyRing> keysList = null;
         String keyserver = null;
 
-        if (mLoaderState instanceof BytesLoaderState) {
+        ParcelableKeyRing keyRing = entry.getParcelableKeyRing();
+        if (keyRing.mBytes != null) {
             // instead of giving the entries by Intent extra, cache them into a
             // file to prevent Java Binder problems on heavy imports
             // read FileImportCache for more info.
@@ -217,10 +198,10 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 Log.e(Constants.TAG, "Problem writing cache file", e);
                 Notify.create(mActivity, "Problem writing cache file!", Notify.Style.ERROR).show();
             }
-        } else if (mLoaderState instanceof CloudLoaderState) {
+        } else {
             keysList = new ArrayList<>();
             keysList.add(keyRing);
-            keyserver = ((CloudLoaderState) mLoaderState).mCloudPrefs.keyserver;
+            keyserver = entry.getKeyserver();
         }
 
         return new ImportKeyringParcel(keysList, keyserver, skipSave);

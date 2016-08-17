@@ -70,6 +70,10 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
             modified = true;
         }
 
+        if (incoming.getKeyserver() != null) {
+            existing.setKeyserver(incoming.getKeyserver());
+        }
+
         // keep track if this key result is from a HKP keyserver
         boolean incomingFromHkpServer = true;
         // we’re going to want to try to fetch the key from everywhere we found it, so remember

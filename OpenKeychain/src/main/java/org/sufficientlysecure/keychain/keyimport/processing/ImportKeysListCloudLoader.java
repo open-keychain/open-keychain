@@ -25,6 +25,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.CloudSearch;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -38,11 +39,11 @@ import java.util.ArrayList;
 
 public class ImportKeysListCloudLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
-    Context mContext;
 
+    private Context mContext;
 
-    Preferences.CloudSearchPrefs mCloudPrefs;
-    String mServerQuery;
+    private String mServerQuery;
+    private Preferences.CloudSearchPrefs mCloudPrefs;
     private ParcelableProxy mParcelableProxy;
 
     private ArrayList<ImportKeysListEntry> mEntryList = new ArrayList<>();
@@ -57,8 +58,10 @@ public class ImportKeysListCloudLoader
      *                        and whether to search keybase.io
      * @param parcelableProxy explicit proxy to use. If null, will retrieve from preferences
      */
-    public ImportKeysListCloudLoader(Context context, String serverQuery, Preferences.CloudSearchPrefs cloudPrefs,
+    public ImportKeysListCloudLoader(Context context, String serverQuery,
+                                     Preferences.CloudSearchPrefs cloudPrefs,
                                      @Nullable ParcelableProxy parcelableProxy) {
+
         super(context);
         mContext = context;
         mServerQuery = serverQuery;
@@ -80,6 +83,12 @@ public class ImportKeysListCloudLoader
             queryServer(true);
         } else {
             queryServer(false);
+        }
+
+        // Now we have all the data needed to build the parcelable key ring for this key
+        for (ImportKeysListEntry e : mEntryList) {
+            e.setParcelableKeyRing(new ParcelableKeyRing(e.getFingerprintHex(), e.getKeyIdHex(),
+                    e.getKeybaseName(), e.getFbUsername()));
         }
 
         return mEntryListWrapper;

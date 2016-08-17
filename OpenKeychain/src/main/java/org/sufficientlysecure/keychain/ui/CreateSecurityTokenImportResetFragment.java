@@ -218,7 +218,7 @@ public class CreateSecurityTokenImportResetFragment
     public void importKey() {
 
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
-        keyList.add(new ParcelableKeyRing(mTokenFingerprint, null));
+        keyList.add(new ParcelableKeyRing(mTokenFingerprint, null, null, null));
         mKeyList = keyList;
 
         mKeyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();

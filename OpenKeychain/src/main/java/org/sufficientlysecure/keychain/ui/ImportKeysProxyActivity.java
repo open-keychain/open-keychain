@@ -197,7 +197,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     }
 
     public void importKeys(String fingerprint) {
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null);
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null, null);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 

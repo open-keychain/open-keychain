@@ -144,7 +144,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
 
         {
             ParcelableKeyRing keyEntry = new ParcelableKeyRing(null,
-                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId));
+                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId), null, null);
             ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
             selectedEntries.add(keyEntry);
 

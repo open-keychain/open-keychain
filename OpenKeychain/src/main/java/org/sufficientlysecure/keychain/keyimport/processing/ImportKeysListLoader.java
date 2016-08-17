@@ -78,7 +78,7 @@ public class ImportKeysListLoader
         }
 
         try {
-            InputData inputData = getInputData(getContext(), mLoaderState);
+            InputData inputData = getInputData(mLoaderState);
             generateListOfKeyrings(inputData);
         } catch (FileNotFoundException e) {
             OperationLog log = new OperationLog();
@@ -133,10 +133,11 @@ public class ImportKeysListLoader
             IteratorWithIOThrow<UncachedKeyRing> it = UncachedKeyRing.fromStream(bufferedInput);
             while (it.hasNext()) {
                 UncachedKeyRing ring = it.next();
-                byte[] encodedRing = ring.getEncoded();
-                ImportKeysListEntry item = new ImportKeysListEntry(getContext(), ring, encodedRing);
+
+                ImportKeysListEntry item = new ImportKeysListEntry(mContext, ring);
                 mData.add(item);
-                mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(encodedRing));
+
+                mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(ring.getEncoded()));
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException on parsing key file! Return NoValidKeysException!", e);
@@ -149,13 +150,15 @@ public class ImportKeysListLoader
     }
 
     @NonNull
-    private static InputData getInputData(Context context, BytesLoaderState loaderState) throws FileNotFoundException {
+    private InputData getInputData(BytesLoaderState ls)
+            throws FileNotFoundException {
+
         InputData inputData;
-        if (loaderState.mKeyBytes != null) {
-            inputData = new InputData(new ByteArrayInputStream(loaderState.mKeyBytes), loaderState.mKeyBytes.length);
-        } else if (loaderState.mDataUri != null) {
-            InputStream inputStream = context.getContentResolver().openInputStream(loaderState.mDataUri);
-            long length = FileHelper.getFileSize(context, loaderState.mDataUri, -1);
+        if (ls.mKeyBytes != null) {
+            inputData = new InputData(new ByteArrayInputStream(ls.mKeyBytes), ls.mKeyBytes.length);
+        } else if (ls.mDataUri != null) {
+            InputStream inputStream = mContext.getContentResolver().openInputStream(ls.mDataUri);
+            long length = FileHelper.getFileSize(mContext, ls.mDataUri, -1);
 
             inputData = new InputData(inputStream, length);
         } else {

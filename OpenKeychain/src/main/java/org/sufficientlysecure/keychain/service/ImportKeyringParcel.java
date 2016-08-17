@@ -26,10 +26,11 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import java.util.ArrayList;
 
 public class ImportKeyringParcel implements Parcelable {
-    // if null, keys are expected to be read from a cache file in ImportExportOperations
+    // If null, keys are expected to be read from a cache file in ImportExportOperations
     public ArrayList<ParcelableKeyRing> mKeyList;
-    public String mKeyserver; // must be set if keys are to be imported from a keyserver
-    public boolean mSkipSave = false; // don't save the key, only return it as part of result
+    public String mKeyserver;
+    // If false, don't save the key, only return it as part of result
+    public boolean mSkipSave = false;
 
     public ImportKeyringParcel(ArrayList<ParcelableKeyRing> keyList, String keyserver) {
         mKeyList = keyList;

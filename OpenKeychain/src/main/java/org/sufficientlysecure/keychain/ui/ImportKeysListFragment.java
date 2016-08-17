@@ -362,11 +362,10 @@ public class ImportKeysListFragment extends Fragment implements
         ArrayList<ImportKeysListEntry> result = data.getResult();
         binding.setStatus(result.size() > 0 ? STATUS_LOADED : STATUS_EMPTY);
 
-        mAdapter.setLoaderState(mLoaderState);
-        mAdapter.setData(result);
-
         // free old cached key data
         mCachedKeyData = null;
+
+        mAdapter.setData(result);
 
         GetKeyResult getKeyResult = (GetKeyResult) data.getOperationResult();
         switch (loader.getId()) {

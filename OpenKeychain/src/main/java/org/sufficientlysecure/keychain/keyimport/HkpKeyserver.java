@@ -354,6 +354,7 @@ public class HkpKeyserver extends Keyserver {
             }
             entry.setUserIds(userIds);
             entry.setPrimaryUserId(userIds.get(0));
+            entry.setKeyserver(getUrlPrefix() + mHost + ":" + mPort);
 
             results.add(entry);
         }
