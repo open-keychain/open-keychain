@@ -70,8 +70,9 @@
                     android:drawablePadding="8dp"
                     android:drawableRight="@drawable/ic_file_download_white_24dp"
                     android:gravity="center_vertical"
-                    android:text="@string/menu_import_all_keys"
-                    android:textColor="#ffffffff" />
+                    android:text="@string/btn_import_all"
+                    android:textAllCaps="true"
+                    android:textColor="?android:attr/textColorPrimary" />
 
             </RelativeLayout>
 

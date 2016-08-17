@@ -24,9 +24,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -122,23 +119,6 @@ public class ImportKeysFileFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement ImportKeysListener");
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.import_keys_file_fragment, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.import_all_keys:
-                mCallback.importKeys();
-                return true;
-        }
-
-        return false;
     }
 
     @Override

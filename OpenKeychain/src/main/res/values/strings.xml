@@ -134,7 +134,6 @@
     <string name="menu_certify_fingerprint_phrases">"Confirm with phrases"</string>
     <string name="menu_share_log">"Share log"</string>
     <string name="menu_change_password">"Change password"</string>
-    <string name="menu_import_all_keys">"Import all keys"</string>
 
     <string name="menu_keyserver_add">"Add"</string>
 
@@ -1575,6 +1574,7 @@
     <string name="security_token_create">"Hold Security Token against the back of your device."</string>
     <string name="security_token_reset_or_import">"This Security Token already contains a key. You can import the key using the cloud or reset the Security Token."</string>
     <string name="btn_import">"Import"</string>
+    <string name="btn_import_all">"Import all"</string>
     <string name="btn_reset">"Reset"</string>
     <string name="security_token_import_radio">"Import key"</string>
     <string name="security_token_reset_radio">"Reset Security Token"</string>
