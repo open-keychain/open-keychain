@@ -44,16 +44,6 @@ import java.nio.ByteOrder;
  * Implements small subset of these features
  */
 public class UsbTransport implements Transport {
-    private static final int PROTOCOLS_OFFSET = 6;
-    private static final int FEATURES_OFFSET = 40;
-    private static final short MASK_T1_PROTO = 2;
-
-    // dwFeatures Masks
-    private static final int MASK_TPDU = 0x10000;
-    private static final int MASK_SHORT_APDU = 0x20000;
-    private static final int MASK_EXTENDED_APDU = 0x40000;
-
-
     private final UsbManager mUsbManager;
     private final UsbDevice mUsbDevice;
     private UsbInterface mUsbInterface;
@@ -62,6 +52,7 @@ public class UsbTransport implements Transport {
     private UsbDeviceConnection mConnection;
     private CcidTransceiver mTransceiver;
     private CcidTransportProtocol mProtocol;
+    private CcidDescription mCcidDescription;
 
     public UsbTransport(UsbDevice usbDevice, UsbManager usbManager) {
         mUsbDevice = usbDevice;
@@ -172,52 +163,14 @@ public class UsbTransport implements Transport {
             throw new UsbTransportException("USB error - failed to claim interface");
         }
 
-        mTransceiver = new CcidTransceiver(mConnection, mBulkIn, mBulkOut);
+        mCcidDescription = CcidDescription.fromRawDescriptiors(mConnection.getRawDescriptors());
+        mTransceiver = new CcidTransceiver(mConnection, mBulkIn, mBulkOut, mCcidDescription);
 
-
-
-        configureProtocol();
-    }
-
-    private void configureProtocol() throws UsbTransportException {
-        byte[] desc = mConnection.getRawDescriptors();
-        int dwProtocols = 0, dwFeatures = 0;
-        boolean hasCcidDescriptor = false;
-
-        ByteBuffer byteBuffer = ByteBuffer.wrap(desc).order(ByteOrder.LITTLE_ENDIAN);
-
-        while (byteBuffer.hasRemaining()) {
-            byteBuffer.mark();
-            byte len = byteBuffer.get(), type = byteBuffer.get();
-
-            if (type == 0x21 && len == 0x36) {
-                byteBuffer.reset();
-
-                byteBuffer.position(byteBuffer.position() + PROTOCOLS_OFFSET);
-                dwProtocols = byteBuffer.getInt();
-
-                byteBuffer.reset();
-
-                byteBuffer.position(byteBuffer.position() + FEATURES_OFFSET);
-                dwFeatures = byteBuffer.getInt();
-                hasCcidDescriptor = true;
-                break;
-            } else {
-                byteBuffer.position(byteBuffer.position() + len - 2);
-            }
-        }
-
-        if (!hasCcidDescriptor) {
-            throw new UsbTransportException("CCID descriptor not found");
-        }
-
-        if ((dwProtocols & MASK_T1_PROTO) == 0) {
-            throw new UsbTransportException("T=0 protocol is not supported");
-        }
-
-        if ((dwFeatures & MASK_TPDU) != 0) {
+        // Select exchage protocol
+        if (mCcidDescription.hasFeature(CcidDescription.FEATURE_EXCHANGE_LEVEL_TPDU)) {
             mProtocol = new T1TpduProtocol(mTransceiver);
-        } else if (((dwFeatures & MASK_SHORT_APDU) != 0) || ((dwFeatures & MASK_EXTENDED_APDU) != 0)) {
+        } else if (mCcidDescription.hasFeature(CcidDescription.FEATURE_EXCHAGE_LEVEL_SHORT_APDU) ||
+                mCcidDescription.hasFeature(CcidDescription.FEATURE_EXCHAGE_LEVEL_EXTENDED_APDU)) {
             mProtocol = new T1ShortApduProtocol(mTransceiver);
         } else {
             throw new UsbTransportException("Character level exchange is not supported");

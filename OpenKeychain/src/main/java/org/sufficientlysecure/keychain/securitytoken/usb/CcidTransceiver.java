@@ -24,6 +24,8 @@ import android.support.annotation.NonNull;
 
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -35,13 +37,15 @@ public class CcidTransceiver {
     private UsbDeviceConnection mConnection;
     private UsbEndpoint mBulkIn;
     private UsbEndpoint mBulkOut;
+    private CcidDescription mCcidDescription;
 
     public CcidTransceiver(final UsbDeviceConnection connection, final UsbEndpoint bulkIn,
-                           final UsbEndpoint bulkOut) {
+                           final UsbEndpoint bulkOut, final CcidDescription ccidDescription) {
 
         mConnection = connection;
         mBulkIn = bulkIn;
         mBulkOut = bulkOut;
+        mCcidDescription = ccidDescription;
     }
 
     public byte[] receiveRaw() throws UsbTransportException {
@@ -63,12 +67,33 @@ public class CcidTransceiver {
      */
     @NonNull
     public byte[] iccPowerOn() throws UsbTransportException {
+        Log.v(Constants.TAG, "ccid: powering on");
+        byte[] data = null;
+        for (CcidDescription.Voltage v : mCcidDescription.getVoltages()) {
+            data = iccPowerOnVoltage(v.getPowerOnValue());
+
+            if (data != null) {
+                Log.v(Constants.TAG, "ccid: powered on with voltage " + v.toString());
+                break;
+            } else {
+                Log.v(Constants.TAG, "ccid: failed to powered with voltage " + v.toString());
+                iccPowerOff();
+                Log.v(Constants.TAG, "ccid: powered off");
+            }
+        }
+        if (data == null) {
+            throw new UsbTransportException("Couldn't power up ICC2");
+        }
+        return data;
+    }
+
+    private byte[] iccPowerOnVoltage(byte voltage) throws UsbTransportException {
         final byte[] iccPowerCommand = {
                 0x62,
                 0x00, 0x00, 0x00, 0x00,
                 0x00,
                 mCounter++,
-                0x00,
+                voltage,
                 0x00, 0x00
         };
 
@@ -80,9 +105,22 @@ public class CcidTransceiver {
             try {
                 atr = receiveRaw();
                 break;
+            } catch (UsbTransportException e) {
+                if (e.getStatus() == 1 && e.getErrorCode() == 7) { // Power select error
+                    Log.v(Constants.TAG, "ccid: got power select error");
+                    return null;
+                }
+                Log.v(Constants.TAG, "ccid: power error, status: " + e.getStatus()
+                        + " code: " + e.getErrorCode());
+
+                if (System.currentTimeMillis() - startTime > TIMEOUT) {
+                    Log.v(Constants.TAG, "ccid: power timeout reached");
+                    break;
+                }
             } catch (Exception e) {
                 // Try more startTime
                 if (System.currentTimeMillis() - startTime > TIMEOUT) {
+                    Log.v(Constants.TAG, "ccid: power timeout reached");
                     break;
                 }
             }
@@ -94,6 +132,19 @@ public class CcidTransceiver {
         }
 
         return atr;
+    }
+
+
+    private void iccPowerOff() throws UsbTransportException {
+        final byte[] iccPowerCommand = {
+                0x63,
+                0x00, 0x00, 0x00, 0x00,
+                0x00,
+                mCounter++,
+                0x00
+        };
+
+        sendRaw(iccPowerCommand);
     }
 
     /**
@@ -159,7 +210,8 @@ public class CcidTransceiver {
     private void checkDataBlockResponse(byte[] bytes) throws UsbTransportException {
         final byte status = getStatus(bytes);
         if (status != 0) {
-            throw new UsbTransportException("USB-CCID error - status " + status + " error code: " + Hex.toHexString(bytes, 8, 1));
+            throw new UsbTransportException("USB-CCID error - status " + status + " error code: "
+                    + Hex.toHexString(bytes, 8, 1), status, bytes[8]);
         }
     }
 
