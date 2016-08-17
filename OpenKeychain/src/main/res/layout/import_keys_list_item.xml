@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="android.view.View" />
+        <import type="android.view.View" alias="V" />
         <import type="org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry" />
 
         <variable name="advanced" type="boolean" />
@@ -20,7 +20,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -28,8 +29,7 @@
                 android:orientation="vertical"
                 android:paddingBottom="16dp"
                 android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="24dp">
+                android:paddingRight="16dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -69,7 +69,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:visibility="@{entry.revokedOrExpired ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{entry.revokedOrExpired ? V.VISIBLE : V.GONE}"
                         app:keyExpired="@{entry.expired}"
                         app:keyRevoked="@{entry.revoked}" />
 
@@ -77,48 +77,36 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <!-- This empty layout is needed to get correct bottom padding in basic mode -->
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
-                android:visibility="@{(!advanced || nonInteractive) ? View.VISIBLE : View.GONE}" />
+                android:visibility="@{(!advanced || nonInteractive) ? V.VISIBLE : V.GONE}" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:visibility="@{(!advanced || nonInteractive) ? View.GONE : View.VISIBLE}">
+                android:visibility="@{(!advanced || nonInteractive) ? V.GONE : V.VISIBLE}">
 
                 <Button
                     android:id="@+id/import_key"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:minHeight="0dp"
-                    android:minWidth="0dp"
-                    android:padding="8dp"
-                    android:text="@string/btn_import"
-                    android:textColor="@color/card_view_button" />
+                    style="@style/CardViewActionButton"
+                    android:text="@string/btn_import" />
 
                 <ImageButton
                     android:id="@+id/expand"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/CardViewActionButton"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:minHeight="0dp"
-                    android:minWidth="0dp"
-                    android:padding="8dp"
                     android:src="@drawable/ic_expand_more_black_24dp" />
 
             </RelativeLayout>
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="@{advanced ? View.VISIBLE : View.GONE}">
+                android:visibility="@{advanced ? V.VISIBLE : V.GONE}">
 
                 <LinearLayout
                     android:id="@+id/extra_container"
@@ -138,7 +126,7 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </FrameLayout>
 
         </LinearLayout>
 

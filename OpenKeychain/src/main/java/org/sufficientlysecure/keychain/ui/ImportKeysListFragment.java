@@ -266,22 +266,22 @@ public class ImportKeysListFragment extends Fragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.basic:
-                mAdvanced = false;
-                mAdapter.setAdvanced(false);
-                mActivity.invalidateOptionsMenu();
-
-                binding.setAdvanced(mAdvanced);
+                setAdvanced(false);
                 return true;
             case R.id.advanced:
-                mAdvanced = true;
-                mAdapter.setAdvanced(true);
-                mActivity.invalidateOptionsMenu();
-                
-                binding.setAdvanced(mAdvanced);
+                setAdvanced(true);
                 return true;
         }
 
         return false;
+    }
+
+    public void setAdvanced(boolean advanced) {
+        this.mAdvanced = advanced;
+
+        mAdapter.setAdvanced(advanced);
+        mActivity.invalidateOptionsMenu();
+        binding.setAdvanced(advanced);
     }
 
     @Override
