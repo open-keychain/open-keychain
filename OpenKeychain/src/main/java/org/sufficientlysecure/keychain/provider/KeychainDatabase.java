@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.MasterPassphraseColumns;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.ui.MigrateSymmetricActivity;
@@ -62,6 +63,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     private Context mContext;
 
     public interface Tables {
+        String MASTER_PASSPHRASE = "master_passphrase";
         String KEY_RINGS_PUBLIC = "keyrings_public";
         String KEY_RINGS_SECRET = "keyrings_secret";
         String KEYS = "keys";
@@ -72,6 +74,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String API_ACCOUNTS = "api_accounts";
         String API_ALLOWED_KEYS = "api_allowed_keys";
     }
+
+    private static final String CREATE_MASTER_PASSPHRASE =
+            "CREATE TABLE IF NOT EXISTS master_passphrase ("
+                    + MasterPassphraseColumns.ROW_INDEX + " INTEGER PRIMARY KEY, "
+                    + MasterPassphraseColumns.ENCRYPTED_BLOCK + " BLOB"
+                    + ")";
 
     private static final String CREATE_KEYRINGS_PUBLIC =
             "CREATE TABLE IF NOT EXISTS keyrings_public ("
@@ -228,6 +236,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ACCOUNTS);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
+        db.execSQL(CREATE_MASTER_PASSPHRASE);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
         db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
@@ -326,6 +335,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 Preferences.getPreferences(mContext).setUsingS2k(true);
                 db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN awaiting_merge INTEGER");
                 db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN secret_ring_type INTEGER");
+                db.execSQL(CREATE_MASTER_PASSPHRASE);
         }
 
 

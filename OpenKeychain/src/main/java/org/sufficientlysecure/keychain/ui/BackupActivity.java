@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -145,12 +146,17 @@ public class BackupActivity extends BaseActivity {
     }
 
     private void askForPassphrase(long masterKeyId) {
-        Intent intent = new Intent(this, PassphraseDialogActivity.class);
-        RequiredInputParcel requiredInput =
-                RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId);
-        requiredInput.mSkipCaching = true;
-        intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-        startActivityForResult(intent, REQUEST_REPEAT_ASK_PASSPHRASE);
+        if (Preferences.getPreferences(this).usesSinglePassphraseWorkflow()) {
+            // TODO: wip, just ask for passphrase one, through the applock
+            // TODO: start it with a different intent
+        } else {
+            Intent intent = new Intent(this, PassphraseDialogActivity.class);
+            RequiredInputParcel requiredInput =
+                    RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId);
+            requiredInput.mSkipCaching = true;
+            intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+            startActivityForResult(intent, REQUEST_REPEAT_ASK_PASSPHRASE);
+        }
     }
 
     @Override
@@ -170,6 +176,10 @@ public class BackupActivity extends BaseActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            // TODO: wip, add new result code, for single pass case
+            // 1) get the pass
+            // 2) duplicate it for all keys we have,
+            // 3) then return that instead!
             case REQUEST_REPEAT_ASK_PASSPHRASE: {
                 if (resultCode != RESULT_OK) {
                     this.finish();

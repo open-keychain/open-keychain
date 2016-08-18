@@ -441,6 +441,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_IS_ERROR_REMOVING_PASSPHRASES(LogLevel.DEBUG, R.string.msg_is_error_removing_passphrases),
         MSG_IS_ERROR_IO_EXC(LogLevel.DEBUG, R.string.msg_is_error_io_exc),
         MSG_IS_ERROR_IO_ENCRYPT(LogLevel.DEBUG, R.string.msg_is_error_io_encrypt),
+        MSG_IS_ERROR_MASTER_PASSPHRASE_ENCRYPT(LogLevel.DEBUG, R.string.msg_is_error_master_passphrase_encrypt),
         MSG_IS_MERGE_PUBLIC (LogLevel.DEBUG, R.string.msg_is_merge_public),
         MSG_IS_MERGE_SECRET (LogLevel.DEBUG, R.string.msg_is_merge_secret),
         MSG_IS_MERGE_SPECIAL (LogLevel.DEBUG, R.string.msg_is_merge_special),

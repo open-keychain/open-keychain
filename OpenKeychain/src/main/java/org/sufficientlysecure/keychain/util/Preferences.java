@@ -146,6 +146,16 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean usesSinglePassphraseWorkflow() {
+        return mSharedPreferences.getBoolean(Pref.USE_SINGLE_PASSPHRASE_WORKFLOW, false);
+    }
+
+    public void setUsesSinglePassphraseWorkflow(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.USE_SINGLE_PASSPHRASE_WORKFLOW, value);
+        editor.commit();
+    }
+
     public String[] getKeyServers() {
         String rawData = mSharedPreferences.getString(Constants.Pref.KEY_SERVERS,
                 Constants.Defaults.KEY_SERVERS);

@@ -57,6 +57,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         }
 
         if (!cryptoInput.hasPassphrase()) {
+            // TODO: wip, major changes to this, work on it later
             log.add(LogType.MSG_CU_REQUIRE_KEYRING_PASSPHRASE, 2);
             return new PgpEditKeyResult(log,
                     RequiredInputParcel.createRequiredKeyringPassphrase(unlockParcel.mMasterKeyId),

@@ -16,10 +16,15 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.provider.KeychainContract.MasterPassphrase;
+import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import javax.crypto.SecretKey;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -99,6 +104,54 @@ public class ProviderReader {
     public HashMap<String, Object> getUnifiedData(long masterKeyId, String[] proj, int[] types)
             throws ProviderReader.NotFoundException {
         return getGenericData(KeyRings.buildUnifiedKeyRingUri(masterKeyId), proj, types);
+    }
+
+    public boolean hasMasterPassphrase() {
+        return getEncryptedMasterKey() != null;
+    }
+
+    private byte[] getEncryptedMasterKey() {
+        Cursor cursor = mContentResolver.query(MasterPassphrase.CONTENT_URI,
+                new String[] {
+                        MasterPassphrase.ENCRYPTED_BLOCK
+                }, null, null, null);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                return cursor.getBlob(0);
+            } else {
+                return null;
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+    }
+
+    // TODO: wip, delete later
+    public boolean verifyMasterPassphrase(Passphrase passphrase) {
+        try {
+            getMasterSecretKey(passphrase);
+        } catch (IncorrectPassphraseException e) {
+            return false;
+        } catch (EncryptDecryptException e) {
+            String s = MainActivity.class.getSimpleName();
+            Log.d(s, "SOMETHING WENT HORRIBLY WRONG");
+            return false;
+        }
+        return true;
+    }
+
+    public SecretKey getMasterSecretKey(Passphrase passphrase) throws EncryptDecryptException,
+    IncorrectPassphraseException {
+        try {
+            byte[] secretKeyBytes = ByteArrayEncryptor.decryptByteArray(getEncryptedMasterKey(),
+                    passphrase.getCharArray());
+            return (SecretKey) ByteArrayEncryptor.fromBytes(secretKeyBytes);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new EncryptDecryptException(e);
+        }
     }
 
     public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {
@@ -220,7 +273,13 @@ public class ProviderReader {
                     throw new ProviderReader.NotFoundException("Secret key not available!");
                 }
                 if (isEncrypted) {
-                    secBlob = ByteArrayEncryptor.decryptByteArray(secBlob, passphrase.getCharArray());
+                    if (mProviderHelper.mUsesSinglePassphraseWorkflow) {
+                        // the passphrase received is the master passphrase
+                        SecretKey key = getMasterSecretKey(passphrase);
+                        secBlob = ByteArrayEncryptor.decryptWithMasterKey(secBlob, key);
+                    } else {
+                        secBlob = ByteArrayEncryptor.decryptByteArray(secBlob, passphrase.getCharArray());
+                    }
                 }
 
                 CanonicalizedSecretKeyRing canSecretKey = new CanonicalizedSecretKeyRing(secBlob, false, verified);

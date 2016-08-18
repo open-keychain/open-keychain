@@ -966,6 +966,7 @@
     <string name="msg_is_error_removing_passphrases">"Error removing passphrases"</string>
     <string name="msg_is_error_io_exc">"Error encoding keyring"</string>
     <string name="msg_is_error_io_encrypt">"Error encoding encrypted keyring"</string>
+    <string name="msg_is_error_master_passphrase_encrypt">"Error using master passphrase"</string>
     <string name="msg_is_merge_public">"Merging imported data into existing public keyring"</string>
     <string name="msg_is_merge_secret">"Merging imported data into existing secret keyring"</string>
     <string name="msg_is_merge_special">"Merging in self-certificates data from public keyring"</string>

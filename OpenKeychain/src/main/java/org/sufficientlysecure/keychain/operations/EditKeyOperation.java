@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 /**
@@ -94,31 +95,37 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         if (isNewKey) {
             keyringPassphrase = saveParcel.mPassphrase;
         } else {
-            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.read().getCachedPublicKeyRing(masterKeyId);
+            if (Preferences.getPreferences(mContext).usesSinglePassphraseWorkflow()) {
+                // TODO: wip, call the applock (?)
+                // line below is placeholder
+                keyringPassphrase = null;
+            } else {
+                CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.read().getCachedPublicKeyRing(masterKeyId);
 
-            try {
-                switch (cachedPublicKeyRing.getSecretKeyringType()) {
-                    case PASSPHRASE_EMPTY: {
-                        keyringPassphrase = new Passphrase();
-                        break;
-                    }
-                    case PASSPHRASE: {
-                        keyringPassphrase = cryptoInput.getPassphrase();
-                        if (keyringPassphrase == null) {
-                            log.add(LogType.MSG_ED_REQUIRE_KEYRING_PASSPHRASE, 2);
-                            return new EditKeyResult(log,
-                                    RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
-                                    cryptoInput);
+                try {
+                    switch (cachedPublicKeyRing.getSecretKeyringType()) {
+                        case PASSPHRASE_EMPTY: {
+                            keyringPassphrase = new Passphrase();
+                            break;
                         }
-                        break;
+                        case PASSPHRASE: {
+                            keyringPassphrase = cryptoInput.getPassphrase();
+                            if (keyringPassphrase == null) {
+                                log.add(LogType.MSG_ED_REQUIRE_KEYRING_PASSPHRASE, 2);
+                                return new EditKeyResult(log,
+                                        RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
+                                        cryptoInput);
+                            }
+                            break;
+                        }
+                        default: {
+                            throw new AssertionError("Unsupported keyring type");
+                        }
                     }
-                    default: {
-                        throw new AssertionError("Unsupported keyring type");
-                    }
+                } catch (NotFoundException e) {
+                    log.add(LogType.MSG_ED_ERROR_KEYRING_NOT_FOUND, 2);
+                    return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
-            } catch (NotFoundException e) {
-                log.add(LogType.MSG_ED_ERROR_KEYRING_NOT_FOUND, 2);
-                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
         }
 

@@ -81,6 +81,9 @@ public class KeychainProvider extends ContentProvider {
     private static final int UPDATED_KEYS = 500;
     private static final int UPDATED_KEYS_SPECIFIC = 501;
 
+    private static final int MASTER_PASSPHRASE = 600;
+    private static final int MASTER_PASSPHRASE_SPECIFIC = 601;
+
     protected UriMatcher mUriMatcher;
 
     /**
@@ -207,6 +210,13 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS, UPDATED_KEYS);
         matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS + "/*", UPDATED_KEYS_SPECIFIC);
 
+        /**
+         * to access table containing master passphrase
+         */
+        matcher.addURI(authority, KeychainContract.BASE_MASTER_PASSPHRASE, MASTER_PASSPHRASE);
+        matcher.addURI(authority, KeychainContract.BASE_MASTER_PASSPHRASE + "/*",
+                MASTER_PASSPHRASE_SPECIFIC);
+
         return matcher;
     }
 
@@ -265,6 +275,11 @@ public class KeychainProvider extends ContentProvider {
 
             case API_ALLOWED_KEYS:
                 return ApiAllowedKeys.CONTENT_TYPE;
+
+            case MASTER_PASSPHRASE:
+                return KeychainContract.MasterPassphrase.CONTENT_TYPE;
+            case MASTER_PASSPHRASE_SPECIFIC:
+                return KeychainContract.MasterPassphrase.CONTENT_ITEM_TYPE;
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -686,6 +701,18 @@ public class KeychainProvider extends ContentProvider {
                 break;
             }
 
+            case MASTER_PASSPHRASE:
+            case MASTER_PASSPHRASE_SPECIFIC: {
+                HashMap<String, String> projectionMap = new HashMap<>();
+                qb.setTables(Tables.MASTER_PASSPHRASE);
+                projectionMap.put(KeychainContract.MasterPassphrase.ROW_INDEX, Tables.MASTER_PASSPHRASE + "."
+                        + KeychainContract.MasterPassphrase.ROW_INDEX);
+                projectionMap.put(KeychainContract.MasterPassphrase.ENCRYPTED_BLOCK, Tables.MASTER_PASSPHRASE + "."
+                        + KeychainContract.MasterPassphrase.ENCRYPTED_BLOCK);
+                qb.setProjectionMap(projectionMap);
+                break;
+            }
+
             case API_APPS: {
                 qb.setTables(Tables.API_APPS);
 
@@ -837,6 +864,16 @@ public class KeychainProvider extends ContentProvider {
                             .build();
                     break;
                 }
+                case MASTER_PASSPHRASE: {
+                    Integer index = (Integer) values.get(KeychainContract.MasterPassphrase.ROW_INDEX);
+                    if (index == null || index != Constants.MasterPassphrase.MASTER_PASSPHRASE_INDEX) {
+                        throw new UnsupportedOperationException("Bad index value, " +
+                                "please use constant from Constants file");
+                    }
+                    db.insertOrThrow(Tables.MASTER_PASSPHRASE, null, values);
+                    rowUri = KeychainContract.MasterPassphrase.buildMasterPassphraseUri(index);
+                    break;
+                }
                 case API_APPS: {
                     db.insertOrThrow(Tables.API_APPS, null, values);
                     break;
@@ -932,6 +969,10 @@ public class KeychainProvider extends ContentProvider {
             case API_ALLOWED_KEYS: {
                 count = db.delete(Tables.API_ALLOWED_KEYS, buildDefaultApiAllowedKeysSelection(uri, additionalSelection),
                         selectionArgs);
+                break;
+            }
+            case MASTER_PASSPHRASE: {
+                count = db.delete(Tables.MASTER_PASSPHRASE, null, null);
                 break;
             }
             default: {

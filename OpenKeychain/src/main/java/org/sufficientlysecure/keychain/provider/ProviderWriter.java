@@ -49,9 +49,11 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.Utf8Util;
 
+import javax.crypto.SecretKey;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,6 +102,19 @@ public class ProviderWriter {
             LogType.MSG_IP_SUBKEY_FLAGS_XXSA, LogType.MSG_IP_SUBKEY_FLAGS_CXSA,
             LogType.MSG_IP_SUBKEY_FLAGS_XESA, LogType.MSG_IP_SUBKEY_FLAGS_CESA
     };
+
+    public boolean saveMasterPassphrase(Passphrase passphrase) throws EncryptDecryptException {
+        // TODO: change to a replace, instead of dropping the table
+        Uri uri = KeychainContract.MasterPassphrase.CONTENT_URI;
+        mContentResolver.delete(uri, null, null);
+        ContentValues values = new ContentValues();
+        values.put(KeychainContract.MasterPassphrase.ROW_INDEX, Constants.MasterPassphrase.MASTER_PASSPHRASE_INDEX);
+
+        byte[] encryptedSecretKey = ByteArrayEncryptor.getNewEncryptedSymmetricKey(passphrase);
+        values.put(KeychainContract.MasterPassphrase.ENCRYPTED_BLOCK, encryptedSecretKey);
+
+        return mContentResolver.insert(uri, values) != null;
+    }
 
     /**
      * Saves an UncachedKeyRing of the public variant into the db.
@@ -614,7 +629,18 @@ public class ProviderWriter {
 
                 // encrypt secret keyring block
                 try {
-                    keyData = ByteArrayEncryptor.encryptByteArray(keyRing.getEncoded(), passphrase.getCharArray());
+                    if (mProviderHelper.mUsesSinglePassphraseWorkflow) {
+                        // we assume that mKeyringPassphrase is indeed our master passphrase
+                        SecretKey key = mProviderHelper.read().getMasterSecretKey(passphrases.mKeyringPassphrase);
+                        keyData = ByteArrayEncryptor.encryptWithMasterKey(keyRing.getEncoded(), key);
+                    } else {
+                        keyData = ByteArrayEncryptor.encryptByteArray(keyRing.getEncoded(), passphrase.getCharArray());
+                    }
+                } catch (IncorrectPassphraseException e) {
+                    Log.e(Constants.TAG, "Fatal bug in code, we master passphrase we tried to use is incorrect", e);
+                    mProviderHelper.log(LogType.MSG_IS_ERROR_MASTER_PASSPHRASE_ENCRYPT);
+                    return SaveKeyringResult.RESULT_ERROR;
+
                 } catch (EncryptDecryptException | IOException e) {
                     Log.e(Constants.TAG, "Encryption went wrong.", e);
                     mProviderHelper.log(LogType.MSG_IS_ERROR_IO_ENCRYPT);
