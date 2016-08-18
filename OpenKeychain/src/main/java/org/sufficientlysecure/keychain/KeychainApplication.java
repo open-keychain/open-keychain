@@ -151,26 +151,30 @@ public class KeychainApplication extends Application {
                         mPreferences.setUsingS2k(false);
                     }
                 }
+                // TODO: wip, check that we have set the master passphrase, ask user to set it if 'no'
+
+                // TODO: wip, check if we have cached the master passphrase in memory. if no, ask for it
             }
 
+            // TODO: do we really need to check everywhere??
             @Override
             public void onActivityStarted(Activity activity) {
-
+                // TODO: wip, check if we have cached
             }
 
             @Override
             public void onActivityResumed(Activity activity) {
-
+                // TODO: wip, check if we have cached
             }
 
             @Override
             public void onActivityPaused(Activity activity) {
-
+                // TODO: wip ...  clear the master passphrase from cache
             }
 
             @Override
             public void onActivityStopped(Activity activity) {
-
+                // TODO: wip ...  clear the master passphrase from cache
             }
 
             @Override
@@ -180,7 +184,7 @@ public class KeychainApplication extends Application {
 
             @Override
             public void onActivityDestroyed(Activity activity) {
-
+                // TODO: wip ... check if we are showing on screeen. if not, clear the master passphrase from cache
             }
         });
     }

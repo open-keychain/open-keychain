@@ -246,6 +246,7 @@ public class ProviderReader {
         }
     }
 
+    //TODO: if using single workflow, use given passphrase to decrypt the secret key, then get our secret keyring.
     private CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRingHelper(Uri uri, Passphrase passphrase,
                                                                            boolean isEncrypted, boolean skipMerge)
             throws ProviderReader.NotFoundException, EncryptDecryptException, IncorrectPassphraseException, ProviderReader.FailedMergeException {

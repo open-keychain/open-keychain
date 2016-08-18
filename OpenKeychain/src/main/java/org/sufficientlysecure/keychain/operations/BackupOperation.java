@@ -59,6 +59,7 @@ import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -85,13 +86,11 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
     private static final String[] PROJECTION = new String[] {
             KeyRings.MASTER_KEY_ID,
             KeyRings.PUBKEY_DATA,
-            KeyRings.PRIVKEY_DATA,
             KeyRings.HAS_ANY_SECRET
     };
     private static final int INDEX_MASTER_KEY_ID = 0;
     private static final int INDEX_PUBKEY_DATA = 1;
-    private static final int INDEX_SECKEY_DATA = 2;
-    private static final int INDEX_HAS_ANY_SECRET = 3;
+    private static final int INDEX_HAS_ANY_SECRET = 2;
 
     public BackupOperation(Context context, ProviderHelper providerHelper, Progressable
             progressable) {
@@ -315,13 +314,12 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
         try {
             arOutStream = new ArmoredOutputStream(outStream);
+            long id = cursor.getLong(INDEX_MASTER_KEY_ID);
 
-            // decrypt ring
-            byte[] data = cursor.getBlob(INDEX_SECKEY_DATA);
-            data = ByteArrayEncryptor.decryptByteArray(data, passphrase.getCharArray());
-
+            // retrieve key & re-canonicalize to remove local signatures
             // don't bother merging secret keyring with public, it will occur when importing backup
-            CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
+            CanonicalizedKeyRing ring = mProviderHelper.read().getCanonicalizedSecretKeyRing(id, passphrase);
+            ring = ring.getUncachedKeyRing().canonicalize(log, 2, true);
 
             // add s2k
             PgpKeyOperation op = new PgpKeyOperation(mProgressable, mCancelled);
@@ -332,7 +330,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                 return false;
             }
             result.getRing().encode(arOutStream);
-        } catch (PgpGeneralException e) {
+        } catch (ProviderReader.NotFoundException e) {
             log.add(LogType.MSG_UPLOAD_ERROR_IO, 2);
         } finally {
             if (arOutStream != null) {

@@ -608,6 +608,11 @@ public class ProviderWriter {
                 }
                 keyRing = (CanonicalizedSecretKeyRing) editResult.getRing().canonicalize(mProviderHelper.getLog(), mProviderHelper.mIndent);
 
+                // TODO: wip, if using single key,
+                // if (...) {
+                // 1)  get the secret key
+                // 2)  get the
+
                 // get passphrase for keyring block encryption, or use empty passphrase if no obvious one exists
                 Passphrase passphrase = passphrases.mKeyringPassphrase;
                 if (passphrase == null) {

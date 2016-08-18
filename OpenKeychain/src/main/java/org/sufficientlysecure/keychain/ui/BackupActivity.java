@@ -85,6 +85,8 @@ public class BackupActivity extends BaseActivity {
                     askForPassphrase(mIdsForRepeatAskPassphrase.next());
                     return;
                 }
+                // TODO: wip, if we are using single key workflow, no need to ask for passphrase at all,
+                // just use the passphrase we have cached in the passphrase cache
             }
 
             // no need to get passphrases, just show backup code
