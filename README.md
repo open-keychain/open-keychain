@@ -52,11 +52,11 @@ Select SDK Platform for API levels 21, 22, 23, and 24.
 
 ### Run Tests
 1. Use OpenJDK instead of Oracle JDK
-2. Execute ``./gradlew clean testFdroidDebug --continue``
+2. Execute ``./gradlew clean testFdroidDebugUnitTest --continue``
 
 ### Run Jacoco Test Coverage
 1. Use OpenJDK instead of Oracle JDK
-2. Execute ``./gradlew clean testFdroidDebug jacocoTestReport``
+2. Execute ``./gradlew clean testFdroidDebugUnitTest jacocoTestReport``
 3. Report is here: OpenKeychain/build/reports/jacoco/jacocoTestReport/html/index.html
 
 ### Development with Android Studio
