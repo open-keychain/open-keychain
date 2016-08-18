@@ -1,5 +1,5 @@
 language: android
-jdk: openjdk7
+#jdk: oraclejdk8
 env:
   - TEST=unit
   - TEST=android ANDROID_TARGET=android-21 ANDROID_ABI=armeabi-v7a ADB_INSTALL_TIMEOUT=10
@@ -13,6 +13,12 @@ sudo: required
 #    hostname: short-hostname
 # workaround from https://github.com/travis-ci/travis-ci/issues/5227#issuecomment-165131913
 before_install:
+  - sudo add-apt-repository ppa:openjdk-r/ppa -y
+  - sudo apt-get update
+  - sudo apt-get install -y openjdk-8-jdk
+  - sudo update-alternatives --auto java
+  - sudo update-alternatives --auto javac
+  - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
   - cat /etc/hosts # optionally check the content *before*
   - sudo hostname "$(hostname | cut -c1-63)"
   - sed -e "s/^\\(127\\.0\\.0\\.1.*\\)/\\1 $(hostname | cut -c1-63)/" /etc/hosts | sudo tee /etc/hosts
@@ -20,10 +26,11 @@ before_install:
 
 android:
   components:
+    - tools
+    - tools # Per https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943
     - android-22
     - android-23
     - android-24
-    - tools
     - platform-tools
     - build-tools-23.0.2
     - build-tools-24.0.1
