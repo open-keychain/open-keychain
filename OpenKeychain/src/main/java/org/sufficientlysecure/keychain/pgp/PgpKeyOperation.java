@@ -500,6 +500,7 @@ public class PgpKeyOperation {
             log.add(LogType.MSG_MF_UNLOCK, indent);
             {
                 try {
+                    // key is expected to lack s2k encryption
                     masterPrivateKey = masterSecretKey.extractPrivateKey(null);
                 } catch (PGPException e) {
                     log.add(LogType.MSG_MF_UNLOCK_ERROR, indent + 1);

@@ -552,7 +552,7 @@ public class ProviderWriter {
     }
 
     /**
-     * Saves an UncachedKeyRing of the secret variant into the db,
+     * Encrypts and saves an UncachedKeyRing of the secret variant into the db,
      * overriding any existing data for the keyring.
      * This method will fail if no corresponding public keyring is in the database!
      */
