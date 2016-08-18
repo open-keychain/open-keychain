@@ -1590,6 +1590,7 @@
     <string name="key_stripped">"stripped"</string>
     <string name="key_divert">"on Security Token"</string>
     <string name="key_no_passphrase">"no password"</string>
+    <string name="key_using_s2k">"using s2k"</string>
     <string name="key_unavailable">"unavailable"</string>
     <string name="secret_cannot_multiple">"Your own keys can only be deleted individually!"</string>
     <string name="title_view_cert">"View Certificate Details"</string>

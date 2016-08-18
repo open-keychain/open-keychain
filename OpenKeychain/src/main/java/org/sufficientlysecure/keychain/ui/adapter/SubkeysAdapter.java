@@ -201,9 +201,9 @@ public class SubkeysAdapter extends CursorAdapter {
                     algorithmStr.append(", ");
                     algorithmStr.append(context.getString(R.string.key_divert));
                     break;
-                case PASSPHRASE_EMPTY:
+                case PASSPHRASE:
                     algorithmStr.append(", ");
-                    algorithmStr.append(context.getString(R.string.key_no_passphrase));
+                    algorithmStr.append(context.getString(R.string.key_using_s2k));
                     break;
                 case UNAVAILABLE:
                     // don't show this on pub keys
