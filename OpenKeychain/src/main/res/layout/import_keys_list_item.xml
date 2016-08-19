@@ -5,7 +5,6 @@
         <import type="android.view.View" alias="V" />
         <import type="org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry" />
 
-        <variable name="advanced" type="boolean" />
         <variable name="nonInteractive" type="boolean" />
         <variable name="entry" type="ImportKeysListEntry" />
     </data>
@@ -77,18 +76,11 @@
 
             </LinearLayout>
 
-            <!-- This empty layout is needed to get correct bottom padding in basic mode -->
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                android:visibility="@{(!advanced || nonInteractive) ? V.VISIBLE : V.GONE}" />
-
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:visibility="@{(!advanced || nonInteractive) ? V.GONE : V.VISIBLE}">
+                android:visibility="@{nonInteractive ? V.GONE : V.VISIBLE}">
 
                 <Button
                     android:id="@+id/import_key"
@@ -105,8 +97,7 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="@{advanced ? V.VISIBLE : V.GONE}">
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:id="@+id/extra_container"

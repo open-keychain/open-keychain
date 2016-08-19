@@ -28,20 +28,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListFragmentBinding;
+import org.sufficientlysecure.keychain.databinding.ImportKeysListItemBasicBinding;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.keyimport.processing.AsyncTaskResultWrapper;
@@ -56,7 +50,6 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
 import org.sufficientlysecure.keychain.util.IteratorWithSize;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Preferences.CloudSearchPrefs;
@@ -78,13 +71,12 @@ public class ImportKeysListFragment extends Fragment implements
     private FragmentActivity mActivity;
     private ImportKeysListener mCallback;
 
-    private ImportKeysListFragmentBinding binding;
+    private ImportKeysListFragmentBinding mBinding;
+    private ImportKeysListItemBasicBinding mBindingBasic;
     private ParcelableProxy mParcelableProxy;
 
-    private RecyclerView mRecyclerView;
+    private List<ParcelableKeyRing> mKeyData;
     private ImportKeysAdapter mAdapter;
-    private boolean mAdvanced;
-
     private LoaderState mLoaderState;
 
     public static final int STATUS_FIRST = 0;
@@ -94,52 +86,8 @@ public class ImportKeysListFragment extends Fragment implements
 
     private static final int LOADER_ID_BYTES = 0;
     private static final int LOADER_ID_CLOUD = 1;
-    private LongSparseArray<ParcelableKeyRing> mCachedKeyData;
 
     private boolean mShowingOrbotDialog;
-
-    /**
-     * Returns an Iterator (with size) of the selected data items.
-     * This iterator is sort of a tradeoff, it's slightly more complex than an
-     * ArrayList would have been, but we save some memory by just returning
-     * relevant elements on demand.
-     */
-    public IteratorWithSize<ParcelableKeyRing> getData() {
-        final List<ImportKeysListEntry> entries = getEntries();
-        final Iterator<ImportKeysListEntry> it = entries.iterator();
-        return new IteratorWithSize<ParcelableKeyRing>() {
-
-            @Override
-            public int getSize() {
-                return entries.size();
-            }
-
-            @Override
-            public boolean hasNext() {
-                return it.hasNext();
-            }
-
-            @Override
-            public ParcelableKeyRing next() {
-                // throws NoSuchElementException if it doesn't exist, but that's not our problem
-                return mCachedKeyData.get(it.next().hashCode());
-            }
-
-            @Override
-            public void remove() {
-                it.remove();
-            }
-        };
-    }
-
-    private List<ImportKeysListEntry> getEntries() {
-        if (mAdapter != null) {
-            return mAdapter.getEntries();
-        } else {
-            Log.e(Constants.TAG, "Adapter not initialized, returning empty list");
-            return new ArrayList<>();
-        }
-    }
 
     /**
      * Creates an interactive ImportKeyListFragment which reads keyrings from bytes, or file specified
@@ -191,23 +139,24 @@ public class ImportKeysListFragment extends Fragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.import_keys_list_fragment, container, false);
-        binding.setStatus(STATUS_FIRST);
-        View view = binding.getRoot();
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.import_keys_list_fragment, container, false);
+        mBinding.setStatus(STATUS_FIRST);
+        mBindingBasic = mBinding.basic;
+        View view = mBinding.getRoot();
 
         mActivity = getActivity();
-        setHasOptionsMenu(true);
 
         Bundle args = getArguments();
         Uri dataUri = args.getParcelable(ARG_DATA_URI);
         byte[] bytes = args.getByteArray(ARG_BYTES);
         String query = args.getString(ARG_SERVER_QUERY);
         boolean nonInteractive = args.getBoolean(ARG_NON_INTERACTIVE, false);
+        mBindingBasic.setNonInteractive(nonInteractive);
 
         // Create an empty adapter we will use to display the loaded data.
         mAdapter = new ImportKeysAdapter(mActivity, mCallback, nonInteractive);
-        binding.recyclerView.setAdapter(mAdapter);
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
+        mBinding.recyclerView.setAdapter(mAdapter);
+        mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
 
         if (dataUri != null || bytes != null) {
             loadState(new BytesLoaderState(bytes, dataUri));
@@ -224,10 +173,16 @@ public class ImportKeysListFragment extends Fragment implements
             restartLoaders();
         }
 
-        binding.importKeys.setOnClickListener(new OnClickListener() {
+        mBinding.basic.importKeys.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mCallback.importKeys();
+            }
+        });
+        mBinding.basic.listKeys.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mBinding.setAdvanced(true);
             }
         });
 
@@ -244,42 +199,6 @@ public class ImportKeysListFragment extends Fragment implements
             throw new ClassCastException(activity.toString()
                     + " must implement ImportKeysListener");
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (mLoaderState != null) {
-            inflater.inflate(R.menu.import_keys_list_fragment, menu);
-
-            MenuItem basicMenuItem = menu.findItem(R.id.basic);
-            basicMenuItem.setVisible(mAdvanced && mLoaderState.isBasicModeSupported());
-            MenuItem advancedMenuItem = menu.findItem(R.id.advanced);
-            advancedMenuItem.setVisible(!mAdvanced);
-        }
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        switch (itemId) {
-            case R.id.basic:
-                setAdvanced(false);
-                return true;
-            case R.id.advanced:
-                setAdvanced(true);
-                return true;
-        }
-        return false;
-    }
-
-    public void setAdvanced(boolean advanced) {
-        this.mAdvanced = advanced;
-
-        mAdapter.setAdvanced(advanced);
-        mActivity.invalidateOptionsMenu();
-        binding.setAdvanced(advanced);
     }
 
     @Override
@@ -310,11 +229,7 @@ public class ImportKeysListFragment extends Fragment implements
                 return;
             }
         }
-
-        if (!mLoaderState.isBasicModeSupported()) {
-            mAdvanced = true;
-        }
-        setAdvanced(mAdvanced);
+        mBinding.setAdvanced(!mLoaderState.isBasicModeSupported());
 
         restartLoaders();
     }
@@ -348,7 +263,7 @@ public class ImportKeysListFragment extends Fragment implements
         }
 
         if (loader != null) {
-            binding.setStatus(STATUS_LOADING);
+            mBinding.setStatus(STATUS_LOADING);
         }
 
         return loader;
@@ -360,19 +275,20 @@ public class ImportKeysListFragment extends Fragment implements
             AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data
     ) {
         ArrayList<ImportKeysListEntry> result = data.getResult();
-        binding.setStatus(result.size() > 0 ? STATUS_LOADED : STATUS_EMPTY);
 
-        // free old cached key data
-        mCachedKeyData = null;
-
+        mKeyData = null;
         mAdapter.setData(result);
+
+        int size = result.size();
+        mBindingBasic.setNumber(size);
+        mBinding.setStatus(size > 0 ? STATUS_LOADED : STATUS_EMPTY);
 
         GetKeyResult getKeyResult = (GetKeyResult) data.getOperationResult();
         switch (loader.getId()) {
             case LOADER_ID_BYTES:
                 if (getKeyResult.success()) {
                     // No error
-                    mCachedKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
+                    mKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
                 } else {
                     getKeyResult.createNotify(mActivity).show();
                 }
@@ -441,6 +357,38 @@ public class ImportKeysListFragment extends Fragment implements
             Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader) {
 
         mAdapter.clearData();
+    }
+
+    /**
+     * Returns an Iterator (with size) of the selected data items.
+     * This iterator is sort of a tradeoff, it's slightly more complex than an
+     * ArrayList would have been, but we save some memory by just returning
+     * relevant elements on demand.
+     */
+    public IteratorWithSize<ParcelableKeyRing> getData() {
+        final Iterator<ParcelableKeyRing> it = mKeyData.iterator();
+        return new IteratorWithSize<ParcelableKeyRing>() {
+
+            @Override
+            public int getSize() {
+                return mKeyData.size();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public ParcelableKeyRing next() {
+                return it.next();
+            }
+
+            @Override
+            public void remove() {
+                it.remove();
+            }
+        };
     }
 
 }

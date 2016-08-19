@@ -128,8 +128,6 @@
     <string name="menu_select_all">"Select all"</string>
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_update_all_keys">"Update all keys"</string>
-    <string name="menu_basic">"Basic"</string>
-    <string name="menu_advanced">"Advanced"</string>
     <string name="menu_certify_fingerprint">"Confirm with fingerprint"</string>
     <string name="menu_certify_fingerprint_phrases">"Confirm with phrases"</string>
     <string name="menu_share_log">"Share log"</string>
@@ -526,7 +524,7 @@
     <string name="import_tab_cloud">"Key Search"</string>
     <string name="import_tab_direct">"File/Clipboard"</string>
     <string name="import_tab_qr_code">"QR Code/NFC"</string>
-    <string name="import_import">"Import selected keys"</string>
+    <string name="import_found_keys">"Found %1$d keys"</string>
     <string name="import_qr_code_wrong">"QR Code malformed! Please try again!"</string>
     <string name="import_qr_code_fp">"Fingerprint is malformed or too short!"</string>
     <string name="import_qr_code_too_short_fingerprint">"Fingerprint is too short!"</string>
@@ -1574,7 +1572,8 @@
     <string name="security_token_create">"Hold Security Token against the back of your device."</string>
     <string name="security_token_reset_or_import">"This Security Token already contains a key. You can import the key using the cloud or reset the Security Token."</string>
     <string name="btn_import">"Import"</string>
-    <string name="btn_import_all">"Import all"</string>
+    <string name="btn_import_keys">"Import keys"</string>
+    <string name="btn_list_keys">"List keys"</string>
     <string name="btn_reset">"Reset"</string>
     <string name="security_token_import_radio">"Import key"</string>
     <string name="security_token_reset_radio">"Reset Security Token"</string>
