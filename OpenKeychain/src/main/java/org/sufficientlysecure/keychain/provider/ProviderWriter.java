@@ -789,8 +789,10 @@ public class ProviderWriter {
                 try {
                     passphrase = PassphraseCacheService.getCachedPassphrase(mContext,
                             publicRing.getMasterKeyId());
-                    secretRing = mProviderHelper.read().getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId(), passphrase)
-                            .getUncachedKeyRing();
+                    if (passphrase != null) {
+                        secretRing = mProviderHelper.read().getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId(), passphrase)
+                                .getUncachedKeyRing();
+                    }
                 } catch (PassphraseCacheService.KeyNotFoundException | ProviderReader.NotFoundException ignored) {}
 
                 if (secretRing != null) {
@@ -816,7 +818,8 @@ public class ProviderWriter {
                 int result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, true);
                 progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
 
-                // reinsert previous secret data || save merged secret key
+                // the secret key data has been wiped from db after saving the public key
+                // reinsert previous secret data or save merged secret key, whichever is appropriate
                 int secretResult = (secretRing == null)
                         ? writeSecretKeyRingToDb(secretKeyData).getResult()
                         : saveCanonicalizedSecretKeyRing(canSecretRing,
