@@ -63,7 +63,7 @@ import java.util.List;
  * method is called to start a new one specifically.
  */
 public class ProviderHelper {
-    public final boolean mUsesSinglePassphraseWorkflow;
+    private final Preferences mPreferences;
     private final ProviderReader mReader;
     private final ProviderWriter mWriter;
     protected final Context mContext;
@@ -87,8 +87,11 @@ public class ProviderHelper {
         mIndent = indent;
         mReader = ProviderReader.newInstance(this, mContentResolver);
         mWriter = ProviderWriter.newInstance(this, mContentResolver);
-        mUsesSinglePassphraseWorkflow = Preferences.getPreferences(mContext)
-                .usesSinglePassphraseWorkflow();
+        mPreferences = Preferences.getPreferences(mContext);
+    }
+
+    public boolean usesSinglePassphraseWorkflow() {
+        return mPreferences.usesSinglePassphraseWorkflow();
     }
 
     public static <T extends ProviderReader>
@@ -106,8 +109,7 @@ public class ProviderHelper {
         mLog = log;
         mIndent = indent;
         mWriter = ProviderWriter.newInstance(this, mContentResolver);
-        mUsesSinglePassphraseWorkflow = Preferences.getPreferences(mContext)
-                .usesSinglePassphraseWorkflow();
+        mPreferences = Preferences.getPreferences(mContext);
 
         // use reflection to create an instance of the custom reader
         mReader = customReaderClass.getDeclaredConstructor(

@@ -156,6 +156,7 @@ public final class Constants {
         public static final long none = 0;
         public static final long symmetric = -1;
         public static final long backup_code = -2;
+        public static final long master_passphrase = -3;
     }
 
     public static final class MasterPassphrase {

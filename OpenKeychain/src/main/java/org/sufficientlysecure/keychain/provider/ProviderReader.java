@@ -274,7 +274,7 @@ public class ProviderReader {
                     throw new ProviderReader.NotFoundException("Secret key not available!");
                 }
                 if (isEncrypted) {
-                    if (mProviderHelper.mUsesSinglePassphraseWorkflow) {
+                    if (mProviderHelper.usesSinglePassphraseWorkflow()) {
                         // the passphrase received is the master passphrase
                         SecretKey key = getMasterSecretKey(passphrase);
                         secBlob = ByteArrayEncryptor.decryptWithMasterKey(secBlob, key);

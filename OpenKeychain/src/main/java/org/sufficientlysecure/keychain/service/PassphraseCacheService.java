@@ -46,7 +46,9 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.security.Key;
 import java.util.Date;
 
 /**
@@ -97,6 +99,15 @@ public class PassphraseCacheService extends Service {
         public KeyNotFoundException(String name) {
             super(name);
         }
+    }
+
+    public static void addMasterPassphrase(Context context, Passphrase passphrase) {
+        String name = context.getResources().getString(R.string.master_passphrase_notification_name);
+        addCachedPassphrase(context, Constants.key.master_passphrase, passphrase, name, Integer.MAX_VALUE);
+    }
+
+    public static void clearMasterPassphrase(Context context) {
+        clearCachedPassphrase(context, Constants.key.master_passphrase);
     }
 
     /**
@@ -178,6 +189,9 @@ public class PassphraseCacheService extends Service {
      * @return passphrase or null (if no passphrase is cached for this keyId)
      */
     public static Passphrase getCachedPassphrase(Context context, long masterKeyId) throws KeyNotFoundException {
+        if (Preferences.getPreferences(context).usesSinglePassphraseWorkflow()) {
+            return getCachedPassphrase(context, Constants.key.master_passphrase, Constants.key.none);
+        }
         return getCachedPassphrase(context, masterKeyId, Constants.key.none);
     }
 
@@ -256,6 +270,14 @@ public class PassphraseCacheService extends Service {
         if (masterKeyId == Constants.key.symmetric) {
             Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for symmetric encryption");
             CachedPassphrases cachedPassphrases = mPassphraseCache.get(Constants.key.symmetric);
+            if (cachedPassphrases == null) {
+                return null;
+            }
+            return cachedPassphrases.mKeyringPassphrase;
+        }
+
+        if (masterKeyId == Constants.key.master_passphrase) {
+            CachedPassphrases cachedPassphrases = mPassphraseCache.get(Constants.key.master_passphrase);
             if (cachedPassphrases == null) {
                 return null;
             }
@@ -462,6 +484,7 @@ public class PassphraseCacheService extends Service {
                     mPassphraseCache.get(keyId).mSubkeyPassphrase = null;
                 } else {
                     // Stop all ttl alarms
+                    // Clear the master passphrase as well, should be expect by the user
                     for (int i = 0; i < mPassphraseCache.size(); i++) {
                         CachedPassphrases cachedPassphrases = mPassphraseCache.valueAt(i);
                         if (cachedPassphrases.mTimeoutMode == TimeoutMode.TTL) {

@@ -1549,7 +1549,8 @@
     <string name="first_time_blank_security_token">"Would you like to use this blank Security Token with OpenKeychain?\n\nPlease take away the Security Token now, you will be prompted when it is needed again!"</string>
     <string name="first_time_blank_security_token_yes">"Use this Security Token"</string>
 
-    <!-- Set Master Passphrase -->
+    <!-- Master Passphrase -->
+    <string name="master_passphrase_notification_name">"&lt;Master Passphrase&gt;"</string>
     <!-- TODO: edit the single password workflow text -->
     <string name="set_master_passphrase_title">"Set Master Password"</string>
     <string name="set_master_passphrase_text">"The master password will be used for OpenKeychain's app lock. A strong password protects your keys in the event of theft."</string>

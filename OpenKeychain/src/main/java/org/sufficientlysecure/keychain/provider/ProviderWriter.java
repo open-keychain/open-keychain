@@ -628,17 +628,23 @@ public class ProviderWriter {
                     passphrase = (passphrase == null) ? new Passphrase() : passphrase;
                 }
 
+                if (mProviderHelper.usesSinglePassphraseWorkflow()) {
+                    try {
+                        passphrase = PassphraseCacheService.getCachedPassphrase(mContext,
+                                Constants.key.master_passphrase);
+                    } catch (PassphraseCacheService.KeyNotFoundException exception) {
+                        throw new AssertionError("No cached master passphrase. Something went terribly wrong");
+                    }
+                }
+
                 if (passphrase.isEmpty()) {
                     keyRingType = SecretKeyRingType.PASSPHRASE_EMPTY;
                 }
 
                 // encrypt secret keyring block
                 try {
-                    if (mProviderHelper.mUsesSinglePassphraseWorkflow) {
-                        // we assume that mKeyringPassphrase is indeed our master passphrase
-                        // TODO: wip, this assumption is currently wrong!!
-                        // just grab directly from the cache. that's the easiest way
-                        SecretKey key = mProviderHelper.read().getMasterSecretKey(passphrases.mKeyringPassphrase);
+                    if (mProviderHelper.usesSinglePassphraseWorkflow()) {
+                        SecretKey key = mProviderHelper.read().getMasterSecretKey(passphrase);
                         keyData = ByteArrayEncryptor.encryptWithMasterKey(keyRing.getEncoded(), key);
                     } else {
                         keyData = ByteArrayEncryptor.encryptByteArray(keyRing.getEncoded(), passphrase.getCharArray());

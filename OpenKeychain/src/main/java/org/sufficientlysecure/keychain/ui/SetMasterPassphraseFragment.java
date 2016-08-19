@@ -21,6 +21,7 @@ import android.widget.Toast;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -75,7 +76,6 @@ public class SetMasterPassphraseFragment extends Fragment {
         helpSinglePasswordWorkflow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: swap this out to a dialog later on?
                 Toast.makeText(getActivity(), R.string.about_single_password_workflow, Toast.LENGTH_LONG).show();
             }
         });
@@ -165,10 +165,12 @@ public class SetMasterPassphraseFragment extends Fragment {
 
             mPassphraseEditAgain.setError(null);
 
-            // save password & chocie of workflow
+            // save password & choice of workflow
             try {
-                new ProviderHelper(getActivity()).write().saveMasterPassphrase(new Passphrase(mPassphraseEdit.getText()));
-            } catch (ByteArrayEncryptor.EncryptDecryptException e){
+                Passphrase passphrase = new Passphrase(mPassphraseEdit.getText());
+                new ProviderHelper(getActivity()).write().saveMasterPassphrase(passphrase);
+                PassphraseCacheService.addMasterPassphrase(getActivity().getApplicationContext(), passphrase);
+            } catch (ByteArrayEncryptor.EncryptDecryptException e) {
                 Toast.makeText(getActivity(), R.string.error_saving_master_password,
                         Toast.LENGTH_LONG).show();
             }
