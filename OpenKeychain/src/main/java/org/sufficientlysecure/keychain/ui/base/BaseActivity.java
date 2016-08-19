@@ -34,7 +34,12 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
+import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
+import org.sufficientlysecure.keychain.ui.MigrateSymmetricActivity;
+import org.sufficientlysecure.keychain.ui.SetMasterPassphraseActivity;
+import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 /**
  * Setups Toolbar
@@ -51,9 +56,34 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startEssentialActivities(this);
         initTheme();
         initLayout();
         initToolbar();
+    }
+
+    private void startEssentialActivities(Activity activity) {
+        // We need to white-list the activities used by those we're calling
+        // this prevents our app from entering a never ending loop.
+        // Skipping those that don't extend BaseActivity is fine,
+        // as they will never be called with an external intent
+
+        Preferences preferences = Preferences.getPreferences(activity);
+        boolean needsMigration =
+                preferences.isUsingS2k() &&
+                        !(activity instanceof MigrateSymmetricActivity);
+
+        boolean isNewInstall =
+                !preferences.isUsingS2k() && !preferences.hasMasterPassphrase() &&
+                        !(activity instanceof SetMasterPassphraseActivity);
+
+        if (needsMigration) {
+            Intent intent = new Intent(activity, MigrateSymmetricActivity.class);
+            startActivity(intent);
+        } else if(isNewInstall) {
+            Intent intent = new Intent(activity, SetMasterPassphraseActivity.class);
+            startActivity(intent);
+        }
     }
 
     @Override

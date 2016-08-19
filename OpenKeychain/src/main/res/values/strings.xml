@@ -840,6 +840,7 @@
     <string name="cert_verify_error">"error!"</string>
     <string name="cert_verify_unavailable">"key unavailable"</string>
 
+
     <!-- LogType log messages. Errors should have _ERROR_ in their name and end with a ! -->
 
     <string name="msg_internal_error">"Internal error!"</string>
@@ -1537,6 +1538,8 @@
     <string name="keyserver_sync_orbot_notif_ignore">"Direct"</string>
 
     <!-- First Time -->
+    <string name="first_time_dialog_title">"Welcome to OpenKeychain!"</string>
+    <string name="first_time_dialog_text">"Take your first step into OpenKeychain by setting your master password.\n\nThis password will be used for our applock mechanism, and also to protect your keys."</string>
     <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
     <string name="first_time_create_key">"Create my key"</string>
     <string name="first_time_import_key">"Import key from file"</string>
@@ -1545,6 +1548,15 @@
     <string name="first_time_skip">"Skip Setup"</string>
     <string name="first_time_blank_security_token">"Would you like to use this blank Security Token with OpenKeychain?\n\nPlease take away the Security Token now, you will be prompted when it is needed again!"</string>
     <string name="first_time_blank_security_token_yes">"Use this Security Token"</string>
+
+    <!-- Set Master Passphrase -->
+    <!-- TODO: edit the single password workflow text -->
+    <string name="set_master_passphrase_title">"Set Master Password"</string>
+    <string name="set_master_passphrase_text">"The master password will be used for OpenKeychain's app lock. A strong password protects your keys in the event of theft."</string>
+    <string name="set_single_password_workflow">"Use Single Password Workflow (recommended)"</string>
+    <string name="help_single_password_workflow">"(?)"</string>
+    <string name="about_single_password_workflow">"The master password will be used as the password for all keys in OpenKeychain. Disabling this prevents use of some features of the app.\n\nRefer to the FAQ for more info. This setting can be toggled at anytime from the settings menu."</string>
+    <string name="error_saving_master_password">"Error saving master password, please contact the developers."</string>
 
     <!-- Migrate to Symmetric Encryption -->
     <string name="msg_mi">"Migrating to symmetric encryption"</string>
@@ -1557,9 +1569,11 @@
     <string name="progress_migrate_cache_keys">"migrate: saving to cache…"</string>
     <string name="progress_migrating">"migrating…"</string>
 
+    <string name="btn_start_migration">"Start Migration"</string>
     <string name="migrate_cancelled_dialog">"Please complete the migration, or clear the application data to start importing keys."</string>
+    <string name="migrate_title">"Migrating"</string>
     <!-- TODO: edit the migration text -->
-    <string name="migrate_changes_to_app">"OpenKeychain has been updated to use a new encryption system for your keys. View the FAQ for more details. You will be prompted to enter passwords for your keys after this screen. \n\nNote: Usage of subkeys with separate passwords is no longer supported. Such subkeys will be modified to use the password of the first present subkey in the keyring."</string>
+    <string name="migrate_changes_to_app">"OpenKeychain has been updated to use a new encryption system for your keys. View the FAQ for more details. You are required to set a master password and then, to enter the passwords for your existing keys. \n\nNote: Usage of subkeys with separate passwords is no longer supported. Such subkeys will be modified to use the password of the first present subkey in the keyring."</string>
     <string name="migrate_error_accessing_cache">"Error, unable to access cached keys. Please try again…"</string>
     <string name="migrate_error_cache_keys">"Critical error, unable to read/write to device. Please try again later."</string>
     <string name="migrate_error_cancelled">"Unknown error has occurred. Please contact the developers…"</string>

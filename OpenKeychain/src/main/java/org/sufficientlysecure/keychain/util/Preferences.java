@@ -136,6 +136,16 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean hasMasterPassphrase() {
+        return mSharedPreferences.getBoolean(Constants.Pref.HAS_MASTER_PASSPHRASE, false);
+    }
+
+    public void setHasMasterPassphrase(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.HAS_MASTER_PASSPHRASE, value);
+        editor.commit();
+    }
+
     public boolean isPartiallyMigrated() {
         return mSharedPreferences.getBoolean(Pref.PARTIALLY_MIGRATED, false);
     }

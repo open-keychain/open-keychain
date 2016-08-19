@@ -6,10 +6,10 @@
               android:paddingTop="16dp"
               android:paddingLeft="24dp"
               android:paddingRight="24dp">
-    <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:text="@string/migrate_changes_to_app" />
+<TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:text="@string/first_time_dialog_text" />
 
 </LinearLayout>

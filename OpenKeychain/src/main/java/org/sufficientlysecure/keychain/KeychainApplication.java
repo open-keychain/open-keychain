@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.ui.MigrateSymmetricActivity;
+import org.sufficientlysecure.keychain.ui.SetMasterPassphraseActivity;
 import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
@@ -132,28 +133,10 @@ public class KeychainApplication extends Application {
             new KeychainDatabase(this).getReadableDatabase().close();
         }
 
-        // migrate is first attempted when upgrading the db
-        // if migrate isn't completed, try again when any activity is created
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
-            Preferences mPreferences = Preferences.getPreferences(getApplicationContext());
-
             @Override
             public void onActivityCreated(Activity activity, Bundle bundle) {
-                if (mPreferences.isUsingS2k() &&
-                        !(activity instanceof MigrateSymmetricActivity
-                                || activity instanceof PassphraseDialogActivity
-                                || activity instanceof ConsolidateDialogActivity)) {
-                    if (new ProviderHelper(activity).write().hasSecretKeys()) {
-                        Intent intent = new Intent(activity, MigrateSymmetricActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        activity.startActivity(intent);
-                    } else {
-                        mPreferences.setUsingS2k(false);
-                    }
-                }
-                // TODO: wip, check that we have set the master passphrase, ask user to set it if 'no'
-
-                // TODO: wip, check if we have cached the master passphrase in memory. if no, ask for it
+                // TODO: wip, applock here, check if we have cached the master passphrase in memory. if no, ask for it
             }
 
             // TODO: do we really need to check everywhere??

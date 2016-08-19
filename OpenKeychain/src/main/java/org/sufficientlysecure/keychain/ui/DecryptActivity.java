@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 
 public class DecryptActivity extends BaseActivity {
@@ -52,8 +53,13 @@ public class DecryptActivity extends BaseActivity {
 
         setFullScreenDialogClose(Activity.RESULT_CANCELED, false);
 
-        // Handle intent actions
-        handleActions(savedInstanceState, getIntent());
+        if (Preferences.getPreferences(this).isUsingS2k()) {
+            // decrypting doesn't work before we migrate
+            finish();
+        } else {
+            // Handle intent actions
+            handleActions(savedInstanceState, getIntent());
+        }
     }
 
     @Override

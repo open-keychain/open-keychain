@@ -1,13 +1,13 @@
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +22,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.MigrateSymmetricInputParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
@@ -38,79 +39,132 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Migrate consists of a consolidate, caching secret keyrings to a file, and actual migration
- * The tasks are run one after another, to prevent bugs when displaying the progress dialog
+ * Migrate consists of a consolidate, caching secret keyrings to a file,
+ * setting the master passphrase, and then collection of passphrases for keys to be migrated
+ *
+ * The consolidate & caching are run one after the other,
+ * to prevent bugs when displaying the progress dialog.
  *
  * Caching is required to provide a reliable source for keyrings when migrating.
  * The cache is created only if migration has not started.
  * The previously built cache is used otherwise
  */
-public class MigrateSymmetricActivity extends FragmentActivity {
+public class MigrateSymmetricActivity extends BaseActivity {
     private static final int REQUEST_REPEAT_PASSPHRASE = 0x00007008;
     private static final int REQUEST_CONSOLIDATE = 0x00007009;
+    public static final String FRAGMENT_TAG = "currentFragment";
 
     private List<KeyringPassphrases> mPassphrasesList;
     private Iterator<SubKeyInfo> mSubKeysForRepeatAskPassphrase;
     private CryptoOperationHelper mCryptoOpHelper;
+    private Fragment mCurrentFragment;
+    private Class mFirstFragmentClass;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPassphrasesList = new ArrayList<>();
-        setContentView(R.layout.migrate_symmetric_activity);
+        setTitle(R.string.title_migrate_symmetric);
+        mToolbar.setNavigationIcon(null);
+        mToolbar.setNavigationOnClickListener(null);
 
-        Preferences prefs = Preferences.getPreferences(this);
-        if (!prefs.isPartiallyMigrated()) {
-            Intent consolidateIntent = new Intent(this, ConsolidateDialogActivity.class);
-            consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
-            startActivityForResult(consolidateIntent, REQUEST_CONSOLIDATE);
+        mPassphrasesList = new ArrayList<>();
+
+        // Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            mCurrentFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         } else {
-            showDialog();
+            Preferences prefs = Preferences.getPreferences(this);
+
+            if (!prefs.isPartiallyMigrated()) {
+                Intent consolidateIntent = new Intent(this, ConsolidateDialogActivity.class);
+                consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
+                startActivityForResult(consolidateIntent, REQUEST_CONSOLIDATE);
+            }
+
+            MigrateSymmetricStartFragment frag = new MigrateSymmetricStartFragment();
+            mFirstFragmentClass = frag.getClass();
+            loadFragment(frag, FragAction.START);
         }
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    public void onBackPressed() {
+        if(mFirstFragmentClass.equals(mCurrentFragment.getClass())) {
+            ActivityCompat.finishAffinity(this);
+        } else {
+            super.onBackPressed();
+        }
     }
 
-    private void showDialog() {
-        final ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(this);
-        CustomAlertDialogBuilder dialog = new CustomAlertDialogBuilder(theme);
-        LayoutInflater inflater = LayoutInflater.from(theme);
-        @SuppressLint("InflateParams") // for dialog's use
-        View view = inflater.inflate(R.layout.migrate_symmetric_dialog, null);
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.migrate_symmetric_activity);
+    }
 
-        dialog.setView(view)
-                .setCancelable(false)
-                .setTitle(R.string.title_migrate_symmetric)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ArrayList<SubKeyInfo> subKeyInfos = new ArrayList<>();
-                        try {
-                            ParcelableFileCache<ParcelableKeyRing> secretKeyRings =
-                                    new ParcelableFileCache<>(getApplication(), MigrateSymmetricOperation.CACHE_FILE_NAME);
-                            ParcelableFileCache.IteratorWithSize<ParcelableKeyRing> itSecrets = secretKeyRings.readCache(false);
-                            while(itSecrets.hasNext()) {
-                                ParcelableKeyRing ring = itSecrets.next();
-                                subKeyInfos.addAll(getSubKeyInfosFromRing(UncachedKeyRing.decodeFromData(ring.mBytes)));
-                            }
-                        } catch (IOException | PgpGeneralException e) {
-                            // not a problem, cache will be created when dialog is started again
-                            Toast.makeText(getApplicationContext(),
-                                    R.string.migrate_error_accessing_cache, Toast.LENGTH_SHORT).show();
-                            ActivityCompat.finishAffinity(MigrateSymmetricActivity.this);
-                        }
+    public enum FragAction {
+        START,
+        TO_RIGHT,
+        TO_LEFT
+    }
 
-                        mSubKeysForRepeatAskPassphrase = subKeyInfos.iterator();
-                        if (mSubKeysForRepeatAskPassphrase.hasNext()) {
-                            startPassphraseActivity();
-                        } else {
-                            startMigration(new ArrayList<KeyringPassphrases>());
-                        }
-                    }
-                }).show();
+    public void loadFragment(Fragment fragment, FragAction action) {
+        mCurrentFragment = fragment;
+
+        // Add the fragment to the 'fragment_container' FrameLayout
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        switch (action) {
+            case START:
+                transaction.setCustomAnimations(0, 0);
+                transaction.replace(R.id.migrate_fragment_container, fragment, FRAGMENT_TAG)
+                        .commit();
+                break;
+            case TO_LEFT:
+                getSupportFragmentManager().popBackStackImmediate();
+                break;
+            case TO_RIGHT:
+                transaction.setCustomAnimations(R.anim.frag_slide_in_from_right, R.anim.frag_slide_out_to_left,
+                        R.anim.frag_slide_in_from_left, R.anim.frag_slide_out_to_right);
+                transaction.addToBackStack(null);
+                transaction.replace(R.id.migrate_fragment_container, fragment, FRAGMENT_TAG)
+                        .commit();
+                break;
+
+        }
+
+        // do it immediately!
+        getSupportFragmentManager().executePendingTransactions();
+    }
+
+    public void finishedSettingMasterPassphrase() {
+        // continue migration
+        collectPassphrasesForKeyRings();
+    }
+
+    private void collectPassphrasesForKeyRings() {
+        ArrayList<SubKeyInfo> subKeyInfos = new ArrayList<>();
+        try {
+            ParcelableFileCache<ParcelableKeyRing> secretKeyRings =
+                    new ParcelableFileCache<>(getApplication(), MigrateSymmetricOperation.CACHE_FILE_NAME);
+            ParcelableFileCache.IteratorWithSize<ParcelableKeyRing> itSecrets = secretKeyRings.readCache(false);
+            while(itSecrets.hasNext()) {
+                ParcelableKeyRing ring = itSecrets.next();
+                subKeyInfos.addAll(getSubKeyInfosFromRing(UncachedKeyRing.decodeFromData(ring.mBytes)));
+            }
+        } catch (IOException | PgpGeneralException e) {
+            // not a problem, cache will be created when dialog is started again
+            Toast.makeText(getApplicationContext(),
+                    R.string.migrate_error_accessing_cache, Toast.LENGTH_LONG).show();
+            ActivityCompat.finishAffinity(MigrateSymmetricActivity.this);
+        }
+
+        mSubKeysForRepeatAskPassphrase = subKeyInfos.iterator();
+        if (mSubKeysForRepeatAskPassphrase.hasNext()) {
+            startPassphraseActivity();
+        } else {
+            startMigration(new ArrayList<KeyringPassphrases>());
+        }
+
     }
 
     private List<SubKeyInfo> getSubKeyInfosFromRing(UncachedKeyRing ring) throws IOException {
@@ -137,20 +191,19 @@ public class MigrateSymmetricActivity extends FragmentActivity {
                     @Override
                     public void onCryptoOperationSuccess(MigrateSymmetricResult result) {
                         Preferences.getPreferences(activity).setPartiallyMigrated(true);
-                        showDialog();
                     }
 
                     @Override
                     public void onCryptoOperationCancelled() {
                         Toast.makeText(activity.getApplicationContext(),
-                                R.string.migrate_error_cancelled, Toast.LENGTH_SHORT).show();
+                                R.string.migrate_error_cancelled, Toast.LENGTH_LONG).show();
                         ActivityCompat.finishAffinity(activity);
                     }
 
                     @Override
                     public void onCryptoOperationError(MigrateSymmetricResult result) {
                         Toast.makeText(activity.getApplicationContext(),
-                                R.string.migrate_error_cache_keys, Toast.LENGTH_SHORT).show();
+                                R.string.migrate_error_cache_keys, Toast.LENGTH_LONG).show();
                         ActivityCompat.finishAffinity(activity);
                     }
 
@@ -165,7 +218,6 @@ public class MigrateSymmetricActivity extends FragmentActivity {
 
         mCryptoOpHelper.cryptoOperation();
     }
-
 
     private void startPassphraseActivity() {
         SubKeyInfo keyInfo = mSubKeysForRepeatAskPassphrase.next();
@@ -200,24 +252,20 @@ public class MigrateSymmetricActivity extends FragmentActivity {
             case REQUEST_CONSOLIDATE : {
                 if (resultCode != Activity.RESULT_OK) {
                     Toast.makeText(this, R.string.migrate_error_consolidating,
-                            Toast.LENGTH_SHORT).show();
+                            Toast.LENGTH_LONG).show();
                     ActivityCompat.finishAffinity(this);
                     return;
                 }
 
                 if (!Preferences.getPreferences(getApplicationContext()).isPartiallyMigrated()) {
                     createCache();
-                } else {
-                    showDialog();
                 }
                 return;
             }
             case REQUEST_REPEAT_PASSPHRASE : {
                 if (resultCode != Activity.RESULT_OK) {
-                    // TODO: give the user a shortcut to clear db & start anew instead?
                     Toast.makeText(this, R.string.migrate_cancelled_dialog,
-                            Toast.LENGTH_SHORT).show();
-                    showDialog();
+                            Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -279,14 +327,14 @@ public class MigrateSymmetricActivity extends FragmentActivity {
                     @Override
                     public void onCryptoOperationCancelled() {
                         Toast.makeText(activity.getApplicationContext(),
-                                R.string.migrate_error_cancelled, Toast.LENGTH_SHORT).show();
+                                R.string.migrate_error_cancelled, Toast.LENGTH_LONG).show();
                         ActivityCompat.finishAffinity(activity);
                     }
 
                     @Override
                     public void onCryptoOperationError(MigrateSymmetricResult result) {
                         Toast.makeText(activity.getApplicationContext(),
-                                R.string.migrate_error_migrating, Toast.LENGTH_SHORT).show();
+                                R.string.migrate_error_migrating, Toast.LENGTH_LONG).show();
                         ActivityCompat.finishAffinity(activity);
                     }
 
@@ -304,12 +352,6 @@ public class MigrateSymmetricActivity extends FragmentActivity {
     private void finishSuccessfulMigration() {
         Preferences.getPreferences(this).setUsingS2k(false);
         Preferences.getPreferences(this).setPartiallyMigrated(false);
-
-        // show the main activity to indicate success
-        Intent mainActivityIntent = new Intent(this, MainActivity.class);
-        mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        // TODO: show success on snackbar
-        startActivity(mainActivityIntent);
         finish();
     }
 

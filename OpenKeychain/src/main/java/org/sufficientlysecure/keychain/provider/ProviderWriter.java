@@ -636,6 +636,8 @@ public class ProviderWriter {
                 try {
                     if (mProviderHelper.mUsesSinglePassphraseWorkflow) {
                         // we assume that mKeyringPassphrase is indeed our master passphrase
+                        // TODO: wip, this assumption is currently wrong!!
+                        // just grab directly from the cache. that's the easiest way
                         SecretKey key = mProviderHelper.read().getMasterSecretKey(passphrases.mKeyringPassphrase);
                         keyData = ByteArrayEncryptor.encryptWithMasterKey(keyRing.getEncoded(), key);
                     } else {
