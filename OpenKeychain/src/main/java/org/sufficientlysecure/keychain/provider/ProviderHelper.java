@@ -97,7 +97,7 @@ public class ProviderHelper {
         return new ProviderHelper(context, new OperationLog(), 0, outerObject, readerClass);
     }
 
-    // TODO: clean this up with first-class-methods when on Java 8
+    // TODO: wip, can this be cleaned up with java8's new features?
     // for test use only
     private <T extends ProviderReader> ProviderHelper(Context context, OperationLog log, int indent,
                                                       Object outerObject, Class<T> customReaderClass) throws Exception {

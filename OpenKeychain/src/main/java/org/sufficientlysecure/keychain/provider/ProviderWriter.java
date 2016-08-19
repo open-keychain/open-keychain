@@ -104,7 +104,7 @@ public class ProviderWriter {
     };
 
     public boolean saveMasterPassphrase(Passphrase passphrase) throws EncryptDecryptException {
-        // TODO: change to a replace, instead of dropping the table
+        // TODO: wip, change to a replace, instead of dropping the table
         Uri uri = KeychainContract.MasterPassphrase.CONTENT_URI;
         mContentResolver.delete(uri, null, null);
         ContentValues values = new ContentValues();
