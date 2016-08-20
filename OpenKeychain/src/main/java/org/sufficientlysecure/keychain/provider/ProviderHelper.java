@@ -90,10 +90,6 @@ public class ProviderHelper {
         mPreferences = Preferences.getPreferences(mContext);
     }
 
-    public boolean usesSinglePassphraseWorkflow() {
-        return mPreferences.usesSinglePassphraseWorkflow();
-    }
-
     public static <T extends ProviderReader>
     ProviderHelper useCustomReaderForTest(Context context, Object outerObject, Class<T> readerClass)
     throws Exception {

@@ -21,6 +21,7 @@ import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import javax.crypto.SecretKey;
@@ -31,15 +32,20 @@ import java.util.HashMap;
 public class ProviderReader {
     private ProviderHelper mProviderHelper;
     private ContentResolver mContentResolver;
+    private Preferences mPreferences;
 
     protected ProviderReader(ProviderHelper helper, ContentResolver resolver) {
         mProviderHelper = helper;
         mContentResolver = resolver;
-
+        mPreferences = Preferences.getPreferences(helper.mContext);
     }
 
     public static ProviderReader newInstance(ProviderHelper helper, ContentResolver resolver) {
         return new ProviderReader(helper, resolver);
+    }
+
+    public boolean usesSinglePassphraseWorkflow() {
+        return mPreferences.usesSinglePassphraseWorkflow();
     }
 
     public Object getGenericData(Uri uri, String column, int type) throws ProviderReader.NotFoundException {
@@ -267,7 +273,7 @@ public class ProviderReader {
                     throw new ProviderReader.NotFoundException("Secret key not available!");
                 }
                 if (isEncrypted) {
-                    if (mProviderHelper.usesSinglePassphraseWorkflow()) {
+                    if (usesSinglePassphraseWorkflow()) {
                         // the passphrase received is the master passphrase
                         SecretKey key = getMasterSecretKey(passphrase);
                         secBlob = ByteArrayEncryptor.decryptWithMasterKey(secBlob, key);

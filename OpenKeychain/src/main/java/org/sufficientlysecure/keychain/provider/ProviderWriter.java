@@ -67,16 +67,22 @@ import java.util.concurrent.TimeUnit;
 public class ProviderWriter {
     private ProviderHelper mProviderHelper;
     private ContentResolver mContentResolver;
+    private Preferences mPreferences;
     private Context mContext;
 
     private ProviderWriter(ProviderHelper helper, ContentResolver resolver) {
         mProviderHelper = helper;
         mContentResolver = resolver;
-        mContext = mProviderHelper.mContext;
+        mContext = helper.mContext;
+        mPreferences = Preferences.getPreferences(helper.mContext);
     }
 
     public static ProviderWriter newInstance(ProviderHelper helper, ContentResolver resolver) {
         return new ProviderWriter(helper, resolver);
+    }
+
+    public boolean usesSinglePassphraseWorkflow() {
+        return mPreferences.usesSinglePassphraseWorkflow();
     }
 
     // bits, in order: CESA. make SURE these are correct, we will get bad log entries otherwise!!
@@ -628,7 +634,7 @@ public class ProviderWriter {
                     passphrase = (passphrase == null) ? new Passphrase() : passphrase;
                 }
 
-                if (mProviderHelper.usesSinglePassphraseWorkflow()) {
+                if (usesSinglePassphraseWorkflow()) {
                     try {
                         passphrase = PassphraseCacheService.getMasterPassphrase(mContext);
                     } catch (PassphraseCacheService.KeyNotFoundException exception) {
@@ -642,7 +648,7 @@ public class ProviderWriter {
 
                 // encrypt secret keyring block
                 try {
-                    if (mProviderHelper.usesSinglePassphraseWorkflow()) {
+                    if (usesSinglePassphraseWorkflow()) {
                         SecretKey key = mProviderHelper.read().getMasterSecretKey(passphrase);
                         keyData = ByteArrayEncryptor.encryptWithMasterKey(keyRing.getEncoded(), key);
                     } else {
