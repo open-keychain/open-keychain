@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * Used to migrate pgp keys in the database to symmetric key encrypted keyring blocks
  * Migrate consists of a consolidate, caching secret keyrings to a file,
  * setting the master passphrase, and then collection of passphrases for keys to be migrated
  *
