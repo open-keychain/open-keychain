@@ -21,26 +21,6 @@
 
         <include layout="@layout/notify_area" />
 
-        <LinearLayout
-            android:id="@+id/import_keys_top_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <FrameLayout
-                android:id="@+id/import_keys_top_container"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:orientation="vertical" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dip"
-                android:background="?android:attr/listDivider" />
-
-        </LinearLayout>
-
         <FrameLayout
             android:id="@+id/import_keys_list_container"
             android:layout_width="match_parent"
@@ -50,7 +30,7 @@
         <RelativeLayout
             android:id="@+id/import_snackbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

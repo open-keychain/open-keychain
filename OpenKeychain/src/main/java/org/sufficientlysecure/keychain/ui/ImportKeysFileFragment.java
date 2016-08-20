@@ -24,6 +24,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -65,46 +68,10 @@ public class ImportKeysFileFragment extends Fragment {
         return frag;
     }
 
-    /**
-     * Inflate the layout for this fragment
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.import_keys_file_fragment, container, false);
-
-        mBrowse = view.findViewById(R.id.import_keys_file_browse);
-        mBrowse.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // open .asc or .gpg files
-                // setting it to text/plain prevents Cyanogenmod's file manager from selecting asc
-                // or gpg types!
-                FileHelper.openDocument(ImportKeysFileFragment.this,
-                        Uri.fromFile(Constants.Path.APP_DIR), "*/*", false, REQUEST_CODE_FILE);
-            }
-        });
-
-        mClipboardButton = view.findViewById(R.id.import_clipboard_button);
-        mClipboardButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
-                String sendText = "";
-                if (clipboardText != null) {
-                    sendText = clipboardText.toString();
-                    sendText = PgpHelper.getPgpKeyContent(sendText);
-                    if (sendText == null) {
-                        Notify.create(mActivity, R.string.error_bad_data, Style.ERROR).show();
-                        return;
-                    }
-                    mCallback.loadKeys(new BytesLoaderState(sendText.getBytes(), null));
-                }
-            }
-        });
-
         setHasOptionsMenu(true);
-
-        return view;
+        return null;
     }
 
     @Override
@@ -119,6 +86,42 @@ public class ImportKeysFileFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement ImportKeysListener");
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.import_keys_file_fragment, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case R.id.menu_import_keys_file_open:
+                // open .asc or .gpg files
+                // setting it to text/plain prevents Cyanogenmod's file manager from selecting asc
+                // or gpg types!
+                FileHelper.openDocument(ImportKeysFileFragment.this,
+                        Uri.fromFile(Constants.Path.APP_DIR), "*/*", false, REQUEST_CODE_FILE);
+                return true;
+            case R.id.menu_import_keys_file_paste:
+                CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
+                String sendText = "";
+                if (clipboardText != null) {
+                    sendText = clipboardText.toString();
+                    sendText = PgpHelper.getPgpKeyContent(sendText);
+                    if (sendText == null) {
+                        Notify.create(mActivity, R.string.error_bad_data, Style.ERROR).show();
+                    } else {
+                        mCallback.loadKeys(new BytesLoaderState(sendText.getBytes(), null));
+                    }
+                }
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

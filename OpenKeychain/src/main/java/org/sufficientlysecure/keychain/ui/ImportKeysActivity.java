@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.view.View;
 import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -104,17 +103,6 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
             // every time the activity is resumed
             mFreshIntent = false;
         }
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        // the only thing we need to take care of for restoring state is
-        // that the top layout is shown iff it contains a fragment
-        Fragment topFragment = getSupportFragmentManager().findFragmentByTag(TAG_FRAG_TOP);
-        boolean hasTopFragment = topFragment != null;
-        findViewById(R.id.import_keys_top_layout).setVisibility(hasTopFragment ? View.VISIBLE : View.GONE);
     }
 
     protected void handleActions(@NonNull Intent intent) {
@@ -278,10 +266,8 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     }
 
     private void startTopFileFragment() {
-        findViewById(R.id.import_keys_top_layout).setVisibility(View.VISIBLE);
         Fragment importFileFragment = ImportKeysFileFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.import_keys_top_container, importFileFragment, TAG_FRAG_TOP)
+        getSupportFragmentManager().beginTransaction().add(importFileFragment, TAG_FRAG_TOP)
                 .commit();
     }
 
@@ -296,11 +282,10 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
      */
     private void startTopCloudFragment(String query, boolean disableQueryEdit,
                                        Preferences.CloudSearchPrefs cloudSearchPrefs) {
-        findViewById(R.id.import_keys_top_layout).setVisibility(View.VISIBLE);
+
         Fragment importCloudFragment = ImportKeysCloudFragment.newInstance(query, disableQueryEdit,
                 cloudSearchPrefs);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.import_keys_top_container, importCloudFragment, TAG_FRAG_TOP)
+        getSupportFragmentManager().beginTransaction().add(importCloudFragment, TAG_FRAG_TOP)
                 .commit();
     }
 
