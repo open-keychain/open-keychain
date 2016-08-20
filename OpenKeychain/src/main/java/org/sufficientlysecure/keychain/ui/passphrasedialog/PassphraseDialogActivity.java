@@ -36,7 +36,6 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 /**
  * We can not directly create a dialog on the application context.
@@ -76,6 +75,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
         // directly return an empty passphrase if appropriate
         try {
             switch (requiredInput.mType) {
+                case PASSPHRASE_APP_LOCK:
                 case PASSPHRASE_IMPORT_KEY:
                 case PASSPHRASE_SYMMETRIC:
                 case BACKUP_CODE:

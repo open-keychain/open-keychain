@@ -166,6 +166,10 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 return;
             }
 
+            case PASSPHRASE_APP_LOCK: {
+                throw new RuntimeException("App lock shouldn't be called by crypto operations!");
+                // PassphraseDialogActivity handles the single passphrase workflow internally
+            }
             default: {
                 throw new RuntimeException("Unhandled pending result!");
             }

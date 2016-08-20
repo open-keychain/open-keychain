@@ -1,16 +1,12 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.view.ContextThemeWrapper;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.Toast;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -24,9 +20,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
-import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases.SubKeyInfo;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
@@ -352,6 +346,7 @@ public class MigrateSymmetricActivity extends BaseActivity {
     private void finishSuccessfulMigration() {
         Preferences.getPreferences(this).setUsingS2k(false);
         Preferences.getPreferences(this).setPartiallyMigrated(false);
+        Preferences.getPreferences(this).setIsAppLockReady(true);
         finish();
     }
 

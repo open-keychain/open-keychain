@@ -95,37 +95,31 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         if (isNewKey) {
             keyringPassphrase = saveParcel.mPassphrase;
         } else {
-            if (Preferences.getPreferences(mContext).usesSinglePassphraseWorkflow()) {
-                // TODO: wip, call the applock (?)
-                // line below is placeholder
-                keyringPassphrase = null;
-            } else {
-                CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.read().getCachedPublicKeyRing(masterKeyId);
+            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.read().getCachedPublicKeyRing(masterKeyId);
 
-                try {
-                    switch (cachedPublicKeyRing.getSecretKeyringType()) {
-                        case PASSPHRASE_EMPTY: {
-                            keyringPassphrase = new Passphrase();
-                            break;
-                        }
-                        case PASSPHRASE: {
-                            keyringPassphrase = cryptoInput.getPassphrase();
-                            if (keyringPassphrase == null) {
-                                log.add(LogType.MSG_ED_REQUIRE_KEYRING_PASSPHRASE, 2);
-                                return new EditKeyResult(log,
-                                        RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
-                                        cryptoInput);
-                            }
-                            break;
-                        }
-                        default: {
-                            throw new AssertionError("Unsupported keyring type");
-                        }
+            try {
+                switch (cachedPublicKeyRing.getSecretKeyringType()) {
+                    case PASSPHRASE_EMPTY: {
+                        keyringPassphrase = new Passphrase();
+                        break;
                     }
-                } catch (NotFoundException e) {
-                    log.add(LogType.MSG_ED_ERROR_KEYRING_NOT_FOUND, 2);
-                    return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                    case PASSPHRASE: {
+                        keyringPassphrase = cryptoInput.getPassphrase();
+                        if (keyringPassphrase == null) {
+                            log.add(LogType.MSG_ED_REQUIRE_KEYRING_PASSPHRASE, 2);
+                            return new EditKeyResult(log,
+                                    RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
+                                    cryptoInput);
+                        }
+                        break;
+                    }
+                    default: {
+                        throw new AssertionError("Unsupported keyring type");
+                    }
                 }
+            } catch (NotFoundException e) {
+                log.add(LogType.MSG_ED_ERROR_KEYRING_NOT_FOUND, 2);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
         }
 

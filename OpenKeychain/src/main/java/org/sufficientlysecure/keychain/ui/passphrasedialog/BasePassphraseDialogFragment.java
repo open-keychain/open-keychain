@@ -31,12 +31,15 @@ abstract class BasePassphraseDialogFragment extends DialogFragment implements Te
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
+        if (getActivity() == null) {
+            return;
+        }
 
         // note we need no synchronization here, this variable is only accessed in the ui thread
         mIsCancelled = true;
-
-        getActivity().setResult(Activity.RESULT_CANCELED);
-        getActivity().finish();
+        Activity activity = getActivity();
+        activity.setResult(Activity.RESULT_CANCELED);
+        activity.finish();
     }
 
     @Override
@@ -82,6 +85,7 @@ abstract class BasePassphraseDialogFragment extends DialogFragment implements Te
 
         ((PassphraseDialogActivity) getActivity()).handleResult(cryptoParcel);
 
+        // required for closing the virtual keyboard
         dismiss();
         getActivity().finish();
     }

@@ -2,7 +2,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -18,6 +17,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -169,7 +169,8 @@ public class SetMasterPassphraseFragment extends Fragment {
             try {
                 Passphrase passphrase = new Passphrase(mPassphraseEdit.getText());
                 new ProviderHelper(getActivity()).write().saveMasterPassphrase(passphrase);
-                PassphraseCacheService.addMasterPassphrase(getActivity().getApplicationContext(), passphrase);
+                // save till the next screen lock
+                PassphraseCacheService.addMasterPassphrase(getActivity().getApplicationContext(), passphrase, 0);
             } catch (ByteArrayEncryptor.EncryptDecryptException e) {
                 Toast.makeText(getActivity(), R.string.error_saving_master_password,
                         Toast.LENGTH_LONG).show();
@@ -182,6 +183,7 @@ public class SetMasterPassphraseFragment extends Fragment {
             if (activity instanceof MigrateSymmetricActivity) {
                 ((MigrateSymmetricActivity) activity).finishedSettingMasterPassphrase();
             } else if (activity instanceof SetMasterPassphraseActivity) {
+                Preferences.getPreferences(activity).setIsAppLockReady(true);
                 activity.finish();
             }
 

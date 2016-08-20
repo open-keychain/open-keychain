@@ -41,6 +41,8 @@ import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
+import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -221,6 +223,12 @@ public class CreateKeyEmailFragment extends Fragment {
 
                 CreateSecurityTokenPinFragment frag = CreateSecurityTokenPinFragment.newInstance();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
+            } else if (Preferences.getPreferences(mCreateKeyActivity).usesSinglePassphraseWorkflow()){
+                hideKeyboard();
+                CreateKeyFinalFragment frag = CreateKeyFinalFragment.newInstance();
+                mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
+                // passphrase doesn't matter TODO: wip, check if we can just ignore this
+                mCreateKeyActivity.mPassphrase = new Passphrase("");
             } else {
                 CreateKeyPassphraseFragment frag = CreateKeyPassphraseFragment.newInstance();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);

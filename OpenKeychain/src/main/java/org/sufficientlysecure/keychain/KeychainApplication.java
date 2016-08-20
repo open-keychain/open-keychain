@@ -34,17 +34,18 @@ import android.widget.Toast;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.AppLockActivity;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
-import org.sufficientlysecure.keychain.ui.MigrateSymmetricActivity;
-import org.sufficientlysecure.keychain.ui.SetMasterPassphraseActivity;
+import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
@@ -53,7 +54,6 @@ import java.util.HashMap;
 
 
 public class KeychainApplication extends Application {
-
     /**
      * Called when the application is starting, before any activity, service, or receiver objects
      * (excluding content providers) have been created.
@@ -133,43 +133,68 @@ public class KeychainApplication extends Application {
             new KeychainDatabase(this).getReadableDatabase().close();
         }
 
-        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
-            @Override
-            public void onActivityCreated(Activity activity, Bundle bundle) {
-                // TODO: wip, applock here, check if we have cached the master passphrase in memory. if no, ask for it
-            }
+        registerActivityLifecycleCallbacks(new LifecycleHandler());
+    }
 
-            // TODO: do we really need to check everywhere??
-            @Override
-            public void onActivityStarted(Activity activity) {
-                // TODO: wip, check if we have cached
-            }
+    /**
+     * For app lock
+     * TODO: app lock is a little slow sometimes, try to store a dummy passphrase on application start,
+     *          to keep passphrase service alive
+     */
+    public class LifecycleHandler implements Application.ActivityLifecycleCallbacks {
+        private Context mApplicationContext = getApplicationContext();
+        private Preferences mPreferences = Preferences.getPreferences(getApplicationContext());
 
-            @Override
-            public void onActivityResumed(Activity activity) {
-                // TODO: wip, check if we have cached
-            }
+        @Override
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        }
 
-            @Override
-            public void onActivityPaused(Activity activity) {
-                // TODO: wip ...  clear the master passphrase from cache
-            }
+        private void showAppLockIfAppropriate(Activity activity) {
+            if (mPreferences.isAppLockReady()) {
 
-            @Override
-            public void onActivityStopped(Activity activity) {
-                // TODO: wip ...  clear the master passphrase from cache
-            }
+                boolean isWhiteListedActivity = activity instanceof AppLockActivity
+                        || activity instanceof PassphraseDialogActivity;
 
-            @Override
-            public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
-
+                if (!isWhiteListedActivity && !hasCachedMasterPassphrase()) {
+                    Intent intent = new Intent(activity, AppLockActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    activity.startActivity(intent);
+                }
             }
+        }
 
-            @Override
-            public void onActivityDestroyed(Activity activity) {
-                // TODO: wip ... check if we are showing on screeen. if not, clear the master passphrase from cache
+        private boolean hasCachedMasterPassphrase() {
+            try {
+                return PassphraseCacheService.getMasterPassphrase(mApplicationContext) != null;
+            } catch (PassphraseCacheService.KeyNotFoundException e) {
+                return false;
             }
-        });
+        }
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+            showAppLockIfAppropriate(activity);
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+        }
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+        }
+
     }
 
     /**

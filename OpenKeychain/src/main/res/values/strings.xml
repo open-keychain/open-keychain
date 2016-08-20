@@ -312,6 +312,7 @@
     <string name="passphrases_do_not_match">"The passwords didn't match."</string>
     <string name="passphrase_must_not_be_empty">"Please enter a password."</string>
     <string name="passphrase_for_symmetric_encryption">"Enter password"</string>
+    <string name="passphrase_for_applock">"Enter master password"</string>
     <string name="passphrase_for_backup">"Enter backup code"</string>
     <string name="passphrase_for">"Enter password for '%s'"</string>
     <string name="passphrase_keyboard_hint_alpha">"Change to alphabetic keyboard"</string>
@@ -1548,6 +1549,9 @@
     <string name="first_time_skip">"Skip Setup"</string>
     <string name="first_time_blank_security_token">"Would you like to use this blank Security Token with OpenKeychain?\n\nPlease take away the Security Token now, you will be prompted when it is needed again!"</string>
     <string name="first_time_blank_security_token_yes">"Use this Security Token"</string>
+
+    <!-- Applock -->
+    <string name="applock_title">"App Lock"</string>
 
     <!-- Master Passphrase -->
     <string name="master_passphrase_notification_name">"&lt;Master Passphrase&gt;"</string>

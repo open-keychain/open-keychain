@@ -630,8 +630,7 @@ public class ProviderWriter {
 
                 if (mProviderHelper.usesSinglePassphraseWorkflow()) {
                     try {
-                        passphrase = PassphraseCacheService.getCachedPassphrase(mContext,
-                                Constants.key.master_passphrase);
+                        passphrase = PassphraseCacheService.getMasterPassphrase(mContext);
                     } catch (PassphraseCacheService.KeyNotFoundException exception) {
                         throw new AssertionError("No cached master passphrase. Something went terribly wrong");
                     }

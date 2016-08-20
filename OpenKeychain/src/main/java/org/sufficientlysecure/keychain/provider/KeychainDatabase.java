@@ -332,7 +332,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // fall through for migrate
             case 17:
                 PassphraseCacheService.clearAllCachedPassphrases(mContext);
-                Preferences.getPreferences(mContext).setUsingS2k(true);
+                Preferences prefs = Preferences.getPreferences(mContext);
+                prefs.setUsingS2k(true);
                 db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN awaiting_merge INTEGER");
                 db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN secret_ring_type INTEGER");
                 db.execSQL(CREATE_MASTER_PASSPHRASE);

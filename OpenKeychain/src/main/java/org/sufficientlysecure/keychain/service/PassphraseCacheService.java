@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.service;
 
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -38,6 +39,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
@@ -48,8 +50,8 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-import java.security.Key;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main
@@ -101,13 +103,14 @@ public class PassphraseCacheService extends Service {
         }
     }
 
-    public static void addMasterPassphrase(Context context, Passphrase passphrase) {
+    public static void addMasterPassphrase(Context context, Passphrase passphrase, int timeToLiveSeconds) {
         String name = context.getResources().getString(R.string.master_passphrase_notification_name);
-        addCachedPassphrase(context, Constants.key.master_passphrase, passphrase, name, Integer.MAX_VALUE);
+        addCachedPassphrase(context, Constants.key.master_passphrase, passphrase, name, timeToLiveSeconds);
     }
 
-    public static void clearMasterPassphrase(Context context) {
-        clearCachedPassphrase(context, Constants.key.master_passphrase);
+    public static Passphrase getMasterPassphrase(Context context) throws KeyNotFoundException{
+        return PassphraseCacheService.getCachedPassphrase(context,
+                Constants.key.master_passphrase);
     }
 
     /**
@@ -564,6 +567,8 @@ public class PassphraseCacheService extends Service {
 
         inboxStyle.setBigContentTitle(getString(R.string.passp_cache_notif_keys));
 
+        // TODO: wip, hide if only masterpassphrase is shown
+        // TODO: wip, modify "clear" to never touch the master passphrase
         // Moves events into the big view
         for (int i = 0; i < mPassphraseCache.size(); i++) {
             inboxStyle.addLine(mPassphraseCache.valueAt(i).mPrimaryUserId);

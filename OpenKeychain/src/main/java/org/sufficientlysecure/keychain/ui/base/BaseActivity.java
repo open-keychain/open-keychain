@@ -34,10 +34,8 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.ui.MigrateSymmetricActivity;
 import org.sufficientlysecure.keychain.ui.SetMasterPassphraseActivity;
-import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -69,20 +67,22 @@ public abstract class BaseActivity extends AppCompatActivity {
         // as they will never be called with an external intent
 
         Preferences preferences = Preferences.getPreferences(activity);
-        boolean needsMigration =
-                preferences.isUsingS2k() &&
-                        !(activity instanceof MigrateSymmetricActivity);
+        if (!preferences.isAppLockReady()) {
+            boolean needsMigration =
+                    preferences.isUsingS2k() &&
+                            !(activity instanceof MigrateSymmetricActivity);
 
-        boolean isNewInstall =
-                !preferences.isUsingS2k() && !preferences.hasMasterPassphrase() &&
-                        !(activity instanceof SetMasterPassphraseActivity);
+            boolean isNewInstall =
+                    !preferences.isUsingS2k() && !preferences.hasMasterPassphrase() &&
+                            !(activity instanceof SetMasterPassphraseActivity);
 
-        if (needsMigration) {
-            Intent intent = new Intent(activity, MigrateSymmetricActivity.class);
-            startActivity(intent);
-        } else if(isNewInstall) {
-            Intent intent = new Intent(activity, SetMasterPassphraseActivity.class);
-            startActivity(intent);
+            if (needsMigration) {
+                Intent intent = new Intent(activity, MigrateSymmetricActivity.class);
+                startActivity(intent);
+            } else if(isNewInstall) {
+                Intent intent = new Intent(activity, SetMasterPassphraseActivity.class);
+                startActivity(intent);
+            }
         }
     }
 

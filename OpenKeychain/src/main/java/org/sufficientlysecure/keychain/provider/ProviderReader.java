@@ -106,10 +106,6 @@ public class ProviderReader {
         return getGenericData(KeyRings.buildUnifiedKeyRingUri(masterKeyId), proj, types);
     }
 
-    public boolean hasMasterPassphrase() {
-        return getEncryptedMasterKey() != null;
-    }
-
     private byte[] getEncryptedMasterKey() {
         Cursor cursor = mContentResolver.query(MasterPassphrase.CONTENT_URI,
                 new String[] {
@@ -129,16 +125,13 @@ public class ProviderReader {
 
     }
 
-    // TODO: wip, delete later
     public boolean verifyMasterPassphrase(Passphrase passphrase) {
         try {
             getMasterSecretKey(passphrase);
         } catch (IncorrectPassphraseException e) {
             return false;
         } catch (EncryptDecryptException e) {
-            String s = MainActivity.class.getSimpleName();
-            Log.d(s, "SOMETHING WENT HORRIBLY WRONG");
-            return false;
+            throw new RuntimeException("Something went wrong in our encryption/decryption", e);
         }
         return true;
     }

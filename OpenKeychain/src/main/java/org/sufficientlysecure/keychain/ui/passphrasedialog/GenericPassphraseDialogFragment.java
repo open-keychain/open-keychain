@@ -25,6 +25,7 @@ import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -38,6 +39,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.widget.CacheTTLSpinner;
@@ -50,9 +52,11 @@ import java.io.IOException;
 public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragment {
     private RequiredInputParcel mRequiredInput;
 
+    private Preferences mPreferences;
     private EditText mPassphraseEditText;
     private ViewAnimator mLayout;
     private CacheTTLSpinner mTimeToLiveSpinner;
+    private ProviderHelper mProviderHelper;
 
     private CanonicalizedSecretKey mSecretKeyToUnlock;
 
@@ -60,7 +64,8 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
-        ProviderHelper helper = new ProviderHelper(activity);
+        mPreferences = Preferences.getPreferences(activity);
+        mProviderHelper = new ProviderHelper(activity);
         ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(activity);
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
         mRequiredInput = getArguments().getParcelable(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT);
@@ -92,6 +97,11 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
         {
             try {
                 switch (mRequiredInput.mType) {
+                    case PASSPHRASE_APP_LOCK: {
+                        message = getString(R.string.passphrase_for_applock);
+                        hint = getString(R.string.label_passphrase);
+                        break;
+                    }
                     case PASSPHRASE_SYMMETRIC: {
                         message = getString(R.string.passphrase_for_symmetric_encryption);
                         hint = getString(R.string.label_passphrase);
@@ -99,10 +109,9 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
 
                     }
                     case PASSPHRASE_KEYRING_UNLOCK: {
-                        CachedPublicKeyRing cachedPublicKeyRing = helper.read().getCachedPublicKeyRing(
+                        CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.read().getCachedPublicKeyRing(
                                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(mRequiredInput.getMasterKeyId()));
 
-                        // no need to set mSecretKeyToUnlock, as we are unlocking a keyring
                         keyRingType = cachedPublicKeyRing.getSecretKeyringType();
                         String mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
                         OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
@@ -111,6 +120,11 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                                 : mainUserIdSplit.name;
                         message = getString(R.string.passphrase_for, userId);
                         hint = getString(R.string.label_passphrase);
+
+                        if (mPreferences.usesSinglePassphraseWorkflow()) {
+                            message = getString(R.string.passphrase_for_applock);
+                            hint = getString(R.string.label_passphrase);
+                        }
                         break;
 
                     }
@@ -138,8 +152,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
 
                     }
                     case PASSPHRASE_TOKEN_UNLOCK: {
-
-                        CanonicalizedSecretKeyRing secretKeyRing = helper.read().getCanonicalizedSecretKeyRing(
+                        CanonicalizedSecretKeyRing secretKeyRing = mProviderHelper.read().getCanonicalizedSecretKeyRing(
                                 mRequiredInput.getMasterKeyId(),
                                 mRequiredInput.getKeyringPassphrase()
                         );
@@ -147,7 +160,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                         mSecretKeyToUnlock = secretKeyRing.getSecretKey(subKeyId);
 
                         // cached key operations are less expensive
-                        CachedPublicKeyRing cachedPublicKeyRing = helper.read().getCachedPublicKeyRing(
+                        CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.read().getCachedPublicKeyRing(
                                 KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
                         String mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
                         OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
@@ -203,8 +216,8 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
         {
             final ImageButton keyboard = (ImageButton) mLayout.findViewById(R.id.passphrase_keyboard);
 
-            if (mRequiredInput.mType == RequiredInputParcel.RequiredInputType.PASSPHRASE_TOKEN_UNLOCK) {
-                if (Preferences.getPreferences(activity).useNumKeypadForSecurityTokenPin()) {
+            if (mRequiredInput.mType == RequiredInputType.PASSPHRASE_TOKEN_UNLOCK) {
+                if (mPreferences.useNumKeypadForSecurityTokenPin()) {
                     mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     keyboard.setImageResource(R.drawable.ic_alphabetical_black_24dp);
                     keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_alpha));
@@ -218,15 +231,14 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                 keyboard.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Preferences prefs = Preferences.getPreferences(activity);
-                        if (prefs.useNumKeypadForSecurityTokenPin()) {
-                            prefs.setUseNumKeypadForSecurityTokenPin(false);
+                        if (mPreferences.useNumKeypadForSecurityTokenPin()) {
+                            mPreferences.setUseNumKeypadForSecurityTokenPin(false);
 
                             mPassphraseEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                             keyboard.setImageResource(R.drawable.ic_numeric_black_24dp);
                             keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_alpha));
                         } else {
-                            prefs.setUseNumKeypadForSecurityTokenPin(true);
+                            mPreferences.setUseNumKeypadForSecurityTokenPin(true);
 
                             mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
                             keyboard.setImageResource(R.drawable.ic_alphabetical_black_24dp);
@@ -291,7 +303,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                 final int timeToLiveSeconds = mTimeToLiveSpinner.getSelectedTimeToLive();
 
                 // Early breakout if we are dealing with a symmetric key
-                if (mRequiredInput.mType == RequiredInputParcel.RequiredInputType.PASSPHRASE_SYMMETRIC) {
+                if (mRequiredInput.mType == RequiredInputType.PASSPHRASE_SYMMETRIC) {
                     if (!mRequiredInput.mSkipCaching) {
                         PassphraseCacheService.addCachedPassphrase(getActivity(),
                                 Constants.key.symmetric, passphrase,
@@ -305,17 +317,24 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                 mLayout.setDisplayedChild(1);
                 positive.setEnabled(false);
 
-                new AsyncTask<Void, Void, CanonicalizedSecretKey>() {
+                new AsyncTask<Void, Void, UnlockDetails>() {
 
                     @Override
-                    protected CanonicalizedSecretKey doInBackground(Void... params) {
+                    protected UnlockDetails doInBackground(Void... params) {
                         try {
                             // unlocking may take a very long time (100ms to several seconds!)
                             long timeBeforeOperation = System.currentTimeMillis();
                             boolean unlockSucceeded;
+                            UnlockDetails unlockDetails = null;
                             ProviderHelper helper = new ProviderHelper(getActivity());
 
                             switch (mRequiredInput.mType) {
+
+                                case PASSPHRASE_APP_LOCK: {
+                                    unlockSucceeded = mProviderHelper.read().verifyMasterPassphrase(passphrase);
+                                    unlockDetails = new UnlockDetails("");
+                                    break;
+                                }
                                 case PASSPHRASE_KEYRING_UNLOCK: {
                                     try {
                                         CanonicalizedSecretKeyRing secretKeyRing =
@@ -324,8 +343,8 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                                                         passphrase
                                                 );
                                         unlockSucceeded = true;
-                                        // required to indicate a successful unlock
-                                        mSecretKeyToUnlock = secretKeyRing.getSecretKey(mRequiredInput.getMasterKeyId());
+                                        CanonicalizedPublicKey key = secretKeyRing.getPublicKey(mRequiredInput.getMasterKeyId());
+                                        unlockDetails = new UnlockDetails(key.getPrimaryUserIdWithFallback());
                                     } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
                                         unlockSucceeded = false;
                                     }
@@ -334,6 +353,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                                 case PASSPHRASE_IMPORT_KEY:
                                 case PASSPHRASE_TOKEN_UNLOCK: {
                                     unlockSucceeded = mSecretKeyToUnlock.unlock(passphrase);
+                                    unlockDetails = new UnlockDetails(mSecretKeyToUnlock.getPrimaryUserIdWithFallback());
                                     break;
                                 }
                                 default: {
@@ -351,7 +371,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                                 }
                             }
 
-                            return unlockSucceeded ? mSecretKeyToUnlock : null;
+                            return unlockSucceeded ? unlockDetails : null;
                         } catch (PgpGeneralException | ProviderReader.NotFoundException |
                                 ByteArrayEncryptor.EncryptDecryptException e) {
                             Toast.makeText(getActivity(), R.string.error_could_not_extract_private_key,
@@ -366,7 +386,7 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
 
                     /** Handle a good or bad passphrase. This happens in the UI thread!  */
                     @Override
-                    protected void onPostExecute(CanonicalizedSecretKey result) {
+                    protected void onPostExecute(UnlockDetails result) {
                         super.onPostExecute(result);
 
                         // if we were cancelled in the meantime, the result isn't relevant anymore
@@ -386,24 +406,26 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
                         // cache the new passphrase as specified in CryptoInputParcel
                         Log.d(Constants.TAG, "Everything okay!");
 
-                        try {
-                            if (mRequiredInput.mSkipCaching) {
-                                Log.d(Constants.TAG, "Not caching entered passphrase!");
-                            } else if (mRequiredInput.mType == RequiredInputParcel.RequiredInputType.PASSPHRASE_TOKEN_UNLOCK) {
-                                Log.d(Constants.TAG, "Caching entered subkey passphrase");
-                                PassphraseCacheService.addCachedSubKeyPassphrase(getActivity(),
-                                        mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId(),
-                                        passphrase, result.getRing().getPrimaryUserIdWithFallback(), timeToLiveSeconds);
+                        if (mRequiredInput.mSkipCaching) {
+                            Log.d(Constants.TAG, "Not caching entered passphrase!");
+                        } else if (mRequiredInput.mType == RequiredInputType.PASSPHRASE_APP_LOCK) {
+                            Log.d(Constants.TAG, "Caching entered master passphrase");
+                            PassphraseCacheService.addMasterPassphrase(getActivity(), passphrase, timeToLiveSeconds);
+                        } else if (mRequiredInput.mType == RequiredInputType.PASSPHRASE_TOKEN_UNLOCK) {
+                            Log.d(Constants.TAG, "Caching entered subkey passphrase");
+                            PassphraseCacheService.addCachedSubKeyPassphrase(getActivity(),
+                                    mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId(),
+                                    passphrase, result.mPrimaryUserId, timeToLiveSeconds);
+                        } else {
+                            Log.d(Constants.TAG, "Caching entered passphrase");
+                            if (mPreferences.usesSinglePassphraseWorkflow()) {
+                                PassphraseCacheService.addMasterPassphrase(getActivity(), passphrase, timeToLiveSeconds);
                             } else {
-                                Log.d(Constants.TAG, "Caching entered passphrase");
                                 PassphraseCacheService.addCachedPassphrase(getActivity(),
                                         mRequiredInput.getMasterKeyId(), passphrase,
-                                        result.getRing().getPrimaryUserIdWithFallback(), timeToLiveSeconds);
+                                        result.mPrimaryUserId, timeToLiveSeconds);
                             }
-                        } catch (PgpKeyNotFoundException e) {
-                            Log.e(Constants.TAG, "adding of a passphrase failed", e);
                         }
-
                         returnWithPassphrase(passphrase);
                     }
                 }.execute();
@@ -415,6 +437,15 @@ public class GenericPassphraseDialogFragment extends BasePassphraseDialogFragmen
         if(passphraseToTry != null) {
             mPassphraseEditText.setText(passphraseToTry.getCharArray(), 0, passphraseToTry.length());
             positive.performClick();
+        }
+    }
+
+
+    private static class UnlockDetails {
+        public final String mPrimaryUserId;
+
+        public UnlockDetails(String primaryUserId) {
+            mPrimaryUserId = primaryUserId;
         }
     }
 }
