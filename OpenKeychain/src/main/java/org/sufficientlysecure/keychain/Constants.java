@@ -103,6 +103,7 @@ public final class Constants {
         public static final String IS_APP_LOCK_READY = "isAppLockReady";
         public static final String HAS_MASTER_PASSPHRASE = "hasMasterPassphrase";
         public static final String PARTIALLY_MIGRATED = "partiallyMigrated";
+        public static final String FAILED_TO_CHANGE_WORKFLOW = "failedToChangeWorkflow";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
         public static final String SEARCH_KEYBASE = "search_keybase_pref";

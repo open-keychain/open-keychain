@@ -166,6 +166,16 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean failedToChangeWorkflow() {
+        return mSharedPreferences.getBoolean(Pref.FAILED_TO_CHANGE_WORKFLOW, false);
+    }
+
+    public void setFailedToChangeWorkflow(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.FAILED_TO_CHANGE_WORKFLOW, value);
+        editor.commit();
+    }
+
     public boolean usesSinglePassphraseWorkflow() {
         return mSharedPreferences.getBoolean(Pref.USE_SINGLE_PASSPHRASE_WORKFLOW, false);
     }
