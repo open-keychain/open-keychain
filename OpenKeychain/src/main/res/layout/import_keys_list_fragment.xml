@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
         <import type="android.view.View" alias="V" />
-        <import type="org.sufficientlysecure.keychain.ui.ImportKeysListFragment" alias="i" />
+        <import type="org.sufficientlysecure.keychain.ui.ImportKeysListFragment" alias="I" />
 
         <variable name="status" type="int" />
         <variable name="advanced" type="boolean" />
@@ -19,14 +18,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:visibility="@{status == i.STATUS_LOADING ? V.VISIBLE : V.GONE}" />
+            android:visibility="@{status == I.STATUS_LOADING ? V.VISIBLE : V.GONE}" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/error_nothing"
+            android:visibility="@{status == I.STATUS_FIRST ? V.VISIBLE : V.GONE}" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/error_nothing_import"
-            android:visibility="@{status == i.STATUS_EMPTY ? V.VISIBLE : V.GONE}" />
+            android:visibility="@{status == I.STATUS_EMPTY ? V.VISIBLE : V.GONE}" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,7 +40,7 @@
             android:orientation="vertical"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:visibility="@{status == i.STATUS_LOADED ? V.VISIBLE : V.GONE}">
+            android:visibility="@{status == I.STATUS_LOADED ? V.VISIBLE : V.GONE}">
 
             <LinearLayout
                 android:layout_width="match_parent"

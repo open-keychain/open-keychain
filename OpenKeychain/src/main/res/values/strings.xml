@@ -123,7 +123,7 @@
     <string name="menu_manage_keys">"Manage my keys"</string>
     <string name="menu_search">"Search"</string>
     <string name="menu_open">"Open"</string>
-    <string name="menu_paste">"Paste"</string>
+    <string name="menu_read_clipboard">"Read from clipboard"</string>
     <string name="menu_nfc_preferences">"NFC settings"</string>
     <string name="menu_beam_preferences">"Beam settings"</string>
     <string name="menu_encrypt_to">"Encrypt to…"</string>
@@ -390,8 +390,8 @@
     <string name="error_jelly_bean_needed">"You need Android 4.1 to use Android's NFC Beam feature!"</string>
     <string name="error_nfc_needed">"NFC must be enabled!"</string>
     <string name="error_beam_needed">"Beam must be enabled!"</string>
+    <string name="error_nothing">"Nothing to show yet."</string>
     <string name="error_nothing_import">"No keys found!"</string>
-    <string name="error_nothing_import_selected">"No keys selected for import!"</string>
     <string name="error_contacts_key_id_missing">"Retrieving the key ID from contacts failed!"</string>
     <string name="error_generic_report_bug">"A generic error occurred, please create a new bug report for OpenKeychain."</string>
     <string name="error_denied_storage_permission">"Can not read files from storage because access has been denied!"</string>
