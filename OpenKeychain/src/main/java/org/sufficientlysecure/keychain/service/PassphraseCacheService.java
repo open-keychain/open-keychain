@@ -567,8 +567,6 @@ public class PassphraseCacheService extends Service {
 
         inboxStyle.setBigContentTitle(getString(R.string.passp_cache_notif_keys));
 
-        // TODO: wip, hide if only masterpassphrase is shown
-        // TODO: wip, modify "clear" to never touch the master passphrase
         // Moves events into the big view
         for (int i = 0; i < mPassphraseCache.size(); i++) {
             inboxStyle.addLine(mPassphraseCache.valueAt(i).mPrimaryUserId);

@@ -75,6 +75,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String API_ALLOWED_KEYS = "api_allowed_keys";
     }
 
+    //TODO: wip, clean this up later
     private static final String CREATE_MASTER_PASSPHRASE =
             "CREATE TABLE IF NOT EXISTS master_passphrase ("
                     + MasterPassphraseColumns.ROW_INDEX + " INTEGER PRIMARY KEY, "
