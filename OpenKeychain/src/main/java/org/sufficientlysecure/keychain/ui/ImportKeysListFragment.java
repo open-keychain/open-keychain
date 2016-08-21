@@ -210,6 +210,21 @@ public class ImportKeysListFragment extends Fragment implements
         }
     }
 
+    /**
+     * User may want to go back to single card view if he's now in full key list
+     * Check if we are in full key list and if this import operation supports basic mode
+     *
+     * @return true if activity's back pressed can be performed
+     */
+    public boolean onBackPressed() {
+        boolean advanced = mBinding.getAdvanced();
+        if (advanced && mLoaderState.isBasicModeSupported()) {
+            mBinding.setAdvanced(false);
+            return false;
+        }
+        return true;
+    }
+
     public void loadState(LoaderState loaderState) {
         mLoaderState = loaderState;
 
@@ -263,8 +278,7 @@ public class ImportKeysListFragment extends Fragment implements
     @Override
     public void onLoadFinished(
             Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader,
-            AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data
-    ) {
+            AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data) {
 
         mAdapter.setData(data.getResult());
         int size = mAdapter.getItemCount();
@@ -328,8 +342,6 @@ public class ImportKeysListFragment extends Fragment implements
                 } else if (!getKeyResult.success()) {
                     getKeyResult.createNotify(mActivity).show();
                 }
-                break;
-            default:
                 break;
         }
     }

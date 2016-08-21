@@ -312,11 +312,20 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     }
 
     @Override
+    public void onBackPressed() {
+        FragmentManager fM = getSupportFragmentManager();
+        ImportKeysListFragment listFragment =
+                (ImportKeysListFragment) fM.findFragmentByTag(TAG_FRAG_LIST);
+
+        if ((listFragment == null) || listFragment.onBackPressed()) {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void loadKeys(LoaderState loaderState) {
         FragmentManager fM = getSupportFragmentManager();
-        ImportKeysListFragment listFragment = (ImportKeysListFragment) fM.findFragmentByTag(TAG_FRAG_LIST);
-
-        listFragment.loadState(loaderState);
+        ((ImportKeysListFragment) fM.findFragmentByTag(TAG_FRAG_LIST)).loadState(loaderState);
     }
 
     @Override
