@@ -69,7 +69,7 @@ public class ImportKeysFileFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater i, ViewGroup c, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         return null;
     }
