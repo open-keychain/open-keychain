@@ -1574,7 +1574,7 @@
     <string name="security_token_create">"Hold Security Token against the back of your device."</string>
     <string name="security_token_reset_or_import">"This Security Token already contains a key. You can import the key using the cloud or reset the Security Token."</string>
     <string name="btn_import">"Import"</string>
-    <string name="btn_import_keys">"Import keys"</string>
+    <string name="btn_import_keys">"Import all keys"</string>
     <string name="btn_list_keys">"List keys"</string>
     <string name="btn_reset">"Reset"</string>
     <string name="security_token_import_radio">"Import key"</string>
