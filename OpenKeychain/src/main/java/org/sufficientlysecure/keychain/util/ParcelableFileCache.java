@@ -52,10 +52,6 @@ public class ParcelableFileCache<E extends Parcelable> {
         mFilename = filename;
     }
 
-    public void writeCache(IteratorWithSize<E> it) throws IOException {
-        writeCache(it.getSize(), it);
-    }
-
     public void writeCache(int numEntries, Iterator<E> it) throws IOException {
         DataOutputStream oos = getOutputStream();
 

@@ -24,7 +24,6 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -42,22 +41,20 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ImportKeysListLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
 
-    private final Context mContext;
-    private final BytesLoaderState mLoaderState;
+    private Context mContext;
+    private BytesLoaderState mState;
 
     private ArrayList<ImportKeysListEntry> mData = new ArrayList<>();
-    private ArrayList<ParcelableKeyRing> mParcelableRings = new ArrayList<>();
     private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
-    public ImportKeysListLoader(Context context, BytesLoaderState inputData) {
+    public ImportKeysListLoader(Context context, BytesLoaderState loaderState) {
         super(context);
-        this.mContext = context;
-        this.mLoaderState = inputData;
+        mContext = context;
+        mState = loaderState;
     }
 
     @Override
@@ -72,13 +69,13 @@ public class ImportKeysListLoader
             mEntryListWrapper = new AsyncTaskResultWrapper<>(mData, getKeyResult);
         }
 
-        if (mLoaderState == null) {
+        if (mState == null) {
             Log.e(Constants.TAG, "Input data is null!");
             return mEntryListWrapper;
         }
 
         try {
-            InputData inputData = getInputData(mLoaderState);
+            InputData inputData = getInputData(mState);
             generateListOfKeyrings(inputData);
         } catch (FileNotFoundException e) {
             OperationLog log = new OperationLog();
@@ -108,15 +105,6 @@ public class ImportKeysListLoader
         super.cancelLoad();
     }
 
-    @Override
-    public void deliverResult(AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data) {
-        super.deliverResult(data);
-    }
-
-    public List<ParcelableKeyRing> getParcelableRings() {
-        return mParcelableRings;
-    }
-
     /**
      * Reads all PGPKeyRing objects from the bytes of an InputData object.
      */
@@ -132,10 +120,7 @@ public class ImportKeysListLoader
             // parse all keyrings
             IteratorWithIOThrow<UncachedKeyRing> it = UncachedKeyRing.fromStream(bufferedInput);
             while (it.hasNext()) {
-                UncachedKeyRing ring = it.next();
-                ImportKeysListEntry item = new ImportKeysListEntry(mContext, ring);
-                mData.add(item);
-                mParcelableRings.add(item.getParcelableKeyRing());
+                mData.add(new ImportKeysListEntry(mContext, it.next()));
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException on parsing key file! Return NoValidKeysException!", e);

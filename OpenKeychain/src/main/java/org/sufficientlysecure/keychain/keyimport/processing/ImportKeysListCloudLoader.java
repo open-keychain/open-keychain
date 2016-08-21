@@ -41,9 +41,7 @@ public class ImportKeysListCloudLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
 
     private Context mContext;
-
-    private String mServerQuery;
-    private Preferences.CloudSearchPrefs mCloudPrefs;
+    private CloudLoaderState mState;
     private ParcelableProxy mParcelableProxy;
 
     private ArrayList<ImportKeysListEntry> mEntryList = new ArrayList<>();
@@ -52,20 +50,18 @@ public class ImportKeysListCloudLoader
     /**
      * Searches a keyserver as specified in cloudPrefs, using an explicit proxy if passed
      *
-     * @param serverQuery     string to search on servers for. If is a fingerprint,
-     *                        will enforce fingerprint check
-     * @param cloudPrefs      contains keyserver to search on, whether to search on the keyserver,
-     *                        and whether to search keybase.io
+     * @param loaderState     state containing the string to search on servers for (if it is a
+     *                        fingerprint, will enforce fingerprint check) and the keyserver to
+     *                        search on (whether to search on the keyserver, and whether to search
+     *                        keybase.io)
      * @param parcelableProxy explicit proxy to use. If null, will retrieve from preferences
      */
-    public ImportKeysListCloudLoader(Context context, String serverQuery,
-                                     Preferences.CloudSearchPrefs cloudPrefs,
+    public ImportKeysListCloudLoader(Context context, CloudLoaderState loaderState,
                                      @Nullable ParcelableProxy parcelableProxy) {
 
         super(context);
         mContext = context;
-        mServerQuery = serverQuery;
-        mCloudPrefs = cloudPrefs;
+        mState = loaderState;
         mParcelableProxy = parcelableProxy;
     }
 
@@ -73,12 +69,12 @@ public class ImportKeysListCloudLoader
     public AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> loadInBackground() {
         mEntryListWrapper = new AsyncTaskResultWrapper<>(mEntryList, null);
 
-        if (mServerQuery == null) {
+        if (mState.mServerQuery == null) {
             Log.e(Constants.TAG, "mServerQuery is null!");
             return mEntryListWrapper;
         }
 
-        if (mServerQuery.startsWith("0x") && mServerQuery.length() == 42) {
+        if (mState.mServerQuery.startsWith("0x") && mState.mServerQuery.length() == 42) {
             Log.d(Constants.TAG, "This search is based on a unique fingerprint. Enforce a fingerprint check!");
             queryServer(true);
         } else {
@@ -143,15 +139,15 @@ public class ImportKeysListCloudLoader
 
         try {
             ArrayList<ImportKeysListEntry> searchResult = CloudSearch.search(
-                    mServerQuery,
-                    mCloudPrefs,
+                    mState.mServerQuery,
+                    mState.mCloudPrefs,
                     parcelableProxy.getProxy()
             );
 
             mEntryList.clear();
             // add result to data
             if (enforceFingerprint) {
-                String fingerprint = mServerQuery.substring(2);
+                String fingerprint = mState.mServerQuery.substring(2);
                 Log.d(Constants.TAG, "fingerprint: " + fingerprint);
                 // query must return only one result!
                 if (searchResult.size() == 1) {

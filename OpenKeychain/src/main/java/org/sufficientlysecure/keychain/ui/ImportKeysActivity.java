@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysOperationCallback;
@@ -46,6 +47,8 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImportKeysActivity extends BaseActivity implements ImportKeysListener {
 
@@ -317,11 +320,11 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     }
 
     @Override
-    public void importKeys() {
-        FragmentManager fM = getSupportFragmentManager();
-        ImportKeysListFragment listFragment = (ImportKeysListFragment) fM.findFragmentByTag(TAG_FRAG_LIST);
-
-        Log.d(Constants.TAG, "importKeys started");
+    public void importKeys(List<ImportKeysListEntry> entries) {
+        List<ParcelableKeyRing> keyRings = new ArrayList<>();
+        for (ImportKeysListEntry e : entries) {
+            keyRings.add(e.getParcelableKeyRing());
+        }
         // instead of giving the entries by Intent extra, cache them into a
         // file to prevent Java Binder problems on heavy imports
         // read FileImportCache for more info.
@@ -330,7 +333,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
             // display here, we should be able to import.
             ParcelableFileCache<ParcelableKeyRing> cache =
                     new ParcelableFileCache<>(this, ImportOperation.CACHE_FILE_NAME);
-            cache.writeCache(listFragment.getData());
+            cache.writeCache(entries.size(), keyRings.iterator());
         } catch (IOException e) {
             Log.e(Constants.TAG, "Problem writing cache file", e);
             Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR).show();

@@ -31,13 +31,13 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListFragmentBinding;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListItemBasicBinding;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.keyimport.processing.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
@@ -49,15 +49,12 @@ import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
-import org.sufficientlysecure.keychain.util.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Preferences.CloudSearchPrefs;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class ImportKeysListFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
@@ -69,13 +66,12 @@ public class ImportKeysListFragment extends Fragment implements
     public static final String ARG_CLOUD_SEARCH_PREFS = "cloud_search_prefs";
 
     private FragmentActivity mActivity;
-    private ImportKeysListener mCallback;
+    private ImportKeysListener mListener;
 
     private ImportKeysListFragmentBinding mBinding;
     private ImportKeysListItemBasicBinding mBindingBasic;
     private ParcelableProxy mParcelableProxy;
 
-    private List<ParcelableKeyRing> mKeyData;
     private ImportKeysAdapter mAdapter;
     private LoaderState mLoaderState;
 
@@ -154,7 +150,7 @@ public class ImportKeysListFragment extends Fragment implements
         mBindingBasic.setNonInteractive(nonInteractive);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new ImportKeysAdapter(mActivity, mCallback, nonInteractive);
+        mAdapter = new ImportKeysAdapter(mActivity, mListener, nonInteractive);
         mBinding.recyclerView.setAdapter(mAdapter);
         mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
 
@@ -173,13 +169,13 @@ public class ImportKeysListFragment extends Fragment implements
             restartLoaders();
         }
 
-        mBinding.basic.importKeys.setOnClickListener(new View.OnClickListener() {
+        mBinding.basic.importKeys.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCallback.importKeys();
+                mListener.importKeys(mAdapter.getEntries());
             }
         });
-        mBinding.basic.listKeys.setOnClickListener(new View.OnClickListener() {
+        mBinding.basic.listKeys.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 mBinding.setAdvanced(true);
@@ -194,7 +190,7 @@ public class ImportKeysListFragment extends Fragment implements
         super.onAttach(activity);
 
         try {
-            mCallback = (ImportKeysListener) activity;
+            mListener = (ImportKeysListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement ImportKeysListener");
@@ -212,10 +208,6 @@ public class ImportKeysListFragment extends Fragment implements
             mActivity.setResult(Activity.RESULT_CANCELED);
             mActivity.finish();
         }
-    }
-
-    public LoaderState getState() {
-        return mLoaderState;
     }
 
     public void loadState(LoaderState loaderState) {
@@ -255,9 +247,8 @@ public class ImportKeysListFragment extends Fragment implements
                 break;
             }
             case LOADER_ID_CLOUD: {
-                CloudLoaderState ls = (CloudLoaderState) mLoaderState;
-                loader = new ImportKeysListCloudLoader(mActivity, ls.mServerQuery,
-                        ls.mCloudPrefs, mParcelableProxy);
+                loader = new ImportKeysListCloudLoader(mActivity, (CloudLoaderState) mLoaderState,
+                        mParcelableProxy);
                 break;
             }
         }
@@ -274,30 +265,22 @@ public class ImportKeysListFragment extends Fragment implements
             Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader,
             AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data
     ) {
-        ArrayList<ImportKeysListEntry> result = data.getResult();
 
-        mKeyData = null;
-        mAdapter.setData(result);
+        mAdapter.setData(data.getResult());
+        int size = mAdapter.getItemCount();
 
-        int size = result.size();
         mBindingBasic.setNumber(size);
         mBinding.setStatus(size > 0 ? STATUS_LOADED : STATUS_EMPTY);
 
         GetKeyResult getKeyResult = (GetKeyResult) data.getOperationResult();
         switch (loader.getId()) {
             case LOADER_ID_BYTES:
-                if (getKeyResult.success()) {
-                    // No error
-                    mKeyData = ((ImportKeysListLoader) loader).getParcelableRings();
-                } else {
+                if (!getKeyResult.success()) {
                     getKeyResult.createNotify(mActivity).show();
                 }
                 break;
-
             case LOADER_ID_CLOUD:
-                if (getKeyResult.success()) {
-                    // No error
-                } else if (getKeyResult.isPending()) {
+                if (getKeyResult.isPending()) {
                     if (getKeyResult.getRequiredInputParcel().mType ==
                             RequiredInputParcel.RequiredInputType.ENABLE_ORBOT) {
                         if (mShowingOrbotDialog) {
@@ -342,11 +325,10 @@ public class ImportKeysListFragment extends Fragment implements
                         new Handler().post(showOrbotDialog);
                         mShowingOrbotDialog = true;
                     }
-                } else {
+                } else if (!getKeyResult.success()) {
                     getKeyResult.createNotify(mActivity).show();
                 }
                 break;
-
             default:
                 break;
         }
@@ -357,38 +339,6 @@ public class ImportKeysListFragment extends Fragment implements
             Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader) {
 
         mAdapter.clearData();
-    }
-
-    /**
-     * Returns an Iterator (with size) of the selected data items.
-     * This iterator is sort of a tradeoff, it's slightly more complex than an
-     * ArrayList would have been, but we save some memory by just returning
-     * relevant elements on demand.
-     */
-    public IteratorWithSize<ParcelableKeyRing> getData() {
-        final Iterator<ParcelableKeyRing> it = mKeyData.iterator();
-        return new IteratorWithSize<ParcelableKeyRing>() {
-
-            @Override
-            public int getSize() {
-                return mKeyData.size();
-            }
-
-            @Override
-            public boolean hasNext() {
-                return it.hasNext();
-            }
-
-            @Override
-            public ParcelableKeyRing next() {
-                return it.next();
-            }
-
-            @Override
-            public void remove() {
-                it.remove();
-            }
-        };
     }
 
 }
