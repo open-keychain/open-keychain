@@ -28,7 +28,11 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
+import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -41,6 +45,7 @@ public class CreateKeyStartFragment extends Fragment {
     View mSecurityToken;
     TextView mSkipOrCancel;
     public static final int REQUEST_CODE_IMPORT_KEY = 0x00007012;
+    public static final int REQUEST_MASTER_PASSPHRASE = 1;
 
     /**
      * Creates new instance of this fragment
@@ -75,6 +80,7 @@ public class CreateKeyStartFragment extends Fragment {
             public void onClick(View v) {
                 CreateKeyNameFragment frag = CreateKeyNameFragment.newInstance();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
+                askForMasterPassphraseIfRequired();
             }
         });
 
@@ -108,6 +114,25 @@ public class CreateKeyStartFragment extends Fragment {
         return view;
     }
 
+    private void askForMasterPassphraseIfRequired() {
+        if (Preferences.getPreferences(mCreateKeyActivity).usesSinglePassphraseWorkflow()
+                && mCreateKeyActivity.mPassphrase == null) {
+
+            try {
+                // if already cached, then just use the cached one
+                mCreateKeyActivity.mPassphrase =
+                        PassphraseCacheService.getMasterPassphrase(mCreateKeyActivity);
+            } catch (PassphraseCacheService.KeyNotFoundException e) {
+                Intent passphraseIntent = new Intent(mCreateKeyActivity, PassphraseDialogActivity.class);
+                RequiredInputParcel requiredInput =
+                        RequiredInputParcel.createRequiredAppLockPassphrase();
+                requiredInput.mSkipCaching = true;
+                passphraseIntent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                startActivityForResult(passphraseIntent, REQUEST_MASTER_PASSPHRASE);
+            }
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -124,6 +149,14 @@ public class CreateKeyStartFragment extends Fragment {
                     mCreateKeyActivity.finish();
                 }
             }
+        } else if (requestCode == REQUEST_MASTER_PASSPHRASE) {
+            if (resultCode != Activity.RESULT_OK) {
+                mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
+                return;
+            }
+            CryptoInputParcel cryptoResult =
+                    data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+            mCreateKeyActivity.mPassphrase = cryptoResult.getPassphrase();
         } else {
             Log.e(Constants.TAG, "No valid request code!");
         }

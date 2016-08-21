@@ -49,7 +49,7 @@ public class BackupActivity extends BaseActivity {
     public static final String EXTRA_SECRET = "export_secret";
 
     private static final int REQUEST_REPEAT_ASK_PASSPHRASE = 1;
-    private static final int REQUEST_ASK_MASTER_PASSPHRASE = 2;
+    private static final int REQUEST_MASTER_PASSPHRASE = 2;
 
     private HashMap<Long, Passphrase> mPassphrases;
     private Iterator<Long> mIdsForRepeatAskPassphrase;
@@ -155,7 +155,7 @@ public class BackupActivity extends BaseActivity {
                     RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId);
             requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-            startActivityForResult(intent, REQUEST_ASK_MASTER_PASSPHRASE);
+            startActivityForResult(intent, REQUEST_MASTER_PASSPHRASE);
         } else {
 
             RequiredInputParcel requiredInput =
@@ -183,7 +183,7 @@ public class BackupActivity extends BaseActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_ASK_MASTER_PASSPHRASE: {
+            case REQUEST_MASTER_PASSPHRASE: {
                 if (resultCode != RESULT_OK) {
                     this.finish();
                     return;

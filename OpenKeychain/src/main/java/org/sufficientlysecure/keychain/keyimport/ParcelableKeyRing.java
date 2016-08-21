@@ -81,8 +81,9 @@ public class ParcelableKeyRing implements Parcelable {
 
     private ParcelableKeyRing(Parcel source) {
         mBytes = source.createByteArray();
-        mMasterKeyId = source.readLong();
-
+        mMasterKeyId = (source.readInt() == 1)
+                ? source.readLong()
+                : null;
         mExpectedFingerprint = source.readString();
         mKeyIdHex = source.readString();
         mKeybaseName = source.readString();
@@ -91,7 +92,10 @@ public class ParcelableKeyRing implements Parcelable {
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByteArray(mBytes);
-        dest.writeLong(mMasterKeyId);
+        dest.writeInt(mMasterKeyId != null ? 1 : 0);
+        if (mMasterKeyId != null) {
+            dest.writeLong(mMasterKeyId);
+        }
         dest.writeString(mExpectedFingerprint);
         dest.writeString(mKeyIdHex);
         dest.writeString(mKeybaseName);

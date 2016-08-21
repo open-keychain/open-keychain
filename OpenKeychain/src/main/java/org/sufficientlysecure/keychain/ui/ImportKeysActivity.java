@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
@@ -90,6 +91,7 @@ public class ImportKeysActivity extends BaseActivity
     public static final String TAG_FRAG_TOP = "frag_top";
 
     private static final int REQUEST_REPEAT_PASSPHRASE = 0x00007008;
+    private static final int REQUEST_MASTER_PASSPHRASE_THEN_REPEAT = 0x00007009;
 
     // for CryptoOperationHelper.Callback
     private String mKeyserver;
@@ -100,6 +102,7 @@ public class ImportKeysActivity extends BaseActivity
     private boolean mFreshIntent;
     private Iterator<SubKeyInfo> mSubKeysForRepeatAskPassphrase;
     private ArrayList<KeyringPassphrases> mPassphrasesList;
+    private Passphrase mMasterPassphrase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -366,12 +369,25 @@ public class ImportKeysActivity extends BaseActivity
         if (ls instanceof ImportKeysListFragment.BytesLoaderState) {
             Log.d(Constants.TAG, "importKeys started");
 
-            // get passphrase for each secret subkey
+            // get passphrases
             ArrayList<SubKeyInfo> secretSubKeyInfos =
                     getAllSubKeyInfo(keyListFragment.getSelectedData());
             mSubKeysForRepeatAskPassphrase = secretSubKeyInfos.iterator();
+
             if(mSubKeysForRepeatAskPassphrase.hasNext()) {
-                startPassphraseActivity();
+                boolean needMasterPassphrase =
+                        Preferences.getPreferences(this).usesSinglePassphraseWorkflow()
+                        && mMasterPassphrase == null;
+                if (needMasterPassphrase) {
+                    try {
+                        mMasterPassphrase = PassphraseCacheService.getMasterPassphrase(this);
+                        askForSubkeyPassphrases();
+                    } catch (PassphraseCacheService.KeyNotFoundException e) {
+                        askForMasterPassphraseThenRepeat();
+                    }
+                } else {
+                    askForSubkeyPassphrases();
+                }
                 return;
             }
             // import immediately if no secret keys
@@ -399,7 +415,6 @@ public class ImportKeysActivity extends BaseActivity
 
         }
     }
-
 
     private ArrayList<SubKeyInfo> getAllSubKeyInfo(Iterator<ParcelableKeyRing> keyRingIterator) {
         ArrayList<SubKeyInfo> subKeyInfos = new ArrayList<>();
@@ -452,7 +467,18 @@ public class ImportKeysActivity extends BaseActivity
         }
     }
 
-    private void startPassphraseActivity() {
+    // Ask for master passphrase, then carry on to ask for passphrases of imported keys
+    private void askForMasterPassphraseThenRepeat() {
+        Intent intent = new Intent(this, PassphraseDialogActivity.class);
+        RequiredInputParcel requiredInput =
+                RequiredInputParcel.createRequiredAppLockPassphrase();
+        requiredInput.mSkipCaching = true;
+        intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+        startActivityForResult(intent, REQUEST_MASTER_PASSPHRASE_THEN_REPEAT);
+
+    }
+
+    private void askForSubkeyPassphrases() {
         SubKeyInfo keyInfo = mSubKeysForRepeatAskPassphrase.next();
         ParcelableKeyRing parcelableKeyRing = keyInfo.mKeyRing;
         long subKeyId = keyInfo.mSubKeyId;
@@ -487,6 +513,19 @@ public class ImportKeysActivity extends BaseActivity
             return;
         }
         switch (requestCode) {
+            case REQUEST_MASTER_PASSPHRASE_THEN_REPEAT: {
+                if (resultCode != RESULT_OK) {
+                    this.finish();
+                    return;
+                }
+                CryptoInputParcel cryptoResult =
+                        data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                mMasterPassphrase = cryptoResult.getPassphrase();
+                if (mSubKeysForRepeatAskPassphrase.hasNext()) {
+                    askForSubkeyPassphrases();
+                }
+                break;
+            }
             case REQUEST_REPEAT_PASSPHRASE : {
                 if (resultCode != RESULT_OK) {
                     return;
@@ -504,7 +543,7 @@ public class ImportKeysActivity extends BaseActivity
                             mPassphrasesList.get(mPassphrasesList.size() - 1).mMasterKeyId != masterKeyId);
 
                     if (isNewKeyRing) {
-                        KeyringPassphrases newKeyring = new KeyringPassphrases(masterKeyId, null);
+                        KeyringPassphrases newKeyring = new KeyringPassphrases(masterKeyId, mMasterPassphrase);
                         newKeyring.mSubkeyPassphrases.put(subKeyId, passphrase);
                         mPassphrasesList.add(newKeyring);
                     } else {
@@ -515,7 +554,7 @@ public class ImportKeysActivity extends BaseActivity
 
                 // check next subkey
                 if (mSubKeysForRepeatAskPassphrase.hasNext()) {
-                    startPassphraseActivity();
+                    askForSubkeyPassphrases();
                     return;
                 } else {
                     importKeysFromFile();

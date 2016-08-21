@@ -643,14 +643,6 @@ public class ProviderWriter {
                     passphrase = (passphrase == null) ? new Passphrase() : passphrase;
                 }
 
-                if (usesSinglePassphraseWorkflow()) {
-                    try {
-                        passphrase = PassphraseCacheService.getMasterPassphrase(mContext);
-                    } catch (PassphraseCacheService.KeyNotFoundException exception) {
-                        throw new AssertionError("No cached master passphrase. Something went terribly wrong");
-                    }
-                }
-
                 if (passphrase.isEmpty()) {
                     keyRingType = SecretKeyRingType.PASSPHRASE_EMPTY;
                 }

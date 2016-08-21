@@ -33,9 +33,9 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
     public static final String EXTRA_TO_SINGLE_PASSPHRASE_WORKFLOW = "to_single_passphrase_workflow";
 
     private static final int REQUEST_REPEAT_ASK_PASSPHRASE = 1;
-    private static final int REQUEST_ASK_MASTER_PASSPHRASE_ONLY = 2;
+    private static final int REQUEST_MASTER_PASSPHRASE_ONLY = 2;
     private static final int REQUEST_NO_SECRET_KEYS = 3;
-    private static final int REQUEST_ASK_MASTER_PASSPHRASE_THEN_REPEAT = 4;
+    private static final int REQUEST_MASTER_PASSPHRASE_THEN_REPEAT = 4;
 
     private HashMap<Long, Passphrase> mPassphrases;
     private Passphrase mMasterPassphrase;
@@ -143,7 +143,7 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
                     RequiredInputParcel.createRequiredAppLockPassphrase();
             requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-            startActivityForResult(intent, REQUEST_ASK_MASTER_PASSPHRASE_THEN_REPEAT);
+            startActivityForResult(intent, REQUEST_MASTER_PASSPHRASE_THEN_REPEAT);
 
         } else {
             // single to multi, only need one passphrase
@@ -152,7 +152,7 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
                     RequiredInputParcel.createRequiredAppLockPassphrase();
             requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-            startActivityForResult(intent, REQUEST_ASK_MASTER_PASSPHRASE_ONLY);
+            startActivityForResult(intent, REQUEST_MASTER_PASSPHRASE_ONLY);
         }
 
     }
@@ -176,7 +176,7 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
                     RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId);
             requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-            startActivityForResult(intent, REQUEST_ASK_MASTER_PASSPHRASE_ONLY);
+            startActivityForResult(intent, REQUEST_MASTER_PASSPHRASE_ONLY);
         }
     }
 
@@ -193,7 +193,7 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
 
                 break;
             }
-            case REQUEST_ASK_MASTER_PASSPHRASE_ONLY: {
+            case REQUEST_MASTER_PASSPHRASE_ONLY: {
                 if (resultCode != RESULT_OK) {
                     this.finish();
                     return;
@@ -204,7 +204,7 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
                 mFinishedCollectingPassphrases = true;
                 break;
             }
-            case REQUEST_ASK_MASTER_PASSPHRASE_THEN_REPEAT: {
+            case REQUEST_MASTER_PASSPHRASE_THEN_REPEAT: {
                 if (resultCode != RESULT_OK) {
                     this.finish();
                     return;
