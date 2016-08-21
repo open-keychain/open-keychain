@@ -24,18 +24,4 @@ public class MigrateSymmetricOperation extends BaseOperation<MigrateSymmetricInp
         return mProviderHelper.migrateSymmetricOperation(mProgressable, CACHE_FILE_NAME, migrateParcel.mKeyringPassphrasesList);
     }
 
-    public static class CreateSecretCacheOperation extends BaseOperation<MigrateSymmetricInputParcel.CreateSecretCacheParcel> {
-
-        public CreateSecretCacheOperation(Context context, ProviderHelper providerHelper, Progressable
-                progressable) {
-            super(context, providerHelper, progressable);
-        }
-
-        @NonNull
-        public MigrateSymmetricResult execute(MigrateSymmetricInputParcel.CreateSecretCacheParcel createSecretCacheParcel,
-                                              CryptoInputParcel cryptoInputParcel) {
-            mProgressable.setPreventCancel();
-            return mProviderHelper.createSecretKeyRingCache(mProgressable, CACHE_FILE_NAME);
-        }
-    }
 }

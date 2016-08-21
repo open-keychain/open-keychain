@@ -768,6 +768,7 @@
         </activity>
         <activity android:name=".ui.MigrateSymmetricActivity"/>
         <activity android:name=".ui.SetMasterPassphraseActivity"/>
+        <activity android:name=".ui.SettingsPassphraseWorkflowActivity"/>
 
         <activity
             android:name=".ui.LogDisplayActivity"

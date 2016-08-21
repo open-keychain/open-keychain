@@ -192,6 +192,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * This fragment shows the PIN/password preferences
      */
     public static class PassphrasePrefsFragment extends PresetPreferenceFragment {
+        SwitchPreference mSinglePassphraseWorkflow;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -219,6 +220,28 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             return false;
                         }
                     });
+
+            mSinglePassphraseWorkflow =
+                    (SwitchPreference) findPreference(Constants.Pref.USE_SINGLE_PASSPHRASE_WORKFLOW);
+            mSinglePassphraseWorkflow.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Boolean toSinglePassphraseWorkflow = (Boolean) newValue;
+
+                    Intent intent = new Intent(getActivity(), SettingsPassphraseWorkflowActivity.class);
+                    intent.putExtra(SettingsPassphraseWorkflowActivity.EXTRA_TO_SINGLE_PASSPHRASE_WORKFLOW,
+                            toSinglePassphraseWorkflow);
+                    startActivity(intent);
+
+                    return false;
+                }
+            });
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            mSinglePassphraseWorkflow.setChecked(sPreferences.usesSinglePassphraseWorkflow());
         }
     }
 

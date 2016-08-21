@@ -6,4 +6,9 @@
     <PreferenceScreen
             android:key="masterPassphrase"
             android:title="@string/label_master_passphrase" />
+    <SwitchPreference
+            android:key="useSinglePassphraseWorkflow"
+            android:persistent="false"
+            android:title="@string/title_single_passphrase_workflow"
+            android:summary="@string/pref_single_passphrase_workflow_summary" />
 </PreferenceScreen>

@@ -31,7 +31,9 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.BenchmarkOperation;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
+import org.sufficientlysecure.keychain.operations.ChangePassphraseWorkflowOperation;
 import org.sufficientlysecure.keychain.operations.ConsolidateOperation;
+import org.sufficientlysecure.keychain.operations.CreateSecretRingCacheOperation;
 import org.sufficientlysecure.keychain.operations.DeleteOperation;
 import org.sufficientlysecure.keychain.operations.EditKeyOperation;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
@@ -144,9 +146,10 @@ public class KeychainService extends Service implements Progressable {
                     op = new BenchmarkOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else if (inputParcel instanceof MigrateSymmetricInputParcel) {
                     op = new MigrateSymmetricOperation(outerThis, new ProviderHelper(outerThis), outerThis);
-                } else if (inputParcel instanceof MigrateSymmetricInputParcel.CreateSecretCacheParcel) {
-                    op = new MigrateSymmetricOperation.CreateSecretCacheOperation(outerThis,
-                            new ProviderHelper(outerThis), outerThis);
+                } else if (inputParcel instanceof CreateSecretKeyRingCacheParcel) {
+                    op = new CreateSecretRingCacheOperation(outerThis, new ProviderHelper(outerThis), outerThis);
+                } else if (inputParcel instanceof ChangePassphraseWorkflowParcel) {
+                    op = new ChangePassphraseWorkflowOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else {
                     throw new AssertionError("Unrecognized input parcel in KeychainService!");
                 }

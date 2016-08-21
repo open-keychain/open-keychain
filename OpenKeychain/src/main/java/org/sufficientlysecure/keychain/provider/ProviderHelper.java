@@ -23,6 +23,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -30,7 +31,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.EncryptedSecretKeyRing;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
+import org.sufficientlysecure.keychain.operations.results.ChangePassphraseWorkflowResult;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
+import org.sufficientlysecure.keychain.operations.results.CreateSecretKeyRingCacheResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.MigrateSymmetricResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -44,11 +47,14 @@ import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -63,7 +69,6 @@ import java.util.List;
  * method is called to start a new one specifically.
  */
 public class ProviderHelper {
-    private final Preferences mPreferences;
     private final ProviderReader mReader;
     private final ProviderWriter mWriter;
     protected final Context mContext;
@@ -87,7 +92,6 @@ public class ProviderHelper {
         mIndent = indent;
         mReader = ProviderReader.newInstance(this, mContentResolver);
         mWriter = ProviderWriter.newInstance(this, mContentResolver);
-        mPreferences = Preferences.getPreferences(mContext);
     }
 
     public static <T extends ProviderReader>
@@ -96,7 +100,7 @@ public class ProviderHelper {
         return new ProviderHelper(context, new OperationLog(), 0, outerObject, readerClass);
     }
 
-    // TODO: wip, can this be cleaned up with java8's new features?
+    // TODO: can this be cleaned up with java8's new features?
     // for test use only
     private <T extends ProviderReader> ProviderHelper(Context context, OperationLog log, int indent,
                                                       Object outerObject, Class<T> customReaderClass) throws Exception {
@@ -105,7 +109,6 @@ public class ProviderHelper {
         mLog = log;
         mIndent = indent;
         mWriter = ProviderWriter.newInstance(this, mContentResolver);
-        mPreferences = Preferences.getPreferences(mContext);
 
         // use reflection to create an instance of the custom reader
         mReader = customReaderClass.getDeclaredConstructor(
@@ -148,30 +151,31 @@ public class ProviderHelper {
     }
 
     @NonNull
-    public MigrateSymmetricResult createSecretKeyRingCache(Progressable progress, String fileName) {
+    public CreateSecretKeyRingCacheResult createSecretKeyRingCache(Progressable progress, String fileName) {
         OperationLog log = new OperationLog();
         int indent = 0;
-        log.add(LogType.MSG_MI, indent);
+        log.add(LogType.MSG_CC, indent);
         progress.setPreventCancel();
-        progress.setProgress(R.string.progress_migrate_cache_keys, 0, 100);
+        progress.setProgress(R.string.progress_cache_secret_keys, 0, 100);
 
         try {
-            log.add(LogType.MSG_MI_CACHE_SECRET, indent);
+            log.add(LogType.MSG_CC_CACHE_SECRET, indent);
             indent += 1;
 
             Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(),
-                    new String[]{KeyRings.PRIVKEY_DATA, KeyRings.HAS_ANY_SECRET},
+                    new String[]{KeyRings.PRIVKEY_DATA, KeyRings.HAS_ANY_SECRET, KeyRings.MASTER_KEY_ID},
                     KeyRings.HAS_ANY_SECRET + "!=0", null, null);
-            cacheKeyRings(cursor, 0, fileName);
+            cacheKeyRings(cursor, 0, 2, fileName);
             //noinspection ConstantConditions, null is caught below
             cursor.close();
 
         } catch (NullPointerException | IOException e) {
-            log.add(LogType.MSG_MI_ERROR_DB, indent + 1);
-            return new MigrateSymmetricResult(MigrateSymmetricResult.RESULT_ERROR, log);
+            log.add(LogType.MSG_CC_ERROR_DB, indent + 1);
+            return new CreateSecretKeyRingCacheResult(CreateSecretKeyRingCacheResult.RESULT_ERROR, log);
         }
 
-        return new MigrateSymmetricResult(MigrateSymmetricResult.RESULT_OK, log);
+        log.add(LogType.MSG_CC_SUCCESS, indent);
+        return new CreateSecretKeyRingCacheResult(CreateSecretKeyRingCacheResult.RESULT_OK, log);
     }
 
     @NonNull
@@ -181,6 +185,7 @@ public class ProviderHelper {
         int indent = 0;
         ParcelableFileCache<ParcelableKeyRing> secRings;
 
+        log.add(LogType.MSG_MI, indent);
         try {
             secRings = new ParcelableFileCache<>(mContext, fileName);
             IteratorWithSize<ParcelableKeyRing> itSecrets = secRings.readCache(false);
@@ -207,6 +212,83 @@ public class ProviderHelper {
     }
 
     @NonNull
+    public ChangePassphraseWorkflowResult changePassphraseWorkflowOperation(Progressable progress,
+                                                                            String fileName,
+                                                                            HashMap<Long, Passphrase> passphrases,
+                                                                            Passphrase masterPassphrase,
+                                                                            Boolean toSinglePassphraseWorkflow) {
+        OperationLog log = new OperationLog();
+        int indent = 0;
+        ParcelableFileCache<ParcelableKeyRing> secRings;
+
+        int currentProgress = 0;
+        progress.setProgress(R.string.progress_change_workflow, currentProgress, 100);
+        progress.setPreventCancel();
+
+        log.add(LogType.MSG_PW, indent);
+        try {
+            secRings = new ParcelableFileCache<>(mContext, fileName);
+            IteratorWithSize<ParcelableKeyRing> itSecrets = secRings.readCache(false);
+            int numSecret = itSecrets.getSize();
+
+            log.add(LogType.MSG_PW_REIMPORT_SECRET, indent, numSecret);
+            indent += 1;
+
+            int progressInterval = 100 / numSecret;
+            SecretKey key = read().getMasterSecretKey(masterPassphrase);
+            while (itSecrets.hasNext()) {
+                progress.setProgress(currentProgress, 100);
+                ParcelableKeyRing parcel = itSecrets.next();
+                long masterKeyId = parcel.mMasterKeyId;
+                byte[] encryptedBlob = parcel.mBytes;
+                byte[] reEncrypted;
+
+                if (toSinglePassphraseWorkflow) {
+                    // currently, each ring has a different passphrase
+                    Passphrase keyPassphrase = passphrases.get(masterKeyId);
+                    byte[] decrypted = ByteArrayEncryptor.decryptByteArray(encryptedBlob, keyPassphrase.getCharArray());
+                    reEncrypted = ByteArrayEncryptor.encryptWithMasterKey(decrypted, key);
+
+                } else {
+                    // currently, each ring is with intermediate key
+
+                    byte[] decrypted = ByteArrayEncryptor.decryptWithMasterKey(encryptedBlob, key);
+                    reEncrypted = ByteArrayEncryptor.encryptByteArray(decrypted, masterPassphrase.getCharArray());
+                }
+
+                // directly replace the blob in the db
+                ContentValues values = new ContentValues();
+                values.put(KeyRingData.KEY_RING_DATA, reEncrypted);
+                Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
+                if (mContentResolver.update(uri, values, null, null) == 0) {
+                    log.add(LogType.MSG_PW_DB_EXCEPTION, indent);
+                }
+                currentProgress += progressInterval;
+            }
+
+            secRings.delete();
+
+        } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
+            Log.e(Constants.TAG, "Fatal bug in code, the passphrases we tried are incorrect", e);
+            log.add(LogType.MSG_PW_BAD_PASSPHRASE, indent + 1);
+            return new ChangePassphraseWorkflowResult(ChangePassphraseWorkflowResult.RESULT_ERROR, log);
+        } catch (ByteArrayEncryptor.EncryptDecryptException e) {
+            Log.e(Constants.TAG, "Encryption went wrong.", e);
+            log.add(LogType.MSG_PW_ERROR_ENCRYPT_DECRYPT, indent + 1);
+            return new ChangePassphraseWorkflowResult(ChangePassphraseWorkflowResult.RESULT_ERROR, log);
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "error retrieving secret keys from cache", e);
+            log.add(LogType.MSG_PW_ERROR_IO, indent + 1);
+            return new ChangePassphraseWorkflowResult(ChangePassphraseWorkflowResult.RESULT_ERROR, log);
+        } finally {
+            indent -= 1;
+        }
+
+        log.add(LogType.MSG_PW_SUCCESS, indent);
+        return new ChangePassphraseWorkflowResult(ChangePassphraseWorkflowResult.RESULT_OK, log);
+    }
+
+    @NonNull
     public ConsolidateResult consolidateDatabaseStep1(Progressable progress) {
         OperationLog log = new OperationLog();
         int indent = 0;
@@ -230,9 +312,9 @@ public class ProviderHelper {
             indent += 1;
 
             Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(),
-                    new String[]{KeyRings.PUBKEY_DATA, KeyRings.HAS_ANY_SECRET},
+                    new String[]{KeyRings.PUBKEY_DATA, KeyRings.HAS_ANY_SECRET, KeyRings.MASTER_KEY_ID},
                     KeyRings.HAS_ANY_SECRET + "!=0", null, null);
-            cacheKeyRings(cursor, 0, "consolidate_own_public.pcl");
+            cacheKeyRings(cursor, 0, 2, "consolidate_own_public.pcl");
             //noinspection ConstantConditions, null is caught below
             cursor.close();
 
@@ -282,8 +364,8 @@ public class ProviderHelper {
             // importing own public rings and foreign public rings
             Cursor cursor = mContentResolver.query(
                     KeyRingData.buildPublicKeyRingUri(),
-                    new String[]{KeyRingData.KEY_RING_DATA}, null, null, null);
-            cacheKeyRings(cursor, 0, "consolidate_foreign_public.pcl");
+                    new String[]{KeyRingData.KEY_RING_DATA, KeyRingData.MASTER_KEY_ID}, null, null, null);
+            cacheKeyRings(cursor, 0, 1, "consolidate_foreign_public.pcl");
             //noinspection ConstantConditions, null is caught below
             cursor.close();
 
@@ -306,7 +388,8 @@ public class ProviderHelper {
         return consolidateDatabaseStep2(log, indent, progress, false);
     }
 
-    private void cacheKeyRings(final Cursor cursor, final int keyRingPosition, String fileName)
+    private void cacheKeyRings(final Cursor cursor, final int keyRingPosition,
+                               final int masterKeyIdPosition, String fileName)
             throws IOException, NullPointerException {
         // No keys existing might be a legitimate option, we write an empty file in that case
         cursor.moveToFirst();
@@ -323,7 +406,9 @@ public class ProviderHelper {
                 if (cursor.isAfterLast()) {
                     return false;
                 }
-                ring = new ParcelableKeyRing(cursor.getBlob(keyRingPosition));
+                ring = new ParcelableKeyRing(
+                        cursor.getBlob(keyRingPosition),
+                        cursor.getLong(masterKeyIdPosition));
                 cursor.moveToNext();
                 return true;
             }

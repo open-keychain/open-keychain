@@ -1001,9 +1001,12 @@ public class KeychainProvider extends ContentProvider {
             switch (match) {
                 case KEY_RING_SECRET: {
                     if (values.size() != 1 ||
-                            !(values.containsKey(KeyRingData.AWAITING_MERGE) || values.containsKey(KeyRingData.SECRET_RING_TYPE))) {
+                            !(values.containsKey(KeyRingData.AWAITING_MERGE) ||
+                                    values.containsKey(KeyRingData.SECRET_RING_TYPE) ||
+                                    values.containsKey(KeyRingData.KEY_RING_DATA))) {
                         throw new UnsupportedOperationException(
-                                "Only awaiting_merge || has_secret_ring column may be updated, one at at time!");
+                                "Only awaiting_merge || has_secret_ring column may be updated || key_ring_data" +
+                                        ", one at at time!");
                     }
                     Long mkid = Long.parseLong(uri.getPathSegments().get(1));
                     String actualSelection = Keys.MASTER_KEY_ID + " = " + Long.toString(mkid);

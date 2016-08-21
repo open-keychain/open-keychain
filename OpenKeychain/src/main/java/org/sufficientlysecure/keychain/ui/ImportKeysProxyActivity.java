@@ -189,7 +189,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     }
 
     public void importKeys(byte[] keyringData) {
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(keyringData);
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(keyringData, null);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 

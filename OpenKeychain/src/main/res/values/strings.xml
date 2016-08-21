@@ -20,6 +20,7 @@
     <string name="title_api_registered_apps">"Apps"</string>
     <string name="title_key_server_preference">"OpenPGP keyservers"</string>
     <string name="title_cache_ttl_preference">"Customize 'Remember' choices"</string>
+    <string name="title_single_passphrase_workflow">"Single password workflow"</string>
     <string name="title_change_passphrase">"Change Password"</string>
     <string name="title_change_master_passphrase">"Change Master Password"</string>
     <string name="title_share_fingerprint_with">"Share fingerprint with…"</string>
@@ -56,7 +57,7 @@
     <string name="section_cloud_search">"Key Search"</string>
     <string name="section_cloud_search_summary">"Keyserver, keybase.io"</string>
     <string name="section_passphrase">"Passwords and PINs"</string>
-    <string name="section_passphrase_summary">"Handling, master password, remember time"</string>
+    <string name="section_passphrase_summary">"Caching, master password, password workflow"</string>
     <string name="section_proxy_settings">"Network Anonymity"</string>
     <string name="section_proxy_settings_summary">"Tor, Proxy Settings"</string>
     <string name="section_gui">"Interface"</string>
@@ -1563,21 +1564,41 @@
     <!-- TODO: edit the single password workflow text -->
     <string name="set_master_passphrase_title">"Set Master Password"</string>
     <string name="set_master_passphrase_text">"The master password will be used for OpenKeychain's app lock. A strong password protects your keys in the event of theft."</string>
-    <string name="set_single_password_workflow">"Use Single Password Workflow (recommended)"</string>
-    <string name="help_single_password_workflow">"(?)"</string>
-    <string name="about_single_password_workflow">"The master password will be used as the password for all keys in OpenKeychain. Disabling this prevents use of some features of the app.\n\nRefer to the FAQ for more info. This setting can be toggled at anytime from the settings menu."</string>
     <string name="error_saving_master_password">"Error saving master password, please contact the developers."</string>
     <string name="error_write_to_db_master_password">"Error writing master password to database, please try again."</string>
+
+    <!-- Single Passphrase Workflow -->
+    <string name="set_single_password_workflow">"Use Single Password Workflow (recommended)"</string>
+    <string name="pref_single_passphrase_workflow_summary">"(recommended)\n\nThe master password will be used as the password for all keys. Disabling this prevents using some features of the app.\n\nRefer to the FAQ for more info."</string>
+    <string name="help_single_password_workflow">"(?)"</string>
+    <string name="about_single_password_workflow">"The master password will be used as the password for all keys in OpenKeychain. Disabling this prevents use of some features of the app.\n\nRefer to the FAQ for more info. This setting can be toggled at anytime from the settings menu."</string>
+
+    <!-- Create Secret Key Ring Cache -->
+    <string name="msg_cc">"Creating internal cache"</string>
+    <string name="msg_cc_error_db">"Error accessing database"</string>
+    <string name="msg_cc_success">"Successful cache creation"</string>
+    <string name="create_cache_error">"Critical error, unable to read/write to device. Please try again later."</string>
+    <string name="create_cache_cancelled">"Unknown error has occurred. Please contact the developers…"</string>
+    <string name="progress_cache_secret_keys">"Caching secret keys…"</string>
+
+    <!-- Change Passphrase Workflow -->
+    <string name="msg_pw">"Changing workflow"</string>
+    <string name="msg_pw_reimport_secret">"Re-importing secret keys"</string>
+    <string name="msg_pw_error_db_exception">"Database error encountered, please try again later"</string>
+    <string name="msg_pw_error_bad_passphrase">"Bad password used to decrypt keys, please contact developers"</string>
+    <string name="msg_pw_error_io">"IO error encountered, please try again later"</string>
+    <string name="msg_pw_error_encrypt_decrypt">"Error encrypting/decrypting keys"</string>
+    <string name="msg_pw_success">"Successfully changed workflow"</string>
+
+    <string name="progress_change_workflow">"Changing workflow…"</string>
 
     <!-- Migrate to Symmetric Encryption -->
     <string name="msg_mi">"Migrating to symmetric encryption"</string>
     <string name="msg_mi_cache_secret">"Caching secret keys"</string>
-    <string name="msg_mi_error_db">"Error accessing database"</string>
     <string name="msg_mi_error_decode_cache">"Error decoding keys from cache"</string>
     <string name="msg_mi_reimport_secret">"Re-importing secret keys from cache"</string>
     <string name="msg_mi_success">"Successful migration to symmetrically encrypted keyring blocks"</string>
 
-    <string name="progress_migrate_cache_keys">"migrate: saving to cache…"</string>
     <string name="progress_migrating">"migrating…"</string>
 
     <string name="btn_start_migration">"Start Migration"</string>

@@ -172,7 +172,7 @@ public class SafeSlingerActivity extends BaseActivity
             do {
                 d = extras.getByteArray(ExchangeConfig.extra.MEMBER_DATA + i);
                 if (d != null) {
-                    list.add(new ParcelableKeyRing(d));
+                    list.add(new ParcelableKeyRing(d, null));
                     i++;
                 }
             } while (d != null);

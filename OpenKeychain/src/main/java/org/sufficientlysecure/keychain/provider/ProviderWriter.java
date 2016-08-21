@@ -628,11 +628,6 @@ public class ProviderWriter {
                 }
                 keyRing = (CanonicalizedSecretKeyRing) editResult.getRing().canonicalize(mProviderHelper.getLog(), mProviderHelper.mIndent);
 
-                // TODO: wip, if using single key,
-                // if (...) {
-                // 1)  get the secret key
-                // 2)  get the
-
                 // get passphrase for keyring block encryption, or use empty passphrase if no obvious one exists
                 Passphrase passphrase = passphrases.mKeyringPassphrase;
                 if (passphrase == null) {
@@ -669,7 +664,7 @@ public class ProviderWriter {
                         keyData = ByteArrayEncryptor.encryptByteArray(keyRing.getEncoded(), passphrase.getCharArray());
                     }
                 } catch (IncorrectPassphraseException e) {
-                    Log.e(Constants.TAG, "Fatal bug in code, we master passphrase we tried to use is incorrect", e);
+                    Log.e(Constants.TAG, "Fatal bug in code, the master passphrase we tried is incorrect", e);
                     mProviderHelper.log(LogType.MSG_IS_ERROR_MASTER_PASSPHRASE_ENCRYPT);
                     return SaveKeyringResult.RESULT_ERROR;
 

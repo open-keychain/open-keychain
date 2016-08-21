@@ -111,7 +111,7 @@ public final class Constants {
         public static final String FILE_USE_COMPRESSION = "useFileCompression";
         public static final String TEXT_USE_COMPRESSION = "useTextCompression";
         public static final String USE_ARMOR = "useArmor";
-        public static final String USE_SINGLE_PASSPHRASE_WORKFLOW = "usingSinglePassphraseWorkflow";
+        public static final String USE_SINGLE_PASSPHRASE_WORKFLOW = "useSinglePassphraseWorkflow";
         // proxy settings
         public static final String USE_NORMAL_PROXY = "useNormalProxy";
         public static final String USE_TOR_PROXY = "useTorProxy";

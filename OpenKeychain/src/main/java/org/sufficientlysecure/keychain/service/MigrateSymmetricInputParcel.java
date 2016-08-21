@@ -41,34 +41,4 @@ public class MigrateSymmetricInputParcel implements Parcelable {
         }
     };
 
-    public static class CreateSecretCacheParcel implements Parcelable {
-
-        public CreateSecretCacheParcel() {
-        }
-
-        protected CreateSecretCacheParcel(Parcel in) {
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-        }
-
-        public static final Creator<CreateSecretCacheParcel> CREATOR = new Parcelable.Creator<CreateSecretCacheParcel>() {
-            @Override
-            public CreateSecretCacheParcel createFromParcel(Parcel in) {
-                return new CreateSecretCacheParcel(in);
-            }
-
-            @Override
-            public CreateSecretCacheParcel[] newArray(int size) {
-                return new CreateSecretCacheParcel[size];
-            }
-        };
-
-    }
 }

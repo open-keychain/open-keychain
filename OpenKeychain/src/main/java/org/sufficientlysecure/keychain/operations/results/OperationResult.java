@@ -627,6 +627,15 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_UNLOCK_ERROR (LogLevel.ERROR, R.string.msg_mf_unlock_error),
         MSG_MF_UNLOCK (LogLevel.DEBUG, R.string.msg_mf_unlock),
 
+        // change passphrase workflow
+        MSG_PW (LogLevel.START, R.string.msg_pw),
+        MSG_PW_REIMPORT_SECRET (LogLevel.DEBUG, R.string.msg_pw_reimport_secret),
+        MSG_PW_DB_EXCEPTION (LogLevel.ERROR, R.string.msg_pw_error_db_exception),
+        MSG_PW_BAD_PASSPHRASE (LogLevel.ERROR, R.string.msg_pw_error_bad_passphrase),
+        MSG_PW_ERROR_IO (LogLevel.ERROR, R.string.msg_pw_error_io),
+        MSG_PW_ERROR_ENCRYPT_DECRYPT (LogLevel.ERROR, R.string.msg_pw_error_encrypt_decrypt),
+        MSG_PW_SUCCESS (LogLevel.OK, R.string.msg_pw_success),
+
         // consolidate
         MSG_CON_CRITICAL_IN (LogLevel.DEBUG, R.string.msg_con_critical_in),
         MSG_CON_CRITICAL_OUT (LogLevel.DEBUG, R.string.msg_con_critical_out),
@@ -659,10 +668,14 @@ public abstract class OperationResult implements Parcelable {
         MSG_CON_WARN_DELETE_OWN_PUBLIC (LogLevel.WARN, R.string.msg_con_warn_delete_own_public),
         MSG_CON_WARN_DELETE_SECRET (LogLevel.WARN, R.string.msg_con_warn_delete_secret),
 
+        // cache secret
+        MSG_CC(LogLevel.START, R.string.msg_cc),
+        MSG_CC_CACHE_SECRET(LogLevel.DEBUG, R.string.msg_mi_cache_secret),
+        MSG_CC_ERROR_DB (LogLevel.ERROR, R.string.msg_cc_error_db),
+        MSG_CC_SUCCESS (LogLevel.OK, R.string.msg_cc_success),
+
         // migrate
         MSG_MI(LogLevel.START, R.string.msg_mi),
-        MSG_MI_CACHE_SECRET(LogLevel.DEBUG, R.string.msg_mi_cache_secret),
-        MSG_MI_ERROR_DB (LogLevel.ERROR, R.string.msg_mi_error_db),
         MSG_MI_ERROR_DECODE_CACHE(LogLevel.DEBUG, R.string.msg_mi_error_decode_cache),
         MSG_MI_REIMPORT_SECRET (LogLevel.DEBUG, R.string.msg_mi_reimport_secret),
         MSG_MI_SUCCESS (LogLevel.OK, R.string.msg_mi_success),

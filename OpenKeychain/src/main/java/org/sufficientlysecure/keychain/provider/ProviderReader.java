@@ -219,23 +219,17 @@ public class ProviderReader {
 
     /**
      * Retrieves and merges a canonicalized secret keyring with its updated public counterpart if flagged for a merge
-     * The retrieved keyring is expected to be stripped of s2k
      */
     public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRingWithMerge(long id, Passphrase passphrase)
             throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException, FailedMergeException {
         return getCanonicalizedSecretKeyRingHelper(KeyRings.buildUnifiedKeyRingUri(id), passphrase, true, false);
     }
-    /**
-     * The retrieved keyring is expected to be stripped of s2k
-     */
+
     public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri uri, Passphrase passphrase)
             throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException, FailedMergeException {
         return getCanonicalizedSecretKeyRingHelper(uri, passphrase, true, true);
     }
 
-    /**
-     * The retrieved keyring is expected to be stripped of s2k
-     */
     public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long id, Passphrase passphrase)
             throws NotFoundException, EncryptDecryptException, IncorrectPassphraseException {
         try {
@@ -245,7 +239,9 @@ public class ProviderReader {
         }
     }
 
-    //TODO: if using single workflow, use given passphrase to decrypt the secret key, then get our secret keyring.
+    /**
+     * The retrieved keyring is expected to be stripped of s2k
+     */
     private CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRingHelper(Uri uri, Passphrase passphrase,
                                                                            boolean isEncrypted, boolean skipMerge)
             throws ProviderReader.NotFoundException, EncryptDecryptException, IncorrectPassphraseException, ProviderReader.FailedMergeException {

@@ -15,6 +15,7 @@ import org.sufficientlysecure.keychain.operations.results.MigrateSymmetricResult
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.service.CreateSecretKeyRingCacheParcel;
 import org.sufficientlysecure.keychain.service.MigrateSymmetricInputParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -180,19 +181,19 @@ public class MigrateSymmetricActivity extends BaseActivity {
             UncachedPublicKey key = keyIt.next();
             list.add(new SubKeyInfo(ring.getMasterKeyId(),
                     key.getKeyId(),
-                    new ParcelableKeyRing(ring.getEncoded())));
+                    new ParcelableKeyRing(ring.getEncoded(), ring.getMasterKeyId())));
         }
         return list;
     }
 
     private void createCache() {
-        CryptoOperationHelper.Callback<MigrateSymmetricInputParcel.CreateSecretCacheParcel, MigrateSymmetricResult> callback =
-                new CryptoOperationHelper.Callback<MigrateSymmetricInputParcel.CreateSecretCacheParcel, MigrateSymmetricResult>() {
+        CryptoOperationHelper.Callback<CreateSecretKeyRingCacheParcel, MigrateSymmetricResult> callback =
+                new CryptoOperationHelper.Callback<CreateSecretKeyRingCacheParcel, MigrateSymmetricResult>() {
                     Activity activity = MigrateSymmetricActivity.this;
 
                     @Override
-                    public MigrateSymmetricInputParcel.CreateSecretCacheParcel createOperationInput() {
-                        return new MigrateSymmetricInputParcel.CreateSecretCacheParcel();
+                    public CreateSecretKeyRingCacheParcel createOperationInput() {
+                        return new CreateSecretKeyRingCacheParcel(MigrateSymmetricOperation.CACHE_FILE_NAME);
                     }
 
                     @Override
@@ -221,7 +222,7 @@ public class MigrateSymmetricActivity extends BaseActivity {
                 };
 
         mCryptoOpHelper =
-                new CryptoOperationHelper<>(1, this, callback, R.string.progress_migrate_cache_keys);
+                new CryptoOperationHelper<>(1, this, callback, R.string.progress_cache_secret_keys);
 
         mCryptoOpHelper.cryptoOperation();
     }
