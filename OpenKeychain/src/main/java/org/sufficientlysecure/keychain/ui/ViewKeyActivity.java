@@ -416,6 +416,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         backupKey.setVisible(mIsSecret);
         MenuItem changePassword = menu.findItem(R.id.menu_key_change_password);
         changePassword.setVisible(mIsSecret);
+        if (Preferences.getPreferences(this).usesSinglePassphraseWorkflow()) {
+            menu.findItem(R.id.menu_key_change_password).setVisible(false);
+        }
 
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
         certifyFingerprint.setVisible(!mIsSecret && !mIsVerified && !mIsExpired && !mIsRevoked);

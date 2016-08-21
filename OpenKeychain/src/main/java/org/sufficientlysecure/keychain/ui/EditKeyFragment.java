@@ -66,6 +66,7 @@ import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.Date;
 
@@ -136,6 +137,11 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
         mChangePassphrase = view.findViewById(R.id.edit_key_action_change_passphrase);
         mAddUserId = view.findViewById(R.id.edit_key_action_add_user_id);
         mAddSubkey = view.findViewById(R.id.edit_key_action_add_key);
+
+        if (Preferences.getPreferences(getActivity()).usesSinglePassphraseWorkflow()) {
+            view.findViewById(R.id.password_header).setVisibility(View.GONE);
+            mChangePassphrase.setVisibility(View.GONE);
+        }
 
         return view;
     }
