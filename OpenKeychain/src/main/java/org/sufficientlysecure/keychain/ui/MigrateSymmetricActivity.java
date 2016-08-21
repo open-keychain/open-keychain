@@ -56,6 +56,18 @@ public class MigrateSymmetricActivity extends BaseActivity {
     private Class mFirstFragmentClass;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // TODO: fail-safe disabled for debugging
+        // fail-safe if this activity is opened twice
+        /*
+        if (Preferences.getPreferences(this).isAppLockReady()) {
+            finish();
+        }
+        */
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_migrate_symmetric);
@@ -345,9 +357,10 @@ public class MigrateSymmetricActivity extends BaseActivity {
     }
 
     private void finishSuccessfulMigration() {
-        Preferences.getPreferences(this).setUsingS2k(false);
-        Preferences.getPreferences(this).setPartiallyMigrated(false);
-        Preferences.getPreferences(this).setIsAppLockReady(true);
+        Preferences prefs = Preferences.getPreferences(this);
+        prefs.setUsingS2k(false);
+        prefs.setPartiallyMigrated(false);
+        prefs.setIsAppLockReady(true);
         finish();
     }
 
