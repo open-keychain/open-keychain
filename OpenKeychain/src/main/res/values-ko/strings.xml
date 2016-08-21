@@ -42,8 +42,8 @@
   <string name="section_keys">서브키</string>
   <string name="section_cloud_search">키 </string>
   <string name="section_cloud_search_summary">키서버, keybase.io</string>
-  <string name="section_passphrase_cache">암호와 PIN</string>
-  <string name="section_passphrase_cache_summary">다루기, 유저 인터페이스, 기억 시간</string>
+  <string name="section_passphrase">암호와 PIN</string>
+  <string name="section_passphrase_summary">다루기, 유저 인터페이스, 기억 시간</string>
   <string name="section_proxy_settings">네트워크 익명성</string>
   <string name="section_proxy_settings_summary">Tor, 프록시 설정</string>
   <string name="section_gui">인터페이스</string>

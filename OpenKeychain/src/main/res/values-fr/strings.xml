@@ -47,8 +47,8 @@
   <string name="section_keys">Sous-clefs</string>
   <string name="section_cloud_search">Recherche de clefs</string>
   <string name="section_cloud_search_summary">Serveur de clefs, keybase.io</string>
-  <string name="section_passphrase_cache">Mots de passe et NIP</string>
-  <string name="section_passphrase_cache_summary">Gestion, interface utilisateur, délai de mémorisation</string>
+  <string name="section_passphrase">Mots de passe et NIP</string>
+  <string name="section_passphrase_summary">Gestion, interface utilisateur, délai de mémorisation</string>
   <string name="section_proxy_settings">Anonymat du réseau</string>
   <string name="section_proxy_settings_summary">Tor, paramètres du mandataire</string>
   <string name="section_gui">Interface</string>

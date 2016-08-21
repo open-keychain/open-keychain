@@ -492,6 +492,11 @@
             android:label="@string/title_cache_ttl_preference"
             android:windowSoftInputMode="stateHidden" />
         <activity
+            android:name=".ui.SettingsMasterPassphraseActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_change_master_passphrase"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
             android:name=".ui.BackupActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_backup">

@@ -47,8 +47,8 @@
   <string name="section_keys">子密钥</string>
   <string name="section_cloud_search">搜索密钥</string>
   <string name="section_cloud_search_summary">密钥服务器， keybase.io</string>
-  <string name="section_passphrase_cache">密码和 PIN 码</string>
-  <string name="section_passphrase_cache_summary">处理，用户界面，记忆时间</string>
+  <string name="section_passphrase">密码和 PIN 码</string>
+  <string name="section_passphrase_summary">处理，用户界面，记忆时间</string>
   <string name="section_proxy_settings">匿名网络</string>
   <string name="section_proxy_settings_summary">Tor，代理服务器设置</string>
   <string name="section_gui">界面</string>

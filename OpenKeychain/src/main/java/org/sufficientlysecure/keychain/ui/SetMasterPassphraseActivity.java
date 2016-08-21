@@ -30,7 +30,7 @@ public class SetMasterPassphraseActivity extends BaseActivity {
             mCurrentFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         } else {
             showDialog();
-            SetMasterPassphraseFragment frag = new SetMasterPassphraseFragment();
+            SetMasterPassphraseFragment frag = SetMasterPassphraseFragment.newInstance(false, null);
             mFirstFragmentClass = frag.getClass();
             loadFragment(frag, FragAction.START);
         }

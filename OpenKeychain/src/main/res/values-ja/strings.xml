@@ -47,8 +47,8 @@
   <string name="section_keys">副鍵</string>
   <string name="section_cloud_search">鍵検索</string>
   <string name="section_cloud_search_summary">鍵サーバ, keybase.io</string>
-  <string name="section_passphrase_cache">パスワードとPIN</string>
-  <string name="section_passphrase_cache_summary">取り扱い、ユーザインタフェース、忘れない時間</string>
+  <string name="section_passphrase">パスワードとPIN</string>
+  <string name="section_passphrase_summary">取り扱い、ユーザインタフェース、忘れない時間</string>
   <string name="section_proxy_settings">ネットワーク匿名性</string>
   <string name="section_proxy_settings_summary">Tor、Proxyの設定</string>
   <string name="section_gui">インタフェース</string>

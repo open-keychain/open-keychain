@@ -20,7 +20,7 @@ public class MigrateSymmetricStartFragment extends Fragment {
         startMigration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SetMasterPassphraseFragment frag = new SetMasterPassphraseFragment();
+                SetMasterPassphraseFragment frag = SetMasterPassphraseFragment.newInstance(false, null);
                 mMigrateSymmetricActivity.loadFragment(frag, MigrateSymmetricActivity.FragAction.TO_RIGHT);
             }
         });

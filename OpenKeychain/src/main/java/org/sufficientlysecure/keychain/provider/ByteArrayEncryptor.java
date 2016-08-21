@@ -191,9 +191,18 @@ public final class ByteArrayEncryptor {
     public static byte[] getNewEncryptedSymmetricKey(Passphrase passphrase) throws EncryptDecryptException {
         try {
             SecretKey secretKey = generateSymmetricKey();
+            return encryptSymmetricKey(passphrase, secretKey);
+        } catch (GeneralSecurityException | EncryptDecryptException e) {
+            throw new EncryptDecryptException(e);
+        }
+    }
+
+    // Encrypts secret key with given passphrase
+    public static byte[] encryptSymmetricKey(Passphrase passphrase, SecretKey secretKey) throws EncryptDecryptException {
+        try {
             byte[] keyBytes = toBytes(secretKey);
             return encryptByteArray(keyBytes, passphrase.getCharArray());
-        } catch (GeneralSecurityException | IOException e) {
+        } catch (IOException e) {
             throw new EncryptDecryptException(e);
         }
     }

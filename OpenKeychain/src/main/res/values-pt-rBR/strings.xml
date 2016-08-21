@@ -47,8 +47,8 @@
   <string name="section_keys">Sub-chaves</string>
   <string name="section_cloud_search">Buscar chave</string>
   <string name="section_cloud_search_summary">Keyserver, keybase.io</string>
-  <string name="section_passphrase_cache">Senhas e PINs</string>
-  <string name="section_passphrase_cache_summary">Manipulação, interface de usuário, lembrete de tempo</string>
+  <string name="section_passphrase">Senhas e PINs</string>
+  <string name="section_passphrase_summary">Manipulação, interface de usuário, lembrete de tempo</string>
   <string name="section_proxy_settings">Anonimato de rede</string>
   <string name="section_proxy_settings_summary">Tor, Configuração de Proxy</string>
   <string name="section_gui">Interface</string>

@@ -46,8 +46,8 @@
   <string name="section_keys">Undernycklar</string>
   <string name="section_cloud_search">Nyckelsökning</string>
   <string name="section_cloud_search_summary">Nyckelserver, keybase.io</string>
-  <string name="section_passphrase_cache">Lösenord och PIN-koder</string>
-  <string name="section_passphrase_cache_summary">Hantering, användargränssnitt, kom ihåg tid</string>
+  <string name="section_passphrase">Lösenord och PIN-koder</string>
+  <string name="section_passphrase_summary">Hantering, användargränssnitt, kom ihåg tid</string>
   <string name="section_proxy_settings">Nätverksanonymitet</string>
   <string name="section_proxy_settings_summary">Tor, proxyinställningar</string>
   <string name="section_gui">Gränssnitt</string>

@@ -48,7 +48,7 @@
   <string name="section_cloud_search">Zoek naar sleutels</string>
   <string name="section_cloud_search_summary">Keyserver, keybase.io</string>
   <string name="section_passphrase_cache">Wachtwoorden en PIN\'s</string>
-  <string name="section_passphrase_cache_summary">Afhandeling, gebruikersinterface, herrineringstijd</string>
+  <string name="section_passphrase_summary">Afhandeling, gebruikersinterface, herrineringstijd</string>
   <string name="section_proxy_settings">Netwerkanonimiteit</string>
   <string name="section_proxy_settings_summary">Tor, Proxy-instellingen</string>
   <string name="section_gui">Interface</string>

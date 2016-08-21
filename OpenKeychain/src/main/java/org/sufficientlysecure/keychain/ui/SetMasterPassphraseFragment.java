@@ -17,7 +17,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -28,11 +27,32 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 public class SetMasterPassphraseFragment extends Fragment {
 
-    // view
+    public static final String ARG_FROM_APP_SETTINGS = "from_app_settings";
+    public static final String ARG_CURRENT_PASSPHRASE = "current_passphrase";
+
+    private boolean mFromAppSettings;
+    private Activity mActivity;
+    private Preferences mPreferences;
+    private Passphrase mCurrentMasterPassphrase;
+
     private PassphraseEditText mPassphraseEdit;
     private EditText mPassphraseEditAgain;
     private CheckBox mUseSinglePasswordWorkflow;
-    private Activity mActivity;
+
+    public static SetMasterPassphraseFragment newInstance(boolean fromSettingsPage, Passphrase passphrase) {
+        if (fromSettingsPage && passphrase == null) {
+            throw new AssertionError("Should have passphrase when coming from settings menu!");
+        }
+
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_FROM_APP_SETTINGS, fromSettingsPage);
+        args.putParcelable(ARG_CURRENT_PASSPHRASE, passphrase);
+
+        SetMasterPassphraseFragment fragment = new SetMasterPassphraseFragment();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
 
     /**
      * Checks if text of given EditText is not empty. If it is empty an error is
@@ -63,6 +83,8 @@ public class SetMasterPassphraseFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mPreferences = Preferences.getPreferences(getActivity());
+
         View view = inflater.inflate(R.layout.set_master_passphrase_fragment, container, false);
 
         mPassphraseEdit = (PassphraseEditText) view.findViewById(R.id.master_passphrase);
@@ -70,7 +92,7 @@ public class SetMasterPassphraseFragment extends Fragment {
         CheckBox showPassphrase = (CheckBox) view.findViewById(R.id.show_master_passphrase);
         mUseSinglePasswordWorkflow = (CheckBox) view.findViewById(R.id.use_single_password_workflow);
         TextView helpSinglePasswordWorkflow = (TextView) view.findViewById(R.id.help_single_password_workflow);
-        View nextButton = view.findViewById(R.id.set_master_passphrase_next_button);
+        TextView nextButton = (TextView) view.findViewById(R.id.set_master_passphrase_next_button);
         View backButton = view.findViewById(R.id.set_master_passphrase_back_button);
 
         helpSinglePasswordWorkflow.setOnClickListener(new View.OnClickListener() {
@@ -138,6 +160,17 @@ public class SetMasterPassphraseFragment extends Fragment {
         mPassphraseEdit.addTextChangedListener(textWatcher);
         mPassphraseEditAgain.addTextChangedListener(textWatcher);
 
+        mFromAppSettings = getArguments().getBoolean(ARG_FROM_APP_SETTINGS);
+        if (mFromAppSettings) {
+            // don't show workflow selection
+            view.findViewById(R.id.workflow_selection_layout).setVisibility(View.GONE);
+            backButton.setVisibility(View.GONE);
+            nextButton.setText(R.string.set_master_passphrase_button);
+
+            // also get passphrase from user
+            mCurrentMasterPassphrase = getArguments().getParcelable(ARG_CURRENT_PASSPHRASE);
+        }
+
         return view;
     }
 
@@ -163,31 +196,48 @@ public class SetMasterPassphraseFragment extends Fragment {
                 return;
             }
 
+            hideKeyboard();
             mPassphraseEditAgain.setError(null);
 
-            // save password & choice of workflow
+            // saving the master passphrase
             try {
-                Passphrase passphrase = new Passphrase(mPassphraseEdit.getText());
-                new ProviderHelper(getActivity()).write().saveMasterPassphrase(passphrase);
+                Passphrase newPassphrase = new Passphrase(mPassphraseEdit.getText());
+                ProviderHelper helper = new ProviderHelper(mActivity);
+
+                boolean success = (mPreferences.hasMasterPassphrase())
+                        ? helper.write().changeMasterPassphrase(newPassphrase, mCurrentMasterPassphrase)
+                        : helper.write().saveMasterPassphrase(newPassphrase);
+
+                if (!success) {
+                    Toast.makeText(getActivity(),
+                            R.string.error_write_to_db_master_password,
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
                 // save till the next screen lock
-                PassphraseCacheService.addMasterPassphrase(getActivity().getApplicationContext(), passphrase, 0);
-            } catch (ByteArrayEncryptor.EncryptDecryptException e) {
+                PassphraseCacheService.addMasterPassphrase(getActivity().getApplicationContext(), newPassphrase, 0);
+                mPreferences.setHasMasterPassphrase(true);
+
+            } catch (ByteArrayEncryptor.EncryptDecryptException | ByteArrayEncryptor.IncorrectPassphraseException e) {
+                // passphrase should never be wrong, check method of retrieval
                 Toast.makeText(getActivity(), R.string.error_saving_master_password,
                         Toast.LENGTH_LONG).show();
-            }
-            Preferences preferences = Preferences.getPreferences(getActivity());
-            preferences.setUsesSinglePassphraseWorkflow(mUseSinglePasswordWorkflow.isChecked());
-            preferences.setHasMasterPassphrase(true);
-
-            Activity activity = getActivity();
-            if (activity instanceof MigrateSymmetricActivity) {
-                ((MigrateSymmetricActivity) activity).finishedSettingMasterPassphrase();
-            } else if (activity instanceof SetMasterPassphraseActivity) {
-                Preferences.getPreferences(activity).setIsAppLockReady(true);
-                activity.finish();
+                return;
             }
 
-            hideKeyboard();
+            //TODO: wip, use an enum instead?
+            // save choice of workflow & finish
+            if (mActivity instanceof MigrateSymmetricActivity) {
+                ((MigrateSymmetricActivity) mActivity).finishedSettingMasterPassphrase();
+                mPreferences.setUsesSinglePassphraseWorkflow(mUseSinglePasswordWorkflow.isChecked());
+            } else if (mActivity instanceof SetMasterPassphraseActivity) {
+                Preferences.getPreferences(mActivity).setIsAppLockReady(true);
+                mPreferences.setUsesSinglePassphraseWorkflow(mUseSinglePasswordWorkflow.isChecked());
+                mActivity.finish();
+            } else if (mFromAppSettings) {
+                // don't save choice of workflow, we have hidden it if coming from app settings
+                mActivity.finish();
+            }
         }
     }
 

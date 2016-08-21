@@ -122,6 +122,20 @@ public class ProviderWriter {
         return mContentResolver.insert(uri, values) != null;
     }
 
+    public boolean changeMasterPassphrase(Passphrase newPassphrase, Passphrase currentPassphrase)
+            throws EncryptDecryptException, IncorrectPassphraseException {
+        SecretKey key = mProviderHelper.read().getMasterSecretKey(currentPassphrase);
+        Uri uri = KeychainContract.MasterPassphrase.CONTENT_URI;
+        mContentResolver.delete(uri, null, null);
+        ContentValues values = new ContentValues();
+        values.put(KeychainContract.MasterPassphrase.ROW_INDEX, Constants.MasterPassphrase.MASTER_PASSPHRASE_INDEX);
+
+        byte[] encryptedSecretKey = ByteArrayEncryptor.encryptSymmetricKey(newPassphrase, key);
+        values.put(KeychainContract.MasterPassphrase.ENCRYPTED_BLOCK, encryptedSecretKey);
+
+        return mContentResolver.insert(uri, values) != null;
+    }
+
     /**
      * Saves an UncachedKeyRing of the public variant into the db.
      * <p/>

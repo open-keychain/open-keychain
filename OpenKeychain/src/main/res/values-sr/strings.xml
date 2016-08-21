@@ -46,8 +46,8 @@
   <string name="section_keys">Поткључеви</string>
   <string name="section_cloud_search">Претрага кључа</string>
   <string name="section_cloud_search_summary">Сервер кључева, keybase.io</string>
-  <string name="section_passphrase_cache">Лозинке и пинови</string>
-  <string name="section_passphrase_cache_summary">Руковање, корисничко сучеље, време памћења</string>
+  <string name="section_passphrase">Лозинке и пинови</string>
+  <string name="section_passphrase_summary">Руковање, корисничко сучеље, време памћења</string>
   <string name="section_proxy_settings">Анонимност на мрежи</string>
   <string name="section_proxy_settings_summary">Тор, поставке проксија</string>
   <string name="section_gui">Сучеље</string>

@@ -47,8 +47,8 @@
   <string name="section_keys">Unterschlüssel</string>
   <string name="section_cloud_search">Schlüsselsuche</string>
   <string name="section_cloud_search_summary">Schlüsselserver, Keybase.io</string>
-  <string name="section_passphrase_cache">Passwörter und PINs</string>
-  <string name="section_passphrase_cache_summary">Bedienung, Benutzeroberfläche, Merkdauer</string>
+  <string name="section_passphrase">Passwörter und PINs</string>
+  <string name="section_passphrase_summary">Bedienung, Benutzeroberfläche, Merkdauer</string>
   <string name="section_proxy_settings">Netzwerkanonymität</string>
   <string name="section_proxy_settings_summary">Tor, Proxyeinstellungen</string>
   <string name="section_gui">Oberfläche</string>

@@ -42,8 +42,8 @@
   <string name="section_keys">Subclaves</string>
   <string name="section_cloud_search">Búsqueda de claves</string>
   <string name="section_cloud_search_summary">Servidor de claves, keybase.io</string>
-  <string name="section_passphrase_cache">Contraseñas y PINs</string>
-  <string name="section_passphrase_cache_summary">Manejo, interfaz de usuario, periodo de recuerdo</string>
+  <string name="section_passphrase">Contraseñas y PINs</string>
+  <string name="section_passphrase_summary">Manejo, interfaz de usuario, periodo de recuerdo</string>
   <string name="section_proxy_settings">Anonimato en la red</string>
   <string name="section_proxy_settings_summary">Tor, configuración de proxy</string>
   <string name="section_gui">Interfaz</string>

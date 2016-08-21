@@ -40,7 +40,7 @@
   <string name="section_keys">Subclave</string>
   <string name="section_cloud_search">Búsqueda de clave</string>
   <string name="section_cloud_search_summary">Servidor de clave, keybase.io</string>
-  <string name="section_passphrase_cache">Contraseñas y NIPs</string>
+  <string name="section_passphrase">Contraseñas y NIPs</string>
   <string name="section_proxy_settings">Anonimato de red</string>
   <string name="section_proxy_settings_summary">Tor, Ajustes de proxy</string>
   <string name="section_gui">Interfaz</string>

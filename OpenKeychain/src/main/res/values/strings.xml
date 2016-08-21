@@ -21,6 +21,7 @@
     <string name="title_key_server_preference">"OpenPGP keyservers"</string>
     <string name="title_cache_ttl_preference">"Customize 'Remember' choices"</string>
     <string name="title_change_passphrase">"Change Password"</string>
+    <string name="title_change_master_passphrase">"Change Master Password"</string>
     <string name="title_share_fingerprint_with">"Share fingerprint with…"</string>
     <string name="title_share_key">"Share key with…"</string>
     <string name="title_share_file">"Share file with…"</string>
@@ -54,8 +55,8 @@
     <string name="section_keys">"Subkeys"</string>
     <string name="section_cloud_search">"Key Search"</string>
     <string name="section_cloud_search_summary">"Keyserver, keybase.io"</string>
-    <string name="section_passphrase_cache">"Passwords and PINs"</string>
-    <string name="section_passphrase_cache_summary">"Handling, user interface, remember time"</string>
+    <string name="section_passphrase">"Passwords and PINs"</string>
+    <string name="section_passphrase_summary">"Handling, master password, remember time"</string>
     <string name="section_proxy_settings">"Network Anonymity"</string>
     <string name="section_proxy_settings_summary">"Tor, Proxy Settings"</string>
     <string name="section_gui">"Interface"</string>
@@ -193,6 +194,8 @@
     <string name="label_enter_keyserver_url">"URL"</string>
     <string name="label_keyserver_dialog_delete">"Delete keyserver"</string>
     <string name="label_theme">"Theme"</string>
+
+    <string name="label_master_passphrase">"Change master password"</string>
 
     <string name="pref_keyserver">"OpenPGP keyservers"</string>
     <string name="pref_keyserver_summary">"Search keys on selected OpenPGP keyservers (HKP protocol)"</string>
@@ -1555,6 +1558,8 @@
 
     <!-- Master Passphrase -->
     <string name="master_passphrase_notification_name">"&lt;Master Passphrase&gt;"</string>
+    <string name="set_master_passphrase_button">"Set Passphrase"</string>
+    <string name="error_set_master_passphrase">"Error saving master passphrase"</string>
     <!-- TODO: edit the single password workflow text -->
     <string name="set_master_passphrase_title">"Set Master Password"</string>
     <string name="set_master_passphrase_text">"The master password will be used for OpenKeychain's app lock. A strong password protects your keys in the event of theft."</string>
@@ -1562,6 +1567,7 @@
     <string name="help_single_password_workflow">"(?)"</string>
     <string name="about_single_password_workflow">"The master password will be used as the password for all keys in OpenKeychain. Disabling this prevents use of some features of the app.\n\nRefer to the FAQ for more info. This setting can be toggled at anytime from the settings menu."</string>
     <string name="error_saving_master_password">"Error saving master password, please contact the developers."</string>
+    <string name="error_write_to_db_master_password">"Error writing master password to database, please try again."</string>
 
     <!-- Migrate to Symmetric Encryption -->
     <string name="msg_mi">"Migrating to symmetric encryption"</string>

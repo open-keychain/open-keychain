@@ -46,8 +46,8 @@
   <string name="section_keys">Azpigiltzak</string>
   <string name="section_cloud_search">Giltza Bilaketa</string>
   <string name="section_cloud_search_summary">Giltza-zerbitzaria, keybase.io</string>
-  <string name="section_passphrase_cache">Sarhitzak eta PIN-ak</string>
-  <string name="section_passphrase_cache_summary">Kudeaketa, erabiltzaile interfazea, gogoratu ordua</string>
+  <string name="section_passphrase">Sarhitzak eta PIN-ak</string>
+  <string name="section_passphrase_summary">Kudeaketa, erabiltzaile interfazea, gogoratu ordua</string>
   <string name="section_proxy_settings">Sare Izengabetasuna</string>
   <string name="section_proxy_settings_summary">Tor, Proxy Ezarpenak</string>
   <string name="section_gui">Interfazea</string>

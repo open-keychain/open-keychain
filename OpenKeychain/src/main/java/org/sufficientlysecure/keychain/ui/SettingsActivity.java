@@ -210,6 +210,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             return false;
                         }
                     });
+
+            findPreference(Constants.Pref.MASTER_PASSPHRASE)
+                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        public boolean onPreferenceClick(Preference preference) {
+                            Intent intent = new Intent(getActivity(), SettingsMasterPassphraseActivity.class);
+                            startActivity(intent);
+                            return false;
+                        }
+                    });
         }
     }
 
