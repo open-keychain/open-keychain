@@ -299,7 +299,6 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
         mCryptoOpHelper.cryptoOperation();
     }
 
-
     private void startWorkflowChange() {
         CryptoOperationHelper.Callback<ChangePassphraseWorkflowParcel, ChangePassphraseWorkflowResult> callback =
                 new CryptoOperationHelper.Callback<ChangePassphraseWorkflowParcel, ChangePassphraseWorkflowResult>() {
@@ -327,7 +326,7 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
                     public void onCryptoOperationError(ChangePassphraseWorkflowResult result) {
                         Toast.makeText(activity.getApplicationContext(),
                                 R.string.migrate_error_migrating, Toast.LENGTH_LONG).show();
-                        //todo: set flag to fix this
+                        // TODO: changing the workflow has failed, recover by placing back what we have cached
                     }
 
                     @Override
@@ -342,7 +341,7 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
     }
 
     private void finishWorkflowChange() {
-        //todo: set flags so we won't try and restore
+        // TODO: changing the workflow has completed, flag that we don't need to recover
 
         mPreferences.setUsesSinglePassphraseWorkflow(mToSinglePassphraseWorkflow);
         finish();

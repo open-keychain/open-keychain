@@ -138,8 +138,7 @@ public class KeychainApplication extends Application {
 
     /**
      * For app lock
-     * TODO: app lock is a little slow sometimes, try to store a dummy passphrase on application start,
-     *          to keep passphrase service alive
+     * TODO: app lock is a little slow sometimes, try to put a flag into preferences to indicate if master pass is cached
      */
     public class LifecycleHandler implements Application.ActivityLifecycleCallbacks {
         private Context mApplicationContext = getApplicationContext();
