@@ -49,6 +49,7 @@ public class BackupActivity extends BaseActivity {
     public static final String EXTRA_SECRET = "export_secret";
 
     private static final int REQUEST_REPEAT_ASK_PASSPHRASE = 1;
+    private static final int REQUEST_ASK_MASTER_PASSPHRASE = 2;
 
     private HashMap<Long, Passphrase> mPassphrases;
     private Iterator<Long> mIdsForRepeatAskPassphrase;
@@ -85,8 +86,6 @@ public class BackupActivity extends BaseActivity {
                     askForPassphrase(mIdsForRepeatAskPassphrase.next());
                     return;
                 }
-                // TODO: wip, if we are using single key workflow, just ask for psasphrase once
-                // just use the passphrase we have cached in the passphrase cache
             }
 
             // no need to get passphrases, just show backup code
@@ -148,11 +147,17 @@ public class BackupActivity extends BaseActivity {
     }
 
     private void askForPassphrase(long masterKeyId) {
+        Intent intent = new Intent(this, PassphraseDialogActivity.class);
+
         if (Preferences.getPreferences(this).usesSinglePassphraseWorkflow()) {
-            // TODO: wip, just ask for passphrase one, through the applock
-            // TODO: start it with a different intent
+
+            RequiredInputParcel requiredInput =
+                    RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId);
+            requiredInput.mSkipCaching = true;
+            intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+            startActivityForResult(intent, REQUEST_ASK_MASTER_PASSPHRASE);
         } else {
-            Intent intent = new Intent(this, PassphraseDialogActivity.class);
+
             RequiredInputParcel requiredInput =
                     RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId);
             requiredInput.mSkipCaching = true;
@@ -178,10 +183,24 @@ public class BackupActivity extends BaseActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            // TODO: wip, add new result code, for single pass case
-            // 1) get the pass
-            // 2) duplicate it for all keys we have,
-            // 3) then return that instead!
+            case REQUEST_ASK_MASTER_PASSPHRASE: {
+                if (resultCode != RESULT_OK) {
+                    this.finish();
+                    return;
+                }
+                RequiredInputParcel requiredInput =
+                        data.getParcelableExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT);
+                CryptoInputParcel cryptoResult =
+                        data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                mPassphrases.put(requiredInput.getMasterKeyId(), cryptoResult.getPassphrase());
+
+                while (mIdsForRepeatAskPassphrase.hasNext()) {
+                    Long id = mIdsForRepeatAskPassphrase.next();
+                    mPassphrases.put(id, cryptoResult.getPassphrase());
+                }
+                mFinishedCollectingPassphrases = true;
+                break;
+            }
             case REQUEST_REPEAT_ASK_PASSPHRASE: {
                 if (resultCode != RESULT_OK) {
                     this.finish();
