@@ -146,6 +146,16 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean useApplock() {
+        return mSharedPreferences.getBoolean(Pref.USE_APPLOCK, false);
+    }
+
+    public void setUseApplock(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.USE_APPLOCK, value);
+        editor.commit();
+    }
+
     public boolean hasMasterPassphrase() {
         return mSharedPreferences.getBoolean(Constants.Pref.HAS_MASTER_PASSPHRASE, false);
     }

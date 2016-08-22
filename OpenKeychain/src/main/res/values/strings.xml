@@ -21,6 +21,7 @@
     <string name="title_key_server_preference">"OpenPGP keyservers"</string>
     <string name="title_cache_ttl_preference">"Customize 'Remember' choices"</string>
     <string name="title_single_passphrase_workflow">"Single password workflow"</string>
+    <string name="title_use_applock">"Use app lock"</string>
     <string name="title_change_passphrase">"Change Password"</string>
     <string name="title_change_master_passphrase">"Change Master Password"</string>
     <string name="title_share_fingerprint_with">"Share fingerprint with…"</string>
@@ -57,7 +58,7 @@
     <string name="section_cloud_search">"Key Search"</string>
     <string name="section_cloud_search_summary">"Keyserver, keybase.io"</string>
     <string name="section_passphrase">"Passwords and PINs"</string>
-    <string name="section_passphrase_summary">"Caching, master password, password workflow"</string>
+    <string name="section_passphrase_summary">"Caching, master password, applock, workflow"</string>
     <string name="section_proxy_settings">"Network Anonymity"</string>
     <string name="section_proxy_settings_summary">"Tor, Proxy Settings"</string>
     <string name="section_gui">"Interface"</string>

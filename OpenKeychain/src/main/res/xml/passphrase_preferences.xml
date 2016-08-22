@@ -4,8 +4,11 @@
         android:key="passphraseCacheTtls"
         android:title="@string/label_passphrase_cache_ttl" />
     <PreferenceScreen
-            android:key="masterPassphrase"
+            android:key="changeMasterPassphrase"
             android:title="@string/label_master_passphrase" />
+    <SwitchPreference
+            android:key="useApplock"
+            android:title="@string/title_use_applock" />
     <SwitchPreference
             android:key="useSinglePassphraseWorkflow"
             android:persistent="false"

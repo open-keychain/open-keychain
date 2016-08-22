@@ -138,7 +138,6 @@ public class KeychainApplication extends Application {
 
     /**
      * For app lock
-     * TODO: app lock is a little slow sometimes, try to put a flag into preferences to indicate if master pass is cached
      */
     public class LifecycleHandler implements Application.ActivityLifecycleCallbacks {
         private Context mApplicationContext = getApplicationContext();
@@ -149,7 +148,7 @@ public class KeychainApplication extends Application {
         }
 
         private void showAppLockIfAppropriate(Activity activity) {
-            if (mPreferences.isAppLockReady()) {
+            if (mPreferences.useApplock() && mPreferences.isAppLockReady()) {
 
                 boolean isWhiteListedActivity = activity instanceof AppLockActivity
                         || activity instanceof PassphraseDialogActivity;
@@ -162,6 +161,7 @@ public class KeychainApplication extends Application {
             }
         }
 
+        // TODO: accessing the passphrase cache for the master passphrase is slow
         private boolean hasCachedMasterPassphrase() {
             try {
                 return PassphraseCacheService.getMasterPassphrase(mApplicationContext) != null;

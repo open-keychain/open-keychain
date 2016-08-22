@@ -94,7 +94,7 @@ public final class Constants {
 
     public static final class Pref {
         public static final String PASSPHRASE_CACHE_TTLS = "passphraseCacheTtls";
-        public static final String MASTER_PASSPHRASE = "masterPassphrase";
+        public static final String CHANGE_MASTER_PASSPHRASE = "changeMasterPassphrase";
         public static final String LANGUAGE = "language";
         public static final String KEY_SERVERS = "keyServers";
         public static final String PREF_DEFAULT_VERSION = "keyServersDefaultVersion";
@@ -105,6 +105,7 @@ public final class Constants {
         public static final String PARTIALLY_MIGRATED = "partiallyMigrated";
         public static final String FAILED_TO_CHANGE_WORKFLOW = "failedToChangeWorkflow";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
+        public static final String USE_APPLOCK = "useApplock";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
         public static final String SEARCH_KEYBASE = "search_keybase_pref";
         public static final String USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN = "useNumKeypadForYubikeyPin";
