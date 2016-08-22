@@ -162,8 +162,4 @@ public final class Constants {
         public static final long backup_code = -2;
         public static final long master_passphrase = -3;
     }
-
-    public static final class MasterPassphrase {
-        public static final int MASTER_PASSPHRASE_INDEX = 0;
-    }
 }

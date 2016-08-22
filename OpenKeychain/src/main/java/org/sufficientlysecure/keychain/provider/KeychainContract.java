@@ -26,7 +26,6 @@ import org.sufficientlysecure.keychain.Constants;
 public class KeychainContract {
 
     interface MasterPassphraseColumns {
-        String ROW_INDEX = "row_index";
         String ENCRYPTED_BLOCK = "encrypted_block";
     }
 
@@ -134,7 +133,7 @@ public class KeychainContract {
     public static final String PATH_ACCOUNTS = "accounts";
     public static final String PATH_ALLOWED_KEYS = "allowed_keys";
 
-    public static class MasterPassphrase implements MasterPassphraseColumns {
+    public static class MasterPassphrase implements MasterPassphraseColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_MASTER_PASSPHRASE).build();
 
@@ -143,11 +142,6 @@ public class KeychainContract {
 
         public static final String CONTENT_ITEM_TYPE
                 = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.master_passphrase";
-
-        public static Uri buildMasterPassphraseUri(int index) {
-            return CONTENT_URI.buildUpon().appendPath(Integer.toString(index))
-                    .build();
-        }
     }
 
     public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {

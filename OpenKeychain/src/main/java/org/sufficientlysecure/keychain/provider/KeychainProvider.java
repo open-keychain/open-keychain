@@ -705,8 +705,6 @@ public class KeychainProvider extends ContentProvider {
             case MASTER_PASSPHRASE_SPECIFIC: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 qb.setTables(Tables.MASTER_PASSPHRASE);
-                projectionMap.put(KeychainContract.MasterPassphrase.ROW_INDEX, Tables.MASTER_PASSPHRASE + "."
-                        + KeychainContract.MasterPassphrase.ROW_INDEX);
                 projectionMap.put(KeychainContract.MasterPassphrase.ENCRYPTED_BLOCK, Tables.MASTER_PASSPHRASE + "."
                         + KeychainContract.MasterPassphrase.ENCRYPTED_BLOCK);
                 qb.setProjectionMap(projectionMap);
@@ -865,13 +863,8 @@ public class KeychainProvider extends ContentProvider {
                     break;
                 }
                 case MASTER_PASSPHRASE: {
-                    Integer index = (Integer) values.get(KeychainContract.MasterPassphrase.ROW_INDEX);
-                    if (index == null || index != Constants.MasterPassphrase.MASTER_PASSPHRASE_INDEX) {
-                        throw new UnsupportedOperationException("Bad index value, " +
-                                "please use constant from Constants file");
-                    }
                     db.insertOrThrow(Tables.MASTER_PASSPHRASE, null, values);
-                    rowUri = KeychainContract.MasterPassphrase.buildMasterPassphraseUri(index);
+                    rowUri = KeychainContract.MasterPassphrase.CONTENT_URI;
                     break;
                 }
                 case API_APPS: {
@@ -1052,6 +1045,10 @@ public class KeychainProvider extends ContentProvider {
                         actualSelection += " AND (" + selection + ")";
                     }
                     count = db.update(Tables.CERTS, values, actualSelection, selectionArgs);
+                    break;
+                }
+                case MASTER_PASSPHRASE: {
+                    count = db.update(Tables.MASTER_PASSPHRASE, values, selection, selectionArgs);
                     break;
                 }
                 default: {

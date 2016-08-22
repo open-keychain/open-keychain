@@ -110,12 +110,8 @@ public class ProviderWriter {
     };
 
     public boolean saveMasterPassphrase(Passphrase passphrase) throws EncryptDecryptException {
-        // TODO: wip, change to a replace, instead of dropping the table
         Uri uri = KeychainContract.MasterPassphrase.CONTENT_URI;
-        mContentResolver.delete(uri, null, null);
         ContentValues values = new ContentValues();
-        values.put(KeychainContract.MasterPassphrase.ROW_INDEX, Constants.MasterPassphrase.MASTER_PASSPHRASE_INDEX);
-
         byte[] encryptedSecretKey = ByteArrayEncryptor.getNewEncryptedSymmetricKey(passphrase);
         values.put(KeychainContract.MasterPassphrase.ENCRYPTED_BLOCK, encryptedSecretKey);
 
@@ -126,14 +122,12 @@ public class ProviderWriter {
             throws EncryptDecryptException, IncorrectPassphraseException {
         SecretKey key = mProviderHelper.read().getMasterSecretKey(currentPassphrase);
         Uri uri = KeychainContract.MasterPassphrase.CONTENT_URI;
-        mContentResolver.delete(uri, null, null);
         ContentValues values = new ContentValues();
-        values.put(KeychainContract.MasterPassphrase.ROW_INDEX, Constants.MasterPassphrase.MASTER_PASSPHRASE_INDEX);
 
         byte[] encryptedSecretKey = ByteArrayEncryptor.encryptSymmetricKey(newPassphrase, key);
         values.put(KeychainContract.MasterPassphrase.ENCRYPTED_BLOCK, encryptedSecretKey);
 
-        return mContentResolver.insert(uri, values) != null;
+        return mContentResolver.update(uri, values, null, null) > 0;
     }
 
     /**
