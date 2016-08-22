@@ -227,8 +227,6 @@ public class CreateKeyEmailFragment extends Fragment {
                 hideKeyboard();
                 CreateKeyFinalFragment frag = CreateKeyFinalFragment.newInstance();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
-                // passphrase doesn't matter TODO: wip, check if we can just ignore this
-                mCreateKeyActivity.mPassphrase = new Passphrase("");
             } else {
                 CreateKeyPassphraseFragment frag = CreateKeyPassphraseFragment.newInstance();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);

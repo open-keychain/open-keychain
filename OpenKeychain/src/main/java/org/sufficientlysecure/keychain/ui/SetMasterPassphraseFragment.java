@@ -225,9 +225,9 @@ public class SetMasterPassphraseFragment extends Fragment {
                 return;
             }
 
-            //TODO: wip, use an enum instead?
             // save choice of workflow & finish
             if (mActivity instanceof MigrateSymmetricActivity) {
+                // do not finish, MigrateSymmetricActivity takes over from here
                 ((MigrateSymmetricActivity) mActivity).finishedSettingMasterPassphrase();
                 mPreferences.setUsesSinglePassphraseWorkflow(mUseSinglePasswordWorkflow.isChecked());
             } else if (mActivity instanceof SetMasterPassphraseActivity) {
