@@ -1,0 +1,5 @@
+platform:
+  Maven:
+    'com.nispok:snackbar':
+      tests:
+        deprecated: skip
