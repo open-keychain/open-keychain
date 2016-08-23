@@ -283,7 +283,7 @@ public class ImportKeysListFragment extends Fragment implements
         mAdapter.setData(data.getResult());
         int size = mAdapter.getItemCount();
 
-        mBindingBasic.setNumber(size);
+        mBinding.setNumber(size);
         mBinding.setStatus(size > 0 ? STATUS_LOADED : STATUS_EMPTY);
 
         GetKeyResult getKeyResult = (GetKeyResult) data.getOperationResult();
