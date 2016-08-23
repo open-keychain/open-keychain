@@ -28,6 +28,22 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ChangePassphraseWorkflowParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
+/**
+ * This operation changes the passphrase workflow of the application.
+ * The available workflows are as mentioned below.
+ *
+ * Single passphrase workflow:
+ * The user only uses the master passphrase for all passphrase requiring operations.
+ * This is achieved by using a intermediary symmetric key. The master passphrase provided by
+ * the user is used to encrypt this intermediary key. The intermediary key is used to encrypt
+ * all secret keyrings.
+ *
+ * Multi-passphrase workflow:
+ * The user uses the master passphrase only for the applock, managing the master passphrase and
+ * changing the passphrase workflow. All other keyrings are encrypted using individual passphrases.
+ *
+ * Consequently, we re-encrypt all secret keys when going from single to multi & vice versa.
+ */
 public class ChangePassphraseWorkflowOperation extends BaseOperation<ChangePassphraseWorkflowParcel> {
     public static final String CACHE_FILE_NAME = "change_workflow.pcl";
 
