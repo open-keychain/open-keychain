@@ -18,6 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:paddingTop="24dp">
 
             <LinearLayout
@@ -25,8 +28,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingBottom="16dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -40,7 +43,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="8dp"
                 android:visibility="@{nonInteractive ? V.GONE : V.VISIBLE}">
 
                 <Button
@@ -51,7 +53,7 @@
                 <Button
                     android:id="@+id/list_keys"
                     style="@style/CardViewActionButton"
-                    android:text="@string/btn_list_keys" />
+                    android:text="@string/btn_view_list" />
 
             </LinearLayout>
 
