@@ -23,6 +23,8 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -41,6 +43,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract.CrossProcessCache;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.util.Log;
@@ -87,6 +90,7 @@ public class PassphraseCacheService extends Service {
     private BroadcastReceiver mIntentReceiver;
 
     private LongSparseArray<CachedPassphrases> mPassphraseCache = new LongSparseArray<>();
+    private ContentResolver mContentResolver;
 
     Context mContext;
 
@@ -406,6 +410,10 @@ public class PassphraseCacheService extends Service {
                     am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, masterKeyId));
                 }
 
+                if (masterKeyId == Constants.key.master_passphrase) {
+                    updateMasterPassphrasePresenceInCache(true);
+                }
+
                 mPassphraseCache.put(masterKeyId, cachedPassphrases);
                 break;
             }
@@ -478,6 +486,9 @@ public class PassphraseCacheService extends Service {
                     // Stop specific ttl alarm and
                     am.cancel(buildIntent(this, keyId));
                     mPassphraseCache.delete(keyId);
+                    if (keyId == Constants.key.master_passphrase) {
+                        updateMasterPassphrasePresenceInCache(false);
+                    }
                 } else if (intent.hasExtra(EXTRA_SUBKEY_ID)) {
                     long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
                     mPassphraseCache.get(keyId).mSubkeyPassphrase = null;
@@ -491,6 +502,7 @@ public class PassphraseCacheService extends Service {
                         }
                     }
                     mPassphraseCache.clear();
+                    updateMasterPassphrasePresenceInCache(false);
                 }
                 break;
             }
@@ -505,6 +517,12 @@ public class PassphraseCacheService extends Service {
         return START_STICKY;
     }
 
+    private void updateMasterPassphrasePresenceInCache(boolean present) {
+        ContentValues values = new ContentValues();
+        values.put(CrossProcessCache.MASTER_PASSPHRASE_IS_CACHED, present ? 1 : 0);
+        mContentResolver.update(CrossProcessCache.CONTENT_URI, values, null, null);
+    }
+
     /** Called when one specific passphrase for keyId timed out. */
     private void removeTimeoutedPassphrase(long keyId) {
 
@@ -516,6 +534,9 @@ public class PassphraseCacheService extends Service {
             }
             // remove passphrase object
             mPassphraseCache.remove(keyId);
+            if (keyId == Constants.key.master_passphrase) {
+                updateMasterPassphrasePresenceInCache(false);
+            }
         }
 
         Log.d(Constants.TAG, "PassphraseCacheService Timeout of keyId " + keyId + ", removed from memory!");
@@ -534,6 +555,9 @@ public class PassphraseCacheService extends Service {
             }
             // only do this if we didn't remove at, which continues loop by reducing size!
             i += 1;
+        }
+        if (mPassphraseCache.get(Constants.key.master_passphrase) == null) {
+            updateMasterPassphrasePresenceInCache(false);
         }
 
         Log.d(Constants.TAG, "PassphraseCacheService Removing all cached-until-lock passphrases from memory!");
@@ -597,6 +621,7 @@ public class PassphraseCacheService extends Service {
     public void onCreate() {
         super.onCreate();
         mContext = this;
+        mContentResolver = mContext.getContentResolver();
         Log.d(Constants.TAG, "PassphraseCacheService, onCreate()");
 
         registerReceiver();

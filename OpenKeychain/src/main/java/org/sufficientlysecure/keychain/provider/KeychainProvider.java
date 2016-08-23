@@ -36,9 +36,11 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.provider.KeychainContract.CrossProcessCache;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.MasterPassphrase;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
@@ -82,6 +84,9 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int MASTER_PASSPHRASE = 600;
     private static final int MASTER_PASSPHRASE_SPECIFIC = 601;
+
+    private static final int CROSS_PROCESS_CACHE = 700;
+    private static final int CROSS_PROCESS_CACHE_SPECIFIC = 701;
 
     protected UriMatcher mUriMatcher;
 
@@ -215,6 +220,10 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_MASTER_PASSPHRASE, MASTER_PASSPHRASE);
         matcher.addURI(authority, KeychainContract.BASE_MASTER_PASSPHRASE + "/*",
                 MASTER_PASSPHRASE_SPECIFIC);
+
+        matcher.addURI(authority, KeychainContract.BASE_CROSS_PROCESS_CACHE, CROSS_PROCESS_CACHE);
+        matcher.addURI(authority, KeychainContract.BASE_CROSS_PROCESS_CACHE + "/*",
+                CROSS_PROCESS_CACHE_SPECIFIC);
 
         return matcher;
     }
@@ -700,12 +709,23 @@ public class KeychainProvider extends ContentProvider {
                 break;
             }
 
+            case CROSS_PROCESS_CACHE:
+            case CROSS_PROCESS_CACHE_SPECIFIC: {
+                HashMap<String, String> projectionMap = new HashMap<>();
+                qb.setTables(Tables.CROSS_PROCESS_CACHE);
+                projectionMap.put(CrossProcessCache.MASTER_PASSPHRASE_IS_CACHED,
+                        Tables.CROSS_PROCESS_CACHE + "."
+                        + CrossProcessCache.MASTER_PASSPHRASE_IS_CACHED);
+                qb.setProjectionMap(projectionMap);
+                break;
+            }
+
             case MASTER_PASSPHRASE:
             case MASTER_PASSPHRASE_SPECIFIC: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 qb.setTables(Tables.MASTER_PASSPHRASE);
-                projectionMap.put(KeychainContract.MasterPassphrase.ENCRYPTED_BLOCK, Tables.MASTER_PASSPHRASE + "."
-                        + KeychainContract.MasterPassphrase.ENCRYPTED_BLOCK);
+                projectionMap.put(MasterPassphrase.ENCRYPTED_BLOCK, Tables.MASTER_PASSPHRASE + "."
+                        + MasterPassphrase.ENCRYPTED_BLOCK);
                 qb.setProjectionMap(projectionMap);
                 break;
             }
@@ -863,8 +883,12 @@ public class KeychainProvider extends ContentProvider {
                 }
                 case MASTER_PASSPHRASE: {
                     db.insertOrThrow(Tables.MASTER_PASSPHRASE, null, values);
-                    rowUri = KeychainContract.MasterPassphrase.CONTENT_URI;
+                    rowUri = MasterPassphrase.CONTENT_URI;
                     break;
+                }
+                case CROSS_PROCESS_CACHE: {
+                    db.insertOrThrow(Tables.CROSS_PROCESS_CACHE, null, values);
+                    rowUri = CrossProcessCache.CONTENT_URI;
                 }
                 case API_APPS: {
                     db.insertOrThrow(Tables.API_APPS, null, values);
@@ -967,6 +991,10 @@ public class KeychainProvider extends ContentProvider {
                 count = db.delete(Tables.MASTER_PASSPHRASE, null, null);
                 break;
             }
+            case CROSS_PROCESS_CACHE: {
+                count = db.delete(Tables.CROSS_PROCESS_CACHE, null, null);
+                break;
+            }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
@@ -1048,6 +1076,10 @@ public class KeychainProvider extends ContentProvider {
                 }
                 case MASTER_PASSPHRASE: {
                     count = db.update(Tables.MASTER_PASSPHRASE, values, selection, selectionArgs);
+                    break;
+                }
+                case CROSS_PROCESS_CACHE: {
+                    count = db.update(Tables.CROSS_PROCESS_CACHE, values, selection, selectionArgs);
                     break;
                 }
                 default: {

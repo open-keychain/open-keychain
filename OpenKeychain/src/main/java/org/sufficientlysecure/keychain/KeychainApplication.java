@@ -21,8 +21,10 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -32,11 +34,11 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.AppLockActivity;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.ui.RevertChangeWorkflowDialogActivity;
@@ -144,8 +146,8 @@ public class KeychainApplication extends Application {
      * For app lock
      */
     public class LifecycleHandler implements Application.ActivityLifecycleCallbacks {
-        private Context mApplicationContext = getApplicationContext();
         private Preferences mPreferences = Preferences.getPreferences(getApplicationContext());
+        private ContentResolver mContentResolver = getApplicationContext().getContentResolver();
 
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -165,14 +167,22 @@ public class KeychainApplication extends Application {
             }
         }
 
-        // TODO: accessing the passphrase cache for the master passphrase is slow
+        // the db stores whether the master passphrase is cached or not,
+        // as suggested by Android docs for passing data across processes reliably
+        // (PassphraseCacheService lives on another process. Querying it currently takes a long time)
         private boolean hasCachedMasterPassphrase() {
+            Cursor cursor = mContentResolver.query(KeychainContract.CrossProcessCache.CONTENT_URI,
+                    new String[]{KeychainContract.CrossProcessCache.MASTER_PASSPHRASE_IS_CACHED},
+                    KeychainContract.CrossProcessCache.MASTER_PASSPHRASE_IS_CACHED + "!=0", null, null);
             try {
-                return PassphraseCacheService.getMasterPassphrase(mApplicationContext) != null;
-            } catch (PassphraseCacheService.KeyNotFoundException e) {
-                return false;
+                return cursor != null && cursor.moveToFirst();
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
         }
+
         @Override
         public void onActivityDestroyed(Activity activity) {
         }

@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAccounts
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.CrossProcessColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.MasterPassphraseColumns;
@@ -72,12 +73,24 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String API_APPS = "api_apps";
         String API_ACCOUNTS = "api_accounts";
         String API_ALLOWED_KEYS = "api_allowed_keys";
+        String CROSS_PROCESS_CACHE = "cross_process_cache";
     }
 
     private static final String CREATE_MASTER_PASSPHRASE =
             "CREATE TABLE IF NOT EXISTS master_passphrase ("
                     + MasterPassphraseColumns.ENCRYPTED_BLOCK + " BLOB"
                     + ")";
+
+
+    private static final String CREATE_CROSS_PROCESS_CACHE =
+            "CREATE TABLE IF NOT EXISTS cross_process_cache ("
+                    + CrossProcessColumns.MASTER_PASSPHRASE_IS_CACHED + " INT"
+                    + ")";
+
+    private static final String INSERT_INITIAL_MASTER_PASSPHRASE_STATE =
+            "INSERT INTO cross_process_cache ("
+                    + CrossProcessColumns.MASTER_PASSPHRASE_IS_CACHED + ")"
+                    + " VALUES ('0')";
 
     private static final String CREATE_KEYRINGS_PUBLIC =
             "CREATE TABLE IF NOT EXISTS keyrings_public ("
@@ -235,6 +248,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_API_APPS_ACCOUNTS);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
         db.execSQL(CREATE_MASTER_PASSPHRASE);
+        db.execSQL(CREATE_CROSS_PROCESS_CACHE);
+        db.execSQL(INSERT_INITIAL_MASTER_PASSPHRASE_STATE);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
         db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
@@ -335,6 +350,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN awaiting_merge INTEGER");
                 db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN secret_ring_type INTEGER");
                 db.execSQL(CREATE_MASTER_PASSPHRASE);
+                db.execSQL(CREATE_CROSS_PROCESS_CACHE);
+                db.execSQL(INSERT_INITIAL_MASTER_PASSPHRASE_STATE);
         }
 
 
