@@ -171,6 +171,8 @@ public class ImportKeysCloudFragment extends Fragment {
             }
         });
 
+        searchItem.expandActionView();
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
