@@ -359,7 +359,7 @@ public class MigrateSymmetricActivity extends BaseActivity {
 
     private void finishSuccessfulMigration() {
         Preferences prefs = Preferences.getPreferences(this);
-        prefs.setUsingS2k(false);
+        prefs.setUsingEncryptedKeyRings(true);
         prefs.setPartiallyMigrated(false);
         prefs.setIsAppLockReady(true);
         finish();

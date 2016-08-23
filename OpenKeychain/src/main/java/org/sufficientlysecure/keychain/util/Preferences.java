@@ -126,13 +126,13 @@ public class Preferences {
         editor.commit();
     }
 
-    public boolean isUsingS2k() {
-        return mSharedPreferences.getBoolean(Constants.Pref.USING_S2K, false);
+    public boolean isUsingEncryptedKeyRings() {
+        return mSharedPreferences.getBoolean(Constants.Pref.USING_ENCRYPTED_KEYRINGS, true);
     }
 
-    public void setUsingS2k(boolean value) {
+    public void setUsingEncryptedKeyRings(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.Pref.USING_S2K, value);
+        editor.putBoolean(Constants.Pref.USING_ENCRYPTED_KEYRINGS, value);
         editor.commit();
     }
 

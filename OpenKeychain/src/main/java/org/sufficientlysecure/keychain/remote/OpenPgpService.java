@@ -862,8 +862,8 @@ public class OpenPgpService extends Service {
             return result;
         }
 
-        // check if database has to be updated
-        result = databaseIsUpToDateOrReturnIntent(data);
+        // check if we require user to open the main app
+        result = mainApplicationIsUpToDateOrReturnIntent(data);
         if (result != null) {
             return result;
         }
@@ -872,11 +872,11 @@ public class OpenPgpService extends Service {
     }
 
 
-    private Intent databaseIsUpToDateOrReturnIntent(Intent data) {
+    private Intent mainApplicationIsUpToDateOrReturnIntent(Intent data) {
         Preferences pref = Preferences.getPreferences(getApplicationContext());
 
-        if(pref.isUsingS2k() || !pref.hasMasterPassphrase()) {
-            // main app has not updated to using symmetric key blocks,
+        if(!pref.isUsingEncryptedKeyRings() || !pref.hasMasterPassphrase()) {
+            // main app has not updated to using encrypted keyrings blocks,
             // or user has not yet set a master passphrase
             // prompt user to start app & rectify this
             ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(this);

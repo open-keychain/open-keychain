@@ -1140,6 +1140,9 @@ public class PgpKeyOperation {
 
     }
 
+    /**
+     * This method expects a CanonicalizedSecretKeyRing with decrypted secret subkeys
+     */
     public PgpEditKeyResult addS2kToSubKeys(CanonicalizedSecretKeyRing wsKR,
                                             Passphrase newPassphrase) {
 

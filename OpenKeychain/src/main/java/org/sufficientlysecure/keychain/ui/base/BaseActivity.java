@@ -70,11 +70,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         Preferences preferences = Preferences.getPreferences(activity);
         if (!preferences.isAppLockReady()) {
             boolean needsMigration =
-                    preferences.isUsingS2k() &&
+                    !preferences.isUsingEncryptedKeyRings() &&
                             !(activity instanceof MigrateSymmetricActivity);
 
             boolean isNewInstall =
-                    !preferences.isUsingS2k() && !preferences.hasMasterPassphrase() &&
+                    preferences.isUsingEncryptedKeyRings() && !preferences.hasMasterPassphrase() &&
                             !(activity instanceof SetMasterPassphraseActivity);
 
             if (needsMigration) {

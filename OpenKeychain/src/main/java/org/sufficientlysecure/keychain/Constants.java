@@ -99,7 +99,7 @@ public final class Constants {
         public static final String KEY_SERVERS = "keyServers";
         public static final String PREF_DEFAULT_VERSION = "keyServersDefaultVersion";
         public static final String FIRST_TIME = "firstTime";
-        public static final String USING_S2K = "usingS2k";
+        public static final String USING_ENCRYPTED_KEYRINGS = "usingS2k";
         public static final String IS_APP_LOCK_READY = "isAppLockReady";
         public static final String HAS_MASTER_PASSPHRASE = "hasMasterPassphrase";
         public static final String PARTIALLY_MIGRATED = "partiallyMigrated";

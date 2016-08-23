@@ -53,7 +53,7 @@ public class DecryptActivity extends BaseActivity {
 
         setFullScreenDialogClose(Activity.RESULT_CANCELED, false);
 
-        if (Preferences.getPreferences(this).isUsingS2k()) {
+        if (!Preferences.getPreferences(this).isUsingEncryptedKeyRings()) {
             // decrypting doesn't work before we migrate
             finish();
         } else {
