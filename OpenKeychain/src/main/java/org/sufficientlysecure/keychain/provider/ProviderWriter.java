@@ -152,7 +152,7 @@ public class ProviderWriter {
         try {
 
             mProviderHelper.log(LogType.MSG_IP_PREPARE);
-            result += 1;
+            mProviderHelper.mIndent += 1;
 
             // save all keys and userIds included in keyRing object in database
             operations = new ArrayList<>();
@@ -174,7 +174,7 @@ public class ProviderWriter {
 
             mProviderHelper.log(LogType.MSG_IP_INSERT_SUBKEYS);
             progress.setProgress(LogType.MSG_IP_INSERT_SUBKEYS.getMsgId(), 40, 100);
-            result += 1;
+            mProviderHelper.mIndent += 1;
             { // insert subkeys
                 Uri uri = Keys.buildKeysUri(masterKeyId);
                 int rank = 0;
@@ -183,7 +183,7 @@ public class ProviderWriter {
                     mProviderHelper.log(keyId == masterKeyId ? LogType.MSG_IP_MASTER : LogType.MSG_IP_SUBKEY,
                             KeyFormattingUtils.convertKeyIdToHex(keyId)
                     );
-                    result += 1;
+                    mProviderHelper.mIndent += 1;
 
                     ContentValues values = new ContentValues();
                     values.put(Keys.MASTER_KEY_ID, masterKeyId);
@@ -235,10 +235,10 @@ public class ProviderWriter {
 
                     operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
                     ++rank;
-                    result -= 1;
+                    mProviderHelper.mIndent -= 1;
                 }
             }
-            result -= 1;
+            mProviderHelper.mIndent -= 1;
 
             // get a list of owned secret keys, for verification filtering
             LongSparseArray<CanonicalizedPublicKey> trustedKeys = getTrustedMasterKeys();
@@ -252,7 +252,7 @@ public class ProviderWriter {
             } else {
                 mProviderHelper.log(LogType.MSG_IP_UID_CLASSIFYING, trustedKeys.size());
             }
-            result += 1;
+            mProviderHelper.mIndent += 1;
             for (byte[] rawUserId : masterKey.getUnorderedRawUserIds()) {
                 String userId = Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(rawUserId);
                 UserPacketItem item = new UserPacketItem();
@@ -265,7 +265,7 @@ public class ProviderWriter {
                 int unknownCerts = 0;
 
                 mProviderHelper.log(LogType.MSG_IP_UID_PROCESSING, userId);
-                result += 1;
+                mProviderHelper.mIndent += 1;
                 // look through signatures for this specific key
                 for (WrappedSignature cert : new IterableIterator<>(
                         masterKey.getSignaturesForRawId(rawUserId))) {
@@ -336,10 +336,10 @@ public class ProviderWriter {
                 if (unknownCerts > 0) {
                     mProviderHelper.log(LogType.MSG_IP_UID_CERTS_UNKNOWN, unknownCerts);
                 }
-                result -= 1;
+                mProviderHelper.mIndent -= 1;
 
             }
-            result -= 1;
+            mProviderHelper.mIndent -= 1;
 
             ArrayList<WrappedUserAttribute> userAttributes = masterKey.getUnorderedUserAttributes();
             // Don't spam the log if there aren't even any attributes
@@ -347,7 +347,7 @@ public class ProviderWriter {
                 mProviderHelper.log(LogType.MSG_IP_UAT_CLASSIFYING);
             }
 
-            result += 1;
+            mProviderHelper.mIndent += 1;
             for (WrappedUserAttribute userAttribute : userAttributes) {
 
                 UserPacketItem item = new UserPacketItem();
@@ -365,7 +365,7 @@ public class ProviderWriter {
                         mProviderHelper.log(LogType.MSG_IP_UAT_PROCESSING_UNKNOWN);
                         break;
                 }
-                result += 1;
+                mProviderHelper.mIndent += 1;
                 // look through signatures for this specific key
                 for (WrappedSignature cert : new IterableIterator<>(
                         masterKey.getSignaturesForUserAttribute(userAttribute))) {
@@ -436,10 +436,10 @@ public class ProviderWriter {
                 if (unknownCerts > 0) {
                     mProviderHelper.log(LogType.MSG_IP_UAT_CERTS_UNKNOWN, unknownCerts);
                 }
-                result -= 1;
+                mProviderHelper.mIndent -= 1;
 
             }
-            result -= 1;
+            mProviderHelper.mIndent -= 1;
 
             progress.setProgress(LogType.MSG_IP_UID_REORDER.getMsgId(), 65, 100);
             mProviderHelper.log(LogType.MSG_IP_UID_REORDER);
@@ -484,7 +484,7 @@ public class ProviderWriter {
             Log.e(Constants.TAG, "IOException during import", e);
             return SaveKeyringResult.RESULT_ERROR;
         } finally {
-            result -= 1;
+            mProviderHelper.mIndent -= 1;
         }
 
         // before deleting key, retrieve it's last updated time
