@@ -411,7 +411,7 @@ public class PassphraseCacheService extends Service {
                 }
 
                 if (masterKeyId == Constants.key.master_passphrase) {
-                    updateMasterPassphrasePresenceInCache(true);
+                    updateMasterPassphrasePresence(true, mContentResolver);
                 }
 
                 mPassphraseCache.put(masterKeyId, cachedPassphrases);
@@ -487,7 +487,7 @@ public class PassphraseCacheService extends Service {
                     am.cancel(buildIntent(this, keyId));
                     mPassphraseCache.delete(keyId);
                     if (keyId == Constants.key.master_passphrase) {
-                        updateMasterPassphrasePresenceInCache(false);
+                        updateMasterPassphrasePresence(false, mContentResolver);
                     }
                 } else if (intent.hasExtra(EXTRA_SUBKEY_ID)) {
                     long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
@@ -502,7 +502,7 @@ public class PassphraseCacheService extends Service {
                         }
                     }
                     mPassphraseCache.clear();
-                    updateMasterPassphrasePresenceInCache(false);
+                    updateMasterPassphrasePresence(false, mContentResolver);
                 }
                 break;
             }
@@ -517,10 +517,10 @@ public class PassphraseCacheService extends Service {
         return START_STICKY;
     }
 
-    private void updateMasterPassphrasePresenceInCache(boolean present) {
+    public static void updateMasterPassphrasePresence(boolean present, ContentResolver resolver) {
         ContentValues values = new ContentValues();
         values.put(CrossProcessCache.MASTER_PASSPHRASE_IS_CACHED, present ? 1 : 0);
-        mContentResolver.update(CrossProcessCache.CONTENT_URI, values, null, null);
+        resolver.update(CrossProcessCache.CONTENT_URI, values, null, null);
     }
 
     /** Called when one specific passphrase for keyId timed out. */
@@ -535,7 +535,7 @@ public class PassphraseCacheService extends Service {
             // remove passphrase object
             mPassphraseCache.remove(keyId);
             if (keyId == Constants.key.master_passphrase) {
-                updateMasterPassphrasePresenceInCache(false);
+                updateMasterPassphrasePresence(false, mContentResolver);
             }
         }
 
@@ -557,7 +557,7 @@ public class PassphraseCacheService extends Service {
             i += 1;
         }
         if (mPassphraseCache.get(Constants.key.master_passphrase) == null) {
-            updateMasterPassphrasePresenceInCache(false);
+            updateMasterPassphrasePresence(false, mContentResolver);
         }
 
         Log.d(Constants.TAG, "PassphraseCacheService Removing all cached-until-lock passphrases from memory!");

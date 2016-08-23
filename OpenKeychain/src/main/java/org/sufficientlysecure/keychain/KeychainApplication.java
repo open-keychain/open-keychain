@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.AppLockActivity;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.ui.RevertChangeWorkflowDialogActivity;
@@ -137,6 +138,20 @@ public class KeychainApplication extends Application {
             Intent revertIntent = new Intent(this, RevertChangeWorkflowDialogActivity.class);
             revertIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(revertIntent);
+        }
+
+        // to counter force shutdown of passphrase cache (messes up master passphrase presence check)
+        // verify presence of master passphrase once on startup
+        // (this means that we are still a little slow when first starting OpenKeychain)
+        // TODO: improve applock performance further
+        if (prefs.useApplock()) {
+            try {
+                if (PassphraseCacheService.getMasterPassphrase(getApplicationContext()) != null) {
+                    PassphraseCacheService.updateMasterPassphrasePresence(true, getContentResolver());
+                }
+            } catch (PassphraseCacheService.KeyNotFoundException e) {
+                PassphraseCacheService.updateMasterPassphrasePresence(false, getContentResolver());
+            }
         }
 
         registerActivityLifecycleCallbacks(new LifecycleHandler());
