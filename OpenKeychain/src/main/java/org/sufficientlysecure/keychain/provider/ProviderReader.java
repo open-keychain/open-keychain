@@ -17,9 +17,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.MasterPassphrase;
-import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.util.KeyringPassphrases;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -147,7 +145,7 @@ public class ProviderReader {
         try {
             byte[] secretKeyBytes = ByteArrayEncryptor.decryptByteArray(getEncryptedMasterKey(),
                     passphrase.getCharArray());
-            return (SecretKey) ByteArrayEncryptor.fromBytes(secretKeyBytes);
+            return (SecretKey) ByteArrayEncryptor.bytesToSerializable(secretKeyBytes);
         } catch (IOException | ClassNotFoundException e) {
             throw new EncryptDecryptException(e);
         }

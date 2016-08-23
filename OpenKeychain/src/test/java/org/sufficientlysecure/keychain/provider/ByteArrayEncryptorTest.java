@@ -14,6 +14,8 @@ import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Random;
@@ -84,14 +86,6 @@ public class ByteArrayEncryptorTest {
         Assert.assertTrue("byte data should be equal after decryption", Arrays.equals(mData, decrypted));
     }
 
-    /**
-     * TODO: reactivate this when encryption algo is changed
-     * Doesn't always work due to collisions in hashing
-     * Example:
-     *   eBkXQTfuBqp'cTcar&g*
-     *   plnlrtfpijpuhqylxbgqiiyipieyxvfsavzgxbbcfusqkozwpngsyejqlmjsytrmd
-     */
-    /*
     @Test(expected = IncorrectPassphraseException.class)
     public void testDecryptWithWrongPassphrase() throws Exception {
         Passphrase otherPassphrase;
@@ -108,6 +102,5 @@ public class ByteArrayEncryptorTest {
         // try decrypting with a wrong passphrase
         ByteArrayEncryptor.decryptByteArray(encrypted, otherPassphrase.getCharArray());
     }
-    */
 
 }
