@@ -72,4 +72,32 @@ public class ChangePassphraseWorkflowParcel implements Parcelable {
         }
     };
 
+    public static class RevertChangeWorkflowParcel implements Parcelable {
+        public RevertChangeWorkflowParcel() {
+        }
+
+        protected RevertChangeWorkflowParcel(Parcel in) {
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+        }
+
+        public static final Creator<RevertChangeWorkflowParcel> CREATOR = new Parcelable.Creator<RevertChangeWorkflowParcel>() {
+            @Override
+            public RevertChangeWorkflowParcel createFromParcel(Parcel in) {
+                return new RevertChangeWorkflowParcel(in);
+            }
+
+            @Override
+            public RevertChangeWorkflowParcel[] newArray(int size) {
+                return new RevertChangeWorkflowParcel[size];
+            }
+        };
+    }
 }

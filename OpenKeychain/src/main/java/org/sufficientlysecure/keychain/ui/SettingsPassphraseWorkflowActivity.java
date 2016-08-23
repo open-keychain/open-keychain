@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 import org.sufficientlysecure.keychain.R;
@@ -322,6 +323,8 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
 
                     @Override
                     public ChangePassphraseWorkflowParcel createOperationInput() {
+                        // we set a flag here so recovery can occur if workflow change didn't finish
+                        mPreferences.setMidwayChangingPassphraseWorkflow(true);
                         return new ChangePassphraseWorkflowParcel(mPassphrases, mMasterPassphrase, mToSinglePassphraseWorkflow);
                     }
 
@@ -342,7 +345,7 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
                     public void onCryptoOperationError(ChangePassphraseWorkflowResult result) {
                         Toast.makeText(activity.getApplicationContext(),
                                 R.string.migrate_error_migrating, Toast.LENGTH_LONG).show();
-                        // TODO: changing the workflow has failed, recover by placing back what we have cached
+                        ActivityCompat.finishAffinity(SettingsPassphraseWorkflowActivity.this);
                     }
 
                     @Override
@@ -357,8 +360,7 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
     }
 
     private void finishWorkflowChange() {
-        // TODO: changing the workflow has completed, flag that we don't need to recover
-
+        mPreferences.setMidwayChangingPassphraseWorkflow(false);
         mPreferences.setUsesSinglePassphraseWorkflow(mToSinglePassphraseWorkflow);
         finish();
     }

@@ -1593,6 +1593,15 @@
 
     <string name="progress_change_workflow">"Changing workflow…"</string>
 
+    <!-- Revert Workflow Change (when change passphrase workflow fails) -->
+    <string name="msg_rw">"Reverting workflow change"</string>
+    <string name="msg_rw_reimport_secret">"Re-importing secret keys"</string>
+    <string name="msg_rw_error_db_exception">"Database error encountered, please try again later"</string>
+    <string name="msg_rw_error_io">"IO error encountered, please try again later"</string>
+    <string name="msg_rw_success">"Successfully reverted workflow"</string>
+
+    <string name="progress_revert_change_workflow">"Reverting workflow change…"</string>
+
     <!-- Migrate to Symmetric Encryption -->
     <string name="msg_mi">"Migrating to symmetric encryption"</string>
     <string name="msg_mi_cache_secret">"Caching secret keys"</string>

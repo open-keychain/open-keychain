@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.BenchmarkOperation;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.ChangePassphraseWorkflowOperation;
+import org.sufficientlysecure.keychain.operations.ChangePassphraseWorkflowOperation.RevertChangeWorkflowOperation;
 import org.sufficientlysecure.keychain.operations.ChangeUnlockOperation;
 import org.sufficientlysecure.keychain.operations.ConsolidateOperation;
 import org.sufficientlysecure.keychain.operations.CreateSecretRingCacheOperation;
@@ -51,6 +52,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.ChangePassphraseWorkflowParcel.RevertChangeWorkflowParcel;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
@@ -149,6 +151,8 @@ public class KeychainService extends Service implements Progressable {
                     op = new CreateSecretRingCacheOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else if (inputParcel instanceof ChangePassphraseWorkflowParcel) {
                     op = new ChangePassphraseWorkflowOperation(outerThis, new ProviderHelper(outerThis), outerThis);
+                } else if (inputParcel instanceof RevertChangeWorkflowParcel) {
+                    op = new RevertChangeWorkflowOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else {
                     throw new AssertionError("Unrecognized input parcel in KeychainService!");
                 }

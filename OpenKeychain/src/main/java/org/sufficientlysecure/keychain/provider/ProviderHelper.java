@@ -211,6 +211,57 @@ public class ProviderHelper {
     }
 
     @NonNull
+    public ChangePassphraseWorkflowResult revertWorkflowChangeOperation(Progressable progress,
+                                                                        String fileName) {
+        OperationLog log = new OperationLog();
+        int indent = 0;
+        ParcelableFileCache<ParcelableKeyRing> secRings;
+
+        int currentProgress = 0;
+        progress.setProgress(R.string.progress_revert_change_workflow, currentProgress, 100);
+        progress.setPreventCancel();
+
+        log.add(LogType.MSG_RW, indent);
+        try {
+            secRings = new ParcelableFileCache<>(mContext, fileName);
+            IteratorWithSize<ParcelableKeyRing> itSecrets = secRings.readCache(false);
+            int numSecret = itSecrets.getSize();
+
+            log.add(LogType.MSG_RW_REIMPORT_SECRET, indent, numSecret);
+            indent += 1;
+
+            int progressInterval = 100 / numSecret;
+            while (itSecrets.hasNext()) {
+                progress.setProgress(currentProgress, 100);
+                ParcelableKeyRing parcel = itSecrets.next();
+                long masterKeyId = parcel.mMasterKeyId;
+                byte[] encryptedBlob = parcel.mBytes;
+
+                // directly replace the blob into the db
+                ContentValues values = new ContentValues();
+                values.put(KeyRingData.KEY_RING_DATA, encryptedBlob);
+                Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
+                if (mContentResolver.update(uri, values, null, null) == 0) {
+                    log.add(LogType.MSG_RW_DB_EXCEPTION, indent);
+                }
+                currentProgress += progressInterval;
+            }
+
+            secRings.delete();
+
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "error retrieving secret keys from cache", e);
+            log.add(LogType.MSG_RW_ERROR_IO, indent + 1);
+            return new ChangePassphraseWorkflowResult(ChangePassphraseWorkflowResult.RESULT_ERROR, log);
+        } finally {
+            indent -= 1;
+        }
+
+        log.add(LogType.MSG_RW_SUCCESS, indent);
+        return new ChangePassphraseWorkflowResult(ChangePassphraseWorkflowResult.RESULT_OK, log);
+    }
+
+    @NonNull
     public ChangePassphraseWorkflowResult changePassphraseWorkflowOperation(Progressable progress,
                                                                             String fileName,
                                                                             HashMap<Long, Passphrase> passphrases,
@@ -261,6 +312,7 @@ public class ProviderHelper {
                 Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
                 if (mContentResolver.update(uri, values, null, null) == 0) {
                     log.add(LogType.MSG_PW_DB_EXCEPTION, indent);
+                    return new ChangePassphraseWorkflowResult(ChangePassphraseWorkflowResult.RESULT_ERROR, log);
                 }
                 currentProgress += progressInterval;
             }

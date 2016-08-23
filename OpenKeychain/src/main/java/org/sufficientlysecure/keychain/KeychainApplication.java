@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
@@ -40,12 +39,11 @@ import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.AppLockActivity;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
-import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.ui.RevertChangeWorkflowDialogActivity;
 import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
-import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
@@ -131,6 +129,12 @@ public class KeychainApplication extends Application {
         if (!checkConsolidateRecovery()) {
             // force DB upgrade, https://github.com/open-keychain/open-keychain/issues/1334
             new KeychainDatabase(this).getReadableDatabase().close();
+        }
+        if (prefs.isMidwayChangingPassphraseWorkflow()) {
+            // try to revert back to state before changing workflow
+            Intent revertIntent = new Intent(this, RevertChangeWorkflowDialogActivity.class);
+            revertIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(revertIntent);
         }
 
         registerActivityLifecycleCallbacks(new LifecycleHandler());

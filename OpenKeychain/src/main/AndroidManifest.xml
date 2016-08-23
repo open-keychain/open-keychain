@@ -769,7 +769,9 @@
         <activity android:name=".ui.MigrateSymmetricActivity"/>
         <activity android:name=".ui.SetMasterPassphraseActivity"/>
         <activity android:name=".ui.SettingsPassphraseWorkflowActivity"/>
-
+        <activity
+                android:name=".ui.RevertChangeWorkflowDialogActivity"
+                android:theme="@style/Theme.Keychain.Transparent" />
         <activity
             android:name=".ui.LogDisplayActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"

@@ -24,7 +24,6 @@ import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
@@ -635,6 +634,13 @@ public abstract class OperationResult implements Parcelable {
         MSG_PW_ERROR_IO (LogLevel.ERROR, R.string.msg_pw_error_io),
         MSG_PW_ERROR_ENCRYPT_DECRYPT (LogLevel.ERROR, R.string.msg_pw_error_encrypt_decrypt),
         MSG_PW_SUCCESS (LogLevel.OK, R.string.msg_pw_success),
+
+        // revert workflow change
+        MSG_RW (LogLevel.START, R.string.msg_rw),
+        MSG_RW_REIMPORT_SECRET (LogLevel.DEBUG, R.string.msg_rw_reimport_secret),
+        MSG_RW_DB_EXCEPTION (LogLevel.ERROR, R.string.msg_rw_error_db_exception),
+        MSG_RW_ERROR_IO (LogLevel.ERROR, R.string.msg_rw_error_io),
+        MSG_RW_SUCCESS (LogLevel.OK, R.string.msg_rw_success),
 
         // consolidate
         MSG_CON_CRITICAL_IN (LogLevel.DEBUG, R.string.msg_con_critical_in),

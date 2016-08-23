@@ -26,6 +26,7 @@ import org.sufficientlysecure.keychain.operations.results.ChangePassphraseWorkfl
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ChangePassphraseWorkflowParcel;
+import org.sufficientlysecure.keychain.service.ChangePassphraseWorkflowParcel.RevertChangeWorkflowParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
 /**
@@ -66,4 +67,22 @@ public class ChangePassphraseWorkflowOperation extends BaseOperation<ChangePassp
         );
     }
 
+    public static class RevertChangeWorkflowOperation extends BaseOperation<RevertChangeWorkflowParcel> {
+
+        public RevertChangeWorkflowOperation(Context context, ProviderHelper providerHelper,
+                                                 Progressable progressable) {
+            super(context, providerHelper, progressable);
+        }
+
+        @NonNull
+        @Override
+        public ChangePassphraseWorkflowResult execute(RevertChangeWorkflowParcel changeParcel,
+                                                      CryptoInputParcel cryptoInputParcel) {
+            mProgressable.setPreventCancel();
+            return mProviderHelper.revertWorkflowChangeOperation(
+                    mProgressable,
+                    CACHE_FILE_NAME
+            );
+        }
+    }
 }

@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain;
 
 import android.os.Environment;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
@@ -103,7 +102,7 @@ public final class Constants {
         public static final String IS_APP_LOCK_READY = "isAppLockReady";
         public static final String HAS_MASTER_PASSPHRASE = "hasMasterPassphrase";
         public static final String PARTIALLY_MIGRATED = "partiallyMigrated";
-        public static final String FAILED_TO_CHANGE_WORKFLOW = "failedToChangeWorkflow";
+        public static final String MIDWAY_CHANGING_PASSPHRASE_WORKFLOW = "setMidwayChangingPassphraseWorkflow";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String USE_APPLOCK = "useApplock";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
