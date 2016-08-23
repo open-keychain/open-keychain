@@ -49,7 +49,7 @@
 
                 <include
                     android:id="@+id/basic"
-                    layout="@layout/import_keys_list_item_basic" />
+                    layout="@layout/import_keys_list_basic_item" />
 
             </LinearLayout>
 

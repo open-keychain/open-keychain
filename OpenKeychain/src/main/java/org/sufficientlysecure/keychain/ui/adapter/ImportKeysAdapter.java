@@ -126,14 +126,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         final boolean downloaded = keyState.mDownloaded;
         final boolean showed = keyState.mShowed;
 
-        b.importKey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getKey(entry, false);
-            }
-        });
-
-        b.expand.setOnClickListener(new View.OnClickListener() {
+        b.card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCurrent = position;
@@ -145,15 +138,12 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             }
         });
 
-        float rotation = showed ? 180 : 0;
-        if (!keyState.mAnimated) {
-            keyState.mAnimated = true;
-            float oldRotation = !showed ? 180 : 0;
-            b.expand.setRotation(oldRotation);
-            b.expand.animate().rotation(rotation).start();
-        } else {
-            b.expand.setRotation(rotation);
-        }
+        b.extra.importKey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getKey(entry, false);
+            }
+        });
 
         b.extraContainer.setVisibility(showed ? View.VISIBLE : View.GONE);
     }
@@ -234,13 +224,11 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     private class KeyState {
         public boolean mDownloaded = false;
         public boolean mShowed = false;
-        public boolean mAnimated = true;
     }
 
     private void changeState(int position, boolean showed) {
         KeyState keyState = mKeyStates[position];
         keyState.mShowed = showed;
-        keyState.mAnimated = true;
         notifyItemChanged(position);
     }
 

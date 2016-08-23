@@ -7,9 +7,11 @@
 
         <variable name="nonInteractive" type="boolean" />
         <variable name="entry" type="ImportKeysListEntry" />
+        <variable name="expanded" type="boolean" />
     </data>
 
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
@@ -20,102 +22,82 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="24dp">
+            android:paddingBottom="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingBottom="16dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:paddingTop="24dp">
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_toLeftOf="@+id/status"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
 
-                        <TextView
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_toLeftOf="@+id/status"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
+                                app:keySecret="@{entry.secretKey}"
+                                app:keyUserId="@{entry.primaryUserId.name}"
+                                app:query="@{entry.query}" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textAppearance="?android:attr/textAppearanceSmall"
+                                app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
+                                app:keyUserEmail="@{entry.primaryUserId.email}"
+                                app:query="@{entry.query}" />
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
-                            app:keySecret="@{entry.secretKey}"
-                            app:keyUserId="@{entry.primaryUserId.name}"
-                            app:query="@{entry.query}" />
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:visibility="@{entry.revokedOrExpired ? V.VISIBLE : V.GONE}"
+                            app:keyExpired="@{entry.expired}"
+                            app:keyRevoked="@{entry.revoked}" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
-                            app:keyUserEmail="@{entry.primaryUserId.email}"
-                            app:query="@{entry.query}" />
+                    </RelativeLayout>
 
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:visibility="@{entry.revokedOrExpired ? V.VISIBLE : V.GONE}"
-                        app:keyExpired="@{entry.expired}"
-                        app:keyRevoked="@{entry.revoked}" />
-
-                </RelativeLayout>
+                </LinearLayout>
 
             </LinearLayout>
 
-            <RelativeLayout
+            <FrameLayout
+                android:id="@+id/extra_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:visibility="@{nonInteractive ? V.GONE : V.VISIBLE}">
+                android:animateLayoutChanges="true"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <Button
-                    android:id="@+id/import_key"
-                    style="@style/CardViewActionButton"
-                    android:text="@string/btn_import" />
-
-                <ImageButton
-                    android:id="@+id/expand"
-                    style="@style/CardViewActionButton"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/ic_expand_more_black_24dp" />
-
-            </RelativeLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/extra_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:animateLayoutChanges="true"
-                    android:orientation="vertical"
-                    android:paddingBottom="24dp"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingTop="16dp"
-                    android:visibility="gone">
-
-                    <include
-                        layout="@layout/import_keys_list_item_extra"
-                        app:entry="@{entry}" />
-
-                </LinearLayout>
+                <include
+                    android:id="@+id/extra"
+                    layout="@layout/import_keys_list_item_extra"
+                    app:entry="@{entry}" />
 
             </FrameLayout>
 

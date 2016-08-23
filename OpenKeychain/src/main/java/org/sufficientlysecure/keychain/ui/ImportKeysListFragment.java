@@ -35,8 +35,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.databinding.ImportKeysListBasicItemBinding;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListFragmentBinding;
-import org.sufficientlysecure.keychain.databinding.ImportKeysListItemBasicBinding;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.processing.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
@@ -69,7 +69,7 @@ public class ImportKeysListFragment extends Fragment implements
     private ImportKeysListener mListener;
 
     private ImportKeysListFragmentBinding mBinding;
-    private ImportKeysListItemBasicBinding mBindingBasic;
+    private ImportKeysListBasicItemBinding mBindingBasic;
     private ParcelableProxy mParcelableProxy;
 
     private ImportKeysAdapter mAdapter;
