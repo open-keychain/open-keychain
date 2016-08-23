@@ -9,13 +9,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor.IncorrectPassphraseException;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor.IncorrectPassphraseException;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Random;

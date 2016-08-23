@@ -1,14 +1,13 @@
 package org.sufficientlysecure.keychain.util;
 
 
-import java.util.HashMap;
-import java.util.Set;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-
 import org.sufficientlysecure.keychain.KeychainApplication;
+
+import java.util.HashMap;
+import java.util.Set;
 
 
 public class ParcelableHashMap <K extends Parcelable, V extends Parcelable> implements Parcelable {

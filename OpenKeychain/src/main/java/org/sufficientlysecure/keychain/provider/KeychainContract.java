@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.provider;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
-
 import org.sufficientlysecure.keychain.Constants;
 
 public class KeychainContract {

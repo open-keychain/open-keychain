@@ -29,7 +29,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
-
+import nordpol.android.NfcGuideView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -52,8 +52,6 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
-import nordpol.android.NfcGuideView;
 
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant

@@ -20,9 +20,7 @@ package org.sufficientlysecure.keychain.service;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.ui.widget.PasswordStrengthBarView;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.Serializable;

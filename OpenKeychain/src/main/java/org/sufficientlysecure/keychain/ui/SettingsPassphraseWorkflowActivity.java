@@ -5,15 +5,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
 import android.widget.Toast;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.ChangePassphraseWorkflowOperation;
 import org.sufficientlysecure.keychain.operations.results.ChangePassphraseWorkflowResult;
 import org.sufficientlysecure.keychain.operations.results.CreateSecretKeyRingCacheResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.ChangePassphraseWorkflowParcel;
 import org.sufficientlysecure.keychain.service.CreateSecretKeyRingCacheParcel;

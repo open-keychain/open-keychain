@@ -2,7 +2,6 @@ package org.sufficientlysecure.keychain.service.input;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import android.support.annotation.NonNull;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.util.Passphrase;

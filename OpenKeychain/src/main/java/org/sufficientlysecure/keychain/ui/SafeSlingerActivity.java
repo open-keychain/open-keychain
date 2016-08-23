@@ -27,7 +27,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
-
+import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
+import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -46,9 +47,6 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
-import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class SafeSlingerActivity extends BaseActivity

@@ -22,7 +22,6 @@ package org.sufficientlysecure.keychain.pgp;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.BCPGOutputStream;
 import org.bouncycastle.bcpg.CompressionAlgorithmTags;

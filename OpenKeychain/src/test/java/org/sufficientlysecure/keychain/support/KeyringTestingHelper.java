@@ -19,12 +19,11 @@
 package org.sufficientlysecure.keychain.support;
 
 import android.content.Context;
-
 import org.bouncycastle.util.Arrays;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.provider.ProviderReader;
 
 import java.io.ByteArrayInputStream;

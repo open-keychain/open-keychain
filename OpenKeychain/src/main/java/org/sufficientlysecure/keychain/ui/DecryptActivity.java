@@ -18,10 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -33,13 +29,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
 
 public class DecryptActivity extends BaseActivity {

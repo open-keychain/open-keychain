@@ -5,12 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class AppLockActivity extends AppCompatActivity {
     private static final int REQUEST_FOR_PASSPHRASE = 1;

@@ -18,8 +18,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import java.util.ArrayList;
-
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
@@ -28,6 +26,8 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderReader.NotFoundException;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.ArrayList;
 
 /**
  * This class can be used to build OpenPgpSignatureResult objects based on several checks.

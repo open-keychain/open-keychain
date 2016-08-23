@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.provider;
 
 import android.database.Cursor;
 import android.net.Uri;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;

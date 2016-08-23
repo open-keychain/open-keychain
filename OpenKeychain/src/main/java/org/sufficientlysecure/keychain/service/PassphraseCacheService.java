@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.service;
 
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -37,9 +36,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.util.LongSparseArray;
-
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
@@ -51,7 +48,6 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main

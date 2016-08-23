@@ -17,12 +17,12 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import java.util.Iterator;
-import java.util.Random;
-
 import junit.framework.Assert;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
+
+import java.util.Iterator;
+import java.util.Random;
 
 
 public class TestingUtils {
