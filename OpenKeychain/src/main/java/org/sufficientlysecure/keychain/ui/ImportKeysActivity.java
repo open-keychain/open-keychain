@@ -269,9 +269,11 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     }
 
     private void startTopFileFragment() {
-        Fragment importFileFragment = ImportKeysFileFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().add(importFileFragment, TAG_FRAG_TOP)
-                .commit();
+        FragmentManager fM = getSupportFragmentManager();
+        if (fM.findFragmentByTag(TAG_FRAG_TOP) == null) {
+            Fragment importFileFragment = ImportKeysFileFragment.newInstance();
+            fM.beginTransaction().add(importFileFragment, TAG_FRAG_TOP).commit();
+        }
     }
 
     /**
@@ -286,10 +288,12 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     private void startTopCloudFragment(String query, boolean disableQueryEdit,
                                        Preferences.CloudSearchPrefs cloudSearchPrefs) {
 
-        Fragment importCloudFragment = ImportKeysCloudFragment.newInstance(query, disableQueryEdit,
-                cloudSearchPrefs);
-        getSupportFragmentManager().beginTransaction().add(importCloudFragment, TAG_FRAG_TOP)
-                .commit();
+        FragmentManager fM = getSupportFragmentManager();
+        if (fM.findFragmentByTag(TAG_FRAG_TOP) == null) {
+            Fragment importCloudFragment = ImportKeysCloudFragment.newInstance(query,
+                    disableQueryEdit, cloudSearchPrefs);
+            fM.beginTransaction().add(importCloudFragment, TAG_FRAG_TOP).commit();
+        }
     }
 
     private boolean isFingerprintValid(String fingerprint) {
