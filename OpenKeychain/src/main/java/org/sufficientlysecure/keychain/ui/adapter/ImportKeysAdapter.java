@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
@@ -76,8 +77,9 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         }
 
         // If there is only one key, get it automatically
-        if (mData.size() == 1)
+        if (mData.size() == 1) {
             getKey(mData.get(0), true);
+        }
 
         notifyDataSetChanged();
     }
@@ -157,8 +159,9 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.extra.showKey.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                long keyId = KeyFormattingUtils.convertKeyIdHexToKeyId(entry.getKeyIdHex());
                 Intent intent = new Intent(mActivity, ViewKeyActivity.class);
-                intent.setData(KeyRings.buildGenericKeyRingUri(entry.getKeyId()));
+                intent.setData(KeyRings.buildGenericKeyRingUri(keyId));
                 mActivity.startActivity(intent);
             }
         });

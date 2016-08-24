@@ -29,7 +29,6 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -86,10 +85,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public String getKeyIdHex() {
         return mKeyIdHex;
-    }
-
-    public long getKeyId() {
-        return new BigInteger(mKeyIdHex.substring(2), 16).longValue();
     }
 
     public void setKeyIdHex(String keyIdHex) {
