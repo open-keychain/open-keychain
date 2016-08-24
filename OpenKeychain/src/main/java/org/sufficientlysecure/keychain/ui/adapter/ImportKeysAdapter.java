@@ -208,6 +208,9 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
                 ImportKeysListEntry entry = mData.get(mCurrent);
 
+                entry.setRevoked(keyRing.isRevoked());
+                entry.setExpired(keyRing.isExpired());
+
                 entry.setDate(keyRing.getCreationDate());
                 entry.setKeyId(keyRing.getMasterKeyId());
 
