@@ -80,7 +80,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     public static final String TAG_FRAG_TOP = "frag_top";
 
     private boolean mFreshIntent;
-    private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
+    private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOpHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -308,8 +308,8 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mOperationHelper != null &&
-                mOperationHelper.handleActivityResult(requestCode, resultCode, data)) {
+        if (mOpHelper != null &&
+                mOpHelper.handleActivityResult(requestCode, resultCode, data)) {
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -355,8 +355,8 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
 
         ImportKeyringParcel inputParcel = new ImportKeyringParcel(null, null);
         ImportKeysOperationCallback callback = new ImportKeysOperationCallback(this, inputParcel);
-        mOperationHelper = new CryptoOperationHelper(1, this, callback, R.string.progress_importing);
-        mOperationHelper.cryptoOperation();
+        mOpHelper = new CryptoOperationHelper<>(1, this, callback, R.string.progress_importing);
+        mOpHelper.cryptoOperation();
     }
 
     @Override

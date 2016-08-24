@@ -11,9 +11,7 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.R;
 
-/**
- * Created by Andrea on 19/06/2016.
- */
+
 public class PermissionsUtil {
 
     private static final int PERMISSION_READ_EXTERNAL_STORAGE = 1;

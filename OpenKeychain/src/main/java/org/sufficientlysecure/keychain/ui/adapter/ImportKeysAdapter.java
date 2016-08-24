@@ -156,7 +156,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
         b.extra.showKey.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 Intent intent = new Intent(mActivity, ViewKeyActivity.class);
                 intent.setData(KeyRings.buildGenericKeyRingUri(entry.getKeyId()));
                 mActivity.startActivity(intent);
@@ -176,7 +176,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         ImportKeysResultListener listener = skipSave ? this : mListener;
         ImportKeysOperationCallback cb = new ImportKeysOperationCallback(listener, inputParcel);
         int message = skipSave ? R.string.progress_downloading : R.string.progress_importing;
-        CryptoOperationHelper opHelper = new CryptoOperationHelper(1, mActivity, cb, message);
+        CryptoOperationHelper opHelper = new CryptoOperationHelper<>(1, mActivity, cb, message);
         opHelper.cryptoOperation();
     }
 
