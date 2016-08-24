@@ -1,11 +1,14 @@
 package org.sufficientlysecure.keychain.ui.util;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
@@ -24,28 +27,45 @@ public class PermissionsUtil {
      * <p/>
      * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
      */
+    @SuppressLint("NewApi") // Api level is checked in checkReadPermission
     public static boolean checkAndRequestReadPermission(Activity activity, Uri uri) {
+        boolean result = checkReadPermission(activity, uri);
+        if (!result) {
+            activity.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_READ_EXTERNAL_STORAGE);
+        }
+        return result;
+    }
+
+    public static boolean checkAndRequestReadPermission(Fragment fragment, Uri uri) {
+        boolean result = checkReadPermission(fragment.getContext(), uri);
+        if (!result) {
+            fragment.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_READ_EXTERNAL_STORAGE);
+        }
+        return result;
+    }
+
+    private static boolean checkReadPermission(Context context, Uri uri) {
         if (!ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
             return true;
         }
 
-        // Additional check due to https://commonsware.com/blog/2015/11/09/you-cannot-hold-nonexistent-permissions.html
+        // Additional check due to:
+        // https://commonsware.com/blog/2015/11/09/you-cannot-hold-nonexistent-permissions.html
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
         }
 
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             return true;
         }
 
-        activity.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                PERMISSION_READ_EXTERNAL_STORAGE);
-
         return false;
     }
 
-    public static boolean checkReadPermissionResult(Activity activity,
+    public static boolean checkReadPermissionResult(Context context,
                                                     int requestCode,
                                                     int[] grantResults) {
 
@@ -59,7 +79,8 @@ public class PermissionsUtil {
         if (permissionWasGranted) {
             return true;
         } else {
-            Toast.makeText(activity, R.string.error_denied_storage_permission, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.error_denied_storage_permission, Toast.LENGTH_LONG)
+                    .show();
 
             return false;
         }

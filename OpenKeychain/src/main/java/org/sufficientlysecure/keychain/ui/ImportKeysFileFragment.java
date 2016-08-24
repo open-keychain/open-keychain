@@ -49,9 +49,6 @@ public class ImportKeysFileFragment extends Fragment {
     private Activity mActivity;
     private ImportKeysListener mCallback;
 
-    private View mBrowse;
-    private View mClipboardButton;
-
     private Uri mCurrentUri;
 
     private static final int REQUEST_CODE_FILE = 0x00007003;
@@ -131,17 +128,14 @@ public class ImportKeysFileFragment extends Fragment {
                 if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
                     mCurrentUri = data.getData();
 
-                    if (PermissionsUtil.checkAndRequestReadPermission(mActivity, mCurrentUri)) {
+                    if (PermissionsUtil.checkAndRequestReadPermission(this, mCurrentUri)) {
                         startImportingKeys();
                     }
                 }
                 break;
             }
-
             default:
                 super.onActivityResult(requestCode, resultCode, data);
-
-                break;
         }
     }
 

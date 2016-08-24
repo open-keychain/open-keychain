@@ -165,16 +165,13 @@ public class ImportKeysListFragment extends Fragment implements
             loadState(new CloudLoaderState(query, cloudSearchPrefs));
         }
 
-        if (dataUri == null || PermissionsUtil.checkAndRequestReadPermission(mActivity, dataUri)) {
-            restartLoaders();
-        }
-
         mBinding.basic.importKeys.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 mListener.importKeys(mAdapter.getEntries());
             }
         });
+
         mBinding.basic.listKeys.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -232,7 +229,7 @@ public class ImportKeysListFragment extends Fragment implements
             BytesLoaderState ls = (BytesLoaderState) mLoaderState;
 
             if (ls.mDataUri != null &&
-                    !PermissionsUtil.checkAndRequestReadPermission(mActivity, ls.mDataUri)) {
+                    !PermissionsUtil.checkAndRequestReadPermission(this, ls.mDataUri)) {
                 return;
             }
         }
