@@ -17,11 +17,13 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -35,7 +37,9 @@ import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysResultList
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
@@ -131,7 +135,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         final boolean downloaded = keyState.mDownloaded;
         final boolean showed = keyState.mShowed;
 
-        b.card.setOnClickListener(new View.OnClickListener() {
+        b.card.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCurrent = position;
@@ -143,10 +147,19 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             }
         });
 
-        b.extra.importKey.setOnClickListener(new View.OnClickListener() {
+        b.extra.importKey.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 getKey(entry, false);
+            }
+        });
+
+        b.extra.showKey.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mActivity, ViewKeyActivity.class);
+                intent.setData(KeyRings.buildGenericKeyRingUri(entry.getKeyId()));
+                mActivity.startActivity(intent);
             }
         });
 
@@ -210,6 +223,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
                 entry.setRevoked(keyRing.isRevoked());
                 entry.setExpired(keyRing.isExpired());
+                entry.setUpdated(result.isOkUpdated());
 
                 entry.setDate(keyRing.getCreationDate());
                 entry.setKeyId(keyRing.getMasterKeyId());

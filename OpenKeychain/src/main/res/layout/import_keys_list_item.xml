@@ -7,7 +7,6 @@
 
         <variable name="nonInteractive" type="boolean" />
         <variable name="entry" type="ImportKeysListEntry" />
-        <variable name="expanded" type="boolean" />
     </data>
 
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"

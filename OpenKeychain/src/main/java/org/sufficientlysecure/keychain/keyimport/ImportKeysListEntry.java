@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,18 +49,23 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private ArrayList<Map.Entry<String, HashSet<String>>> mSortedUserIds;
 
     private String mKeyIdHex;
+
+    private boolean mSecretKey;
     private boolean mRevoked;
     private boolean mExpired;
-    private Date mDate; // TODO: not displayed
+    private boolean mUpdated;
+
+    private Date mDate;
     private String mFingerprintHex;
     private Integer mBitStrength;
     private String mCurveOid;
     private String mAlgorithm;
-    private boolean mSecretKey;
+
     private UserId mPrimaryUserId;
     private String mKeyserver;
     private String mKeybaseName;
     private String mFbUsername;
+
     private String mQuery;
     private Integer mHashCode = null;
 
@@ -80,6 +86,10 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public String getKeyIdHex() {
         return mKeyIdHex;
+    }
+
+    public long getKeyId() {
+        return new BigInteger(mKeyIdHex.substring(2), 16).longValue();
     }
 
     public void setKeyIdHex(String keyIdHex) {
@@ -112,6 +122,14 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public Date getDate() {
         return mDate;
+    }
+
+    public boolean isUpdated() {
+        return mUpdated;
+    }
+
+    public void setUpdated(boolean updated) {
+        mUpdated = updated;
     }
 
     public void setDate(Date date) {
@@ -343,6 +361,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeSerializable(mMergedUserIds);
         dest.writeByte((byte) (mRevoked ? 1 : 0));
         dest.writeByte((byte) (mExpired ? 1 : 0));
+        dest.writeByte((byte) (mUpdated ? 1 : 0));
         dest.writeInt(mDate == null ? 0 : 1);
         if (mDate != null) {
             dest.writeLong(mDate.getTime());
@@ -370,6 +389,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mMergedUserIds = (HashMap<String, HashSet<String>>) source.readSerializable();
             vr.mRevoked = source.readByte() == 1;
             vr.mExpired = source.readByte() == 1;
+            vr.mUpdated = source.readByte() == 1;
             vr.mDate = source.readInt() != 0 ? new Date(source.readLong()) : null;
             vr.mFingerprintHex = source.readString();
             vr.mKeyIdHex = source.readString();

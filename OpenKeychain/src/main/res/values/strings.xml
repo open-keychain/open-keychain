@@ -532,6 +532,11 @@
     <string name="import_qr_code_too_short_fingerprint">"Fingerprint is too short!"</string>
     <string name="import_qr_code_button">"Scan QR Code"</string>
     <string name="import_qr_code_text">"Place your camera over the QR Code!"</string>
+    <string name="btn_import">"Import"</string>
+    <string name="btn_import_keys">"Import all keys"</string>
+    <string name="btn_view_list">"View list"</string>
+    <string name="btn_refresh">"Refresh"</string>
+    <string name="btn_show_key">"Show key"</string>
 
     <!-- Import from URL -->
     <string name="import_url_warn_no_search_parameter">"No search query defined. You can still manually search on this keyserver."</string>
@@ -1573,9 +1578,6 @@
     <string name="security_token_status_partly">"Security Token matches, partly bound to key"</string>
     <string name="security_token_create">"Hold Security Token against the back of your device."</string>
     <string name="security_token_reset_or_import">"This Security Token already contains a key. You can import the key using the cloud or reset the Security Token."</string>
-    <string name="btn_import">"Import"</string>
-    <string name="btn_import_keys">"Import all keys"</string>
-    <string name="btn_view_list">"View list"</string>
     <string name="btn_reset">"Reset"</string>
     <string name="security_token_import_radio">"Import key"</string>
     <string name="security_token_reset_radio">"Reset Security Token"</string>

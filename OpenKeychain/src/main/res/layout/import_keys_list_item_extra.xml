@@ -2,6 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" alias="V" />
         <import type="org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry" />
 
         <variable name="entry" type="ImportKeysListEntry" />
@@ -98,7 +99,14 @@
         <Button
             android:id="@+id/import_key"
             style="@style/CardViewActionButton"
-            android:text="@string/btn_import" />
+            android:text="@string/btn_import"
+            android:visibility="@{entry.updated ? V.GONE : V.VISIBLE}" />
+
+        <Button
+            android:id="@+id/show_key"
+            style="@style/CardViewActionButton"
+            android:text="@string/btn_show_key"
+            android:visibility="@{entry.updated ? V.VISIBLE : V.GONE}" />
 
     </LinearLayout>
 

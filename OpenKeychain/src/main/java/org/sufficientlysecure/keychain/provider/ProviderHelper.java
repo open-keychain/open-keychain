@@ -926,10 +926,12 @@ public class ProviderHelper {
             }
 
             CanonicalizedPublicKeyRing canPublicRing;
+            boolean alreadyExists = false;
 
             // If there is an old keyring, merge it
             try {
                 UncachedKeyRing oldPublicRing = getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
+                alreadyExists = true;
 
                 // Merge data from new public ring into the old one
                 log(LogType.MSG_IP_MERGE_PUBLIC);
@@ -998,18 +1000,23 @@ public class ProviderHelper {
                 }
             }
 
-            int result = SaveKeyringResult.SAVED_PUBLIC;
+            int result;
             if (!skipSave) {
                 result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);
+            } else {
+                result = SaveKeyringResult.SAVED_PUBLIC
+                        | (alreadyExists ? SaveKeyringResult.UPDATED : 0);
             }
 
             // Save the saved keyring (if any)
             if (canSecretRing != null) {
                 progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
 
-                int secretResult = SaveKeyringResult.SAVED_SECRET;
+                int secretResult;
                 if (!skipSave) {
-                    saveCanonicalizedSecretKeyRing(canSecretRing);
+                    secretResult = saveCanonicalizedSecretKeyRing(canSecretRing);
+                } else {
+                    secretResult = SaveKeyringResult.SAVED_SECRET;
                 }
 
                 if ((secretResult & SaveKeyringResult.RESULT_ERROR) != SaveKeyringResult.RESULT_ERROR) {
@@ -1018,7 +1025,6 @@ public class ProviderHelper {
             }
 
             return new SaveKeyringResult(result, mLog, canSecretRing);
-
         } catch (IOException e) {
             log(LogType.MSG_IP_ERROR_IO_EXC);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
@@ -1051,10 +1057,12 @@ public class ProviderHelper {
             }
 
             CanonicalizedSecretKeyRing canSecretRing;
+            boolean alreadyExists = false;
 
             // If there is an old secret key, merge it.
             try {
                 UncachedKeyRing oldSecretRing = getCanonicalizedSecretKeyRing(masterKeyId).getUncachedKeyRing();
+                alreadyExists = true;
 
                 // Merge data from new secret ring into old one
                 log(LogType.MSG_IS_MERGE_SECRET);
@@ -1129,9 +1137,11 @@ public class ProviderHelper {
                 return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
 
-            int publicResult = SaveKeyringResult.SAVED_PUBLIC;
+            int publicResult;
             if (!skipSave) {
                 publicResult = saveCanonicalizedPublicKeyRing(canPublicRing, progress, true);
+            } else {
+                publicResult = SaveKeyringResult.SAVED_PUBLIC;
             }
 
             if ((publicResult & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
@@ -1140,13 +1150,15 @@ public class ProviderHelper {
 
             progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
 
-            int result = SaveKeyringResult.SAVED_SECRET;
+            int result;
             if (!skipSave) {
                 result = saveCanonicalizedSecretKeyRing(canSecretRing);
+            } else {
+                result = SaveKeyringResult.SAVED_SECRET
+                        | (alreadyExists ? SaveKeyringResult.UPDATED : 0);
             }
 
             return new SaveKeyringResult(result, mLog, canSecretRing);
-
         } catch (IOException e) {
             log(LogType.MSG_IS_ERROR_IO_EXC);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
