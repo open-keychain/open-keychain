@@ -549,8 +549,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
 
         // pre-fill out primary name
         String predefinedName = KeyRing.splitUserId(mPrimaryUserId).name;
-        AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger,
-                predefinedName, true);
+        AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger, predefinedName);
 
         addUserIdDialog.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
     }

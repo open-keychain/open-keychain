@@ -34,7 +34,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -49,7 +48,6 @@ import org.sufficientlysecure.keychain.util.Log;
 public class AddUserIdDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_NAME = "name";
-    private static final String ARG_ALLOW_COMMENT = "allow_comment";
 
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_CANCEL = 2;
@@ -59,16 +57,13 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
     private Messenger mMessenger;
     private NameEditText  mName;
     private EmailEditText mEmail;
-    private EditText mComment;
 
-    public static AddUserIdDialogFragment newInstance(Messenger messenger, String predefinedName,
-                                                      boolean allowComment) {
+    public static AddUserIdDialogFragment newInstance(Messenger messenger, String predefinedName) {
 
         AddUserIdDialogFragment frag = new AddUserIdDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_MESSENGER, messenger);
         args.putString(ARG_NAME, predefinedName);
-        args.putBoolean(ARG_ALLOW_COMMENT, allowComment);
         frag.setArguments(args);
 
         return frag;
@@ -82,7 +77,6 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         final Activity activity = getActivity();
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
         String predefinedName = getArguments().getString(ARG_NAME);
-        boolean allowComment = getArguments().getBoolean(ARG_ALLOW_COMMENT);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
@@ -94,13 +88,6 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
 
         mName = (NameEditText) view.findViewById(R.id.add_user_id_name);
         mEmail = (EmailEditText) view.findViewById(R.id.add_user_id_address);
-        mComment = (EditText) view.findViewById(R.id.add_user_id_comment);
-
-        if (allowComment) {
-            mComment.setVisibility(View.VISIBLE);
-        } else {
-            mComment.setVisibility(View.GONE);
-        }
 
         mName.setText(predefinedName);
 
@@ -111,8 +98,8 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
 
                 // return new user id back to activity
                 Bundle data = new Bundle();
-                String userId = KeyRing.createUserId(new OpenPgpUtils.UserId(mName.getText().toString(),
-                        mEmail.getText().toString(), mComment.getText().toString()));
+                String userId = KeyRing.createUserId(new OpenPgpUtils.UserId(
+                        mName.getText().toString(), mEmail.getText().toString(), null));
                 data.putString(MESSAGE_DATA_USER_ID, userId);
                 sendMessageToHandler(MESSAGE_OKAY, data);
             }
@@ -144,9 +131,6 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
             }
         });
         mEmail.requestFocus();
-
-        mComment.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
-        mComment.setOnEditorActionListener(this);
 
         return alert.show();
     }

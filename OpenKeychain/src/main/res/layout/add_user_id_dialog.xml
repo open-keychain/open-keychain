@@ -25,16 +25,4 @@
         android:hint="@string/create_key_hint_full_name"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <EditText
-        android:id="@+id/add_user_id_comment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="?attr/colorTertiaryText"
-        android:singleLine="true"
-        android:lines="1"
-        android:maxLines="1"
-        android:imeOptions="actionDone"
-        android:hint="@string/label_comment"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
 </LinearLayout>

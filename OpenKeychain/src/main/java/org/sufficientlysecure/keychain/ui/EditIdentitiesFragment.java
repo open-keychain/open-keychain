@@ -321,8 +321,7 @@ public class EditIdentitiesFragment extends Fragment
 
         // pre-fill out primary name
         String predefinedName = KeyRing.splitUserId(mPrimaryUserId).name;
-        AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger,
-                predefinedName, false);
+        AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger, predefinedName);
 
         addUserIdDialog.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
     }
