@@ -103,17 +103,23 @@
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/import_key"
-            style="@style/CardViewActionButton"
-            android:text="@string/btn_import"
-            android:visibility="@{entry.updated ? V.GONE : V.VISIBLE}" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/show_key"
-            style="@style/CardViewActionButton"
-            android:text="@string/btn_show_key"
-            android:visibility="@{entry.updated ? V.VISIBLE : V.GONE}" />
+            <Button
+                android:id="@+id/import_key"
+                style="@style/CardViewActionButton"
+                android:text="@{entry.updated ? @string/btn_refresh : @string/btn_import}" />
+
+            <Button
+                android:id="@+id/show_key"
+                style="@style/CardViewActionButton"
+                android:text="@string/btn_go_to_key"
+                android:visibility="@{entry.updated ? V.VISIBLE : V.GONE}" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

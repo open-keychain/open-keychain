@@ -536,7 +536,7 @@
     <string name="btn_import_keys">"Import all keys"</string>
     <string name="btn_view_list">"View list"</string>
     <string name="btn_refresh">"Refresh"</string>
-    <string name="btn_show_key">"Show key"</string>
+    <string name="btn_go_to_key">"Go to key"</string>
 
     <!-- Import from URL -->
     <string name="import_url_warn_no_search_parameter">"No search query defined. You can still manually search on this keyserver."</string>
