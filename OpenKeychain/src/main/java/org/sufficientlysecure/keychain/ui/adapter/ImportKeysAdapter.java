@@ -78,6 +78,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
         // If there is only one key, get it automatically
         if (mData.size() == 1) {
+            mCurrent = 0;
             getKey(mData.get(0), true);
         }
 
@@ -140,8 +141,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.card.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrent = position;
                 if (!downloaded) {
+                    mCurrent = position;
                     getKey(entry, true);
                 } else {
                     changeState(position, !showed);
