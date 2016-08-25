@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder> implements ImportKeysResultListener {
@@ -224,17 +225,9 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                         "| isRev: " + keyRing.isRevoked() + "| isExp: " + keyRing.isExpired());
 
                 ImportKeysListEntry entry = mData.get(mCurrent);
-
-                entry.setRevoked(keyRing.isRevoked());
-                entry.setExpired(keyRing.isExpired());
                 entry.setUpdated(result.isOkUpdated());
 
-                entry.setDate(keyRing.getCreationDate());
-                entry.setKeyId(keyRing.getMasterKeyId());
-
-                ArrayList<String> realUserIdsPlusKeybase = keyRing.getUnorderedUserIds();
-                realUserIdsPlusKeybase.addAll(entry.getKeybaseUserIds());
-                entry.setUserIds(realUserIdsPlusKeybase);
+                mergeEntryWithKey(entry, keyRing);
 
                 mKeyStates[mCurrent].mDownloaded = true;
                 changeState(mCurrent, true);
@@ -245,6 +238,22 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         } else {
             result.createNotify(mActivity).show();
         }
+    }
+
+    private void mergeEntryWithKey(ImportKeysListEntry entry, CanonicalizedKeyRing keyRing) {
+        entry.setRevoked(keyRing.isRevoked());
+        entry.setExpired(keyRing.isExpired());
+
+        Date expectedDate = entry.getDate();
+        Date creationDate = keyRing.getCreationDate();
+        if ((expectedDate != null) && !expectedDate.equals(creationDate)) {
+            throw new AssertionError("Creation date doesn't match the expected one");
+        }
+        entry.setKeyId(keyRing.getMasterKeyId());
+
+        ArrayList<String> realUserIdsPlusKeybase = keyRing.getUnorderedUserIds();
+        realUserIdsPlusKeybase.addAll(entry.getKeybaseUserIds());
+        entry.setUserIds(realUserIdsPlusKeybase);
     }
 
     private class KeyState {
