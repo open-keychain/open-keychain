@@ -37,49 +37,30 @@
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp">
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="vertical">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentLeft="true"
-                            android:layout_toLeftOf="@+id/status"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="?android:attr/textAppearanceMedium"
-                                app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
-                                app:keySecret="@{entry.secretKey}"
-                                app:keyUserId="@{entry.primaryUserId.name}"
-                                app:query="@{entry.query}" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:textAppearance="?android:attr/textAppearanceSmall"
-                                app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
-                                app:keyUserEmail="@{entry.primaryUserId.email}"
-                                app:query="@{entry.query}" />
-
-                        </LinearLayout>
-
-                        <ImageView
-                            android:id="@+id/status"
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:layout_centerVertical="true"
-                            android:visibility="@{entry.revokedOrExpired ? V.VISIBLE : V.GONE}"
-                            app:keyExpired="@{entry.expired}"
-                            app:keyRevoked="@{entry.revoked}" />
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
+                            app:keySecret="@{entry.secretKey}"
+                            app:keyUserId="@{entry.primaryUserId.name}"
+                            app:query="@{entry.query}" />
 
-                    </RelativeLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
+                            app:keyUserEmail="@{entry.primaryUserId.email}"
+                            app:query="@{entry.query}" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
