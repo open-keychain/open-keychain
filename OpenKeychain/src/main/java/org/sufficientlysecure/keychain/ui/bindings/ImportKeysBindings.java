@@ -4,12 +4,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
 import android.graphics.Color;
-import android.widget.ImageView;
+import android.text.format.DateFormat;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+
+import java.util.Date;
 
 public class ImportKeysBindings {
 
@@ -51,17 +52,19 @@ public class ImportKeysBindings {
         textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpired));
     }
 
-    @BindingAdapter({"app:keyRevoked", "app:keyExpired"})
-    public static void setStatus(ImageView imageView, boolean revoked, boolean expired) {
-        Context context = imageView.getContext();
+    @BindingAdapter({"app:keyCreation", "app:keyRevokedOrExpired"})
+    public static void setCreation(TextView textView, Date creationDate, boolean revokedOrExpired) {
+        Context context = textView.getContext();
 
-        if (revoked) {
-            KeyFormattingUtils.setStatusImage(context, imageView, null,
-                    KeyFormattingUtils.State.REVOKED, R.color.key_flag_gray);
-        } else if (expired) {
-            KeyFormattingUtils.setStatusImage(context, imageView, null,
-                    KeyFormattingUtils.State.EXPIRED, R.color.key_flag_gray);
+        String text;
+        if (creationDate != null) {
+            text = DateFormat.getDateFormat(context).format(creationDate);
+        } else {
+            Resources resources = context.getResources();
+            text = resources.getString(R.string.unknown);
         }
+        textView.setText(text);
+        textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpired));
     }
 
 }

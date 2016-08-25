@@ -3,8 +3,8 @@ package org.sufficientlysecure.keychain.ui.bindings;
 import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,30 +14,29 @@ import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 
 public class ImportKeysExtraBindings {
 
-    @BindingAdapter({"app:keyCreation"})
-    public static void setCreation(TextView textView, Date creationDate) {
-        Context context = textView.getContext();
-        String text;
-        if (creationDate != null) {
-            text = DateFormat.getDateFormat(context).format(creationDate);
-        } else {
-            Resources resources = context.getResources();
-            text = resources.getString(R.string.unknown);
+    @BindingAdapter({"app:keyRevoked", "app:keyExpired"})
+    public static void setStatus(ImageView imageView, boolean revoked, boolean expired) {
+        Context context = imageView.getContext();
+
+        if (revoked) {
+            KeyFormattingUtils.setStatusImage(context, imageView, null,
+                    KeyFormattingUtils.State.REVOKED, R.color.key_flag_gray);
+        } else if (expired) {
+            KeyFormattingUtils.setStatusImage(context, imageView, null,
+                    KeyFormattingUtils.State.EXPIRED, R.color.key_flag_gray);
         }
-        textView.setText(text);
     }
 
     @BindingAdapter({"app:keyId"})
     public static void setKeyId(TextView textView, String keyId) {
         Context context = textView.getContext();
         String text;
-        if (keyId != null){
+        if (keyId != null) {
             text = KeyFormattingUtils.beautifyKeyId(keyId);
         } else {
             Resources resources = context.getResources();
