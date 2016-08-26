@@ -224,7 +224,7 @@ android {
         fdroid {
             buildConfigField "boolean", "DONATIONS_GOOGLE", "false"
             buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "null"
-            buildConfigField "String", "PAYPAL_USER", "\"dominik@dominikschuermann.de\""
+            buildConfigField "String", "PAYPAL_USER", "\"dominik@sufficientlysecure.org\""
             buildConfigField "String", "PAYPAL_CURRENCY_CODE", "\"EUR\""
             buildConfigField "String", "BITCOIN_ADDRESS", "\"1JZfAKTbTU5LJTkDELhPUF4Xa6VstEZgz6\""
         }
