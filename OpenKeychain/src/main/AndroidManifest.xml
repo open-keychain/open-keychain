@@ -86,9 +86,6 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
-    <!-- TODO: Readme before adding a new activity
-         Set this to all activities, to allow app lock to work correctly: configChanges="orientation|screenSize"
-         refer to KeychainApplication's LifecycleCallback for more information -->
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
     <application
         android:name=".KeychainApplication"
