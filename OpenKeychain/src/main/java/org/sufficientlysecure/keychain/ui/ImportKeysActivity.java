@@ -374,19 +374,7 @@ public class ImportKeysActivity extends BaseActivity
             mSubKeysForRepeatAskPassphrase = secretSubKeyInfos.iterator();
 
             if(mSubKeysForRepeatAskPassphrase.hasNext()) {
-                boolean needMasterPassphrase =
-                        Preferences.getPreferences(this).usesSinglePassphraseWorkflow()
-                        && mMasterPassphrase == null;
-                if (needMasterPassphrase) {
-                    try {
-                        mMasterPassphrase = PassphraseCacheService.getMasterPassphrase(this);
-                        askForSubkeyPassphrases();
-                    } catch (PassphraseCacheService.KeyNotFoundException e) {
-                        askForMasterPassphraseThenRepeat();
-                    }
-                } else {
-                    askForSubkeyPassphrases();
-                }
+                gatherPassphrasesForKeyImport();
                 return;
             }
             // import immediately if no secret keys
@@ -413,6 +401,29 @@ public class ImportKeysActivity extends BaseActivity
             mOperationHelper.cryptoOperation();
 
         }
+    }
+
+    private void gatherPassphrasesForKeyImport() {
+        boolean needMasterPassphrase =
+                Preferences.getPreferences(this).usesSinglePassphraseWorkflow()
+                        && mMasterPassphrase == null;
+
+        if (needMasterPassphrase) {
+            try {
+                mMasterPassphrase = PassphraseCacheService.getMasterPassphrase(this);
+            } catch (PassphraseCacheService.KeyNotFoundException ignored) {
+            }
+
+            // if we can't get the master passphrase, ask for it
+            if (mMasterPassphrase == null) {
+                askForMasterPassphraseThenRepeat();
+                return;
+            }
+        }
+
+        // we don't need the master passphrase or, we already have it
+        // just ask for subkey passphrases
+        askForSubkeyPassphrases();
     }
 
     private ArrayList<SubKeyInfo> getAllSubKeyInfo(Iterator<ParcelableKeyRing> keyRingIterator) {
@@ -466,7 +477,7 @@ public class ImportKeysActivity extends BaseActivity
         }
     }
 
-    // Ask for master passphrase, then carry on to ask for passphrases of imported keys
+    // Ask for master passphrase, then carry on to ask for passphrases for importing keys
     private void askForMasterPassphraseThenRepeat() {
         Intent intent = new Intent(this, PassphraseDialogActivity.class);
         RequiredInputParcel requiredInput =
