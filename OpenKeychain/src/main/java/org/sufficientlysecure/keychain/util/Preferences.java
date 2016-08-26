@@ -125,6 +125,7 @@ public class Preferences {
         editor.commit();
     }
 
+    // indicates if app is currently using encrypted keyring blocks
     public boolean isUsingEncryptedKeyRings() {
         return mSharedPreferences.getBoolean(Constants.Pref.USING_ENCRYPTED_KEYRINGS, true);
     }
@@ -135,6 +136,7 @@ public class Preferences {
         editor.commit();
     }
 
+    // indicates if the applock has been setup & is currently ready for use
     public boolean isAppLockReady() {
         return mSharedPreferences.getBoolean(Pref.IS_APP_LOCK_READY, false);
     }
@@ -165,6 +167,7 @@ public class Preferences {
         editor.commit();
     }
 
+    // indicates if app has failed the migration to using encrypted keyring blocks
     public boolean isPartiallyMigrated() {
         return mSharedPreferences.getBoolean(Pref.PARTIALLY_MIGRATED, false);
     }
@@ -175,6 +178,7 @@ public class Preferences {
         editor.commit();
     }
 
+    // indicates if app has failed to complete a "change passphrase workflow" operation
     public boolean isMidwayChangingPassphraseWorkflow() {
         return mSharedPreferences.getBoolean(Pref.MIDWAY_CHANGING_PASSPHRASE_WORKFLOW, false);
     }
