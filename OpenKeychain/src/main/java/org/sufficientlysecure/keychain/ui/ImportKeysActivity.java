@@ -411,8 +411,7 @@ public class ImportKeysActivity extends BaseActivity
         if (needMasterPassphrase) {
             try {
                 mMasterPassphrase = PassphraseCacheService.getMasterPassphrase(this);
-            } catch (PassphraseCacheService.KeyNotFoundException ignored) {
-            }
+            } catch (PassphraseCacheService.KeyNotFoundException ignored) {}
 
             // if we can't get the master passphrase, ask for it
             if (mMasterPassphrase == null) {

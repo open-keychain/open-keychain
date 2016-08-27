@@ -149,9 +149,8 @@ public class KeychainApplication extends Application {
                 if (PassphraseCacheService.getMasterPassphrase(getApplicationContext()) != null) {
                     PassphraseCacheService.updateMasterPassphrasePresence(true, getContentResolver());
                 }
-            } catch (PassphraseCacheService.KeyNotFoundException e) {
-                PassphraseCacheService.updateMasterPassphrasePresence(false, getContentResolver());
-            }
+            } catch (PassphraseCacheService.KeyNotFoundException ignored) {}
+            PassphraseCacheService.updateMasterPassphrasePresence(false, getContentResolver());
         }
 
         registerActivityLifecycleCallbacks(new LifecycleHandler());

@@ -117,18 +117,19 @@ public class CreateKeyStartFragment extends Fragment {
         if (Preferences.getPreferences(mCreateKeyActivity).usesSinglePassphraseWorkflow()
                 && mCreateKeyActivity.mPassphrase == null) {
 
+            // if already cached, then just use the cached one
             try {
-                // if already cached, then just use the cached one
                 mCreateKeyActivity.mPassphrase =
                         PassphraseCacheService.getMasterPassphrase(mCreateKeyActivity);
-            } catch (PassphraseCacheService.KeyNotFoundException e) {
-                Intent passphraseIntent = new Intent(mCreateKeyActivity, PassphraseDialogActivity.class);
-                RequiredInputParcel requiredInput =
-                        RequiredInputParcel.createRequiredAppLockPassphrase();
-                requiredInput.mSkipCaching = true;
-                passphraseIntent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                startActivityForResult(passphraseIntent, REQUEST_MASTER_PASSPHRASE);
-            }
+            } catch (PassphraseCacheService.KeyNotFoundException ignored) {}
+
+            // otherwise, ask for it
+            Intent passphraseIntent = new Intent(mCreateKeyActivity, PassphraseDialogActivity.class);
+            RequiredInputParcel requiredInput =
+                    RequiredInputParcel.createRequiredAppLockPassphrase();
+            requiredInput.mSkipCaching = true;
+            passphraseIntent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+            startActivityForResult(passphraseIntent, REQUEST_MASTER_PASSPHRASE);
         }
     }
 
