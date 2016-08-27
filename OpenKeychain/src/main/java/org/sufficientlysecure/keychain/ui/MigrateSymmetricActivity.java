@@ -78,13 +78,12 @@ public class MigrateSymmetricActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // TODO: fail-safe disabled for debugging
-        // fail-safe if this activity is opened twice
-        /*
+        // TODO: there are cases where the migrate activity is opened twice
+        // no deterministic way to reproduce this bug has been found yet
+        // this fail-safe is designed as a workabout to solve the problem
         if (Preferences.getPreferences(this).isAppLockReady()) {
             finish();
         }
-        */
     }
 
     @Override
