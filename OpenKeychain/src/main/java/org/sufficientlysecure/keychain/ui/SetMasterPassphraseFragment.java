@@ -218,8 +218,8 @@ public class SetMasterPassphraseFragment extends Fragment {
             mPassphraseEditAgain.setError(null);
 
             // saving the master passphrase
+            Passphrase newPassphrase = new Passphrase(mPassphraseEdit.getText());
             try {
-                Passphrase newPassphrase = new Passphrase(mPassphraseEdit.getText());
                 ProviderHelper helper = new ProviderHelper(mActivity);
 
                 boolean success = (mPreferences.hasMasterPassphrase())
@@ -232,9 +232,6 @@ public class SetMasterPassphraseFragment extends Fragment {
                             Toast.LENGTH_LONG).show();
                     return;
                 }
-                // save till the next screen lock
-                PassphraseCacheService.addMasterPassphrase(getActivity().getApplicationContext(), newPassphrase, 0);
-                mPreferences.setHasMasterPassphrase(true);
 
             } catch (ByteArrayEncryptor.EncryptDecryptException | ByteArrayEncryptor.IncorrectPassphraseException e) {
                 // passphrase should never be wrong, check method of retrieval
@@ -246,9 +243,10 @@ public class SetMasterPassphraseFragment extends Fragment {
             // save choice of workflow & finish
             if (mActivity instanceof MigrateSymmetricActivity) {
                 // do not finish, MigrateSymmetricActivity takes over from here
-                ((MigrateSymmetricActivity) mActivity).finishedSettingMasterPassphrase();
+                ((MigrateSymmetricActivity) mActivity).finishedSettingMasterPassphrase(newPassphrase);
                 mPreferences.setUsesSinglePassphraseWorkflow(mUseSinglePasswordWorkflow.isChecked());
             } else if (mActivity instanceof SetMasterPassphraseActivity) {
+                mPreferences.setHasMasterPassphrase(true);
                 Preferences.getPreferences(mActivity).setIsAppLockReady(true);
                 mPreferences.setUsesSinglePassphraseWorkflow(mUseSinglePasswordWorkflow.isChecked());
                 mActivity.finish();

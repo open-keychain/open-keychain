@@ -28,6 +28,7 @@ import android.widget.Toast;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.MigrateSymmetricOperation;
+import org.sufficientlysecure.keychain.operations.results.CreateSecretKeyRingCacheResult;
 import org.sufficientlysecure.keychain.operations.results.MigrateSymmetricResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
@@ -72,6 +73,7 @@ public class MigrateSymmetricActivity extends BaseActivity {
     private CryptoOperationHelper mCryptoOpHelper;
     private Fragment mCurrentFragment;
     private Class mFirstFragmentClass;
+    private Passphrase mMasterPassphrase;
 
     @Override
     protected void onResume() {
@@ -161,7 +163,9 @@ public class MigrateSymmetricActivity extends BaseActivity {
         getSupportFragmentManager().executePendingTransactions();
     }
 
-    public void finishedSettingMasterPassphrase() {
+    public void finishedSettingMasterPassphrase(Passphrase masterPassphrase) {
+        mMasterPassphrase = masterPassphrase;
+
         // continue migration
         collectPassphrasesForKeyRings();
     }
@@ -204,8 +208,8 @@ public class MigrateSymmetricActivity extends BaseActivity {
     }
 
     private void createCache() {
-        CryptoOperationHelper.Callback<CreateSecretKeyRingCacheParcel, MigrateSymmetricResult> callback =
-                new CryptoOperationHelper.Callback<CreateSecretKeyRingCacheParcel, MigrateSymmetricResult>() {
+        CryptoOperationHelper.Callback<CreateSecretKeyRingCacheParcel, CreateSecretKeyRingCacheResult> callback =
+                new CryptoOperationHelper.Callback<CreateSecretKeyRingCacheParcel, CreateSecretKeyRingCacheResult>() {
                     Activity activity = MigrateSymmetricActivity.this;
 
                     @Override
@@ -214,7 +218,7 @@ public class MigrateSymmetricActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onCryptoOperationSuccess(MigrateSymmetricResult result) {
+                    public void onCryptoOperationSuccess(CreateSecretKeyRingCacheResult result) {
                         Preferences.getPreferences(activity).setPartiallyMigrated(true);
                     }
 
@@ -226,7 +230,7 @@ public class MigrateSymmetricActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onCryptoOperationError(MigrateSymmetricResult result) {
+                    public void onCryptoOperationError(CreateSecretKeyRingCacheResult result) {
                         Toast.makeText(activity.getApplicationContext(),
                                 R.string.migrate_error_cache_keys, Toast.LENGTH_LONG).show();
                         ActivityCompat.finishAffinity(activity);
@@ -307,7 +311,7 @@ public class MigrateSymmetricActivity extends BaseActivity {
                             mPassphrasesList.get(mPassphrasesList.size() - 1).mMasterKeyId != masterKeyId);
 
                     if (isNewKeyRing) {
-                        KeyringPassphrases newKeyring = new KeyringPassphrases(masterKeyId, null);
+                        KeyringPassphrases newKeyring = new KeyringPassphrases(masterKeyId, mMasterPassphrase);
                         newKeyring.mSubkeyPassphrases.put(subKeyId, passphrase);
                         mPassphrasesList.add(newKeyring);
                     } else {
@@ -375,10 +379,11 @@ public class MigrateSymmetricActivity extends BaseActivity {
     }
 
     private void finishSuccessfulMigration() {
-        Preferences prefs = Preferences.getPreferences(this);
-        prefs.setUsingEncryptedKeyRings(true);
-        prefs.setPartiallyMigrated(false);
-        prefs.setIsAppLockReady(true);
+        Preferences preferences = Preferences.getPreferences(this);
+        preferences.setHasMasterPassphrase(true);
+        preferences.setUsingEncryptedKeyRings(true);
+        preferences.setPartiallyMigrated(false);
+        preferences.setIsAppLockReady(true);
         finish();
     }
 

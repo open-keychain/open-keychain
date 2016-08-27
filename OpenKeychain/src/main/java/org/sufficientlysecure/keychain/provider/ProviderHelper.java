@@ -149,6 +149,7 @@ public class ProviderHelper {
         return mWriter;
     }
 
+    // Caches all secret keyrings we possess into a file
     @NonNull
     public CreateSecretKeyRingCacheResult createSecretKeyRingCache(Progressable progress, String fileName) {
         OperationLog log = new OperationLog();

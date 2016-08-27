@@ -946,17 +946,6 @@ public class ProviderWriter {
         }
     }
 
-    public boolean hasSecretKeys() {
-        Uri uri = KeychainContract.KeyRingData.buildSecretKeyRingUri();
-        Cursor cursor = mContentResolver.query(uri, null, null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            cursor.close();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     /**
      * Only for import testing, where we lack passphrases for the test keyrings
      */
