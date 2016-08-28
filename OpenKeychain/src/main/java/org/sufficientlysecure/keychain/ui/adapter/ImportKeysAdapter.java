@@ -37,7 +37,10 @@ import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysResultList
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -58,23 +61,41 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     private boolean mNonInteractive;
 
     private List<ImportKeysListEntry> mData;
-
     private KeyState[] mKeyStates;
     private int mCurrent;
+
+    private ProviderHelper mProviderHelper;
 
     public ImportKeysAdapter(FragmentActivity activity, ImportKeysListener listener,
                              boolean nonInteractive) {
 
-        this.mActivity = activity;
-        this.mListener = listener;
-        this.mNonInteractive = nonInteractive;
+        mActivity = activity;
+        mListener = listener;
+        mNonInteractive = nonInteractive;
+
+        mProviderHelper = new ProviderHelper(activity);
     }
 
     public void setData(List<ImportKeysListEntry> data) {
-        this.mData = data;
-        this.mKeyStates = new KeyState[data.size()];
+        mData = data;
+
+        mKeyStates = new KeyState[data.size()];
         for (int i = 0; i < mKeyStates.length; i++) {
             mKeyStates[i] = new KeyState();
+
+            ImportKeysListEntry entry = mData.get(i);
+            long keyId = KeyFormattingUtils.convertKeyIdHexToKeyId(entry.getKeyIdHex());
+            try {
+                KeyRing keyRing;
+                if (entry.isSecretKey()) {
+                    keyRing = mProviderHelper.getCanonicalizedSecretKeyRing(keyId);
+                } else {
+                    keyRing = mProviderHelper.getCachedPublicKeyRing(keyId);
+                }
+                mKeyStates[i].mAlreadyPresent = true;
+                mKeyStates[i].mVerified = keyRing.getVerified() > 0;
+            } catch (ProviderHelper.NotFoundException | PgpKeyNotFoundException ignored) {
+            }
         }
 
         // If there is only one key, get it automatically
@@ -259,6 +280,9 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     }
 
     private class KeyState {
+        public boolean mAlreadyPresent = false;
+        public boolean mVerified = false;
+
         public boolean mDownloaded = false;
         public boolean mShowed = false;
     }
