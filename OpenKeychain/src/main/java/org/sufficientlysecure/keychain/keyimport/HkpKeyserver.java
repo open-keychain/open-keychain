@@ -19,12 +19,8 @@
 package org.sufficientlysecure.keychain.keyimport;
 
 
+import android.support.annotation.NonNull;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -47,14 +43,18 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.support.annotation.NonNull;
-
 import de.measite.minidns.Client;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
 import de.measite.minidns.record.SRV;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class HkpKeyserver extends Keyserver {
+
     private static class HttpError extends Exception {
         private static final long serialVersionUID = 1718783705229428893L;
         private int mCode;
@@ -275,7 +275,6 @@ public class HkpKeyserver extends Keyserver {
         while (matcher.find()) {
             final ImportKeysListEntry entry = new ImportKeysListEntry();
             entry.setQuery(query);
-            entry.addOrigin(getUrlPrefix() + mHost + ":" + mPort);
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
@@ -299,10 +298,10 @@ public class HkpKeyserver extends Keyserver {
                 int algorithmId = Integer.decode(matcher.group(2));
                 entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitSize, null));
 
-                final long creationDate = Long.parseLong(matcher.group(4));
-                final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-                tmpGreg.setTimeInMillis(creationDate * 1000);
-                entry.setDate(tmpGreg.getTime());
+                long creationDate = Long.parseLong(matcher.group(4));
+                GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                calendar.setTimeInMillis(creationDate * 1000);
+                entry.setDate(calendar.getTime());
             } catch (NumberFormatException e) {
                 Log.e(Constants.TAG, "Conversation for bit size, algorithm, or creation date failed.", e);
                 // skip this key
@@ -311,7 +310,18 @@ public class HkpKeyserver extends Keyserver {
 
             try {
                 entry.setRevoked(matcher.group(6).contains("r"));
-                entry.setExpired(matcher.group(6).contains("e"));
+                boolean expired = matcher.group(6).contains("e");
+
+                // It may be expired even without flag, thus check expiration date
+                String expiration;
+                if (!expired && !(expiration = matcher.group(5)).isEmpty()) {
+                    long expirationDate = Long.parseLong(expiration);
+                    TimeZone timeZoneUTC = TimeZone.getTimeZone("UTC");
+                    GregorianCalendar calendar = new GregorianCalendar(timeZoneUTC);
+                    calendar.setTimeInMillis(expirationDate * 1000);
+                    expired = new GregorianCalendar(timeZoneUTC).compareTo(calendar) >= 0;
+                }
+                entry.setExpired(expired);
             } catch (NullPointerException e) {
                 Log.e(Constants.TAG, "Check for revocation or expiry failed.", e);
                 // skip this key
@@ -344,6 +354,7 @@ public class HkpKeyserver extends Keyserver {
             }
             entry.setUserIds(userIds);
             entry.setPrimaryUserId(userIds.get(0));
+            entry.setKeyserver(getUrlPrefix() + mHost + ":" + mPort);
 
             results.add(entry);
         }

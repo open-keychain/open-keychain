@@ -1384,7 +1384,7 @@
   <string name="key_unavailable">non disponible</string>
   <string name="secret_cannot_multiple">Vos propres clefs ne peuvent être supprimées qu\'individuellement !</string>
   <string name="title_view_cert">Voir les détails du certificat</string>
-  <string name="unknown_algorithm">inconnu</string>
+  <string name="unknown">inconnu</string>
   <string name="can_sign_not">impossible de signer</string>
   <string name="error_no_encrypt_subkey">Aucune sous-clef de chiffrement n\'est proposée !</string>
   <string name="contact_show_key">Montrer la clef (%s)</string>

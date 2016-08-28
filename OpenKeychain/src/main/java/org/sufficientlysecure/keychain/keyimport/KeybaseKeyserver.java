@@ -18,8 +18,8 @@
 package org.sufficientlysecure.keychain.keyimport;
 
 import com.textuality.keybase.lib.KeybaseException;
-import com.textuality.keybase.lib.Match;
 import com.textuality.keybase.lib.KeybaseQuery;
+import com.textuality.keybase.lib.Match;
 import com.textuality.keybase.lib.User;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -32,9 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KeybaseKeyserver extends Keyserver {
-    public static final String ORIGIN = "keybase:keybase.io";
 
-    Proxy mProxy;
+    private Proxy mProxy;
 
     public KeybaseKeyserver(Proxy proxy) {
         mProxy = proxy;
@@ -71,7 +70,6 @@ public class KeybaseKeyserver extends Keyserver {
     private ImportKeysListEntry makeEntry(Match match, String query) throws KeybaseException {
         final ImportKeysListEntry entry = new ImportKeysListEntry();
         entry.setQuery(query);
-        entry.addOrigin(ORIGIN);
 
         entry.setRevoked(false); // keybase doesn’t say anything about revoked keys
 

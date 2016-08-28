@@ -751,7 +751,7 @@
   <string name="key_stripped">slečen</string>
   <string name="key_unavailable">ni na voljo</string>
   <string name="title_view_cert">Preglej podrobosti potrdila</string>
-  <string name="unknown_algorithm">neznan</string>
+  <string name="unknown">neznan</string>
   <string name="can_sign_not">ne more podpisati</string>
   <string name="error_no_encrypt_subkey">Ni nobenega podključa za šifriranje!</string>
   <string name="contact_show_key">Prikaži ključ (%s)</string>

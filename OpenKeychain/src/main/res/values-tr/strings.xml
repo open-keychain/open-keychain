@@ -395,7 +395,7 @@
   <string name="key_unavailable">mevcut değil</string>
   <string name="secret_cannot_multiple">Kendi anahtarlarınız yalnızca teker teker silinebilir!</string>
   <string name="title_view_cert">Sertifika Ayrıntılarını Görüntüle</string>
-  <string name="unknown_algorithm">bilinmeyen</string>
+  <string name="unknown">bilinmeyen</string>
   <string name="can_sign_not">imzalanamadı</string>
   <string name="error_no_encrypt_subkey">Şifreleme için kullanılabilecek altanahtar mevcut değil!</string>
   <string name="contact_show_key">Anahtarı göster (%s)</string>

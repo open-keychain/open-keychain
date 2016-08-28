@@ -57,11 +57,13 @@ public class EmailKeyHelper {
             // Put them in a list and import
             ArrayList<ParcelableKeyRing> keys = new ArrayList<>(entries.size());
             for (ImportKeysListEntry entry : entries) {
-                keys.add(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex()));
+                keys.add(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(), null,
+                        null));
             }
             mKeyList = keys;
             mKeyserver = keyserver;
         }
+
         @Override
         public ImportKeyringParcel createOperationInput() {
             return new ImportKeyringParcel(mKeyList, mKeyserver);
@@ -95,7 +97,7 @@ public class EmailKeyHelper {
         Set<ImportKeysListEntry> keys = new HashSet<>();
         try {
             for (ImportKeysListEntry key : keyServer.search(mail)) {
-                if (key.isRevoked() || key.isExpired()) continue;
+                if (key.isRevokedOrExpired()) continue;
                 for (String userId : key.getUserIds()) {
                     if (userId.toLowerCase().contains(mail.toLowerCase(Locale.ENGLISH))) {
                         keys.add(key);

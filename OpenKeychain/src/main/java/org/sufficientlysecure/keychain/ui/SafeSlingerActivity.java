@@ -30,6 +30,7 @@ import android.widget.NumberPicker;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -141,7 +142,7 @@ public class SafeSlingerActivity extends BaseActivity
                 // We parcel this iteratively into a file - anything we can
                 // display here, we should be able to import.
                 ParcelableFileCache<ParcelableKeyRing> cache =
-                        new ParcelableFileCache<>(this, "key_import.pcl");
+                        new ParcelableFileCache<>(this, ImportOperation.CACHE_FILE_NAME);
                 cache.writeCache(it.size(), it.iterator());
 
                 mOperationHelper =

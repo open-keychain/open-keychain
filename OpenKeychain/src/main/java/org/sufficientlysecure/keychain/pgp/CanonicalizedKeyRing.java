@@ -29,18 +29,17 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 
-/** A generic wrapped PGPKeyRing object.
- *
+/**
+ * A generic wrapped PGPKeyRing object.
+ * <p>
  * This class provides implementations for all basic getters which both
  * PublicKeyRing and SecretKeyRing have in common. To make the wrapped keyring
  * class typesafe in implementing subclasses, the field is stored in the
  * implementing class, providing properly typed access through the getRing
  * getter method.
- *
  */
 public abstract class CanonicalizedKeyRing extends KeyRing {
 
@@ -80,16 +79,24 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
 
     public boolean isRevoked() {
         // Is the master key revoked?
-        return getRing().getPublicKey().isRevoked();
+        return getRing().getPublicKey().hasRevocation();
+    }
+
+    public Date getCreationDate() {
+        return getPublicKey().getCreationTime();
+    }
+
+    public Date getExpirationDate() {
+        return getPublicKey().getExpiryTime();
     }
 
     public boolean isExpired() {
         // Is the master key expired?
-        Date creationDate = getPublicKey().getCreationTime();
-        Date expiryDate = getPublicKey().getExpiryTime();
+        Date creationDate = getCreationDate();
+        Date expirationDate = getExpirationDate();
 
         Date now = new Date();
-        return creationDate.after(now) || (expiryDate != null && expiryDate.before(now));
+        return creationDate.after(now) || (expirationDate != null && expirationDate.before(now));
     }
 
     public boolean canCertify() throws PgpKeyNotFoundException {
@@ -98,7 +105,7 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
 
     public Set<Long> getEncryptIds() {
         HashSet<Long> result = new HashSet<>();
-        for(CanonicalizedPublicKey key : publicKeyIterator()) {
+        for (CanonicalizedPublicKey key : publicKeyIterator()) {
             if (key.canEncrypt() && key.isValid()) {
                 result.add(key.getKeyId());
             }
@@ -107,7 +114,7 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
     }
 
     public long getEncryptId() throws PgpKeyNotFoundException {
-        for(CanonicalizedPublicKey key : publicKeyIterator()) {
+        for (CanonicalizedPublicKey key : publicKeyIterator()) {
             if (key.canEncrypt() && key.isValid()) {
                 return key.getKeyId();
             }
@@ -119,7 +126,7 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         try {
             getEncryptId();
             return true;
-        } catch(PgpKeyNotFoundException e) {
+        } catch (PgpKeyNotFoundException e) {
             return false;
         }
     }
@@ -128,8 +135,10 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         getRing().encode(stream);
     }
 
-    /** Returns an UncachedKeyRing which wraps the same data as this ring. This method should
-     * only be used */
+    /**
+     * Returns an UncachedKeyRing which wraps the same data as this ring. This method should
+     * only be used
+     */
     public UncachedKeyRing getUncachedKeyRing() {
         return new UncachedKeyRing(getRing());
     }

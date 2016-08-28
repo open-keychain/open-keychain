@@ -1384,7 +1384,7 @@
   <string name="key_unavailable">nicht verfügbar</string>
   <string name="secret_cannot_multiple">Deine eigenen Schlüssel können nur einzeln gelöscht werden!</string>
   <string name="title_view_cert">Beglaubigungsdetails anzeigen</string>
-  <string name="unknown_algorithm">unbekannt</string>
+  <string name="unknown">unbekannt</string>
   <string name="can_sign_not">kann nicht signieren</string>
   <string name="error_no_encrypt_subkey">Kein Verschlüsselungs-Unterschlüssel verfügbar!</string>
   <string name="contact_show_key">Schlüssel anzeigen (%s)</string>

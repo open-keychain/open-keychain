@@ -21,108 +21,59 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
-import org.sufficientlysecure.keychain.R;
+import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public class ImportKeysListEntry implements Serializable, Parcelable {
     private static final long serialVersionUID = -7797972103284992662L;
 
+    private ParcelableKeyRing mParcelableKeyRing;
+
     private ArrayList<String> mUserIds;
     private HashMap<String, HashSet<String>> mMergedUserIds;
-    private long mKeyId;
+    private ArrayList<Map.Entry<String, HashSet<String>>> mSortedUserIds;
+
     private String mKeyIdHex;
+
+    private boolean mSecretKey;
     private boolean mRevoked;
     private boolean mExpired;
-    private Date mDate; // TODO: not displayed
+    private boolean mUpdated;
+
+    private Date mDate;
     private String mFingerprintHex;
     private Integer mBitStrength;
     private String mCurveOid;
     private String mAlgorithm;
-    private boolean mSecretKey;
-    private String mPrimaryUserId;
+
+    private UserId mPrimaryUserId;
+    private String mKeyserver;
     private String mKeybaseName;
     private String mFbUsername;
+
     private String mQuery;
-    private ArrayList<String> mOrigins;
     private Integer mHashCode = null;
 
-    private boolean mSelected;
-
-    public int describeContents() {
-        return 0;
+    public ParcelableKeyRing getParcelableKeyRing() {
+        return mParcelableKeyRing;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mPrimaryUserId);
-        dest.writeStringList(mUserIds);
-        dest.writeSerializable(mMergedUserIds);
-        dest.writeLong(mKeyId);
-        dest.writeByte((byte) (mRevoked ? 1 : 0));
-        dest.writeByte((byte) (mExpired ? 1 : 0));
-        dest.writeInt(mDate == null ? 0 : 1);
-        if (mDate != null) {
-            dest.writeLong(mDate.getTime());
-        }
-        dest.writeString(mFingerprintHex);
-        dest.writeString(mKeyIdHex);
-        dest.writeInt(mBitStrength == null ? 0 : 1);
-        if (mBitStrength != null) {
-            dest.writeInt(mBitStrength);
-        }
-        dest.writeString(mAlgorithm);
-        dest.writeByte((byte) (mSecretKey ? 1 : 0));
-        dest.writeByte((byte) (mSelected ? 1 : 0));
-        dest.writeString(mKeybaseName);
-        dest.writeString(mFbUsername);
-        dest.writeStringList(mOrigins);
-    }
-
-    public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
-        public ImportKeysListEntry createFromParcel(final Parcel source) {
-            ImportKeysListEntry vr = new ImportKeysListEntry();
-            vr.mPrimaryUserId = source.readString();
-            vr.mUserIds = new ArrayList<>();
-            source.readStringList(vr.mUserIds);
-            vr.mMergedUserIds = (HashMap<String, HashSet<String>>) source.readSerializable();
-            vr.mKeyId = source.readLong();
-            vr.mRevoked = source.readByte() == 1;
-            vr.mExpired = source.readByte() == 1;
-            vr.mDate = source.readInt() != 0 ? new Date(source.readLong()) : null;
-            vr.mFingerprintHex = source.readString();
-            vr.mKeyIdHex = source.readString();
-            vr.mBitStrength = source.readInt() != 0 ? source.readInt() : null;
-            vr.mAlgorithm = source.readString();
-            vr.mSecretKey = source.readByte() == 1;
-            vr.mSelected = source.readByte() == 1;
-            vr.mKeybaseName = source.readString();
-            vr.mFbUsername = source.readString();
-            vr.mOrigins = new ArrayList<>();
-            source.readStringList(vr.mOrigins);
-
-            return vr;
-        }
-
-        public ImportKeysListEntry[] newArray(final int size) {
-            return new ImportKeysListEntry[size];
-        }
-    };
-
-    public int hashCode() {
-        if (mHashCode != null) {
-            return mHashCode;
-        }
-        return super.hashCode();
+    public void setParcelableKeyRing(ParcelableKeyRing parcelableKeyRing) {
+        this.mParcelableKeyRing = parcelableKeyRing;
     }
 
     public boolean hasSameKeyAs(ImportKeysListEntry other) {
@@ -136,12 +87,12 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         return mKeyIdHex;
     }
 
-    public boolean isSelected() {
-        return mSelected;
+    public void setKeyIdHex(String keyIdHex) {
+        mKeyIdHex = keyIdHex;
     }
 
-    public void setSelected(boolean selected) {
-        mSelected = selected;
+    public void setKeyId(long keyId) {
+        mKeyIdHex = KeyFormattingUtils.convertKeyIdToHex(keyId);
     }
 
     public boolean isExpired() {
@@ -152,18 +103,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mExpired = expired;
     }
 
-    public long getKeyId() {
-        return mKeyId;
-    }
-
-    public void setKeyId(long keyId) {
-        mKeyId = keyId;
-    }
-
-    public void setKeyIdHex(String keyIdHex) {
-        mKeyIdHex = keyIdHex;
-    }
-
     public boolean isRevoked() {
         return mRevoked;
     }
@@ -172,8 +111,20 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mRevoked = revoked;
     }
 
+    public boolean isRevokedOrExpired() {
+        return mRevoked || mExpired;
+    }
+
     public Date getDate() {
         return mDate;
+    }
+
+    public boolean isUpdated() {
+        return mUpdated;
+    }
+
+    public void setUpdated(boolean updated) {
+        mUpdated = updated;
     }
 
     public void setDate(Date date) {
@@ -186,6 +137,10 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setFingerprintHex(String fingerprintHex) {
         mFingerprintHex = fingerprintHex;
+    }
+
+    public void setFingerprint(byte[] fingerprint) {
+        mFingerprintHex = KeyFormattingUtils.convertFingerprintToHex(fingerprint);
     }
 
     public Integer getBitStrength() {
@@ -216,33 +171,36 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mSecretKey = secretKey;
     }
 
-    public ArrayList<String> getUserIds() {
-        return mUserIds;
-    }
-
-    public void setUserIds(ArrayList<String> userIds) {
-        mUserIds = userIds;
-        updateMergedUserIds();
-    }
-
-    public String getPrimaryUserId() {
+    public UserId getPrimaryUserId() {
         return mPrimaryUserId;
     }
 
-    public void setPrimaryUserId(String uid) {
-        mPrimaryUserId = uid;
+    public void setPrimaryUserId(String userId) {
+        mPrimaryUserId = KeyRing.splitUserId(userId);
+    }
+
+    public void setPrimaryUserId(UserId primaryUserId) {
+        mPrimaryUserId = primaryUserId;
+    }
+
+    public String getKeyserver() {
+        return mKeyserver;
+    }
+
+    public void setKeyserver(String keyserver) {
+        mKeyserver = keyserver;
     }
 
     public String getKeybaseName() {
         return mKeybaseName;
     }
 
-    public String getFbUsername() {
-        return mFbUsername;
-    }
-
     public void setKeybaseName(String keybaseName) {
         mKeybaseName = keybaseName;
+    }
+
+    public String getFbUsername() {
+        return mFbUsername;
     }
 
     public void setFbUsername(String fbUsername) {
@@ -257,16 +215,49 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mQuery = query;
     }
 
-    public ArrayList<String> getOrigins() {
-        return mOrigins;
+    public int hashCode() {
+        return mHashCode != null ? mHashCode : super.hashCode();
     }
 
-    public void addOrigin(String origin) {
-        mOrigins.add(origin);
+    public List<String> getUserIds() {
+        // To ensure choerency, use methods of this class to edit the list
+        return Collections.unmodifiableList(mUserIds);
     }
 
-    public HashMap<String, HashSet<String>> getMergedUserIds() {
-        return mMergedUserIds;
+    public ArrayList<Map.Entry<String, HashSet<String>>> getSortedUserIds() {
+        if (mSortedUserIds == null)
+            sortMergedUserIds();
+
+        return mSortedUserIds;
+    }
+
+    public void setUserIds(ArrayList<String> userIds) {
+        mUserIds = userIds;
+        updateMergedUserIds();
+    }
+
+    public boolean addUserIds(List<String> userIds) {
+        boolean modified = false;
+        for (String uid : userIds) {
+            if (!mUserIds.contains(uid)) {
+                mUserIds.add(uid);
+                modified = true;
+            }
+        }
+
+        if (modified)
+            updateMergedUserIds();
+
+        return modified;
+    }
+
+    public ArrayList<String> getKeybaseUserIds() {
+        ArrayList<String> keybaseUserIds = new ArrayList<>();
+        for (String s : mUserIds) {
+            if (s.contains(":"))
+                keybaseUserIds.add(s);
+        }
+        return keybaseUserIds;
     }
 
     /**
@@ -275,51 +266,44 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public ImportKeysListEntry() {
         // keys from keyserver are always public keys; from keybase too
         mSecretKey = false;
-        // do not select by default
-        mSelected = false;
+
         mUserIds = new ArrayList<>();
-        mOrigins = new ArrayList<>();
     }
 
     /**
      * Constructor based on key object, used for import from NFC, QR Codes, files
      */
-    @SuppressWarnings("unchecked")
-    public ImportKeysListEntry(Context context, UncachedKeyRing ring) {
-        // selected is default
-        this.mSelected = true;
-
+    public ImportKeysListEntry(Context ctx, UncachedKeyRing ring) {
         mSecretKey = ring.isSecret();
+
         UncachedPublicKey key = ring.getPublicKey();
-
-        mHashCode = key.hashCode();
-
-        mPrimaryUserId = key.getPrimaryUserIdWithFallback();
-        mUserIds = key.getUnorderedUserIds();
-        updateMergedUserIds();
-
-        // if there was no user id flagged as primary, use the first one
-        if (mPrimaryUserId == null) {
-            mPrimaryUserId = context.getString(R.string.user_id_none);
-        }
-
-        mKeyId = key.getKeyId();
-        mKeyIdHex = KeyFormattingUtils.convertKeyIdToHex(mKeyId);
+        setPrimaryUserId(key.getPrimaryUserIdWithFallback());
+        setKeyId(key.getKeyId());
+        setFingerprint(key.getFingerprint());
 
         // NOTE: Dont use maybe methods for now, they can be wrong.
         mRevoked = false; //key.isMaybeRevoked();
         mExpired = false; //key.isMaybeExpired();
-        mFingerprintHex = KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint());
+
         mBitStrength = key.getBitStrength();
         mCurveOid = key.getCurveOid();
-        final int algorithm = key.getAlgorithm();
-        mAlgorithm = KeyFormattingUtils.getAlgorithmInfo(context, algorithm, mBitStrength, mCurveOid);
+        int algorithm = key.getAlgorithm();
+        mAlgorithm = KeyFormattingUtils.getAlgorithmInfo(ctx, algorithm, mBitStrength, mCurveOid);
+        mHashCode = key.hashCode();
+
+        setUserIds(key.getUnorderedUserIds());
+
+        try {
+            byte[] encoded = ring.getEncoded();
+            mParcelableKeyRing = new ParcelableKeyRing(encoded);
+        } catch (IOException ignored) {
+        }
     }
 
-    public void updateMergedUserIds() {
+    private void updateMergedUserIds() {
         mMergedUserIds = new HashMap<>();
         for (String userId : mUserIds) {
-            OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
+            UserId userIdSplit = KeyRing.splitUserId(userId);
 
             // TODO: comment field?
 
@@ -341,6 +325,85 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
                 mMergedUserIds.put(userId, new HashSet<String>());
             }
         }
+
+        mSortedUserIds = null;
+    }
+
+    private void sortMergedUserIds() {
+        mSortedUserIds = new ArrayList<>(mMergedUserIds.entrySet());
+
+        Collections.sort(mSortedUserIds, new Comparator<Map.Entry<String, HashSet<String>>>() {
+            @Override
+            public int compare(Map.Entry<String, HashSet<String>> entry1,
+                               Map.Entry<String, HashSet<String>> entry2) {
+
+                // sort keybase UserIds after non-Keybase
+                boolean e1IsKeybase = entry1.getKey().contains(":");
+                boolean e2IsKeybase = entry2.getKey().contains(":");
+                if (e1IsKeybase != e2IsKeybase) {
+                    return (e1IsKeybase) ? 1 : -1;
+                }
+                return entry1.getKey().compareTo(entry2.getKey());
+            }
+        });
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(mParcelableKeyRing, flags);
+        dest.writeSerializable(mPrimaryUserId);
+        dest.writeStringList(mUserIds);
+        dest.writeSerializable(mMergedUserIds);
+        dest.writeByte((byte) (mRevoked ? 1 : 0));
+        dest.writeByte((byte) (mExpired ? 1 : 0));
+        dest.writeByte((byte) (mUpdated ? 1 : 0));
+        dest.writeInt(mDate == null ? 0 : 1);
+        if (mDate != null) {
+            dest.writeLong(mDate.getTime());
+        }
+        dest.writeString(mFingerprintHex);
+        dest.writeString(mKeyIdHex);
+        dest.writeInt(mBitStrength == null ? 0 : 1);
+        if (mBitStrength != null) {
+            dest.writeInt(mBitStrength);
+        }
+        dest.writeString(mAlgorithm);
+        dest.writeByte((byte) (mSecretKey ? 1 : 0));
+        dest.writeString(mKeybaseName);
+        dest.writeString(mFbUsername);
+    }
+
+    public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
+        public ImportKeysListEntry createFromParcel(final Parcel source) {
+            ImportKeysListEntry vr = new ImportKeysListEntry();
+
+            vr.mParcelableKeyRing = source.readParcelable(ParcelableKeyRing.class.getClassLoader());
+            vr.mPrimaryUserId = (UserId) source.readSerializable();
+            vr.mUserIds = new ArrayList<>();
+            source.readStringList(vr.mUserIds);
+            vr.mMergedUserIds = (HashMap<String, HashSet<String>>) source.readSerializable();
+            vr.mRevoked = source.readByte() == 1;
+            vr.mExpired = source.readByte() == 1;
+            vr.mUpdated = source.readByte() == 1;
+            vr.mDate = source.readInt() != 0 ? new Date(source.readLong()) : null;
+            vr.mFingerprintHex = source.readString();
+            vr.mKeyIdHex = source.readString();
+            vr.mBitStrength = source.readInt() != 0 ? source.readInt() : null;
+            vr.mAlgorithm = source.readString();
+            vr.mSecretKey = source.readByte() == 1;
+            vr.mKeybaseName = source.readString();
+            vr.mFbUsername = source.readString();
+
+            return vr;
+        }
+
+        public ImportKeysListEntry[] newArray(final int size) {
+            return new ImportKeysListEntry[size];
+        }
+    };
+
+    public int describeContents() {
+        return 0;
     }
 
 }

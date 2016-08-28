@@ -15,8 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.adapter;
+package org.sufficientlysecure.keychain.keyimport.processing;
 
+
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v4.content.AsyncTaskLoader;
+
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
+import org.sufficientlysecure.keychain.util.FileHelper;
+import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -25,40 +42,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.util.LongSparseArray;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
-import org.sufficientlysecure.keychain.ui.ImportKeysListFragment.BytesLoaderState;
-import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
-
 public class ImportKeysListLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
 
-    final Context mContext;
-    final BytesLoaderState mLoaderState;
+    private Context mContext;
+    private BytesLoaderState mState;
 
-    ArrayList<ImportKeysListEntry> mData = new ArrayList<>();
-    LongSparseArray<ParcelableKeyRing> mParcelableRings = new LongSparseArray<>();
-    AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
+    private ArrayList<ImportKeysListEntry> mData = new ArrayList<>();
+    private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
-    public ImportKeysListLoader(Context context, BytesLoaderState inputData) {
+    public ImportKeysListLoader(Context context, BytesLoaderState loaderState) {
         super(context);
-        this.mContext = context;
-        this.mLoaderState = inputData;
+        mContext = context;
+        mState = loaderState;
     }
 
     @Override
@@ -73,13 +69,13 @@ public class ImportKeysListLoader
             mEntryListWrapper = new AsyncTaskResultWrapper<>(mData, getKeyResult);
         }
 
-        if (mLoaderState == null) {
+        if (mState == null) {
             Log.e(Constants.TAG, "Input data is null!");
             return mEntryListWrapper;
         }
 
         try {
-            InputData inputData = getInputData(getContext(), mLoaderState);
+            InputData inputData = getInputData(mState);
             generateListOfKeyrings(inputData);
         } catch (FileNotFoundException e) {
             OperationLog log = new OperationLog();
@@ -109,16 +105,9 @@ public class ImportKeysListLoader
         super.cancelLoad();
     }
 
-    @Override
-    public void deliverResult(AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data) {
-        super.deliverResult(data);
-    }
-
-    public LongSparseArray<ParcelableKeyRing> getParcelableRings() {
-        return mParcelableRings;
-    }
-
-    /** Reads all PGPKeyRing objects from the bytes of an InputData object. */
+    /**
+     * Reads all PGPKeyRing objects from the bytes of an InputData object.
+     */
     private void generateListOfKeyrings(InputData inputData) {
         PositionAwareInputStream progressIn = new PositionAwareInputStream(
                 inputData.getInputStream());
@@ -131,10 +120,7 @@ public class ImportKeysListLoader
             // parse all keyrings
             IteratorWithIOThrow<UncachedKeyRing> it = UncachedKeyRing.fromStream(bufferedInput);
             while (it.hasNext()) {
-                UncachedKeyRing ring = it.next();
-                ImportKeysListEntry item = new ImportKeysListEntry(getContext(), ring);
-                mData.add(item);
-                mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(ring.getEncoded()));
+                mData.add(new ImportKeysListEntry(mContext, it.next()));
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException on parsing key file! Return NoValidKeysException!", e);
@@ -147,13 +133,15 @@ public class ImportKeysListLoader
     }
 
     @NonNull
-    private static InputData getInputData(Context context, BytesLoaderState loaderState) throws FileNotFoundException {
+    private InputData getInputData(BytesLoaderState ls)
+            throws FileNotFoundException {
+
         InputData inputData;
-        if (loaderState.mKeyBytes != null) {
-            inputData = new InputData(new ByteArrayInputStream(loaderState.mKeyBytes), loaderState.mKeyBytes.length);
-        } else if (loaderState.mDataUri != null) {
-            InputStream inputStream = context.getContentResolver().openInputStream(loaderState.mDataUri);
-            long length = FileHelper.getFileSize(context, loaderState.mDataUri, -1);
+        if (ls.mKeyBytes != null) {
+            inputData = new InputData(new ByteArrayInputStream(ls.mKeyBytes), ls.mKeyBytes.length);
+        } else if (ls.mDataUri != null) {
+            InputStream inputStream = mContext.getContentResolver().openInputStream(ls.mDataUri);
+            long length = FileHelper.getFileSize(mContext, ls.mDataUri, -1);
 
             inputData = new InputData(inputStream, length);
         } else {
