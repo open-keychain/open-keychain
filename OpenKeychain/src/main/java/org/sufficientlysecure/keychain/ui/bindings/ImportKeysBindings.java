@@ -56,13 +56,11 @@ public class ImportKeysBindings {
     public static void setCreation(TextView textView, Date creationDate, boolean revokedOrExpired) {
         Context context = textView.getContext();
 
-        String text;
+        String text = "";
         if (creationDate != null) {
             text = DateFormat.getDateFormat(context).format(creationDate);
-        } else {
-            Resources resources = context.getResources();
-            text = resources.getString(R.string.unknown);
         }
+
         textView.setText(text);
         textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpired));
     }

@@ -246,7 +246,9 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
         Date expectedDate = entry.getDate();
         Date creationDate = keyRing.getCreationDate();
-        if ((expectedDate != null) && !expectedDate.equals(creationDate)) {
+        if (expectedDate == null) {
+            entry.setDate(creationDate);
+        } else if (!expectedDate.equals(creationDate)) {
             throw new AssertionError("Creation date doesn't match the expected one");
         }
         entry.setKeyId(keyRing.getMasterKeyId());
