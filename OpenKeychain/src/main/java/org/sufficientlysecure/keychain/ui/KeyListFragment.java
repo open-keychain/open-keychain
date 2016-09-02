@@ -35,6 +35,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.ActionMode;
@@ -54,6 +55,8 @@ import android.widget.ViewAnimator;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.tonicartos.superslim.LayoutManager;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -74,6 +77,7 @@ import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.ContentDescriptionHint;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.adapter.KeySectionedListAdapter;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -97,8 +101,9 @@ public class KeyListFragment extends LoaderFragment
     private static final int REQUEST_DELETE = 2;
     private static final int REQUEST_VIEW_KEY = 3;
 
-    private KeyListAdapter mAdapter;
-    private StickyListHeadersListView mStickyList;
+    //private KeyListAdapter mAdapter;
+    private KeySectionedListAdapter mAdapter;
+    private RecyclerView mStickyList;
 
     // saves the mode object for multiselect, needed for reset at some point
     private ActionMode mActionMode = null;
@@ -125,8 +130,8 @@ public class KeyListFragment extends LoaderFragment
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.key_list_fragment, getContainer());
 
-        mStickyList = (StickyListHeadersListView) view.findViewById(R.id.key_list_list);
-        mStickyList.setOnItemClickListener(this);
+        mStickyList = (RecyclerView) view.findViewById(R.id.key_list_list);
+        //mStickyList.setOnItemClickListener(this);
 
         mFab = (FloatingActionsMenu) view.findViewById(R.id.fab_main);
 
@@ -170,13 +175,12 @@ public class KeyListFragment extends LoaderFragment
 
         // show app name instead of "keys" from nav drawer
         final FragmentActivity activity = getActivity();
-
         activity.setTitle(R.string.app_name);
 
-        mStickyList.setOnItemClickListener(this);
-        mStickyList.setAreHeadersSticky(true);
-        mStickyList.setDrawingListUnderStickyHeader(false);
-        mStickyList.setFastScrollEnabled(true);
+        //mStickyList.setOnItemClickListener(this);
+        //mStickyList.setAreHeadersSticky(true);
+        //mStickyList.setDrawingListUnderStickyHeader(false);
+        //mStickyList.setFastScrollEnabled(true);
 
         // Adds an empty footer view so that the Floating Action Button won't block content
         // in last few rows.
@@ -192,14 +196,16 @@ public class KeyListFragment extends LoaderFragment
         );
 
         footer.setLayoutParams(params);
-        mStickyList.addFooterView(footer, null, false);
+        //mStickyList.addFooterView(footer, null, false);
 
         /*
          * Multi-selection
          */
-        mStickyList.setFastScrollAlwaysVisible(true);
+        //mStickyList.setFastScrollAlwaysVisible(true);
 
-        mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        //mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
+        /*
         mStickyList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener() {
 
             @Override
@@ -257,6 +263,7 @@ public class KeyListFragment extends LoaderFragment
             }
 
         });
+        */
 
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
@@ -265,7 +272,7 @@ public class KeyListFragment extends LoaderFragment
         setContentShown(false);
 
         // this view is made visible if no data is available
-        mStickyList.setEmptyView(activity.findViewById(R.id.key_list_empty));
+        // mStickyList.setEmptyView(activity.findViewById(R.id.key_list_empty));
 
         // click on search button (in empty view) starts query for search string
         vSearchContainer = (ViewAnimator) activity.findViewById(R.id.search_container);
@@ -278,8 +285,11 @@ public class KeyListFragment extends LoaderFragment
         });
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new KeyListAdapter(activity, null, 0);
+        //mAdapter = new KeyListAdapter(activity, null, 0);
+        mAdapter = new KeySectionedListAdapter(getContext(), null);
+
         mStickyList.setAdapter(mAdapter);
+        mStickyList.setLayoutManager(new LayoutManager(getActivity()));
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
