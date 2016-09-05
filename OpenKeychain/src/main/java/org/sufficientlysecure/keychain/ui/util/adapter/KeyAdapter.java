@@ -49,14 +49,14 @@ public interface KeyAdapter {
     boolean isSecretAvailable(int position);
 
     class KeyItem implements Serializable {
-        final String mUserIdFull;
-        final OpenPgpUtils.UserId mUserId;
-        final long mKeyId;
-        final boolean mHasDuplicate;
-        final boolean mHasEncrypt;
-        final Date mCreation;
-        final String mFingerprint;
-        final boolean mIsSecret, mIsRevoked, mIsExpired, mIsVerified;
+        public final String mUserIdFull;
+        public final OpenPgpUtils.UserId mUserId;
+        public final long mKeyId;
+        public final boolean mHasDuplicate;
+        public final boolean mHasEncrypt;
+        public final Date mCreation;
+        public final String mFingerprint;
+        public final boolean mIsSecret, mIsRevoked, mIsExpired, mIsVerified;
 
         public KeyItem(Cursor cursor) {
             String userId = cursor.getString(INDEX_USER_ID);

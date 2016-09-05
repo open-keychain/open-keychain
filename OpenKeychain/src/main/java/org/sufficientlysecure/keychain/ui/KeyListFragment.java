@@ -21,12 +21,10 @@ package org.sufficientlysecure.keychain.ui;
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,7 +33,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.ActionMode;
@@ -46,11 +43,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -73,26 +67,22 @@ import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.ContentDescriptionHint;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.adapter.KeySectionedListAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.KeySectionedListAdapter;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerFragment;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
-import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
-import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
  * StickyListHeaders library which does not extend upon ListView.
  */
-public class KeyListFragment extends LoaderFragment
+public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor>, FabContainer,
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
@@ -100,10 +90,6 @@ public class KeyListFragment extends LoaderFragment
     static final int REQUEST_ACTION = 1;
     private static final int REQUEST_DELETE = 2;
     private static final int REQUEST_VIEW_KEY = 3;
-
-    //private KeyListAdapter mAdapter;
-    private KeySectionedListAdapter mAdapter;
-    private RecyclerView mStickyList;
 
     // saves the mode object for multiselect, needed for reset at some point
     private ActionMode mActionMode = null;
@@ -126,12 +112,8 @@ public class KeyListFragment extends LoaderFragment
      * Load custom layout with StickyListView from library
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.key_list_fragment, getContainer());
-
-        mStickyList = (RecyclerView) view.findViewById(R.id.key_list_list);
-        //mStickyList.setOnItemClickListener(this);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.key_list_fragment, container, false);
 
         mFab = (FloatingActionsMenu) view.findViewById(R.id.fab_main);
 
@@ -162,7 +144,7 @@ public class KeyListFragment extends LoaderFragment
         });
 
 
-        return root;
+        return view;
     }
 
     /**
@@ -182,7 +164,7 @@ public class KeyListFragment extends LoaderFragment
         //mStickyList.setDrawingListUnderStickyHeader(false);
         //mStickyList.setFastScrollEnabled(true);
 
-        // Adds an empty footer view so that the Floating Action Button won't block content
+        /* Adds an empty footer view so that the Floating Action Button won't block content
         // in last few rows.
         View footer = new View(activity);
 
@@ -197,6 +179,7 @@ public class KeyListFragment extends LoaderFragment
 
         footer.setLayoutParams(params);
         //mStickyList.addFooterView(footer, null, false);
+        */
 
         /*
          * Multi-selection
@@ -269,7 +252,7 @@ public class KeyListFragment extends LoaderFragment
         setHasOptionsMenu(true);
 
         // Start out with a progress indicator.
-        setContentShown(false);
+        hideList(true);
 
         // this view is made visible if no data is available
         // mStickyList.setEmptyView(activity.findViewById(R.id.key_list_empty));
@@ -286,10 +269,9 @@ public class KeyListFragment extends LoaderFragment
 
         // Create an empty adapter we will use to display the loaded data.
         //mAdapter = new KeyListAdapter(activity, null, 0);
-        mAdapter = new KeySectionedListAdapter(getContext(), null);
 
-        mStickyList.setAdapter(mAdapter);
-        mStickyList.setLayoutManager(new LayoutManager(getActivity()));
+        setAdapter(new KeySectionedListAdapter(getContext(), null));
+        setLayoutManager(new LayoutManager(getActivity()));
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
@@ -324,22 +306,22 @@ public class KeyListFragment extends LoaderFragment
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), uri, KeyListAdapter.PROJECTION, null, null, ORDER);
+        return new CursorLoader(getActivity(), uri, KeyAdapter.PROJECTION, null, null, ORDER);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
-        mAdapter.setSearchQuery(mQuery);
+        getAdapter().setSearchQuery(mQuery);
 
         if (data != null && (mQuery == null || TextUtils.isEmpty(mQuery))) {
-            boolean isSecret = data.moveToFirst() && data.getInt(KeyListAdapter.INDEX_HAS_ANY_SECRET) != 0;
+            boolean isSecret = data.moveToFirst() && data.getInt(KeyAdapter.INDEX_HAS_ANY_SECRET) != 0;
             if (!isSecret) {
-                MatrixCursor headerCursor = new MatrixCursor(KeyListAdapter.PROJECTION);
-                Long[] row = new Long[KeyListAdapter.PROJECTION.length];
-                row[KeyListAdapter.INDEX_HAS_ANY_SECRET] = 1L;
-                row[KeyListAdapter.INDEX_MASTER_KEY_ID] = 0L;
+                MatrixCursor headerCursor = new MatrixCursor(KeyAdapter.PROJECTION);
+                Long[] row = new Long[KeyAdapter.PROJECTION.length];
+                row[KeyAdapter.INDEX_HAS_ANY_SECRET] = 1L;
+                row[KeyAdapter.INDEX_MASTER_KEY_ID] = 0L;
                 headerCursor.addRow(row);
 
                 Cursor dataCursor = data;
@@ -348,7 +330,8 @@ public class KeyListFragment extends LoaderFragment
                 });
             }
         }
-        mAdapter.swapCursor(data);
+
+        getAdapter().swapCursor(data);
 
         // end action mode, if any
         if (mActionMode != null) {
@@ -357,9 +340,9 @@ public class KeyListFragment extends LoaderFragment
 
         // The list should now be shown.
         if (isResumed()) {
-            setContentShown(true);
+            showList(true);
         } else {
-            setContentShownNoAnimation(true);
+            showList(false);
         }
     }
 
@@ -368,7 +351,7 @@ public class KeyListFragment extends LoaderFragment
         // This is called when the last Cursor provided to onLoadFinished()
         // above is about to be closed. We need to make sure we are no
         // longer using it.
-        mAdapter.swapCursor(null);
+        getAdapter().swapCursor(null);
     }
 
     /**
@@ -378,7 +361,7 @@ public class KeyListFragment extends LoaderFragment
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Intent viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
         viewIntent.setData(
-                KeyRings.buildGenericKeyRingUri(mAdapter.getMasterKeyId(position)));
+                KeyRings.buildGenericKeyRingUri(getAdapter().getMasterKeyId(position)));
         startActivityForResult(viewIntent, REQUEST_VIEW_KEY);
     }
 
@@ -762,6 +745,7 @@ public class KeyListFragment extends LoaderFragment
         return false;
     }
 
+    /*
     public class KeyListAdapter extends KeyAdapter implements StickyListHeadersAdapter {
 
         private HashMap<Integer, Boolean> mSelection = new HashMap<>();
@@ -842,19 +826,13 @@ public class KeyListFragment extends LoaderFragment
             TextView mCount;
         }
 
-        /**
-         * Creates a new header view and binds the section headers to it. It uses the ViewHolder
-         * pattern. Most functionality is similar to getView() from Android's CursorAdapter.
-         * <p/>
-         * NOTE: The variables mDataValid and mCursor are available due to the super class
-         * CursorAdapter.
-         */
+
         @Override
         public View getHeaderView(int position, View convertView, ViewGroup parent) {
             HeaderViewHolder holder;
             if (convertView == null) {
                 holder = new HeaderViewHolder();
-                convertView = mInflater.inflate(R.layout.key_list_header, parent, false);
+                convertView = mInflater.inflate(R.layout.key_list_header_public, parent, false);
                 holder.mText = (TextView) convertView.findViewById(R.id.stickylist_header_text);
                 holder.mCount = (TextView) convertView.findViewById(R.id.contacts_num);
                 convertView.setTag(holder);
@@ -899,9 +877,6 @@ public class KeyListFragment extends LoaderFragment
             return convertView;
         }
 
-        /**
-         * Header IDs should be static, position=1 should always return the same Id that is.
-         */
         @Override
         public long getHeaderId(int position) {
             if (!mDataValid) {
@@ -927,9 +902,6 @@ public class KeyListFragment extends LoaderFragment
             }
         }
 
-        /**
-         * -------------------------- MULTI-SELECTION METHODS --------------
-         */
         public void setNewSelection(int position, boolean value) {
             mSelection.put(position, value);
             notifyDataSetChanged();
@@ -965,5 +937,6 @@ public class KeyListFragment extends LoaderFragment
         }
 
     }
+*/
 
 }

@@ -12,25 +12,23 @@
     super:slm_section_sectionManager="linear"
     tools:ignore="ResAuto">
 
-    <TextView
-        style="@style/SectionHeader"
-        android:id="@+id/stickylist_header_text"
+    <TextView style="@style/SectionHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start|left"
-        android:text="header text" />
+        android:text="@string/my_keys" />
 
     <TextView
+        android:id="@android:id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="key count"
-        android:id="@+id/contacts_num"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="8dp"
-        android:visibility="gone"
-        android:textColor="@android:color/darker_gray" />
+        android:layout_marginLeft="8dp"
+        android:textColor="@android:color/darker_gray"
+        tools:text="11 Keys"/>
 
 </RelativeLayout>
