@@ -9,13 +9,14 @@ import android.view.ViewGroup;
 
 import com.tonicartos.superslim.LayoutManager;
 import org.sufficientlysecure.keychain.util.Log;
+
 /**
  * @param <T> section type.
  * @param <VH> the view holder extending {@code BaseViewHolder<Cursor>} that is bound to the cursor data.
  * @param <SH> the view holder extending {@code BaseViewHolder<<T>>} that is bound to the section data.
  */
-public abstract class SectionCursorAdapter<T, VH extends SectionCursorAdapter.ViewHolder,
-        SH extends SectionCursorAdapter.ViewHolder> extends CursorAdapter {
+public abstract class SectionCursorAdapter<C extends Cursor, T, VH extends SectionCursorAdapter.ViewHolder,
+        SH extends SectionCursorAdapter.ViewHolder> extends CursorAdapter<C> {
 
     public static final String TAG = "SectionCursorAdapter";
 
@@ -25,7 +26,7 @@ public abstract class SectionCursorAdapter<T, VH extends SectionCursorAdapter.Vi
     private SparseArrayCompat<T> mSectionMap = new SparseArrayCompat<>();
     private Comparator<T> mSectionComparator;
 
-    public SectionCursorAdapter(Context context, Cursor cursor, int flags) {
+    public SectionCursorAdapter(Context context, C cursor, int flags) {
         this(context, cursor, flags, new Comparator<T>() {
             @Override
             public boolean equal(T obj1, T obj2) {
@@ -35,7 +36,7 @@ public abstract class SectionCursorAdapter<T, VH extends SectionCursorAdapter.Vi
         });
     }
 
-    public SectionCursorAdapter(Context context, Cursor cursor, int flags, Comparator<T> comparator) {
+    public SectionCursorAdapter(Context context, C cursor, int flags, Comparator<T> comparator) {
         super(context, cursor, flags);
         setSectionComparator(comparator);
     }
@@ -82,7 +83,7 @@ public abstract class SectionCursorAdapter<T, VH extends SectionCursorAdapter.Vi
         }
     }
 
-    private void appendSections(Cursor cursor) throws IllegalStateException {
+    private void appendSections(C cursor) throws IllegalStateException {
         int cursorPosition = 0;
         while(hasValidData() && cursor.moveToNext()) {
             T section = getSectionFromCursor(cursor);
@@ -109,7 +110,7 @@ public abstract class SectionCursorAdapter<T, VH extends SectionCursorAdapter.Vi
      * @return the section from the cursor at its current position.
      * This object will be passed to newSectionView and bindSectionView.
      */
-    protected abstract T getSectionFromCursor(Cursor cursor) throws IllegalStateException;
+    protected abstract T getSectionFromCursor(C cursor) throws IllegalStateException;
 
     @Override
     public int getItemCount() {
@@ -119,7 +120,7 @@ public abstract class SectionCursorAdapter<T, VH extends SectionCursorAdapter.Vi
     @Override
     public final long getItemId(int listPosition) {
         if (isSection(listPosition))
-            return listPosition;
+            return -1;
         else {
             int cursorPosition = getCursorPositionWithoutSections(listPosition);
             return super.getItemId(cursorPosition);
@@ -154,6 +155,19 @@ public abstract class SectionCursorAdapter<T, VH extends SectionCursorAdapter.Vi
         } else {
             return -1;
         }
+    }
+
+    public int getListPosition(int cursorPosition) {
+        for(int i = 0; i < mSectionMap.size(); i++) {
+            int sectionIndex = mSectionMap.keyAt(i);
+            if (sectionIndex > cursorPosition) {
+                return cursorPosition;
+            }
+
+            cursorPosition +=1;
+        }
+
+        return cursorPosition;
     }
 
     /**
@@ -263,7 +277,7 @@ public abstract class SectionCursorAdapter<T, VH extends SectionCursorAdapter.Vi
     protected abstract VH onCreateItemViewHolder(ViewGroup parent, int viewType);
 
     protected abstract void onBindSectionViewHolder(SH holder, T section);
-    protected abstract void onBindItemViewHolder(VH holder, Cursor cursor);
+    protected abstract void onBindItemViewHolder(VH holder, C cursor);
 
     public interface Comparator<T> {
         boolean equal(T obj1, T obj2);

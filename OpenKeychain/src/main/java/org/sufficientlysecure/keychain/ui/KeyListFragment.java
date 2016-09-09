@@ -83,11 +83,13 @@ import java.util.ArrayList;
  * StickyListHeaders library which does not extend upon ListView.
  */
 public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
-        implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
+        implements SearchView.OnQueryTextListener,
         LoaderManager.LoaderCallbacks<Cursor>, FabContainer,
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
     static final int REQUEST_ACTION = 1;
+    static final String ORDER = KeyRings.HAS_ANY_SECRET + " DESC, " + KeyRings.USER_ID + " COLLATE NOCASE ASC";
+
     private static final int REQUEST_DELETE = 2;
     private static final int REQUEST_VIEW_KEY = 3;
 
@@ -107,6 +109,101 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
     // for ConsolidateOperation
     private CryptoOperationHelper<ConsolidateInputParcel, ConsolidateResult> mConsolidateOpHelper;
+
+    // Callbacks related to listview and menu events
+    private final ActionMode.Callback mActionCallback
+            = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            getActivity().getMenuInflater().inflate(R.menu.key_list_multi, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.menu_key_list_multi_encrypt: {
+                    long[] keyIds = getAdapter().getSelectedMasterKeyIds();
+                    Intent intent = new Intent(getActivity(), EncryptFilesActivity.class);
+                    intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
+                    intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, keyIds);
+
+                    startActivityForResult(intent, REQUEST_ACTION);
+                    mode.finish();
+                    break;
+                }
+
+                case R.id.menu_key_list_multi_delete: {
+                    long[] keyIds = getAdapter().getSelectedMasterKeyIds();
+                    boolean hasSecret = getAdapter().isAnySecretKeySelected();
+                    Intent intent = new Intent(getActivity(), DeleteKeyDialogActivity.class);
+                    intent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS, keyIds);
+                    intent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, hasSecret);
+                    if (hasSecret) {
+                        intent.putExtra(DeleteKeyDialogActivity.EXTRA_KEYSERVER,
+                                Preferences.getPreferences(getActivity()).getPreferredKeyserver());
+                    }
+
+                    startActivityForResult(intent, REQUEST_DELETE);
+                    break;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+            if(getAdapter() != null) {
+                getAdapter().finishSelection();
+            }
+        }
+    };
+
+    private final KeySectionedListAdapter.KeyListListener mKeyListener
+            = new KeySectionedListAdapter.KeyListListener() {
+        @Override
+        public void onKeyDummyItemClicked() {
+            createKey();
+        }
+
+        @Override
+        public void onKeyItemClicked(long masterKeyId) {
+            Intent viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
+            viewIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+            startActivityForResult(viewIntent, REQUEST_VIEW_KEY);
+        }
+
+        @Override
+        public void onSlingerButtonClicked(long masterKeyId) {
+            Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
+            safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
+            startActivityForResult(safeSlingerIntent, REQUEST_ACTION);
+        }
+
+        @Override
+        public void onSelectionStateChanged(int selectedCount) {
+            if(selectedCount < 1) {
+                if(mActionMode != null) {
+                    mActionMode.finish();
+                }
+            } else {
+                if(mActionMode == null) {
+                    mActionMode = getActivity().startActionMode(mActionCallback);
+                }
+
+                String keysSelected = getResources().getQuantityString(
+                        R.plurals.key_list_selected_keys, selectedCount, selectedCount);
+                mActionMode.setTitle(keysSelected);
+            }
+        }
+    };
+
 
     /**
      * Load custom layout with StickyListView from library
@@ -181,73 +278,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         //mStickyList.addFooterView(footer, null, false);
         */
 
-        /*
-         * Multi-selection
-         */
-        //mStickyList.setFastScrollAlwaysVisible(true);
-
-        //mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-
-        /*
-        mStickyList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener() {
-
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                android.view.MenuInflater inflater = activity.getMenuInflater();
-                inflater.inflate(R.menu.key_list_multi, menu);
-                mActionMode = mode;
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-
-                // get IDs for checked positions as long array
-                long[] ids;
-
-                switch (item.getItemId()) {
-                    case R.id.menu_key_list_multi_encrypt: {
-                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                        encrypt(mode, ids);
-                        break;
-                    }
-                    case R.id.menu_key_list_multi_delete: {
-                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                        showDeleteKeyDialog(ids, mAdapter.isAnySecretSelected());
-                        break;
-                    }
-                }
-                return true;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                mActionMode = null;
-                mAdapter.clearSelection();
-            }
-
-            @Override
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
-                    boolean checked) {
-                if (checked) {
-                    mAdapter.setNewSelection(position, true);
-                } else {
-                    mAdapter.removeSelection(position);
-                }
-                int count = mStickyList.getCheckedItemCount();
-                String keysSelected = getResources().getQuantityString(
-                        R.plurals.key_list_selected_keys, count, count);
-                mode.setTitle(keysSelected);
-            }
-
-        });
-        */
-
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
@@ -270,7 +300,10 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         // Create an empty adapter we will use to display the loaded data.
         //mAdapter = new KeyListAdapter(activity, null, 0);
 
-        setAdapter(new KeySectionedListAdapter(getContext(), null));
+        KeySectionedListAdapter adapter = new KeySectionedListAdapter(getContext(), null);
+        adapter.setKeyListener(mKeyListener);
+
+        setAdapter(adapter);
         setLayoutManager(new LayoutManager(getActivity()));
 
         // Prepare the loader. Either re-connect with an existing one,
@@ -289,9 +322,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         searchIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
         startActivity(searchIntent);
     }
-
-    static final String ORDER =
-            KeyRings.HAS_ANY_SECRET + " DESC, " + KeyRings.USER_ID + " COLLATE NOCASE ASC";
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -314,24 +344,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         getAdapter().setSearchQuery(mQuery);
-
-        if (data != null && (mQuery == null || TextUtils.isEmpty(mQuery))) {
-            boolean isSecret = data.moveToFirst() && data.getInt(KeyAdapter.INDEX_HAS_ANY_SECRET) != 0;
-            if (!isSecret) {
-                MatrixCursor headerCursor = new MatrixCursor(KeyAdapter.PROJECTION);
-                Long[] row = new Long[KeyAdapter.PROJECTION.length];
-                row[KeyAdapter.INDEX_HAS_ANY_SECRET] = 1L;
-                row[KeyAdapter.INDEX_MASTER_KEY_ID] = 0L;
-                headerCursor.addRow(row);
-
-                Cursor dataCursor = data;
-                data = new MergeCursor(new Cursor[] {
-                        headerCursor, dataCursor
-                });
-            }
-        }
-
-        getAdapter().swapCursor(data);
+        getAdapter().swapCursor(KeySectionedListAdapter.KeyCursor.wrap(data));
 
         // end action mode, if any
         if (mActionMode != null) {
@@ -354,44 +367,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         getAdapter().swapCursor(null);
     }
 
-    /**
-     * On click on item, start key view activity
-     */
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Intent viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
-        viewIntent.setData(
-                KeyRings.buildGenericKeyRingUri(getAdapter().getMasterKeyId(position)));
-        startActivityForResult(viewIntent, REQUEST_VIEW_KEY);
-    }
-
-    protected void encrypt(ActionMode mode, long[] masterKeyIds) {
-        Intent intent = new Intent(getActivity(), EncryptFilesActivity.class);
-        intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
-        intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, masterKeyIds);
-        // used instead of startActivity set actionbar based on callingPackage
-        startActivityForResult(intent, REQUEST_ACTION);
-
-        mode.finish();
-    }
-
-    /**
-     * Show dialog to delete key
-     *
-     * @param hasSecret must contain whether the list of masterKeyIds contains a secret key or not
-     */
-    public void showDeleteKeyDialog(long[] masterKeyIds, boolean hasSecret) {
-        Intent intent = new Intent(getActivity(), DeleteKeyDialogActivity.class);
-        intent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS, masterKeyIds);
-        intent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, hasSecret);
-        if (hasSecret) {
-            intent.putExtra(DeleteKeyDialogActivity.EXTRA_KEYSERVER,
-                    Preferences.getPreferences(getActivity()).getPreferredKeyserver());
-        }
-        startActivityForResult(intent, REQUEST_DELETE);
-    }
-
-
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         inflater.inflate(R.menu.key_list, menu);
@@ -406,7 +381,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
         // Get the searchview
         MenuItem searchItem = menu.findItem(R.id.menu_key_list_search);
-
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Execute this when searching
@@ -551,7 +525,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         }
 
         ProviderHelper providerHelper = new ProviderHelper(activity);
-
         Cursor cursor = providerHelper.getContentResolver().query(
                 KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                         KeyRings.FINGERPRINT
@@ -566,7 +539,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
         try {
             while (cursor.moveToNext()) {
-                byte[] blob = cursor.getBlob(0);//fingerprint column is 0
+                byte[] blob = cursor.getBlob(0); //fingerprint column is 0
                 String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
                 ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null);
                 keyList.add(keyEntry);
@@ -585,7 +558,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
     }
 
     private void consolidate() {
-
         CryptoOperationHelper.Callback<ConsolidateInputParcel, ConsolidateResult> callback
                 = new CryptoOperationHelper.Callback<ConsolidateInputParcel, ConsolidateResult>() {
 
@@ -615,14 +587,11 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
             }
         };
 
-        mConsolidateOpHelper =
-                new CryptoOperationHelper<>(2, this, callback, R.string.progress_importing);
-
+        mConsolidateOpHelper = new CryptoOperationHelper<>(2, this, callback, R.string.progress_importing);
         mConsolidateOpHelper.cryptoOperation();
     }
 
     private void benchmark() {
-
         CryptoOperationHelper.Callback<BenchmarkInputParcel, BenchmarkResult> callback
                 = new CryptoOperationHelper.Callback<BenchmarkInputParcel, BenchmarkResult>() {
 
@@ -652,9 +621,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
             }
         };
 
-        CryptoOperationHelper opHelper =
-                new CryptoOperationHelper<>(2, this, callback, R.string.progress_importing);
-
+        CryptoOperationHelper opHelper = new CryptoOperationHelper<>(2, this, callback, R.string.progress_importing);
         opHelper.cryptoOperation();
     }
 
@@ -673,6 +640,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                 if (mActionMode != null) {
                     mActionMode.finish();
                 }
+
                 if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
                     OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
                     result.createNotify(getActivity()).show();
@@ -744,199 +712,4 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
     public boolean onCryptoSetProgress(String msg, int progress, int max) {
         return false;
     }
-
-    /*
-    public class KeyListAdapter extends KeyAdapter implements StickyListHeadersAdapter {
-
-        private HashMap<Integer, Boolean> mSelection = new HashMap<>();
-
-        private Context mContext;
-
-        public KeyListAdapter(Context context, Cursor c, int flags) {
-            super(context, c, flags);
-            mContext = context;
-        }
-
-        @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            View view = super.newView(context, cursor, parent);
-
-            final KeyItemViewHolder holder = (KeyItemViewHolder) view.getTag();
-
-            holder.mSlinger.setVisibility(View.VISIBLE);
-
-            ContentDescriptionHint.setup(holder.mSlingerButton);
-            holder.mSlingerButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (holder.mMasterKeyId != null) {
-                        Intent safeSlingerIntent = new Intent(mContext, SafeSlingerActivity.class);
-                        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, holder.mMasterKeyId);
-                        startActivityForResult(safeSlingerIntent, REQUEST_ACTION);
-                    }
-                }
-            });
-
-            return view;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            // let the adapter handle setting up the row views
-            View v = super.getView(position, convertView, parent);
-
-            int colorEmphasis = FormattingUtils.getColorFromAttr(mContext, R.attr.colorEmphasis);
-
-            if (mSelection.get(position) != null) {
-                // selected position color
-                v.setBackgroundColor(colorEmphasis);
-            } else {
-                // default color
-                v.setBackgroundColor(Color.TRANSPARENT);
-            }
-
-            return v;
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            boolean isSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) != 0;
-            long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-            if (isSecret && masterKeyId == 0L) {
-
-                // sort of a hack: if this item isn't enabled, we make it clickable
-                // to intercept its click events
-                view.setClickable(true);
-
-                KeyItemViewHolder h = (KeyItemViewHolder) view.getTag();
-                h.setDummy(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        createKey();
-                    }
-                });
-                return;
-            }
-
-            super.bindView(view, context, cursor);
-        }
-
-        private class HeaderViewHolder {
-            TextView mText;
-            TextView mCount;
-        }
-
-
-        @Override
-        public View getHeaderView(int position, View convertView, ViewGroup parent) {
-            HeaderViewHolder holder;
-            if (convertView == null) {
-                holder = new HeaderViewHolder();
-                convertView = mInflater.inflate(R.layout.key_list_header_public, parent, false);
-                holder.mText = (TextView) convertView.findViewById(R.id.stickylist_header_text);
-                holder.mCount = (TextView) convertView.findViewById(R.id.contacts_num);
-                convertView.setTag(holder);
-            } else {
-                holder = (HeaderViewHolder) convertView.getTag();
-            }
-
-            if (!mDataValid) {
-                // no data available at this point
-                Log.d(Constants.TAG, "getHeaderView: No data available at this point!");
-                return convertView;
-            }
-
-            if (!mCursor.moveToPosition(position)) {
-                throw new IllegalStateException("couldn't move cursor to position " + position);
-            }
-
-            if (mCursor.getInt(INDEX_HAS_ANY_SECRET) != 0) {
-                { // set contact count
-                    int num = mCursor.getCount();
-                    // If this is a dummy secret key, subtract one
-                    if (mCursor.getLong(INDEX_MASTER_KEY_ID) == 0L) {
-                        num -= 1;
-                    }
-                    String contactsTotal = mContext.getResources().getQuantityString(R.plurals.n_keys, num, num);
-                    holder.mCount.setText(contactsTotal);
-                    holder.mCount.setVisibility(View.VISIBLE);
-                }
-
-                holder.mText.setText(convertView.getResources().getString(R.string.my_keys));
-                return convertView;
-            }
-
-            // set header text as first char in user id
-            String userId = mCursor.getString(INDEX_USER_ID);
-            String headerText = convertView.getResources().getString(R.string.user_id_no_name);
-            if (userId != null && userId.length() > 0) {
-                headerText = "" + userId.charAt(0);
-            }
-            holder.mText.setText(headerText);
-            holder.mCount.setVisibility(View.GONE);
-            return convertView;
-        }
-
-        @Override
-        public long getHeaderId(int position) {
-            if (!mDataValid) {
-                // no data available at this point
-                Log.d(Constants.TAG, "getHeaderView: No data available at this point!");
-                return -1;
-            }
-
-            if (!mCursor.moveToPosition(position)) {
-                throw new IllegalStateException("couldn't move cursor to position " + position);
-            }
-
-            // early breakout: all secret keys are assigned id 0
-            if (mCursor.getInt(INDEX_HAS_ANY_SECRET) != 0) {
-                return 1L;
-            }
-            // otherwise, return the first character of the name as ID
-            String userId = mCursor.getString(INDEX_USER_ID);
-            if (userId != null && userId.length() > 0) {
-                return Character.toUpperCase(userId.charAt(0));
-            } else {
-                return Long.MAX_VALUE;
-            }
-        }
-
-        public void setNewSelection(int position, boolean value) {
-            mSelection.put(position, value);
-            notifyDataSetChanged();
-        }
-
-        public boolean isAnySecretSelected() {
-            for (int pos : mSelection.keySet()) {
-                if (isSecretAvailable(pos)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public long[] getCurrentSelectedMasterKeyIds() {
-            long[] ids = new long[mSelection.size()];
-            int i = 0;
-            // get master key ids
-            for (int pos : mSelection.keySet()) {
-                ids[i++] = getMasterKeyId(pos);
-            }
-            return ids;
-        }
-
-        public void removeSelection(int position) {
-            mSelection.remove(position);
-            notifyDataSetChanged();
-        }
-
-        public void clearSelection() {
-            mSelection.clear();
-            notifyDataSetChanged();
-        }
-
-    }
-*/
-
 }

@@ -2,11 +2,14 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorWrapper;
+import android.database.MatrixCursor;
+import android.database.MergeCursor;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +20,21 @@ import android.widget.TextView;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.adapter.*;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class KeySectionedListAdapter extends SectionCursorAdapter<Character, SectionCursorAdapter.ViewHolder, KeySectionedListAdapter.KeyHeaderViewHolder> implements org.sufficientlysecure.keychain.ui.util.adapter.KeyAdapter {
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedListAdapter.KeyCursor, Character,
+        SectionCursorAdapter.ViewHolder, KeySectionedListAdapter.KeyHeaderViewHolder> {
+
     private static final short VIEW_ITEM_TYPE_KEY = 0x0;
     private static final short VIEW_ITEM_TYPE_DUMMY = 0x1;
 
@@ -31,56 +42,108 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<Character, Sec
     private static final short VIEW_SECTION_TYPE_PUBLIC = 0x1;
 
     private String mQuery;
-    private SparseBooleanArray mSelectionMap;
+    private List<Integer> mSelected;
+    private KeyListListener mListener;
+
     private boolean mHasDummy = false;
 
     public KeySectionedListAdapter(Context context, Cursor cursor) {
-        super(context, cursor, 0);
+        super(context, KeyCursor.wrap(cursor), 0);
 
         mQuery = "";
-        mSelectionMap = new SparseBooleanArray();
+        mSelected = new ArrayList<>();
     }
 
-    @Override
     public void setSearchQuery(String query) {
         mQuery = query;
     }
 
-    @Override
-    public boolean isEnabled(Cursor cursor) {
-        return true;
-    }
-
-    @Override
-    public KeyItem getItem(int position) {
-        Cursor cursor = getCursor();
-
-        if(cursor != null) {
-            if(cursor.getPosition() != position) {
-                moveCursor(position);
-            }
-
-            return new KeyItem(cursor);
-        }
-
-        return null;
-    }
-
-    @Override
-    public long getMasterKeyId(int position) {
-        return 0;
-    }
-
-    @Override
-    public boolean isSecretAvailable(int position) {
-        return false;
-    }
 
     @Override
     public void onContentChanged() {
         mHasDummy = false;
+        mSelected.clear();
+
+        if(mListener != null) {
+            mListener.onSelectionStateChanged(0);
+        }
+
         super.onContentChanged();
     }
+
+    @Override
+    public KeyCursor swapCursor(KeyCursor cursor) {
+        if (cursor != null && (mQuery == null || TextUtils.isEmpty(mQuery))) {
+            boolean isSecret = cursor.moveToFirst() && cursor.isSecret();
+
+            if (!isSecret) {
+                MatrixCursor headerCursor = new MatrixCursor(KeyCursor.PROJECTION);
+                Long[] row = new Long[KeyCursor.PROJECTION.length];
+                row[KeyCursor.INDEX_HAS_ANY_SECRET] = 1L;
+                row[KeyCursor.INDEX_MASTER_KEY_ID] = 0L;
+                headerCursor.addRow(row);
+
+                Cursor[] toMerge = {
+                        headerCursor,
+                        cursor.getWrappedCursor()
+                };
+
+                cursor = KeyCursor.wrap(new MergeCursor(toMerge));
+            }
+        }
+
+        return (KeyCursor) super.swapCursor(cursor);
+    }
+
+    public void setKeyListener(KeyListListener listener) {
+        mListener = listener;
+    }
+
+    private int getSelectedCount() {
+        return mSelected.size();
+    }
+
+    private void selectPosition(int position) {
+        mSelected.add(position);
+        notifyItemChanged(position);
+    }
+
+    private void deselectPosition(int position) {
+        mSelected.remove(Integer.valueOf(position));
+        notifyItemChanged(position);
+    }
+
+    private boolean isSelected(int position) {
+        return mSelected.contains(position);
+    }
+
+    public long[] getSelectedMasterKeyIds() {
+        long[] keys = new long[mSelected.size()];
+        for(int i = 0; i < keys.length; i++) {
+            if(!moveCursor(mSelected.get(i))) {
+                return keys;
+            }
+
+            keys[i] = getIdFromCursor(getCursor());
+        }
+
+        return keys;
+    }
+
+    public boolean isAnySecretKeySelected() {
+        for(int i = 0; i < mSelected.size(); i++) {
+            if(!moveCursor(mSelected.get(i))) {
+                return false;
+            }
+
+            if(getCursor().isSecret()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     /**
      * Returns the number of database entries displayed.
@@ -95,15 +158,20 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<Character, Sec
     }
 
     @Override
-    protected Character getSectionFromCursor(Cursor cursor) throws IllegalStateException {
-        if (cursor.getInt(INDEX_HAS_ANY_SECRET) != 0) {
-            if (cursor.getLong(INDEX_MASTER_KEY_ID) == 0L) {
+    public long getIdFromCursor(KeyCursor cursor) {
+        return cursor.getKeyId();
+    }
+
+    @Override
+    protected Character getSectionFromCursor(KeyCursor cursor) throws IllegalStateException {
+        if (cursor.isSecret()) {
+            if (cursor.getKeyId() == 0L) {
                 mHasDummy = true;
             }
 
             return '#';
         } else {
-            String userId = cursor.getString(INDEX_USER_ID);
+            String userId = cursor.getRawUserId();
             if(TextUtils.isEmpty(userId)) {
                 return '?';
             } else {
@@ -122,10 +190,9 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<Character, Sec
     @Override
     protected short getSectionItemViewType(int position) {
         if(moveCursor(position)) {
-            boolean hasMaster = getCursor().getLong(INDEX_MASTER_KEY_ID) != 0L;
-            boolean isSecret = getCursor().getInt(INDEX_HAS_ANY_SECRET) != 0;
+           KeyCursor c = getCursor();
 
-            if (isSecret && !hasMaster) {
+            if (c.isSecret() && c.getKeyId() == 0L) {
                 return VIEW_ITEM_TYPE_DUMMY;
             }
         } else {
@@ -193,34 +260,47 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<Character, Sec
     }
 
     @Override
-    protected void onBindItemViewHolder(ViewHolder holder, Cursor cursor) {
+    protected void onBindItemViewHolder(ViewHolder holder, KeyCursor cursor) {
         if (holder.getItemViewTypeWithoutSections() == VIEW_ITEM_TYPE_KEY) {
             Highlighter highlighter = new Highlighter(getContext(), mQuery);
-            ((KeyItemViewHolder) holder).bindKey(new KeyItem(cursor), highlighter);
+            ((KeyItemViewHolder) holder).bindKey(cursor, highlighter);
         }
     }
 
-    private static class KeyDummyViewHolder extends SectionCursorAdapter.ViewHolder
+    public void finishSelection() {
+        Integer[] selected = mSelected.toArray(
+                new Integer[mSelected.size()]
+        );
+
+        mSelected.clear();
+
+        for(int i = 0; i < selected.length; i++) {
+            notifyItemChanged(selected[i]);
+        }
+    }
+
+    private class KeyDummyViewHolder extends SectionCursorAdapter.ViewHolder
             implements View.OnClickListener{
 
-        public KeyDummyViewHolder(View itemView) {
+        KeyDummyViewHolder(View itemView) {
             super(itemView);
 
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
+            itemView.setEnabled(getSelectedCount() == 0);
         }
 
         @Override
         public void onClick(View view) {
-
+            if(mListener != null) {
+                mListener.onKeyDummyItemClicked();
+            }
         }
     }
 
-    private static class KeyItemViewHolder extends SectionCursorAdapter.ViewHolder
+    private class KeyItemViewHolder extends SectionCursorAdapter.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
 
-        private View mLayoutData;
-        private Long mMasterKeyId;
         private TextView mMainUserId;
         private TextView mMainUserIdRest;
         private TextView mCreationDate;
@@ -228,13 +308,9 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<Character, Sec
         private View mSlinger;
         private ImageButton mSlingerButton;
 
-        public KeyItemViewHolder(View itemView) {
+        KeyItemViewHolder(View itemView) {
             super(itemView);
 
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-
-            mLayoutData = itemView.findViewById(R.id.key_list_item_data);
             mMainUserId = (TextView) itemView.findViewById(R.id.key_list_item_name);
             mMainUserIdRest = (TextView) itemView.findViewById(R.id.key_list_item_email);
             mStatus = (ImageView) itemView.findViewById(R.id.key_list_item_status_icon);
@@ -242,14 +318,21 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<Character, Sec
             mSlingerButton = (ImageButton) itemView.findViewById(R.id.key_list_item_slinger_button);
             mCreationDate = (TextView) itemView.findViewById(R.id.key_list_item_creation);
 
+            itemView.setClickable(true);
+            itemView.setLongClickable(true);
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+
+            mSlingerButton.setClickable(true);
             mSlingerButton.setOnClickListener(this);
         }
 
-        public void bindKey(KeyItem keyItem, Highlighter highlighter) {
-            Context ctx = itemView.getContext();
+        void bindKey(KeyCursor keyItem, Highlighter highlighter) {
+            itemView.setSelected(isSelected(getAdapterPosition()));
+            Context context = itemView.getContext();
 
             { // set name and stuff, common to both key types
-                OpenPgpUtils.UserId userIdSplit = keyItem.mUserId;
+                OpenPgpUtils.UserId userIdSplit = keyItem.getUserId();
                 if (userIdSplit.name != null) {
                     mMainUserId.setText(highlighter.highlight(userIdSplit.name));
                 } else {
@@ -263,63 +346,79 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<Character, Sec
                 }
             }
 
-            // sort of a hack: if this item isn't enabled, we make it clickable
-            // to intercept its click events. either way, no listener!
-            itemView.setClickable(false);
-
-            { // set edit button and status, specific by key type
-
-                mMasterKeyId = keyItem.mKeyId;
-
+            { // set edit button and status, specific by key type. Note: order is important!
                 int textColor;
+                if (keyItem.isRevoked()) {
+                    KeyFormattingUtils.setStatusImage(
+                            context,
+                            mStatus,
+                            null,
+                            KeyFormattingUtils.State.REVOKED,
+                            R.color.key_flag_gray
+                    );
 
-                // Note: order is important!
-                if (keyItem.mIsRevoked) {
-                    KeyFormattingUtils
-                            .setStatusImage(ctx, mStatus, null, KeyFormattingUtils.State.REVOKED, R.color.key_flag_gray);
                     mStatus.setVisibility(View.VISIBLE);
                     mSlinger.setVisibility(View.GONE);
-                    textColor = ContextCompat.getColor(ctx, R.color.key_flag_gray);
-                } else if (keyItem.mIsExpired) {
-                    KeyFormattingUtils.setStatusImage(ctx, mStatus, null, KeyFormattingUtils.State.EXPIRED, R.color.key_flag_gray);
+                    textColor = ContextCompat.getColor(context, R.color.key_flag_gray);
+                } else if (keyItem.isExpired()) {
+                    KeyFormattingUtils.setStatusImage(
+                            context,
+                            mStatus,
+                            null,
+                            KeyFormattingUtils.State.EXPIRED,
+                            R.color.key_flag_gray
+                    );
+
                     mStatus.setVisibility(View.VISIBLE);
                     mSlinger.setVisibility(View.GONE);
-                    textColor = ContextCompat.getColor(ctx, R.color.key_flag_gray);
-                } else if (keyItem.mIsSecret) {
+                    textColor = ContextCompat.getColor(context, R.color.key_flag_gray);
+                } else if (keyItem.isSecret()) {
                     mStatus.setVisibility(View.GONE);
                     if (mSlingerButton.hasOnClickListeners()) {
                         mSlingerButton.setColorFilter(
-                                FormattingUtils.getColorFromAttr(ctx, R.attr.colorTertiaryText),
-                                PorterDuff.Mode.SRC_IN);
+                                FormattingUtils.getColorFromAttr(context, R.attr.colorTertiaryText),
+                                PorterDuff.Mode.SRC_IN
+                        );
+
                         mSlinger.setVisibility(View.VISIBLE);
                     } else {
                         mSlinger.setVisibility(View.GONE);
                     }
-                    textColor = FormattingUtils.getColorFromAttr(ctx, R.attr.colorText);
+                    textColor = FormattingUtils.getColorFromAttr(context, R.attr.colorText);
                 } else {
                     // this is a public key - show if it's verified
-                    if (keyItem.mIsVerified) {
-                        KeyFormattingUtils.setStatusImage(ctx, mStatus, KeyFormattingUtils.State.VERIFIED);
+                    if (keyItem.isVerified()) {
+                        KeyFormattingUtils.setStatusImage(
+                                context,
+                                mStatus,
+                                KeyFormattingUtils.State.VERIFIED
+                        );
+
                         mStatus.setVisibility(View.VISIBLE);
                     } else {
-                        KeyFormattingUtils.setStatusImage(ctx, mStatus, KeyFormattingUtils.State.UNVERIFIED);
+                        KeyFormattingUtils.setStatusImage(
+                                context,
+                                mStatus,
+                                KeyFormattingUtils.State.UNVERIFIED
+                        );
+
                         mStatus.setVisibility(View.VISIBLE);
                     }
                     mSlinger.setVisibility(View.GONE);
-                    textColor = FormattingUtils.getColorFromAttr(ctx, R.attr.colorText);
+                    textColor = FormattingUtils.getColorFromAttr(context, R.attr.colorText);
                 }
 
                 mMainUserId.setTextColor(textColor);
                 mMainUserIdRest.setTextColor(textColor);
 
-                if (keyItem.mHasDuplicate) {
-                    String dateTime = DateUtils.formatDateTime(ctx,
-                            keyItem.mCreation.getTime(),
+                if (keyItem.hasDuplicate()) {
+                    String dateTime = DateUtils.formatDateTime(context,
+                            keyItem.getCreationTime(),
                             DateUtils.FORMAT_SHOW_DATE
                                     | DateUtils.FORMAT_SHOW_TIME
                                     | DateUtils.FORMAT_SHOW_YEAR
                                     | DateUtils.FORMAT_ABBREV_MONTH);
-                    mCreationDate.setText(ctx.getString(R.string.label_key_created,
+                    mCreationDate.setText(context.getString(R.string.label_key_created,
                             dateTime));
                     mCreationDate.setTextColor(textColor);
                     mCreationDate.setVisibility(View.VISIBLE);
@@ -332,11 +431,47 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<Character, Sec
 
         @Override
         public void onClick(View v) {
+            int pos = getAdapterPosition();
+            switch (v.getId()) {
+                case R.id.key_list_item_slinger_button:
+                    if(mListener != null) {
+                        mListener.onSlingerButtonClicked(getItemId());
+                    }
+                    break;
+
+                default:
+                    if(getSelectedCount() == 0) {
+                        if(mListener != null) {
+                            mListener.onKeyItemClicked(getItemId());
+                        }
+                    } else {
+                        if(isSelected(pos)) {
+                            deselectPosition(pos);
+                        } else {
+                            selectPosition(pos);
+                        }
+
+                        if(mListener != null) {
+                            mListener.onSelectionStateChanged(getSelectedCount());
+                        }
+                    }
+                    break;
+            }
 
         }
 
         @Override
         public boolean onLongClick(View v) {
+            System.out.println("Long Click!");
+            if(getSelectedCount() == 0) {
+                selectPosition(getAdapterPosition());
+
+                if(mListener != null) {
+                    mListener.onSelectionStateChanged(getSelectedCount());
+                }
+                return true;
+            }
+
             return false;
         }
     }
@@ -352,5 +487,113 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<Character, Sec
         public void bind(String title) {
             mText1.setText(title);
         }
+    }
+
+    public static class KeyCursor extends CursorWrapper {
+        public static final String[] PROJECTION = new String[]{
+                KeychainContract.KeyRings._ID,
+                KeychainContract.KeyRings.MASTER_KEY_ID,
+                KeychainContract.KeyRings.USER_ID,
+                KeychainContract.KeyRings.IS_REVOKED,
+                KeychainContract.KeyRings.IS_EXPIRED,
+                KeychainContract.KeyRings.VERIFIED,
+                KeychainContract.KeyRings.HAS_ANY_SECRET,
+                KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
+                KeychainContract.KeyRings.FINGERPRINT,
+                KeychainContract.KeyRings.CREATION,
+                KeychainContract.KeyRings.HAS_ENCRYPT
+        };
+
+        public static final int INDEX_ENTRY_ID = 0;
+        public static final int INDEX_MASTER_KEY_ID = 1;
+        public static final int INDEX_USER_ID = 2;
+        public static final int INDEX_IS_REVOKED = 3;
+        public static final int INDEX_IS_EXPIRED = 4;
+        public static final int INDEX_VERIFIED = 5;
+        public static final int INDEX_HAS_ANY_SECRET = 6;
+        public static final int INDEX_HAS_DUPLICATE_USER_ID = 7;
+        public static final int INDEX_FINGERPRINT = 8;
+        public static final int INDEX_CREATION = 9;
+        public static final int INDEX_HAS_ENCRYPT = 10;
+
+        public static KeyCursor wrap(Cursor cursor) {
+            if(cursor != null) {
+                return new KeyCursor(cursor);
+            } else {
+                return null;
+            }
+        }
+
+        /**
+         * Creates a cursor wrapper.
+         *
+         * @param cursor The underlying cursor to wrap.
+         */
+        private KeyCursor(Cursor cursor) {
+            super(cursor);
+        }
+
+        public int getEntryId() {
+            return getInt(INDEX_ENTRY_ID);
+        }
+
+        public String getRawUserId() {
+            return getString(INDEX_USER_ID);
+        }
+
+        public OpenPgpUtils.UserId getUserId() {
+            return KeyRing.splitUserId(getRawUserId());
+        }
+
+        public long getKeyId() {
+            return getLong(INDEX_MASTER_KEY_ID);
+        }
+
+        public boolean hasDuplicate() {
+            return getLong(INDEX_HAS_DUPLICATE_USER_ID) > 0L;
+        }
+
+        public boolean hasEncrypt() {
+            return getInt(INDEX_HAS_ENCRYPT) != 0;
+        }
+
+        public long getCreationTime() {
+            return getLong(INDEX_CREATION) * 1000;
+        }
+
+        public Date getCreationDate() {
+            return new Date(getCreationTime());
+        }
+
+        public byte[] getRawFingerprint() {
+            return getBlob(INDEX_FINGERPRINT);
+        }
+
+        public String getFingerprint() {
+            return KeyFormattingUtils.convertFingerprintToHex(getRawFingerprint());
+        }
+
+        public boolean isSecret() {
+            return getInt(INDEX_HAS_ANY_SECRET) != 0;
+        }
+
+        public boolean isRevoked() {
+            return getInt(INDEX_IS_REVOKED) > 0;
+        }
+
+        public boolean isExpired() {
+            return getInt(INDEX_IS_EXPIRED) > 0;
+        }
+
+        public boolean isVerified() {
+            return getInt(INDEX_VERIFIED) > 0;
+        }
+    }
+
+    public interface KeyListListener {
+        void onKeyDummyItemClicked();
+        void onKeyItemClicked(long masterKeyId);
+        void onSlingerButtonClicked(long masterKeyId);
+        void onSelectionStateChanged(int selectedCount);
     }
 }

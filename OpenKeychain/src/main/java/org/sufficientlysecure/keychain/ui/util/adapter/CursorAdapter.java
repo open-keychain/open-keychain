@@ -9,11 +9,11 @@ import android.support.v7.widget.RecyclerView;
 
 import org.sufficientlysecure.keychain.util.Log;
 
-public abstract class CursorAdapter extends RecyclerView.Adapter {
+public abstract class CursorAdapter<C extends Cursor> extends RecyclerView.Adapter {
 
     public static final String TAG = "CursorAdapter";
 
-    private Cursor mCursor;
+    private C mCursor;
     private Context mContext;
     private boolean mDataValid;
 
@@ -39,7 +39,7 @@ public abstract class CursorAdapter extends RecyclerView.Adapter {
      * @param c The cursor from which to get the data.
      * @param context The context
      */
-    public CursorAdapter(Context context, Cursor c) {
+    public CursorAdapter(Context context, C c) {
         init(context, c, FLAG_REGISTER_CONTENT_OBSERVER);
     }
 
@@ -51,11 +51,11 @@ public abstract class CursorAdapter extends RecyclerView.Adapter {
      * @param flags Flags used to determine the behavior of the adapter
      * @see #FLAG_REGISTER_CONTENT_OBSERVER
      */
-    public CursorAdapter(Context context, Cursor c, int flags) {
+    public CursorAdapter(Context context, C c, int flags) {
         init(context, c, flags);
     }
 
-    private void init(Context context, Cursor c, int flags) {
+    private void init(Context context, C c, int flags) {
         boolean cursorPresent = c != null;
         mCursor = c;
         mDataValid = cursorPresent;
@@ -80,7 +80,7 @@ public abstract class CursorAdapter extends RecyclerView.Adapter {
      * Returns the cursor.
      * @return the cursor.
      */
-    public Cursor getCursor() {
+    public C getCursor() {
         return mCursor;
     }
 
@@ -140,7 +140,7 @@ public abstract class CursorAdapter extends RecyclerView.Adapter {
      * @param cursor The cursor moved to the correct position.
      * @return The id of the dataset
      */
-    public long getIdFromCursor(Cursor cursor) {
+    public long getIdFromCursor(C cursor) {
         if(cursor != null) {
             return cursor.getPosition();
         } else {
@@ -185,7 +185,7 @@ public abstract class CursorAdapter extends RecyclerView.Adapter {
      *
      * @param cursor The new cursor to be used
      */
-    public void changeCursor(Cursor cursor) {
+    public void changeCursor(C cursor) {
         Cursor old = swapCursor(cursor);
         if (old != null) {
             old.close();
@@ -202,7 +202,7 @@ public abstract class CursorAdapter extends RecyclerView.Adapter {
      * If the given new Cursor is the same instance is the previously set
      * Cursor, null is also returned.
      */
-    public Cursor swapCursor(Cursor newCursor) {
+    public Cursor swapCursor(C newCursor) {
         if (newCursor == mCursor) {
             return null;
         }
