@@ -120,7 +120,8 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
     public long[] getSelectedMasterKeyIds() {
         long[] keys = new long[mSelected.size()];
         for(int i = 0; i < keys.length; i++) {
-            if(!moveCursor(mSelected.get(i))) {
+            int index = getCursorPositionWithoutSections(mSelected.get(i));
+            if(!moveCursor(index)) {
                 return keys;
             }
 
@@ -132,7 +133,8 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
     public boolean isAnySecretKeySelected() {
         for(int i = 0; i < mSelected.size(); i++) {
-            if(!moveCursor(mSelected.get(i))) {
+            int index = getCursorPositionWithoutSections(mSelected.get(i));
+            if(!moveCursor(index)) {
                 return false;
             }
 

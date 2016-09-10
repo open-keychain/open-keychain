@@ -174,7 +174,7 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
 
     @Override
     public void onDestroy() {
-        setAdapter(null);
+        //setAdapter(null);
         super.onDestroy();
     }
 
