@@ -77,6 +77,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
@@ -88,8 +89,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
     static final int REQUEST_ACTION = 1;
-    static final String ORDER = KeyRings.HAS_ANY_SECRET + " DESC, " + KeyRings.USER_ID + " COLLATE NOCASE ASC";
-
     private static final int REQUEST_DELETE = 2;
     private static final int REQUEST_VIEW_KEY = 3;
 
@@ -141,6 +140,10 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                 case R.id.menu_key_list_multi_delete: {
                     long[] keyIds = getAdapter().getSelectedMasterKeyIds();
                     boolean hasSecret = getAdapter().isAnySecretKeySelected();
+
+                    System.out.println(Arrays.toString(keyIds));
+                    System.out.println(hasSecret);
+
                     Intent intent = new Intent(getActivity(), DeleteKeyDialogActivity.class);
                     intent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS, keyIds);
                     intent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, hasSecret);
@@ -256,36 +259,11 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         final FragmentActivity activity = getActivity();
         activity.setTitle(R.string.app_name);
 
-        //mStickyList.setOnItemClickListener(this);
-        //mStickyList.setAreHeadersSticky(true);
-        //mStickyList.setDrawingListUnderStickyHeader(false);
-        //mStickyList.setFastScrollEnabled(true);
-
-        /* Adds an empty footer view so that the Floating Action Button won't block content
-        // in last few rows.
-        View footer = new View(activity);
-
-        int spacing = (int) android.util.TypedValue.applyDimension(
-                android.util.TypedValue.COMPLEX_UNIT_DIP, 72, getResources().getDisplayMetrics()
-        );
-
-        android.widget.AbsListView.LayoutParams params = new android.widget.AbsListView.LayoutParams(
-                android.widget.AbsListView.LayoutParams.MATCH_PARENT,
-                spacing
-        );
-
-        footer.setLayoutParams(params);
-        //mStickyList.addFooterView(footer, null, false);
-        */
-
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
         // Start out with a progress indicator.
-        hideList(true);
-
-        // this view is made visible if no data is available
-        // mStickyList.setEmptyView(activity.findViewById(R.id.key_list_empty));
+        hideList(false);
 
         // click on search button (in empty view) starts query for search string
         vSearchContainer = (ViewAnimator) activity.findViewById(R.id.search_container);
@@ -336,7 +314,9 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), uri, KeyAdapter.PROJECTION, null, null, ORDER);
+        return new CursorLoader(getActivity(), uri,
+                KeySectionedListAdapter.KeyCursor.PROJECTION, null, null,
+                KeySectionedListAdapter.KeyCursor.ORDER);
     }
 
     @Override

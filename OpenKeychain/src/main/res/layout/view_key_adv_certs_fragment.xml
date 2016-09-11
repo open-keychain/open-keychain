@@ -26,22 +26,45 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+        <LinearLayout
+            android:id="@android:id/progress"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/certs_list"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:scrollbarStyle="outsideOverlay" />
+            android:layout_height="match_parent"
+            android:gravity="center">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/empty_certs"
-            android:id="@+id/empty"
-            android:visibility="gone"
-            android:layout_gravity="center" />
+            <ProgressBar
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@android:id/widget_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@android:id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:clipToPadding="false" />
+
+            <TextView
+                android:id="@android:id/empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/empty_certs"
+                android:visibility="gone"
+                android:layout_gravity="center" />
+
+        </RelativeLayout>
 
     </FrameLayout>
 

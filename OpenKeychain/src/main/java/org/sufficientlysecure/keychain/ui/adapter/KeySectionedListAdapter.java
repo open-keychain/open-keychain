@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -92,7 +91,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             }
         }
 
-        return (KeyCursor) super.swapCursor(cursor);
+        return super.swapCursor(cursor);
     }
 
     public void setKeyListener(KeyListListener listener) {
@@ -492,6 +491,9 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
     }
 
     public static class KeyCursor extends CursorWrapper {
+        public static final String ORDER = KeychainContract.KeyRings.HAS_ANY_SECRET
+                + " DESC, " + KeychainContract.KeyRings.USER_ID + " COLLATE NOCASE ASC";
+
         public static final String[] PROJECTION = new String[]{
                 KeychainContract.KeyRings._ID,
                 KeychainContract.KeyRings.MASTER_KEY_ID,

@@ -23,7 +23,6 @@ dependencies {
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     compile 'com.splitwise:tokenautocomplete:2.0.7@aar'
-    compile 'se.emilsjolander:stickylistheaders:2.7.0'
     compile 'org.sufficientlysecure:html-textview:1.8'
     compile 'org.sufficientlysecure:donations:2.4'
     compile 'com.nispok:snackbar:2.11.0'
@@ -102,7 +101,6 @@ dependencyVerification {
             'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
             'org.ocpsoft.prettytime:prettytime:ef7098d973ae78b57d1a22dc37d3b8a771bf030301300e24055d676b6cdc5e75',
             'com.splitwise:tokenautocomplete:f56239588390f103b270b7c12361d99b06313a5a0410dc7f66e241ac4baf9baa',
-            'se.emilsjolander:stickylistheaders:a08ca948aa6b220f09d82f16bbbac395f6b78897e9eeac6a9f0b0ba755928eeb',
             'org.sufficientlysecure:html-textview:206f484fe4178be6c831fe680de558764967e7b56496c4cc7f37f2979a477df6',
             'org.sufficientlysecure:donations:96f8197bab26dfe41900d824f10f8f1914519cd62eedb77bdac5b223eccdf0a6',
             'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',

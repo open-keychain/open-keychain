@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import org.sufficientlysecure.keychain.util.Log;
 
 public abstract class CursorAdapter<C extends Cursor> extends RecyclerView.Adapter {
-
     public static final String TAG = "CursorAdapter";
 
     private C mCursor;
@@ -202,12 +201,12 @@ public abstract class CursorAdapter<C extends Cursor> extends RecyclerView.Adapt
      * If the given new Cursor is the same instance is the previously set
      * Cursor, null is also returned.
      */
-    public Cursor swapCursor(C newCursor) {
+    public C swapCursor(C newCursor) {
         if (newCursor == mCursor) {
             return null;
         }
 
-        Cursor oldCursor = mCursor;
+        C oldCursor = mCursor;
         if (oldCursor != null) {
             if (mChangeObserver != null) oldCursor.unregisterContentObserver(mChangeObserver);
             if (mDataSetObserver != null) oldCursor.unregisterDataSetObserver(mDataSetObserver);
