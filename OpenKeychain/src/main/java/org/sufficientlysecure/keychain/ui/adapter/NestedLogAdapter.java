@@ -24,6 +24,8 @@ import java.util.List;
 public class NestedLogAdapter extends RecyclerView.Adapter<NestedLogAdapter.LogEntryViewHolder> {
     private static final int ENTRY_TYPE_REGULAR = 0;
     private static final int ENTRY_TYPE_SUBLOG = 1;
+    private static final int LOG_ENTRY_ITEM_INDENT = 2;
+
 
     private final int mIndentFactor;
     private LogActionListener mListener;
@@ -57,7 +59,7 @@ public class NestedLogAdapter extends RecyclerView.Adapter<NestedLogAdapter.LogE
         int lastSection = 0;
         for (int i = 0; i < list.size(); i++) {
             OperationResult.LogEntryParcel parcel = list.get(i);
-            if(parcel.mIndent < 1) {
+            if(parcel.mIndent < LOG_ENTRY_ITEM_INDENT) {
                 lastSection = i;
             }
 

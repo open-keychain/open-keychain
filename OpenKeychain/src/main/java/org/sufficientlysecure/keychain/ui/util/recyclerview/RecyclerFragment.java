@@ -38,6 +38,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
@@ -134,6 +136,10 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
 
         RecyclerView listView = new RecyclerView(context);
         listView.setId(INTERNAL_LIST_VIEW_ID);
+
+        int padding = FormattingUtils.dpToPx(context, 8);
+        listView.setPadding(padding, 0, padding, 0);
+        listView.setClipToPadding(false);
 
         listContainer.addView(listView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
