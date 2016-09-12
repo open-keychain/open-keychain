@@ -44,8 +44,8 @@
   <string name="section_keys">Podklíče</string>
   <string name="section_cloud_search">Vyhledávání klíče</string>
   <string name="section_cloud_search_summary">Keyserver, keybase.io</string>
-  <string name="section_passphrase_cache">Hesla a PINy</string>
-  <string name="section_passphrase_cache_summary">Přenášení, uživatelské rozhraní, čas po který si pamatovat</string>
+  <string name="section_passphrase">Hesla a PINy</string>
+  <string name="section_passphrase_summary">Přenášení, uživatelské rozhraní, čas po který si pamatovat</string>
   <string name="section_proxy_settings">Anonimita na síti</string>
   <string name="section_proxy_settings_summary">Tor, Nastavení proxy</string>
   <string name="section_gui">Rozhraní</string>

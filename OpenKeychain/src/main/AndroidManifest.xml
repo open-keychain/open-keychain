@@ -489,8 +489,13 @@
             android:label="@string/title_cache_ttl_preference"
             android:windowSoftInputMode="stateHidden" />
         <activity
+            android:name=".ui.SettingsMasterPassphraseActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_change_master_passphrase"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
             android:name=".ui.BackupActivity"
-            android:configChanges="keyboardHidden|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_backup">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -758,8 +763,12 @@
                 <data android:scheme="OpenPGP4fpr" />
             </intent-filter>
         </activity>
-
-
+        <activity android:name=".ui.MigrateSymmetricActivity"/>
+        <activity android:name=".ui.SetMasterPassphraseActivity"/>
+        <activity android:name=".ui.SettingsPassphraseWorkflowActivity"/>
+        <activity
+                android:name=".ui.RevertChangeWorkflowDialogActivity"
+                android:theme="@style/Theme.Keychain.Transparent" />
         <activity
             android:name=".ui.LogDisplayActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -768,8 +777,11 @@
             android:name=".ui.ConsolidateDialogActivity"
             android:theme="@style/Theme.Keychain.Transparent" />
         <activity
-            android:name=".ui.PassphraseDialogActivity"
+            android:name=".ui.passphrasedialog.PassphraseDialogActivity"
             android:theme="@style/Theme.Keychain.Transparent" />
+        <activity
+                android:name=".ui.AppLockActivity"
+                android:launchMode="singleTop"/>
         <activity
             android:name=".ui.RetryUploadDialogActivity"
             android:theme="@style/Theme.Keychain.Transparent" />

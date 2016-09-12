@@ -35,15 +35,20 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
+import org.sufficientlysecure.keychain.provider.ProviderReader.NotFoundException;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
+import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 /**
@@ -82,34 +87,78 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
+        Long masterKeyId = saveParcel.mMasterKeyId;
+        boolean isNewKey = masterKeyId == null;
+        Passphrase keyringPassphrase;
+
+        // get the keyring's passphrase
+        if (isNewKey) {
+            keyringPassphrase = saveParcel.mPassphrase;
+        } else {
+            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.read().getCachedPublicKeyRing(masterKeyId);
+
+            try {
+                switch (cachedPublicKeyRing.getSecretKeyringType()) {
+                    case PASSPHRASE_EMPTY: {
+                        keyringPassphrase = new Passphrase();
+                        break;
+                    }
+                    case PASSPHRASE: {
+                        keyringPassphrase = cryptoInput.getPassphrase();
+                        if (keyringPassphrase == null) {
+                            log.add(LogType.MSG_ED_REQUIRE_KEYRING_PASSPHRASE, 2);
+                            return new EditKeyResult(log,
+                                    RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
+                                    cryptoInput);
+                        }
+                        break;
+                    }
+                    default: {
+                        throw new AssertionError("Unsupported keyring type");
+                    }
+                }
+            } catch (NotFoundException e) {
+                log.add(LogType.MSG_ED_ERROR_KEYRING_NOT_FOUND, 2);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+            }
+        }
+
         // Perform actual modification (or creation)
         PgpEditKeyResult modifyResult;
         {
             PgpKeyOperation keyOperations =
                     new PgpKeyOperation(new ProgressScaler(mProgressable, 10, 60, 100), mCancelled);
 
-            // If a key id is specified, fetch and edit
-            if (saveParcel.mMasterKeyId != null) {
+            if (isNewKey) {
+                modifyResult = keyOperations.createSecretKeyRing(saveParcel);
+            } else {
                 try {
-
                     log.add(LogType.MSG_ED_FETCHING, 1,
                             KeyFormattingUtils.convertKeyIdToHex(saveParcel.mMasterKeyId));
+
+                    // update the keyring along the way
                     CanonicalizedSecretKeyRing secRing =
-                            mProviderHelper.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
+                            mProviderHelper.read().getCanonicalizedSecretKeyRingWithMerge(
+                                    saveParcel.mMasterKeyId, keyringPassphrase);
 
                     modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
                     if (modifyResult.isPending()) {
                         log.add(modifyResult, 1);
                         return new EditKeyResult(log, modifyResult);
                     }
-
                 } catch (NotFoundException e) {
-                    log.add(LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
+                    log.add(LogType.MSG_ED_ERROR_KEYRING_NOT_FOUND, 2);
+                    return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                } catch (ByteArrayEncryptor.EncryptDecryptException e) {
+                    log.add(LogType.MSG_ED_ERROR_DECRYPT_KEYRING, 2);
+                    return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
+                    log.add(LogType.MSG_ED_ERROR_INCORRECT_PASSPHRASE, 2);
+                    return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                } catch (ProviderReader.FailedMergeException e) {
+                    log.add(LogType.MSG_ED_ERROR_MERGE_KEYRING, 2);
                     return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
                 }
-            } else {
-                // otherwise, create new one
-                modifyResult = keyOperations.createSecretKeyRing(saveParcel);
             }
         }
 
@@ -161,9 +210,11 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
             }
         }
 
+        KeyringPassphrases passphrases = new KeyringPassphrases(ring.getMasterKeyId(), keyringPassphrase);
+
         // Save the new keyring.
         SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 60, 95, 100));
+                .write().saveSecretKeyRing(ring, passphrases, new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here

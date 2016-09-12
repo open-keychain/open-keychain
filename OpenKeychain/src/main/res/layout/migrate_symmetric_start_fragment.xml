@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/first_time_1"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="3" />
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="16dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/migrate_changes_to_app"
+                android:layout_weight="1"/>
+
+        <TextView
+                android:background="?attr/colorButtonRow"
+                android:id="@+id/start_migration"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/btn_start_migration"
+                android:textAllCaps="true"
+                android:minHeight="?android:attr/listPreferredItemHeight"
+                android:drawableRight="@drawable/ic_chevron_right_grey_24dp"
+                android:drawablePadding="8dp"
+                android:gravity="right|center_vertical"
+                android:clickable="true"
+                style="?android:attr/borderlessButtonStyle" />
+    </LinearLayout>
+</ScrollView>
+

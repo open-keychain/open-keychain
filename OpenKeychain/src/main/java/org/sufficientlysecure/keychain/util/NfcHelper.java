@@ -22,6 +22,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -32,11 +33,11 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.lang.ref.WeakReference;
@@ -128,11 +129,11 @@ public class NfcHelper {
                                 try {
                                     Uri blobUri =
                                             KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                                    mNfcKeyringBytes = (byte[]) mProviderHelper.getGenericData(
+                                    mNfcKeyringBytes = (byte[]) mProviderHelper.read().getGenericData(
                                             blobUri,
                                             KeychainContract.KeyRingData.KEY_RING_DATA,
-                                            ProviderHelper.FIELD_TYPE_BLOB);
-                                } catch (ProviderHelper.NotFoundException e) {
+                                            Cursor.FIELD_TYPE_BLOB);
+                                } catch (ProviderReader.NotFoundException e) {
                                     Log.e(Constants.TAG, "key not found!", e);
                                 }
 

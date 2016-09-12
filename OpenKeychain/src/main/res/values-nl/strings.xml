@@ -48,7 +48,7 @@
   <string name="section_cloud_search">Zoek naar sleutels</string>
   <string name="section_cloud_search_summary">Keyserver, keybase.io</string>
   <string name="section_passphrase_cache">Wachtwoorden en PIN\'s</string>
-  <string name="section_passphrase_cache_summary">Afhandeling, gebruikersinterface, herrineringstijd</string>
+  <string name="section_passphrase_summary">Afhandeling, gebruikersinterface, herrineringstijd</string>
   <string name="section_proxy_settings">Netwerkanonimiteit</string>
   <string name="section_proxy_settings_summary">Tor, Proxy-instellingen</string>
   <string name="section_gui">Interface</string>
@@ -897,7 +897,7 @@
   <string name="msg_mf_master">Bezig met wijzigen van hoofdcertificaten</string>
   <string name="msg_mf_notation_empty">Bezig met toevoegen van leeg notatiepakket</string>
   <string name="msg_mf_notation_pin">Bezig met toevoegen van PIN-notatiepakket</string>
-  <string name="msg_mf_passphrase">Bezig met wijzigen van wachtwoord voor sleutelbos</string>
+  <string name="msg_mf_add_s2k_encryption">Bezig met wijzigen van wachtwoord voor sleutelbos</string>
   <string name="msg_mf_pin">Bezig met veranderen van PIN op kaart</string>
   <string name="msg_mf_admin_pin">Bezig met veranderen van administrator-PIN op kaart</string>
   <string name="msg_mf_passphrase_key">Bezig met opnieuw versleutelen van subsleutel %s met nieuw wachtwoord</string>
@@ -907,7 +907,7 @@
   <string name="msg_mf_primary_new">Bezig met aanmaken van nieuw certificaat voor nieuwe primaire gebruikers-ID</string>
   <string name="msg_mf_restricted_mode">Veranderen naar beperkte bewerkingsmodus</string>
   <string name="msg_mf_subkey_change">Bezig met wijzigen van subsleutel %s</string>
-  <string name="msg_mf_require_passphrase">Wachtwoord vereist voor bewerkingen</string>
+  <string name="msg_mf_require_subkey_passphrase">Wachtwoord vereist voor bewerkingen</string>
   <string name="msg_mf_subkey_new">Bezig met toevoegen van nieuwe subsleutel of type %s</string>
   <string name="msg_mf_subkey_new_id">Nieuwe subsleutel-ID: %s</string>
   <string name="msg_mf_error_past_expiry">Verloopdatum kan niet in het verleden zijn!</string>
@@ -928,22 +928,22 @@
   <string name="msg_con_error_bad_state">Consolidatie gestart terwijl er geen database was gecached! Dit is waarschijnlijk een bug, gelieve een verslag in te dienen!</string>
   <string name="msg_con_error_concurrent">Consolidatie afgebroken, loopt al op een andere draad!</string>
   <string name="msg_con_save_secret">Bezig met opslaan van geheime sleutelbossen</string>
-  <string name="msg_con_save_public">Bezig met opslaan van publieke sleutelbossen</string>
+  <string name="msg_con_save_all_public">Bezig met opslaan van publieke sleutelbossen</string>
   <string name="msg_con_db_clear">Bezig met wissen van database</string>
   <string name="msg_con_success">Database succesvol geconsolideerd</string>
   <string name="msg_con_critical_in">Begin van kritieke fase</string>
   <string name="msg_con_critical_out">Einde van kritieke fase</string>
-  <string name="msg_con_delete_public">Bezig met verwijderen van cachebestand van publieke sleutelbos</string>
+  <string name="msg_con_delete_all_public">Bezig met verwijderen van cachebestand van publieke sleutelbos</string>
   <string name="msg_con_delete_secret">Bezig met verwijderen van cachebestand van geheime sleutelbos</string>
   <string name="msg_con_error_db">Fout bij openen van database!</string>
-  <string name="msg_con_error_io_public">I/O-fout bij schrijven van publieke sleutels naar cache!</string>
+  <string name="msg_con_error_io_all_public">I/O-fout bij schrijven van publieke sleutels naar cache!</string>
   <string name="msg_con_error_io_secret">I/O-fout bij schrijven van geheime sleutels naar cache!</string>
-  <string name="msg_con_error_public">Fout bij opnieuw importeren van publieke sleutels!</string>
+  <string name="msg_con_error_all_public">Fout bij opnieuw importeren van publieke sleutels!</string>
   <string name="msg_con_error_secret">Fout bij opnieuw importeren van geheime sleutels!</string>
   <string name="msg_con_recover">Bezig met hervatten van consolidatieproces</string>
   <string name="msg_con_recursive">Recursief samenvoegen wordt overgeslaan</string>
   <string name="msg_con_recover_unknown">Bezig met hervatten van consolidatieproces uit onbekende staat</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Bezig met opnieuw importeren van een publieke sleutel</item>
     <item quantity="other">Bezig met opnieuw importeren van %d publieke sleutels</item>
   </plurals>
@@ -953,7 +953,7 @@
     <item quantity="other">Bezig met opnieuw importeren van %d geheime sleutels</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Geen geheime sleutel om opnieuw te importeren, bewerking wordt overgeslaan…</string>
-  <string name="msg_con_warn_delete_public">Uitzondering bij verwijderen van publiek cachebestand</string>
+  <string name="msg_con_warn_delete_all_public">Uitzondering bij verwijderen van publiek cachebestand</string>
   <string name="msg_con_warn_delete_secret">Uitzondering bij verwijderen van geheim cachebestand</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Bezig met uitvoeren van sleutelbewerking</string>
@@ -1045,7 +1045,7 @@
   <string name="msg_pse_error_no_passphrase">Geen wachtwoord opgegeven!</string>
   <string name="msg_pse_error_pgp">Interne OpenPGP-fout!</string>
   <string name="msg_pse_error_sig">OpenPGP-ondertekeningsuitzondering tegengekomen!</string>
-  <string name="msg_pse_error_unlock">Onbekende fout bij ontgrendelen van sleutel!</string>
+  <string name="msg_pse_error_unlock_subkey">Onbekende fout bij ontgrendelen van sleutel!</string>
   <string name="msg_pse_key_ok">Bezig met versleutelen voor sleutel: %s</string>
   <string name="msg_pse_key_unknown">Ontbrekende sleutel voor versleuteling: %s</string>
   <string name="msg_pse_key_warn">Slechte sleutel voor versleuteling: %s</string>
@@ -1070,7 +1070,7 @@
   <string name="msg_crt_error_self">Kan self-certificaat zo niet uitgeven!</string>
   <string name="msg_crt_error_master_not_found">Hoofdsleutel niet gevonden!</string>
   <string name="msg_crt_error_nothing">Geen sleutels gecertificeerd!</string>
-  <string name="msg_crt_error_unlock">Fout bij ontgrendelen van hoofdsleutel!</string>
+  <string name="msg_crt_error_unlock_master">Fout bij ontgrendelen van hoofdsleutel!</string>
   <string name="msg_crt">Bezig met certificeren van sleutelbossen</string>
   <string name="msg_crt_master_fetch">Bezig met ophalen van gecertificeerde hoofdsleutel</string>
   <string name="msg_crt_nfc_return">Terugkeren naar NFC-scherm</string>

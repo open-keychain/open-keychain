@@ -22,8 +22,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ViewAnimator;
-
-import com.tokenautocomplete.TokenCompleteTextView;
 import com.tokenautocomplete.TokenCompleteTextView.TokenListener;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -32,7 +30,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderReader.NotFoundException;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
@@ -135,7 +133,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     private void preselectKeys(Long signatureKeyId, long[] encryptionKeyIds) {
         if (signatureKeyId != null) {
             try {
-                CachedPublicKeyRing keyring = mProviderHelper.getCachedPublicKeyRing(
+                CachedPublicKeyRing keyring = mProviderHelper.read().getCachedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingUri(signatureKeyId));
                 if (keyring.hasAnySecret()) {
                     mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
@@ -149,7 +147,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
             for (long preselectedId : encryptionKeyIds) {
                 try {
                     CanonicalizedPublicKeyRing ring =
-                            mProviderHelper.getCanonicalizedPublicKeyRing(preselectedId);
+                            mProviderHelper.read().getCanonicalizedPublicKeyRing(preselectedId);
                     mEncryptKeyView.addObject(new KeyItem(ring));
                 } catch (NotFoundException e) {
                     Log.e(Constants.TAG, "key not found!", e);

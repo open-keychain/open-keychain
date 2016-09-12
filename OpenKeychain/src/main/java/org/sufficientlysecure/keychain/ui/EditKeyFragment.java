@@ -34,7 +34,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -49,8 +48,7 @@ import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
-import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.provider.ProviderReader.NotFoundException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -67,7 +65,7 @@ import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.Date;
 
@@ -139,6 +137,11 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
         mAddUserId = view.findViewById(R.id.edit_key_action_add_user_id);
         mAddSubkey = view.findViewById(R.id.edit_key_action_add_key);
 
+        if (Preferences.getPreferences(getActivity()).usesSinglePassphraseWorkflow()) {
+            view.findViewById(R.id.password_header).setVisibility(View.GONE);
+            mChangePassphrase.setVisibility(View.GONE);
+        }
+
         return view;
     }
 
@@ -201,7 +204,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
         try {
             Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
             CachedPublicKeyRing keyRing =
-                    new ProviderHelper(getActivity()).getCachedPublicKeyRing(secretUri);
+                    new ProviderHelper(getActivity()).read().getCachedPublicKeyRing(secretUri);
             long masterKeyId = keyRing.getMasterKeyId();
 
             // check if this is a master secret key we can work with
@@ -339,8 +342,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                     Bundle data = message.getData();
 
                     // cache new returned passphrase!
-                    mSaveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(
-                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)));
+                    mSaveKeyringParcel.mPassphrase = data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE);
                 }
             }
         };

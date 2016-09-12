@@ -17,9 +17,12 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import java.util.Random;
-
 import junit.framework.Assert;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
+
+import java.util.Iterator;
+import java.util.Random;
 
 
 public class TestingUtils {
@@ -57,6 +60,19 @@ public class TestingUtils {
             Assert.assertEquals(msg, expected[i], actual[actual.length -expected.length +i]);
         }
 
+    }
+
+    /**
+     * Convenience method for pairing a passphrase to all subkeys
+     */
+    public static KeyringPassphrases generateImportPassphrases(UncachedKeyRing keyRing, Passphrase subkeyPassphrase, Passphrase keyringPassphrase) {
+        KeyringPassphrases passphrases = new KeyringPassphrases(keyRing.getMasterKeyId(), keyringPassphrase);
+        Iterator<UncachedPublicKey> iterator = keyRing.getPublicKeys();
+        while(iterator.hasNext()) {
+            UncachedPublicKey key = iterator.next();
+            passphrases.mSubkeyPassphrases.put(key.getKeyId(), subkeyPassphrase);
+        }
+        return passphrases;
     }
 
 }

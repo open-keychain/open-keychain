@@ -34,10 +34,12 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderReader.NotFoundException;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 /** An operation which promotes a public key ring to a secret one.
@@ -70,7 +72,7 @@ public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
                 log.add(LogType.MSG_PR_FETCHING, 1,
                         KeyFormattingUtils.convertKeyIdToHex(promoteKeyringParcel.mKeyRingId));
                 CanonicalizedPublicKeyRing pubRing =
-                        mProviderHelper.getCanonicalizedPublicKeyRing(promoteKeyringParcel.mKeyRingId);
+                        mProviderHelper.read().getCanonicalizedPublicKeyRing(promoteKeyringParcel.mKeyRingId);
 
                 if (promoteKeyringParcel.mSubKeyIds == null) {
                     log.add(LogType.MSG_PR_ALL, 1);
@@ -114,8 +116,11 @@ public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
         setPreventCancel();
 
         // Save the new keyring.
+        // TODO: passphrase is empty for now, change when migrating to single passphrase for app
         SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(promotedRing, new ProgressScaler(mProgressable, 60, 95, 100));
+                .write().saveSecretKeyRing(promotedRing,
+                        new KeyringPassphrases(promotedRing.getMasterKeyId(), new Passphrase()),
+                        new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here

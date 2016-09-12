@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
@@ -26,7 +27,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
-
+import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
+import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -34,6 +36,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -44,9 +47,6 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
-import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class SafeSlingerActivity extends BaseActivity
@@ -103,8 +103,8 @@ public class SafeSlingerActivity extends BaseActivity
         // retrieve public key blob and start SafeSlinger
         Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId);
         try {
-            byte[] keyBlob = (byte[]) new ProviderHelper(this).getGenericData(
-                    uri, KeychainContract.KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
+            byte[] keyBlob = (byte[]) new ProviderHelper(this).read().getGenericData(
+                    uri, KeychainContract.KeyRingData.KEY_RING_DATA, Cursor.FIELD_TYPE_BLOB);
 
             Intent slingerIntent = new Intent(this, ExchangeActivity.class);
 
@@ -112,7 +112,7 @@ public class SafeSlingerActivity extends BaseActivity
             slingerIntent.putExtra(ExchangeConfig.extra.USER_DATA, keyBlob);
             slingerIntent.putExtra(ExchangeConfig.extra.HOST_NAME, Constants.SAFESLINGER_SERVER);
             startActivityForResult(slingerIntent, REQUEST_CODE_SAFE_SLINGER);
-        } catch (ProviderHelper.NotFoundException e) {
+        } catch (ProviderReader.NotFoundException e) {
             Log.e(Constants.TAG, "personal key not found", e);
         }
     }
@@ -170,7 +170,7 @@ public class SafeSlingerActivity extends BaseActivity
             do {
                 d = extras.getByteArray(ExchangeConfig.extra.MEMBER_DATA + i);
                 if (d != null) {
-                    list.add(new ParcelableKeyRing(d));
+                    list.add(new ParcelableKeyRing(d, null));
                     i++;
                 }
             } while (d != null);

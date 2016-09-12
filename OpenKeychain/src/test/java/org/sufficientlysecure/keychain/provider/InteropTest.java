@@ -17,8 +17,10 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.net.Uri;
-
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -31,17 +33,19 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
+import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -49,6 +53,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -63,7 +68,6 @@ import java.util.ArrayList;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
 public class InteropTest {
-
     @BeforeClass
     public static void setUpOnce() throws Exception {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
@@ -98,20 +102,24 @@ public class InteropTest {
     private void runTest(File base) throws Exception {
         JSONObject config = new JSONObject(asString(base));
         String testType = config.getString("type");
-        if (testType.equals("import")) {
-            runImportTest(config, base);
-        } else if (testType.equals("decrypt")) {
-            runDecryptTest(config, base);
-        } else {
-            Assert.fail(base + ": unexpected test type");
+        switch (testType) {
+            case "import":
+                runImportTest(config, base);
+                break;
+            case "decrypt":
+                runDecryptTest(config, base);
+                break;
+            default:
+                Assert.fail(base + ": unexpected test type");
+                break;
         }
     }
 
-    private static final String asString(File json) throws Exception {
+    private static String asString(File json) throws Exception {
         return new String(asBytes(json), "utf-8");
     }
 
-    private static final byte[] asBytes(File f) throws Exception {
+    private static byte[] asBytes(File f) throws Exception {
         FileInputStream fin = null;
         try {
             fin = new FileInputStream(f);
@@ -134,16 +142,19 @@ public class InteropTest {
             verify = null;
         }
 
+        Passphrase pass = new Passphrase(config.getString("passphrase"));
         CanonicalizedSecretKeyRing decrypt = (CanonicalizedSecretKeyRing)
                 readRingFromFile(new File(root, config.getString("decryptKey")));
+        PgpKeyOperation keyOp = new PgpKeyOperation(null);
+        PgpEditKeyResult editResult = keyOp.removeEncryption(decrypt,
+                TestingUtils.generateImportPassphrases(decrypt.getUncachedKeyRing(), pass, pass));
+        decrypt = (CanonicalizedSecretKeyRing) editResult.getRing().canonicalize(new OperationLog(), 0);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayInputStream in =
                 new ByteArrayInputStream(asBytes(new File(root, baseName + ".asc")));
 
         InputData data = new InputData(in, in.available());
-
-        Passphrase pass = new Passphrase(config.getString("passphrase"));
 
         PgpDecryptVerifyOperation op = makeOperation(base.toString(), pass, decrypt, verify);
         PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
@@ -175,7 +186,7 @@ public class InteropTest {
                 readRingFromFile(new File(root, baseName + ".asc"));
 
         // Check we have the correct uids.
-        ArrayList<String> expected = new ArrayList<String>();
+        ArrayList<String> expected = new ArrayList<>();
         JSONArray uids = config.getJSONArray("expected_uids");
         for (int i = 0; i < uids.length(); i++) {
             expected.add(uids.getString(i));
@@ -191,7 +202,7 @@ public class InteropTest {
                 expected.add(subkeys.getJSONObject(i).getString("expected_fingerprint"));
             }
         }
-        ArrayList<String> actual = new ArrayList<String>();
+        ArrayList<String> actual = new ArrayList<>();
         for (CanonicalizedPublicKey pk: pkr.publicKeyIterator()) {
             if (pk.isValid()) {
                 actual.add(KeyFormattingUtils.convertFingerprintToHex(pk.getFingerprint()));
@@ -223,80 +234,106 @@ public class InteropTest {
         return ukr.canonicalize(log, 0);
     }
 
-    private  static final void close(Closeable v) {
+    private static void close(Closeable v) {
         if (v != null) {
             try {
                 v.close();
-            } catch (Throwable any) {
+            } catch (Throwable ignored) {
             }
         }
     }
 
-    private static final String getBaseName(File base) {
+    private static String getBaseName(File base) {
         String name = base.getName();
         return name.substring(0, name.length() - ".json".length());
     }
 
-    private PgpDecryptVerifyOperation makeOperation(final String msg, final Passphrase passphrase,
+    private PgpDecryptVerifyOperation makeOperation(final String msg, final Passphrase opPassphrase,
             final CanonicalizedSecretKeyRing decrypt, final CanonicalizedPublicKeyRing verify)
             throws Exception {
 
-        final long decryptId = decrypt.getEncryptId();
-        final Uri decryptUri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(decryptId);
-        final Uri verifyUri =  verify != null ?
+        long decryptId = decrypt.getEncryptId();
+        this.msg = msg;
+        this.opPassphrase = opPassphrase;
+        this.decrypt = decrypt;
+        this.verify = verify;
+        this.decryptUri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(decryptId);
+        this.verifyUri =  verify != null ?
                 KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(verify.getMasterKeyId()) : null;
 
-        ProviderHelper helper = new ProviderHelper(RuntimeEnvironment.application) {
-
-            @Override
-            public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {
-                Assert.assertEquals(msg + ": query should be for the decryption key", queryUri, decryptUri);
-                return new CachedPublicKeyRing(this, queryUri) {
-                    @Override
-                    public long getMasterKeyId() throws PgpKeyNotFoundException {
-                        return decrypt.getMasterKeyId();
-                    }
-
-                    @Override
-                    public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
-                        return decrypt.getSecretKey(keyId).getSecretKeyTypeSuperExpensive();
-                    }
-                };
-            }
-
-            @Override
-            public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri q)
-                    throws NotFoundException {
-                Assert.assertEquals(msg + ": query should be for verification key", q, verifyUri);
-                return verify;
-            }
-
-            @Override
-            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri q)
-                    throws NotFoundException {
-                Assert.assertEquals(msg + ": query should be for the decryption key", q, decryptUri);
-                return decrypt;
-            }
-
-            @Override
-            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long masterKeyId)
-                    throws NotFoundException {
-                Assert.assertEquals(msg + ": query should be for the decryption key",
-                        masterKeyId, decrypt.getMasterKeyId());
-                return decrypt;
-            }
-        };
+        Context context = RuntimeEnvironment.application;
+        ProviderHelper helper = ProviderHelper.useCustomReaderForTest(context, this, CustomReader.class);
 
         return new PgpDecryptVerifyOperation(RuntimeEnvironment.application, helper, null) {
             @Override
-            public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
+            public Passphrase getCachedPassphrase(long masterKeyId)
                     throws NoSecretKeyException {
                 Assert.assertEquals(msg + ": passphrase should be for the secret key",
                         masterKeyId, decrypt.getMasterKeyId());
-                Assert.assertEquals(msg + ": passphrase should refer to the decryption subkey",
-                        subKeyId, decryptId);
-                return passphrase;
+                return opPassphrase;
             }
         };
     }
+
+    String msg;
+    Passphrase opPassphrase;
+    CanonicalizedSecretKeyRing decrypt;
+    CanonicalizedPublicKeyRing verify;
+    Uri decryptUri;
+    Uri verifyUri;
+
+    private class CustomReader extends ProviderReader {
+        private ProviderHelper mProviderHelper;
+
+        public CustomReader(ProviderHelper helper, ContentResolver resolver) {
+            super(helper, resolver);
+            mProviderHelper = helper;
+        }
+
+        @Override
+        public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {
+            Assert.assertEquals(msg + ": query should be for the decryption key", queryUri, decryptUri);
+            return new CachedPublicKeyRing(mProviderHelper, queryUri) {
+                @Override
+                public long getMasterKeyId() throws PgpKeyNotFoundException {
+                    return decrypt.getMasterKeyId();
+                }
+
+                @Override
+                public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
+                    return decrypt.getSecretKey(keyId).getSecretKeyTypeSuperExpensive();
+                }
+
+                @Override
+                public SecretKeyRingType getSecretKeyringType() throws NotFoundException {
+                    return SecretKeyRingType.PASSPHRASE;
+                }
+            };
+        }
+
+        @Override
+        public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri q)
+                throws ProviderReader.NotFoundException {
+            Assert.assertEquals(msg + ": query should be for verification key", q, verifyUri);
+            return verify;
+        }
+
+        @Override
+        public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri q, Passphrase passphrase)
+                throws ProviderReader.NotFoundException {
+            Assert.assertEquals(msg + ": query should be for the decryption key", q, decryptUri);
+            Assert.assertEquals(msg + ": passphrase should be for the secret key", opPassphrase, passphrase);
+            return decrypt;
+        }
+
+        @Override
+        public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long masterKeyId, Passphrase passphrase)
+                throws ProviderReader.NotFoundException {
+            Assert.assertEquals(msg + ": query should be for the decryption key",
+                    masterKeyId, decrypt.getMasterKeyId());
+            Assert.assertEquals(msg + ": passphrase should be for the secret key", opPassphrase, passphrase);
+            return decrypt;
+        }
+    }
+
 }

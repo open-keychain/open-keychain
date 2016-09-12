@@ -27,7 +27,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-
+import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
@@ -35,18 +35,29 @@ import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases.SubKeyInfo;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class ImportKeysActivity extends BaseActivity
         implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
@@ -78,6 +89,9 @@ public class ImportKeysActivity extends BaseActivity
     public static final String TAG_FRAG_LIST = "frag_list";
     public static final String TAG_FRAG_TOP = "frag_top";
 
+    private static final int REQUEST_REPEAT_PASSPHRASE = 0x00007008;
+    private static final int REQUEST_MASTER_PASSPHRASE_THEN_REPEAT = 0x00007009;
+
     // for CryptoOperationHelper.Callback
     private String mKeyserver;
     private ArrayList<ParcelableKeyRing> mKeyList;
@@ -85,6 +99,9 @@ public class ImportKeysActivity extends BaseActivity
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
 
     private boolean mFreshIntent;
+    private Iterator<SubKeyInfo> mSubKeysForRepeatAskPassphrase;
+    private ArrayList<KeyringPassphrases> mPassphrasesList;
+    private Passphrase mMasterPassphrase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +109,7 @@ public class ImportKeysActivity extends BaseActivity
 
         // we're started with a new Intent that needs to be handled by onResumeFragments
         mFreshIntent = true;
+        mPassphrasesList = new ArrayList<>();
 
         setFullScreenDialogClose(Activity.RESULT_CANCELED, true);
         findViewById(R.id.import_import).setOnClickListener(new OnClickListener() {
@@ -350,28 +368,18 @@ public class ImportKeysActivity extends BaseActivity
         if (ls instanceof ImportKeysListFragment.BytesLoaderState) {
             Log.d(Constants.TAG, "importKeys started");
 
-            // get DATA from selected key entries
-            IteratorWithSize<ParcelableKeyRing> selectedEntries = keyListFragment.getSelectedData();
+            // get passphrases
+            ArrayList<SubKeyInfo> secretSubKeyInfos =
+                    getAllSubKeyInfo(keyListFragment.getSelectedData());
+            mSubKeysForRepeatAskPassphrase = secretSubKeyInfos.iterator();
 
-            // instead of giving the entries by Intent extra, cache them into a
-            // file to prevent Java Binder problems on heavy imports
-            // read FileImportCache for more info.
-            try {
-                // We parcel this iteratively into a file - anything we can
-                // display here, we should be able to import.
-                ParcelableFileCache<ParcelableKeyRing> cache =
-                        new ParcelableFileCache<>(this, "key_import.pcl");
-                cache.writeCache(selectedEntries);
-
-                mKeyList = null;
-                mKeyserver = null;
-                mOperationHelper.cryptoOperation();
-
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Problem writing cache file", e);
-                Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR)
-                        .show((ViewGroup) findViewById(R.id.import_snackbar));
+            if(mSubKeysForRepeatAskPassphrase.hasNext()) {
+                gatherPassphrasesForKeyImport();
+                return;
             }
+            // import immediately if no secret keys
+            importKeysFromFile();
+
         } else if (ls instanceof ImportKeysListFragment.CloudLoaderState) {
             ImportKeysListFragment.CloudLoaderState sls =
                     (ImportKeysListFragment.CloudLoaderState) ls;
@@ -389,10 +397,121 @@ public class ImportKeysActivity extends BaseActivity
 
             mKeyList = keys;
             mKeyserver = sls.mCloudPrefs.keyserver;
+            mPassphrasesList = null;
             mOperationHelper.cryptoOperation();
 
         }
     }
+
+    private void gatherPassphrasesForKeyImport() {
+        boolean needMasterPassphrase =
+                Preferences.getPreferences(this).usesSinglePassphraseWorkflow()
+                        && mMasterPassphrase == null;
+
+        if (needMasterPassphrase) {
+            try {
+                mMasterPassphrase = PassphraseCacheService.getMasterPassphrase(this);
+            } catch (PassphraseCacheService.KeyNotFoundException ignored) {}
+
+            // if we can't get the master passphrase, ask for it
+            if (mMasterPassphrase == null) {
+                askForMasterPassphraseThenRepeat();
+                return;
+            }
+        }
+
+        // we don't need the master passphrase or, we already have it
+        // just ask for subkey passphrases
+        askForSubkeyPassphrases();
+    }
+
+    private ArrayList<SubKeyInfo> getAllSubKeyInfo(Iterator<ParcelableKeyRing> keyRingIterator) {
+        ArrayList<SubKeyInfo> subKeyInfos = new ArrayList<>();
+        while(keyRingIterator.hasNext()) {
+            try {
+                ParcelableKeyRing pKeyRing = keyRingIterator.next();
+                UncachedKeyRing uKeyRing = UncachedKeyRing.decodeFromData(pKeyRing.mBytes);
+                if(uKeyRing.isSecret()) {
+                    Iterator<UncachedPublicKey> keyIterator = uKeyRing.getPublicKeys();
+                    while(keyIterator.hasNext()) {
+                        UncachedPublicKey publicKey = keyIterator.next();
+                        subKeyInfos.add(new SubKeyInfo(uKeyRing.getMasterKeyId(),
+                                                        publicKey.getKeyId(),
+                                                        pKeyRing));
+
+                    }
+                }
+            } catch (IOException | PgpGeneralException e) {
+                Toast.makeText(this, R.string.error_could_not_process_key_data, Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }
+        return subKeyInfos;
+    }
+
+    private void importKeysFromFile() {
+        // get DATA from selected key entries
+        FragmentManager fragMan = getSupportFragmentManager();
+        ImportKeysListFragment keyListFragment = (ImportKeysListFragment) fragMan.findFragmentByTag(TAG_FRAG_LIST);
+        IteratorWithSize<ParcelableKeyRing> selectedEntries = keyListFragment.getSelectedData();
+
+        // instead of giving the entries by Intent extra, cache them into a
+        // file to prevent Java Binder problems on heavy imports
+        // read FileImportCache for more info.
+        try {
+            // We parcel this iteratively into a file - anything we can
+            // display here, we should be able to import.
+            ParcelableFileCache<ParcelableKeyRing> cache =
+                    new ParcelableFileCache<>(this, "key_import.pcl");
+            cache.writeCache(selectedEntries);
+
+            mKeyList = null;
+            mKeyserver = null;
+            mOperationHelper.cryptoOperation();
+
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Problem writing cache file", e);
+            Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR)
+                    .show((ViewGroup) findViewById(R.id.import_snackbar));
+        }
+    }
+
+    // Ask for master passphrase, then carry on to ask for passphrases for importing keys
+    private void askForMasterPassphraseThenRepeat() {
+        Intent intent = new Intent(this, PassphraseDialogActivity.class);
+        RequiredInputParcel requiredInput =
+                RequiredInputParcel.createRequiredAppLockPassphrase();
+        intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+        startActivityForResult(intent, REQUEST_MASTER_PASSPHRASE_THEN_REPEAT);
+    }
+
+    private void askForSubkeyPassphrases() {
+        SubKeyInfo keyInfo = mSubKeysForRepeatAskPassphrase.next();
+        ParcelableKeyRing parcelableKeyRing = keyInfo.mKeyRing;
+        long subKeyId = keyInfo.mSubKeyId;
+        long masterKeyId = keyInfo.mMasterKeyId;
+
+        Intent intent = new Intent(this, PassphraseDialogActivity.class);
+
+        // try using last entered passphrase if appropriate
+        if (!mPassphrasesList.isEmpty()) {
+            KeyringPassphrases prevKeyring = mPassphrasesList.get(mPassphrasesList.size() - 1);
+            Passphrase passphrase = prevKeyring.getSingleSubkeyPassphrase();
+
+            boolean sameMasterKey = masterKeyId == prevKeyring.mMasterKeyId;
+            boolean prevSubKeysHaveSamePassphrase = prevKeyring.subKeysHaveSamePassphrase();
+            if(sameMasterKey && prevSubKeysHaveSamePassphrase) {
+                intent.putExtra(PassphraseDialogActivity.EXTRA_PASSPHRASE_TO_TRY, passphrase);
+            }
+        }
+
+        RequiredInputParcel requiredInput = RequiredInputParcel.
+                        createRequiredImportKeyPassphrase(masterKeyId, subKeyId, parcelableKeyRing);
+        requiredInput.mSkipCaching = true;
+        intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+        startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -400,7 +519,59 @@ public class ImportKeysActivity extends BaseActivity
                 mOperationHelper.handleActivityResult(requestCode, resultCode, data)) {
             return;
         }
-        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_MASTER_PASSPHRASE_THEN_REPEAT: {
+                if (resultCode != RESULT_OK) {
+                    this.finish();
+                    return;
+                }
+                CryptoInputParcel cryptoResult =
+                        data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                mMasterPassphrase = cryptoResult.getPassphrase();
+                if (mSubKeysForRepeatAskPassphrase.hasNext()) {
+                    askForSubkeyPassphrases();
+                }
+                break;
+            }
+            case REQUEST_REPEAT_PASSPHRASE : {
+                if (resultCode != RESULT_OK) {
+                    return;
+                }
+                RequiredInputParcel requiredParcel = data.getParcelableExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT);
+                CryptoInputParcel cryptoParcel = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                long masterKeyId = requiredParcel.getMasterKeyId();
+                long subKeyId = requiredParcel.getSubKeyId();
+                Passphrase passphrase = cryptoParcel.getPassphrase();
+
+                // save passphrase if one is returned
+                // could be stripped or diverted to card otherwise
+                if(passphrase != null) {
+                     boolean isNewKeyRing = (mPassphrasesList.isEmpty() ||
+                            mPassphrasesList.get(mPassphrasesList.size() - 1).mMasterKeyId != masterKeyId);
+
+                    if (isNewKeyRing) {
+                        KeyringPassphrases newKeyring = new KeyringPassphrases(masterKeyId, mMasterPassphrase);
+                        newKeyring.mSubkeyPassphrases.put(subKeyId, passphrase);
+                        mPassphrasesList.add(newKeyring);
+                    } else {
+                        KeyringPassphrases prevKeyring = mPassphrasesList.get(mPassphrasesList.size() - 1);
+                        prevKeyring.mSubkeyPassphrases.put(subKeyId, passphrase);
+                    }
+                }
+
+                // check next subkey
+                if (mSubKeysForRepeatAskPassphrase.hasNext()) {
+                    askForSubkeyPassphrases();
+                    return;
+                } else {
+                    importKeysFromFile();
+                }
+
+            }
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
     }
 
     /**
@@ -434,7 +605,7 @@ public class ImportKeysActivity extends BaseActivity
 
     @Override
     public ImportKeyringParcel createOperationInput() {
-        return new ImportKeyringParcel(mKeyList, mKeyserver);
+        return new ImportKeyringParcel(mKeyList, mKeyserver, mPassphrasesList);
     }
 
     @Override
@@ -456,4 +627,5 @@ public class ImportKeysActivity extends BaseActivity
     public boolean onCryptoSetProgress(String msg, int progress, int max) {
         return false;
     }
+
 }

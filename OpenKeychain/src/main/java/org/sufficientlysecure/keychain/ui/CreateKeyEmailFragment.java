@@ -35,12 +35,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -220,6 +220,10 @@ public class CreateKeyEmailFragment extends Fragment {
                 hideKeyboard();
 
                 CreateSecurityTokenPinFragment frag = CreateSecurityTokenPinFragment.newInstance();
+                mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
+            } else if (Preferences.getPreferences(mCreateKeyActivity).usesSinglePassphraseWorkflow()){
+                hideKeyboard();
+                CreateKeyFinalFragment frag = CreateKeyFinalFragment.newInstance();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
             } else {
                 CreateKeyPassphraseFragment frag = CreateKeyPassphraseFragment.newInstance();

@@ -21,9 +21,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
-
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.BCPGOutputStream;
 import org.bouncycastle.bcpg.CompressionAlgorithmTags;
@@ -40,15 +38,17 @@ import org.bouncycastle.openpgp.operator.jcajce.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing.SecretKeyRingType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -225,10 +225,44 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 long signingMasterKeyId = data.getSignatureMasterKeyId();
                 long signingSubKeyId = data.getSignatureSubKeyId();
 
-                CanonicalizedSecretKeyRing signingKeyRing =
-                        mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId);
-                signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
+                CachedPublicKeyRing cachedPublicKeyRing =
+                        mProviderHelper.read().getCachedPublicKeyRing(signingMasterKeyId);
 
+                SecretKeyRingType secretKeyRingType = cachedPublicKeyRing.getSecretKeyringType();
+
+                // get keyring passphrase
+                Passphrase keyringPassphrase;
+                switch (secretKeyRingType) {
+                    case PASSPHRASE_EMPTY: {
+                        keyringPassphrase = new Passphrase();
+                        break;
+                    }
+                    case PASSPHRASE: {
+                        keyringPassphrase = cryptoInput.getPassphrase();
+                        if (keyringPassphrase == null) {
+                            try {
+                                keyringPassphrase = getCachedPassphrase(signingMasterKeyId);
+                            } catch (NoSecretKeyException ignored) {
+                                // treat as a cache miss for error handling purposes
+                            }
+                            if (keyringPassphrase == null) {
+                                log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
+                                return new PgpSignEncryptResult(log,
+                                        RequiredInputParcel.createRequiredKeyringPassphrase(signingMasterKeyId),
+                                        cryptoInput);
+                            }
+                        }
+                        break;
+                    }
+                    default: {
+                        throw new AssertionError("Unsupported keyring type");
+                    }
+                }
+
+                CanonicalizedSecretKeyRing signingKeyRing =
+                        mProviderHelper.read().getCanonicalizedSecretKeyRingWithMerge(
+                                signingMasterKeyId, keyringPassphrase);
+                signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
 
                 // Make sure key is not expired or revoked
                 if (signingKeyRing.isExpired() || signingKeyRing.isRevoked()
@@ -243,55 +277,39 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                     return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
 
-                switch (mProviderHelper.getCachedPublicKeyRing(signingMasterKeyId).getSecretKeyType(signingSubKeyId)) {
+                switch (cachedPublicKeyRing.getSecretKeyType(signingSubKeyId)) {
                     case DIVERT_TO_CARD:
                     case PASSPHRASE_EMPTY: {
                         if (!signingKey.unlock(new Passphrase())) {
                             throw new AssertionError(
-                                    "PASSPHRASE_EMPTY/DIVERT_TO_CARD keyphrase not unlocked with empty passphrase."
+                                    "PASSPHRASE_EMPTY/DIVERT_TO_CARD "
+                                            + "keyphrase not unlocked with empty passphrase."
                                             + " This is a programming error!");
                         }
                         break;
                     }
-
-                    case PIN:
-                    case PATTERN:
-                    case PASSPHRASE: {
-                        Passphrase localPassphrase = cryptoInput.getPassphrase();
-                        if (localPassphrase == null) {
-                            try {
-                                localPassphrase = getCachedPassphrase(signingMasterKeyId, signingKey.getKeyId());
-                            } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
-                            }
-                        }
-                        if (localPassphrase == null) {
-                            log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
-                            return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                                    signingMasterKeyId, signingKey.getKeyId(),
-                                    cryptoInput.getSignatureTime()), cryptoInput);
-                        }
-                        if (!signingKey.unlock(localPassphrase)) {
-                            log.add(LogType.MSG_PSE_ERROR_BAD_PASSPHRASE, indent);
-                            return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-                        }
-                        break;
-                    }
-
-                    case GNU_DUMMY: {
-                        log.add(LogType.MSG_PSE_ERROR_UNLOCK, indent);
-                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-                    }
                     default: {
-                        throw new AssertionError("Unhandled SecretKeyType! (should not happen)");
+                        // other key types should not reach this point
+                        log.add(LogType.MSG_PSE_ERROR_UNLOCK_SUBKEY, indent);
+                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                     }
 
                 }
 
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (ProviderReader.NotFoundException e) {
                 log.add(LogType.MSG_PSE_ERROR_SIGN_KEY, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             } catch (PgpGeneralException e) {
-                log.add(LogType.MSG_PSE_ERROR_UNLOCK, indent);
+                log.add(LogType.MSG_PSE_ERROR_UNLOCK_SUBKEY, indent);
+                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+            } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
+                log.add(LogType.MSG_PSE_ERROR_UNLOCK_KEYRING, indent);
+                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+            } catch (ByteArrayEncryptor.EncryptDecryptException e) {
+                log.add(LogType.MSG_PSE_ERROR_DECRYPT_KEYRING, indent);
+                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+            } catch (ProviderReader.FailedMergeException e) {
+                log.add(LogType.MSG_PSE_ERROR_MERGE_KEYRING, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             }
 
@@ -332,7 +350,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 // Asymmetric encryption
                 for (long id : data.getEncryptionMasterKeyIds()) {
                     try {
-                        CanonicalizedPublicKeyRing keyRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                        CanonicalizedPublicKeyRing keyRing = mProviderHelper.read().getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(id));
                         Set<Long> encryptSubKeyIds = keyRing.getEncryptIds();
                         for (Long subKeyId : encryptSubKeyIds) {
@@ -351,7 +369,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                             log.add(LogType.MSG_PSE_ERROR_REVOKED_OR_EXPIRED, indent);
                             return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                         }
-                    } catch (ProviderHelper.NotFoundException e) {
+                    } catch (ProviderReader.NotFoundException e) {
                         log.add(LogType.MSG_PSE_KEY_UNKNOWN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);

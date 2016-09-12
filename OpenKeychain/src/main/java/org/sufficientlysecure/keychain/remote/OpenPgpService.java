@@ -19,23 +19,11 @@
 package org.sufficientlysecure.keychain.remote;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -45,7 +33,6 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
@@ -55,6 +42,7 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -76,12 +64,26 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableHashMap;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 public class OpenPgpService extends Service {
 
@@ -227,7 +229,7 @@ public class OpenPgpService extends Service {
 
                 // get first usable subkey capable of signing
                 try {
-                    long signSubKeyId = mProviderHelper.getCachedPublicKeyRing(
+                    long signSubKeyId = mProviderHelper.read().getCachedPublicKeyRing(
                             pgpData.getSignatureMasterKeyId()).getSecretSignId();
                     pgpData.setSignatureSubKeyId(signSubKeyId);
                 } catch (PgpKeyNotFoundException e) {
@@ -367,7 +369,7 @@ public class OpenPgpService extends Service {
 
                     // get first usable subkey capable of signing
                     try {
-                        long signSubKeyId = mProviderHelper.getCachedPublicKeyRing(
+                        long signSubKeyId = mProviderHelper.read().getCachedPublicKeyRing(
                                 pgpData.getSignatureMasterKeyId()).getSecretSignId();
                         pgpData.setSignatureSubKeyId(signSubKeyId);
                     } catch (PgpKeyNotFoundException e) {
@@ -623,7 +625,7 @@ public class OpenPgpService extends Service {
             try {
                 // try to find key, throws NotFoundException if not in db!
                 CanonicalizedPublicKeyRing keyRing =
-                        mProviderHelper.getCanonicalizedPublicKeyRing(
+                        mProviderHelper.read().getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(masterKeyId));
 
                 Intent result = new Intent();
@@ -652,7 +654,7 @@ public class OpenPgpService extends Service {
                         piFactory.createShowKeyPendingIntent(data, masterKeyId));
 
                 return result;
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (ProviderReader.NotFoundException e) {
                 // If keys are not in db we return an additional PendingIntent
                 // to retrieve the missing key
                 Intent result = new Intent();
@@ -746,7 +748,8 @@ public class OpenPgpService extends Service {
             // after user interaction with RemoteBackupActivity,
             // the backup code is cached in CryptoInputParcelCacheService, now we can proceed
 
-            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, null);
+            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, null,
+                    ParcelableHashMap.toParcelableHashMap(inputParcel.getPassphrases()));
             BackupOperation op = new BackupOperation(this, mProviderHelper, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 
@@ -858,6 +861,32 @@ public class OpenPgpService extends Service {
             return result;
         }
 
+        // check if we require user to open the main app
+        result = mainApplicationIsUpToDateOrReturnIntent(data);
+        if (result != null) {
+            return result;
+        }
+
+        return null;
+    }
+
+
+    private Intent mainApplicationIsUpToDateOrReturnIntent(Intent data) {
+        Preferences pref = Preferences.getPreferences(getApplicationContext());
+
+        if(!pref.isUsingEncryptedKeyRings() || !pref.hasMasterPassphrase()) {
+            // main app has not updated to using encrypted keyrings blocks,
+            // or user has not yet set a master passphrase
+            // prompt user to start app & rectify this
+            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(this);
+            PendingIntent pi = piFactory.createErrorPendingIntent(data,
+                    this.getString(R.string.api_open_main_app_text));
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+            result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+
+            return result;
+        }
         return null;
     }
 

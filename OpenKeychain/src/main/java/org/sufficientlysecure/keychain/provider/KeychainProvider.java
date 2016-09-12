@@ -30,16 +30,17 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.provider.KeychainContract.CrossProcessCache;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.MasterPassphrase;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
@@ -80,6 +81,12 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int UPDATED_KEYS = 500;
     private static final int UPDATED_KEYS_SPECIFIC = 501;
+
+    private static final int MASTER_PASSPHRASE = 600;
+    private static final int MASTER_PASSPHRASE_SPECIFIC = 601;
+
+    private static final int CROSS_PROCESS_CACHE = 700;
+    private static final int CROSS_PROCESS_CACHE_SPECIFIC = 701;
 
     protected UriMatcher mUriMatcher;
 
@@ -207,6 +214,17 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS, UPDATED_KEYS);
         matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS + "/*", UPDATED_KEYS_SPECIFIC);
 
+        /**
+         * to access table containing master passphrase
+         */
+        matcher.addURI(authority, KeychainContract.BASE_MASTER_PASSPHRASE, MASTER_PASSPHRASE);
+        matcher.addURI(authority, KeychainContract.BASE_MASTER_PASSPHRASE + "/*",
+                MASTER_PASSPHRASE_SPECIFIC);
+
+        matcher.addURI(authority, KeychainContract.BASE_CROSS_PROCESS_CACHE, CROSS_PROCESS_CACHE);
+        matcher.addURI(authority, KeychainContract.BASE_CROSS_PROCESS_CACHE + "/*",
+                CROSS_PROCESS_CACHE_SPECIFIC);
+
         return matcher;
     }
 
@@ -265,6 +283,11 @@ public class KeychainProvider extends ContentProvider {
 
             case API_ALLOWED_KEYS:
                 return ApiAllowedKeys.CONTENT_TYPE;
+
+            case MASTER_PASSPHRASE:
+                return KeychainContract.MasterPassphrase.CONTENT_TYPE;
+            case MASTER_PASSPHRASE_SPECIFIC:
+                return KeychainContract.MasterPassphrase.CONTENT_ITEM_TYPE;
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -328,6 +351,12 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.PRIVKEY_DATA,
                         Tables.KEY_RINGS_SECRET + "." + KeyRingData.KEY_RING_DATA
                                 + " AS " + KeyRings.PRIVKEY_DATA);
+                projectionMap.put(KeyRings.SECRET_RING_TYPE,
+                        Tables.KEY_RINGS_SECRET + "." + KeyRingData.SECRET_RING_TYPE
+                                + " AS " + KeyRings.SECRET_RING_TYPE);
+                projectionMap.put(KeyRings.AWAITING_MERGE,
+                        Tables.KEY_RINGS_SECRET + "." + KeyRingData.AWAITING_MERGE
+                                + " AS " + KeyRings.AWAITING_MERGE);
                 projectionMap.put(KeyRings.HAS_SECRET, Tables.KEYS + "." + KeyRings.HAS_SECRET);
                 projectionMap.put(KeyRings.HAS_ANY_SECRET,
                         "(" + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NOT NULL)" +
@@ -372,7 +401,10 @@ public class KeychainProvider extends ContentProvider {
                                 + " = "
                                     + Tables.KEY_RINGS_PUBLIC + "." + KeyRingData.MASTER_KEY_ID
                                 + ")" : "")
-                        + (plist.contains(KeyRings.PRIVKEY_DATA) || plist.contains(KeyRings.HAS_ANY_SECRET) ?
+                        + (plist.contains(KeyRings.PRIVKEY_DATA)
+                            || plist.contains(KeyRings.HAS_ANY_SECRET)
+                            || plist.contains(KeyRings.AWAITING_MERGE)
+                            || plist.contains(KeyRings.SECRET_RING_TYPE) ?
                             " LEFT JOIN " + Tables.KEY_RINGS_SECRET + " ON ("
                                     + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
@@ -591,6 +623,8 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_SECRET + ".oid AS _id");
                 projectionMap.put(KeyRingData.MASTER_KEY_ID, KeyRingData.MASTER_KEY_ID);
                 projectionMap.put(KeyRingData.KEY_RING_DATA, KeyRingData.KEY_RING_DATA);
+                projectionMap.put(KeyRingData.SECRET_RING_TYPE, KeyRingData.SECRET_RING_TYPE);
+                projectionMap.put(KeyRingData.AWAITING_MERGE, KeyRingData.AWAITING_MERGE);
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(Tables.KEY_RINGS_SECRET);
@@ -672,6 +706,27 @@ public class KeychainProvider extends ContentProvider {
                     qb.appendWhere(UpdatedKeys.MASTER_KEY_ID + " = ");
                     qb.appendWhereEscapeString(uri.getPathSegments().get(1));
                 }
+                break;
+            }
+
+            case CROSS_PROCESS_CACHE:
+            case CROSS_PROCESS_CACHE_SPECIFIC: {
+                HashMap<String, String> projectionMap = new HashMap<>();
+                qb.setTables(Tables.CROSS_PROCESS_CACHE);
+                projectionMap.put(CrossProcessCache.MASTER_PASSPHRASE_IS_CACHED,
+                        Tables.CROSS_PROCESS_CACHE + "."
+                        + CrossProcessCache.MASTER_PASSPHRASE_IS_CACHED);
+                qb.setProjectionMap(projectionMap);
+                break;
+            }
+
+            case MASTER_PASSPHRASE:
+            case MASTER_PASSPHRASE_SPECIFIC: {
+                HashMap<String, String> projectionMap = new HashMap<>();
+                qb.setTables(Tables.MASTER_PASSPHRASE);
+                projectionMap.put(MasterPassphrase.ENCRYPTED_BLOCK, Tables.MASTER_PASSPHRASE + "."
+                        + MasterPassphrase.ENCRYPTED_BLOCK);
+                qb.setProjectionMap(projectionMap);
                 break;
             }
 
@@ -826,6 +881,15 @@ public class KeychainProvider extends ContentProvider {
                             .build();
                     break;
                 }
+                case MASTER_PASSPHRASE: {
+                    db.insertOrThrow(Tables.MASTER_PASSPHRASE, null, values);
+                    rowUri = MasterPassphrase.CONTENT_URI;
+                    break;
+                }
+                case CROSS_PROCESS_CACHE: {
+                    db.insertOrThrow(Tables.CROSS_PROCESS_CACHE, null, values);
+                    rowUri = CrossProcessCache.CONTENT_URI;
+                }
                 case API_APPS: {
                     db.insertOrThrow(Tables.API_APPS, null, values);
                     break;
@@ -923,6 +987,14 @@ public class KeychainProvider extends ContentProvider {
                         selectionArgs);
                 break;
             }
+            case MASTER_PASSPHRASE: {
+                count = db.delete(Tables.MASTER_PASSPHRASE, null, null);
+                break;
+            }
+            case CROSS_PROCESS_CACHE: {
+                count = db.delete(Tables.CROSS_PROCESS_CACHE, null, null);
+                break;
+            }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
@@ -947,6 +1019,23 @@ public class KeychainProvider extends ContentProvider {
         try {
             final int match = mUriMatcher.match(uri);
             switch (match) {
+                case KEY_RING_SECRET: {
+                    if (values.size() != 1 ||
+                            !(values.containsKey(KeyRingData.AWAITING_MERGE) ||
+                                    values.containsKey(KeyRingData.SECRET_RING_TYPE) ||
+                                    values.containsKey(KeyRingData.KEY_RING_DATA))) {
+                        throw new UnsupportedOperationException(
+                                "Only awaiting_merge || has_secret_ring column may be updated || key_ring_data" +
+                                        ", one at at time!");
+                    }
+                    Long mkid = Long.parseLong(uri.getPathSegments().get(1));
+                    String actualSelection = Keys.MASTER_KEY_ID + " = " + Long.toString(mkid);
+                    if (!TextUtils.isEmpty(selection)) {
+                        actualSelection += " AND (" + selection + ")";
+                    }
+                    count = db.update(Tables.KEY_RINGS_SECRET, values, actualSelection, selectionArgs);
+                    break;
+                }
                 case KEY_RING_KEYS: {
                     if (values.size() != 1 || !values.containsKey(Keys.HAS_SECRET)) {
                         throw new UnsupportedOperationException(
@@ -969,6 +1058,28 @@ public class KeychainProvider extends ContentProvider {
                 case API_ACCOUNTS_BY_ACCOUNT_NAME: {
                     count = db.update(Tables.API_ACCOUNTS, values,
                             buildDefaultApiAccountsSelection(uri, selection), selectionArgs);
+                    break;
+                }
+                case KEY_RING_CERTS: {
+                    if (values.size() != 1 || !values.containsKey(Certs.VERIFIED)) {
+                        throw new UnsupportedOperationException(
+                                "Only verified column may be updated");
+                    }
+                    // make sure we get a long value here
+                    Long mkid = Long.parseLong(uri.getPathSegments().get(1));
+                    String actualSelection = Keys.MASTER_KEY_ID + " = " + Long.toString(mkid);
+                    if (!TextUtils.isEmpty(selection)) {
+                        actualSelection += " AND (" + selection + ")";
+                    }
+                    count = db.update(Tables.CERTS, values, actualSelection, selectionArgs);
+                    break;
+                }
+                case MASTER_PASSPHRASE: {
+                    count = db.update(Tables.MASTER_PASSPHRASE, values, selection, selectionArgs);
+                    break;
+                }
+                case CROSS_PROCESS_CACHE: {
+                    count = db.update(Tables.CROSS_PROCESS_CACHE, values, selection, selectionArgs);
                     break;
                 }
                 default: {

@@ -32,7 +32,6 @@ import android.text.format.DateFormat;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
@@ -185,7 +184,7 @@ public class ViewCertActivity extends BaseActivity
 
                 try {
                     ProviderHelper providerHelper = new ProviderHelper(ViewCertActivity.this);
-                    long signerMasterKeyId = providerHelper.getCachedPublicKeyRing(
+                    long signerMasterKeyId = providerHelper.read().getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mCertifierKeyId)).getMasterKeyId();
                     viewIntent.setData(KeyRings.buildGenericKeyRingUri(signerMasterKeyId));
                     startActivity(viewIntent);

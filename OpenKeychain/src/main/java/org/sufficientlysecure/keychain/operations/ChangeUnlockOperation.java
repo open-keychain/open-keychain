@@ -26,14 +26,18 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 
 
 public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
@@ -45,53 +49,56 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
     @NonNull
     public OperationResult execute(ChangeUnlockParcel unlockParcel, CryptoInputParcel cryptoInput) {
         OperationResult.OperationLog log = new OperationResult.OperationLog();
-        log.add(OperationResult.LogType.MSG_ED, 0);
+        log.add(LogType.MSG_CU, 0);
 
         if (unlockParcel == null || unlockParcel.mMasterKeyId == null) {
-            log.add(OperationResult.LogType.MSG_ED_ERROR_NO_PARCEL, 1);
+            log.add(LogType.MSG_CU_ERROR_NO_PARCEL, 1);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
-        // Perform actual modification
-        PgpEditKeyResult modifyResult;
-        {
-            PgpKeyOperation keyOperations =
-                    new PgpKeyOperation(new ProgressScaler(mProgressable, 0, 70, 100));
-
-            try {
-                    log.add(OperationResult.LogType.MSG_ED_FETCHING, 1,
-                            KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
-
-                    CanonicalizedSecretKeyRing secRing =
-                            mProviderHelper.getCanonicalizedSecretKeyRing(unlockParcel.mMasterKeyId);
-                    modifyResult = keyOperations.modifyKeyRingPassphrase(secRing, cryptoInput, unlockParcel);
-
-                    if (modifyResult.isPending()) {
-                        // obtain original passphrase from user
-                        log.add(modifyResult, 1);
-                        return new EditKeyResult(log, modifyResult);
-                    }
-            } catch (ProviderHelper.NotFoundException e) {
-                log.add(OperationResult.LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
-                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
-            }
-        }
-
-        log.add(modifyResult, 1);
-
-        if (!modifyResult.success()) {
-            // error is already logged by modification
-            return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+        if (!cryptoInput.hasPassphrase()) {
+            log.add(LogType.MSG_CU_REQUIRE_KEYRING_PASSPHRASE, 2);
+            return new PgpEditKeyResult(log,
+                    RequiredInputParcel.createRequiredKeyringPassphrase(unlockParcel.mMasterKeyId),
+                    cryptoInput);
         }
 
         // Cannot cancel from here on out!
         mProgressable.setPreventCancel();
 
-        // It's a success, so this must be non-null now
-        UncachedKeyRing ring = modifyResult.getRing();
+        // retrieve ring
+        CanonicalizedSecretKeyRing retrievedRing;
+        {
+            try {
+                log.add(LogType.MSG_CU_FETCHING_KEYRING, 1,
+                        KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
+
+                // update the keyring along the way
+                retrievedRing = mProviderHelper.read().getCanonicalizedSecretKeyRingWithMerge(
+                        unlockParcel.mMasterKeyId,
+                        cryptoInput.getPassphrase()
+                );
+            } catch (ProviderReader.NotFoundException e) {
+                log.add(LogType.MSG_CU_ERROR_KEYRING_NOT_FOUND, 2);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+            } catch (ByteArrayEncryptor.EncryptDecryptException e) {
+                log.add(LogType.MSG_CU_ERROR_DECRYPT_KEYRING, 2);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+            } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
+                log.add(LogType.MSG_CU_ERROR_INCORRECT_PASSPHRASE, 2);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+            } catch (ProviderReader.FailedMergeException e) {
+                log.add(LogType.MSG_CU_ERROR_MERGE_KEYRING, 2);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+            }
+        }
 
         SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 70, 95, 100));
+                .write().saveSecretKeyRing(
+                        retrievedRing.getUncachedKeyRing(),
+                        new KeyringPassphrases(retrievedRing.getMasterKeyId(), unlockParcel.mNewPassphrase),
+                        new ProgressScaler(mProgressable, 0, 95, 100)
+                );
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here
@@ -99,9 +106,12 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
+        // clear cache of old passphrase
+        PassphraseCacheService.clearCachedPassphrase(mContext, retrievedRing.getMasterKeyId());
+
         updateProgress(R.string.progress_done, 100, 100);
-        log.add(OperationResult.LogType.MSG_ED_SUCCESS, 0);
-        return new EditKeyResult(EditKeyResult.RESULT_OK, log, ring.getMasterKeyId());
+        log.add(LogType.MSG_CU_SUCCESS, 0);
+        return new EditKeyResult(EditKeyResult.RESULT_OK, log, retrievedRing.getMasterKeyId());
 
     }
 

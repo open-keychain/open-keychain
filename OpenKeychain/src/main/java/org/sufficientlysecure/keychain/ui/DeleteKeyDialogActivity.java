@@ -20,21 +20,21 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.operations.results.RevokeResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -90,13 +91,13 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         if (mMasterKeyIds.length == 1 && mHasSecret) {
             // if mMasterKeyIds.length == 0 we let the DeleteOperation respond
             try {
-                HashMap<String, Object> data = new ProviderHelper(this).getUnifiedData(
+                HashMap<String, Object> data = new ProviderHelper(this).read().getUnifiedData(
                         mMasterKeyIds[0], new String[]{
                                 KeychainContract.KeyRings.USER_ID,
                                 KeychainContract.KeyRings.IS_REVOKED
                         }, new int[]{
-                                ProviderHelper.FIELD_TYPE_STRING,
-                                ProviderHelper.FIELD_TYPE_INTEGER
+                                Cursor.FIELD_TYPE_STRING,
+                                Cursor.FIELD_TYPE_INTEGER
                         }
                 );
 
@@ -114,7 +115,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 } else {
                     showRevokeDeleteDialog(name);
                 }
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (ProviderReader.NotFoundException e) {
                 Log.e(Constants.TAG,
                         "Secret key to delete not found at DeleteKeyDialogActivity for "
                                 + mMasterKeyIds[0], e);
@@ -271,13 +272,13 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 long masterKeyId = masterKeyIds[0];
 
                 try {
-                    HashMap<String, Object> data = new ProviderHelper(activity).getUnifiedData(
+                    HashMap<String, Object> data = new ProviderHelper(activity).read().getUnifiedData(
                             masterKeyId, new String[]{
                                     KeychainContract.KeyRings.USER_ID,
                                     KeychainContract.KeyRings.HAS_ANY_SECRET
                             }, new int[]{
-                                    ProviderHelper.FIELD_TYPE_STRING,
-                                    ProviderHelper.FIELD_TYPE_INTEGER
+                                    Cursor.FIELD_TYPE_STRING,
+                                    Cursor.FIELD_TYPE_INTEGER
                             }
                     );
                     String name;
@@ -296,7 +297,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                     } else {
                         mMainMessage.setText(getString(R.string.public_key_deletetion_confirmation, name));
                     }
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (ProviderReader.NotFoundException e) {
                     dismiss();
                     return null;
                 }

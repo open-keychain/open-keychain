@@ -19,22 +19,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
-import java.security.SignatureException;
-import java.security.spec.ECGenParameterSpec;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Stack;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.bcpg.S2K;
 import org.bouncycastle.bcpg.sig.Features;
@@ -72,21 +56,37 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
-import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenKeyToCardOperationsBuilder;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Primes;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
+import java.security.SignatureException;
+import java.security.spec.ECGenParameterSpec;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class is the single place where ALL operations that actually modify a PGP public or secret
@@ -315,18 +315,8 @@ public class PgpKeyOperation {
 
             progress(R.string.progress_building_master_key, 40);
 
-            // Build key encrypter and decrypter based on passphrase
-            PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder()
-                    .build().get(PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_HASH_ALGO);
-            PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                    PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO,
-                    encryptorHashCalc, PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
-
-            PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
-                    .build().get(PgpSecurityConstants.SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO);
             PGPSecretKey masterSecretKey = new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
-                    sha1Calc, true, keyEncryptor);
+                    null, true, null);
 
             PGPSecretKeyRing sKR = new PGPSecretKeyRing(
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
@@ -379,7 +369,6 @@ public class PgpKeyOperation {
          * 4a. For each subkey change, generate new subkey binding certificate
          * 4b. For each subkey revocation, generate new subkey revocation certificate
          * 5. Generate and add new subkeys
-         * 6. If requested, change passphrase
          */
 
         log.add(LogType.MSG_MF, indent,
@@ -471,14 +460,6 @@ public class PgpKeyOperation {
             return internalRestricted(sKR, saveParcel, log, indent + 1);
         }
 
-        // Do we require a passphrase? If so, pass it along
-        if (!isDivertToCard(masterSecretKey) && !cryptoInput.hasPassphrase()) {
-            log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
-            return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                    masterSecretKey.getKeyID(), masterSecretKey.getKeyID(),
-                    cryptoInput.getSignatureTime()), cryptoInput);
-        }
-
         // read masterKeyFlags, and use the same as before.
         // since this is the master key, this contains at least CERTIFY_OTHER
         PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
@@ -519,9 +500,8 @@ public class PgpKeyOperation {
             log.add(LogType.MSG_MF_UNLOCK, indent);
             {
                 try {
-                    PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                            Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(cryptoInput.getPassphrase().getCharArray());
-                    masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
+                    // key is expected to lack s2k encryption
+                    masterPrivateKey = masterSecretKey.extractPrivateKey(null);
                 } catch (PGPException e) {
                     log.add(LogType.MSG_MF_UNLOCK_ERROR, indent + 1);
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
@@ -906,10 +886,7 @@ public class PgpKeyOperation {
 
                 PGPPrivateKey subPrivateKey;
                 if (!isDivertToCard(sKey)) {
-                    PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                    cryptoInput.getPassphrase().getCharArray());
-                    subPrivateKey = sKey.extractPrivateKey(keyDecryptor);
+                    subPrivateKey = sKey.extractPrivateKey(null);
                     // super special case: subkey is allowed to sign, but isn't available
                     if (subPrivateKey == null) {
                         log.add(LogType.MSG_MF_ERROR_SUB_STRIPPED,
@@ -1024,20 +1001,7 @@ public class PgpKeyOperation {
                     nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
                 }
 
-                PGPSecretKey sKey; {
-                    // Build key encrypter and decrypter based on passphrase
-                    PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder()
-                            .build().get(PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_HASH_ALGO);
-                    PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                            PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
-                            PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                    cryptoInput.getPassphrase().getCharArray());
-
-                    PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
-                            .build().get(PgpSecurityConstants.SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO);
-                    sKey = new PGPSecretKey(keyPair.getPrivateKey(), pKey, sha1Calc, false, keyEncryptor);
-                }
+                PGPSecretKey sKey = new PGPSecretKey(keyPair.getPrivateKey(), pKey, null, false, null);
 
                 log.add(LogType.MSG_MF_SUBKEY_NEW_ID,
                         indent+1, KeyFormattingUtils.convertKeyIdToHex(sKey.getKeyID()));
@@ -1053,23 +1017,7 @@ public class PgpKeyOperation {
                 return new PgpEditKeyResult(PgpEditKeyResult.RESULT_CANCELLED, log, null);
             }
 
-            // 6. If requested, change passphrase
-            if (saveParcel.getChangeUnlockParcel() != null) {
-                progress(R.string.progress_modify_passphrase, 90);
-                log.add(LogType.MSG_MF_PASSPHRASE, indent);
-                indent += 1;
-
-                sKR = applyNewPassphrase(sKR, masterPublicKey, cryptoInput.getPassphrase(),
-                        saveParcel.getChangeUnlockParcel().mNewPassphrase, log, indent);
-                if (sKR == null) {
-                    // The error has been logged above, just return a bad state
-                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-                }
-
-                indent -= 1;
-            }
-
-            // 7. if requested, change PIN and/or Admin PIN on security token
+            // 6. if requested, change PIN and/or Admin PIN on security token
             if (saveParcel.mSecurityTokenPin != null) {
                 progress(R.string.progress_modify_pin, 90);
                 log.add(LogType.MSG_MF_PIN, indent);
@@ -1126,7 +1074,7 @@ public class PgpKeyOperation {
     }
 
     /** This method does the actual modifications in a keyring just like internal, except it
-     * supports only the subset of operations which require no passphrase, and will error
+     * supports only the subset of operations which does not require a master key, and will error
      * otherwise.
      */
     private PgpEditKeyResult internalRestricted(PGPSecretKeyRing sKR, SaveKeyringParcel saveParcel,
@@ -1134,7 +1082,7 @@ public class PgpKeyOperation {
 
         progress(R.string.progress_modify, 0);
 
-        // Make sure the saveParcel includes only operations available without passphrase!
+        // Make sure the saveParcel includes only restricted operations
         if (!saveParcel.isRestrictedOnly()) {
             log.add(LogType.MSG_MF_ERROR_RESTRICTED, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
@@ -1192,81 +1140,41 @@ public class PgpKeyOperation {
 
     }
 
-
-    public PgpEditKeyResult modifyKeyRingPassphrase(CanonicalizedSecretKeyRing wsKR,
-                                                    CryptoInputParcel cryptoInput,
-                                                    ChangeUnlockParcel changeUnlockParcel) {
+    /**
+     * This method expects a CanonicalizedSecretKeyRing with decrypted secret subkeys
+     */
+    public PgpEditKeyResult addS2kToSubKeys(CanonicalizedSecretKeyRing wsKR,
+                                            Passphrase newPassphrase) {
 
         OperationLog log = new OperationLog();
         int indent = 0;
-
-        if (changeUnlockParcel.mMasterKeyId == null || changeUnlockParcel.mMasterKeyId != wsKR.getMasterKeyId()) {
-            log.add(LogType.MSG_MF_ERROR_KEYID, indent);
-            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-        }
 
         log.add(LogType.MSG_MF, indent,
                 KeyFormattingUtils.convertKeyIdToHex(wsKR.getMasterKeyId()));
         indent += 1;
         progress(R.string.progress_building_key, 0);
 
-        // We work on bouncycastle object level here
         PGPSecretKeyRing sKR = wsKR.getRing();
         PGPSecretKey masterSecretKey = sKR.getSecretKey();
         PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
-        // Make sure the fingerprint matches
-        if (changeUnlockParcel.mFingerprint == null || !Arrays.equals(changeUnlockParcel.mFingerprint,
-                masterSecretKey.getPublicKey().getFingerprint())) {
-            log.add(LogType.MSG_MF_ERROR_FINGERPRINT, indent);
-            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-        }
 
-        // Find the first unstripped secret key
-        PGPSecretKey nonDummy = firstNonDummySecretKeyID(sKR);
-        if(nonDummy == null) {
-            log.add(OperationResult.LogType.MSG_MF_ERROR_ALL_KEYS_STRIPPED, indent);
-            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-        }
+        log.add(LogType.MSG_MF_ADD_S2K_ENCRYPTION, indent);
+        indent += 1;
 
-        if (!cryptoInput.hasPassphrase()) {
-            log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
-
-            return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                    masterSecretKey.getKeyID(), nonDummy.getKeyID(),
-                    cryptoInput.getSignatureTime()), cryptoInput);
-        } else {
-            progress(R.string.progress_modify_passphrase, 50);
-            log.add(LogType.MSG_MF_PASSPHRASE, indent);
-            indent += 1;
-
-            try {
-                sKR = applyNewPassphrase(sKR, masterPublicKey, cryptoInput.getPassphrase(),
-                        changeUnlockParcel.mNewPassphrase, log, indent);
-                if (sKR == null) {
-                    // The error has been logged above, just return a bad state
-                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-                }
-            } catch (PGPException e) {
-                throw new UnsupportedOperationException("Failed to build encryptor/decryptor!");
+        try {
+            sKR = applyNewPassphrase(sKR, masterPublicKey, new Passphrase(), newPassphrase, log, indent);
+            if (sKR == null) {
+                // The error has been logged above, just return a bad state
+                return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
             }
-
-            indent -= 1;
-            progress(R.string.progress_done, 100);
-            log.add(LogType.MSG_MF_SUCCESS, indent);
-            return new PgpEditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
+        } catch (PGPException e) {
+            throw new UnsupportedOperationException("Failed to build encryptor/decryptor!");
         }
-    }
 
-    private static PGPSecretKey firstNonDummySecretKeyID(PGPSecretKeyRing secRing) {
-        Iterator<PGPSecretKey> secretKeyIterator = secRing.getSecretKeys();
-
-        while(secretKeyIterator.hasNext()) {
-            PGPSecretKey secretKey = secretKeyIterator.next();
-            if(!isDummy(secretKey)){
-                return secretKey;
-            }
-        }
-        return null;
+        indent -= 1;
+        progress(R.string.progress_done, 100);
+        log.add(LogType.MSG_MF_SUCCESS, indent);
+        return new PgpEditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
     }
 
     /** This method returns true iff the provided keyring has a local direct key signature
@@ -1285,6 +1193,97 @@ public class PgpKeyOperation {
         return false;
     }
 
+    public PgpEditKeyResult removeEncryption(CanonicalizedSecretKeyRing wsKR,
+                                             KeyringPassphrases passphrases) {
+        OperationLog log = new OperationLog();
+        int indent = 0;
+
+        if (passphrases.mMasterKeyId != wsKR.getMasterKeyId()) {
+            log.add(LogType.MSG_MF_ERROR_KEYID, indent);
+            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+        }
+
+        log.add(LogType.MSG_MF, indent,
+                KeyFormattingUtils.convertKeyIdToHex(wsKR.getMasterKeyId()));
+        indent += 1;
+        progress(R.string.progress_building_key, 0);
+
+        // We work on bouncycastle object level here
+        PGPSecretKeyRing sKR = wsKR.getRing();
+
+        progress(R.string.progress_modify_passphrase, 50);
+        log.add(LogType.MSG_MF_ADD_S2K_ENCRYPTION, indent);
+        indent += 1;
+
+        try {
+            sKR = removeEncryptionImpl(sKR, passphrases.mSubkeyPassphrases, log, indent);
+            if (sKR == null) {
+                // The error has been logged above, just return a bad state
+                return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+            }
+        } catch (PGPException e) {
+            throw new UnsupportedOperationException("Failed to build encryptor/decryptor!");
+        }
+
+        indent -= 1;
+        progress(R.string.progress_done, 100);
+        log.add(LogType.MSG_MF_SUCCESS, indent);
+        return new PgpEditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
+    }
+
+    /**
+     * Implementation of remove encryption, removes encryption on all subkeys if possible
+     */
+    private static PGPSecretKeyRing removeEncryptionImpl(
+            PGPSecretKeyRing sKR,
+            HashMap<Long, Passphrase> passphrases,
+            OperationLog log, int indent) throws PGPException {
+        boolean keysModified = false;
+
+        for (PGPSecretKey sKey : new IterableIterator<>(sKR.getSecretKeys())) {
+            log.add(LogType.MSG_MF_PASSPHRASE_KEY, indent,
+                    KeyFormattingUtils.convertKeyIdToHex(sKey.getKeyID()));
+
+            Passphrase passphrase = passphrases.get(sKey.getKeyID());
+            if(passphrase == null) {
+                // try empty passphrase for decryption
+                try {
+                    PBESecretKeyDecryptor emptyDecryptor =
+                            new JcePBESecretKeyDecryptorBuilder().setProvider(
+                                    Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
+                    sKey = PGPSecretKey.copyWithNewPassword(sKey, emptyDecryptor, null);
+                } catch (PGPException e) {
+                    log.add(LogType.MSG_MF_PASSPHRASE_MISSING, indent+1);
+                    continue;
+                }
+            } else {
+                // use given passphrase for decryption
+                PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
+                        Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.getCharArray());
+                try {
+                    sKey = PGPSecretKey.copyWithNewPassword(sKey, keyDecryptor, null);
+                } catch (PGPException e) {
+                    log.add(LogType.MSG_MF_ERROR_PASSPHRASE_SUBKEY, indent+1);
+                    continue;
+                }
+            }
+
+            sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+            keysModified = true;
+        }
+
+        if(!keysModified) {
+            // no passphrase changed, do not fail as all keys may be stripped
+            log.add(LogType.MSG_MF_ERROR_PASSPHRASES_UNCHANGED, indent+1);
+        }
+
+        return sKR;
+    }
+
+
+    /**
+     * Change passphrase of subkeys with given passphrase to newPassphrase.
+     */
     private static PGPSecretKeyRing applyNewPassphrase(
             PGPSecretKeyRing sKR,
             PGPPublicKey masterPublicKey,

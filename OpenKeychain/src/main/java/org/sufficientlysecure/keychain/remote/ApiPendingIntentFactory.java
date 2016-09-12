@@ -21,7 +21,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.ui.RemoteBackupActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteCreateAccountActivity;
@@ -56,8 +55,8 @@ public class ApiPendingIntentFactory {
             case SECURITY_TOKEN_SIGN: {
                 return createSecurityTokenOperationPendingIntent(data, requiredInput, cryptoInput);
             }
-
-            case PASSPHRASE: {
+            case PASSPHRASE_KEYRING_UNLOCK:
+            case PASSPHRASE_TOKEN_UNLOCK: {
                 return createPassphrasePendingIntent(data, requiredInput, cryptoInput);
             }
 

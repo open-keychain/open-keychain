@@ -42,8 +42,8 @@
   <string name="section_keys">Subclaves</string>
   <string name="section_cloud_search">Búsqueda de claves</string>
   <string name="section_cloud_search_summary">Servidor de claves, keybase.io</string>
-  <string name="section_passphrase_cache">Contraseñas y PINs</string>
-  <string name="section_passphrase_cache_summary">Manejo, interfaz de usuario, periodo de recuerdo</string>
+  <string name="section_passphrase">Contraseñas y PINs</string>
+  <string name="section_passphrase_summary">Manejo, interfaz de usuario, periodo de recuerdo</string>
   <string name="section_proxy_settings">Anonimato en la red</string>
   <string name="section_proxy_settings_summary">Tor, configuración de proxy</string>
   <string name="section_gui">Interfaz</string>
@@ -931,7 +931,7 @@
   <string name="msg_mf_master">Modificando certificaciones maestras</string>
   <string name="msg_mf_notation_empty">Añadiendo paquete de notación vacío</string>
   <string name="msg_mf_notation_pin">Añadiendo paquete de notación de PIN</string>
-  <string name="msg_mf_passphrase">Cambiando contraseña para el juego de claves</string>
+  <string name="msg_mf_add_s2k_encryption">Cambiando contraseña para el juego de claves</string>
   <string name="msg_mf_pin">Cambiando el PIN en la tarjeta</string>
   <string name="msg_mf_admin_pin">Cambiando el PIN de Admin en la tarjeta</string>
   <string name="msg_mf_passphrase_key">Re-cifrando subclave %s con la nueva contraseña</string>
@@ -941,7 +941,7 @@
   <string name="msg_mf_primary_new">Generando nuevo certificado para nueva identidad principal de usuario</string>
   <string name="msg_mf_restricted_mode">Cambiando al modo de operación restringido</string>
   <string name="msg_mf_subkey_change">Modificando subclave %s</string>
-  <string name="msg_mf_require_passphrase">Contraseña requerida para operaciones</string>
+  <string name="msg_mf_require_subkey_passphrase">Contraseña requerida para operaciones</string>
   <string name="msg_mf_subkey_new">Añadiendo nueva subclave de tipo %s</string>
   <string name="msg_mf_subkey_new_id">Nueva identidad de subclave: %s</string>
   <string name="msg_mf_error_past_expiry">¡La fecha de caducidad no puede ser del pasado!</string>
@@ -962,22 +962,22 @@
   <string name="msg_con_error_bad_state">¡La consolidación se inició cuando ninguna base de datos estaba en caché! Probablemente esto es un error de programación, por favor, consigne un informe de fallo.</string>
   <string name="msg_con_error_concurrent">¡Consolidación abortada, ejecutándose ya en otro hilo!</string>
   <string name="msg_con_save_secret">Guardando juegos de claves secretas (privadas)</string>
-  <string name="msg_con_save_public">Guardando juegos de claves públicas</string>
+  <string name="msg_con_save_all_public">Guardando juegos de claves públicas</string>
   <string name="msg_con_db_clear">Limpiando base de datos</string>
   <string name="msg_con_success">Base de datos consolidada con éxito</string>
   <string name="msg_con_critical_in">Entrando en fase crítica</string>
   <string name="msg_con_critical_out">Abandonando fase crítica</string>
-  <string name="msg_con_delete_public">Borrando fichero de caché del juego de claves públicas</string>
+  <string name="msg_con_delete_all_public">Borrando fichero de caché del juego de claves públicas</string>
   <string name="msg_con_delete_secret">Borrando fichero de caché del juego de claves secretas (privadas)</string>
   <string name="msg_con_error_db">¡Error al abrir la base de datos!</string>
-  <string name="msg_con_error_io_public">¡Error de E/S al escribir claves públicas en caché!</string>
+  <string name="msg_con_error_io_all_public">¡Error de E/S al escribir claves públicas en caché!</string>
   <string name="msg_con_error_io_secret">¡Error de E/S al escribir claves secretas (privadas) en caché!</string>
-  <string name="msg_con_error_public">¡Error al reimportar claves públicas!</string>
+  <string name="msg_con_error_all_public">¡Error al reimportar claves públicas!</string>
   <string name="msg_con_error_secret">¡Error reimportando claves secretas (privadas)!</string>
   <string name="msg_con_recover">Retomando el proceso de consolidación</string>
   <string name="msg_con_recursive">Omitiendo consolidación recursiva</string>
   <string name="msg_con_recover_unknown">Retomando el proceso de consolidación desde un estado desconocido</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Reimportando una clave pública</item>
     <item quantity="other">Reimportando %d claves públicas</item>
   </plurals>
@@ -987,7 +987,7 @@
     <item quantity="other">Reimportando %d claves secretas (privadas)</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">No hay claves públicas a reimportar, omitiendo...</string>
-  <string name="msg_con_warn_delete_public">Excepción al borrar el fichero de caché de claves públicas</string>
+  <string name="msg_con_warn_delete_all_public">Excepción al borrar el fichero de caché de claves públicas</string>
   <string name="msg_con_warn_delete_secret">Excepción al borrar el fichero de caché de claves secretas (privadas)</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Realizando operación en la clave</string>
@@ -1089,7 +1089,7 @@
   <string name="msg_pse_error_no_passphrase">¡No se proporcionó contraseña!</string>
   <string name="msg_pse_error_pgp">¡Error interno de OpenPGP!</string>
   <string name="msg_pse_error_sig">¡Se encontró una excepción de firma OpenPGP!</string>
-  <string name="msg_pse_error_unlock">¡Error desconocido al desbloquear clave!</string>
+  <string name="msg_pse_error_unlock_subkey">¡Error desconocido al desbloquear clave!</string>
   <string name="msg_pse_key_ok">Cifrando para la clave: %s</string>
   <string name="msg_pse_key_unknown">Clave para cifrado ausente: %s</string>
   <string name="msg_pse_key_warn">Clave para cifrado errónea: %s</string>
@@ -1114,7 +1114,7 @@
   <string name="msg_crt_error_self">¡No se puede emitir un auto-certificado como este!</string>
   <string name="msg_crt_error_master_not_found">¡Clave maestra no encontrada!</string>
   <string name="msg_crt_error_nothing">¡No se certificaron claves!</string>
-  <string name="msg_crt_error_unlock">¡Error desbloqueando clave maestra!</string>
+  <string name="msg_crt_error_unlock_master">¡Error desbloqueando clave maestra!</string>
   <string name="msg_crt">Certificando juegos de claves</string>
   <string name="msg_crt_master_fetch">Descargando clave maestra certificante</string>
   <string name="msg_crt_nfc_return">Volviendo a la pantalla NFC</string>

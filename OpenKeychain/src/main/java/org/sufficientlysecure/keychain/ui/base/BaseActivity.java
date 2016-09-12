@@ -24,17 +24,20 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
+import org.sufficientlysecure.keychain.ui.MigrateSymmetricActivity;
+import org.sufficientlysecure.keychain.ui.SetMasterPassphraseActivity;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 /**
  * Setups Toolbar
@@ -44,12 +47,45 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected View mStatusBar;
     protected ThemeChanger mThemeChanger;
 
+    public static final int REQUEST_CODE_PIN = 1;
+    public static final int REQUEST_KEYRING_PASSPHRASE_FOR_PIN = 2;
+    public static final int REQUEST_KEYRING_PASSPHRASE_FOR_MOVE_TO_CARD = 3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initTheme();
         initLayout();
         initToolbar();
+        startEssentialActivities(this);
+    }
+
+    private void startEssentialActivities(Activity activity) {
+        // We need to white-list the activities used by those we're calling
+        // to prevent our app from entering a never ending loop.
+        // Skipping those that don't extend BaseActivity is fine,
+        // as they will never be called with an external intent
+
+        Preferences preferences = Preferences.getPreferences(activity);
+        if (!preferences.isAppLockReady()) {
+            boolean needsMigration =
+                    !preferences.isUsingEncryptedKeyRings() &&
+                            !(activity instanceof MigrateSymmetricActivity);
+
+            boolean isNewInstall =
+                    preferences.isUsingEncryptedKeyRings() && !preferences.hasMasterPassphrase() &&
+                            !(activity instanceof SetMasterPassphraseActivity);
+
+            if (needsMigration) {
+                Log.e("activitysource", "source: " + activity.getLocalClassName());
+                Intent intent = new Intent(activity, MigrateSymmetricActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            } else if(isNewInstall) {
+                Intent intent = new Intent(activity, SetMasterPassphraseActivity.class);
+                startActivity(intent);
+            }
+        }
     }
 
     @Override

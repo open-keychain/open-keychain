@@ -47,8 +47,8 @@
   <string name="section_keys">Доп. ключи</string>
   <string name="section_cloud_search">Поиск ключа</string>
   <string name="section_cloud_search_summary">Сервер ключей, keybase.io</string>
-  <string name="section_passphrase_cache">Пароли и PIN-коды</string>
-  <string name="section_passphrase_cache_summary">Обработка, пользовательский интерфейс, время запоминания</string>
+  <string name="section_passphrase">Пароли и PIN-коды</string>
+  <string name="section_passphrase_summary">Обработка, пользовательский интерфейс, время запоминания</string>
   <string name="section_proxy_settings">Сетевая анонимность</string>
   <string name="section_proxy_settings_summary">Tor, настройки прокси</string>
   <string name="section_gui">Интерфейс</string>
@@ -1027,7 +1027,7 @@
   <string name="msg_mf_master">Изменение основного сертификата</string>
   <string name="msg_mf_notation_empty">Добавление пустого пакета примечаний</string>
   <string name="msg_mf_notation_pin">Добавление пакета примечаний с PIN-кодом</string>
-  <string name="msg_mf_passphrase">Изменение пароля для связки ключей</string>
+  <string name="msg_mf_add_s2k_encryption">Изменение пароля для связки ключей</string>
   <string name="msg_mf_pin">Изменение PIN-кода карты</string>
   <string name="msg_mf_admin_pin">Изменение PIN-кода администратора карты</string>
   <string name="msg_mf_passphrase_key">Перешифровка доп. ключа %s с новым паролем</string>
@@ -1038,7 +1038,7 @@
   <string name="msg_mf_restricted_mode">Переход в ограниченный режим работы</string>
   <string name="msg_mf_subkey_change">Изменение доп. ключа %s</string>
   <string name="msg_mf_require_divert">Отвлечение на токен безопасности для криптографических операций</string>
-  <string name="msg_mf_require_passphrase">Для действий необходим пароль</string>
+  <string name="msg_mf_require_subkey_passphrase">Для действий необходим пароль</string>
   <string name="msg_mf_subkey_new">Добавление нового доп. ключа типа %s</string>
   <string name="msg_mf_subkey_new_id">Идентификатор нового доп. ключа: %s</string>
   <string name="msg_mf_error_past_expiry">Срок годности не может быть в прошлом!</string>
@@ -1061,22 +1061,22 @@
   <string name="msg_con_error_bad_state">Консолидация началась но база не кэширована! Это программная ошибка, пожалуйста, сообщите об этом.</string>
   <string name="msg_con_error_concurrent">Консолидация прервана, уже запущена на другом потоке!</string>
   <string name="msg_con_save_secret">Сохранение секретной связки ключей</string>
-  <string name="msg_con_save_public">Сохранение публичной связки ключей</string>
+  <string name="msg_con_save_all_public">Сохранение публичной связки ключей</string>
   <string name="msg_con_db_clear">Очистка базы данных</string>
   <string name="msg_con_success">Успешно консолидированная база данных</string>
   <string name="msg_con_critical_in">Ввод в критическую фазу</string>
   <string name="msg_con_critical_out">Выход из критической фазы</string>
-  <string name="msg_con_delete_public">Удаление кэша связки публичных ключей</string>
+  <string name="msg_con_delete_all_public">Удаление кэша связки публичных ключей</string>
   <string name="msg_con_delete_secret">Удаление кэша связки секретных ключей</string>
   <string name="msg_con_error_db">Ошибка открытия базы данных!</string>
-  <string name="msg_con_error_io_public">Ошибка записи публичных ключей в кэш!</string>
+  <string name="msg_con_error_io_all_public">Ошибка записи публичных ключей в кэш!</string>
   <string name="msg_con_error_io_secret">Ошибка записи приватных ключей в кэш!</string>
-  <string name="msg_con_error_public">Ошибка переимпортирования публичных ключей!</string>
+  <string name="msg_con_error_all_public">Ошибка переимпортирования публичных ключей!</string>
   <string name="msg_con_error_secret">Ошибка переимпортирования приватных ключей!</string>
   <string name="msg_con_recover">Возобновление процесса консолидации</string>
   <string name="msg_con_recursive">Пропуск рекурсивной консолидации</string>
   <string name="msg_con_recover_unknown">Возобновление процесса консолидации из неизвестного состояния</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Переимпортирование публичного ключа!</item>
     <item quantity="few">Переимпортирование %d публичных ключей!</item>
     <item quantity="many">Переимпортирование %d публичных ключей!</item>
@@ -1090,7 +1090,7 @@
     <item quantity="other">Переимпортирование %d секретных ключей!</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Нет секретных ключей для повторного импорта, пропуск…</string>
-  <string name="msg_con_warn_delete_public">Исключение удаления публичного файла кэша</string>
+  <string name="msg_con_warn_delete_all_public">Исключение удаления публичного файла кэша</string>
   <string name="msg_con_warn_delete_secret">Исключение удаления секретного файла кэша</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Выполнение операции ключа</string>
@@ -1196,7 +1196,7 @@
   <string name="msg_pse_error_no_passphrase">Пароль не предусмотрен!</string>
   <string name="msg_pse_error_pgp">Внутренняя ошибка OpenPGP!</string>
   <string name="msg_pse_error_sig">Обнаружена исключительная ситуация  подписи OpenPGP!</string>
-  <string name="msg_pse_error_unlock">Неизвестная ошибка разблокировения ключа!</string>
+  <string name="msg_pse_error_unlock_subkey">Неизвестная ошибка разблокировения ключа!</string>
   <string name="msg_pse_key_ok">Шифрование для ключа: %s</string>
   <string name="msg_pse_key_unknown">Отсутствует ключ для шифрования: %s</string>
   <string name="msg_pse_key_warn">Некорректный ключ для шифрования: %s</string>
@@ -1225,7 +1225,7 @@
   <string name="msg_crt_error_self">Нельзя выпустить самосертификат вроде этого!</string>
   <string name="msg_crt_error_master_not_found">Основной ключ не найден!</string>
   <string name="msg_crt_error_nothing">Нет сертифицированных ключей!</string>
-  <string name="msg_crt_error_unlock">Ошибка разблокирования основного ключа!</string>
+  <string name="msg_crt_error_unlock_master">Ошибка разблокирования основного ключа!</string>
   <string name="msg_crt">Сертификация связок</string>
   <string name="msg_crt_master_fetch">Получение сертификации основного ключа</string>
   <string name="msg_crt_nfc_return">Возвращение к экрану NFC</string>

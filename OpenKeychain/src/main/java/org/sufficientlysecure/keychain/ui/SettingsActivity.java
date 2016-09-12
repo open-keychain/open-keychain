@@ -44,13 +44,14 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
@@ -192,6 +193,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * This fragment shows the PIN/password preferences
      */
     public static class PassphrasePrefsFragment extends PresetPreferenceFragment {
+        private static final int REQUEST_MASTER_PASSPHRASE = 1;
+        private SwitchPreference mSinglePassphraseWorkflow;
+        private SwitchPreference mApplock;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -210,7 +214,66 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             return false;
                         }
                     });
+
+            findPreference(Constants.Pref.CHANGE_MASTER_PASSPHRASE)
+                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        public boolean onPreferenceClick(Preference preference) {
+                            Intent intent = new Intent(getActivity(), SettingsMasterPassphraseActivity.class);
+                            startActivity(intent);
+                            return false;
+                        }
+                    });
+
+            mApplock = (SwitchPreference) findPreference(Constants.Pref.USE_APPLOCK);
+            mApplock.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+                    RequiredInputParcel requiredInput =
+                            RequiredInputParcel.createRequiredAppLockPassphrase();
+                    requiredInput.mSkipCaching = true;
+                    intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                    startActivityForResult(intent, REQUEST_MASTER_PASSPHRASE);
+                    return false;
+                }
+            });
+
+            mSinglePassphraseWorkflow =
+                    (SwitchPreference) findPreference(Constants.Pref.USE_SINGLE_PASSPHRASE_WORKFLOW);
+            mSinglePassphraseWorkflow.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Boolean toSinglePassphraseWorkflow = (Boolean) newValue;
+
+                    Intent intent = new Intent(getActivity(), SettingsPassphraseWorkflowActivity.class);
+                    intent.putExtra(SettingsPassphraseWorkflowActivity.EXTRA_TO_SINGLE_PASSPHRASE_WORKFLOW,
+                            toSinglePassphraseWorkflow);
+                    startActivity(intent);
+
+                    return false;
+                }
+            });
         }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            mSinglePassphraseWorkflow.setChecked(sPreferences.usesSinglePassphraseWorkflow());
+        }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (requestCode == REQUEST_MASTER_PASSPHRASE) {
+                if (resultCode == RESULT_OK) {
+                    boolean wasChecked = mApplock.isChecked();
+                    mApplock.setChecked(!wasChecked);
+                    sPreferences.setUseApplock(!wasChecked);
+                }
+            } else {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+
     }
 
     public static class ProxyPrefsFragment extends PresetPreferenceFragment {

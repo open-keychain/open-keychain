@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
@@ -72,19 +71,20 @@ public class ConsolidateDialogActivity extends FragmentActivity
 
     @Override
     public void onCryptoOperationSuccess(ConsolidateResult result) {
-        // don't care about result (for now?)
-        ConsolidateDialogActivity.this.finish();
+        setResult(RESULT_OK);
+        finish();
     }
 
     @Override
     public void onCryptoOperationCancelled() {
-
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     @Override
     public void onCryptoOperationError(ConsolidateResult result) {
-        // don't care about result (for now?)
-        ConsolidateDialogActivity.this.finish();
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     @Override

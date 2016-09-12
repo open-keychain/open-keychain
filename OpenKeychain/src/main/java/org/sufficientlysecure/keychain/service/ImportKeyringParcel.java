@@ -21,17 +21,29 @@ package org.sufficientlysecure.keychain.service;
 import android.os.Parcel;
 import android.os.Parcelable;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 
 import java.util.ArrayList;
 
 public class ImportKeyringParcel implements Parcelable {
     // if null, keys are expected to be read from a cache file in ImportExportOperations
     public ArrayList<ParcelableKeyRing> mKeyList;
-    public String mKeyserver; // must be set if keys are to be imported from a keyserver
+    // must be set if keys are to be imported from a keyserver
+    public String mKeyserver;
+    // must be set if keys are to be imported from a cache file
+    public ArrayList<KeyringPassphrases> mKeyringPassphrasesList;
+
+    public ImportKeyringParcel (ArrayList<ParcelableKeyRing> keyList, String keyserver
+            , ArrayList<KeyringPassphrases> keyringPassphrasesList) {
+        mKeyList = keyList;
+        mKeyserver = keyserver;
+        mKeyringPassphrasesList = keyringPassphrasesList;
+    }
 
     public ImportKeyringParcel (ArrayList<ParcelableKeyRing> keyList, String keyserver) {
         mKeyList = keyList;
         mKeyserver = keyserver;
+        mKeyringPassphrasesList = new ArrayList<>();
     }
 
     protected ImportKeyringParcel(Parcel in) {
@@ -39,7 +51,8 @@ public class ImportKeyringParcel implements Parcelable {
             mKeyList = new ArrayList<>();
             in.readList(mKeyList, ParcelableKeyRing.class.getClassLoader());
         } else {
-            mKeyList = null;
+            mKeyringPassphrasesList = new ArrayList<>();
+            in.readList(mKeyringPassphrasesList, KeyringPassphrases.class.getClassLoader());
         }
         mKeyserver = in.readString();
     }
@@ -53,6 +66,7 @@ public class ImportKeyringParcel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         if (mKeyList == null) {
             dest.writeByte((byte) (0x00));
+            dest.writeList(mKeyringPassphrasesList);
         } else {
             dest.writeByte((byte) (0x01));
             dest.writeList(mKeyList);

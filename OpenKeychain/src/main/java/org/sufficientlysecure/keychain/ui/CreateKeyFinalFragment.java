@@ -32,7 +32,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
-
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
@@ -45,7 +44,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
@@ -290,7 +288,7 @@ public class CreateKeyFinalFragment extends Fragment {
                     2048, null, KeyFlags.AUTHENTICATION, 0L));
 
             // use empty passphrase
-            saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));
+            saveKeyringParcel.mPassphrase = new Passphrase();
         } else {
             saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
                     3072, null, KeyFlags.CERTIFY_OTHER, 0L));
@@ -300,9 +298,9 @@ public class CreateKeyFinalFragment extends Fragment {
                     3072, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
 
             if (createKeyActivity.mPassphrase != null) {
-                saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(createKeyActivity.mPassphrase));
+                saveKeyringParcel.mPassphrase = createKeyActivity.mPassphrase;
             } else {
-                saveKeyringParcel.setNewUnlock(null);
+                saveKeyringParcel.mPassphrase = null;
             }
         }
         String userId = KeyRing.createUserId(
@@ -415,7 +413,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
         final SaveKeyringParcel changeKeyringParcel;
         CachedPublicKeyRing key = (new ProviderHelper(activity))
-                .getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
+                .read().getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
         try {
             changeKeyringParcel = new SaveKeyringParcel(key.getMasterKeyId(), key.getFingerprint());
         } catch (PgpKeyNotFoundException e) {

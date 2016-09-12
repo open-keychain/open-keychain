@@ -18,11 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ClipData;
@@ -50,7 +45,6 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -60,6 +54,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -68,6 +63,11 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
+
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 
 public class ViewKeyAdvShareFragment extends LoaderFragment implements
@@ -202,7 +202,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         long keyId = 0;
         try {
             keyId = new ProviderHelper(getActivity())
-                    .getCachedPublicKeyRing(dataUri)
+                    .read().getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
@@ -220,7 +220,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         ProviderHelper providerHelper = new ProviderHelper(activity);
 
         try {
-            String content = providerHelper.getKeyRingAsArmoredString(
+            String content = providerHelper.write().getKeyRingAsArmoredString(
                     KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri));
 
             if (toClipboard) {
@@ -274,7 +274,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
-        } catch (ProviderHelper.NotFoundException e) {
+        } catch (ProviderReader.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
             Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
         }
@@ -459,7 +459,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         long keyId;
         try {
             keyId = new ProviderHelper(getActivity())
-                    .getCachedPublicKeyRing(mDataUri)
+                    .read().getCachedPublicKeyRing(mDataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);

@@ -27,10 +27,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
-
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
@@ -189,7 +187,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     }
 
     public void importKeys(byte[] keyringData) {
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(keyringData);
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(keyringData, null);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 

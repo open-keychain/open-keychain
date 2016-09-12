@@ -134,7 +134,7 @@ public class ImportKeysListLoader
                 UncachedKeyRing ring = it.next();
                 ImportKeysListEntry item = new ImportKeysListEntry(getContext(), ring);
                 mData.add(item);
-                mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(ring.getEncoded()));
+                mParcelableRings.put(item.hashCode(), new ParcelableKeyRing(ring.getEncoded(), null));
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException on parsing key file! Return NoValidKeysException!", e);

@@ -24,7 +24,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -32,12 +31,17 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAccounts
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.CrossProcessColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.MasterPassphraseColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
+import org.sufficientlysecure.keychain.ui.MigrateSymmetricActivity;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,11 +58,12 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 17;
+    private static final int DATABASE_VERSION = 18;
     static Boolean apgHack = false;
     private Context mContext;
 
     public interface Tables {
+        String MASTER_PASSPHRASE = "master_passphrase";
         String KEY_RINGS_PUBLIC = "keyrings_public";
         String KEY_RINGS_SECRET = "keyrings_secret";
         String KEYS = "keys";
@@ -68,7 +73,24 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String API_APPS = "api_apps";
         String API_ACCOUNTS = "api_accounts";
         String API_ALLOWED_KEYS = "api_allowed_keys";
+        String CROSS_PROCESS_CACHE = "cross_process_cache";
     }
+
+    private static final String CREATE_MASTER_PASSPHRASE =
+            "CREATE TABLE IF NOT EXISTS master_passphrase ("
+                    + MasterPassphraseColumns.ENCRYPTED_BLOCK + " BLOB"
+                    + ")";
+
+
+    private static final String CREATE_CROSS_PROCESS_CACHE =
+            "CREATE TABLE IF NOT EXISTS cross_process_cache ("
+                    + CrossProcessColumns.MASTER_PASSPHRASE_IS_CACHED + " INT"
+                    + ")";
+
+    private static final String INSERT_INITIAL_MASTER_PASSPHRASE_STATE =
+            "INSERT INTO cross_process_cache ("
+                    + CrossProcessColumns.MASTER_PASSPHRASE_IS_CACHED + ")"
+                    + " VALUES ('0')";
 
     private static final String CREATE_KEYRINGS_PUBLIC =
             "CREATE TABLE IF NOT EXISTS keyrings_public ("
@@ -80,6 +102,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS keyrings_secret ("
                     + KeyRingsColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY,"
                     + KeyRingsColumns.KEY_RING_DATA + " BLOB, "
+                    + KeyRingsColumns.SECRET_RING_TYPE + " INTEGER, "
+                    + KeyRingsColumns.AWAITING_MERGE + " INTEGER, "
                     + "FOREIGN KEY(" + KeyRingsColumns.MASTER_KEY_ID + ") "
                         + "REFERENCES keyrings_public(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
             + ")";
@@ -223,6 +247,9 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ACCOUNTS);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
+        db.execSQL(CREATE_MASTER_PASSPHRASE);
+        db.execSQL(CREATE_CROSS_PROCESS_CACHE);
+        db.execSQL(INSERT_INITIAL_MASTER_PASSPHRASE_STATE);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
         db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
@@ -314,17 +341,35 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 15:
                 db.execSQL("CREATE INDEX uids_by_name ON user_packets (name COLLATE NOCASE)");
                 db.execSQL("CREATE INDEX uids_by_email ON user_packets (email COLLATE NOCASE)");
-                if (oldVersion == 14) {
-                    // no consolidate necessary
-                    return;
-                }
+            case 16:
+                // fall through for migrate
+            case 17:
+                PassphraseCacheService.clearAllCachedPassphrases(mContext);
+                Preferences prefs = Preferences.getPreferences(mContext);
+                prefs.setUsingEncryptedKeyRings(false);
+                db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN awaiting_merge INTEGER");
+                db.execSQL("ALTER TABLE keyrings_secret ADD COLUMN secret_ring_type INTEGER");
+                db.execSQL(CREATE_MASTER_PASSPHRASE);
+                db.execSQL(CREATE_CROSS_PROCESS_CACHE);
+                db.execSQL(INSERT_INITIAL_MASTER_PASSPHRASE_STATE);
         }
 
-        // always do consolidate after upgrade
-        Intent consolidateIntent = new Intent(mContext.getApplicationContext(), ConsolidateDialogActivity.class);
-        consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
-        consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.getApplicationContext().startActivity(consolidateIntent);
+
+        if (oldVersion <= 17) {
+            // migrate to symmetrically encrypted keyring blocks
+            // consolidate is handled by migration to prevent progress bar bugs
+            Intent migrateIntent = new Intent(mContext.getApplicationContext(), MigrateSymmetricActivity.class);
+            migrateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.getApplicationContext().startActivity(migrateIntent);
+
+        } else {
+
+            // always do consolidate after upgrade
+            Intent consolidateIntent = new Intent(mContext.getApplicationContext(), ConsolidateDialogActivity.class);
+            consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
+            consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.getApplicationContext().startActivity(consolidateIntent);
+        }
     }
 
     @Override
@@ -398,7 +443,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     byte[] data = cursor.getBlob(0);
                     try {
                         UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
-                        providerHelper.savePublicKeyRing(ring);
+                        providerHelper.write().savePublicKeyRing(ring);
                     } catch(PgpGeneralException e) {
                         Log.e(Constants.TAG, "Error decoding keyring blob!");
                     }
@@ -422,7 +467,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     byte[] data = cursor.getBlob(0);
                     try {
                         UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
-                        providerHelper.savePublicKeyRing(ring);
+                        providerHelper.write().savePublicKeyRing(ring);
                     } catch(PgpGeneralException e) {
                         Log.e(Constants.TAG, "Error decoding keyring blob!");
                     }

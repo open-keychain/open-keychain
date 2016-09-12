@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:layout_above="@+id/bottom_placeholder">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:orientation="vertical">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/set_master_passphrase_text" />
+
+            <org.sufficientlysecure.keychain.ui.widget.PassphraseEditText
+                    android:id="@+id/master_passphrase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPassword"
+                    android:hint="@string/label_passphrase"
+                    android:ems="10"
+                    android:layout_gravity="center_horizontal"
+            />
+
+            <EditText
+                    android:id="@+id/master_passphrase_again"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:inputType="textPassword"
+                    android:hint="@string/label_passphrase_again"
+                    android:ems="10"
+                    android:layout_gravity="center_horizontal" />
+
+            <CheckBox
+                    android:id="@+id/show_master_passphrase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/label_show_passphrase" />
+
+            <LinearLayout
+                    android:id="@+id/workflow_selection_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                <CheckBox
+                        android:id="@+id/use_single_password_workflow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="left|center_vertical"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:text="@string/set_single_password_workflow"/>
+
+                <TextView
+                        android:id="@+id/help_single_password_workflow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:textColor="#0645AD"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="@string/help_single_password_workflow"
+                        android:maxLines="1"
+                        android:layout_weight="7"
+                        android:clickable="true"
+                        android:gravity="center"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="?attr/colorButtonRow"
+            android:id="@+id/bottom_placeholder">
+
+        <TextView
+                android:id="@+id/set_master_passphrase_back_button"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="@string/btn_back"
+                android:textAllCaps="true"
+                android:minHeight="?android:attr/listPreferredItemHeight"
+                android:drawableLeft="@drawable/ic_chevron_left_grey_24dp"
+                android:drawablePadding="8dp"
+                android:gravity="left|center_vertical"
+                android:clickable="true"
+                style="?android:attr/borderlessButtonStyle" />
+
+        <TextView
+                android:id="@+id/set_master_passphrase_next_button"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="@string/btn_next"
+                android:textAllCaps="true"
+                android:minHeight="?android:attr/listPreferredItemHeight"
+                android:drawableRight="@drawable/ic_chevron_right_grey_24dp"
+                android:drawablePadding="8dp"
+                android:gravity="right|center_vertical"
+                android:clickable="true"
+                style="?android:attr/borderlessButtonStyle"/>
+    </LinearLayout>
+</RelativeLayout>

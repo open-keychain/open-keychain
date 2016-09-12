@@ -105,7 +105,7 @@ public class MiscCryptOperationTests {
         importKeysFromResource(mActivity, "x.sec.asc");
 
         // make sure no passphrases are cached
-        PassphraseCacheService.clearCachedPassphrases(mActivity);
+        PassphraseCacheService.clearAllCachedPassphrases(mActivity);
     }
 
     //@Test

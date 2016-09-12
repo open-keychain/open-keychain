@@ -19,23 +19,31 @@ package org.sufficientlysecure.keychain;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.AppLockActivity;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
+import org.sufficientlysecure.keychain.ui.RevertChangeWorkflowDialogActivity;
+import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
@@ -47,7 +55,6 @@ import java.util.HashMap;
 
 
 public class KeychainApplication extends Application {
-
     /**
      * Called when the application is starting, before any activity, service, or receiver objects
      * (excluding content providers) have been created.
@@ -105,14 +112,16 @@ public class KeychainApplication extends Application {
             KeyserverSyncAdapterService.enableKeyserverSync(this);
         }
 
+        Preferences prefs = Preferences.getPreferences(this);
+
         // if first time, enable keyserver and contact sync
-        if (Preferences.getPreferences(this).isFirstTime()) {
+        if (prefs.isFirstTime()) {
             KeyserverSyncAdapterService.enableKeyserverSync(this);
             ContactSyncAdapterService.enableContactsSync(this);
         }
 
         // Update keyserver list as needed
-        Preferences.getPreferences(this).upgradePreferences(this);
+        prefs.upgradePreferences(this);
 
         TlsHelper.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
         TlsHelper.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
@@ -124,6 +133,95 @@ public class KeychainApplication extends Application {
             // force DB upgrade, https://github.com/open-keychain/open-keychain/issues/1334
             new KeychainDatabase(this).getReadableDatabase().close();
         }
+        if (prefs.isMidwayChangingPassphraseWorkflow()) {
+            // try to revert back to state before changing workflow
+            Intent revertIntent = new Intent(this, RevertChangeWorkflowDialogActivity.class);
+            revertIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(revertIntent);
+        }
+
+        // to counter force shutdown of passphrase cache (messes up master passphrase presence check)
+        // verify presence of master passphrase once on startup
+        // (this means that we are still a little slow when first starting OpenKeychain)
+        // TODO: improve applock performance further
+        if (prefs.useApplock()) {
+            try {
+                if (PassphraseCacheService.getMasterPassphrase(getApplicationContext()) != null) {
+                    PassphraseCacheService.updateMasterPassphrasePresence(true, getContentResolver());
+                }
+            } catch (PassphraseCacheService.KeyNotFoundException ignored) {}
+            PassphraseCacheService.updateMasterPassphrasePresence(false, getContentResolver());
+        }
+
+        registerActivityLifecycleCallbacks(new LifecycleHandler());
+    }
+
+    /**
+     * For app lock
+     */
+    public class LifecycleHandler implements Application.ActivityLifecycleCallbacks {
+        private Preferences mPreferences = Preferences.getPreferences(getApplicationContext());
+        private ContentResolver mContentResolver = getApplicationContext().getContentResolver();
+
+        @Override
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        }
+
+        private void showAppLockIfAppropriate(Activity activity) {
+            if (mPreferences.useApplock() && mPreferences.isAppLockReady()) {
+
+                boolean isWhiteListedActivity = activity instanceof AppLockActivity
+                        || activity instanceof PassphraseDialogActivity;
+
+                if (!isWhiteListedActivity && !hasCachedMasterPassphrase()) {
+                    Intent intent = new Intent(activity, AppLockActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    activity.startActivity(intent);
+                }
+            }
+        }
+
+        // the db stores whether the master passphrase is cached or not,
+        // as suggested by Android docs for passing data across processes reliably
+        // (PassphraseCacheService lives on another process. Querying it currently takes a long time)
+        private boolean hasCachedMasterPassphrase() {
+            Cursor cursor = mContentResolver.query(KeychainContract.CrossProcessCache.CONTENT_URI,
+                    new String[]{KeychainContract.CrossProcessCache.MASTER_PASSPHRASE_IS_CACHED},
+                    KeychainContract.CrossProcessCache.MASTER_PASSPHRASE_IS_CACHED + "!=0", null, null);
+            try {
+                return cursor != null && cursor.moveToFirst();
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+            showAppLockIfAppropriate(activity);
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+        }
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+        }
+
     }
 
     /**

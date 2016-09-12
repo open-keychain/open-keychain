@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.service;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -68,8 +67,7 @@ public class SaveKeyringParcel implements Parcelable {
     private boolean mUploadAtomic;
     private String mKeyserver;
 
-    // private because we have to set other details like key id
-    private ChangeUnlockParcel mNewUnlock;
+    public Passphrase mPassphrase;
 
     public SaveKeyringParcel() {
         reset();
@@ -82,7 +80,7 @@ public class SaveKeyringParcel implements Parcelable {
     }
 
     public void reset() {
-        mNewUnlock = null;
+        mPassphrase = null;
         mAddUserIds = new ArrayList<>();
         mAddUserAttribute = new ArrayList<>();
         mAddSubKeys = new ArrayList<>();
@@ -103,18 +101,6 @@ public class SaveKeyringParcel implements Parcelable {
         mKeyserver = keysever;
     }
 
-    public void setNewUnlock(ChangeUnlockParcel parcel) {
-        mNewUnlock = parcel;
-    }
-
-    public ChangeUnlockParcel getChangeUnlockParcel() {
-        if(mNewUnlock != null) {
-            mNewUnlock.mMasterKeyId = mMasterKeyId;
-            mNewUnlock.mFingerprint = mFingerprint;
-        }
-        return mNewUnlock;
-    }
-
     public boolean isUpload() {
         return mUpload;
     }
@@ -131,9 +117,9 @@ public class SaveKeyringParcel implements Parcelable {
         return isRestrictedOnly() && mChangeSubKeys.isEmpty();
     }
 
-    /** Returns true iff this parcel does not contain any operations which require a passphrase. */
+    /** Returns true iff this parcel does not contain any operations which require a master key & its passphrase. */
     public boolean isRestrictedOnly() {
-        if (mNewUnlock != null || !mAddUserIds.isEmpty() || !mAddUserAttribute.isEmpty()
+        if (mPassphrase != null || !mAddUserIds.isEmpty() || !mAddUserAttribute.isEmpty()
                 || !mAddSubKeys.isEmpty() || mChangePrimaryUserId != null || !mRevokeUserIds.isEmpty()
                 || !mRevokeSubKeys.isEmpty()) {
             return false;
@@ -261,7 +247,7 @@ public class SaveKeyringParcel implements Parcelable {
         mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
         mFingerprint = source.createByteArray();
 
-        mNewUnlock = source.readParcelable(getClass().getClassLoader());
+        mPassphrase = source.readParcelable(Passphrase.class.getClassLoader());
 
         mAddUserIds = source.createStringArrayList();
         mAddUserAttribute = (ArrayList<WrappedUserAttribute>) source.readSerializable();
@@ -290,7 +276,7 @@ public class SaveKeyringParcel implements Parcelable {
         destination.writeByteArray(mFingerprint);
 
         // yes, null values are ok for parcelables
-        destination.writeParcelable(mNewUnlock, flags);
+        destination.writeParcelable(mPassphrase, flags);
 
         destination.writeStringList(mAddUserIds);
         destination.writeSerializable(mAddUserAttribute);
@@ -328,7 +314,7 @@ public class SaveKeyringParcel implements Parcelable {
     @Override
     public String toString() {
         String out = "mMasterKeyId: " + mMasterKeyId + "\n";
-        out += "mNewUnlock: " + mNewUnlock + "\n";
+        out += "mPassphrase: " + mPassphrase + "\n";
         out += "mAddUserIds: " + mAddUserIds + "\n";
         out += "mAddUserAttribute: " + mAddUserAttribute + "\n";
         out += "mAddSubKeys: " + mAddSubKeys + "\n";

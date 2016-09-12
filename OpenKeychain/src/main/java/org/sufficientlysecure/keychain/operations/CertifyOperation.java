@@ -32,15 +32,15 @@ import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderReader.NotFoundException;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -81,60 +81,72 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
 
-            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
-            Passphrase passphrase;
+            CachedPublicKeyRing cachedPublicKeyRing = mProviderHelper.read().getCachedPublicKeyRing(masterKeyId);
 
-            switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
-                case PIN:
-                case PATTERN:
-                case PASSPHRASE:
-                    passphrase = cryptoInput.getPassphrase();
-                    if (passphrase == null) {
+            // get keyring passphrase
+            Passphrase keyringPassphrase;
+            switch (cachedPublicKeyRing.getSecretKeyringType()) {
+                case PASSPHRASE_EMPTY: {
+                    keyringPassphrase = new Passphrase();
+                    break;
+                }
+                case PASSPHRASE: {
+                    keyringPassphrase = cryptoInput.getPassphrase();
+                    if (keyringPassphrase == null) {
                         try {
-                            passphrase = getCachedPassphrase(masterKeyId, masterKeyId);
-                        } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
+                            keyringPassphrase = getCachedPassphrase(masterKeyId);
+                        } catch (NoSecretKeyException ignored) {
                             // treat as a cache miss for error handling purposes
                         }
-                    }
-
-                    if (passphrase == null) {
-                        return new CertifyResult(log,
-                                RequiredInputParcel.createRequiredSignPassphrase(masterKeyId, masterKeyId, null),
-                                cryptoInput
-                        );
+                        if (keyringPassphrase == null) {
+                            return new CertifyResult(log,
+                                    RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId),
+                                    cryptoInput);
+                        }
                     }
                     break;
-
-                case PASSPHRASE_EMPTY:
-                    passphrase = new Passphrase("");
-                    break;
-
-                case DIVERT_TO_CARD:
-                    // the unlock operation will succeed for passphrase == null in a divertToCard key
-                    passphrase = null;
-                    break;
-
-                default:
-                    log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
-                    return new CertifyResult(CertifyResult.RESULT_ERROR, log);
+                }
+                default: {
+                    throw new AssertionError("Unsupported keyring type");
+                }
             }
 
-            // Get actual secret key
             CanonicalizedSecretKeyRing secretKeyRing =
-                    mProviderHelper.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId);
+                    mProviderHelper.read().getCanonicalizedSecretKeyRing(parcel.mMasterKeyId, keyringPassphrase);
             certificationKey = secretKeyRing.getSecretKey();
 
             log.add(LogType.MSG_CRT_UNLOCK, 1);
-            boolean unlockSuccessful = certificationKey.unlock(passphrase);
-            if (!unlockSuccessful) {
-                log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
-                return new CertifyResult(CertifyResult.RESULT_ERROR, log);
+
+            switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
+                case DIVERT_TO_CARD:
+                case PASSPHRASE_EMPTY: {
+                    // the unlock operation will succeed with an empty passphrase in a divertToCard key
+                    if (!certificationKey.unlock(new Passphrase())) {
+                        throw new AssertionError(
+                                "PASSPHRASE_EMPTY/DIVERT_TO_CARD" +
+                                        " keyphrase not unlocked with empty passphrase." +
+                                        " This is a programming error!");
+                    }
+                    break;
+                }
+                default: {
+                    // other types of subkeys should not reach this point
+                    log.add(LogType.MSG_CRT_ERROR_UNLOCK_MASTER, 2);
+                    return new CertifyResult(CertifyResult.RESULT_ERROR, log);
+                }
             }
+
         } catch (PgpGeneralException e) {
-            log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
+            log.add(LogType.MSG_CRT_ERROR_UNLOCK_MASTER, 2);
             return new CertifyResult(CertifyResult.RESULT_ERROR, log);
         } catch (NotFoundException e) {
             log.add(LogType.MSG_CRT_ERROR_MASTER_NOT_FOUND, 2);
+            return new CertifyResult(CertifyResult.RESULT_ERROR, log);
+        } catch (ByteArrayEncryptor.EncryptDecryptException e) {
+            log.add(LogType.MSG_CRT_ERROR_DECRYPT_KEYRING, 2);
+            return new CertifyResult(CertifyResult.RESULT_ERROR, log);
+        } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
+            log.add(LogType.MSG_CRT_ERROR_UNLOCK_KEYRING, 2);
             return new CertifyResult(CertifyResult.RESULT_ERROR, log);
         }
 
@@ -165,7 +177,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                 }
 
                 CanonicalizedPublicKeyRing publicRing =
-                        mProviderHelper.getCanonicalizedPublicKeyRing(action.mMasterKeyId);
+                        mProviderHelper.read().getCanonicalizedPublicKeyRing(action.mMasterKeyId);
 
                 PgpCertifyOperation op = new PgpCertifyOperation();
                 PgpCertifyResult result = op.certify(certificationKey, publicRing,
@@ -223,7 +235,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                     KeyFormattingUtils.convertKeyIdToHex(certifiedKey.getMasterKeyId()));
             // store the signed key in our local cache
             mProviderHelper.clearLog();
-            SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
+            SaveKeyringResult result = mProviderHelper.write().savePublicKeyRing(certifiedKey);
 
             if (uploadOperation != null) {
                 UploadKeyringParcel uploadInput =

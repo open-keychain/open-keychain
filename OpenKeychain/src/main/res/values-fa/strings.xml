@@ -270,7 +270,7 @@
   <!--modifySecretKeyRing-->
   <!--Consolidate-->
   <string name="msg_con_reimport_secret_skip">هیچ کلید خصوصی‌ای برای ورود یافت نشد، نادیده گرفته شد...</string>
-  <string name="msg_con_warn_delete_public">استثنا در حذف کردن فایل عمومیِ cache</string>
+  <string name="msg_con_warn_delete_all_public">استثنا در حذف کردن فایل عمومیِ cache</string>
   <string name="msg_con_warn_delete_secret">استثنا در حذف کردن فایل خصوصیِ cache</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">در حال انجام عملیات کلید</string>

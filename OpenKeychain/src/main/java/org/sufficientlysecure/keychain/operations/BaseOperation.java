@@ -22,12 +22,10 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
-import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -111,22 +109,18 @@ public abstract class BaseOperation <T extends Parcelable> implements Passphrase
     }
 
     @Override
-    public Passphrase getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
+    public Passphrase getCachedPassphrase(long masterKeyId) throws NoSecretKeyException {
         try {
-            if (subKeyId != key.symmetric) {
-                long masterKeyId = mProviderHelper.getMasterKeyId(subKeyId);
-                return getCachedPassphrase(masterKeyId, subKeyId);
-            }
-            return getCachedPassphrase(key.symmetric, key.symmetric);
-        } catch (NotFoundException e) {
+            return PassphraseCacheService.getCachedPassphrase(mContext, masterKeyId);
+        } catch (PassphraseCacheService.KeyNotFoundException e) {
             throw new PassphraseCacheInterface.NoSecretKeyException();
         }
     }
 
     @Override
-    public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException {
+    public Passphrase getCachedSubkeyPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException {
         try {
-            return PassphraseCacheService.getCachedPassphrase(
+            return PassphraseCacheService.getCachedSubkeyPassphrase(
                     mContext, masterKeyId, subKeyId);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
             throw new PassphraseCacheInterface.NoSecretKeyException();

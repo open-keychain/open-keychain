@@ -10,8 +10,8 @@
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$PassphrasePrefsFragment"
         android:icon="@drawable/ic_lock_black_24dp"
-        android:summary="@string/section_passphrase_cache_summary"
-        android:title="@string/section_passphrase_cache" />
+        android:summary="@string/section_passphrase_summary"
+        android:title="@string/section_passphrase" />
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$ProxyPrefsFragment"
         android:icon="@drawable/ic_tor_black_24dp"

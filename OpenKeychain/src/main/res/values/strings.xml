@@ -20,7 +20,10 @@
     <string name="title_api_registered_apps">"Apps"</string>
     <string name="title_key_server_preference">"OpenPGP keyservers"</string>
     <string name="title_cache_ttl_preference">"Customize 'Remember' choices"</string>
+    <string name="title_single_passphrase_workflow">"Single password workflow"</string>
+    <string name="title_use_applock">"Use app lock"</string>
     <string name="title_change_passphrase">"Change Password"</string>
+    <string name="title_change_master_passphrase">"Change Master Password"</string>
     <string name="title_share_fingerprint_with">"Share fingerprint with…"</string>
     <string name="title_share_key">"Share key with…"</string>
     <string name="title_share_file">"Share file with…"</string>
@@ -31,6 +34,7 @@
     <string name="title_export_key">"Backup Key"</string>
     <string name="title_export_keys">"Backup Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
+    <string name="title_migrate_symmetric">"Changes to OpenKeychain"</string>
     <string name="title_send_key">"Upload to Keyserver"</string>
     <string name="title_backup">"Backup Key"</string>
     <string name="title_certify_key">"Confirm Key"</string>
@@ -53,8 +57,8 @@
     <string name="section_keys">"Subkeys"</string>
     <string name="section_cloud_search">"Key Search"</string>
     <string name="section_cloud_search_summary">"Keyserver, keybase.io"</string>
-    <string name="section_passphrase_cache">"Passwords and PINs"</string>
-    <string name="section_passphrase_cache_summary">"Handling, user interface, remember time"</string>
+    <string name="section_passphrase">"Passwords and PINs"</string>
+    <string name="section_passphrase_summary">"Caching, master password, applock, workflow"</string>
     <string name="section_proxy_settings">"Network Anonymity"</string>
     <string name="section_proxy_settings_summary">"Tor, Proxy Settings"</string>
     <string name="section_gui">"Interface"</string>
@@ -193,6 +197,8 @@
     <string name="label_keyserver_dialog_delete">"Delete keyserver"</string>
     <string name="label_theme">"Theme"</string>
 
+    <string name="label_master_passphrase">"Change master password"</string>
+
     <string name="pref_keyserver">"OpenPGP keyservers"</string>
     <string name="pref_keyserver_summary">"Search keys on selected OpenPGP keyservers (HKP protocol)"</string>
     <string name="pref_keybase">"keybase.io"</string>
@@ -311,6 +317,7 @@
     <string name="passphrases_do_not_match">"The passwords didn't match."</string>
     <string name="passphrase_must_not_be_empty">"Please enter a password."</string>
     <string name="passphrase_for_symmetric_encryption">"Enter password"</string>
+    <string name="passphrase_for_applock">"Enter master password"</string>
     <string name="passphrase_for_backup">"Enter backup code"</string>
     <string name="passphrase_for">"Enter password for '%s'"</string>
     <string name="passphrase_keyboard_hint_alpha">"Change to alphabetic keyboard"</string>
@@ -381,6 +388,7 @@
     <string name="error_integrity_check_failed">"integrity check failed! Data has been modified!"</string>
     <string name="error_wrong_passphrase">"wrong password"</string>
     <string name="error_could_not_extract_private_key">"could not extract private key"</string>
+    <string name="error_could_not_process_key_data">"could not process key data"</string>
     <string name="error_wrong_security_token">"this security token doesn't contain required key"</string>
 
     <!-- errors without preceeding Error: -->
@@ -632,6 +640,7 @@
     <string name="api_settings_key">"Account key:"</string>
     <string name="api_settings_accounts_empty">"No accounts attached to this app."</string>
     <string name="api_create_account_text">"No key is configured for this account. Please select one of your existing keys or create a new one.\nApps can only decrypt/sign with the keys selected here!"</string>
+    <string name="api_open_main_app_text">"OpenKeychain has undergone an update which requires starting the main application.\nPlease try again after starting OpenKeychain."</string>
     <string name="api_update_account_text">"The key saved for this account has been deleted. Please select a different one!\nApps can only decrypt/sign with the keys selected here!"</string>
     <string name="api_register_text">"The displayed app wants to encrypt/decrypt messages and sign them in your name.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the 'Apps' screen."</string>
     <string name="api_register_allow">"Allow access"</string>
@@ -837,6 +846,7 @@
     <string name="cert_verify_error">"error!"</string>
     <string name="cert_verify_unavailable">"key unavailable"</string>
 
+
     <!-- LogType log messages. Errors should have _ERROR_ in their name and end with a ! -->
 
     <string name="msg_internal_error">"Internal error!"</string>
@@ -850,6 +860,7 @@
     <string name="msg_ip_encode_fail">"Operation failed due to encoding error"</string>
     <string name="msg_ip_error_io_exc">"Operation failed due to i/o error"</string>
     <string name="msg_ip_error_op_exc">"Operation failed due to database error"</string>
+    <string name="msg_ip_error_passphrase_cache">"Operation failed due to passphrase cache error"</string>
     <string name="msg_ip_error_remote_ex">"Operation failed due to internal error"</string>
     <string name="msg_ip">"Importing public keyring %s"</string>
     <string name="msg_ip_fingerprint_error">"Fingerprint of importing key does not match expected!"</string>
@@ -941,11 +952,28 @@
     <string name="msg_is_bad_type_public">"Tried to import public keyring as secret. This is a bug, please file a report!"</string>
     <string name="msg_is_bad_type_uncanon">"Tried to import a keyring without canonicalization. This is a bug, please file a report!"</string>
 
+    <!-- Write Secret log entries -->
+    <string name="msg_ws">"Writing secret key %s"</string>
+    <string name="msg_ws_db_exception">"Database error!"</string>
+    <string name="msg_ws_writing_subkey_data">"Writing subkey data"</string>
+    <string name="msg_ws_subkey_nonexistent">"Subkey %s unavailable in secret key"</string>
+    <string name="msg_ws_subkey_ok">"Marked secret subkey %s as available"</string>
+    <string name="msg_ws_subkey_empty">"Marked secret subkey %s as available, with empty password"</string>
+    <string name="msg_ws_subkey_pin">"Marked secret subkey %s as available, with PIN"</string>
+    <string name="msg_ws_subkey_stripped">"Marked secret subkey %s as stripped"</string>
+    <string name="msg_ws_subkey_divert">"Marked secret subkey %s as key on Security Token"</string>
+    <string name="msg_ws_success">"Successfully written secret keyring"</string>
+    <string name="msg_ws_updating_self_certs">"Updating self certs"</string>
+    <string name="msg_ws_updated_self_certs">"Updated self certs"</string>
+
     <!-- Import Secret log entries -->
     <string name="msg_is">"Importing secret key %s"</string>
     <string name="msg_is_db_exception">"Database error!"</string>
     <string name="msg_is_importing_subkeys">"Processing secret subkeys"</string>
+    <string name="msg_is_error_removing_passphrases">"Error removing passphrases"</string>
     <string name="msg_is_error_io_exc">"Error encoding keyring"</string>
+    <string name="msg_is_error_io_encrypt">"Error encoding encrypted keyring"</string>
+    <string name="msg_is_error_master_passphrase_encrypt">"Error using master passphrase"</string>
     <string name="msg_is_merge_public">"Merging imported data into existing public keyring"</string>
     <string name="msg_is_merge_secret">"Merging imported data into existing secret keyring"</string>
     <string name="msg_is_merge_special">"Merging in self-certificates data from public keyring"</string>
@@ -1046,6 +1074,16 @@
     <string name="msg_mg_found_new">"Found %s new certificates in keyring"</string>
     <string name="msg_mg_unchanged">"Nothing to merge"</string>
 
+    <!-- Keyring change unlock -->
+    <string name="msg_cu">"Changing password for keyring"</string>
+    <string name="msg_cu_error_decrypt_keyring">"Error decrypting secret keyring! (this is a bug, please report)"</string>
+    <string name="msg_cu_error_incorrect_passphrase">"Decrypt secret keyring failed due to incorrect password! (this is a bug, please report)"</string>
+    <string name="msg_cu_error_keyring_not_found">"Keyring not found!"</string>
+    <string name="msg_cu_error_no_parcel">"Missing ChangeUnlockParcel! (this is a bug, please report)"</string>
+    <string name="msg_cu_fetching_keyring">"Fetching keyring for modification"</string>
+    <string name="msg_cu_require_keyring_passphrase">"Keyring password required, requesting user input…"</string>
+    <string name="msg_cu_success">"Successfully changed keyring's password"</string>
+
     <!-- createSecretKeyRing -->
     <string name="msg_cr">"Generating new master key"</string>
     <string name="msg_cr_error_no_master">"No master key options specified!"</string>
@@ -1064,6 +1102,7 @@
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
+    <string name="msg_mf_add_s2k_encryption">"Changing password for keyring"</string>
     <string name="msg_mf_divert">"Will use Security Token for crypto operations"</string>
     <string name="msg_mf_error_all_keys_stripped">All keys are stripped!</string>
     <string name="msg_mf_error_divert_newsub">"Creation of new subkeys is not supported for primary keys on Security Tokens!"</string>
@@ -1080,6 +1119,7 @@
     <string name="msg_mf_error_null_expiry">"Expiry time cannot be "same as before" on subkey creation. This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_noop">"Nothing to do!"</string>
     <string name="msg_mf_error_passphrase_master">"Fatal error decrypting master key! This is likely a programming error, please file a bug report!"</string>
+    <string name="msg_mf_error_passphrase_subkey">"Fatal error decrypting subkey! This is likely a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_passphrases_unchanged">"No password changed!"</string>
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
@@ -1089,9 +1129,9 @@
     <string name="msg_mf_error_duplicate_keytocard_for_slot">"Security Token supports only one slot per key type."</string>
     <string name="msg_mf_error_invalid_flags_for_keytocard">"Inappropriate key flags for Security Token key."</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
+    <string name="msg_mf_missing_passphrase">"Password for subkey cannot be changed. (Is it stripped or revoked?)"</string>
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
     <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
-    <string name="msg_mf_passphrase">"Changing password for keyring"</string>
     <string name="msg_mf_pin">"Changing PIN on card"</string>
     <string name="msg_mf_admin_pin">"Changing Admin PIN on card"</string>
     <string name="msg_mf_passphrase_key">"Re-encrypting subkey %s with new password"</string>
@@ -1102,7 +1142,7 @@
     <string name="msg_mf_restricted_mode">"Changing to restricted operation mode"</string>
     <string name="msg_mf_subkey_change">"Modifying subkey %s"</string>
     <string name="msg_mf_require_divert">"Using Security Token for crypto operations"</string>
-    <string name="msg_mf_require_passphrase">"Password required for operations"</string>
+    <string name="msg_mf_require_subkey_passphrase">"Password required for operations"</string>
     <string name="msg_mf_subkey_new">"Adding new subkey of type %s"</string>
     <string name="msg_mf_subkey_new_id">"New subkey ID: %s"</string>
     <string name="msg_mf_error_past_expiry">"Expiry date cannot be in the past!"</string>
@@ -1126,24 +1166,32 @@
     <string name="msg_con_error_bad_state">"Consolidation was started while no database was cached! This is probably a programming error, please file a bug report."</string>
     <string name="msg_con_error_concurrent">"Consolidation aborted, already running on other thread!"</string>
     <string name="msg_con_save_secret">"Saving secret keyrings"</string>
-    <string name="msg_con_save_public">"Saving public keyrings"</string>
+    <string name="msg_con_save_own_public">"Saving own public keyrings"</string>
+    <string name="msg_con_save_foreign_public">"Saving foreign public keyrings"</string>
     <string name="msg_con_db_clear">"Clearing database"</string>
     <string name="msg_con_success">"Successfully consolidated database"</string>
     <string name="msg_con_critical_in">"Entering critical phase"</string>
     <string name="msg_con_critical_out">"Leaving critical phase"</string>
-    <string name="msg_con_delete_public">"Deleting public keyring cache file"</string>
+    <string name="msg_con_delete_foreign_public">"Deleting foreign public keyring cache file"</string>
+    <string name="msg_con_delete_own_public">"Deleting own public keyring cache file"</string>
     <string name="msg_con_delete_secret">"Deleting secret keyring cache file"</string>
     <string name="msg_con_error_db">"Error opening database!"</string>
-    <string name="msg_con_error_io_public">"IO error writing public keys to cache!"</string>
+    <string name="msg_con_error_io_foreign_public">"IO error writing foreign public keys to cache!"</string>
+    <string name="msg_con_error_io_own_public">"IO error writing own public keys to cache!"</string>
     <string name="msg_con_error_io_secret">"IO error writing secret keys to cache!"</string>
-    <string name="msg_con_error_public">"Error reimporting public keys!"</string>
+    <string name="msg_con_error_foreign_public">"Error reimporting foreign public keys!"</string>
+    <string name="msg_con_error_own_public">"Error reimporting own public keys!"</string>
     <string name="msg_con_error_secret">"Error reimporting secret keys!"</string>
     <string name="msg_con_recover">"Resuming consolidation process"</string>
     <string name="msg_con_recursive">"Skipping recursive consolidation"</string>
     <string name="msg_con_recover_unknown">"Resuming consolidation process from unknown state"</string>
-    <plurals name="msg_con_reimport_public">
-        <item quantity="one">"Reimporting one public key"</item>
-        <item quantity="other">"Reimporting %d public keys"</item>
+    <plurals name="msg_con_reimport_foreign_public">
+        <item quantity="one">"Reimporting one foreign public key"</item>
+        <item quantity="other">"Reimporting %d foreign public keys"</item>
+    </plurals>
+    <plurals name="msg_con_reimport_own_public">
+        <item quantity="one">"Reimporting one personal public key"</item>
+        <item quantity="other">"Reimporting %d personal public keys"</item>
     </plurals>
     <string name="msg_con_reimport_public_skip">"No public keys to reimport, skipping…"</string>
     <plurals name="msg_con_reimport_secret">
@@ -1151,7 +1199,8 @@
         <item quantity="other">"Reimporting %d secret keys"</item>
     </plurals>
     <string name="msg_con_reimport_secret_skip">"No secret keys to reimport, skipping…"</string>
-    <string name="msg_con_warn_delete_public">"Exception deleting public cache file"</string>
+    <string name="msg_con_warn_delete_foreign_public">"Exception deleting foreign public cache file"</string>
+    <string name="msg_con_warn_delete_own_public">"Exception deleting own public cache file"</string>
     <string name="msg_con_warn_delete_secret">"Exception deleting secret cache file"</string>
 
     <!-- Edit Key (higher level than modify) -->
@@ -1159,8 +1208,12 @@
     <string name="msg_ed_caching_new">"Caching new password"</string>
     <string name="msg_ed_error_no_parcel">"Missing SaveKeyringParcel! (this is a bug, please report)"</string>
     <string name="msg_ed_error_key_not_found">"Key not found!"</string>
+    <string name="msg_ed_error_keyring_not_found">"Keyring not found!"</string>
+    <string name="msg_ed_error_decrypt_keyring">"Error decrypting secret keyring! (this is a bug, please report)"</string>
     <string name="msg_ed_error_extract_public_upload">"Error extracting public key for upload!"</string>
+    <string name="msg_ed_error_incorrect_passphrase">"Decrypt secret keyring failed due to incorrect password! (this is a bug, please report)"</string>
     <string name="msg_ed_fetching">"Fetching key to modify (%s)"</string>
+    <string name="msg_ed_require_keyring_passphrase">"Keyring password required, requesting user input…"</string>
     <string name="msg_ed_success">"Key operation successful"</string>
 
     <!-- Promote key -->
@@ -1197,17 +1250,20 @@
     <string name="msg_dc_clear_signature">"Saving signature data for later"</string>
     <string name="msg_dc_clear">"Processing cleartext data"</string>
     <string name="msg_dc_error_bad_passphrase">"Error unlocking key, bad password!"</string>
-    <string name="msg_dc_error_sym_passphrase">"Error decrypting data! (Bad password?)"</string>
     <string name="msg_dc_error_corrupt_data">"Data is corrupt!"</string>
+    <string name="msg_dc_error_decrypt_keyring">"Error decrypting keyring!"></string>
     <string name="msg_dc_error_extract_key">"Unknown error unlocking key!"</string>
+    <string name="msg_dc_error_input">"Error opening input data stream!"</string>
     <string name="msg_dc_error_integrity_check">"Integrity check error!"</string>
     <string name="msg_dc_error_invalid_data">"No valid OpenPGP encrypted or signed data found!"</string>
     <string name="msg_dc_error_io">"Encountered an error reading input data!"</string>
-    <string name="msg_dc_error_input">"Error opening input data stream!"</string>
     <string name="msg_dc_error_no_data">"No encrypted data found in stream!"</string>
     <string name="msg_dc_error_no_key">"No encrypted data with known secret key found in stream!"</string>
     <string name="msg_dc_error_no_signature">"Missing signature data!"</string>
     <string name="msg_dc_error_pgp_exception">"Encountered OpenPGP Exception during operation!"</string>
+    <string name="msg_dc_error_sym_passphrase">"Error decrypting data! (Bad password?)"</string>
+    <string name="msg_dc_error_unlock_keyring">"Error unlocking keyring!"</string>
+    <string name="msg_dc_error_unlock_subkey">"Error unlocking subkey!"</string>
     <string name="msg_dc_integrity_check_ok">"Integrity check OK!"</string>
     <string name="msg_dc_ok_meta_only">"Only metadata was requested, skipping decryption"</string>
     <string name="msg_dc_ok">"Decryption/Verification finished"</string>
@@ -1257,6 +1313,7 @@
     <string name="msg_pse_compressing">"Preparing compression"</string>
     <string name="msg_pse_encrypting">"Encrypting data"</string>
     <string name="msg_pse_error_bad_passphrase">"Bad password!"</string>
+    <string name="msg_pse_error_decrypt_keyring">"Error decrypting keyring!"</string>
     <string name="msg_pse_error_io">"Encountered IO Exception during operation!"</string>
     <string name="msg_pse_error_key_sign">"Selected signing key cannot sign data!"</string>
     <string name="msg_pse_error_sign_key">"Error fetching signing key!"</string>
@@ -1264,7 +1321,8 @@
     <string name="msg_pse_error_no_passphrase">"No password provided!"</string>
     <string name="msg_pse_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_pse_error_sig">"Encountered OpenPGP signature exception!"</string>
-    <string name="msg_pse_error_unlock">"Unknown error unlocking key!"</string>
+    <string name="msg_pse_error_unlock_subkey">"Unknown error unlocking key!"</string>
+    <string name="msg_pse_error_unlock_keyring">"Unknown error unlocking keyring!"</string>
     <string name="msg_pse_error_revoked_or_expired">"Revoked/Expired key cannot be used for sign or encryption"</string>
     <string name="msg_pse_key_ok">"Encrypting for key: %s"</string>
     <string name="msg_pse_key_unknown">"Missing key for encryption: %s"</string>
@@ -1289,9 +1347,11 @@
         <item quantity="other">"Certifying %1$d user attributes for key %2$s"</item>
     </plurals>
     <string name="msg_crt_error_self">"Cannot issue self-certificate like this!"</string>
+    <string name="msg_crt_error_decrypt_keyring">"Error decrypting keyring!"</string>
     <string name="msg_crt_error_master_not_found">"Master key not found!"</string>
     <string name="msg_crt_error_nothing">"No keys certified!"</string>
-    <string name="msg_crt_error_unlock">"Error unlocking master key!"</string>
+    <string name="msg_crt_error_unlock_master">"Error unlocking master key!"</string>
+    <string name="msg_crt_error_unlock_keyring">"Error unlocking keyring!"</string>
     <string name="msg_crt">"Certifying keyrings"</string>
     <string name="msg_crt_master_fetch">"Fetching certifying master key"</string>
     <string name="msg_crt_nfc_return">"Returning to NFC screen"</string>
@@ -1305,6 +1365,12 @@
     <string name="msg_crt_warn_upload_failed">"Upload operation failed!"</string>
 
     <string name="msg_crt_upload_success">"Successfully uploaded key to server"</string>
+
+    <plurals name="msg_write">
+        <item quantity="one">"Writing key"</item>
+        <item quantity="other">"Writing %d keys"</item>
+    </plurals>
+    <string name="msg_write_success">"Write keys successful!"</string>
 
     <plurals name="msg_import">
         <item quantity="one">"Importing key"</item>
@@ -1335,6 +1401,9 @@
     <string name="msg_backup_secret">"Creating backup of secret key %s"</string>
     <string name="msg_backup_error_uri_open">"Error opening URI stream!"</string>
     <string name="msg_backup_error_db">"Database error!"</string>
+    <string name="msg_backup_error_decrypt">"Keyring decryption error!"</string>
+    <string name="msg_backup_error_missing_passphrase">"No passphrase provided for decrypt this keyring!"</string>
+    <string name="msg_backup_error_incorrect_passphrase">"Incorrect passphrase for decrypting keyring!"</string>
     <string name="msg_backup_error_io">"Input/output error!"</string>
     <string name="msg_backup_success">"Backup operation successful"</string>
 
@@ -1455,6 +1524,9 @@
     <string name="msg_mime_parsing_error">"MIME parsing failed"</string>
     <string name="msg_mime_parsing_success">"MIME parsing successfully!"</string>
 
+    <!--generic error msg for operations -->
+    <string name="msg_op_error_merge_keyring">"Previous keyring update has led to an error. Keyring's last working state is restored. Please try again!"</string>
+
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_touch_to_clear">"Touch to clear passwords."</string>
     <plurals name="passp_cache_notif_n_keys">
@@ -1472,6 +1544,8 @@
     <string name="keyserver_sync_orbot_notif_ignore">"Direct"</string>
 
     <!-- First Time -->
+    <string name="first_time_dialog_title">"Welcome to OpenKeychain!"</string>
+    <string name="first_time_dialog_text">"Take your first step into OpenKeychain by setting your master password.\n\nThis password will be used for our applock mechanism, and also to protect your keys."</string>
     <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
     <string name="first_time_create_key">"Create my key"</string>
     <string name="first_time_import_key">"Import key from file"</string>
@@ -1481,6 +1555,74 @@
     <string name="first_time_blank_security_token">"Would you like to use this blank Security Token with OpenKeychain?\n\nPlease take away the Security Token now, you will be prompted when it is needed again!"</string>
     <string name="first_time_blank_security_token_yes">"Use this Security Token"</string>
 
+    <!-- Applock -->
+    <string name="applock_title">"App Lock"</string>
+
+    <!-- Master Passphrase -->
+    <string name="master_passphrase_notification_name">"&lt;Master Passphrase&gt;"</string>
+    <string name="set_master_passphrase_button">"Set Passphrase"</string>
+    <string name="error_set_master_passphrase">"Error saving master passphrase"</string>
+    <!-- TODO: edit the single password workflow text -->
+    <string name="set_master_passphrase_title">"Set Master Password"</string>
+    <string name="set_master_passphrase_text">"The master password will be used for OpenKeychain's app lock. A strong password protects your keys in the event of theft."</string>
+    <string name="error_saving_master_password">"Error saving master password, please contact the developers."</string>
+    <string name="error_write_to_db_master_password">"Error writing master password to database, please try again."</string>
+
+    <!-- Single Passphrase Workflow -->
+    <string name="set_single_password_workflow">"Use Single Password Workflow (recommended)"</string>
+    <string name="pref_single_passphrase_workflow_summary">"(recommended)\n\nThe master password will be used as the password for all keys. Disabling this prevents using some features of the app.\n\nRefer to the FAQ for more info."</string>
+    <string name="help_single_password_workflow">"(?)"</string>
+    <string name="about_single_password_workflow">"The master password will be used as the password for all keys in OpenKeychain. Disabling this prevents use of some features of the app.\n\nRefer to the FAQ for more info. This setting can be toggled at anytime from the settings menu."</string>
+
+    <!-- Create Secret Key Ring Cache -->
+    <string name="msg_cc">"Creating internal cache"</string>
+    <string name="msg_cc_error_db">"Error accessing database"</string>
+    <string name="msg_cc_success">"Successful cache creation"</string>
+    <string name="create_cache_error">"Critical error, unable to read/write to device. Please try again later."</string>
+    <string name="create_cache_cancelled">"Unknown error has occurred. Please contact the developers…"</string>
+    <string name="progress_cache_secret_keys">"Caching secret keys…"</string>
+
+    <!-- Change Passphrase Workflow -->
+    <string name="msg_pw">"Changing workflow"</string>
+    <string name="msg_pw_reimport_secret">"Re-importing secret keys"</string>
+    <string name="msg_pw_error_db_exception">"Database error encountered, please try again later"</string>
+    <string name="msg_pw_error_bad_passphrase">"Bad password used to decrypt keys, please contact developers"</string>
+    <string name="msg_pw_error_io">"IO error encountered, please try again later"</string>
+    <string name="msg_pw_error_encrypt_decrypt">"Error encrypting/decrypting keys"</string>
+    <string name="msg_pw_success">"Successfully changed workflow"</string>
+
+    <string name="progress_change_workflow">"Changing workflow…"</string>
+
+    <!-- Revert Workflow Change (when change passphrase workflow fails) -->
+    <string name="msg_rw">"Reverting workflow change"</string>
+    <string name="msg_rw_reimport_secret">"Re-importing secret keys"</string>
+    <string name="msg_rw_error_db_exception">"Database error encountered, please try again later"</string>
+    <string name="msg_rw_error_io">"IO error encountered, please try again later"</string>
+    <string name="msg_rw_success">"Successfully reverted workflow"</string>
+
+    <string name="progress_revert_change_workflow">"Reverting workflow change…"</string>
+
+    <!-- Migrate to Symmetric Encryption -->
+    <string name="msg_mi">"Migrating to symmetric encryption"</string>
+    <string name="msg_mi_cache_secret">"Caching secret keys"</string>
+    <string name="msg_mi_error_decode_cache">"Error decoding keys from cache"</string>
+    <string name="msg_mi_reimport_secret">"Re-importing secret keys from cache"</string>
+    <string name="msg_mi_success">"Successful migration to symmetrically encrypted keyring blocks"</string>
+
+    <string name="progress_migrating">"migrating…"</string>
+
+    <string name="btn_start_migration">"Start Migration"</string>
+    <string name="migrate_cancelled_dialog">"Please complete the migration, or clear the application data to start importing keys."</string>
+    <string name="migrate_title">"Migrating"</string>
+    <!-- TODO: edit the migration text -->
+    <string name="migrate_changes_to_app">"OpenKeychain has been updated to use a new encryption system for your keys. View the FAQ for more details. You are required to set a master password and then, to enter the passwords for your existing keys. \n\nNote: Usage of subkeys with separate passwords is no longer supported. Such subkeys will be modified to use the password of the first present subkey in the keyring."</string>
+    <string name="migrate_error_accessing_cache">"Error, unable to access cached keys. Please try again…"</string>
+    <string name="migrate_error_cache_keys">"Critical error, unable to read/write to device. Please try again later."</string>
+    <string name="migrate_error_cancelled">"Unknown error has occurred. Please contact the developers…"</string>
+    <string name="migrate_error_consolidating">"Error consolidating. Please try again…"</string>
+    <string name="migrate_error_migrating">"Error migrating. Please try again…"</string>
+
+    <!-- Backup/Restore -->
     <string name="backup_text">"Backups that include your own keys must never be shared with other people!"</string>
     <string name="backup_all">"All keys + your own keys"</string>
     <string name="backup_public_keys">"All keys"</string>
@@ -1505,6 +1647,7 @@
     <string name="key_stripped">"stripped"</string>
     <string name="key_divert">"on Security Token"</string>
     <string name="key_no_passphrase">"no password"</string>
+    <string name="key_using_s2k">"using s2k"</string>
     <string name="key_unavailable">"unavailable"</string>
     <string name="secret_cannot_multiple">"Your own keys can only be deleted individually!"</string>
     <string name="title_view_cert">"View Certificate Details"</string>

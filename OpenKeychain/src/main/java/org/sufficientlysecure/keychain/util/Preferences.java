@@ -28,13 +28,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-import org.sufficientlysecure.keychain.util.orbot.OrbotStatusReceiver;
 
 import java.io.Serializable;
 import java.net.Proxy;
@@ -103,10 +101,6 @@ public class Preferences {
         editor.commit();
     }
 
-    public boolean getPassphraseCacheSubs() {
-        return mSharedPreferences.getBoolean(Pref.PASSPHRASE_CACHE_SUBS, false);
-    }
-
     public boolean getCachedConsolidate() {
         return mSharedPreferences.getBoolean(Pref.CACHED_CONSOLIDATE, false);
     }
@@ -128,6 +122,80 @@ public class Preferences {
     public void setFirstTime(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Constants.Pref.FIRST_TIME, value);
+        editor.commit();
+    }
+
+    // indicates if app is currently using encrypted keyring blocks
+    public boolean isUsingEncryptedKeyRings() {
+        return mSharedPreferences.getBoolean(Constants.Pref.USING_ENCRYPTED_KEYRINGS, true);
+    }
+
+    public void setUsingEncryptedKeyRings(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.Pref.USING_ENCRYPTED_KEYRINGS, value);
+        editor.commit();
+    }
+
+    // indicates if the applock has been setup & is currently ready for use
+    public boolean isAppLockReady() {
+        return mSharedPreferences.getBoolean(Pref.IS_APP_LOCK_READY, false);
+    }
+
+    public void setIsAppLockReady(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.IS_APP_LOCK_READY, value);
+        editor.commit();
+    }
+
+    public boolean useApplock() {
+        return mSharedPreferences.getBoolean(Pref.USE_APPLOCK, false);
+    }
+
+    public void setUseApplock(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.USE_APPLOCK, value);
+        editor.commit();
+    }
+
+    public boolean hasMasterPassphrase() {
+        return mSharedPreferences.getBoolean(Constants.Pref.HAS_MASTER_PASSPHRASE, false);
+    }
+
+    public void setHasMasterPassphrase(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.HAS_MASTER_PASSPHRASE, value);
+        editor.commit();
+    }
+
+    // indicates if app has failed the migration to using encrypted keyring blocks
+    public boolean isPartiallyMigrated() {
+        return mSharedPreferences.getBoolean(Pref.PARTIALLY_MIGRATED, false);
+    }
+
+    public void setPartiallyMigrated(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.PARTIALLY_MIGRATED, value);
+        editor.commit();
+    }
+
+    // indicates if app has failed to complete a "change passphrase workflow" operation
+    public boolean isMidwayChangingPassphraseWorkflow() {
+        return mSharedPreferences.getBoolean(Pref.MIDWAY_CHANGING_PASSPHRASE_WORKFLOW, false);
+    }
+
+    public void setMidwayChangingPassphraseWorkflow(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.MIDWAY_CHANGING_PASSPHRASE_WORKFLOW, value);
+        editor.commit();
+    }
+
+    public boolean usesSinglePassphraseWorkflow() {
+        return mSharedPreferences.getBoolean(Pref.USE_SINGLE_PASSPHRASE_WORKFLOW, false);
+    }
+
+    public void setUsesSinglePassphraseWorkflow(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.USE_SINGLE_PASSPHRASE_WORKFLOW, value);
         editor.commit();
     }
 

@@ -158,6 +158,11 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         }
     }
 
+    public boolean isDummy() {
+        S2K s2k = mSecretKey.getS2K();
+        return s2k != null && s2k.getType() == S2K.GNU_DUMMY_S2K;
+    }
+
     /**
      * Returns true on right passphrase
      */

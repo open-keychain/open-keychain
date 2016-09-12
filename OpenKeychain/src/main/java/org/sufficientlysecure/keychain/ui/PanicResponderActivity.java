@@ -22,7 +22,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 
 /**
@@ -39,7 +38,7 @@ public class PanicResponderActivity extends Activity {
 
         Intent intent = getIntent();
         if (intent != null && PANIC_TRIGGER_ACTION.equals(intent.getAction())) {
-            PassphraseCacheService.clearCachedPassphrases(this);
+            PassphraseCacheService.clearAllCachedPassphrases(this);
             PanicExitActivity.exitAndRemoveFromRecentApps(this);
         }
 

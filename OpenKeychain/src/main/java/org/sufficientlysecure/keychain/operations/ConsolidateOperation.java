@@ -28,6 +28,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
+
 public class ConsolidateOperation extends BaseOperation<ConsolidateInputParcel> {
 
     public ConsolidateOperation(Context context, ProviderHelper providerHelper, Progressable
@@ -45,4 +46,5 @@ public class ConsolidateOperation extends BaseOperation<ConsolidateInputParcel> 
             return mProviderHelper.consolidateDatabaseStep1(mProgressable);
         }
     }
+
 }

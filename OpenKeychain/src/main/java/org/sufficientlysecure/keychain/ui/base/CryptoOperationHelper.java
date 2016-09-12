@@ -19,8 +19,6 @@
 
 package org.sufficientlysecure.keychain.ui.base;
 
-import java.util.Date;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -31,7 +29,6 @@ import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -39,12 +36,14 @@ import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.RetryUploadDialogActivity;
+import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Date;
 
 /**
  * Designed to be integrated into activities or fragments used for CryptoOperations.
@@ -140,7 +139,9 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 return;
             }
 
-            case PASSPHRASE:
+            case PASSPHRASE_TOKEN_UNLOCK:
+            case PASSPHRASE_IMPORT_KEY:
+            case PASSPHRASE_KEYRING_UNLOCK:
             case PASSPHRASE_SYMMETRIC:
             case BACKUP_CODE: {
                 Intent intent = new Intent(activity, PassphraseDialogActivity.class);
@@ -164,6 +165,10 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 return;
             }
 
+            case PASSPHRASE_APP_LOCK: {
+                throw new RuntimeException("App lock shouldn't be called by crypto operations!");
+                // PassphraseDialogActivity handles the single passphrase workflow internally
+            }
             default: {
                 throw new RuntimeException("Unhandled pending result!");
             }

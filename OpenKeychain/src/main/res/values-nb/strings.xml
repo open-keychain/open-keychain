@@ -47,7 +47,7 @@
   <string name="section_keys">Undernøkler</string>
   <string name="section_cloud_search">Finn nøkkel</string>
   <string name="section_cloud_search_summary">Nøkkeltjener, keybase.io</string>
-  <string name="section_passphrase_cache">Passord og PIN-koder</string>
+  <string name="section_passphrase">Passord og PIN-koder</string>
   <string name="section_proxy_settings">Nettverks-anonymitet</string>
   <string name="section_proxy_settings_summary">Tor, mellomtjener-innstillinger</string>
   <string name="section_gui">Grensesnitt</string>

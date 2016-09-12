@@ -25,7 +25,6 @@ import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSignature;
 import org.bouncycastle.openpgp.jcajce.JcaPGPObjectFactory;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -40,6 +39,36 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
     CanonicalizedSecretKeyRing(PGPSecretKeyRing ring, int verified) {
         super(verified);
         mRing = ring;
+    }
+
+    public enum SecretKeyRingType {
+        UNAVAILABLE(0), PASSPHRASE(1), PASSPHRASE_EMPTY(2), PIN(3), PATTERN(4);
+
+        final int mNum;
+
+        SecretKeyRingType(int num) {
+            mNum = num;
+        }
+
+        public static SecretKeyRingType fromNum(int num) {
+            switch (num) {
+                case 1:
+                    return PASSPHRASE;
+                case 2:
+                    return PASSPHRASE_EMPTY;
+                case 3:
+                    return PIN;
+                case 4:
+                    return PATTERN;
+                default:
+                    // no secret keyring
+                    return UNAVAILABLE;
+            }
+        }
+
+        public int getNum() {
+            return mNum;
+        }
     }
 
     public CanonicalizedSecretKeyRing(byte[] blob, boolean isRevoked, int verified)

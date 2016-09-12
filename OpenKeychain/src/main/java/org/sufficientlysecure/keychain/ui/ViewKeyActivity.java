@@ -19,11 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -66,7 +61,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -74,25 +68,23 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.ContentDescriptionHint;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
-import org.sufficientlysecure.keychain.ui.util.ContentDescriptionHint;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -102,6 +94,11 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 
 
 public class ViewKeyActivity extends BaseSecurityTokenActivity implements
@@ -113,12 +110,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     public static final String EXTRA_SECURITY_TOKEN_FINGERPRINTS = "security_token_fingerprints";
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({REQUEST_QR_FINGERPRINT, REQUEST_BACKUP, REQUEST_CERTIFY, REQUEST_DELETE})
+    @IntDef({REQUEST_QR_FINGERPRINT, REQUEST_CERTIFY, REQUEST_DELETE})
     private @interface RequestType {}
     static final int REQUEST_QR_FINGERPRINT = 1;
-    static final int REQUEST_BACKUP = 2;
-    static final int REQUEST_CERTIFY = 3;
-    static final int REQUEST_DELETE = 4;
+    static final int REQUEST_CERTIFY = 2;
+    static final int REQUEST_DELETE = 3;
 
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
     public static final String EXTRA_LINKED_TRANSITION = "linked_transition";
@@ -380,7 +376,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 return true;
             }
             case R.id.menu_key_view_backup: {
-                startPassphraseActivity(REQUEST_BACKUP);
+                startBackupActivity();
                 return true;
             }
             case R.id.menu_key_view_delete: {
@@ -396,7 +392,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             case R.id.menu_key_view_refresh: {
                 try {
                     updateFromKeyserver(mDataUri, mProviderHelper);
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (ProviderReader.NotFoundException e) {
                     Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
                 }
                 return true;
@@ -419,6 +415,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         backupKey.setVisible(mIsSecret);
         MenuItem changePassword = menu.findItem(R.id.menu_key_change_password);
         changePassword.setVisible(mIsSecret);
+        if (Preferences.getPreferences(this).usesSinglePassphraseWorkflow()) {
+            menu.findItem(R.id.menu_key_change_password).setVisible(false);
+        }
 
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
         certifyFingerprint.setVisible(!mIsSecret && !mIsVerified && !mIsExpired && !mIsRevoked);
@@ -529,38 +528,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         ActivityCompat.startActivity(this, qrCodeIntent, opts);
     }
 
-    private void startPassphraseActivity(int requestCode) {
-
-        if (keyHasPassphrase()) {
-            Intent intent = new Intent(this, PassphraseDialogActivity.class);
-            RequiredInputParcel requiredInput =
-                    RequiredInputParcel.createRequiredDecryptPassphrase(mMasterKeyId, mMasterKeyId);
-            requiredInput.mSkipCaching = true;
-            intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-            startActivityForResult(intent, requestCode);
-        } else {
-            startBackupActivity();
-        }
-    }
-
-    private boolean keyHasPassphrase() {
-        try {
-            SecretKeyType secretKeyType =
-                    mProviderHelper.getCachedPublicKeyRing(mMasterKeyId).getSecretKeyType(mMasterKeyId);
-            switch (secretKeyType) {
-                // all of these make no sense to ask
-                case PASSPHRASE_EMPTY:
-                case GNU_DUMMY:
-                case DIVERT_TO_CARD:
-                case UNAVAILABLE:
-                    return false;
-                default:
-                    return true;
-            }
-        } catch (NotFoundException e) {
-            return false;
-        }
-    }
 
     private void startBackupActivity() {
         Intent intent = new Intent(this, BackupActivity.class);
@@ -621,11 +588,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 return;
             }
 
-            case REQUEST_BACKUP: {
-                startBackupActivity();
-                return;
-            }
-
             case REQUEST_DELETE: {
                 setResult(RESULT_OK, data);
                 finish();
@@ -662,7 +624,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         try {
 
             // if the security token matches a subkey in any key
-            CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(
+            CachedPublicKeyRing ring = mProviderHelper.read().getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(tokenId));
             byte[] candidateFp = ring.getFingerprint();
 
@@ -736,7 +698,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         }
         try {
             long keyId = new ProviderHelper(this)
-                    .getCachedPublicKeyRing(dataUri)
+                    .read().getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
             long[] encryptionKeyIds = new long[]{keyId};
             Intent intent;
@@ -760,7 +722,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         long keyId = 0;
         try {
             keyId = new ProviderHelper(this)
-                    .getCachedPublicKeyRing(dataUri)
+                    .read().getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
@@ -1092,16 +1054,16 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
 
     private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
-            throws ProviderHelper.NotFoundException {
+            throws ProviderReader.NotFoundException {
 
         mIsRefreshing = true;
         mRefreshItem.setEnabled(false);
         mRefreshItem.setActionView(mRefresh);
         mRefresh.startAnimation(mRotate);
 
-        byte[] blob = (byte[]) providerHelper.getGenericData(
+        byte[] blob = (byte[]) providerHelper.read().getGenericData(
                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+                KeychainContract.Keys.FINGERPRINT, Cursor.FIELD_TYPE_BLOB);
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
 
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null);

@@ -46,8 +46,8 @@
   <string name="section_keys">Поткључеви</string>
   <string name="section_cloud_search">Претрага кључа</string>
   <string name="section_cloud_search_summary">Сервер кључева, keybase.io</string>
-  <string name="section_passphrase_cache">Лозинке и пинови</string>
-  <string name="section_passphrase_cache_summary">Руковање, корисничко сучеље, време памћења</string>
+  <string name="section_passphrase">Лозинке и пинови</string>
+  <string name="section_passphrase_summary">Руковање, корисничко сучеље, време памћења</string>
   <string name="section_proxy_settings">Анонимност на мрежи</string>
   <string name="section_proxy_settings_summary">Тор, поставке проксија</string>
   <string name="section_gui">Сучеље</string>
@@ -1003,7 +1003,7 @@
   <string name="msg_mf_master">Модификујем главне сертификате</string>
   <string name="msg_mf_notation_empty">Додајем празни пакет нотације</string>
   <string name="msg_mf_notation_pin">Додајем ПИН пакет нотације</string>
-  <string name="msg_mf_passphrase">Мењам лозинку за привезак</string>
+  <string name="msg_mf_add_s2k_encryption">Мењам лозинку за привезак</string>
   <string name="msg_mf_pin">Мењам ПИН на картици</string>
   <string name="msg_mf_admin_pin">Мењам администраторски ПИН на картици</string>
   <string name="msg_mf_passphrase_key">Поново шифрујем поткључ %s новом лозинком</string>
@@ -1013,7 +1013,7 @@
   <string name="msg_mf_primary_new">Генеришем нови сертификат за нови примарни кориснички ИД</string>
   <string name="msg_mf_restricted_mode">Пребацујем на ограничени режим рада</string>
   <string name="msg_mf_subkey_change">Модификујем поткључ %s</string>
-  <string name="msg_mf_require_passphrase">Потребна је лозинка за извршење радњи</string>
+  <string name="msg_mf_require_subkey_passphrase">Потребна је лозинка за извршење радњи</string>
   <string name="msg_mf_subkey_new">Додајем нови поткључ типа %s</string>
   <string name="msg_mf_subkey_new_id">ИД новог поткључа: %s</string>
   <string name="msg_mf_error_past_expiry">Датум истицања не може бити у прошлости!</string>
@@ -1034,22 +1034,22 @@
   <string name="msg_con_error_bad_state">Учвршћивање покренуто док база података није била кеширана! Ово је вероватно грешка у програмирању, поднесите извештај о грешци.</string>
   <string name="msg_con_error_concurrent">Учвршћивање прекинуто, већ је у току на другој нити!</string>
   <string name="msg_con_save_secret">Уписујем тајне привеске</string>
-  <string name="msg_con_save_public">Уписујем јавне привеске</string>
+  <string name="msg_con_save_all_public">Уписујем јавне привеске</string>
   <string name="msg_con_db_clear">Чистим базу података</string>
   <string name="msg_con_success">База података је успешно учвршћена</string>
   <string name="msg_con_critical_in">Долазим у критичну фазу</string>
   <string name="msg_con_critical_out">Напуштам критичну фазу</string>
-  <string name="msg_con_delete_public">Бришем фајл кеша јавног привеска</string>
+  <string name="msg_con_delete_all_public">Бришем фајл кеша јавног привеска</string>
   <string name="msg_con_delete_secret">Бришем фајл кеша тајног привеска</string>
   <string name="msg_con_error_db">Грешка отварања базе података!</string>
-  <string name="msg_con_error_io_public">У/И грешка при упису јавних кључева у кеш!</string>
+  <string name="msg_con_error_io_all_public">У/И грешка при упису јавних кључева у кеш!</string>
   <string name="msg_con_error_io_secret">У/И грешка при упису тајних кључева у кеш!</string>
-  <string name="msg_con_error_public">Грешка поновног увоза јавних кључева!</string>
+  <string name="msg_con_error_all_public">Грешка поновног увоза јавних кључева!</string>
   <string name="msg_con_error_secret">Грешка поновног увоза тајних кључева!</string>
   <string name="msg_con_recover">Настављам поступак учвршћивања</string>
   <string name="msg_con_recursive">Прескачем рекурзивно учвршћивање</string>
   <string name="msg_con_recover_unknown">Настављам поступак учвршћивања из непознатог стања</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Поново увозим %d јавни кључ</item>
     <item quantity="few">Поново увозим %d јавна кључа</item>
     <item quantity="other">Поново увозим %d јавних кључева</item>
@@ -1061,7 +1061,7 @@
     <item quantity="other">Поново увозим %d тајних кључева</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Нема тајних кључева за поновно увожење, прескачем…</string>
-  <string name="msg_con_warn_delete_public">Изузетак при брисању фајла јавног кеша</string>
+  <string name="msg_con_warn_delete_all_public">Изузетак при брисању фајла јавног кеша</string>
   <string name="msg_con_warn_delete_secret">Изузетак при брисању фајла тајног кеша</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Извршавам радњу на кључу</string>
@@ -1166,7 +1166,7 @@
   <string name="msg_pse_error_no_passphrase">Лозинка није дата!</string>
   <string name="msg_pse_error_pgp">Унутрашња ОпенПГП грешка!</string>
   <string name="msg_pse_error_sig">Наиђох на изузетак ОпенПГП потписивања!</string>
-  <string name="msg_pse_error_unlock">Непозната грешка откључавања кључа!</string>
+  <string name="msg_pse_error_unlock_subkey">Непозната грешка откључавања кључа!</string>
   <string name="msg_pse_key_ok">Шифрујем за кључ: %s</string>
   <string name="msg_pse_key_unknown">Недостаје кључ за шифровање: %s</string>
   <string name="msg_pse_key_warn">Лош кључ за шифровање: %s</string>
@@ -1193,7 +1193,7 @@
   <string name="msg_crt_error_self">Не могу да издам овакав самопотписани сертификат!</string>
   <string name="msg_crt_error_master_not_found">Главни кључ није нађен!</string>
   <string name="msg_crt_error_nothing">Нема оверених кључева!</string>
-  <string name="msg_crt_error_unlock">Грешка откључавања главног кључа!</string>
+  <string name="msg_crt_error_unlock_master">Грешка откључавања главног кључа!</string>
   <string name="msg_crt">Оверавам привеске</string>
   <string name="msg_crt_master_fetch">Добављам главни кључ за оверавање</string>
   <string name="msg_crt_nfc_return">Враћам на НФЦ екран</string>

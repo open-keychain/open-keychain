@@ -29,18 +29,20 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
-
+import nordpol.android.NfcGuideView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ByteArrayEncryptor;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
+import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
@@ -50,8 +52,6 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
-import nordpol.android.NfcGuideView;
 
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
@@ -137,13 +137,33 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
     }
 
     private void obtainPassphraseIfRequired() {
-        // obtain passphrase for this subkey
-        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.SECURITY_TOKEN_MOVE_KEY_TO_CARD
-                && mRequiredInput.mType != RequiredInputParcel.RequiredInputType.SECURITY_TOKEN_RESET_CARD) {
-            obtainSecurityTokenPin(mRequiredInput);
-            checkPinAvailability();
-        } else {
-            checkDeviceConnection();
+        try {
+            switch (mRequiredInput.mType) {
+                case SECURITY_TOKEN_MOVE_KEY_TO_CARD: {
+                    mInputParcel.mPassphrase = PassphraseCacheService.getCachedPassphrase(this, mRequiredInput.getMasterKeyId());
+                    if (mInputParcel.mPassphrase == null) {
+                        Intent intent = new Intent(this, PassphraseDialogActivity.class);
+                        intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
+                                RequiredInputParcel.createRequiredKeyringPassphrase(mRequiredInput));
+                        startActivityForResult(intent, REQUEST_KEYRING_PASSPHRASE_FOR_MOVE_TO_CARD);
+                    }
+                    checkDeviceConnection();
+                    break;
+                }
+                case SECURITY_TOKEN_SIGN:
+                case SECURITY_TOKEN_DECRYPT: {
+                    Passphrase keyringPassphrase = PassphraseCacheService.getCachedPassphrase(this, mRequiredInput.getMasterKeyId());
+                    obtainSecurityTokenPin(mRequiredInput, keyringPassphrase);
+                    checkPinAvailability();
+                    break;
+                }
+                default: {
+                    checkDeviceConnection();
+                }
+            }
+        } catch (PassphraseCacheService.KeyNotFoundException e) {
+            throw new AssertionError(
+                    "tried to find passphrase for non-existing key. this is a programming error!");
         }
     }
 
@@ -152,12 +172,16 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (REQUEST_CODE_PIN == requestCode) {
             checkPinAvailability();
+        } else if (REQUEST_KEYRING_PASSPHRASE_FOR_MOVE_TO_CARD == requestCode) {
+            CryptoInputParcel cryptoInput = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+            mInputParcel.mPassphrase = cryptoInput.getPassphrase();
+            checkDeviceConnection();
         }
     }
 
     private void checkPinAvailability() {
         try {
-            Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
+            Passphrase passphrase = PassphraseCacheService.getCachedSubkeyPassphrase(this,
                     mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
             if (passphrase != null) {
                 checkDeviceConnection();
@@ -225,11 +249,16 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
-                    secretKeyRing = providerHelper.getCanonicalizedSecretKeyRing(
-                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId())
-                    );
-                } catch (ProviderHelper.NotFoundException e) {
+                    secretKeyRing = providerHelper.read().getCanonicalizedSecretKeyRingWithMerge(
+                            mRequiredInput.getMasterKeyId(), mInputParcel.getPassphrase());
+                } catch (ProviderReader.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
+                } catch (ByteArrayEncryptor.EncryptDecryptException e) {
+                    throw new IOException("Error decrypting keyring.");
+                } catch (ByteArrayEncryptor.IncorrectPassphraseException e) {
+                    throw new IOException("Bad keyring passphrase.");
+                } catch (ProviderReader.FailedMergeException e) {
+                    throw new IOException(getString(R.string.msg_op_error_merge_keyring));
                 }
 
                 byte[] newPin = mRequiredInput.mInputData[0];
@@ -243,15 +272,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     CanonicalizedSecretKey key = secretKeyRing.getSecretKey(subkeyId);
                     byte[] tokenSerialNumber = Arrays.copyOf(mSecurityTokenHelper.getAid(), 16);
 
-                    Passphrase passphrase;
-                    try {
-                        passphrase = PassphraseCacheService.getCachedPassphrase(this,
-                                mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
-                    } catch (PassphraseCacheService.KeyNotFoundException e) {
-                        throw new IOException("Unable to get cached passphrase!");
-                    }
-
-                    mSecurityTokenHelper.changeKey(key, passphrase);
+                    // empty passphrase works as keys are not encrypted
+                    mSecurityTokenHelper.changeKey(key, new Passphrase());
 
                     // TODO: Is this really used anywhere?
                     mInputParcel.addCryptoData(subkeyBytes, tokenSerialNumber);
@@ -339,7 +361,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
         onSecurityTokenError(error);
 
         // clear (invalid) passphrase
-        PassphraseCacheService.clearCachedPassphrase(
+        PassphraseCacheService.clearCachedSubkeyPassphrase(
                 this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
     }
 }

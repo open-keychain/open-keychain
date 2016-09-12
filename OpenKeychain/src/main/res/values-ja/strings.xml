@@ -47,8 +47,8 @@
   <string name="section_keys">副鍵</string>
   <string name="section_cloud_search">鍵検索</string>
   <string name="section_cloud_search_summary">鍵サーバ, keybase.io</string>
-  <string name="section_passphrase_cache">パスワードとPIN</string>
-  <string name="section_passphrase_cache_summary">取り扱い、ユーザインタフェース、忘れない時間</string>
+  <string name="section_passphrase">パスワードとPIN</string>
+  <string name="section_passphrase_summary">取り扱い、ユーザインタフェース、忘れない時間</string>
   <string name="section_proxy_settings">ネットワーク匿名性</string>
   <string name="section_proxy_settings_summary">Tor、Proxyの設定</string>
   <string name="section_gui">インタフェース</string>
@@ -984,7 +984,7 @@
   <string name="msg_mf_master">マスター認証を変更</string>
   <string name="msg_mf_notation_empty">空のノーテーションパケットを追加</string>
   <string name="msg_mf_notation_pin">PINノーテーションパケットを追加</string>
-  <string name="msg_mf_passphrase">鍵輪のパスワードを変更中</string>
+  <string name="msg_mf_add_s2k_encryption">鍵輪のパスワードを変更中</string>
   <string name="msg_mf_pin">カードのPINを変更</string>
   <string name="msg_mf_admin_pin">カードの管理者PINを変更</string>
   <string name="msg_mf_passphrase_key">副鍵 %s を新しいパスワードで再暗号化</string>
@@ -995,7 +995,7 @@
   <string name="msg_mf_restricted_mode">制限操作モードへ変更</string>
   <string name="msg_mf_subkey_change">副鍵 %s を変更中</string>
   <string name="msg_mf_require_divert">セキュリティトークンでの暗号化操作に切り替えます</string>
-  <string name="msg_mf_require_passphrase">操作にパスワードが必要です</string>
+  <string name="msg_mf_require_subkey_passphrase">操作にパスワードが必要です</string>
   <string name="msg_mf_subkey_new">種類%sの新しい副鍵を追加</string>
   <string name="msg_mf_subkey_new_id">新しい副鍵 ID: %s</string>
   <string name="msg_mf_error_past_expiry">期限切れ日を過去にはできません!</string>
@@ -1018,22 +1018,22 @@
   <string name="msg_con_error_bad_state">データベースでキャッシュせずに統合が開始されています! これはおそらくプログラムエラーなので、バグレポートでファイルの提出をお願いします!</string>
   <string name="msg_con_error_concurrent">統合を中断しました、すでに他のスレッドで動いているためです!</string>
   <string name="msg_con_save_secret">秘密鍵の鍵輪を保存中</string>
-  <string name="msg_con_save_public">公開鍵の鍵輪を保存中</string>
+  <string name="msg_con_save_all_public">公開鍵の鍵輪を保存中</string>
   <string name="msg_con_db_clear">データベースの消去中</string>
   <string name="msg_con_success">データベースの統合が成功しました</string>
   <string name="msg_con_critical_in">クリティカルなフェーズに入りました</string>
   <string name="msg_con_critical_out">クリティカルなフェーズを抜けました</string>
-  <string name="msg_con_delete_public">公開鍵輪のキャッシュファイルを削除中</string>
+  <string name="msg_con_delete_all_public">公開鍵輪のキャッシュファイルを削除中</string>
   <string name="msg_con_delete_secret">秘密鍵輪のキャッシュファイルを削除中</string>
   <string name="msg_con_error_db">データベースオープン中のエラー!</string>
-  <string name="msg_con_error_io_public">キャッシュに公開鍵を書く際にI/Oエラー!</string>
+  <string name="msg_con_error_io_all_public">キャッシュに公開鍵を書く際にI/Oエラー!</string>
   <string name="msg_con_error_io_secret">キャッシュに秘密鍵を書く際にI/Oエラー!</string>
-  <string name="msg_con_error_public">公開鍵の再インポートのエラー!</string>
+  <string name="msg_con_error_all_public">公開鍵の再インポートのエラー!</string>
   <string name="msg_con_error_secret">秘密鍵の再インポートのエラー!</string>
   <string name="msg_con_recover">統合整理処理のレジューム</string>
   <string name="msg_con_recursive">再帰統合処理をスキップ</string>
   <string name="msg_con_recover_unknown">不明な状態からの統合整理処理のレジューム</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="other">%d の公開鍵を再インポート中</item>
   </plurals>
   <string name="msg_con_reimport_public_skip">再インポートで公開鍵がありません、スキップします...</string>
@@ -1041,7 +1041,7 @@
     <item quantity="other">%d の秘密鍵を再インポート中</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">再インポートで秘密鍵がありません、スキップします...</string>
-  <string name="msg_con_warn_delete_public">公開鍵キャッシュファイルの削除例外</string>
+  <string name="msg_con_warn_delete_all_public">公開鍵キャッシュファイルの削除例外</string>
   <string name="msg_con_warn_delete_secret">秘密鍵のキャッシュファイルを削除中に例外発生</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">キー操作の実行</string>
@@ -1147,7 +1147,7 @@
   <string name="msg_pse_error_no_passphrase">パスワードが提供されてない!</string>
   <string name="msg_pse_error_pgp">OpenPGP内部エラー!</string>
   <string name="msg_pse_error_sig">OpenPGP署名例外に当たりました!</string>
-  <string name="msg_pse_error_unlock">鍵のロック解除で不明なエラー!</string>
+  <string name="msg_pse_error_unlock_subkey">鍵のロック解除で不明なエラー!</string>
   <string name="msg_pse_key_ok">暗号化の鍵: %s</string>
   <string name="msg_pse_key_unknown">暗号化の鍵を紛失: %s</string>
   <string name="msg_pse_key_warn">暗号化に問題のある鍵: %s</string>
@@ -1170,7 +1170,7 @@
   <string name="msg_crt_error_self">自己証明書的な発行は行えません!</string>
   <string name="msg_crt_error_master_not_found">主鍵が見当りません!</string>
   <string name="msg_crt_error_nothing">検証できた鍵がない!</string>
-  <string name="msg_crt_error_unlock">主鍵のロック解除エラー!</string>
+  <string name="msg_crt_error_unlock_master">主鍵のロック解除エラー!</string>
   <string name="msg_crt">鍵輪の検証</string>
   <string name="msg_crt_master_fetch">検証中の主鍵のフェッチ</string>
   <string name="msg_crt_nfc_return">NFCの画面に復帰</string>

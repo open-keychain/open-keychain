@@ -19,13 +19,12 @@
 package org.sufficientlysecure.keychain.support;
 
 import android.content.Context;
-
 import org.bouncycastle.util.Arrays;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
+import org.sufficientlysecure.keychain.provider.ProviderReader;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -59,12 +58,12 @@ public class KeyringTestingHelper {
         // Should throw an exception; key is not yet saved
         retrieveKeyAndExpectNotFound(providerHelper, masterKeyId);
 
-        SaveKeyringResult saveKeyringResult = providerHelper.savePublicKeyRing(ring, new ProgressScaler(), null);
+        SaveKeyringResult saveKeyringResult = providerHelper.write().savePublicKeyRing(ring);
 
         boolean saveSuccess = saveKeyringResult.success();
 
         // Now re-retrieve the saved key. Should not throw an exception.
-        providerHelper.getCanonicalizedPublicKeyRing(masterKeyId);
+        providerHelper.read().getCanonicalizedPublicKeyRing(masterKeyId);
 
         // A different ID should still fail
         retrieveKeyAndExpectNotFound(providerHelper, masterKeyId - 1);
@@ -347,9 +346,9 @@ public class KeyringTestingHelper {
 
     private void retrieveKeyAndExpectNotFound(ProviderHelper providerHelper, long masterKeyId) {
         try {
-            providerHelper.getCanonicalizedPublicKeyRing(masterKeyId);
+            providerHelper.read().getCanonicalizedPublicKeyRing(masterKeyId);
             throw new AssertionError("Was expecting the previous call to fail!");
-        } catch (ProviderHelper.NotFoundException expectedException) {
+        } catch (ProviderReader.NotFoundException expectedException) {
             // good
         }
     }

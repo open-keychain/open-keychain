@@ -81,7 +81,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
         if (data.getSignatureMasterKeyId() != Constants.key.none
                 && data.getSignatureSubKeyId() == null) {
             try {
-                long signKeyId = mProviderHelper.getCachedPublicKeyRing(
+                long signKeyId = mProviderHelper.read().getCachedPublicKeyRing(
                         data.getSignatureMasterKeyId()).getSecretSignId();
                 data.setSignatureSubKeyId(signKeyId);
             } catch (PgpKeyNotFoundException e) {
@@ -113,7 +113,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
             if (result.isPending()) {
                 RequiredInputParcel requiredInput = result.getRequiredInputParcel();
                 // Passphrase returns immediately, nfc are aggregated
-                if (requiredInput.mType == RequiredInputType.PASSPHRASE) {
+                if (requiredInput.mType == RequiredInputType.PASSPHRASE_KEYRING_UNLOCK) {
                     return new SignEncryptResult(log, requiredInput, results, cryptoInput);
                 }
                 if (pendingInputBuilder == null) {

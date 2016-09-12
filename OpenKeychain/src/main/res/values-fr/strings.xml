@@ -47,8 +47,8 @@
   <string name="section_keys">Sous-clefs</string>
   <string name="section_cloud_search">Recherche de clefs</string>
   <string name="section_cloud_search_summary">Serveur de clefs, keybase.io</string>
-  <string name="section_passphrase_cache">Mots de passe et NIP</string>
-  <string name="section_passphrase_cache_summary">Gestion, interface utilisateur, délai de mémorisation</string>
+  <string name="section_passphrase">Mots de passe et NIP</string>
+  <string name="section_passphrase_summary">Gestion, interface utilisateur, délai de mémorisation</string>
   <string name="section_proxy_settings">Anonymat du réseau</string>
   <string name="section_proxy_settings_summary">Tor, paramètres du mandataire</string>
   <string name="section_gui">Interface</string>
@@ -998,7 +998,7 @@
   <string name="msg_mf_master">Modification des certifications maîtresses</string>
   <string name="msg_mf_notation_empty">Ajout d\'un paquet de notation vide</string>
   <string name="msg_mf_notation_pin">Ajout d\'un paquet de notation NIP</string>
-  <string name="msg_mf_passphrase">Changement de mot de passe pour le trousseau</string>
+  <string name="msg_mf_add_s2k_encryption">Changement de mot de passe pour le trousseau</string>
   <string name="msg_mf_pin">Changement du NIP sur la carte</string>
   <string name="msg_mf_admin_pin">Changement du NIP d\'admin. sur la carte</string>
   <string name="msg_mf_passphrase_key">Rechiffrement de la sous-clef %s avec un nouveau mot de passe</string>
@@ -1009,7 +1009,7 @@
   <string name="msg_mf_restricted_mode">Changement vers le mode opérationnel restreint</string>
   <string name="msg_mf_subkey_change">Modification de la sous-clef %s</string>
   <string name="msg_mf_require_divert">Déviation vers le jeton de sécurité pour les opérations de chiffrement</string>
-  <string name="msg_mf_require_passphrase">Mot de passe exigé pour les opérations</string>
+  <string name="msg_mf_require_subkey_passphrase">Mot de passe exigé pour les opérations</string>
   <string name="msg_mf_subkey_new">Ajout d\'une nouvelle sous-clef de type %s</string>
   <string name="msg_mf_subkey_new_id">Nouvelle ID de sous-clef : %s</string>
   <string name="msg_mf_error_past_expiry">La date d\'expiration ne peut pas être dans le passé !</string>
@@ -1032,22 +1032,22 @@
   <string name="msg_con_error_bad_state">La consolidation a été commencée alors qu\'aucune base de données n\'était en cache ! C\'est probablement une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_con_error_concurrent">La consolidation a été abandonnée, elle est déjà en cours sur un autre exétron !</string>
   <string name="msg_con_save_secret">Enregistrement des trousseaux secrets</string>
-  <string name="msg_con_save_public">Enregistrement des trousseaux publiques</string>
+  <string name="msg_con_save_all_public">Enregistrement des trousseaux publiques</string>
   <string name="msg_con_db_clear">Nettoyage de la base de données</string>
   <string name="msg_con_success">Base de données consolidée avec succès</string>
   <string name="msg_con_critical_in">Début de la phase critique</string>
   <string name="msg_con_critical_out">Fin de la phase critique</string>
-  <string name="msg_con_delete_public">Suppression du fichier de cache du trousseau public</string>
+  <string name="msg_con_delete_all_public">Suppression du fichier de cache du trousseau public</string>
   <string name="msg_con_delete_secret">Suppression du fichier de cache du trousseau secret</string>
   <string name="msg_con_error_db">Erreur d\'ouverture de la base de données !</string>
-  <string name="msg_con_error_io_public">Erreur E/S d\'écriture des clefs publiques vers le cache !</string>
+  <string name="msg_con_error_io_all_public">Erreur E/S d\'écriture des clefs publiques vers le cache !</string>
   <string name="msg_con_error_io_secret">Erreur E/S d\'écriture des clefs secrètes vers le cache !</string>
-  <string name="msg_con_error_public">Erreur de réimportation des clefs publiques !</string>
+  <string name="msg_con_error_all_public">Erreur de réimportation des clefs publiques !</string>
   <string name="msg_con_error_secret">Erreur de réimportation des clefs secrètes !</string>
   <string name="msg_con_recover">Reprise du processus de consolidation</string>
   <string name="msg_con_recursive">Consolidation récursive ignorée</string>
   <string name="msg_con_recover_unknown">Reprise du processus de consolidation à partir d\'un état inconnu</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Réimportation d\'une clef publique</item>
     <item quantity="other">Réimportation de %d clefs publiques</item>
   </plurals>
@@ -1057,7 +1057,7 @@
     <item quantity="other">Réimportation de %d clefs secrètes</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Aucune clef secrète à réimporter, étape ignorée...</string>
-  <string name="msg_con_warn_delete_public">Exception de suppression du fichier de cache public</string>
+  <string name="msg_con_warn_delete_all_public">Exception de suppression du fichier de cache public</string>
   <string name="msg_con_warn_delete_secret">Exception de suppression du fichier de cache secret</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Exécution de l\'opération sur la clef</string>
@@ -1163,7 +1163,7 @@
   <string name="msg_pse_error_no_passphrase">Aucun mot de passe fourni !</string>
   <string name="msg_pse_error_pgp">Erreur interne OpenPGP !</string>
   <string name="msg_pse_error_sig">Une exception de signature OpenPGP a été rencontrée !</string>
-  <string name="msg_pse_error_unlock">Erreur inconnue de déverrouillage de la clef !</string>
+  <string name="msg_pse_error_unlock_subkey">Erreur inconnue de déverrouillage de la clef !</string>
   <string name="msg_pse_key_ok">Chiffrement pour la clef : %s</string>
   <string name="msg_pse_key_unknown">Clef manquante pour le chiffrement : %s</string>
   <string name="msg_pse_key_warn">Clef erronée pour le chiffrement : %s</string>
@@ -1188,7 +1188,7 @@
   <string name="msg_crt_error_self">Un auto-certificat ne peut pas être délivré ainsi !</string>
   <string name="msg_crt_error_master_not_found">Clef maîtresse introuvable !</string>
   <string name="msg_crt_error_nothing">Aucune clef certifiée !</string>
-  <string name="msg_crt_error_unlock">Erreur de déverrouillage de la clef maîtresse !</string>
+  <string name="msg_crt_error_unlock_master">Erreur de déverrouillage de la clef maîtresse !</string>
   <string name="msg_crt">Certification des trousseaux</string>
   <string name="msg_crt_master_fetch">Récupération de la clef maîtresse de certification</string>
   <string name="msg_crt_nfc_return">Retour vers l\'écran NFC</string>

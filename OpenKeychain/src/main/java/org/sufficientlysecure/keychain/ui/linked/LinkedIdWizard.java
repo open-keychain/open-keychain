@@ -29,7 +29,6 @@ import android.support.v4.app.TaskStackBuilder;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -58,7 +57,7 @@ public class LinkedIdWizard extends BaseActivity {
         try {
             Uri uri = getIntent().getData();
             uri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(uri);
-            CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(uri);
+            CachedPublicKeyRing ring = new ProviderHelper(this).read().getCachedPublicKeyRing(uri);
             if (!ring.hasAnySecret()) {
                 Log.e(Constants.TAG, "Linked Identities can only be added to secret keys!");
                 finish();

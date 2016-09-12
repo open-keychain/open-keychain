@@ -18,10 +18,9 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.io.PrintStream;
-import java.security.Security;
-import java.util.Iterator;
-
+import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -31,9 +30,6 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.bcpg.sig.KeyFlags;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
@@ -45,14 +41,16 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
+
+import java.io.PrintStream;
+import java.security.Security;
+import java.util.Iterator;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
@@ -80,7 +78,7 @@ public class PromoteKeyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("derp");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase1));
+            parcel.mPassphrase = mKeyPhrase1;
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -98,7 +96,7 @@ public class PromoteKeyOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.savePublicKeyRing(mStaticRing.extractPublicKeyRing(), new ProgressScaler(), null);
+        providerHelper.write().savePublicKeyRing(mStaticRing.extractPublicKeyRing());
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -115,7 +113,7 @@ public class PromoteKeyOperationTest {
 
         {
             CachedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .getCachedPublicKeyRing(mStaticRing.getMasterKeyId());
+                    .read().getCachedPublicKeyRing(mStaticRing.getMasterKeyId());
             Assert.assertTrue("key must have a secret now", ring.hasAnySecret());
 
             Iterator<UncachedPublicKey> it = mStaticRing.getPublicKeys();
@@ -141,7 +139,7 @@ public class PromoteKeyOperationTest {
 
         {
             CanonicalizedSecretKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId());
+                    .read().getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId(), new Passphrase());
 
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
                 Assert.assertEquals("all subkeys must be divert-to-card",
@@ -171,7 +169,7 @@ public class PromoteKeyOperationTest {
 
         {
             CanonicalizedSecretKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId());
+                    .read().getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId(), new Passphrase());
 
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
                 if (key.getKeyId() == keyId) {

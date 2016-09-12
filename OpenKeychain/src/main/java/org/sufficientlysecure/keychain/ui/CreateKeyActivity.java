@@ -25,7 +25,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.TaskStackBuilder;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -143,6 +142,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
         } else {
             setTitle(R.string.title_manage_my_keys);
         }
+
     }
 
     @Override
@@ -175,7 +175,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
         if (containsKeys(mScannedFingerprints)) {
             try {
                 long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mScannedFingerprints);
-                CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
+                CachedPublicKeyRing ring = new ProviderHelper(this).read().getCachedPublicKeyRing(masterKeyId);
                 ring.getMasterKeyId();
 
                 Intent intent = new Intent(this, ViewKeyActivity.class);
@@ -293,4 +293,5 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
 
         super.finish();
     }
+
 }

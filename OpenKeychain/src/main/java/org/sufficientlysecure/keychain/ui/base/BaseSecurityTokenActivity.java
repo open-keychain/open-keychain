@@ -32,41 +32,39 @@ import android.nfc.Tag;
 import android.nfc.TagLostException;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
+import nordpol.android.OnDiscoveredTagListener;
+import nordpol.android.TagDispatcher;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.NfcTransport;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
-import org.sufficientlysecure.keychain.util.UsbConnectionDispatcher;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.dialog.FidesmoInstallDialog;
 import org.sufficientlysecure.keychain.ui.dialog.FidesmoPgpInstallDialog;
+import org.sufficientlysecure.keychain.ui.passphrasedialog.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.UsbConnectionDispatcher;
 
 import java.io.IOException;
 
-import nordpol.android.OnDiscoveredTagListener;
-import nordpol.android.TagDispatcher;
-
 public abstract class BaseSecurityTokenActivity extends BaseActivity
         implements OnDiscoveredTagListener, UsbConnectionDispatcher.OnDiscoveredUsbDeviceListener {
-    public static final int REQUEST_CODE_PIN = 1;
+    // request codes are defined in base class
 
     public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";
 
@@ -104,7 +102,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mSecurityTokenFingerprints);
 
         try {
-            CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(
+            CachedPublicKeyRing ring = new ProviderHelper(this).read().getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
             long masterKeyId = ring.getMasterKeyId();
 
@@ -389,19 +387,31 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         mNfcTagDispatcher.enableExclusiveNfc();
     }
 
-    protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput) {
+    protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput, Passphrase keyringPassphrase) {
 
         try {
-            Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
+            Passphrase pinPassphrase = PassphraseCacheService.getCachedSubkeyPassphrase(this,
                     requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
-            if (passphrase != null) {
-                mSecurityTokenHelper.setPin(passphrase);
+            if (pinPassphrase != null) {
+                mSecurityTokenHelper.setPin(pinPassphrase);
                 return;
+            }
+
+            if (keyringPassphrase == null) {
+                keyringPassphrase =
+                        PassphraseCacheService.getCachedPassphrase(
+                        this, requiredInput.getMasterKeyId());
+            }
+            if (keyringPassphrase == null) {
+                Intent intent = new Intent(this, PassphraseDialogActivity.class);
+                intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
+                        RequiredInputParcel.createRequiredKeyringPassphrase(requiredInput));
+                startActivityForResult(intent, REQUEST_KEYRING_PASSPHRASE_FOR_PIN);
             }
 
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
-                    RequiredInputParcel.createRequiredPassphrase(requiredInput));
+                    RequiredInputParcel.createRequiredTokenPassphrase(requiredInput, keyringPassphrase));
             startActivityForResult(intent, REQUEST_CODE_PIN);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
             throw new AssertionError(
@@ -414,17 +424,27 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CODE_PIN: {
-                if (resultCode != Activity.RESULT_OK) {
-                    setResult(resultCode);
-                    finish();
-                    return;
-                }
+                finishUponBadResult(resultCode);
                 CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
                 mSecurityTokenHelper.setPin(input.getPassphrase());
-                break;
+                return;
+            }
+            case REQUEST_KEYRING_PASSPHRASE_FOR_PIN: {
+                finishUponBadResult(resultCode);
+                CryptoInputParcel cryptoInput = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                RequiredInputParcel requiredInput = data.getParcelableExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT);
+                obtainSecurityTokenPin(requiredInput, cryptoInput.getPassphrase());
+                return;
             }
             default:
                 super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void finishUponBadResult(int resultCode) {
+        if (resultCode != Activity.RESULT_OK) {
+            setResult(resultCode);
+            finish();
         }
     }
 

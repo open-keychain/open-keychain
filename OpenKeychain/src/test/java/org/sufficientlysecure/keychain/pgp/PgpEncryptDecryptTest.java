@@ -18,16 +18,13 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.security.Security;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import org.apache.tools.ant.util.StringUtils;
+import org.bouncycastle.bcpg.BCPGInputStream;
+import org.bouncycastle.bcpg.Packet;
+import org.bouncycastle.bcpg.PacketTags;
+import org.bouncycastle.bcpg.PublicKeyEncSessionPacket;
+import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,13 +37,6 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.bcpg.BCPGInputStream;
-import org.bouncycastle.bcpg.Packet;
-import org.bouncycastle.bcpg.PacketTags;
-import org.bouncycastle.bcpg.PublicKeyEncSessionPacket;
-import org.bouncycastle.bcpg.sig.KeyFlags;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openpgp.PGPKeyFlags;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -54,7 +44,6 @@ import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
@@ -63,9 +52,19 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.Require
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.security.Security;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
@@ -103,7 +102,6 @@ public class PgpEncryptDecryptTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("bloom");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase1));
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -121,7 +119,6 @@ public class PgpEncryptDecryptTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("belle");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase2));
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -158,12 +155,19 @@ public class PgpEncryptDecryptTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
-        providerHelper.saveSecretKeyRing(mStaticRing2, new ProgressScaler());
+        providerHelper.write().saveSecretKeyRing(
+                mStaticRing1,
+                new KeyringPassphrases(mStaticRing1.getMasterKeyId(), mKeyPhrase1),
+                new ProgressScaler());
+        providerHelper.write().saveSecretKeyRing(
+                mStaticRing2,
+                new KeyringPassphrases(mStaticRing2.getMasterKeyId(), mKeyPhrase2),
+                new ProgressScaler());
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
     }
+
 
     @Test
     public void testSymmetricEncryptDecrypt() {
@@ -326,7 +330,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
@@ -386,7 +390,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
@@ -443,7 +447,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setDetachedSignature(detachedSignature);
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
@@ -500,7 +504,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
 
@@ -529,7 +533,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
-                    mKeyPhrase1, mStaticRing1.getMasterKeyId(), null);
+                    mKeyPhrase1, mStaticRing1.getMasterKeyId());
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
@@ -553,14 +557,14 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
-                    null, mStaticRing1.getMasterKeyId(), null);
+                    null, mStaticRing1.getMasterKeyId());
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
             Assert.assertFalse("decryption with no passphrase must return pending", result.success());
             Assert.assertTrue("decryption with no passphrase should return pending", result.isPending());
-            Assert.assertEquals("decryption with no passphrase should return pending passphrase",
-                    RequiredInputType.PASSPHRASE, result.getRequiredInputParcel().mType);
+            Assert.assertEquals("decryption with no passphrase should return pending keyring passphrase",
+                    RequiredInputType.PASSPHRASE_KEYRING_UNLOCK, result.getRequiredInputParcel().mType);
         }
 
     }
@@ -628,10 +632,11 @@ public class PgpEncryptDecryptTest {
             parcel.mChangeSubKeys.add(new SubkeyChange(encKeyId1, true, false));
             UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
-                    new CryptoInputParcel(new Date(), mKeyPhrase1));
+                    new CryptoInputParcel(new Date(), new Passphrase()));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.saveSecretKeyRing(modified, new ProgressScaler());
+            providerHelper.write().saveSecretKeyRing(
+                    modified, new KeyringPassphrases(modified.getMasterKeyId(), mKeyPhrase1), new ProgressScaler());
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     new ProviderHelper(RuntimeEnvironment.application), null);
@@ -650,10 +655,11 @@ public class PgpEncryptDecryptTest {
             parcel.mChangeSubKeys.add(new SubkeyChange(encKeyId1, KeyFlags.CERTIFY_OTHER, null));
             UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
-                    new CryptoInputParcel(new Date(), mKeyPhrase1));
+                    new CryptoInputParcel(new Date(), new Passphrase()));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.saveSecretKeyRing(modified, new ProgressScaler());
+            providerHelper.write().saveSecretKeyRing(
+                    modified, new KeyringPassphrases(modified.getMasterKeyId(), mKeyPhrase1), new ProgressScaler());
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     new ProviderHelper(RuntimeEnvironment.application), null);
@@ -677,10 +683,11 @@ public class PgpEncryptDecryptTest {
             parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(mStaticRing1, 2));
             UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
-                    new CryptoInputParcel(new Date(), mKeyPhrase1));
+                    new CryptoInputParcel(new Date(), new Passphrase()));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
-            providerHelper.saveSecretKeyRing(modified, new ProgressScaler());
+            providerHelper.write().saveSecretKeyRing(
+                    modified, new KeyringPassphrases(modified.getMasterKeyId(), mKeyPhrase1), new ProgressScaler());
         }
 
         { // encrypt to this keyring, make sure it's not encrypted to the revoked subkey
@@ -762,7 +769,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
-                    mKeyPhrase1, mStaticRing1.getMasterKeyId(), null);
+                    mKeyPhrase1, mStaticRing1.getMasterKeyId());
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
@@ -791,7 +798,7 @@ public class PgpEncryptDecryptTest {
 
             // provide passphrase for the second, and check that the first is never asked for!
             PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
-                    mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
+                    mKeyPhrase2, mStaticRing2.getMasterKeyId());
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowedKeyIds(allowed);
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
@@ -814,7 +821,7 @@ public class PgpEncryptDecryptTest {
 
             // provide passphrase for the second, and check that the first is never asked for!
             PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
-                    mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
+                    mKeyPhrase2, mStaticRing2.getMasterKeyId());
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowedKeyIds(new HashSet<Long>());
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
@@ -837,7 +844,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
-                    mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
+                    mKeyPhrase2, mStaticRing2.getMasterKeyId());
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
@@ -893,7 +900,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
-                    mKeyPhrase1, mStaticRing1.getMasterKeyId(), null);
+                    mKeyPhrase1, mStaticRing1.getMasterKeyId());
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
@@ -920,7 +927,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
-                    mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
+                    mKeyPhrase2, mStaticRing2.getMasterKeyId());
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
@@ -977,7 +984,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
 
@@ -1046,7 +1053,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(passphrase), data, out);
 
@@ -1070,20 +1077,17 @@ public class PgpEncryptDecryptTest {
     }
 
     private PgpDecryptVerifyOperation operationWithFakePassphraseCache(
-            final Passphrase passphrase, final Long checkMasterKeyId, final Long checkSubKeyId) {
+            final Passphrase passphrase, final Long checkMasterKeyId) {
 
         return new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                 new ProviderHelper(RuntimeEnvironment.application), null) {
+
             @Override
-            public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
+            public Passphrase getCachedPassphrase(long masterKeyId)
                     throws NoSecretKeyException {
                 if (checkMasterKeyId != null) {
                     Assert.assertEquals("requested passphrase should be for expected master key id",
                             (long) checkMasterKeyId, masterKeyId);
-                }
-                if (checkSubKeyId != null) {
-                    Assert.assertEquals("requested passphrase should be for expected sub key id",
-                            (long) checkSubKeyId, subKeyId);
                 }
                 if (passphrase == null) {
                     return null;

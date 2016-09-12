@@ -31,13 +31,10 @@ import android.content.Context;
 import android.support.annotation.StringRes;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
-import android.support.test.espresso.base.DefaultFailureHandler;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.view.View;
 
 import com.nispok.snackbar.Snackbar;
-import com.tokenautocomplete.TokenCompleteTextView;
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
@@ -45,7 +42,6 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
@@ -104,9 +100,9 @@ public class TestHelpers {
         while(stream.hasNext()) {
             UncachedKeyRing ring = stream.next();
             if (ring.isSecret()) {
-                helper.saveSecretKeyRing(ring, new ProgressScaler());
+                helper.write().saveSecretKeyRingForTest(ring);
             } else {
-                helper.savePublicKeyRing(ring);
+                helper.write().savePublicKeyRing(ring);
             }
         }
 
@@ -162,7 +158,7 @@ public class TestHelpers {
         importKeysFromResource(context, "x.sec.asc");
 
         // make sure no passphrases are cached
-        PassphraseCacheService.clearCachedPassphrases(context);
+        PassphraseCacheService.clearAllCachedPassphrases(context);
 
     }
 

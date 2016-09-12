@@ -1,0 +1,13 @@
+empty-passphrase-pgp-sec.asc // A generic secret keyring created using GPG with default settings
+
+config: // Uses the empty passphrase for all subkeys
+1) master key with certify & sign
+2) subkey with encrypt
+
+
+with-new-key.pub.asc // The public key of passwordless-pgp-sec, with an additional encrypt subkey
+
+config:
+1) master key with certify & sign
+2) subkey with encrypt
+3) subkey with encrypt

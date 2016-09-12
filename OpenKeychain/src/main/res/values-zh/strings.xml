@@ -47,8 +47,8 @@
   <string name="section_keys">子密钥</string>
   <string name="section_cloud_search">搜索密钥</string>
   <string name="section_cloud_search_summary">密钥服务器， keybase.io</string>
-  <string name="section_passphrase_cache">密码和 PIN 码</string>
-  <string name="section_passphrase_cache_summary">处理，用户界面，记忆时间</string>
+  <string name="section_passphrase">密码和 PIN 码</string>
+  <string name="section_passphrase_summary">处理，用户界面，记忆时间</string>
   <string name="section_proxy_settings">匿名网络</string>
   <string name="section_proxy_settings_summary">Tor，代理服务器设置</string>
   <string name="section_gui">界面</string>
@@ -942,7 +942,7 @@
   <string name="msg_mf_error_duplicate_keytocard_for_slot">智能卡仅支持每存储位一密钥的规格。</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">安全令牌密钥的标签不正确。</string>
   <string name="msg_mf_master">正在修改主密钥认证</string>
-  <string name="msg_mf_passphrase">正在更改密钥环密码</string>
+  <string name="msg_mf_add_s2k_encryption">正在更改密钥环密码</string>
   <string name="msg_mf_pin">正在变更安全令牌PIN码</string>
   <string name="msg_mf_admin_pin">正在变更安全令牌管理员PIN码</string>
   <string name="msg_mf_passphrase_key">用新密码重新加密子密钥%s</string>
@@ -950,7 +950,7 @@
   <string name="msg_mf_passphrase_fail">无法更改子密钥的密码！(其密码与其他密钥不一致吗？)</string>
   <string name="msg_mf_subkey_change">正在修改子密钥 %s</string>
   <string name="msg_mf_require_divert">正在将用于加解密操作的密钥转移到安全令牌中</string>
-  <string name="msg_mf_require_passphrase">需要为操作提供密码</string>
+  <string name="msg_mf_require_subkey_passphrase">需要为操作提供密码</string>
   <string name="msg_mf_subkey_new">正在新建 %s 类型子密钥</string>
   <string name="msg_mf_subkey_new_id">新建子密钥ID：%s</string>
   <string name="msg_mf_error_past_expiry">过期时间不能设置为过去！</string>
@@ -967,7 +967,7 @@
   <string name="msg_con_db_clear">正在清空数据库</string>
   <string name="msg_con_success">成功整理数据库</string>
   <string name="msg_con_error_db">打开数据库时出错！</string>
-  <string name="msg_con_error_public">重新导入公共密钥时出错</string>
+  <string name="msg_con_error_all_public">重新导入公共密钥时出错</string>
   <string name="msg_con_error_secret">重新导入私有密钥时出错</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed_error_key_not_found">未找到密钥</string>
@@ -1012,7 +1012,7 @@
   <string name="msg_pse_error_no_passphrase">没有提供密码！</string>
   <string name="msg_pse_error_pgp">OpenPGP 内部错误！</string>
   <string name="msg_pse_error_sig">遇到 OpenPGP 签名异常！</string>
-  <string name="msg_pse_error_unlock">未知的密钥解锁错误！</string>
+  <string name="msg_pse_error_unlock_subkey">未知的密钥解锁错误！</string>
   <string name="msg_pse_key_ok">正在加密到密钥：%s</string>
   <string name="msg_pse_key_unknown">没有找到加密的密钥：%s</string>
   <string name="msg_pse_key_warn">不可用于加密的密钥：%s</string>

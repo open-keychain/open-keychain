@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -26,9 +28,6 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.bcpg.sig.KeyFlags;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -41,10 +40,10 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
-import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.util.KeyringPassphrases;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -61,7 +60,6 @@ public class CertifyOperationTest {
 
     static UncachedKeyRing mStaticRing1, mStaticRing2;
     static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
-    static Passphrase mKeyPhrase2 = TestingUtils.genPassphrase(true);
 
     static PrintStream oldShadowStream;
 
@@ -84,7 +82,6 @@ public class CertifyOperationTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("derp");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase1));
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -108,8 +105,6 @@ public class CertifyOperationTest {
             parcel.mAddUserAttribute.add(
                     WrappedUserAttribute.fromSubpacket(random.nextInt(100)+1, uatdata));
 
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase2));
-
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
@@ -126,8 +121,9 @@ public class CertifyOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
-        providerHelper.savePublicKeyRing(mStaticRing2.extractPublicKeyRing(), new ProgressScaler(), null);
+        providerHelper.write().saveSecretKeyRing(mStaticRing1,
+                new KeyringPassphrases(mStaticRing1.getMasterKeyId(), mKeyPhrase1), new ProgressScaler());
+        providerHelper.write().savePublicKeyRing(mStaticRing2.extractPublicKeyRing());
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -137,7 +133,7 @@ public class CertifyOperationTest {
     public void testSelfCertifyFlag() throws Exception {
 
         CanonicalizedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                .getCanonicalizedPublicKeyRing(mStaticRing1.getMasterKeyId());
+                .read().getCanonicalizedPublicKeyRing(mStaticRing1.getMasterKeyId());
         Assert.assertEquals("secret key must be marked self-certified in database",
                 // TODO this should be more correctly be VERIFIED_SELF at some point!
                 Certs.VERIFIED_SECRET, ring.getVerified());
@@ -151,7 +147,7 @@ public class CertifyOperationTest {
 
         {
             CanonicalizedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
+                    .read().getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("public key must not be marked verified prior to certification",
                     Certs.UNVERIFIED, ring.getVerified());
         }
@@ -165,7 +161,7 @@ public class CertifyOperationTest {
 
         {
             CanonicalizedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
+                    .read().getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("new key must be verified now",
                     Certs.VERIFIED_SECRET, ring.getVerified());
         }
@@ -179,7 +175,7 @@ public class CertifyOperationTest {
 
         {
             CanonicalizedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
+                    .read().getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("public key must not be marked verified prior to certification",
                     Certs.UNVERIFIED, ring.getVerified());
         }
@@ -193,7 +189,7 @@ public class CertifyOperationTest {
 
         {
             CanonicalizedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
-                    .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
+                    .read().getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("new key must be verified now",
                     Certs.VERIFIED_SECRET, ring.getVerified());
         }

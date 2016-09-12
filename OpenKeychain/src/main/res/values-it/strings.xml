@@ -919,19 +919,19 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_con_error_bad_state">Il consolidamento è stato avviato mentre nessun database è stato memorizzato nella cache! Questo è probabilmente un errore di programmazione, si prega di aprire un bug report.</string>
   <string name="msg_con_error_concurrent">Consolidamento interrotto, già in esecuzione su un altro processo!</string>
   <string name="msg_con_save_secret">Salvataggio portachiavi privati</string>
-  <string name="msg_con_save_public">Salvataggio portachiavi pubblico</string>
+  <string name="msg_con_save_all_public">Salvataggio portachiavi pubblico</string>
   <string name="msg_con_db_clear">Pulizia database</string>
   <string name="msg_con_success">Consolidamento database con successo</string>
   <string name="msg_con_critical_in">Ingresso fase critica</string>
   <string name="msg_con_critical_out">Uscita fase critica</string>
-  <string name="msg_con_delete_public">Eliminazione del file di cache del portachiavi pubblico</string>
+  <string name="msg_con_delete_all_public">Eliminazione del file di cache del portachiavi pubblico</string>
   <string name="msg_con_delete_secret">Eliminazione del file di cache del portachiavi privato</string>
   <string name="msg_con_error_db">Errore nell\'apertura del database</string>
-  <string name="msg_con_error_io_public">Errore di IO durante la scrittura delle chiavi pubbliche nella cache!</string>
+  <string name="msg_con_error_io_all_public">Errore di IO durante la scrittura delle chiavi pubbliche nella cache!</string>
   <string name="msg_con_error_io_secret">Errore di IO durante la scrittura delle chiavi private nella cache!</string>
-  <string name="msg_con_error_public">Errore nella re-importazione delle chiavi pubbliche!</string>
+  <string name="msg_con_error_all_public">Errore nella re-importazione delle chiavi pubbliche!</string>
   <string name="msg_con_error_secret">Errore nella re-importazione delle chiavi private!</string>
-  <plurals name="msg_con_reimport_public">
+  <plurals name="msg_con_reimport_all_public">
     <item quantity="one">Reimportazione di una chiave pubblica</item>
     <item quantity="other">Reimportazione di %d chiavi pubbliche</item>
   </plurals>
@@ -941,7 +941,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
     <item quantity="other">Reimportazione di %d chiavi private</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Nessuna chiave privata da reimportare, proseguo...</string>
-  <string name="msg_con_warn_delete_public">Eccezione durante la eliminazione del file di cache pubblico</string>
+  <string name="msg_con_warn_delete_all_public">Eccezione durante la eliminazione del file di cache pubblico</string>
   <string name="msg_con_warn_delete_secret">Eccezione durante la eliminazione del file di cache privato</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed_error_key_not_found">Chiave non trovata.</string>

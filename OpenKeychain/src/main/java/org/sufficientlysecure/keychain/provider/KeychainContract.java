@@ -20,14 +20,23 @@ package org.sufficientlysecure.keychain.provider;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
-
 import org.sufficientlysecure.keychain.Constants;
 
 public class KeychainContract {
 
+    interface MasterPassphraseColumns {
+        String ENCRYPTED_BLOCK = "encrypted_block";
+    }
+
+    interface CrossProcessColumns {
+        String MASTER_PASSPHRASE_IS_CACHED = "master_passphrase_is_cached";
+    }
+
     interface KeyRingsColumns {
         String MASTER_KEY_ID = "master_key_id"; // not a database id
         String KEY_RING_DATA = "key_ring_data"; // PGPPublicKeyRing / PGPSecretKeyRing blob
+        String AWAITING_MERGE = "awaiting_merge"; // waiting to merge public key into secret
+        String SECRET_RING_TYPE = "secret_ring_type";
     }
 
     interface KeysColumns {
@@ -103,6 +112,10 @@ public class KeychainContract {
     private static final Uri BASE_CONTENT_URI_INTERNAL = Uri
             .parse("content://" + CONTENT_AUTHORITY);
 
+    public static final String BASE_MASTER_PASSPHRASE = "master_passphrase";
+
+    public static final String BASE_CROSS_PROCESS_CACHE = "cross_process_cache";
+
     public static final String BASE_KEY_RINGS = "key_rings";
 
     public static final String BASE_UPDATED_KEYS = "updated_keys";
@@ -125,6 +138,28 @@ public class KeychainContract {
     public static final String PATH_ACCOUNTS = "accounts";
     public static final String PATH_ALLOWED_KEYS = "allowed_keys";
 
+    public static class CrossProcessCache implements CrossProcessColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_CROSS_PROCESS_CACHE).build();
+
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.master_passphrase";
+
+        public static final String CONTENT_ITEM_TYPE
+                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.master_passphrase";
+    }
+
+    public static class MasterPassphrase implements MasterPassphraseColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_MASTER_PASSPHRASE).build();
+
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.master_passphrase";
+
+        public static final String CONTENT_ITEM_TYPE
+                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.master_passphrase";
+    }
+
     public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
         public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
@@ -138,6 +173,8 @@ public class KeychainContract {
         public static final String HAS_DUPLICATE_USER_ID = "has_duplicate_user_id";
         public static final String PUBKEY_DATA = "pubkey_data";
         public static final String PRIVKEY_DATA = "privkey_data";
+        public static final String AWAITING_MERGE = "awaiting_merge";
+        public static final String SECRET_RING_TYPE = "secret_ring_type";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();

@@ -34,7 +34,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
@@ -201,9 +200,9 @@ public class SubkeysAdapter extends CursorAdapter {
                     algorithmStr.append(", ");
                     algorithmStr.append(context.getString(R.string.key_divert));
                     break;
-                case PASSPHRASE_EMPTY:
+                case PASSPHRASE:
                     algorithmStr.append(", ");
-                    algorithmStr.append(context.getString(R.string.key_no_passphrase));
+                    algorithmStr.append(context.getString(R.string.key_using_s2k));
                     break;
                 case UNAVAILABLE:
                     // don't show this on pub keys

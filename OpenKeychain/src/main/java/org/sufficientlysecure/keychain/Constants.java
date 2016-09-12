@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain;
 
 import android.os.Environment;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
@@ -94,13 +93,18 @@ public final class Constants {
 
     public static final class Pref {
         public static final String PASSPHRASE_CACHE_TTLS = "passphraseCacheTtls";
-        public static final String PASSPHRASE_CACHE_DEFAULT = "passphraseCacheDefault";
-        public static final String PASSPHRASE_CACHE_SUBS = "passphraseCacheSubs";
+        public static final String CHANGE_MASTER_PASSPHRASE = "changeMasterPassphrase";
         public static final String LANGUAGE = "language";
         public static final String KEY_SERVERS = "keyServers";
         public static final String PREF_DEFAULT_VERSION = "keyServersDefaultVersion";
         public static final String FIRST_TIME = "firstTime";
+        public static final String USING_ENCRYPTED_KEYRINGS = "usingEncryptedKeyrings";
+        public static final String IS_APP_LOCK_READY = "isAppLockReady";
+        public static final String HAS_MASTER_PASSPHRASE = "hasMasterPassphrase";
+        public static final String PARTIALLY_MIGRATED = "partiallyMigrated";
+        public static final String MIDWAY_CHANGING_PASSPHRASE_WORKFLOW = "setMidwayChangingPassphraseWorkflow";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
+        public static final String USE_APPLOCK = "useApplock";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
         public static final String SEARCH_KEYBASE = "search_keybase_pref";
         public static final String USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN = "useNumKeypadForYubikeyPin";
@@ -108,6 +112,7 @@ public final class Constants {
         public static final String FILE_USE_COMPRESSION = "useFileCompression";
         public static final String TEXT_USE_COMPRESSION = "useTextCompression";
         public static final String USE_ARMOR = "useArmor";
+        public static final String USE_SINGLE_PASSPHRASE_WORKFLOW = "useSinglePassphraseWorkflow";
         // proxy settings
         public static final String USE_NORMAL_PROXY = "useNormalProxy";
         public static final String USE_TOR_PROXY = "useTorProxy";
@@ -154,6 +159,6 @@ public final class Constants {
         public static final long none = 0;
         public static final long symmetric = -1;
         public static final long backup_code = -2;
+        public static final long master_passphrase = -3;
     }
-
 }
