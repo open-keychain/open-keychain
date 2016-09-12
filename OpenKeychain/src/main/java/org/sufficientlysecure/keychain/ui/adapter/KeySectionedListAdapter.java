@@ -190,7 +190,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
     @Override
     protected short getSectionItemViewType(int position) {
-        if(moveCursor(position)) {
+        if (moveCursor(position)) {
            KeyCursor c = getCursor();
 
             if (c.isSecret() && c.getKeyId() == 0L) {
@@ -435,24 +435,24 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             int pos = getAdapterPosition();
             switch (v.getId()) {
                 case R.id.key_list_item_slinger_button:
-                    if(mListener != null) {
+                    if (mListener != null) {
                         mListener.onSlingerButtonClicked(getItemId());
                     }
                     break;
 
                 default:
-                    if(getSelectedCount() == 0) {
-                        if(mListener != null) {
+                    if (getSelectedCount() == 0) {
+                        if (mListener != null) {
                             mListener.onKeyItemClicked(getItemId());
                         }
                     } else {
-                        if(isSelected(pos)) {
+                        if (isSelected(pos)) {
                             deselectPosition(pos);
                         } else {
                             selectPosition(pos);
                         }
 
-                        if(mListener != null) {
+                        if (mListener != null) {
                             mListener.onSelectionStateChanged(getSelectedCount());
                         }
                     }
@@ -464,10 +464,10 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
         @Override
         public boolean onLongClick(View v) {
             System.out.println("Long Click!");
-            if(getSelectedCount() == 0) {
+            if (getSelectedCount() == 0) {
                 selectPosition(getAdapterPosition());
 
-                if(mListener != null) {
+                if (mListener != null) {
                     mListener.onSelectionStateChanged(getSelectedCount());
                 }
                 return true;

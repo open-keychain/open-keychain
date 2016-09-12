@@ -40,9 +40,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingLeft="16dp"
+                android:paddingStart="16dp"
                 android:paddingRight="32dp"
+                android:paddingEnd="32dp"
+                android:paddingBottom="72dp"
                 android:clipToPadding="false"
-                android:scrollbarStyle="outsideOverlay" />
+                android:scrollbars="vertical"
+                android:scrollbarStyle="outsideOverlay"/>
 
             <LinearLayout
                 android:id="@android:id/empty"

@@ -41,7 +41,6 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
-
     private static final int INTERNAL_LIST_VIEW_ID = android.R.id.list;
     private static final int INTERNAL_EMPTY_VIEW_ID = android.R.id.empty;
     private static final int INTERNAL_LIST_CONTAINER_ID = android.R.id.widget_frame;
@@ -104,7 +103,7 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
 
-        final Context context = parent.getContext();
+        final Context context = getContext();
         FrameLayout root = new FrameLayout(context);
 
         LinearLayout progressContainer = new LinearLayout(context);

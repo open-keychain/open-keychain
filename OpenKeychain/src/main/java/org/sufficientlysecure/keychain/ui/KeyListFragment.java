@@ -140,10 +140,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                 case R.id.menu_key_list_multi_delete: {
                     long[] keyIds = getAdapter().getSelectedMasterKeyIds();
                     boolean hasSecret = getAdapter().isAnySecretKeySelected();
-
-                    System.out.println(Arrays.toString(keyIds));
-                    System.out.println(hasSecret);
-
                     Intent intent = new Intent(getActivity(), DeleteKeyDialogActivity.class);
                     intent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS, keyIds);
                     intent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, hasSecret);

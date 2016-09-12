@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import com.tonicartos.superslim.LayoutManager;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.util.Objects;
+
 /**
  * @param <T> section type.
  * @param <VH> the view holder extending {@code BaseViewHolder<Cursor>} that is bound to the cursor data.
@@ -71,7 +73,6 @@ public abstract class SectionCursorAdapter<C extends Cursor, T, VH extends Secti
             moveCursor(-1);
             try {
                 mSectionMap.clear();
-
                 appendSections(getCursor());
             } catch (IllegalStateException e) {
                 Log.e(TAG, "Couldn't build sections. Perhaps you're moving the cursor" +
@@ -87,10 +88,12 @@ public abstract class SectionCursorAdapter<C extends Cursor, T, VH extends Secti
         int cursorPosition = 0;
         while(hasValidData() && cursor.moveToNext()) {
             T section = getSectionFromCursor(cursor);
-            if (cursor.getPosition() != cursorPosition)
+            if (cursor.getPosition() != cursorPosition) {
                 throw new IllegalStateException("Do not move the cursor's position in getSectionFromCursor.");
-            if (!hasSection(section))
+            }
+            if (!hasSection(section)) {
                 mSectionMap.append(cursorPosition + mSectionMap.size(), section);
+            }
             cursorPosition++;
         }
     }
@@ -119,11 +122,13 @@ public abstract class SectionCursorAdapter<C extends Cursor, T, VH extends Secti
 
     @Override
     public final long getItemId(int listPosition) {
-        if (isSection(listPosition))
-            return -1;
-        else {
+        int index = mSectionMap.indexOfKey(listPosition);
+        if (index < 0) {
             int cursorPosition = getCursorPositionWithoutSections(listPosition);
             return super.getItemId(cursorPosition);
+        } else {
+            T section = mSectionMap.valueAt(index);
+            return section != null ? section.hashCode() : 0L;
         }
     }
 
