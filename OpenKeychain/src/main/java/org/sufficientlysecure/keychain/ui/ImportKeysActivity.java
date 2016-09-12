@@ -481,10 +481,8 @@ public class ImportKeysActivity extends BaseActivity
         Intent intent = new Intent(this, PassphraseDialogActivity.class);
         RequiredInputParcel requiredInput =
                 RequiredInputParcel.createRequiredAppLockPassphrase();
-        requiredInput.mSkipCaching = true;
         intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
         startActivityForResult(intent, REQUEST_MASTER_PASSPHRASE_THEN_REPEAT);
-
     }
 
     private void askForSubkeyPassphrases() {

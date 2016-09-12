@@ -158,7 +158,6 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
 
             RequiredInputParcel requiredInput =
                     RequiredInputParcel.createRequiredAppLockPassphrase();
-            requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
             startActivityForResult(intent, REQUEST_MASTER_PASSPHRASE_THEN_REPEAT);
 
@@ -167,7 +166,6 @@ public class SettingsPassphraseWorkflowActivity extends AppCompatActivity {
 
             RequiredInputParcel requiredInput =
                     RequiredInputParcel.createRequiredAppLockPassphrase();
-            requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
             startActivityForResult(intent, REQUEST_MASTER_PASSPHRASE_ONLY);
         }

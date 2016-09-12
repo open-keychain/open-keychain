@@ -127,7 +127,6 @@ public class CreateKeyStartFragment extends Fragment {
             Intent passphraseIntent = new Intent(mCreateKeyActivity, PassphraseDialogActivity.class);
             RequiredInputParcel requiredInput =
                     RequiredInputParcel.createRequiredAppLockPassphrase();
-            requiredInput.mSkipCaching = true;
             passphraseIntent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
             startActivityForResult(passphraseIntent, REQUEST_MASTER_PASSPHRASE);
         }

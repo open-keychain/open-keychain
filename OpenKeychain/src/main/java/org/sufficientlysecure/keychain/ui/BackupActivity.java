@@ -152,7 +152,6 @@ public class BackupActivity extends BaseActivity {
 
             RequiredInputParcel requiredInput =
                     RequiredInputParcel.createRequiredKeyringPassphrase(masterKeyId);
-            requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
             startActivityForResult(intent, REQUEST_MASTER_PASSPHRASE);
         } else {
