@@ -2,13 +2,11 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.CursorWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.HashMap;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
@@ -17,8 +15,11 @@ import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter;
 import org.sufficientlysecure.keychain.ui.util.adapter.SectionCursorAdapter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CertSectionedListAdapter extends SectionCursorAdapter<CertSectionedListAdapter.CertCursor, String,
         CertSectionedListAdapter.CertItemViewHolder, CertSectionedListAdapter.CertSectionViewHolder> {
@@ -65,7 +66,9 @@ public class CertSectionedListAdapter extends SectionCursorAdapter<CertSectioned
         holder.bind(cursor);
     }
 
-    class CertItemViewHolder extends SectionCursorAdapter.ViewHolder implements View.OnClickListener {
+    class CertItemViewHolder extends SectionCursorAdapter.ViewHolder
+            implements View.OnClickListener {
+
         private TextView mSignerKeyId;
         private TextView mSignerName;
         private TextView mSignStatus;
@@ -141,17 +144,23 @@ public class CertSectionedListAdapter extends SectionCursorAdapter<CertSectioned
         }
     }
 
-    public static class CertCursor extends CursorWrapper {
-        public static final String[] CERTS_PROJECTION = new String[]{
-                KeychainContract.Certs._ID,
-                KeychainContract.Certs.MASTER_KEY_ID,
-                KeychainContract.Certs.VERIFIED,
-                KeychainContract.Certs.TYPE,
-                KeychainContract.Certs.RANK,
-                KeychainContract.Certs.KEY_ID_CERTIFIER,
-                KeychainContract.Certs.USER_ID,
-                KeychainContract.Certs.SIGNER_UID
-        };
+    public static class CertCursor extends CursorAdapter.AbstractCursor {
+        public static final String[] CERTS_PROJECTION;
+        static {
+            ArrayList<String> projection = new ArrayList<>();
+            projection.addAll(Arrays.asList(AbstractCursor.PROJECTION));
+            projection.addAll(Arrays.asList(
+                    KeychainContract.Certs.MASTER_KEY_ID,
+                    KeychainContract.Certs.VERIFIED,
+                    KeychainContract.Certs.TYPE,
+                    KeychainContract.Certs.RANK,
+                    KeychainContract.Certs.KEY_ID_CERTIFIER,
+                    KeychainContract.Certs.USER_ID,
+                    KeychainContract.Certs.SIGNER_UID
+            ));
+
+            CERTS_PROJECTION = projection.toArray(new String[projection.size()]);
+        }
 
         public static final String CERTS_SORT_ORDER =
                 KeychainDatabase.Tables.CERTS + "." + KeychainContract.Certs.RANK + " ASC, "
@@ -167,27 +176,8 @@ public class CertSectionedListAdapter extends SectionCursorAdapter<CertSectioned
             }
         }
 
-        private HashMap<String, Integer> mColumnIndices;
-
-        /**
-         * Creates a cursor wrapper.
-         *
-         * @param cursor The underlying cursor to wrap.
-         */
         private CertCursor(Cursor cursor) {
             super(cursor);
-            mColumnIndices = new HashMap<>(cursor.getColumnCount() * 4 / 3, 0.75f);
-        }
-
-        @Override
-        public void close() {
-            mColumnIndices.clear();
-            super.close();
-        }
-
-        public int getEntryId() {
-            int index = getColumnIndexOrThrow(KeychainContract.Certs._ID);
-            return getInt(index);
         }
 
         public long getKeyId() {
@@ -231,30 +221,6 @@ public class CertSectionedListAdapter extends SectionCursorAdapter<CertSectioned
 
         public OpenPgpUtils.UserId getSignerUserId() {
             return KeyRing.splitUserId(getRawSignerUserId());
-        }
-
-        @Override
-        public int getColumnIndexOrThrow(String colName) {
-            Integer colIndex = mColumnIndices.get(colName);
-            if(colIndex == null) {
-                colIndex = super.getColumnIndexOrThrow(colName);
-                mColumnIndices.put(colName, colIndex);
-            } else if (colIndex < 0){
-                throw new IllegalArgumentException("Could not get column index for name: \"" + colName + "\"");
-            }
-
-            return colIndex;
-        }
-
-        @Override
-        public int getColumnIndex(String colName) {
-            Integer colIndex = mColumnIndices.get(colName);
-            if(colIndex == null) {
-                colIndex = super.getColumnIndex(colName);
-                mColumnIndices.put(colName, colIndex);
-            }
-
-            return colIndex;
         }
     }
 

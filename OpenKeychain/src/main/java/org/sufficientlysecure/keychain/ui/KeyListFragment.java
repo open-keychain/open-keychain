@@ -70,6 +70,7 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.adapter.KeySectionedListAdapter;
+import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerFragment;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
@@ -311,8 +312,8 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getActivity(), uri,
-                KeySectionedListAdapter.KeyCursor.PROJECTION, null, null,
-                KeySectionedListAdapter.KeyCursor.ORDER);
+                KeySectionedListAdapter.KeyListCursor.PROJECTION, null, null,
+                KeySectionedListAdapter.KeyListCursor.ORDER);
     }
 
     @Override
@@ -320,7 +321,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         getAdapter().setSearchQuery(mQuery);
-        getAdapter().swapCursor(KeySectionedListAdapter.KeyCursor.wrap(data));
+        getAdapter().swapCursor(KeySectionedListAdapter.KeyListCursor.wrap(data));
 
         // end action mode, if any
         if (mActionMode != null) {

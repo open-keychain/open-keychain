@@ -17,8 +17,8 @@ import java.util.Objects;
  * @param <VH> the view holder extending {@code BaseViewHolder<Cursor>} that is bound to the cursor data.
  * @param <SH> the view holder extending {@code BaseViewHolder<<T>>} that is bound to the section data.
  */
-public abstract class SectionCursorAdapter<C extends Cursor, T, VH extends SectionCursorAdapter.ViewHolder,
-        SH extends SectionCursorAdapter.ViewHolder> extends CursorAdapter<C> {
+public abstract class SectionCursorAdapter<C extends CursorAdapter.AbstractCursor, T, VH extends SectionCursorAdapter.ViewHolder,
+        SH extends SectionCursorAdapter.ViewHolder> extends CursorAdapter<C, RecyclerView.ViewHolder> {
 
     public static final String TAG = "SectionCursorAdapter";
 
@@ -40,6 +40,8 @@ public abstract class SectionCursorAdapter<C extends Cursor, T, VH extends Secti
 
     public SectionCursorAdapter(Context context, C cursor, int flags, Comparator<T> comparator) {
         super(context, cursor, flags);
+
+        setHasStableIds(false); // because we have additional section items
         setSectionComparator(comparator);
     }
 
@@ -122,6 +124,7 @@ public abstract class SectionCursorAdapter<C extends Cursor, T, VH extends Secti
 
     @Override
     public final long getItemId(int listPosition) {
+        /*
         int index = mSectionMap.indexOfKey(listPosition);
         if (index < 0) {
             int cursorPosition = getCursorPositionWithoutSections(listPosition);
@@ -129,6 +132,13 @@ public abstract class SectionCursorAdapter<C extends Cursor, T, VH extends Secti
         } else {
             T section = mSectionMap.valueAt(index);
             return section != null ? section.hashCode() : 0L;
+        } */
+
+        if (isSection(listPosition)) {
+            return RecyclerView.NO_ID;
+        } else {
+            int cursorPosition = getCursorPositionWithoutSections(listPosition);
+            return super.getItemId(cursorPosition);
         }
     }
 

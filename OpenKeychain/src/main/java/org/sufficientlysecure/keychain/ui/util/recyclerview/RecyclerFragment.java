@@ -38,15 +38,16 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
-    private static final int INTERNAL_LIST_VIEW_ID = android.R.id.list;
-    private static final int INTERNAL_EMPTY_VIEW_ID = android.R.id.empty;
-    private static final int INTERNAL_LIST_CONTAINER_ID = android.R.id.widget_frame;
-    private static final int INTERNAL_PROGRESS_CONTAINER_ID = android.R.id.progress;
+    protected static final int INTERNAL_LIST_VIEW_ID = android.R.id.list;
+    protected static final int INTERNAL_EMPTY_VIEW_ID = android.R.id.empty;
+    protected static final int INTERNAL_LIST_CONTAINER_ID = android.R.id.widget_frame;
+    protected static final int INTERNAL_PROGRESS_CONTAINER_ID = android.R.id.progress;
 
     private final Handler handler = new Handler();
     private final Runnable requestFocus = new Runnable() {
@@ -143,7 +144,6 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
 
         listContainer.addView(listView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
 
         root.addView(listContainer, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -297,6 +297,16 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
 
     public void showList(boolean animated) {
         setListShown(true, animated);
+    }
+
+    public void setEmptyText(String text) {
+        ensureList();
+        if(emptyView instanceof TextView) {
+            ((TextView) emptyView).setText(text);
+        } else {
+            Log.e(Constants.TAG, "Cannot set empty text on a view that is null" +
+                    "or not an instance of android.view.View!");
+        }
     }
 
     private void setListShown(boolean shown, boolean animated) {

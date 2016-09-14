@@ -2,7 +2,6 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.CursorWrapper;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.graphics.PorterDuff;
@@ -19,7 +18,6 @@ import android.widget.TextView;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
@@ -28,10 +26,10 @@ import org.sufficientlysecure.keychain.ui.util.adapter.*;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 
-public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedListAdapter.KeyCursor, Character,
+public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedListAdapter.KeyListCursor, Character,
         SectionCursorAdapter.ViewHolder, KeySectionedListAdapter.KeyHeaderViewHolder> {
 
     private static final short VIEW_ITEM_TYPE_KEY = 0x0;
@@ -47,7 +45,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
     private boolean mHasDummy = false;
 
     public KeySectionedListAdapter(Context context, Cursor cursor) {
-        super(context, KeyCursor.wrap(cursor), 0);
+        super(context, KeyListCursor.wrap(cursor, KeyListCursor.class), 0);
 
         mQuery = "";
         mSelected = new ArrayList<>();
@@ -71,15 +69,15 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
     }
 
     @Override
-    public KeyCursor swapCursor(KeyCursor cursor) {
+    public KeyListCursor swapCursor(KeyListCursor cursor) {
         if (cursor != null && (mQuery == null || TextUtils.isEmpty(mQuery))) {
             boolean isSecret = cursor.moveToFirst() && cursor.isSecret();
 
             if (!isSecret) {
-                MatrixCursor headerCursor = new MatrixCursor(KeyCursor.PROJECTION);
-                Long[] row = new Long[KeyCursor.PROJECTION.length];
-                row[KeyCursor.INDEX_HAS_ANY_SECRET] = 1L;
-                row[KeyCursor.INDEX_MASTER_KEY_ID] = 0L;
+                MatrixCursor headerCursor = new MatrixCursor(KeyListCursor.PROJECTION);
+                Long[] row = new Long[KeyListCursor.PROJECTION.length];
+                row[cursor.getColumnIndex(KeychainContract.KeyRings.HAS_ANY_SECRET)] = 1L;
+                row[cursor.getColumnIndex(KeychainContract.KeyRings.MASTER_KEY_ID)] = 0L;
                 headerCursor.addRow(row);
 
                 Cursor[] toMerge = {
@@ -87,7 +85,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                         cursor.getWrappedCursor()
                 };
 
-                cursor = KeyCursor.wrap(new MergeCursor(toMerge));
+                cursor = KeyListCursor.wrap(new MergeCursor(toMerge));
             }
         }
 
@@ -159,12 +157,12 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
     }
 
     @Override
-    public long getIdFromCursor(KeyCursor cursor) {
+    public long getIdFromCursor(KeyListCursor cursor) {
         return cursor.getKeyId();
     }
 
     @Override
-    protected Character getSectionFromCursor(KeyCursor cursor) throws IllegalStateException {
+    protected Character getSectionFromCursor(KeyListCursor cursor) throws IllegalStateException {
         if (cursor.isSecret()) {
             if (cursor.getKeyId() == 0L) {
                 mHasDummy = true;
@@ -191,7 +189,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
     @Override
     protected short getSectionItemViewType(int position) {
         if (moveCursor(position)) {
-           KeyCursor c = getCursor();
+            KeyListCursor c = getCursor();
 
             if (c.isSecret() && c.getKeyId() == 0L) {
                 return VIEW_ITEM_TYPE_DUMMY;
@@ -261,7 +259,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
     }
 
     @Override
-    protected void onBindItemViewHolder(ViewHolder holder, KeyCursor cursor) {
+    protected void onBindItemViewHolder(ViewHolder holder, KeyListCursor cursor) {
         if (holder.getItemViewTypeWithoutSections() == VIEW_ITEM_TYPE_KEY) {
             Highlighter highlighter = new Highlighter(getContext(), mQuery);
             ((KeyItemViewHolder) holder).bindKey(cursor, highlighter);
@@ -328,7 +326,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             mSlingerButton.setOnClickListener(this);
         }
 
-        void bindKey(KeyCursor keyItem, Highlighter highlighter) {
+        void bindKey(KeyListCursor keyItem, Highlighter highlighter) {
             itemView.setSelected(isSelected(getAdapterPosition()));
             Context context = itemView.getContext();
 
@@ -490,87 +488,45 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
         }
     }
 
-    public static class KeyCursor extends CursorWrapper {
+    public static class KeyListCursor extends CursorAdapter.KeyCursor {
         public static final String ORDER = KeychainContract.KeyRings.HAS_ANY_SECRET
                 + " DESC, " + KeychainContract.KeyRings.USER_ID + " COLLATE NOCASE ASC";
 
-        public static final String[] PROJECTION = new String[]{
-                KeychainContract.KeyRings._ID,
-                KeychainContract.KeyRings.MASTER_KEY_ID,
-                KeychainContract.KeyRings.USER_ID,
-                KeychainContract.KeyRings.IS_REVOKED,
-                KeychainContract.KeyRings.IS_EXPIRED,
-                KeychainContract.KeyRings.VERIFIED,
-                KeychainContract.KeyRings.HAS_ANY_SECRET,
-                KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
-                KeychainContract.KeyRings.FINGERPRINT,
-                KeychainContract.KeyRings.CREATION,
-                KeychainContract.KeyRings.HAS_ENCRYPT
-        };
+        public static final String[] PROJECTION;
 
-        public static final int INDEX_ENTRY_ID = 0;
-        public static final int INDEX_MASTER_KEY_ID = 1;
-        public static final int INDEX_USER_ID = 2;
-        public static final int INDEX_IS_REVOKED = 3;
-        public static final int INDEX_IS_EXPIRED = 4;
-        public static final int INDEX_VERIFIED = 5;
-        public static final int INDEX_HAS_ANY_SECRET = 6;
-        public static final int INDEX_HAS_DUPLICATE_USER_ID = 7;
-        public static final int INDEX_FINGERPRINT = 8;
-        public static final int INDEX_CREATION = 9;
-        public static final int INDEX_HAS_ENCRYPT = 10;
+        static {
+            ArrayList<String> arr = new ArrayList<>();
+            arr.addAll(Arrays.asList(KeyCursor.PROJECTION));
+            arr.addAll(Arrays.asList(
+                    KeychainContract.KeyRings.VERIFIED,
+                    KeychainContract.KeyRings.HAS_ANY_SECRET,
+                    KeychainContract.KeyRings.FINGERPRINT,
+                    KeychainContract.KeyRings.HAS_ENCRYPT
+            ));
 
-        public static KeyCursor wrap(Cursor cursor) {
-            if(cursor != null) {
-                return new KeyCursor(cursor);
+            PROJECTION = arr.toArray(new String[arr.size()]);
+        }
+
+        public static KeyListCursor wrap(Cursor cursor) {
+            if (cursor != null) {
+                return new KeyListCursor(cursor);
             } else {
                 return null;
             }
         }
 
-        /**
-         * Creates a cursor wrapper.
-         *
-         * @param cursor The underlying cursor to wrap.
-         */
-        private KeyCursor(Cursor cursor) {
+        private KeyListCursor(Cursor cursor) {
             super(cursor);
         }
 
-        public int getEntryId() {
-            return getInt(INDEX_ENTRY_ID);
-        }
-
-        public String getRawUserId() {
-            return getString(INDEX_USER_ID);
-        }
-
-        public OpenPgpUtils.UserId getUserId() {
-            return KeyRing.splitUserId(getRawUserId());
-        }
-
-        public long getKeyId() {
-            return getLong(INDEX_MASTER_KEY_ID);
-        }
-
-        public boolean hasDuplicate() {
-            return getLong(INDEX_HAS_DUPLICATE_USER_ID) > 0L;
-        }
-
         public boolean hasEncrypt() {
-            return getInt(INDEX_HAS_ENCRYPT) != 0;
-        }
-
-        public long getCreationTime() {
-            return getLong(INDEX_CREATION) * 1000;
-        }
-
-        public Date getCreationDate() {
-            return new Date(getCreationTime());
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.HAS_ENCRYPT);
+            return getInt(index) != 0;
         }
 
         public byte[] getRawFingerprint() {
-            return getBlob(INDEX_FINGERPRINT);
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.FINGERPRINT);
+            return getBlob(index);
         }
 
         public String getFingerprint() {
@@ -578,19 +534,13 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
         }
 
         public boolean isSecret() {
-            return getInt(INDEX_HAS_ANY_SECRET) != 0;
-        }
-
-        public boolean isRevoked() {
-            return getInt(INDEX_IS_REVOKED) > 0;
-        }
-
-        public boolean isExpired() {
-            return getInt(INDEX_IS_EXPIRED) > 0;
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.HAS_ANY_SECRET);
+            return getInt(index) != 0;
         }
 
         public boolean isVerified() {
-            return getInt(INDEX_VERIFIED) > 0;
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.VERIFIED);
+            return getInt(index) > 0;
         }
     }
 

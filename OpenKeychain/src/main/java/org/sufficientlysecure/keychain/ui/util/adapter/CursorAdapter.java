@@ -3,13 +3,26 @@ package org.sufficientlysecure.keychain.ui.util.adapter;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.database.CursorWrapper;
 import android.database.DataSetObserver;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
-public abstract class CursorAdapter<C extends Cursor> extends RecyclerView.Adapter {
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+
+public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH extends RecyclerView.ViewHolder>
+        extends RecyclerView.Adapter<VH> {
     public static final String TAG = "CursorAdapter";
 
     private C mCursor;
@@ -31,7 +44,7 @@ public abstract class CursorAdapter<C extends Cursor> extends RecyclerView.Adapt
 
     /**
      * Constructor that allows control over auto-requery.  It is recommended
-     * you not use this, but instead {@link #CursorAdapter(Context, Cursor, int)}.
+     * you not use this, but instead {@link #CursorAdapter(Context, AbstractCursor, int)}.
      * When using this constructor, {@link #FLAG_REGISTER_CONTENT_OBSERVER}
      * will always be set.
      *
@@ -141,7 +154,7 @@ public abstract class CursorAdapter<C extends Cursor> extends RecyclerView.Adapt
      */
     public long getIdFromCursor(C cursor) {
         if(cursor != null) {
-            return cursor.getPosition();
+            return cursor.getEntryId();
         } else {
             return RecyclerView.NO_ID;
         }
@@ -193,7 +206,7 @@ public abstract class CursorAdapter<C extends Cursor> extends RecyclerView.Adapt
 
     /**
      * Swap in a new Cursor, returning the old Cursor.  Unlike
-     * {@link #changeCursor(Cursor)}, the returned old Cursor is <em>not</em>
+     * {@link #changeCursor(AbstractCursor)}, the returned old Cursor is <em>not</em>
      * closed.
      *
      * @param newCursor The new cursor to be used.
@@ -279,6 +292,144 @@ public abstract class CursorAdapter<C extends Cursor> extends RecyclerView.Adapt
         public void onInvalidated() {
             mDataValid = false;
             onContentChanged();
+        }
+    }
+
+    public static abstract class AbstractCursor extends CursorWrapper {
+        public static final String[] PROJECTION = { "_id" };
+
+        public static <T extends AbstractCursor> T wrap(Cursor cursor, Class<T> type) {
+            if (cursor != null) {
+                try {
+                    Constructor<T> constructor = type.getConstructor(Cursor.class);
+                    return constructor.newInstance(cursor);
+                } catch (Exception e) {
+                    Log.e(Constants.TAG, "Could not create instance of cursor wrapper!", e);
+                }
+            }
+
+            return null;
+        }
+
+        private HashMap<String, Integer> mColumnIndices;
+
+        /**
+         * Creates a cursor wrapper.
+         *
+         * @param cursor The underlying cursor to wrap.
+         */
+        protected AbstractCursor(Cursor cursor) {
+            super(cursor);
+            mColumnIndices = new HashMap<>(cursor.getColumnCount() * 4 / 3, 0.75f);
+        }
+
+        @Override
+        public void close() {
+            mColumnIndices.clear();
+            super.close();
+        }
+
+        public final int getEntryId() {
+            int index = getColumnIndexOrThrow("_id");
+            return getInt(index);
+        }
+
+        @Override
+        public final int getColumnIndexOrThrow(String colName) {
+            Integer colIndex = mColumnIndices.get(colName);
+            if(colIndex == null) {
+                colIndex = super.getColumnIndexOrThrow(colName);
+                mColumnIndices.put(colName, colIndex);
+            } else if (colIndex < 0){
+                throw new IllegalArgumentException("Could not get column index for name: \"" + colName + "\"");
+            }
+
+            return colIndex;
+        }
+
+        @Override
+        public final int getColumnIndex(String colName) {
+            Integer colIndex = mColumnIndices.get(colName);
+            if(colIndex == null) {
+                colIndex = super.getColumnIndex(colName);
+                mColumnIndices.put(colName, colIndex);
+            }
+
+            return colIndex;
+        }
+    }
+
+    public static class KeyCursor extends AbstractCursor {
+        public static final String[] PROJECTION;
+
+        static {
+            ArrayList<String> arr = new ArrayList<>();
+            arr.addAll(Arrays.asList(AbstractCursor.PROJECTION));
+            arr.addAll(Arrays.asList(
+                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.KeyRings.USER_ID,
+                    KeychainContract.KeyRings.IS_REVOKED,
+                    KeychainContract.KeyRings.IS_EXPIRED,
+                    KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
+                    KeychainContract.KeyRings.CREATION
+            ));
+
+            PROJECTION = arr.toArray(new String[arr.size()]);
+        }
+
+        public static KeyCursor wrap(Cursor cursor) {
+            if (cursor != null) {
+                return new KeyCursor(cursor);
+            } else {
+                return null;
+            }
+        }
+
+        /**
+         * Creates a cursor wrapper.
+         *
+         * @param cursor The underlying cursor to wrap.
+         */
+        protected KeyCursor(Cursor cursor) {
+            super(cursor);
+        }
+
+        public long getKeyId() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.MASTER_KEY_ID);
+            return getLong(index);
+        }
+
+        public String getRawUserId() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.USER_ID);
+            return getString(index);
+        }
+
+        public OpenPgpUtils.UserId getUserId() {
+            return KeyRing.splitUserId(getRawUserId());
+        }
+
+        public boolean hasDuplicate() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID);
+            return getLong(index) > 0L;
+        }
+
+        public boolean isRevoked() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.IS_REVOKED);
+            return getInt(index) > 0;
+        }
+
+        public boolean isExpired() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.IS_EXPIRED);
+            return getInt(index) > 0;
+        }
+
+        public long getCreationTime() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.CREATION);
+            return getLong(index) * 1000;
+        }
+
+        public Date getCreationDate() {
+            return new Date(getCreationTime());
         }
     }
 }

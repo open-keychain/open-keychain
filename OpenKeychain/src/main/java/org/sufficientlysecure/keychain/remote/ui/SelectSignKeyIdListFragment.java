@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.remote.ui;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -27,42 +26,44 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.support.v7.widget.LinearLayoutManager;
 
 import org.openintents.openpgp.util.OpenPgpApi;
+import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
-import org.sufficientlysecure.keychain.ui.widget.FixedListView;
+import org.sufficientlysecure.keychain.remote.ui.adapter.SelectSignKeyAdapter;
+import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
+import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class SelectSignKeyIdListFragment extends ListFragmentWorkaround implements LoaderManager.LoaderCallbacks<Cursor> {
+public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyAdapter>
+        implements SelectSignKeyAdapter.SelectSignKeyListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String ARG_DATA_URI = "uri";
+    private static final String ARG_PREF_UID = "pref_uid";
     public static final String ARG_DATA = "data";
 
-    private SelectKeyCursorAdapter mAdapter;
-    private ApiDataAccessObject mApiDao;
-
     private Uri mDataUri;
+    private Intent mResult;
+    private String mPrefUid;
+    private ApiDataAccessObject mApiDao;
 
     /**
      * Creates new instance of this fragment
      */
-    public static SelectSignKeyIdListFragment newInstance(Uri dataUri, Intent data) {
+    public static SelectSignKeyIdListFragment newInstance(Uri dataUri, Intent data, String preferredUserId) {
         SelectSignKeyIdListFragment frag = new SelectSignKeyIdListFragment();
         Bundle args = new Bundle();
 
         args.putParcelable(ARG_DATA_URI, dataUri);
         args.putParcelable(ARG_DATA, data);
+        args.putString(ARG_PREF_UID, preferredUserId);
 
         frag.setArguments(args);
 
@@ -72,31 +73,7 @@ public class SelectSignKeyIdListFragment extends ListFragmentWorkaround implemen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mApiDao = new ApiDataAccessObject(getActivity());
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View layout = super.onCreateView(inflater, container,
-                savedInstanceState);
-        ListView lv = (ListView) layout.findViewById(android.R.id.list);
-        ViewGroup parent = (ViewGroup) lv.getParent();
-
-        /*
-         * http://stackoverflow.com/a/15880684
-         * Remove ListView and add FixedListView in its place.
-         * This is done here programatically to be still able to use the progressBar of ListFragment.
-         *
-         * We want FixedListView to be able to put this ListFragment inside a ScrollView
-         */
-        int lvIndex = parent.indexOfChild(lv);
-        parent.removeViewAt(lvIndex);
-        FixedListView newLv = new FixedListView(getActivity());
-        newLv.setId(android.R.id.list);
-        parent.addView(newLv, lvIndex, lv.getLayoutParams());
-        return layout;
     }
 
     /**
@@ -106,36 +83,19 @@ public class SelectSignKeyIdListFragment extends ListFragmentWorkaround implemen
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mResult = getArguments().getParcelable(ARG_DATA);
+        mPrefUid = getArguments().getString(ARG_PREF_UID);
         mDataUri = getArguments().getParcelable(ARG_DATA_URI);
-        final Intent resultData = getArguments().getParcelable(ARG_DATA);
-
-        getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                long masterKeyId = mAdapter.getMasterKeyId(position);
-
-                Uri allowedKeysUri = mDataUri.buildUpon().appendPath(KeychainContract.PATH_ALLOWED_KEYS).build();
-                Log.d(Constants.TAG, "allowedKeysUri: " + allowedKeysUri);
-                mApiDao.addAllowedKeyIdForApp(allowedKeysUri, masterKeyId);
-
-                resultData.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, masterKeyId);
-
-                getActivity().setResult(Activity.RESULT_OK, resultData);
-                getActivity().finish();
-            }
-        });
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
 
-        mAdapter = new SecretKeyCursorAdapter(getActivity(), null, 0, getListView());
-
-        setListAdapter(mAdapter);
+        setAdapter(new SelectSignKeyAdapter(getContext(), null));
+        setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Start out with a progress indicator.
-        setListShown(false);
+        hideList(false);
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
@@ -172,13 +132,13 @@ public class SelectSignKeyIdListFragment extends ListFragmentWorkaround implemen
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
-        mAdapter.swapCursor(data);
+        getAdapter().swapCursor(CursorAdapter.KeyCursor.wrap(data));
 
         // The list should now be shown.
         if (isResumed()) {
-            setListShown(true);
+            showList(true);
         } else {
-            setListShownNoAnimation(true);
+            showList(false);
         }
 
     }
@@ -188,35 +148,31 @@ public class SelectSignKeyIdListFragment extends ListFragmentWorkaround implemen
         // This is called when the last Cursor provided to onLoadFinished()
         // above is about to be closed. We need to make sure we are no
         // longer using it.
-        mAdapter.swapCursor(null);
+        getAdapter().swapCursor(null);
     }
 
-    private class SecretKeyCursorAdapter extends SelectKeyCursorAdapter {
+    @Override
+    public void onCreateKeyDummyClicked() {
+        OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(mPrefUid);
 
-        public SecretKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView) {
-            super(context, c, flags, listView);
-        }
-
-        @Override
-        protected void initIndex(Cursor cursor) {
-            super.initIndex(cursor);
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            super.bindView(view, context, cursor);
-            ViewHolderItem h = (ViewHolderItem) view.getTag();
-
-            h.selected.setVisibility(View.GONE);
-
-            boolean enabled = false;
-            if ((Boolean) h.statusIcon.getTag()) {
-                h.statusIcon.setVisibility(View.GONE);
-                enabled = true;
-            }
-            h.setEnabled(enabled);
-        }
-
+        Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
+        intent.putExtra(CreateKeyActivity.EXTRA_NAME, userIdSplit.name);
+        intent.putExtra(CreateKeyActivity.EXTRA_EMAIL, userIdSplit.email);
+        getActivity().startActivityForResult(intent, SelectSignKeyIdActivity.REQUEST_CODE_CREATE_KEY);
     }
 
+    @Override
+    public void onSelectKeyItemClicked(long masterKeyId) {
+        Uri allowedKeysUri = mDataUri.buildUpon()
+                .appendPath(KeychainContract.PATH_ALLOWED_KEYS)
+                .build();
+
+        mApiDao.addAllowedKeyIdForApp(allowedKeysUri, masterKeyId);
+        mResult.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, masterKeyId);
+
+        Log.d(Constants.TAG, "allowedKeysUri: " + allowedKeysUri);
+
+        getActivity().setResult(Activity.RESULT_OK, mResult);
+        getActivity().finish();
+    }
 }
