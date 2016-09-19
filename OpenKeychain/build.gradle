@@ -33,7 +33,6 @@ dependencies {
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
     compile 'com.cocosw:bottomsheet:1.3.0@aar'
     compile 'com.tonicartos:superslim:0.4.13'
-    compile 'com.simplecityapps:recyclerview-fastscroll:1.0.10'
 
     // Material Drawer
     compile 'com.mikepenz:materialdrawer:5.2.2@aar'
@@ -110,7 +109,6 @@ dependencyVerification {
             'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
             'com.cocosw:bottomsheet:4af6112a7f4cad4e2b70e5fdf1edc39f51275523a0f53011a012837dc103e597',
             'com.tonicartos:superslim:ca89b5c674660cc6918a8f8fd385065bffeee27983e0d33c7c2f0ad7b34d2d49',
-            'com.simplecityapps:recyclerview-fastscroll:3b4c7ac18c6cff367723f5954643735b777cd9fe32a1a200273259145b5e17b4',
             'com.mikepenz:materialdrawer:4169462fdde042e2bb53a7c2b4e2334d569d16b2020781ee05741b50e1a2967d',
             'com.mikepenz:fastadapter:1bfc00216d71dfdfe0d8e7a9d92bb97bfaa1794543930e34b1f79d5d7adbddf6',
             'com.mikepenz:materialize:575195b2fa5b2414fb14a59470ee21d8a8cd8355b651e0cf52e477e3ff1cd96c',
