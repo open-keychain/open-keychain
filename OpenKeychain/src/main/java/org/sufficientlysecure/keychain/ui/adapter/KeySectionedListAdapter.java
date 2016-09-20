@@ -297,7 +297,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
         }
     }
 
-    private class KeyItemViewHolder extends SectionCursorAdapter.ViewHolder
+    public class KeyItemViewHolder extends SectionCursorAdapter.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
 
         private TextView mMainUserId;

@@ -20,14 +20,19 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
+import android.support.v7.widget.RecyclerView;
 import android.widget.AdapterView;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.runners.MethodSorters;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.matcher.CustomMatchers;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
@@ -70,10 +75,12 @@ public class EditKeyTest {
         importKeysFromResource(activity, "x.sec.asc");
 
         // navigate to edit key dialog
-        onData(withKeyItemId(0x9D604D2F310716A3L))
-                .inAdapterView(allOf(isAssignableFrom(AdapterView.class),
-                        isDescendantOfA(ViewMatchers.withId(R.id.key_list_list))))
-                .perform(click());
+        onView(allOf(
+                isAssignableFrom(RecyclerView.class),
+                withId(android.R.id.list)
+        )).perform(RecyclerViewActions.actionOnHolderItem(
+                                CustomMatchers.withKeyHolderId(0x9D604D2F310716A3L), click()));
+
         onView(withId(R.id.view_key_card_user_ids_edit)).perform(click());
 
         // no-op should yield snackbar
