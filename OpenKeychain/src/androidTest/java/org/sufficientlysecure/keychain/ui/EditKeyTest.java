@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnHolderItem;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -46,6 +47,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
 import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
+import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyHolderId;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItemId;
 
 //TODO This test is disabled because it needs to be fixed to work with updated code
@@ -77,9 +79,9 @@ public class EditKeyTest {
         // navigate to edit key dialog
         onView(allOf(
                 isAssignableFrom(RecyclerView.class),
-                withId(android.R.id.list)
-        )).perform(RecyclerViewActions.actionOnHolderItem(
-                                CustomMatchers.withKeyHolderId(0x9D604D2F310716A3L), click()));
+                withId(android.R.id.list)))
+                .perform(actionOnHolderItem(
+                        withKeyHolderId(0x9D604D2F310716A3L), click()));
 
         onView(withId(R.id.view_key_card_user_ids_edit)).perform(click());
 
