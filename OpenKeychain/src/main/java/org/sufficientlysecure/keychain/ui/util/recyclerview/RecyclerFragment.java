@@ -352,12 +352,14 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
 
     @SuppressWarnings("unchecked")
     private void ensureList() {
-        if (listView != null)
+        if (listView != null) {
             return;
+        }
 
         View root = getView();
-        if (root == null)
+        if (root == null) {
             throw new IllegalStateException("Content view not yet created");
+        }
 
         if (root instanceof RecyclerView) {
             listView = (RecyclerView) root;

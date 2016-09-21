@@ -40,8 +40,6 @@ public abstract class SectionCursorAdapter<C extends CursorAdapter.AbstractCurso
 
     public SectionCursorAdapter(Context context, C cursor, int flags, Comparator<T> comparator) {
         super(context, cursor, flags);
-
-        setHasStableIds(false); // because we have additional section items
         setSectionComparator(comparator);
     }
 

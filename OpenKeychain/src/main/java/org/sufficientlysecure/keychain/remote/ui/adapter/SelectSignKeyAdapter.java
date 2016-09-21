@@ -48,11 +48,6 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
     }
 
     @Override
-    public long getIdFromCursor(KeyCursor keyCursor) {
-        return keyCursor.getKeyId();
-    }
-
-    @Override
     public int getItemViewType(int position) {
         return position == getItemCount() -1 ?
                 VIEW_TYPE_DUMMY : VIEW_TYPE_KEY;

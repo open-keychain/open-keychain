@@ -20,6 +20,8 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;

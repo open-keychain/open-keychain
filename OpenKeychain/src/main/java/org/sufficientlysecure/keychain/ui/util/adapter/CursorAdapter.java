@@ -52,6 +52,7 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
      * @param context The context
      */
     public CursorAdapter(Context context, C c) {
+        setHasStableIds(true);
         init(context, c, FLAG_REGISTER_CONTENT_OBSERVER);
     }
 
@@ -64,6 +65,7 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
      * @see #FLAG_REGISTER_CONTENT_OBSERVER
      */
     public CursorAdapter(Context context, C c, int flags) {
+        setHasStableIds(true);
         init(context, c, flags);
     }
 
