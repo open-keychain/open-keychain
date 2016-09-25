@@ -1,17 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?attr/listPreferredItemHeight"
+    android:minHeight="?android:attr/listPreferredItemHeight"
     android:gravity="center_vertical"
-    android:maxLines="1"
+    android:singleLine="true"
     android:orientation="horizontal"
     android:descendantFocusability="blocksDescendants"
-    android:background="@drawable/list_item_ripple"
     android:focusable="false">
+
+    <LinearLayout
+        android:id="@+id/key_list_item_dummy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:focusable="true"
+        android:visibility="gone"
+        android:background="?android:selectableItemBackground"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="4dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="You don't have any keys yet!"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="Click here to create or import one."
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            android:src="@drawable/ic_key_plus_grey600_24dp"
+            />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/key_list_item_data"
@@ -38,7 +83,7 @@
             android:id="@+id/key_list_item_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="1"
+            android:singleLine="true"
             android:ellipsize="end"
             tools:text="user@example.com"
             android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -47,11 +92,12 @@
             android:id="@+id/key_list_item_creation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="1"
+            android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="gone"
             tools:visibility="visible"
-            tools:text="Created on 10/10/2010 10:00" />
+            tools:text="Created on 10/10/2010 10:00"
+            />
 
     </LinearLayout>
 
@@ -88,6 +134,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:padding="16dp"
-        tools:src="@drawable/status_signature_revoked_cutout_24dp" />
+        tools:src="@drawable/status_signature_revoked_cutout_24dp"
+        />
 
 </LinearLayout>

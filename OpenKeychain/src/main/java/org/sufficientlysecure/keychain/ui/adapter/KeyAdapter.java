@@ -94,6 +94,7 @@ public class KeyAdapter extends CursorAdapter {
 
     public static class KeyItemViewHolder {
         public View mView;
+        public View mLayoutDummy;
         public View mLayoutData;
         public Long mMasterKeyId;
         public TextView mMainUserId;
@@ -108,6 +109,7 @@ public class KeyAdapter extends CursorAdapter {
         public KeyItemViewHolder(View view) {
             mView = view;
             mLayoutData = view.findViewById(R.id.key_list_item_data);
+            mLayoutDummy = view.findViewById(R.id.key_list_item_dummy);
             mMainUserId = (TextView) view.findViewById(R.id.key_list_item_name);
             mMainUserIdRest = (TextView) view.findViewById(R.id.key_list_item_email);
             mStatus = (ImageView) view.findViewById(R.id.key_list_item_status_icon);
@@ -117,6 +119,10 @@ public class KeyAdapter extends CursorAdapter {
         }
 
         public void setData(Context context, KeyItem item, Highlighter highlighter, boolean enabled) {
+
+            mLayoutData.setVisibility(View.VISIBLE);
+            mLayoutDummy.setVisibility(View.GONE);
+
             mDisplayedItem = item;
 
             { // set name and stuff, common to both key types
@@ -201,8 +207,25 @@ public class KeyAdapter extends CursorAdapter {
                 } else {
                     mCreationDate.setVisibility(View.GONE);
                 }
+
             }
+
         }
+
+        /** Shows the "you have no keys yet" dummy view, and sets an OnClickListener. */
+        public void setDummy(OnClickListener listener) {
+
+            // just reset everything to display the dummy layout
+            mLayoutDummy.setVisibility(View.VISIBLE);
+            mLayoutData.setVisibility(View.GONE);
+            mSlinger.setVisibility(View.GONE);
+            mStatus.setVisibility(View.GONE);
+            mView.setClickable(false);
+
+            mLayoutDummy.setOnClickListener(listener);
+
+        }
+
     }
 
     public boolean isEnabled(Cursor cursor) {
