@@ -37,7 +37,4 @@
     <color name="card_view_button">#7bad45</color>
     <color name="toolbar_photo_tint">#1E7bad45</color>
 
-    <color name="pressed_gray">#0c000000</color>
-    <color name="selected_gray">#2c000000</color>
-
 </resources>

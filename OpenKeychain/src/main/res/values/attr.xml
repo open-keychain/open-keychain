@@ -28,14 +28,4 @@
         <attr name="prefix" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="FastScroller">
-        <attr name="fastScrollScrollBarWidth" format="dimension"/>
-        <attr name="fastScrollAutoHideEnabled" format="boolean" />
-        <attr name="fastScrollAutoHideDelay" format="integer" />
-        <attr name="fastScrollThumbColorNormal" format="color" />
-        <attr name="fastScrollTrackColorNormal" format="color" />
-        <attr name="fastScrollThumbColorDragging" format="color" />
-        <attr name="fastScrollTrackColorDragging" format="color" />
-    </declare-styleable>
-
 </resources>
