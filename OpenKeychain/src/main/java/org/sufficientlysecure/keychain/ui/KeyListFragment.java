@@ -61,6 +61,7 @@ import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
@@ -97,6 +98,9 @@ public class KeyListFragment extends LoaderFragment
     private static final int REQUEST_DELETE = 2;
     private static final int REQUEST_VIEW_KEY = 3;
 
+    //Building Name/Email Duplicate Entries
+    public static HashMap<String,Boolean> duplicateNameEmail;
+
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
 
@@ -127,6 +131,9 @@ public class KeyListFragment extends LoaderFragment
 
         mStickyList = (StickyListHeadersListView) view.findViewById(R.id.key_list_list);
         mStickyList.setOnItemClickListener(this);
+
+        //Initialising duplicateNameEmail
+        duplicateNameEmail = new HashMap<String,Boolean>();
 
         mFab = (FloatingActionsMenu) view.findViewById(R.id.fab_main);
 
@@ -322,6 +329,42 @@ public class KeyListFragment extends LoaderFragment
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         mAdapter.setSearchQuery(mQuery);
+
+        /*
+        Check all the entries and set the name/email pair to true if more than one of them exist.
+        Else set to false.
+        So, all name/email pairs set to true would mean there are more of such pairs (Hack for Duplicate name/email)
+        If there's only one, it will remain false.
+         */
+        if(data.moveToFirst())
+        {
+            do {
+                String userId = data.getString(data.getColumnIndex(KeyRings.USER_ID));
+                KeyRing.UserId mUserId = KeyRing.splitUserId(userId);
+                String name = mUserId.name;
+                String email = mUserId.email;
+                String key = name + email;
+                if(!duplicateNameEmail.containsKey(key)){
+                    duplicateNameEmail.put(key,false);
+                }
+                else {
+                    if(duplicateNameEmail.get(key) != true)
+                        duplicateNameEmail.put(key, true);
+                }
+            }while (data.moveToNext());
+        }
+        /*
+        Testing whether the entries are built properly
+        Can Ignore, Test Code!
+
+        Set set = duplicateNameEmail.entrySet();
+        Iterator i = set.iterator();
+        while (i.hasNext()){
+            Map.Entry me = (Map.Entry) i.next();
+            Log.e("KEY,VALUE : ",String.valueOf(me.getKey())+","+String.valueOf(me.getValue()));
+        }
+
+         */
 
         if (data != null && (mQuery == null || TextUtils.isEmpty(mQuery))) {
             boolean isSecret = data.moveToFirst() && data.getInt(KeyListAdapter.INDEX_HAS_ANY_SECRET) != 0;
