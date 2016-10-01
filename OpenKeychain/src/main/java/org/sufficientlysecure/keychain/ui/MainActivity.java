@@ -60,7 +60,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
 
     public Drawer mDrawer;
     private Toolbar mToolbar;
-    private int CURSOR;
+    private int cursor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -170,8 +170,8 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if(mDrawer.isDrawerOpen()) {
             if (keyCode == 20) {
-                CURSOR = (6 + CURSOR + 1) % 6;
-                switch (CURSOR + 1) {
+                cursor = (6 + cursor + 1) % 6;
+                switch (cursor + 1) {
                     case ID_KEYS:
                         mDrawer.setSelection(ID_KEYS, false);
                         break;
@@ -193,8 +193,8 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                 }
 
             } else if (keyCode == 19) {
-                CURSOR = (6 + CURSOR - 1) % 6;
-                switch (CURSOR + 1) {
+                cursor = (6 + cursor - 1) % 6;
+                switch (cursor + 1) {
                     case ID_KEYS:
                         mDrawer.setSelection(ID_KEYS, false);
                         break;
@@ -217,7 +217,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
             }
             if (keyCode == 66 || keyCode==23) {
                 Intent intent = null;
-                switch (CURSOR + 1) {
+                switch (cursor + 1) {
                     case ID_KEYS:
                         onKeysSelected();
                         break;
