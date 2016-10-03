@@ -112,10 +112,7 @@ public class FastScrollRecyclerView extends RecyclerView implements RecyclerView
         if (count > 0) {
             stopScroll();
 
-
             int pixelsToScroll = (int) (computeVerticalScrollRange() * fraction);
-            System.out.println("ScrollBy Fraction: " + fraction + ", Pixel: " + pixelsToScroll);
-
             scrollBy(0, pixelsToScroll);
         }
     }

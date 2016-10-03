@@ -115,6 +115,16 @@ public abstract class SectionCursorAdapter<C extends CursorAdapter.AbstractCurso
      */
     protected abstract T getSectionFromCursor(C cursor) throws IllegalStateException;
 
+    /**
+     * Return the id of the item represented by the row the cursor
+     * is currently moved to.
+     * @param section The section item to get the id from
+     * @return The id of the dataset
+     */
+    public long getIdFromSection(T section) {
+        return section != null ? section.hashCode() : 0L;
+    }
+
     @Override
     public int getItemCount() {
         return super.getItemCount() + mSectionMap.size();
@@ -122,21 +132,13 @@ public abstract class SectionCursorAdapter<C extends CursorAdapter.AbstractCurso
 
     @Override
     public final long getItemId(int listPosition) {
-        /*
         int index = mSectionMap.indexOfKey(listPosition);
         if (index < 0) {
             int cursorPosition = getCursorPositionWithoutSections(listPosition);
             return super.getItemId(cursorPosition);
         } else {
             T section = mSectionMap.valueAt(index);
-            return section != null ? section.hashCode() : 0L;
-        } */
-
-        if (isSection(listPosition)) {
-            return RecyclerView.NO_ID;
-        } else {
-            int cursorPosition = getCursorPositionWithoutSections(listPosition);
-            return super.getItemId(cursorPosition);
+            return getIdFromSection(section);
         }
     }
 
