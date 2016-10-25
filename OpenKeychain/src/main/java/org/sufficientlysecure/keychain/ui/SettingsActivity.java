@@ -58,12 +58,15 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
     public static final int REQUEST_CODE_KEYSERVER_PREF = 0x00007005;
+    public static final int REQUEST_CODE_SMARTPGP_AUTHORITIES_PREF = 0x00007006;
     private static final int REQUEST_PERMISSION_READ_CONTACTS = 13;
 
     private static Preferences sPreferences;
@@ -554,6 +557,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     public static class ExperimentalPrefsFragment extends PresetPreferenceFragment {
 
+        private PreferenceScreen mSmartPGPAuthoritiesPreference = null;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -563,6 +568,51 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             initializeTheme((ListPreference) findPreference(Constants.Pref.THEME));
 
+            mSmartPGPAuthoritiesPreference = (PreferenceScreen) findPreference(Constants.Pref.EXPERIMENTAL_SMARTPGP_AUTHORITIES);
+
+            final KeyStore ks = SettingsSmartPGPAuthoritiesActivity.readKeystore(getActivity());
+            int size = 0;
+            try {
+                if (ks != null) {
+                    size = ks.size();
+                }
+            } catch (KeyStoreException e) {}
+
+            mSmartPGPAuthoritiesPreference.setSummary(getActivity().getResources().getQuantityString(R.plurals.n_authorities, size, size));
+
+            mSmartPGPAuthoritiesPreference
+                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        public boolean onPreferenceClick(Preference preference) {
+                            Intent intent = new Intent(getActivity(),
+                                    SettingsSmartPGPAuthoritiesActivity.class);
+                            startActivityForResult(intent, REQUEST_CODE_SMARTPGP_AUTHORITIES_PREF);
+                            return false;
+                        }
+                    });
+        }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            switch (requestCode) {
+                case REQUEST_CODE_SMARTPGP_AUTHORITIES_PREF: {
+                    // update preference, in case it changed
+                    final KeyStore ks = SettingsSmartPGPAuthoritiesActivity.readKeystore(getActivity());
+                    int size = 0;
+                    try {
+                        if (ks != null) {
+                            size = ks.size();
+                        }
+                    } catch (KeyStoreException e) {}
+
+                    mSmartPGPAuthoritiesPreference.setSummary(getActivity().getResources().getQuantityString(R.plurals.n_authorities, size, size));
+                    break;
+                }
+
+                default: {
+                    super.onActivityResult(requestCode, resultCode, data);
+                    break;
+                }
+            }
         }
 
         private static void initializeTheme(final ListPreference themePref) {

@@ -298,6 +298,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
             // Just close
             finish();
         } else {
+            mSecurityTokenHelper.clearSecureMessaging();
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
