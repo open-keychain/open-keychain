@@ -35,4 +35,14 @@
         android:persistent="true"
         android:title="@string/label_theme" />
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="smartpgp_authorities_pref"
+        android:summary="@string/label_smartpgp_verify_summary"
+        android:title="@string/label_smartpgp_verify" />
+    <PreferenceScreen
+        android:dependency="smartpgp_authorities_pref"
+        android:key="smartpgp_authorities"
+        android:title="@string/label_smartpgp_roots" />
+
 </PreferenceScreen>

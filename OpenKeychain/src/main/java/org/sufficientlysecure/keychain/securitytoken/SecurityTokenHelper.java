@@ -21,6 +21,7 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -75,9 +76,9 @@ public class SecurityTokenHelper {
     private static final int MAX_APDU_NC_EXT = 65535;
 
     private static final int MAX_APDU_NE = 256;
-    private static final int MAX_APDU_NE_EXT = 65536;
+    static final int MAX_APDU_NE_EXT = 65536;
 
-    private static final int APDU_SW_SUCCESS = 0x9000;
+    static final int APDU_SW_SUCCESS = 0x9000;
     private static final int APDU_SW1_RESPONSE_AVAILABLE = 0x61;
 
     private static final int MASK_CLA_CHAINING = 1 << 4;
@@ -92,6 +93,7 @@ public class SecurityTokenHelper {
     private Transport mTransport;
     private CardCapabilities mCardCapabilities;
     private OpenPgpCapabilities mOpenPgpCapabilities;
+    private SecureMessaging mSecureMessaging;
 
     private Passphrase mPin;
     private Passphrase mAdminPin;
@@ -181,7 +183,7 @@ public class SecurityTokenHelper {
      *
      * @throws IOException
      */
-    public void connectToDevice() throws IOException {
+    public void connectToDevice(final Context ctx) throws IOException {
         // Connect on transport layer
         mCardCapabilities = new CardCapabilities();
 
@@ -202,6 +204,16 @@ public class SecurityTokenHelper {
         mPw1ValidatedForSignature = false;
         mPw1ValidatedForDecrypt = false;
         mPw3Validated = false;
+
+        if (mOpenPgpCapabilities.isHasSM()) {
+            try {
+                SCP11bSecureMessaging.establish(this, ctx);
+            } catch(SecureMessagingException e) {
+                mSecureMessaging = null;
+                Log.e(Constants.TAG, "failed to establish secure messaging", e);
+            }
+        }
+
     }
 
     /**
@@ -699,7 +711,16 @@ public class SecurityTokenHelper {
      * @return response from the card
      * @throws IOException
      */
-    private ResponseAPDU communicate(CommandAPDU apdu) throws IOException {
+    ResponseAPDU communicate(CommandAPDU apdu) throws IOException {
+        if ((mSecureMessaging != null) && mSecureMessaging.isEstablished()) {
+            try {
+                apdu = mSecureMessaging.encryptAndSign(apdu);
+            } catch (SecureMessagingException e) {
+                clearSecureMessaging();
+                throw new IOException("secure messaging encrypt/sign failure : " + e. getMessage());
+            }
+        }
+
         ByteArrayOutputStream result = new ByteArrayOutputStream();
 
         ResponseAPDU lastResponse = null;
@@ -746,7 +767,18 @@ public class SecurityTokenHelper {
         result.write(lastResponse.getSW1());
         result.write(lastResponse.getSW2());
 
-        return new ResponseAPDU(result.toByteArray());
+        lastResponse = new ResponseAPDU(result.toByteArray());
+
+        if ((mSecureMessaging != null) && mSecureMessaging.isEstablished()) {
+            try {
+                lastResponse = mSecureMessaging.verifyAndDecrypt(lastResponse);
+            } catch (SecureMessagingException e) {
+                clearSecureMessaging();
+                throw new IOException("secure messaging verify/decrypt failure : " + e. getMessage());
+            }
+        }
+
+        return lastResponse;
     }
 
     public Transport getTransport() {
@@ -754,6 +786,7 @@ public class SecurityTokenHelper {
     }
 
     public void setTransport(Transport mTransport) {
+        clearSecureMessaging();
         this.mTransport = mTransport;
     }
 
@@ -833,6 +866,9 @@ public class SecurityTokenHelper {
             }
         }
 
+        // secure messaging must be disabled before reactivation
+        clearSecureMessaging();
+
         // reactivate token!
         // NOTE: keep the order here! First execute _both_ reactivate commands. Before checking _both_ responses
         // If a token is in a bad state and reactivate1 fails, it could still be reactivated with reactivate2
@@ -871,11 +907,30 @@ public class SecurityTokenHelper {
     }
 
     public boolean isPersistentConnectionAllowed() {
-        return mTransport != null && mTransport.isPersistentConnectionAllowed();
+        return mTransport != null &&
+                mTransport.isPersistentConnectionAllowed() &&
+                (mSecureMessaging == null ||
+                 !mSecureMessaging.isEstablished());
     }
 
     public boolean isConnected() {
         return mTransport != null && mTransport.isConnected();
+    }
+
+    public void clearSecureMessaging() {
+        if(mSecureMessaging != null) {
+            mSecureMessaging.clearSession();
+        }
+        mSecureMessaging = null;
+    }
+
+    void setSecureMessaging(final SecureMessaging sm) {
+        clearSecureMessaging();
+        mSecureMessaging = sm;
+    }
+
+    OpenPgpCapabilities getOpenPgpCapabilities() {
+        return mOpenPgpCapabilities;
     }
 
     private static class LazyHolder {
