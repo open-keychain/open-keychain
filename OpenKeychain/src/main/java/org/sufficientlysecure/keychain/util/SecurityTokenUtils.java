@@ -17,19 +17,61 @@
 
 package org.sufficientlysecure.keychain.util;
 
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.securitytoken.ECKeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 
 public class SecurityTokenUtils {
-    public static byte[] createPrivKeyTemplate(RSAPrivateCrtKey secretKey, KeyType slot,
-                                               KeyFormat format) throws IOException {
+    public static byte[] attributesFromSecretKey(final KeyType slot, final CanonicalizedSecretKey secretKey) throws IOException, PgpGeneralException {
+        if (secretKey.isRSA()) {
+            final int mModulusLength = secretKey.getBitStrength();
+            final int mExponentLength = secretKey.getCrtSecretKey().getPublicExponent().bitLength();
+            final byte[] attrs = new byte[6];
+            int i = 0;
+
+            attrs[i++] = (byte)0x01;
+            attrs[i++] = (byte)((mModulusLength >> 8) & 0xff);
+            attrs[i++] = (byte)(mModulusLength & 0xff);
+            attrs[i++] = (byte)((mExponentLength >> 8) & 0xff);
+            attrs[i++] = (byte)(mExponentLength & 0xff);
+            attrs[i++] = RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS.getValue();
+
+            return attrs;
+        } else if (secretKey.isEC()) {
+            final byte[] oid = new ASN1ObjectIdentifier(secretKey.getCurveOid()).getEncoded();
+            final byte[] attrs = new byte[1 + (oid.length - 2) + 1];
+
+            if (slot.equals(KeyType.SIGN))
+                attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDSA_WITH_PUBKEY.getValue();
+            else {
+                attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDH_WITH_PUBKEY.getValue();
+            }
+
+            System.arraycopy(oid, 2, attrs, 1, (oid.length - 2));
+
+            attrs[attrs.length - 1] = (byte)0xff;
+
+            return attrs;
+        } else {
+            throw new IOException("Unsupported key type");
+        }
+    }
+
+
+    public static byte[] createRSAPrivKeyTemplate(RSAPrivateCrtKey secretKey, KeyType slot,
+                                                  RSAKeyFormat format) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream(),
                 template = new ByteArrayOutputStream(),
                 data = new ByteArrayOutputStream(),
@@ -86,6 +128,51 @@ public class SecurityTokenUtils {
         stream.write(encodeLength(data.size()));
         stream.write(data.toByteArray());
 
+        // Result tlv
+        res.write(Hex.decode("4D"));
+        res.write(encodeLength(stream.size()));
+        res.write(stream.toByteArray());
+
+        return res.toByteArray();
+    }
+
+    public static byte[] createECPrivKeyTemplate(ECPrivateKey secretKey, ECPublicKey publicKey, KeyType slot,
+                                                 ECKeyFormat format) throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream(),
+                template = new ByteArrayOutputStream(),
+                data = new ByteArrayOutputStream(),
+                res = new ByteArrayOutputStream();
+
+        final int csize = (int)Math.ceil(publicKey.getParams().getCurve().getField().getFieldSize() / 8.0);
+
+        writeBits(data, secretKey.getS(), csize);
+        template.write(Hex.decode("92"));
+        template.write(encodeLength(data.size()));
+
+        if (format.getAlgorithmFormat().isWithPubkey()) {
+            data.write(Hex.decode("04"));
+            writeBits(data, publicKey.getW().getAffineX(), csize);
+            writeBits(data, publicKey.getW().getAffineY(), csize);
+            template.write(Hex.decode("99"));
+            template.write(encodeLength(1 + 2 * csize));
+        }
+
+        // Bundle up
+
+        // Ext header list data
+        // Control Reference Template to indicate the private key
+        stream.write(slot.getSlot());
+        stream.write(0);
+
+        // Cardholder private key template
+        stream.write(Hex.decode("7F48"));
+        stream.write(encodeLength(template.size()));
+        stream.write(template.toByteArray());
+
+        // Concatenation of key data as defined in DO 7F48
+        stream.write(Hex.decode("5F48"));
+        stream.write(encodeLength(data.size()));
+        stream.write(data.toByteArray());
 
         // Result tlv
         res.write(Hex.decode("4D"));
@@ -132,20 +219,21 @@ public class SecurityTokenUtils {
             throw new IllegalArgumentException("width <= 0");
         }
 
-        byte[] prime = value.toByteArray();
-        int stripIdx = 0;
-        while (prime[stripIdx] == 0 && stripIdx + 1 < prime.length) {
-            stripIdx++;
-        }
+        final byte[] prime = value.toByteArray();
+        int skip = 0;
 
-        if (prime.length - stripIdx > width) {
+        while((skip < prime.length) && (prime[skip] == 0)) ++skip;
+
+        if ((prime.length - skip) > width) {
             throw new IllegalArgumentException("not enough width to fit value: "
-                    + prime.length + "/" + width);
+                    + (prime.length - skip) + "/" + width);
         }
-        byte[] res = new byte[width];
-        int empty = width - (prime.length - stripIdx);
 
-        System.arraycopy(prime, stripIdx, res, Math.max(0, empty), Math.min(prime.length, width));
+        byte[] res = new byte[width];
+
+        System.arraycopy(prime, skip,
+                         res, width - (prime.length - skip),
+                         prime.length - skip);
 
         stream.write(res, 0, width);
         Arrays.fill(res, (byte) 0);

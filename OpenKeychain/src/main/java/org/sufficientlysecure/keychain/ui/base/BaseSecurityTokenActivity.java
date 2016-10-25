@@ -91,9 +91,9 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
      * Override to implement SecurityToken operations (background thread)
      */
     protected void doSecurityTokenInBackground() throws IOException {
+        mSecurityTokenAid = mSecurityTokenHelper.getAid();
         mSecurityTokenFingerprints = mSecurityTokenHelper.getFingerprints();
         mSecurityTokenUserId = mSecurityTokenHelper.getUserId();
-        mSecurityTokenAid = mSecurityTokenHelper.getAid();
     }
 
     /**
@@ -168,7 +168,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             @Override
             protected IOException doInBackground(Void... params) {
                 try {
-                    handleSecurityToken(transport);
+                    handleSecurityToken(transport, BaseSecurityTokenActivity.this);
                 } catch (IOException e) {
                     return e;
                 }
@@ -428,13 +428,13 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         }
     }
 
-    protected void handleSecurityToken(Transport transport) throws IOException {
+    protected void handleSecurityToken(Transport transport, Context ctx) throws IOException {
         // Don't reconnect if device was already connected
         if (!(mSecurityTokenHelper.isPersistentConnectionAllowed()
                 && mSecurityTokenHelper.isConnected()
                 && mSecurityTokenHelper.getTransport().equals(transport))) {
             mSecurityTokenHelper.setTransport(transport);
-            mSecurityTokenHelper.connectToDevice();
+            mSecurityTokenHelper.connectToDevice(ctx);
         }
         doSecurityTokenInBackground();
     }

@@ -484,6 +484,11 @@
             android:label="@string/title_key_server_preference"
             android:windowSoftInputMode="stateHidden" />
         <activity
+            android:name=".ui.SettingsSmartPGPAuthoritiesActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_smartpgp_authorities_preference"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
             android:name=".ui.SettingsCacheTTLActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_cache_ttl_preference"

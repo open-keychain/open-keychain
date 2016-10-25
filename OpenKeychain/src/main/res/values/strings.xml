@@ -19,6 +19,7 @@
     <string name="title_preferences">"Settings"</string>
     <string name="title_api_registered_apps">"Apps"</string>
     <string name="title_key_server_preference">"OpenPGP keyservers"</string>
+    <string name="title_smartpgp_authorities_preference">"SmartPGP authorities"</string>
     <string name="title_cache_ttl_preference">"Customize 'Remember' choices"</string>
     <string name="title_change_passphrase">"Change Password"</string>
     <string name="title_share_fingerprint_with">"Share fingerprint with…"</string>
@@ -182,16 +183,22 @@
     <string name="label_keyservers_title">"Keyservers"</string>
     <string name="label_keyserver_settings_hint">"Drag to change order, tap to edit/delete"</string>
     <string name="label_selected_keyserver_title">"Selected keyserver"</string>
+    <string name="label_selected_smartpgp_authority_title">"Selected authority"</string>
     <string name="label_preferred">"preferred"</string>
     <string name="label_enable_compression">"Enable compression"</string>
     <string name="label_encrypt_filenames">"Encrypt filenames"</string>
     <string name="label_hidden_recipients">"Hide recipients"</string>
+    <string name="label_smartpgp_verify">SmartPGP verify certificate</string>
+    <string name="label_smartpgp_verify_summary">"Validate tokens certificates against a set of trusted certification authorities"</string>
+    <string name="label_smartpgp_roots">SmartPGP trusted authorities</string>
 
     <string name="label_verify_keyserver_connection">"Test connection"</string>
     <string name="label_only_trusted_keyserver">"Only trusted keyserver"</string>
     <string name="label_enter_keyserver_url">"URL"</string>
     <string name="label_keyserver_dialog_delete">"Delete keyserver"</string>
     <string name="label_theme">"Theme"</string>
+    <string name="label_enter_smartpgp_authority_name">Name</string>
+    <string name="label_smartpgp_authority_dialog_delete">"Delete authority"</string>
 
     <string name="pref_keyserver">"OpenPGP keyservers"</string>
     <string name="pref_keyserver_summary">"Search keys on selected OpenPGP keyservers (HKP protocol)"</string>
@@ -267,6 +274,11 @@
         <item quantity="other">"%d keyservers"</item>
     </plurals>
 
+    <plurals name="n_authorities">
+        <item quantity="one">"%d authority"</item>
+        <item quantity="other">"%d authorities"</item>
+    </plurals>
+
     <string name="secret_key">"Secret Key:"</string>
 
     <!-- choice -->
@@ -293,6 +305,8 @@
     <string name="rsa_4096_description_html">"larger file size, considered secure until 2040+"</string>
     <string name="ecc_p256">"ECC P-256"</string>
     <string name="ecc_p256_description_html">"very tiny file size, considered secure until 2040 &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
+    <string name="ecc_p384">"ECC P-384"</string>
+    <string name="ecc_p384_description_html">"very tiny file size, considered secure until 2040 &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
     <string name="ecc_p521">"ECC P-521"</string>
     <string name="ecc_p521_description_html">"tiny file size, considered secure until 2040+ &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
     <string name="usage_none">"None (subkey binding only)"</string>
@@ -764,6 +778,7 @@
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
     <string name="edit_key_error_bad_security_token_algo">"Algorithm not supported by Security Token!"</string>
     <string name="edit_key_error_bad_security_token_size">"Key size not supported by Security Token!"</string>
+    <string name="edit_key_error_bad_security_token_curve">"Curve not supported by Security Token!"</string>
     <string name="edit_key_error_bad_security_token_stripped">"Cannot move key to Security Token (either stripped or already on Security Token)!"</string>
 
     <!-- Create key -->
@@ -792,6 +807,10 @@
     <string name="create_key_yubi_key_pin_not_correct">"PIN is not correct!"</string>
     <string name="create_key_yubi_key_pin_too_short">"PIN must be at least 6 numbers long!"</string>
     <string name="create_key_yubi_key_pin_insecure">"Please choose a secure PIN, not 000000, 123456 or similar combinations (the top 20 most chosen PINs are not allowed)"</string>
+    <string name="create_key_yubi_key_algorithm_text">"Please choose an algorithm for each key."</string>
+    <string name="create_key_yubi_key_algorithm_sign_text">Signature key</string>
+    <string name="create_key_yubi_key_algorithm_dec_text">Decryption key</string>
+    <string name="create_key_yubi_key_algorithm_auth_text">Authentication key</string>
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
@@ -813,6 +832,11 @@
     <string name="add_keyserver_connection_failed">"Failed to connect to keyserver. Please check the URL and your Internet connection."</string>
     <string name="keyserver_preference_deleted">"%s deleted"</string>
     <string name="keyserver_preference_cannot_delete_last">"Cannot delete last keyserver. At least one is required!"</string>
+
+    <!-- Add/Edit SmartPGP authority -->
+    <string name="add_smartpgp_authority_dialog_title">"Add authority"</string>
+    <string name="show_smartpgp_authority_dialog_title">"Edit authority"</string>
+    <string name="smartpgp_authority_preference_deleted">"%s deleted"</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>

@@ -34,7 +34,6 @@ import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-import org.sufficientlysecure.keychain.util.orbot.OrbotStatusReceiver;
 
 import java.io.Serializable;
 import java.net.Proxy;
@@ -464,6 +463,10 @@ public class Preferences {
 
     public boolean getExperimentalEnableKeybase() {
         return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_KEYBASE, false);
+    }
+
+    public boolean getExperimentalSmartPGPAuthoritiesEnable() {
+        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_SMARTPGP_VERIFY_AUTHORITY, false);
     }
 
     public void upgradePreferences(Context context) {

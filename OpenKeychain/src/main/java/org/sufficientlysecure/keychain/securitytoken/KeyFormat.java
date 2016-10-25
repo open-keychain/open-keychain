@@ -17,71 +17,83 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
-// 4.3.3.6 Algorithm Attributes
-public class KeyFormat {
-    private int mAlgorithmId;
-    private int mModulusLength;
-    private int mExponentLength;
-    private AlgorithmFormat mAlgorithmFormat;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.nist.NISTNamedCurves;
+import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.CreateSecurityTokenAlgorithmFragment;
 
-    public KeyFormat(byte[] bytes) {
-        mAlgorithmId = bytes[0];
-        mModulusLength = bytes[1] << 8 | bytes[2];
-        mExponentLength = bytes[3] << 8 | bytes[4];
-        mAlgorithmFormat = AlgorithmFormat.from(bytes[5]);
+public abstract class KeyFormat {
 
-        if (mAlgorithmId != 1) { // RSA
-            throw new IllegalArgumentException("Unsupported Algorithm id " + mAlgorithmId);
-        }
+    public enum KeyFormatType {
+        RSAKeyFormatType,
+        ECKeyFormatType
+    };
+
+    private final KeyFormatType mKeyFormatType;
+
+    public KeyFormat(final KeyFormatType keyFormatType) {
+        mKeyFormatType = keyFormatType;
     }
 
-    public int getAlgorithmId() {
-        return mAlgorithmId;
+    public final KeyFormatType keyFormatType() {
+        return mKeyFormatType;
     }
 
-    public int getModulusLength() {
-        return mModulusLength;
-    }
-
-    public int getExponentLength() {
-        return mExponentLength;
-    }
-
-    public AlgorithmFormat getAlgorithmFormat() {
-        return mAlgorithmFormat;
-    }
-
-    public enum AlgorithmFormat {
-        STANDARD(0, false, false),
-        STANDARD_WITH_MODULUS(1, false, true),
-        CRT(2, true, false),
-        CRT_WITH_MODULUS(3, true, true);
-
-        private int mValue;
-        private boolean mIncludeModulus;
-        private boolean mIncludeCrt;
-
-        AlgorithmFormat(int value, boolean includeCrt, boolean includeModulus) {
-            mValue = value;
-            mIncludeModulus = includeModulus;
-            mIncludeCrt = includeCrt;
-        }
-
-        public static AlgorithmFormat from(byte b) {
-            for (AlgorithmFormat format : values()) {
-                if (format.mValue == b) {
-                    return format;
+    public static KeyFormat fromBytes(byte[] bytes) {
+        switch (bytes[0]) {
+            case PublicKeyAlgorithmTags.RSA_GENERAL:
+                if (bytes.length < 6) {
+                    throw new IllegalArgumentException("Bad length for RSA attributes");
                 }
-            }
-            return null;
-        }
+                return new RSAKeyFormat(bytes[1] << 8 | bytes[2],
+                                        bytes[3] << 8 | bytes[4],
+                                        RSAKeyFormat.RSAAlgorithmFormat.from(bytes[5]));
 
-        public boolean isIncludeModulus() {
-            return mIncludeModulus;
-        }
+            case PublicKeyAlgorithmTags.ECDH:
+            case PublicKeyAlgorithmTags.ECDSA:
+                if (bytes.length < 2) {
+                    throw new IllegalArgumentException("Bad length for RSA attributes");
+                }
+                int len = bytes.length - 1;
+                if (bytes[bytes.length - 1] == (byte)0xff) {
+                    len -= 1;
+                }
+                final byte[] boid = new byte[2 + len];
+                boid[0] = (byte)0x06;
+                boid[1] = (byte)len;
+                System.arraycopy(bytes, 1, boid, 2, len);
+                final ASN1ObjectIdentifier oid = ASN1ObjectIdentifier.getInstance(boid);
+                return new ECKeyFormat(oid, ECKeyFormat.ECAlgorithmFormat.from(bytes[0], bytes[bytes.length - 1]));
 
-        public boolean isIncludeCrt() {
-            return mIncludeCrt;
+            default:
+                throw new IllegalArgumentException("Unsupported Algorithm id " + bytes[0]);
         }
     }
+
+    public static KeyFormat fromCreationKeyType(CreateSecurityTokenAlgorithmFragment.SupportedKeyType t, boolean forEncryption) {
+        final int elen = 17; //65537
+        final ECKeyFormat.ECAlgorithmFormat kf =
+                forEncryption ? ECKeyFormat.ECAlgorithmFormat.ECDH_WITH_PUBKEY : ECKeyFormat.ECAlgorithmFormat.ECDSA_WITH_PUBKEY;
+
+        switch (t) {
+            case RSA_2048:
+                return new RSAKeyFormat(2048, elen, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
+            case RSA_3072:
+                return new RSAKeyFormat(3072, elen, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
+            case RSA_4096:
+                return new RSAKeyFormat(4096, elen, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
+            case ECC_P256:
+                return new ECKeyFormat(NISTNamedCurves.getOID("P-256"), kf);
+            case ECC_P384:
+                return new ECKeyFormat(NISTNamedCurves.getOID("P-384"), kf);
+            case ECC_P521:
+                return new ECKeyFormat(NISTNamedCurves.getOID("P-521"), kf);
+        }
+
+        throw new IllegalArgumentException("Unsupported Algorithm id " + t);
+    }
+
+    public abstract void addToKeyring(SaveKeyringParcel keyring, int keyFlags);
+
 }

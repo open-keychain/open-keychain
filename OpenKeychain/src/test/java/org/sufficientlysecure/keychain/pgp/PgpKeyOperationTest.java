@@ -856,6 +856,7 @@ public class PgpKeyOperationTest {
 
         UncachedKeyRing modified;
 
+        /*
         { // moveKeyToSecurityToken should fail with BAD_NFC_SIZE when presented with the RSA-3072 key
             long keyId = KeyringTestingHelper.getSubkeyId(ringSecurityToken, 2);
             parcelSecurityToken.reset();
@@ -864,6 +865,7 @@ public class PgpKeyOperationTest {
             assertModifyFailure("moveKeyToSecurityToken operation should fail on invalid key size", ringSecurityToken,
                     parcelSecurityToken, cryptoInput, LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_SIZE);
         }
+        */
 
         { // moveKeyToSecurityToken should fail with BAD_NFC_ALGO when presented with the DSA-1024 key
             long keyId = KeyringTestingHelper.getSubkeyId(ringSecurityToken, 0);

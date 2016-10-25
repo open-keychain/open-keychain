@@ -36,15 +36,19 @@ public class OpenPgpCapabilities {
     private boolean mAttriburesChangable;
     private boolean mHasKeyImport;
 
-    private byte mSMAlgo;
+    private int mSMAESKeySize;
     private int mMaxCmdLen;
     private int mMaxRspLen;
 
     private Map<KeyType, KeyFormat> mKeyFormats;
 
     public OpenPgpCapabilities(byte[] data) throws IOException {
-        Iso7816TLV[] tlvs = Iso7816TLV.readList(data, true);
         mKeyFormats = new HashMap<>();
+        updateWithData(data);
+    }
+
+    public void updateWithData(byte[] data) throws IOException {
+        Iso7816TLV[] tlvs = Iso7816TLV.readList(data, true);
         if (tlvs.length == 1 && tlvs[0].mT == 0x6E) {
             tlvs = ((Iso7816TLV.Iso7816CompositeTLV) tlvs[0]).mSubs;
         }
@@ -64,13 +68,13 @@ public class OpenPgpCapabilities {
                     parseExtendedCaps(tlv.mV);
                     break;
                 case 0xC1:
-                    mKeyFormats.put(KeyType.SIGN, new KeyFormat(tlv.mV));
+                    mKeyFormats.put(KeyType.SIGN, KeyFormat.fromBytes(tlv.mV));
                     break;
                 case 0xC2:
-                    mKeyFormats.put(KeyType.ENCRYPT, new KeyFormat(tlv.mV));
+                    mKeyFormats.put(KeyType.ENCRYPT, KeyFormat.fromBytes(tlv.mV));
                     break;
                 case 0xC3:
-                    mKeyFormats.put(KeyType.AUTH, new KeyFormat(tlv.mV));
+                    mKeyFormats.put(KeyType.AUTH, KeyFormat.fromBytes(tlv.mV));
                     break;
                 case 0xC4:
                     mPw1ValidForMultipleSignatures = tlv.mV[0] == 1;
@@ -86,13 +90,13 @@ public class OpenPgpCapabilities {
                     parseExtendedCaps(tlv.mV);
                     break;
                 case 0xC1:
-                    mKeyFormats.put(KeyType.SIGN, new KeyFormat(tlv.mV));
+                    mKeyFormats.put(KeyType.SIGN, KeyFormat.fromBytes(tlv.mV));
                     break;
                 case 0xC2:
-                    mKeyFormats.put(KeyType.ENCRYPT, new KeyFormat(tlv.mV));
+                    mKeyFormats.put(KeyType.ENCRYPT, KeyFormat.fromBytes(tlv.mV));
                     break;
                 case 0xC3:
-                    mKeyFormats.put(KeyType.AUTH, new KeyFormat(tlv.mV));
+                    mKeyFormats.put(KeyType.AUTH, KeyFormat.fromBytes(tlv.mV));
                     break;
                 case 0xC4:
                     mPw1ValidForMultipleSignatures = tlv.mV[0] == 1;
@@ -106,7 +110,7 @@ public class OpenPgpCapabilities {
         mHasKeyImport = (v[0] & MASK_KEY_IMPORT) != 0;
         mAttriburesChangable =(v[0] & MASK_ATTRIBUTES_CHANGABLE) != 0;
 
-        mSMAlgo = v[1];
+        mSMAESKeySize = (v[1] == 1) ? 16 : 32;
 
         mMaxCmdLen = (v[6] << 8) + v[7];
         mMaxRspLen = (v[8] << 8) + v[9];
@@ -128,7 +132,7 @@ public class OpenPgpCapabilities {
         return mHasSM;
     }
 
-    public boolean isAttriburesChangable() {
+    public boolean isAttributesChangable() {
         return mAttriburesChangable;
     }
 
@@ -136,8 +140,8 @@ public class OpenPgpCapabilities {
         return mHasKeyImport;
     }
 
-    public byte getSMAlgo() {
-        return mSMAlgo;
+    public int getSMAESKeySize() {
+        return mSMAESKeySize;
     }
 
     public int getMaxCmdLen() {
