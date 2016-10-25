@@ -160,7 +160,7 @@ public class SecurityTokenUtilsTest extends Mockito {
                         "1212121212121212121212121212121212121212121212121212121212121212" +
                         "1212121212121212121212121212121212121212121212121212121212121212"
                 ),
-                SecurityTokenUtils.createPrivKeyTemplate(key2048, KeyType.AUTH, format));
+                SecurityTokenUtils.createRSAPrivKeyTemplate(key2048, KeyType.AUTH, new RSAKeyFormat(2048, exp.bitLength(), RSAKeyFormat.RSAAlgorithmFormat.STANDARD)));
     }
 
     @Test
