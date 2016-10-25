@@ -18,14 +18,27 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
+import org.bouncycastle.bcpg.ECDHPublicBCPGKey;
+import org.bouncycastle.bcpg.HashAlgorithmTags;
+import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPSignature;
+import org.bouncycastle.openpgp.operator.KeyFingerPrintCalculator;
+import org.bouncycastle.openpgp.operator.RFC6637Utils;
+import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyConverter;
 import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.IOException;
+import java.security.PublicKey;
+import java.security.interfaces.ECPublicKey;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -189,4 +202,62 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         return !isRevoked() && !isExpired();
     }
 
+    // For use only in card export; returns the public key.
+    public ECPublicKey getECPublicKey()
+            throws PgpGeneralException {
+        JcaPGPKeyConverter keyConverter = new JcaPGPKeyConverter();
+        PublicKey retVal;
+        try {
+            retVal = keyConverter.getPublicKey(mPublicKey);
+        } catch (PGPException e) {
+            throw new PgpGeneralException("Error converting public key!", e);
+        }
+
+        return (ECPublicKey) retVal;
+    }
+
+    public ASN1ObjectIdentifier getHashAlgorithm()
+            throws PGPException {
+        if (!isEC()) {
+            throw new PGPException("Key encryption OID is valid only for EC key!");
+        }
+
+        final ECDHPublicBCPGKey eck = (ECDHPublicBCPGKey)mPublicKey.getPublicKeyPacket().getKey();
+
+        switch (eck.getHashAlgorithm()) {
+            case HashAlgorithmTags.SHA256:
+                return NISTObjectIdentifiers.id_sha256;
+            case HashAlgorithmTags.SHA384:
+                return NISTObjectIdentifiers.id_sha384;
+            case HashAlgorithmTags.SHA512:
+                return NISTObjectIdentifiers.id_sha512;
+            default:
+                throw new PGPException("Invalid hash algorithm for EC key : " + eck.getHashAlgorithm());
+        }
+    }
+
+    public int getSymmetricKeySize()
+            throws PGPException {
+        if (!isEC()) {
+            throw new PGPException("Key encryption OID is valid only for EC key!");
+        }
+
+        final ECDHPublicBCPGKey eck = (ECDHPublicBCPGKey)mPublicKey.getPublicKeyPacket().getKey();
+
+        switch (eck.getSymmetricKeyAlgorithm()) {
+            case SymmetricKeyAlgorithmTags.AES_128:
+                return 128;
+            case SymmetricKeyAlgorithmTags.AES_192:
+                return 192;
+            case SymmetricKeyAlgorithmTags.AES_256:
+                return 256;
+            default:
+                throw new PGPException("Invalid symmetric encryption algorithm for EC key : " + eck.getSymmetricKeyAlgorithm());
+        }
+    }
+
+    public byte[] createUserKeyingMaterial(KeyFingerPrintCalculator fingerPrintCalculator)
+            throws IOException, PGPException {
+        return RFC6637Utils.createUserKeyingMaterial(mPublicKey.getPublicKeyPacket(), fingerPrintCalculator);
+    }
 }

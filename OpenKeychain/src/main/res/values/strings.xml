@@ -293,6 +293,8 @@
     <string name="rsa_4096_description_html">"larger file size, considered secure until 2040+"</string>
     <string name="ecc_p256">"ECC P-256"</string>
     <string name="ecc_p256_description_html">"very tiny file size, considered secure until 2040 &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
+    <string name="ecc_p384">"ECC P-384"</string>
+    <string name="ecc_p384_description_html">"very tiny file size, considered secure until 2040 &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
     <string name="ecc_p521">"ECC P-521"</string>
     <string name="ecc_p521_description_html">"tiny file size, considered secure until 2040+ &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
     <string name="usage_none">"None (subkey binding only)"</string>
@@ -764,6 +766,7 @@
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
     <string name="edit_key_error_bad_security_token_algo">"Algorithm not supported by Security Token!"</string>
     <string name="edit_key_error_bad_security_token_size">"Key size not supported by Security Token!"</string>
+    <string name="edit_key_error_bad_security_token_curve">"Curve not supported by Security Token!"</string>
     <string name="edit_key_error_bad_security_token_stripped">"Cannot move key to Security Token (either stripped or already on Security Token)!"</string>
 
     <!-- Create key -->
@@ -792,6 +795,10 @@
     <string name="create_key_yubi_key_pin_not_correct">"PIN is not correct!"</string>
     <string name="create_key_yubi_key_pin_too_short">"PIN must be at least 6 numbers long!"</string>
     <string name="create_key_yubi_key_pin_insecure">"Please choose a secure PIN, not 000000, 123456 or similar combinations (the top 20 most chosen PINs are not allowed)"</string>
+    <string name="create_key_yubi_key_algorithm_text">"Please choose an algorithm for each key."</string>
+    <string name="create_key_yubi_key_algorithm_sign_text">Signature key</string>
+    <string name="create_key_yubi_key_algorithm_dec_text">Decryption key</string>
+    <string name="create_key_yubi_key_algorithm_auth_text">Authentication key</string>
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>

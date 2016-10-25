@@ -33,14 +33,17 @@ public class CreateSecurityTokenBlankFragment extends Fragment {
     View mBackButton;
     View mNextButton;
 
+    private byte[] mAid;
+
     /**
      * Creates new instance of this fragment
      */
-    public static CreateSecurityTokenBlankFragment newInstance() {
+    public static CreateSecurityTokenBlankFragment newInstance(byte[] aid) {
         CreateSecurityTokenBlankFragment frag = new CreateSecurityTokenBlankFragment();
 
         Bundle args = new Bundle();
 
+        frag.mAid = aid;
         frag.setArguments(args);
 
         return frag;
@@ -82,6 +85,7 @@ public class CreateSecurityTokenBlankFragment extends Fragment {
 
     private void nextClicked() {
         mCreateKeyActivity.mCreateSecurityToken = true;
+        mCreateKeyActivity.mSecurityTokenAid = mAid;
 
         CreateKeyNameFragment frag = CreateKeyNameFragment.newInstance();
         mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);

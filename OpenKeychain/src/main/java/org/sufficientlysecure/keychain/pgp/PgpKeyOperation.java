@@ -35,6 +35,10 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.nist.NISTNamedCurves;
+import org.bouncycastle.bcpg.ECDHPublicBCPGKey;
+import org.bouncycastle.bcpg.ECDSAPublicBCPGKey;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.bcpg.S2K;
 import org.bouncycastle.bcpg.sig.Features;
@@ -1645,20 +1649,44 @@ public class PgpKeyOperation {
     }
 
     private static boolean checkSecurityTokenCompatibility(PGPSecretKey key, OperationLog log, int indent) {
-        PGPPublicKey publicKey = key.getPublicKey();
-        int algorithm = publicKey.getAlgorithm();
-        if (algorithm != PublicKeyAlgorithmTags.RSA_ENCRYPT &&
-                algorithm != PublicKeyAlgorithmTags.RSA_SIGN &&
-                algorithm != PublicKeyAlgorithmTags.RSA_GENERAL) {
-            log.add(LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_ALGO, indent + 1);
-            return false;
-        }
 
-        // Key size must be 2048
-        int keySize = publicKey.getBitStrength();
-        if (keySize != 2048) {
-            log.add(LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_SIZE, indent + 1);
-            return false;
+        final PGPPublicKey publicKey = key.getPublicKey();
+        ASN1ObjectIdentifier curve;
+
+        switch (publicKey.getAlgorithm()) {
+            case PublicKeyAlgorithmTags.RSA_ENCRYPT:
+            case PublicKeyAlgorithmTags.RSA_SIGN:
+            case PublicKeyAlgorithmTags.RSA_GENERAL:
+                // Key size must be at least 2048
+                if (publicKey.getBitStrength() < 2048) {
+                    log.add(LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_SIZE, indent + 1);
+                    return false;
+                }
+                break;
+
+            case PublicKeyAlgorithmTags.ECDH:
+                curve = ((ECDHPublicBCPGKey)(publicKey.getPublicKeyPacket().getKey())).getCurveOID();
+                if (!curve.equals(NISTNamedCurves.getOID("P-256")) &&
+                        !curve.equals(NISTNamedCurves.getOID("P-384")) &&
+                        !curve.equals(NISTNamedCurves.getOID("P-521"))) {
+                    log.add(LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_CURVE, indent + 1);
+                    return false;
+                }
+                break;
+
+            case PublicKeyAlgorithmTags.ECDSA:
+                curve = ((ECDSAPublicBCPGKey)(publicKey.getPublicKeyPacket().getKey())).getCurveOID();
+                if (!curve.equals(NISTNamedCurves.getOID("P-256")) &&
+                        !curve.equals(NISTNamedCurves.getOID("P-384")) &&
+                        !curve.equals(NISTNamedCurves.getOID("P-521"))) {
+                    log.add(LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_CURVE, indent + 1);
+                    return false;
+                }
+                break;
+
+            default:
+                log.add(LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_ALGO, indent + 1);
+                return false;
         }
 
         // Secret key parts must be available

@@ -566,6 +566,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_INVALID_FLAGS_FOR_KEYTOCARD(LogLevel.ERROR, R.string.msg_mf_error_invalid_flags_for_keytocard),
         MSG_MF_ERROR_BAD_SECURITY_TOKEN_ALGO(LogLevel.ERROR, R.string.edit_key_error_bad_security_token_algo),
         MSG_MF_ERROR_BAD_SECURITY_TOKEN_SIZE(LogLevel.ERROR, R.string.edit_key_error_bad_security_token_size),
+        MSG_MF_ERROR_BAD_SECURITY_TOKEN_CURVE(LogLevel.ERROR, R.string.edit_key_error_bad_security_token_curve),
         MSG_MF_ERROR_BAD_SECURITY_TOKEN_STRIPPED(LogLevel.ERROR, R.string.edit_key_error_bad_security_token_stripped),
         MSG_MF_MASTER (LogLevel.DEBUG, R.string.msg_mf_master),
         MSG_MF_PASSPHRASE (LogLevel.INFO, R.string.msg_mf_passphrase),

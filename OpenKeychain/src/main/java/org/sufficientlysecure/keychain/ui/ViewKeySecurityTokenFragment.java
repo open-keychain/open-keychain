@@ -52,10 +52,12 @@ public class ViewKeySecurityTokenFragment
     public static final String ARG_FINGERPRINT = "fingerprint";
     public static final String ARG_USER_ID = "user_id";
     public static final String ARG_CARD_AID = "aid";
+    public static final String ARG_CARD_VERSION = "version";
 
     private byte[][] mFingerprints;
     private String mUserId;
     private byte[] mCardAid;
+    private double mCardVersion;
     private long mMasterKeyId;
     private long[] mSubKeyIds;
 
@@ -63,7 +65,7 @@ public class ViewKeySecurityTokenFragment
     private TextView vStatus;
 
     public static ViewKeySecurityTokenFragment newInstance(long masterKeyId,
-            byte[] fingerprints, String userId, byte[] aid) {
+            byte[] fingerprints, String userId, byte[] aid, double version) {
         ViewKeySecurityTokenFragment frag = new ViewKeySecurityTokenFragment();
 
         Bundle args = new Bundle();
@@ -71,6 +73,7 @@ public class ViewKeySecurityTokenFragment
         args.putByteArray(ARG_FINGERPRINT, fingerprints);
         args.putString(ARG_USER_ID, userId);
         args.putByteArray(ARG_CARD_AID, aid);
+        args.putDouble(ARG_CARD_VERSION, version);
         frag.setArguments(args);
 
         return frag;
@@ -93,6 +96,7 @@ public class ViewKeySecurityTokenFragment
         }
         mUserId = args.getString(ARG_USER_ID);
         mCardAid = args.getByteArray(ARG_CARD_AID);
+        mCardVersion = args.getDouble(ARG_CARD_VERSION);
 
         mMasterKeyId = args.getLong(ARG_MASTER_KEY_ID);
 

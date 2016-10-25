@@ -282,12 +282,9 @@ public class CreateKeyFinalFragment extends Fragment {
         SaveKeyringParcel saveKeyringParcel = new SaveKeyringParcel();
 
         if (createKeyActivity.mCreateSecurityToken) {
-            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    2048, null, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER, 0L));
-            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    2048, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
-            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    2048, null, KeyFlags.AUTHENTICATION, 0L));
+            createKeyActivity.mSecurityTokenSign.addToKeyring(saveKeyringParcel, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER);
+            createKeyActivity.mSecurityTokenDec.addToKeyring(saveKeyringParcel, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE);
+            createKeyActivity.mSecurityTokenAuth.addToKeyring(saveKeyringParcel, KeyFlags.AUTHENTICATION);
 
             // use empty passphrase
             saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));

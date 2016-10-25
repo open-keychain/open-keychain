@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -64,6 +65,9 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
     boolean mCreateSecurityToken;
     Passphrase mSecurityTokenPin;
     Passphrase mSecurityTokenAdminPin;
+    KeyFormat mSecurityTokenSign;
+    KeyFormat mSecurityTokenDec;
+    KeyFormat mSecurityTokenAuth;
 
     Fragment mCurrentFragment;
 
@@ -97,6 +101,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
             mPassphrase = savedInstanceState.getParcelable(EXTRA_PASSPHRASE);
             mFirstTime = savedInstanceState.getBoolean(EXTRA_FIRST_TIME);
             mCreateSecurityToken = savedInstanceState.getBoolean(EXTRA_CREATE_SECURITY_TOKEN);
+            mSecurityTokenAid = savedInstanceState.getByteArray(EXTRA_SECURITY_TOKEN_AID);
             mSecurityTokenPin = savedInstanceState.getParcelable(EXTRA_SECURITY_TOKEN_PIN);
             mSecurityTokenAdminPin = savedInstanceState.getParcelable(EXTRA_SECURITY_TOKEN_ADMIN_PIN);
 
@@ -122,7 +127,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
 
                     setTitle(R.string.title_import_keys);
                 } else {
-                    Fragment frag = CreateSecurityTokenBlankFragment.newInstance();
+                    Fragment frag = CreateSecurityTokenBlankFragment.newInstance(nfcAid);
                     loadFragment(frag, FragAction.START);
                     setTitle(R.string.title_manage_my_keys);
                 }
@@ -192,7 +197,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
                 loadFragment(frag, FragAction.TO_RIGHT);
             }
         } else {
-            Fragment frag = CreateSecurityTokenBlankFragment.newInstance();
+            Fragment frag = CreateSecurityTokenBlankFragment.newInstance(mSecurityTokenAid);
             loadFragment(frag, FragAction.TO_RIGHT);
         }
     }
@@ -221,6 +226,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
         outState.putParcelable(EXTRA_PASSPHRASE, mPassphrase);
         outState.putBoolean(EXTRA_FIRST_TIME, mFirstTime);
         outState.putBoolean(EXTRA_CREATE_SECURITY_TOKEN, mCreateSecurityToken);
+        outState.putByteArray(EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
         outState.putParcelable(EXTRA_SECURITY_TOKEN_PIN, mSecurityTokenPin);
         outState.putParcelable(EXTRA_SECURITY_TOKEN_ADMIN_PIN, mSecurityTokenAdminPin);
     }
