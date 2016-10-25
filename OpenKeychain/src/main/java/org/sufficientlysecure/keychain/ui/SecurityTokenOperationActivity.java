@@ -32,6 +32,7 @@ import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -192,9 +193,18 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
+                ProviderHelper providerHelper = new ProviderHelper(this);
+                CanonicalizedPublicKeyRing publicKeyRing;
+                try {
+                    publicKeyRing = providerHelper.getCanonicalizedPublicKeyRing(
+                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId()));
+                } catch (ProviderHelper.NotFoundException e) {
+                    throw new IOException("Couldn't find subkey for key to token operation.");
+                }
+
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
-                    byte[] decryptedSessionKey = mSecurityTokenHelper.decryptSessionKey(encryptedSessionKey);
+                    byte[] decryptedSessionKey = mSecurityTokenHelper.decryptSessionKey(encryptedSessionKey, publicKeyRing.getPublicKey(tokenKeyId));
                     mInputParcel.addCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
                 break;

@@ -200,7 +200,7 @@ public class CreateSecurityTokenPinFragment extends Fragment {
 
             mCreateKeyActivity.mSecurityTokenPin = new Passphrase(mPin.getText().toString());
 
-            CreateKeyFinalFragment frag = CreateKeyFinalFragment.newInstance();
+            CreateSecurityTokenAlgorithmFragment frag = CreateSecurityTokenAlgorithmFragment.newInstance();
             hideKeyboard();
             mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
         }

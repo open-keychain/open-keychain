@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/create_key_buttons"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/create_key_yubi_key_algorithm_text"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/create_key_yubi_key_algorithm_sign_text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <org.sufficientlysecure.keychain.ui.util.spinner.FocusFirstItemSpinner
+                android:id="@+id/create_key_yubi_key_algorithm_sign"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:dropDownWidth="wrap_content"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/create_key_yubi_key_algorithm_dec_text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <org.sufficientlysecure.keychain.ui.util.spinner.FocusFirstItemSpinner
+                android:id="@+id/create_key_yubi_key_algorithm_dec"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:dropDownWidth="wrap_content"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/create_key_yubi_key_algorithm_auth_text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <org.sufficientlysecure.keychain.ui.util.spinner.FocusFirstItemSpinner
+                android:id="@+id/create_key_yubi_key_algorithm_auth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:dropDownWidth="wrap_content"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/create_key_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="?attr/colorButtonRow"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/create_key_back_button"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:drawableLeft="@drawable/ic_chevron_left_grey_24dp"
+            android:drawablePadding="8dp"
+            android:gravity="left|center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/btn_back"
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/create_key_next_button"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:drawablePadding="8dp"
+            android:drawableRight="@drawable/ic_chevron_right_grey_24dp"
+            android:gravity="right|center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/btn_next"
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+</RelativeLayout>

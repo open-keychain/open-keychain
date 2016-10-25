@@ -128,6 +128,7 @@ public class SecurityTokenUtilsTest extends Mockito {
 
     @Test
     public void testPrivateKeyTemplateSimple2048() throws Exception {
+        KeyFormat format = new KeyFormat(Hex.decode("010000001800"));
         RSAPrivateCrtKey key2048 = mock(RSAPrivateCrtKey.class);
         byte[] tmp = new byte[128];
         Arrays.fill(tmp, (byte) 0x11);
@@ -136,8 +137,7 @@ public class SecurityTokenUtilsTest extends Mockito {
         Arrays.fill(tmp, (byte) 0x12);
         when(key2048.getPrimeQ()).thenReturn(new BigInteger(tmp));
 
-        BigInteger exp = new BigInteger("65537");
-        when(key2048.getPublicExponent()).thenReturn(exp);
+        when(key2048.getPublicExponent()).thenReturn(new BigInteger("65537"));
 
         Assert.assertArrayEquals(
                 Hex.decode("4d820115" + // Header TL

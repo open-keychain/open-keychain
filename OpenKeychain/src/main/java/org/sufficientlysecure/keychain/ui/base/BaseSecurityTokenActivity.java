@@ -91,9 +91,9 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
      * Override to implement SecurityToken operations (background thread)
      */
     protected void doSecurityTokenInBackground() throws IOException {
+        mSecurityTokenAid = mSecurityTokenHelper.getAid();
         mSecurityTokenFingerprints = mSecurityTokenHelper.getFingerprints();
         mSecurityTokenUserId = mSecurityTokenHelper.getUserId();
-        mSecurityTokenAid = mSecurityTokenHelper.getAid();
     }
 
     /**

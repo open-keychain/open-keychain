@@ -23,12 +23,28 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 import android.support.annotation.NonNull;
 
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.ASN1OutputStream;
+import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.nist.NISTNamedCurves;
+import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.bcpg.HashAlgorithmTags;
+import org.bouncycastle.jcajce.util.MessageDigestUtils;
+import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.operator.PGPPad;
+import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
@@ -41,6 +57,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 
 /**
@@ -64,6 +86,9 @@ public class SecurityTokenHelper {
     private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
 
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+    private final JcaKeyFingerprintCalculator fingerprintCalculator = new JcaKeyFingerprintCalculator();
+
     private Transport mTransport;
     private CardCapabilities mCardCapabilities;
     private OpenPgpCapabilities mOpenPgpCapabilities;
@@ -75,6 +100,12 @@ public class SecurityTokenHelper {
     private boolean mPw3Validated;
 
     protected SecurityTokenHelper() {
+    }
+
+    public static double parseOpenPgpVersion(final byte[] aid) {
+        float minv = aid[7];
+        while (minv > 0) minv /= 10.0;
+        return aid[6] + minv;
     }
 
     public static SecurityTokenHelper getInstance() {
@@ -218,17 +249,62 @@ public class SecurityTokenHelper {
      * Call DECIPHER command
      *
      * @param encryptedSessionKey the encoded session key
+     * @param publicKey
      * @return the decoded session key
      */
-    public byte[] decryptSessionKey(@NonNull byte[] encryptedSessionKey) throws IOException {
+    public byte[] decryptSessionKey(@NonNull byte[] encryptedSessionKey,
+                                    CanonicalizedPublicKey publicKey)
+            throws IOException {
+        final KeyFormat kf = mOpenPgpCapabilities.getFormatForKeyType(KeyType.ENCRYPT);
+
         if (!mPw1ValidatedForDecrypt) {
             verifyPin(0x82); // (Verify PW1 with mode 82 for decryption)
         }
 
-        // Transmit
-        byte[] data = Arrays.copyOfRange(encryptedSessionKey, 2, encryptedSessionKey.length);
-        if (data[0] != 0) {
-            data = Arrays.prepend(data, (byte) 0x00);
+        byte[] data;
+        int pLen = 0;
+
+        X9ECParameters x9Params = null;
+
+        switch (kf.keyFormatType()) {
+            case RSAKeyFormatType:
+                data = Arrays.copyOfRange(encryptedSessionKey, 2, encryptedSessionKey.length);
+                if (data[0] != 0) {
+                    data = Arrays.prepend(data, (byte) 0x00);
+                }
+                break;
+
+            case ECKeyFormatType:
+                pLen = ((((encryptedSessionKey[0] & 0xff) << 8) + (encryptedSessionKey[1] & 0xff)) + 7) / 8;
+                data = new byte[pLen];
+
+                System.arraycopy(encryptedSessionKey, 2, data, 0, pLen);
+
+                final ECKeyFormat eckf = (ECKeyFormat)kf;
+                x9Params = NISTNamedCurves.getByOID(eckf.getCurveOID());
+
+                final ECPoint p = x9Params.getCurve().decodePoint(data);
+                if (!p.isValid()) {
+                    throw new CardException("Invalid EC point!");
+                }
+
+                data = p.getEncoded(false);
+                data = Arrays.concatenate(
+                        Hex.decode("86"),
+                        new byte[]{ (byte)data.length },
+                        data);
+                data = Arrays.concatenate(
+                        Hex.decode("7F49"),
+                        new byte[] { (byte)data.length },
+                        data);
+                data = Arrays.concatenate(
+                        Hex.decode("A6"),
+                        new byte[] { (byte)data.length },
+                        data);
+                break;
+
+            default:
+                throw new CardException("Unknown encryption key type!");
         }
 
         CommandAPDU command = new CommandAPDU(0x00, 0x2A, 0x80, 0x86, data, MAX_APDU_NE_EXT);
@@ -238,7 +314,47 @@ public class SecurityTokenHelper {
             throw new CardException("Deciphering with Security token failed on receive", response.getSW());
         }
 
-        return response.getData();
+        switch (mOpenPgpCapabilities.getFormatForKeyType(KeyType.ENCRYPT).keyFormatType()) {
+            case RSAKeyFormatType:
+                return response.getData();
+
+            case ECKeyFormatType:
+                data = response.getData();
+
+                final byte[] keyEnc = new byte[encryptedSessionKey[pLen + 2]];
+
+                System.arraycopy(encryptedSessionKey, 2 + pLen + 1, keyEnc, 0, keyEnc.length);
+
+                try {
+                    final MessageDigest kdf = MessageDigest.getInstance(MessageDigestUtils.getDigestName(publicKey.getHashAlgorithm()));
+
+                    kdf.update(new byte[]{ (byte)0, (byte)0, (byte)0, (byte)1 });
+                    kdf.update(data);
+                    kdf.update(publicKey.createUserKeyingMaterial(fingerprintCalculator));
+
+                    final byte[] kek = kdf.digest();
+                    final Cipher c = Cipher.getInstance("AESWrap");
+
+                    c.init(Cipher.UNWRAP_MODE, new SecretKeySpec(kek, 0, publicKey.getSymmetricKeySize() / 8, "AES"));
+
+                    final Key paddedSessionKey = c.unwrap(keyEnc, "Session", Cipher.SECRET_KEY);
+
+                    Arrays.fill(kek, (byte)0);
+
+                    return PGPPad.unpadSessionData(paddedSessionKey.getEncoded());
+                } catch (NoSuchAlgorithmException e) {
+                    throw new CardException("Unknown digest/encryption algorithm!");
+                } catch (NoSuchPaddingException e) {
+                    throw new CardException("Unknown padding algorithm!");
+                } catch (PGPException e) {
+                    throw new CardException(e.getMessage());
+                } catch (InvalidKeyException e) {
+                    throw new CardException("Invalid KEK!");
+                }
+
+            default:
+                throw new CardException("Unknown encryption key type!");
+        }
     }
 
     /**
@@ -300,6 +416,36 @@ public class SecurityTokenHelper {
         }
     }
 
+
+    private void setKeyAttributes(final KeyType slot, final CanonicalizedSecretKey secretKey)
+             throws IOException {
+
+        if (mOpenPgpCapabilities.isAttributesChangable()) {
+            int tag;
+
+            if (slot == KeyType.SIGN) {
+                tag = 0xC1;
+            } else if (slot == KeyType.ENCRYPT) {
+                tag = 0xC2;
+            } else if (slot == KeyType.AUTH) {
+                tag = 0xC3;
+            } else {
+                throw new IOException("Unknown key for card.");
+            }
+
+            try {
+
+                putData(tag, SecurityTokenUtils.attributesFromSecretKey(slot, secretKey));
+
+                mOpenPgpCapabilities.updateWithData(getData(0x00, tag));
+
+            } catch (PgpGeneralException e) {
+                throw new IOException("Key algorithm not supported by the security token.");
+            }
+
+        }
+    }
+
     /**
      * Puts a key on the token in the given slot.
      *
@@ -311,33 +457,58 @@ public class SecurityTokenHelper {
     private void putKey(KeyType slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
             throws IOException {
         RSAPrivateCrtKey crtSecretKey;
-        try {
-            secretKey.unlock(passphrase);
-            crtSecretKey = secretKey.getCrtSecretKey();
-        } catch (PgpGeneralException e) {
-            throw new IOException(e.getMessage());
-        }
-
-        // Shouldn't happen; the UI should block the user from getting an incompatible key this far.
-        if (crtSecretKey.getModulus().bitLength() > 2048) {
-            throw new IOException("Key too large to export to Security Token.");
-        }
-
-        // Should happen only rarely; all GnuPG keys since 2006 use public exponent 65537.
-        if (!crtSecretKey.getPublicExponent().equals(new BigInteger("65537"))) {
-            throw new IOException("Invalid public exponent for smart Security Token.");
-        }
+        ECPrivateKey ecSecretKey;
+        ECPublicKey ecPublicKey;
 
         if (!mPw3Validated) {
             verifyPin(0x83); // (Verify PW3 with mode 83)
         }
 
-
         // Now we're ready to communicate with the token.
-        byte[] bytes = SecurityTokenUtils.createPrivKeyTemplate(crtSecretKey, slot,
-                mOpenPgpCapabilities.getFormatForKeyType(slot));
+        byte[] keyBytes = null;
 
-        CommandAPDU apdu = new CommandAPDU(0x00, 0xDB, 0x3F, 0xFF, bytes);
+        try {
+            secretKey.unlock(passphrase);
+
+            setKeyAttributes(slot, secretKey);
+
+            switch (mOpenPgpCapabilities.getFormatForKeyType(slot).keyFormatType()) {
+                case RSAKeyFormatType:
+                    if (!secretKey.isRSA()) {
+                        throw new IOException("Security Token not configured for RSA key.");
+                    }
+                    crtSecretKey = secretKey.getCrtSecretKey();
+
+                    // Should happen only rarely; all GnuPG keys since 2006 use public exponent 65537.
+                    if (!crtSecretKey.getPublicExponent().equals(new BigInteger("65537"))) {
+                        throw new IOException("Invalid public exponent for smart Security Token.");
+                    }
+
+                    keyBytes = SecurityTokenUtils.createRSAPrivKeyTemplate(crtSecretKey, slot,
+                            (RSAKeyFormat) (mOpenPgpCapabilities.getFormatForKeyType(slot)));
+                    break;
+
+                case ECKeyFormatType:
+                    if (!secretKey.isEC()) {
+                        throw new IOException("Security Token not configured for EC key.");
+                    }
+
+                    secretKey.unlock(passphrase);
+                    ecSecretKey = secretKey.getECSecretKey();
+                    ecPublicKey = secretKey.getECPublicKey();
+
+                    keyBytes = SecurityTokenUtils.createECPrivKeyTemplate(ecSecretKey, ecPublicKey, slot,
+                            (ECKeyFormat) (mOpenPgpCapabilities.getFormatForKeyType(slot)));
+                    break;
+
+                default:
+                    throw new IOException("Key type unsupported by security token.");
+            }
+        } catch (PgpGeneralException e) {
+            throw new IOException(e.getMessage());
+        }
+
+        CommandAPDU apdu = new CommandAPDU(0x00, 0xDB, 0x3F, 0xFF, keyBytes);
         ResponseAPDU response = communicate(apdu);
 
         if (response.getSW() != APDU_SW_SUCCESS) {
@@ -462,8 +633,21 @@ public class SecurityTokenHelper {
                 throw new IOException("Not supported hash algo!");
         }
 
+        byte[] data;
+
+        switch (mOpenPgpCapabilities.getFormatForKeyType(KeyType.SIGN).keyFormatType()) {
+            case RSAKeyFormatType:
+                data = dsi;
+                break;
+            case ECKeyFormatType:
+                data = hash;
+                break;
+            default:
+                throw new IOException("Not supported key type!");
+        }
+
         // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
-        CommandAPDU command = new CommandAPDU(0x00, 0x2A, 0x9E, 0x9A, dsi, MAX_APDU_NE_EXT);
+        CommandAPDU command = new CommandAPDU(0x00, 0x2A, 0x9E, 0x9A, data, MAX_APDU_NE_EXT);
         ResponseAPDU response = communicate(command);
 
         if (response.getSW() != APDU_SW_SUCCESS) {
@@ -477,9 +661,30 @@ public class SecurityTokenHelper {
         byte[] signature = response.getData();
 
         // Make sure the signature we received is actually the expected number of bytes long!
-        if (signature.length != 128 && signature.length != 256
-                && signature.length != 384 && signature.length != 512) {
-            throw new IOException("Bad signature length! Expected 128/256/384/512 bytes, got " + signature.length);
+        switch (mOpenPgpCapabilities.getFormatForKeyType(KeyType.SIGN).keyFormatType()) {
+            case RSAKeyFormatType:
+                if (signature.length != 128 && signature.length != 256
+                        && signature.length != 384 && signature.length != 512) {
+                    throw new IOException("Bad signature length! Expected 128/256/384/512 bytes, got " + signature.length);
+                }
+                break;
+
+            case ECKeyFormatType:
+                if (signature.length % 2 != 0) {
+                    throw new IOException("Bad signature length!");
+                }
+                final byte[] br = new byte[signature.length / 2];
+                final byte[] bs = new byte[signature.length / 2];
+                for(int i = 0; i < br.length; ++i) {
+                    br[i] = signature[i];
+                    bs[i] = signature[br.length + i];
+                }
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ASN1OutputStream out = new ASN1OutputStream(baos);
+                out.writeObject(new DERSequence(new ASN1Encodable[] { new ASN1Integer(br), new ASN1Integer(bs) }));
+                out.flush();
+                signature = baos.toByteArray();
+                break;
         }
 
         return signature;
