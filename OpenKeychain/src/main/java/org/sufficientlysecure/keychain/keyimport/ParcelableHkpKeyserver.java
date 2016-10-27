@@ -173,9 +173,11 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
         URI originalURI = new URI(keyserverUrl);
 
         String scheme = originalURI.getScheme();
-        if (scheme == null
-                || (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)
-                && !"hkp".equalsIgnoreCase(scheme) && !"hkps".equalsIgnoreCase(scheme))) {
+        if (scheme == null) {
+            throw new URISyntaxException("", "scheme null!");
+        }
+        if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)
+                && !"hkp".equalsIgnoreCase(scheme) && !"hkps".equalsIgnoreCase(scheme)) {
             throw new URISyntaxException(scheme, "unsupported scheme!");
         }
 
