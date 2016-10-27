@@ -82,6 +82,8 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
 
     private EditText mKeyserverEditText;
     private TextInputLayout mKeyserverEditTextLayout;
+    private EditText mKeyserverEditOnionText;
+    private TextInputLayout mKeyserverEditOnionTextLayout;
     private CheckBox mVerifyKeyserverCheckBox;
     private CheckBox mOnlyTrustedKeyserverCheckBox;
 
@@ -130,6 +132,8 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
 
         mKeyserverEditText = (EditText) view.findViewById(R.id.keyserver_url_edit_text);
         mKeyserverEditTextLayout = (TextInputLayout) view.findViewById(R.id.keyserver_url_edit_text_layout);
+        mKeyserverEditOnionText = (EditText) view.findViewById(R.id.keyserver_onion_edit_text);
+        mKeyserverEditOnionTextLayout = (TextInputLayout) view.findViewById(R.id.keyserver_onion_edit_text_layout);
         mVerifyKeyserverCheckBox = (CheckBox) view.findViewById(R.id.verify_connection_checkbox);
         mOnlyTrustedKeyserverCheckBox = (CheckBox) view.findViewById(R.id.only_trusted_keyserver_checkbox);
         mVerifyKeyserverCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -148,6 +152,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                 alert.setTitle(R.string.edit_keyserver_dialog_title);
                 ParcelableHkpKeyserver keyserver = getArguments().getParcelable(ARG_KEYSERVER);
                 mKeyserverEditText.setText(keyserver.getUrl());
+                mKeyserverEditOnionText.setText(keyserver.getOnion());
                 break;
             }
         }
@@ -225,11 +230,12 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                 @Override
                 public void onClick(View v) {
                     mKeyserverEditTextLayout.setErrorEnabled(false);
+                    mKeyserverEditOnionTextLayout.setErrorEnabled(false);
 
                     // behaviour same for edit and add
                     String keyserverUrl = mKeyserverEditText.getText().toString();
-                    // TODO!
-                    String keyserverOnion = mKeyserverEditText.getText().toString();
+                    String keyserverOnion = mKeyserverEditOnionText.getText() == null ? null
+                            : mKeyserverEditOnionText.getText().toString();
                     final ParcelableHkpKeyserver keyserver = new ParcelableHkpKeyserver(keyserverUrl, keyserverOnion);
                     if (mVerifyKeyserverCheckBox.isChecked()) {
                         final ParcelableProxy proxy = Preferences.getPreferences(getActivity())
@@ -269,7 +275,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                     } else {
                         dismiss();
                         // return unverified keyserver back to activity
-                        keyserverEdited(new ParcelableHkpKeyserver(keyserverUrl, null), false);
+                        keyserverEdited(keyserver, false);
                     }
                 }
             });

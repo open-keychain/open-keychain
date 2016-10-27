@@ -27,6 +27,24 @@
 
     </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/keyserver_onion_edit_text_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
+
+        <EditText
+            android:id="@+id/keyserver_onion_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ems="10"
+            android:hint="@string/label_enter_keyserver_onion"
+            android:imeOptions="actionDone"
+            android:inputType="textUri" />
+
+    </android.support.design.widget.TextInputLayout>
+
 
     <CheckBox
         android:id="@+id/verify_connection_checkbox"

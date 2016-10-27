@@ -98,7 +98,7 @@ public final class Constants {
         public static final String PASSPHRASE_CACHE_SUBS = "passphraseCacheSubs";
         public static final String LANGUAGE = "language";
         public static final String KEY_SERVERS = "keyServers";
-        public static final String PREF_DEFAULT_VERSION = "keyServersDefaultVersion";
+        public static final String PREF_VERSION = "keyServersDefaultVersion";
         public static final String FIRST_TIME = "firstTime";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
@@ -147,7 +147,7 @@ public final class Constants {
 
     public static final class Defaults {
         public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu";
-        public static final int PREF_VERSION = 7;
+        public static final int PREF_CURRENT_VERSION = 8;
     }
 
     public static final class key {

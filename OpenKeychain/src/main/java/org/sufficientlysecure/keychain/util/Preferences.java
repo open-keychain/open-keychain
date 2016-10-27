@@ -137,7 +137,6 @@ public class Preferences {
         ArrayList<ParcelableHkpKeyserver> servers = new ArrayList<>();
         String[] entries = rawData.split(",");
         for (String entry : entries) {
-
             String[] addresses = entry.trim().split(";");
             String url = addresses[0];
             String onion = addresses.length == 1 ? null : addresses[1];
@@ -452,9 +451,12 @@ public class Preferences {
     }
 
     public void upgradePreferences(Context context) {
-        if (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0) !=
-                Constants.Defaults.PREF_VERSION) {
-            switch (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0)) {
+        Log.d(Constants.TAG, "Upgrading preferences…");
+        int oldVersion = mSharedPreferences.getInt(Constants.Pref.PREF_VERSION, 0);
+        boolean requiresUpgrade = oldVersion < Constants.Defaults.PREF_CURRENT_VERSION;
+
+        if (requiresUpgrade) {
+            switch (oldVersion) {
                 case 1:
                     // fall through
                 case 2:
@@ -469,18 +471,21 @@ public class Preferences {
                             continue;
                         }
                         switch (server.getUrl()) {
-                            case "pool.sks-keyservers.net":
+                            case "pool.sks-keyservers.net": {
                                 // use HKPS!
                                 it.set(new ParcelableHkpKeyserver("hkps://hkps.pool.sks-keyservers.net", null));
                                 break;
-                            case "pgp.mit.edu":
+                            }
+                            case "pgp.mit.edu": {
                                 // use HKPS!
                                 it.set(new ParcelableHkpKeyserver("hkps://pgp.mit.edu", null));
                                 break;
-                            case "subkeys.pgp.net":
+                            }
+                            case "subkeys.pgp.net": {
                                 // remove, because often down and no HKPS!
                                 it.remove();
                                 break;
+                            }
                         }
 
                     }
@@ -507,12 +512,10 @@ public class Preferences {
                         if (server == null) {
                             continue;
                         }
-                        switch (server.getUrl()) {
-                            case "hkps://hkps.pool.sks-keyservers.net":
-                                it.set(new ParcelableHkpKeyserver(
-                                        "hkps://hkps.pool.sks-keyservers.net",
-                                        "hkp://jirk5u4osbsr34t5.onion"));
-                                break;
+                        if ("hkps://hkps.pool.sks-keyservers.net".equals(server.getUrl())) {
+                            it.set(new ParcelableHkpKeyserver(
+                                    "hkps://hkps.pool.sks-keyservers.net",
+                                    "hkp://jirk5u4osbsr34t5.onion"));
                         }
 
                     }
@@ -522,7 +525,7 @@ public class Preferences {
 
             // write new preference version
             mSharedPreferences.edit()
-                    .putInt(Constants.Pref.PREF_DEFAULT_VERSION, Constants.Defaults.PREF_VERSION)
+                    .putInt(Constants.Pref.PREF_VERSION, Constants.Defaults.PREF_CURRENT_VERSION)
                     .commit();
         }
     }

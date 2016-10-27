@@ -155,7 +155,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
         return getURI(mOnion);
     }
 
-    public URI getProxiedURL(ParcelableProxy proxy) throws URISyntaxException {
+    private URI getProxiedURL(ParcelableProxy proxy) throws URISyntaxException {
         if (proxy.isTorEnabled()) {
             return getOnionURI();
         } else {
@@ -195,7 +195,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
     private String query(String request, @NonNull ParcelableProxy proxy) throws Keyserver.QueryFailedException, HttpError {
         try {
             URL url = new URL(getProxiedURL(proxy).toString() + request);
-            Log.d(Constants.TAG, "hkp keyserver query: " + url + " Proxy: " + proxy);
+            Log.d(Constants.TAG, "hkp keyserver query: " + url + " Proxy: " + proxy.getProxy());
             OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy.getProxy());
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
 
@@ -347,7 +347,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
     @Override
     public String get(String keyIdHex, ParcelableProxy proxy) throws Keyserver.QueryFailedException {
         String request = "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
-        Log.d(Constants.TAG, "hkp keyserver get: " + request + " using Proxy: " + proxy);
+        Log.d(Constants.TAG, "hkp keyserver get: " + request + " using Proxy: " + proxy.getProxy());
         String data;
         try {
             data = query(request, proxy);
