@@ -20,39 +20,55 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.provider.BaseColumns;
 import android.support.v4.app.Fragment;
-import android.view.KeyEvent;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.util.ContactHelper;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.Preferences.CloudSearchPrefs;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static android.support.v7.widget.SearchView.OnQueryTextListener;
+import static android.support.v7.widget.SearchView.OnSuggestionListener;
 
 /**
  * Consists of the search bar, search button, and search settings button
  */
 public class ImportKeysCloudFragment extends Fragment {
+
     public static final String ARG_QUERY = "query";
     public static final String ARG_DISABLE_QUERY_EDIT = "disable_query_edit";
     public static final String ARG_CLOUD_SEARCH_PREFS = "cloud_search_prefs";
 
-    private ImportKeysActivity mImportActivity;
+    private static final String CURSOR_SUGGESTION = "suggestion";
 
-    private AutoCompleteTextView mQueryEditText;
+    private Activity mActivity;
+    private ImportKeysListener mCallback;
+
+    private List<String> mNamesAndEmails;
+    private SimpleCursorAdapter mSearchAdapter;
+
+    private List<String> mCurrentSuggestions = new ArrayList<>();
 
     /**
      * Creates new instance of this fragment
@@ -63,8 +79,8 @@ public class ImportKeysCloudFragment extends Fragment {
      *                         preferences.
      */
     public static ImportKeysCloudFragment newInstance(String query, boolean disableQueryEdit,
-                                                      Preferences.CloudSearchPrefs
-                                                              cloudSearchPrefs) {
+                                                      CloudSearchPrefs cloudSearchPrefs) {
+
         ImportKeysCloudFragment frag = new ImportKeysCloudFragment();
 
         Bundle args = new Bundle();
@@ -77,92 +93,120 @@ public class ImportKeysCloudFragment extends Fragment {
         return frag;
     }
 
-    /**
-     * Inflate the layout for this fragment
-     */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.import_keys_cloud_fragment, container, false);
+    public View onCreateView(LayoutInflater i, ViewGroup c, Bundle savedInstanceState) {
+        ContactHelper contactHelper = new ContactHelper(mActivity);
+        mNamesAndEmails = contactHelper.getContactNames();
+        mNamesAndEmails.addAll(contactHelper.getContactMails());
 
-        mQueryEditText = (AutoCompleteTextView) view.findViewById(R.id.cloud_import_server_query);
+        mSearchAdapter = new SimpleCursorAdapter(mActivity,
+                R.layout.import_keys_cloud_suggestions_item, null, new String[]{CURSOR_SUGGESTION},
+                new int[]{android.R.id.text1}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-        ContactHelper contactHelper = new ContactHelper(getActivity());
-        List<String> namesAndEmails = contactHelper.getContactNames();
-        namesAndEmails.addAll(contactHelper.getContactMails());
-        mQueryEditText.setThreshold(3);
-        mQueryEditText.setAdapter(
-                new ArrayAdapter<>
-                        (getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                                namesAndEmails
-                        )
-        );
-
-        View searchButton = view.findViewById(R.id.cloud_import_server_search);
-        searchButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                search(mQueryEditText.getText().toString());
-            }
-        });
-
-        mQueryEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    search(mQueryEditText.getText().toString());
-
-                    // Don't return true to let the keyboard close itself after pressing search
-                    return false;
-                }
-                return false;
-            }
-        });
-
-        View configButton = view.findViewById(R.id.cloud_import_server_config_button);
-        configButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mImportActivity, SettingsActivity.class);
-                intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsActivity.CloudSearchPrefsFragment.class.getName());
-                startActivity(intent);
-            }
-        });
-
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // set displayed values
-        if (getArguments() != null) {
-            String query = getArguments().getString(ARG_QUERY);
-            if (query != null) {
-                mQueryEditText.setText(query, TextView.BufferType.EDITABLE);
-
-                Log.d(Constants.TAG, "query: " + query);
-            } else {
-                // open keyboard
-                mQueryEditText.requestFocus();
-                toggleKeyboard(true);
-            }
-
-            if (getArguments().getBoolean(ARG_DISABLE_QUERY_EDIT, false)) {
-                mQueryEditText.setEnabled(false);
-            }
-        }
+        setHasOptionsMenu(true);
+        return null;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        mImportActivity = (ImportKeysActivity) activity;
+        mActivity = activity;
+
+        try {
+            mCallback = (ImportKeysListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement ImportKeysListener");
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.import_keys_cloud_fragment, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.menu_import_keys_cloud_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setSuggestionsAdapter(mSearchAdapter);
+
+        searchView.setOnSuggestionListener(new OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                searchView.setQuery(mCurrentSuggestions.get(position), true);
+                return true;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                searchView.setQuery(mCurrentSuggestions.get(position), true);
+                return true;
+            }
+        });
+
+        searchView.setOnQueryTextListener(new OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+                search(searchView.getQuery().toString().trim());
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                updateAdapter(newText);
+                return false;
+            }
+        });
+
+        MenuItemCompat.setOnActionExpandListener(searchItem, new OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                mActivity.finish();
+                return true;
+            }
+        });
+
+        searchItem.expandActionView();
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void updateAdapter(String query) {
+        mCurrentSuggestions.clear();
+        MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, CURSOR_SUGGESTION});
+        for (int i = 0; i < mNamesAndEmails.size(); i++) {
+            String s = mNamesAndEmails.get(i);
+            if (s.toLowerCase().startsWith(query.toLowerCase())) {
+                mCurrentSuggestions.add(s);
+                c.addRow(new Object[]{i, s});
+            }
+
+        }
+        mSearchAdapter.changeCursor(c);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case R.id.menu_import_keys_cloud_settings:
+                Intent intent = new Intent(mActivity, SettingsActivity.class);
+                intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+                        SettingsActivity.CloudSearchPrefsFragment.class.getName());
+                startActivity(intent);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void search(String query) {
-        Preferences.CloudSearchPrefs cloudSearchPrefs
+        CloudSearchPrefs cloudSearchPrefs
                 = getArguments().getParcelable(ARG_CLOUD_SEARCH_PREFS);
 
         // no explicit search preferences passed
@@ -170,8 +214,7 @@ public class ImportKeysCloudFragment extends Fragment {
             cloudSearchPrefs = Preferences.getPreferences(getActivity()).getCloudSearchPrefs();
         }
 
-        mImportActivity.loadCallback(
-                new ImportKeysListFragment.CloudLoaderState(query, cloudSearchPrefs));
+        mCallback.loadKeys(new CloudLoaderState(query, cloudSearchPrefs));
         toggleKeyboard(false);
     }
 

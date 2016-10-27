@@ -225,7 +225,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
                     // get key id from MASTER_KEY_ID
                     long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                    getSupportActionBar().setSubtitle(KeyFormattingUtils.beautifyKeyIdWithPrefix(this, masterKeyId));
+                    String formattedKeyId = KeyFormattingUtils.beautifyKeyIdWithPrefix(masterKeyId);
+                    getSupportActionBar().setSubtitle(formattedKeyId);
 
                     mHasSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                     boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;

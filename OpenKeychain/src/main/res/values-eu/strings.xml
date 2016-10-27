@@ -1281,7 +1281,7 @@
   <string name="key_unavailable">eskuraezina</string>
   <string name="secret_cannot_multiple">Zure jabetzako giltzak banaka bakarrik ezabatu daitezke!</string>
   <string name="title_view_cert">Ikusi Egiaztagiriaren Xehetasunak</string>
-  <string name="unknown_algorithm">ezezaguna</string>
+  <string name="unknown">ezezaguna</string>
   <string name="can_sign_not">ezin da sinatu</string>
   <string name="error_no_encrypt_subkey">Ez dago enkriptaketa azpigiltzarik eskuragarri!</string>
   <string name="contact_show_key">Erakutsi (%s) giltza</string>

@@ -287,6 +287,10 @@ android {
         exclude 'META-INF/NOTICE'
         exclude '.readme'
     }
+
+    dataBinding {
+        enabled = true
+    }
 }
 
 task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugWithTestCoverageUnitTest") {

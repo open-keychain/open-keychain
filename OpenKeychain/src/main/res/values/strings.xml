@@ -122,13 +122,14 @@
     <string name="menu_delete_key">"Delete key"</string>
     <string name="menu_manage_keys">"Manage my keys"</string>
     <string name="menu_search">"Search"</string>
+    <string name="menu_open">"Open"</string>
+    <string name="menu_read_clipboard">"Read from clipboard"</string>
     <string name="menu_nfc_preferences">"NFC settings"</string>
     <string name="menu_beam_preferences">"Beam settings"</string>
     <string name="menu_encrypt_to">"Encrypt to…"</string>
     <string name="menu_select_all">"Select all"</string>
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_update_all_keys">"Update all keys"</string>
-    <string name="menu_advanced">"Advanced"</string>
     <string name="menu_certify_fingerprint">"Confirm with fingerprint"</string>
     <string name="menu_certify_fingerprint_phrases">"Confirm with phrases"</string>
     <string name="menu_share_log">"Share log"</string>
@@ -148,6 +149,7 @@
     <string name="label_passphrase_again">"Repeat Password"</string>
     <string name="label_show_passphrase">"Show Password"</string>
     <string name="label_algorithm">"Algorithm"</string>
+    <string name="label_algorithm_colon">"Algorithm:"</string>
     <string name="label_ascii_armor">"File ASCII Armor"</string>
     <string name="label_file_ascii_armor">"Enable ASCII Armor"</string>
     <string name="label_write_version_header">"Let others know that you're using OpenKeychain"</string>
@@ -165,9 +167,11 @@
     <string name="label_file_compression">"File compression"</string>
     <string name="label_keyservers">"Manage OpenPGP keyservers"</string>
     <string name="label_key_id">"Key ID"</string>
+    <string name="label_key_id_colon">"Key ID:"</string>
     <string name="label_key_created">"Key created %s"</string>
     <string name="label_key_type">"Type"</string>
     <string name="label_creation">"Creation"</string>
+    <string name="label_creation_colon">"Creation:"</string>
     <string name="label_expiry">"Expiry"</string>
     <string name="label_usage">"Usage"</string>
     <string name="label_key_size">"Key Size"</string>
@@ -253,7 +257,6 @@
     <string name="orbot_start_dialog_start">"Start Orbot"</string>
     <string name="orbot_start_dialog_cancel">"Cancel"</string>
     <string name="orbot_start_dialog_ignore_tor">"Don't use Tor"</string>
-
 
     <string name="user_id_no_name"><![CDATA[<no name>]]></string>
     <string name="none"><![CDATA[<none>]]></string>
@@ -388,8 +391,8 @@
     <string name="error_jelly_bean_needed">"You need Android 4.1 to use Android's NFC Beam feature!"</string>
     <string name="error_nfc_needed">"NFC must be enabled!"</string>
     <string name="error_beam_needed">"Beam must be enabled!"</string>
+    <string name="error_nothing">"Nothing to show yet."</string>
     <string name="error_nothing_import">"No keys found!"</string>
-    <string name="error_nothing_import_selected">"No keys selected for import!"</string>
     <string name="error_contacts_key_id_missing">"Retrieving the key ID from contacts failed!"</string>
     <string name="error_generic_report_bug">"A generic error occurred, please create a new bug report for OpenKeychain."</string>
     <string name="error_denied_storage_permission">"Can not read files from storage because access has been denied!"</string>
@@ -419,6 +422,7 @@
     <string name="progress_done">"Done."</string>
     <string name="progress_cancel">"Cancel"</string>
     <string name="progress_cancelling">"cancelling…"</string>
+    <string name="progress_downloading">"downloading…"</string>
     <string name="progress_saving">"saving…"</string>
     <string name="progress_importing">"importing…"</string>
     <string name="progress_benchmarking">"benchmarking…"</string>
@@ -523,12 +527,17 @@
     <string name="import_tab_cloud">"Key Search"</string>
     <string name="import_tab_direct">"File/Clipboard"</string>
     <string name="import_tab_qr_code">"QR Code/NFC"</string>
-    <string name="import_import">"Import selected keys"</string>
+    <string name="import_found_keys">"Found %1$d keys"</string>
     <string name="import_qr_code_wrong">"QR Code malformed! Please try again!"</string>
     <string name="import_qr_code_fp">"Fingerprint is malformed or too short!"</string>
     <string name="import_qr_code_too_short_fingerprint">"Fingerprint is too short!"</string>
     <string name="import_qr_code_button">"Scan QR Code"</string>
     <string name="import_qr_code_text">"Place your camera over the QR Code!"</string>
+    <string name="btn_import">"Import"</string>
+    <string name="btn_import_keys">"Import all keys"</string>
+    <string name="btn_view_list">"View list"</string>
+    <string name="btn_refresh">"Refresh"</string>
+    <string name="btn_go_to_key">"Go to key"</string>
 
     <!-- Import from URL -->
     <string name="import_url_warn_no_search_parameter">"No search query defined. You can still manually search on this keyserver."</string>
@@ -1439,6 +1448,7 @@
     <string name="msg_get_too_many_responses">"Key search query returned too many candidates. Please refine your query!"</string>
     <string name="msg_get_query_too_short">"Search query too short. Please refine your query!"</string>
     <string name="msg_get_query_too_short_or_too_many_responses">"Either no keys or too many have been found. Please improve your query!"</string>
+    <string name="msg_get_no_enabled_source">"Enable at least one source for downloading!"</string>
 
     <string name="msg_download_query_failed">"An error occurred when searching for keys."</string>
 
@@ -1509,7 +1519,7 @@
     <string name="key_unavailable">"unavailable"</string>
     <string name="secret_cannot_multiple">"Your own keys can only be deleted individually!"</string>
     <string name="title_view_cert">"View Certificate Details"</string>
-    <string name="unknown_algorithm">"unknown"</string>
+    <string name="unknown">"unknown"</string>
     <string name="can_sign_not">"cannot sign"</string>
     <string name="error_no_encrypt_subkey">"No encryption subkey available!"</string>
     <string name="contact_show_key">"Show key (%s)"</string>
@@ -1569,7 +1579,6 @@
     <string name="security_token_status_partly">"Security Token matches, partly bound to key"</string>
     <string name="security_token_create">"Hold Security Token against the back of your device."</string>
     <string name="security_token_reset_or_import">"This Security Token already contains a key. You can import the key using the cloud or reset the Security Token."</string>
-    <string name="btn_import">"Import"</string>
     <string name="btn_reset">"Reset"</string>
     <string name="security_token_import_radio">"Import key"</string>
     <string name="security_token_reset_radio">"Reset Security Token"</string>

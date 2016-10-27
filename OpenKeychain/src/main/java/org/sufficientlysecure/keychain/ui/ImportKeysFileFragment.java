@@ -17,46 +17,41 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
+import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.ui.ImportKeysListFragment.BytesLoaderState;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public class ImportKeysFileFragment extends Fragment {
-    private ImportKeysActivity mImportActivity;
-    private View mBrowse;
-    private View mClipboardButton;
+
+    private Activity mActivity;
+    private ImportKeysListener mCallback;
 
     private Uri mCurrentUri;
 
     private static final int REQUEST_CODE_FILE = 0x00007003;
-    private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
 
     /**
      * Creates new instance of this fragment
@@ -70,52 +65,60 @@ public class ImportKeysFileFragment extends Fragment {
         return frag;
     }
 
-    /**
-     * Inflate the layout for this fragment
-     */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.import_keys_file_fragment, container, false);
-
-        mBrowse = view.findViewById(R.id.import_keys_file_browse);
-
-        mBrowse.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // open .asc or .gpg files
-                // setting it to text/plain prevents Cyanogenmod's file manager from selecting asc
-                // or gpg types!
-                FileHelper.openDocument(ImportKeysFileFragment.this,
-                        Uri.fromFile(Constants.Path.APP_DIR), "*/*", false, REQUEST_CODE_FILE);
-            }
-        });
-
-        mClipboardButton = view.findViewById(R.id.import_clipboard_button);
-        mClipboardButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
-                String sendText = "";
-                if (clipboardText != null) {
-                    sendText = clipboardText.toString();
-                    sendText = PgpHelper.getPgpKeyContent(sendText);
-                    if (sendText == null) {
-                        Notify.create(mImportActivity, R.string.error_bad_data, Style.ERROR).show();
-                        return;
-                    }
-                    mImportActivity.loadCallback(new BytesLoaderState(sendText.getBytes(), null));
-                }
-            }
-        });
-
-        return view;
+    public View onCreateView(LayoutInflater i, ViewGroup c, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        return null;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        mImportActivity = (ImportKeysActivity) activity;
+        mActivity = activity;
+
+        try {
+            mCallback = (ImportKeysListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement ImportKeysListener");
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.import_keys_file_fragment, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case R.id.menu_import_keys_file_open:
+                // open .asc or .gpg files
+                // setting it to text/plain prevents Cyanogenmod's file manager from selecting asc
+                // or gpg types!
+                FileHelper.openDocument(ImportKeysFileFragment.this,
+                        Uri.fromFile(Constants.Path.APP_DIR), "*/*", false, REQUEST_CODE_FILE);
+                return true;
+            case R.id.menu_import_keys_file_paste:
+                CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
+                String sendText = "";
+                if (clipboardText != null) {
+                    sendText = clipboardText.toString();
+                    sendText = PgpHelper.getPgpKeyContent(sendText);
+                    if (sendText == null) {
+                        Notify.create(mActivity, R.string.error_bad_data, Style.ERROR).show();
+                    } else {
+                        mCallback.loadKeys(new BytesLoaderState(sendText.getBytes(), null));
+                    }
+                }
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -125,90 +128,49 @@ public class ImportKeysFileFragment extends Fragment {
                 if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
                     mCurrentUri = data.getData();
 
-                    if (checkAndRequestReadPermission(mCurrentUri)) {
+                    if (PermissionsUtil.checkAndRequestReadPermission(this, mCurrentUri)) {
                         startImportingKeys();
                     }
                 }
                 break;
             }
-
             default:
                 super.onActivityResult(requestCode, resultCode, data);
-
-                break;
         }
     }
 
     private void startImportingKeys() {
         boolean isEncrypted;
         try {
-            isEncrypted = FileHelper.isEncryptedFile(mImportActivity, mCurrentUri);
+            isEncrypted = FileHelper.isEncryptedFile(mActivity, mCurrentUri);
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error opening file", e);
 
-            Notify.create(mImportActivity, R.string.error_bad_data, Style.ERROR).show();
+            Notify.create(mActivity, R.string.error_bad_data, Style.ERROR).show();
             return;
         }
 
         if (isEncrypted) {
-            Intent intent = new Intent(mImportActivity, DecryptActivity.class);
+            Intent intent = new Intent(mActivity, DecryptActivity.class);
             intent.setAction(Intent.ACTION_VIEW);
             intent.setData(mCurrentUri);
             startActivity(intent);
         } else {
-            mImportActivity.loadCallback(new BytesLoaderState(null, mCurrentUri));
+            mCallback.loadKeys(new BytesLoaderState(null, mCurrentUri));
         }
     }
 
-    /**
-     * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.
-     * <p/>
-     * This method returns true on Android < 6, or if permission is already granted. It
-     * requests the permission and returns false otherwise.
-     * <p/>
-     * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
-     */
-    private boolean checkAndRequestReadPermission(final Uri uri) {
-        if (!ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
-            return true;
-        }
-
-        // Additional check due to https://commonsware.com/blog/2015/11/09/you-cannot-hold-nonexistent-permissions.html
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-
-        requestPermissions(
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
-
-        return false;
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
 
-        if (requestCode != REQUEST_PERMISSION_READ_EXTERNAL_STORAGE) {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            return;
-        }
-
-        boolean permissionWasGranted = grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
-        if (permissionWasGranted) {
+        if (PermissionsUtil.checkReadPermissionResult(mActivity, requestCode, grantResults)) {
             startImportingKeys();
         } else {
-            Toast.makeText(getActivity(), R.string.error_denied_storage_permission, Toast.LENGTH_LONG).show();
-            getActivity().setResult(Activity.RESULT_CANCELED);
-            getActivity().finish();
+            mActivity.setResult(Activity.RESULT_CANCELED);
+            mActivity.finish();
         }
     }
 

@@ -173,7 +173,7 @@ public class CachedPublicKeyRing extends KeyRing {
             Object data = mProviderHelper.getGenericData(mUri,
                     KeychainContract.KeyRings.VERIFIED,
                     ProviderHelper.FIELD_TYPE_INTEGER);
-            return (Integer) data;
+            return ((Long) data).intValue();
         } catch(ProviderHelper.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }

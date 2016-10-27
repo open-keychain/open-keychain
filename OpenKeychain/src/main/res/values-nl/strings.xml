@@ -1161,7 +1161,7 @@
   <string name="key_unavailable">niet beschikbaar</string>
   <string name="secret_cannot_multiple">Je eigen sleutels kunnen enkel individueel verwijderd worden!</string>
   <string name="title_view_cert">Toon Certificaat Details</string>
-  <string name="unknown_algorithm">onbekend</string>
+  <string name="unknown">onbekend</string>
   <string name="can_sign_not">kan niet ondertekenen</string>
   <string name="error_no_encrypt_subkey">Geen codeer-subsleutel beschikbaar!</string>
   <string name="contact_show_key">Toon sleutel (%s)</string>

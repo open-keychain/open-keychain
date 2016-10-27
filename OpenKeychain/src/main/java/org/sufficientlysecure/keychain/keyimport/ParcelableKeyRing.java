@@ -21,7 +21,8 @@ package org.sufficientlysecure.keychain.keyimport;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/** This class is a parcelable representation of either a keyring as raw data,
+/**
+ * This class is a parcelable representation of either a keyring as raw data,
  * or a (unique) reference to one as a fingerprint, keyid, or keybase name.
  */
 public class ParcelableKeyRing implements Parcelable {
@@ -35,36 +36,23 @@ public class ParcelableKeyRing implements Parcelable {
     public final String mFbUsername;
 
     public ParcelableKeyRing(byte[] bytes) {
-        this(null, bytes, false);
-    }
-
-    /**
-     * @param disAmbiguator useless parameter intended to distinguish this overloaded constructor
-     *                      for when null is passed as first two arguments
-     */
-    public ParcelableKeyRing(String expectedFingerprint, byte[] bytes, boolean disAmbiguator) {
-        mBytes = bytes;
-        mExpectedFingerprint = expectedFingerprint;
-        mKeyIdHex = null;
-        mKeybaseName = null;
-        mFbUsername = null;
-    }
-
-    public ParcelableKeyRing(String expectedFingerprint, String keyIdHex) {
-        mBytes = null;
-        mExpectedFingerprint = expectedFingerprint;
-        mKeyIdHex = keyIdHex;
-        mKeybaseName = null;
-        mFbUsername = null;
+        this(bytes, null, null, null, null);
     }
 
     public ParcelableKeyRing(String expectedFingerprint, String keyIdHex, String keybaseName,
                              String fbUsername) {
-        mBytes = null;
-        mExpectedFingerprint = expectedFingerprint;
-        mKeyIdHex = keyIdHex;
-        mKeybaseName = keybaseName;
-        mFbUsername = fbUsername;
+
+        this(null, expectedFingerprint, keyIdHex, keybaseName, fbUsername);
+    }
+
+    public ParcelableKeyRing(byte[] bytes, String expectedFingerprint, String keyIdHex,
+                             String keybaseName, String fbUsername) {
+
+        this.mBytes = bytes;
+        this.mExpectedFingerprint = expectedFingerprint;
+        this.mKeyIdHex = keyIdHex;
+        this.mKeybaseName = keybaseName;
+        this.mFbUsername = fbUsername;
     }
 
     private ParcelableKeyRing(Parcel source) {
@@ -78,6 +66,7 @@ public class ParcelableKeyRing implements Parcelable {
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByteArray(mBytes);
+
         dest.writeString(mExpectedFingerprint);
         dest.writeString(mKeyIdHex);
         dest.writeString(mKeybaseName);

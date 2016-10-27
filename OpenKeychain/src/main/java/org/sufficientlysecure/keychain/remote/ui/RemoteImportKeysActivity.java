@@ -21,9 +21,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
-import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 
 public class RemoteImportKeysActivity extends ImportKeysActivity {
 
@@ -39,7 +37,7 @@ public class RemoteImportKeysActivity extends ImportKeysActivity {
     }
 
     @Override
-    protected void handleResult(ImportKeyResult result) {
+    public void handleResult(ImportKeyResult result) {
         setResult(RESULT_OK, mPendingIntentData);
         finish();
     }

@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.os.Parcel;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
@@ -32,10 +33,15 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Showable;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
+import java.util.ArrayList;
+
 public class ImportKeyResult extends InputPendingResult {
 
     public final int mNewKeys, mUpdatedKeys, mBadKeys, mSecret;
     public final long[] mImportedMasterKeyIds;
+
+    // NOT PARCELED
+    public ArrayList<CanonicalizedKeyRing> mCanonicalizedKeyRings;
 
     // At least one new key
     public static final int RESULT_OK_NEWKEYS = 8;
@@ -107,6 +113,10 @@ public class ImportKeyResult extends InputPendingResult {
         mImportedMasterKeyIds = new long[]{};
     }
 
+    public void setCanonicalizedKeyRings(ArrayList<CanonicalizedKeyRing> canonicalizedKeyRings) {
+        this.mCanonicalizedKeyRings = canonicalizedKeyRings;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
@@ -128,7 +138,6 @@ public class ImportKeyResult extends InputPendingResult {
     };
 
     public Showable createNotify(final Activity activity) {
-
         int resultType = getResult();
 
         String str;
@@ -204,7 +213,6 @@ public class ImportKeyResult extends InputPendingResult {
                 activity.startActivity(intent);
             }
         }, R.string.snackbar_details);
-
     }
 
 }

@@ -54,6 +54,7 @@ import android.widget.ViewAnimator;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -78,6 +79,7 @@ import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
+
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -245,7 +247,7 @@ public class KeyListFragment extends LoaderFragment
 
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
-                    boolean checked) {
+                                                  boolean checked) {
                 if (checked) {
                     mAdapter.setNewSelection(position, true);
                 } else {
@@ -334,7 +336,7 @@ public class KeyListFragment extends LoaderFragment
                 headerCursor.addRow(row);
 
                 Cursor dataCursor = data;
-                data = new MergeCursor(new Cursor[] {
+                data = new MergeCursor(new Cursor[]{
                         headerCursor, dataCursor
                 });
             }
@@ -576,7 +578,7 @@ public class KeyListFragment extends LoaderFragment
             while (cursor.moveToNext()) {
                 byte[] blob = cursor.getBlob(0);//fingerprint column is 0
                 String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
-                ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null);
+                ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null, null);
                 keyList.add(keyEntry);
             }
             mKeyList = keyList;
