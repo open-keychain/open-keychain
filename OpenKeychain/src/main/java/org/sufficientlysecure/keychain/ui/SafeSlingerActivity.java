@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class SafeSlingerActivity extends BaseActivity
 
     // for CryptoOperationHelper
     private ArrayList<ParcelableKeyRing> mKeyList;
-    private String mKeyserver;
+    private ParcelableHkpKeyserver mKeyserver;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
 
 

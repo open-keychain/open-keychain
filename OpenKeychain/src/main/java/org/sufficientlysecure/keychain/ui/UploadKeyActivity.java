@@ -35,8 +35,11 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.util.ArrayList;
 
 /**
  * Sends the selected public key to a keyserver
@@ -49,7 +52,7 @@ public class UploadKeyActivity extends BaseActivity
     private Uri mDataUri;
 
     // CryptoOperationHelper.Callback vars
-    private String mKeyserver;
+    private ParcelableHkpKeyserver mKeyserver;
     private CryptoOperationHelper<UploadKeyringParcel, UploadResult> mUploadOpHelper;
 
     @Override
@@ -64,8 +67,7 @@ public class UploadKeyActivity extends BaseActivity
         mMultiUserIdsFragment.setCheckboxVisibility(false);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
-                .getKeyServers()
+                android.R.layout.simple_spinner_item, getKeyserversArray()
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mKeyServerSpinner.setAdapter(adapter);
@@ -91,6 +93,18 @@ public class UploadKeyActivity extends BaseActivity
 
     }
 
+    private String[] getKeyserversArray() {
+        ArrayList<ParcelableHkpKeyserver> keyservers = Preferences.getPreferences(this)
+                .getKeyServers();
+        String[] keyserversArray = new String[keyservers.size()];
+        int i = 0;
+        for (ParcelableHkpKeyserver k : keyservers) {
+            keyserversArray[i] = k.getUrl();
+            i++;
+        }
+        return keyserversArray;
+    }
+
     @Override
     protected void initLayout() {
         setContentView(R.layout.upload_key_activity);
@@ -105,8 +119,7 @@ public class UploadKeyActivity extends BaseActivity
     }
 
     private void uploadKey() {
-        String server = (String) mKeyServerSpinner.getSelectedItem();
-        mKeyserver = server;
+        mKeyserver = (ParcelableHkpKeyserver) mKeyServerSpinner.getSelectedItem();
 
         mUploadOpHelper = new CryptoOperationHelper<>(1, this, this, R.string.progress_uploading);
         mUploadOpHelper.cryptoOperation();

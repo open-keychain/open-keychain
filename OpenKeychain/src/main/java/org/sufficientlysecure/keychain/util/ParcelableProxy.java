@@ -32,21 +32,28 @@ public class ParcelableProxy implements Parcelable {
     private String mProxyHost;
     private int mProxyPort;
     private Proxy.Type mProxyType;
+    private int mProxyMode;
 
-    public ParcelableProxy(String hostName, int port, Proxy.Type type) {
+    public static final int PROXY_MODE_NORMAL = 0;
+    public static final int PROXY_MODE_TOR = 1;
+
+    public ParcelableProxy(String hostName, int port, Proxy.Type type, int proxyMode) {
         mProxyHost = hostName;
-
-        if (hostName == null) {
+        if (mProxyHost == null) {
             return; // represents a null proxy
         }
 
         mProxyPort = port;
-
         mProxyType = type;
+        mProxyMode = proxyMode;
     }
 
     public static ParcelableProxy getForNoProxy() {
-        return new ParcelableProxy(null, -1, null);
+        return new ParcelableProxy(null, -1, null, PROXY_MODE_NORMAL);
+    }
+
+    public boolean isTorEnabled() {
+        return (mProxyMode == PROXY_MODE_TOR);
     }
 
     @NonNull
@@ -65,6 +72,7 @@ public class ParcelableProxy implements Parcelable {
         mProxyHost = in.readString();
         mProxyPort = in.readInt();
         mProxyType = (Proxy.Type) in.readSerializable();
+        mProxyMode = in.readInt();
     }
 
     @Override
@@ -77,6 +85,7 @@ public class ParcelableProxy implements Parcelable {
         dest.writeString(mProxyHost);
         dest.writeInt(mProxyPort);
         dest.writeSerializable(mProxyType);
+        dest.writeInt(mProxyMode);
     }
 
     @SuppressWarnings("unused")

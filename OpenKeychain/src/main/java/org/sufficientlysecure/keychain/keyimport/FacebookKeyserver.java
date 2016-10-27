@@ -27,6 +27,7 @@ import android.support.annotation.Nullable;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -35,11 +36,12 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.io.IOException;
-import java.net.Proxy;
 
+import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,18 +58,15 @@ public class FacebookKeyserver extends Keyserver {
 
     public static final String ORIGIN = FB_URL;
 
-    private final Proxy mProxy;
-
-    public FacebookKeyserver(Proxy proxy) {
-        mProxy = proxy;
+    public FacebookKeyserver() {
     }
 
     @Override
-    public List<ImportKeysListEntry> search(String fbUsername)
+    public List<ImportKeysListEntry> search(String fbUsername, ParcelableProxy proxy)
             throws QueryFailedException, QueryNeedsRepairException {
         List<ImportKeysListEntry> entry = new ArrayList<>(1);
 
-        String data = get(fbUsername);
+        String data = get(fbUsername, proxy);
         // if we're here that means key retrieval succeeded,
         // would have thrown an exception otherwise
         try {
@@ -85,10 +84,10 @@ public class FacebookKeyserver extends Keyserver {
     }
 
     @Override
-    public String get(String fbUsername) throws QueryFailedException {
-        Log.d(Constants.TAG, "FacebookKeyserver get: " + fbUsername + " using Proxy: " + mProxy);
+    public String get(String fbUsername, ParcelableProxy proxy) throws QueryFailedException {
+        Log.d(Constants.TAG, "FacebookKeyserver get: " + fbUsername + " using Proxy: " + proxy);
 
-        String data = query(fbUsername);
+        String data = query(fbUsername, proxy);
 
         if (data == null) {
             throw new QueryFailedException("data is null");
@@ -101,14 +100,14 @@ public class FacebookKeyserver extends Keyserver {
         throw new QueryFailedException("data is null");
     }
 
-    private String query(String fbUsername) throws QueryFailedException {
+    private String query(String fbUsername, ParcelableProxy proxy) throws QueryFailedException {
         try {
             String request = String.format(FB_KEY_URL_FORMAT, fbUsername);
-            Log.d(Constants.TAG, "fetching from Facebook with: " + request + " proxy: " + mProxy);
+            Log.d(Constants.TAG, "fetching from Facebook with: " + request + " proxy: " + proxy);
 
             URL url = new URL(request);
 
-            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, mProxy);
+            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy.getProxy());
 
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
 
@@ -126,7 +125,7 @@ public class FacebookKeyserver extends Keyserver {
             Log.e(Constants.TAG, "IOException at Facebook key download", e);
             throw new QueryFailedException("Cannot connect to Facebook. "
                     + "Check your Internet connection!"
-                    + (mProxy == Proxy.NO_PROXY ? "" : " Using proxy " + mProxy));
+                    + (proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy()));
         } catch (TlsHelper.TlsHelperException e) {
             Log.e(Constants.TAG, "Exception in cert pinning", e);
             throw new QueryFailedException("Exception in cert pinning. ");
@@ -134,7 +133,7 @@ public class FacebookKeyserver extends Keyserver {
     }
 
     @Override
-    public void add(String armoredKey) throws AddKeyException {
+    public void add(String armoredKey, ParcelableProxy proxy) throws AddKeyException {
         // Implementing will require usage of FB API
         throw new UnsupportedOperationException("Uploading keys not supported yet");
     }

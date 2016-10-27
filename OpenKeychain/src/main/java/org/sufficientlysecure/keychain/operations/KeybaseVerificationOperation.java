@@ -75,8 +75,7 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
                 return new KeybaseVerificationResult(null,
                         RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
             }
-            proxy = Preferences.getPreferences(mContext).getProxyPrefs()
-                    .parcelableProxy.getProxy();
+            proxy = Preferences.getPreferences(mContext).getParcelableProxy().getProxy();
         } else {
             proxy = cryptoInput.getParcelableProxy().getProxy();
         }

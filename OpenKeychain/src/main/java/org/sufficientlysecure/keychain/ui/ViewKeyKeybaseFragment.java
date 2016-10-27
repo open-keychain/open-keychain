@@ -182,13 +182,13 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
     }
 
     private void startSearch(final String fingerprint) {
-        final Preferences.ProxyPrefs proxyPrefs =
-                Preferences.getPreferences(getActivity()).getProxyPrefs();
+        final ParcelableProxy parcelableProxy =
+                Preferences.getPreferences(getActivity()).getParcelableProxy();
 
         OrbotHelper.DialogActions dialogActions = new OrbotHelper.DialogActions() {
             @Override
             public void onOrbotStarted() {
-                new DescribeKey(proxyPrefs.parcelableProxy).execute(fingerprint);
+                new DescribeKey(parcelableProxy).execute(fingerprint);
             }
 
             @Override
@@ -204,7 +204,7 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
         };
 
         if (OrbotHelper.putOrbotInRequiredState(dialogActions, getActivity())) {
-            new DescribeKey(proxyPrefs.parcelableProxy).execute(fingerprint);
+            new DescribeKey(parcelableProxy).execute(fingerprint);
         }
     }
 

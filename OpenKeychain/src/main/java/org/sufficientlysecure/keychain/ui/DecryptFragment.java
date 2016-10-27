@@ -56,6 +56,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 public abstract class DecryptFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -137,7 +138,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
     private void lookupUnknownKey(long unknownKeyId) {
 
         final ArrayList<ParcelableKeyRing> keyList;
-        final String keyserver;
+        final ParcelableHkpKeyserver keyserver;
 
         // search config
         keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();

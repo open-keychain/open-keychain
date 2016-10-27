@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -501,7 +502,7 @@ public class CreateKeyFinalFragment extends Fragment {
         // set data uri as path to keyring
         final long masterKeyId = saveKeyResult.mMasterKeyId;
         // upload to favorite keyserver
-        final String keyserver = Preferences.getPreferences(activity).getPreferredKeyserver();
+        final ParcelableHkpKeyserver keyserver = Preferences.getPreferences(activity).getPreferredKeyserver();
 
         CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult> callback
                 = new CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult>() {

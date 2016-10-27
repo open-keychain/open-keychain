@@ -11,7 +11,6 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.PeriodicSync;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -308,7 +307,7 @@ public class KeyserverSyncAdapterService extends Service {
 
         if (cryptoInputParcel.getParcelableProxy() == null) {
             // no explicit proxy, retrieve from preferences. Check if we should do a staggered sync
-            if (Preferences.getPreferences(context).getProxyPrefs().torEnabled) {
+            if (Preferences.getPreferences(context).getParcelableProxy().isTorEnabled()) {
                 return staggeredUpdate(context, keyList, cryptoInputParcel);
             } else {
                 return directUpdate(context, keyList, cryptoInputParcel);

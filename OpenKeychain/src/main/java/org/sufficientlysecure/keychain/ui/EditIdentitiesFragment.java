@@ -62,6 +62,7 @@ import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 public class EditIdentitiesFragment extends Fragment
@@ -387,7 +388,7 @@ public class EditIdentitiesFragment extends Fragment
 
         final long masterKeyId = editKeyResult.mMasterKeyId;
         // upload to favorite keyserver
-        final String keyserver = Preferences.getPreferences(activity).getPreferredKeyserver();
+        final ParcelableHkpKeyserver keyserver = Preferences.getPreferences(activity).getPreferredKeyserver();
 
         CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult> callback
                 = new CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult>() {

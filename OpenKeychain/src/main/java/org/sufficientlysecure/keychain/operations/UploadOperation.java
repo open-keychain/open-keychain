@@ -20,11 +20,6 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.Proxy;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,8 +27,8 @@ import android.support.annotation.Nullable;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
@@ -50,8 +45,12 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.Preferences.ProxyPrefs;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.Proxy;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -60,7 +59,7 @@ import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
     public UploadOperation(Context context, ProviderHelper providerHelper,
-            Progressable progressable, AtomicBoolean cancelled) {
+                           Progressable progressable, AtomicBoolean cancelled) {
         super(context, providerHelper, progressable, cancelled);
     }
 
@@ -71,41 +70,32 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
         log.add(LogType.MSG_UPLOAD, 0);
         updateProgress(R.string.progress_uploading, 0, 1);
 
-        Proxy proxy;
-        {
-            boolean proxyIsTor = false;
-
-            // Proxy priorities:
-            // 1. explicit proxy
-            // 2. orbot proxy state
-            // 3. proxy from preferences
-            ParcelableProxy parcelableProxy = cryptoInput.getParcelableProxy();
-            if (parcelableProxy != null) {
-                proxy = parcelableProxy.getProxy();
-            } else {
-                if ( ! OrbotHelper.isOrbotInRequiredState(mContext)) {
-                    return new UploadResult(log, RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
-                }
-                ProxyPrefs proxyPrefs = Preferences.getPreferences(mContext).getProxyPrefs();
-                if (proxyPrefs.torEnabled) {
-                    proxyIsTor = true;
-                }
-                proxy = proxyPrefs.getProxy();
+        // Proxy priorities:
+        // 1. explicit proxy
+        // 2. orbot proxy state
+        // 3. proxy from preferences
+        ParcelableProxy parcelableProxy = cryptoInput.getParcelableProxy();
+        if (parcelableProxy == null) {
+            if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
+                return new UploadResult(log, RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
             }
 
-            if (proxyIsTor) {
-                log.add(LogType.MSG_UPLOAD_PROXY_TOR, 1);
-            } else if (proxy == Proxy.NO_PROXY) {
-                log.add(LogType.MSG_UPLOAD_PROXY_DIRECT, 1);
-            } else {
-                log.add(LogType.MSG_UPLOAD_PROXY, 1, proxy.toString());
-            }
-
+            parcelableProxy = Preferences.getPreferences(mContext).getParcelableProxy();
         }
 
-        HkpKeyserver hkpKeyserver;
+        boolean proxyIsTor = parcelableProxy.isTorEnabled();
+
+        if (proxyIsTor) {
+            log.add(LogType.MSG_UPLOAD_PROXY_TOR, 1);
+        } else if (parcelableProxy.getProxy() == Proxy.NO_PROXY) {
+            log.add(LogType.MSG_UPLOAD_PROXY_DIRECT, 1);
+        } else {
+            log.add(LogType.MSG_UPLOAD_PROXY, 1, parcelableProxy.getProxy().toString());
+        }
+
+        ParcelableHkpKeyserver hkpKeyserver;
         {
-            hkpKeyserver = new HkpKeyserver(uploadInput.mKeyserver, proxy);
+            hkpKeyserver = uploadInput.mKeyserver;
             log.add(LogType.MSG_UPLOAD_SERVER, 1, hkpKeyserver.toString());
         }
 
@@ -114,7 +104,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             return new UploadResult(UploadResult.RESULT_ERROR, log);
         }
 
-        return uploadKeyRingToServer(log, hkpKeyserver, keyring);
+        return uploadKeyRingToServer(log, hkpKeyserver, keyring, parcelableProxy);
     }
 
     @Nullable
@@ -136,7 +126,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             CanonicalizedKeyRing canonicalizedRing =
                     UncachedKeyRing.decodeFromData(uploadInput.mUncachedKeyringBytes)
                             .canonicalize(new OperationLog(), 0, true);
-            if ( ! CanonicalizedPublicKeyRing.class.isInstance(canonicalizedRing)) {
+            if (!CanonicalizedPublicKeyRing.class.isInstance(canonicalizedRing)) {
                 throw new IllegalArgumentException("keyring bytes must contain public key ring!");
             }
             log.add(LogType.MSG_UPLOAD_KEY, 0, KeyFormattingUtils.convertKeyIdToHex(canonicalizedRing.getMasterKeyId()));
@@ -155,7 +145,8 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
     @NonNull
     private UploadResult uploadKeyRingToServer(
-            OperationLog log, HkpKeyserver server, CanonicalizedPublicKeyRing keyring) {
+            OperationLog log, ParcelableHkpKeyserver server, CanonicalizedPublicKeyRing keyring,
+            ParcelableProxy proxy) {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
@@ -166,7 +157,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             aos.close();
 
             String armoredKey = bos.toString("UTF-8");
-            server.add(armoredKey);
+            server.add(armoredKey, proxy);
 
             updateProgress(R.string.progress_uploading, 1, 1);
 

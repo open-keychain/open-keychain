@@ -94,6 +94,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableHashMap;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
@@ -759,7 +760,7 @@ public class DecryptListFragment
     private void lookupUnknownKey(final Uri inputUri, long unknownKeyId) {
 
         final ArrayList<ParcelableKeyRing> keyList;
-        final String keyserver;
+        final ParcelableHkpKeyserver keyserver;
 
         // search config
         keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();

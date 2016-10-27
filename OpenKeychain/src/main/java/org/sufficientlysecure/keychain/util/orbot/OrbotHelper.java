@@ -72,6 +72,7 @@ import org.sufficientlysecure.keychain.ui.dialog.OrbotStartDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PreferenceInstallDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.List;
@@ -153,6 +154,7 @@ public class OrbotHelper {
     /**
      * Initialize the OrbotStatusReceiver (if not already happened) and check, whether Orbot is
      * running or not.
+     *
      * @param context context
      * @return if Orbot is running
      */
@@ -285,8 +287,8 @@ public class OrbotHelper {
      * otherwise
      */
     public static boolean isOrbotInRequiredState(Context context) {
-        Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(context).getProxyPrefs();
-        if (!proxyPrefs.torEnabled) {
+        ParcelableProxy proxy = Preferences.getPreferences(context).getParcelableProxy();
+        if (!proxy.isTorEnabled()) {
             return true;
         } else if (!OrbotHelper.isOrbotInstalled(context) || !OrbotHelper.isOrbotRunning(context)) {
             return false;
@@ -298,15 +300,15 @@ public class OrbotHelper {
      * checks if Tor is enabled and if it is, that Orbot is installed and running. Generates appropriate dialogs.
      *
      * @param middleButton resourceId of string to display as the middle button of install and enable dialogs
-     * @param proxyPrefs   proxy preferences used to determine if Tor is required to be started
+     * @param proxy        proxy preferences used to determine if Tor is required to be started
      * @return true if Tor is not enabled or Tor is enabled and Orbot is installed and running, else false
      */
     public static boolean putOrbotInRequiredState(final int middleButton,
                                                   final DialogActions dialogActions,
-                                                  Preferences.ProxyPrefs proxyPrefs,
+                                                  ParcelableProxy proxy,
                                                   final FragmentActivity fragmentActivity) {
 
-        if (!proxyPrefs.torEnabled) {
+        if (!proxy.isTorEnabled()) {
             return true;
         }
 
@@ -377,7 +379,7 @@ public class OrbotHelper {
                                                   FragmentActivity fragmentActivity) {
         return putOrbotInRequiredState(R.string.orbot_ignore_tor,
                 dialogActions,
-                Preferences.getPreferences(fragmentActivity).getProxyPrefs(),
+                Preferences.getPreferences(fragmentActivity).getParcelableProxy(),
                 fragmentActivity);
     }
 

@@ -18,7 +18,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -41,29 +40,28 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.AddEditKeyserverDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperAdapter;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperViewHolder;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperDragCallback;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperAdapter;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperDragCallback;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperViewHolder;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 public class SettingsKeyserverFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
 
     private static final String ARG_KEYSERVER_ARRAY = "arg_keyserver_array";
     private ItemTouchHelper mItemTouchHelper;
 
-    private ArrayList<String> mKeyservers;
+    private ArrayList<ParcelableHkpKeyserver> mKeyservers;
     private KeyserverListAdapter mAdapter;
 
-    public static SettingsKeyserverFragment newInstance(String[] keyservers) {
+    public static SettingsKeyserverFragment newInstance(ArrayList<ParcelableHkpKeyserver> keyservers) {
         Bundle args = new Bundle();
-        args.putStringArray(ARG_KEYSERVER_ARRAY, keyservers);
+        args.putParcelableArrayList(ARG_KEYSERVER_ARRAY, keyservers);
 
         SettingsKeyserverFragment fragment = new SettingsKeyserverFragment();
         fragment.setArguments(args);
@@ -82,8 +80,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        String keyservers[] = getArguments().getStringArray(ARG_KEYSERVER_ARRAY);
-        mKeyservers = new ArrayList<>(Arrays.asList(keyservers));
+        mKeyservers = getArguments().getParcelableArrayList(ARG_KEYSERVER_ARRAY);
 
         mAdapter = new KeyserverListAdapter(mKeyservers);
 
@@ -133,7 +130,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     }
 
     private void startEditKeyserverDialog(AddEditKeyserverDialogFragment.DialogAction action,
-                                          String keyserver, final int position) {
+                                          ParcelableHkpKeyserver keyserver, final int position) {
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -162,7 +159,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
                                     R.string.add_keyserver_without_verification,
                                     Notify.Style.WARN).show();
                         }
-                        String keyserver = data.getString(
+                        ParcelableHkpKeyserver keyserver = data.getParcelable(
                                 AddEditKeyserverDialogFragment.MESSAGE_KEYSERVER);
 
                         AddEditKeyserverDialogFragment.DialogAction dialogAction
@@ -189,13 +186,13 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
         dialogFragment.show(getFragmentManager(), "addKeyserverDialog");
     }
 
-    private void addKeyserver(String keyserver) {
+    private void addKeyserver(ParcelableHkpKeyserver keyserver) {
         mKeyservers.add(keyserver);
         mAdapter.notifyItemInserted(mKeyservers.size() - 1);
         saveKeyserverList();
     }
 
-    private void editKeyserver(String newKeyserver, int position) {
+    private void editKeyserver(ParcelableHkpKeyserver newKeyserver, int position) {
         mKeyservers.set(position, newKeyserver);
         mAdapter.notifyItemChanged(position);
         saveKeyserverList();
@@ -218,8 +215,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     }
 
     private void saveKeyserverList() {
-        String servers[] = mKeyservers.toArray(new String[mKeyservers.size()]);
-        Preferences.getPreferences(getActivity()).setKeyServers(servers);
+        Preferences.getPreferences(getActivity()).setKeyServers(mKeyservers);
     }
 
     @Override
@@ -231,9 +227,9 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     public class KeyserverListAdapter extends RecyclerView.Adapter<KeyserverListAdapter.ViewHolder>
             implements ItemTouchHelperAdapter {
 
-        private final List<String> mKeyservers;
+        private final ArrayList<ParcelableHkpKeyserver> mKeyservers;
 
-        public KeyserverListAdapter(List<String> keyservers) {
+        public KeyserverListAdapter(ArrayList<ParcelableHkpKeyserver> keyservers) {
             mKeyservers = keyservers;
         }
 
@@ -246,7 +242,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.keyserverUrl.setText(mKeyservers.get(position));
+            holder.keyserverUrl.setText(mKeyservers.get(position).getUrl());
 
             // Start a drag whenever the handle view it touched
             holder.dragHandleView.setOnTouchListener(new View.OnTouchListener() {

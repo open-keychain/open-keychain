@@ -76,6 +76,7 @@ import org.sufficientlysecure.keychain.ui.util.ContentDescriptionHint;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
@@ -111,7 +112,7 @@ public class KeyListFragment extends LoaderFragment
 
     // for CryptoOperationHelper import
     private ArrayList<ParcelableKeyRing> mKeyList;
-    private String mKeyserver;
+    private ParcelableHkpKeyserver mKeyserver;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
 
     // for ConsolidateOperation

@@ -1,40 +1,40 @@
 /*
- * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2016 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2011-2014 Thialfihar <thi@thialfihar.org>
- * Copyright (C) 2011 Senecaso
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.sufficientlysecure.keychain.keyimport;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -47,38 +47,17 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.support.annotation.NonNull;
-
 import de.measite.minidns.Client;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
 import de.measite.minidns.record.SRV;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
-public class HkpKeyserver extends Keyserver {
-    private static class HttpError extends Exception {
-        private static final long serialVersionUID = 1718783705229428893L;
-        private int mCode;
-        private String mData;
-
-        public HttpError(int code, String data) {
-            super("" + code + ": " + data);
-            mCode = code;
-            mData = data;
-        }
-
-        public int getCode() {
-            return mCode;
-        }
-
-        public String getData() {
-            return mData;
-        }
-    }
-
-    private String mHost;
-    private short mPort;
-    private Proxy mProxy;
-    private boolean mSecure;
+public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
 
     /**
      * pub:%keyid%:%algo%:%keylen%:%creationdate%:%expirationdate%:%flags%
@@ -148,64 +127,76 @@ public class HkpKeyserver extends Keyserver {
     private static final short PORT_DEFAULT = 11371;
     private static final short PORT_DEFAULT_HKPS = 443;
 
-    /**
-     * @param hostAndPort may be just
-     *                    "<code>hostname</code>" (eg. "<code>pool.sks-keyservers.net</code>"), then it will
-     *                    connect using {@link #PORT_DEFAULT}. However, port may be specified after colon
-     *                    ("<code>hostname:port</code>", eg. "<code>p80.pool.sks-keyservers.net:80</code>").
-     */
-    public HkpKeyserver(String hostAndPort, Proxy proxy) {
-        String host = hostAndPort;
-        short port = PORT_DEFAULT;
-        boolean secure = false;
-        String[] parts = hostAndPort.split(":");
-        if (parts.length > 1) {
-            if (!parts[0].contains(".")) { // This is not a domain or ip, so it must be a protocol name
-                if ("hkps".equalsIgnoreCase(parts[0]) || "https".equalsIgnoreCase(parts[0])) {
-                    secure = true;
-                    port = PORT_DEFAULT_HKPS;
-                } else if (!"hkp".equalsIgnoreCase(parts[0]) && !"http".equalsIgnoreCase(parts[0])) {
-                    throw new IllegalArgumentException("Protocol " + parts[0] + " is unknown");
-                }
-                host = parts[1];
-                if (host.startsWith("//")) { // People tend to type https:// and hkps://, so we'll support that as well
-                    host = host.substring(2);
-                }
-                if (parts.length > 2) {
-                    port = Short.decode(parts[2]);
-                }
-            } else {
-                host = parts[0];
-                port = Short.decode(parts[1]);
-            }
+    private String mUrl;
+    private String mOnion;
+
+    public ParcelableHkpKeyserver(@NonNull String url, String onion) {
+        mUrl = url.trim();
+        mOnion = onion == null ? null : onion.trim();
+    }
+
+    public ParcelableHkpKeyserver(@NonNull String url) {
+        this(url, null);
+    }
+
+    public String getUrl() {
+        return mUrl;
+    }
+
+    public String getOnion() {
+        return mOnion;
+    }
+
+    public URI getUrlURI() throws URISyntaxException {
+        return getURI(mUrl);
+    }
+
+    public URI getOnionURI() throws URISyntaxException {
+        return getURI(mOnion);
+    }
+
+    public URI getProxiedURL(ParcelableProxy proxy) throws URISyntaxException {
+        if (proxy.isTorEnabled()) {
+            return getOnionURI();
+        } else {
+            return getUrlURI();
         }
-        mHost = host;
-        mPort = port;
-        mProxy = proxy;
-        mSecure = secure;
     }
 
-    public HkpKeyserver(String host, short port, Proxy proxy) {
-        this(host, port, proxy, false);
+    /**
+     * @param keyserverUrl "<code>hostname</code>" (eg. "<code>pool.sks-keyservers.net</code>"), then it will
+     *                     connect using {@link #PORT_DEFAULT}. However, port may be specified after colon
+     *                     ("<code>hostname:port</code>", eg. "<code>p80.pool.sks-keyservers.net:80</code>").
+     */
+    private URI getURI(String keyserverUrl) throws URISyntaxException {
+        URI originalURI = new URI(keyserverUrl);
+
+        String scheme = originalURI.getScheme();
+        if (scheme == null
+                || (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)
+                && !"hkp".equalsIgnoreCase(scheme) && !"hkps".equalsIgnoreCase(scheme))) {
+            throw new URISyntaxException(scheme, "unsupported scheme!");
+        }
+
+        int port = originalURI.getPort();
+
+        if ("hkps".equalsIgnoreCase(scheme)) {
+            scheme = "https";
+            port = port == -1 ? PORT_DEFAULT_HKPS : port;
+        } else if ("hkp".equalsIgnoreCase(scheme)) {
+            scheme = "http";
+            port = port == -1 ? PORT_DEFAULT : port;
+        }
+
+        return new URI(scheme, originalURI.getUserInfo(), originalURI.getHost(), port,
+                originalURI.getPath(), originalURI.getQuery(), originalURI.getFragment());
     }
 
-    public HkpKeyserver(String host, short port, Proxy proxy, boolean secure) {
-        mHost = host;
-        mPort = port;
-        mProxy = proxy;
-        mSecure = secure;
-    }
-
-    private String getUrlPrefix() {
-        return mSecure ? "https://" : "http://";
-    }
-
-
-    private String query(String request, @NonNull Proxy proxy) throws QueryFailedException, HttpError {
+    private String query(String request, @NonNull ParcelableProxy proxy) throws Keyserver.QueryFailedException, HttpError {
         try {
-            URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
+            URL url = new URL(getProxiedURL(proxy).toString() + request);
             Log.d(Constants.TAG, "hkp keyserver query: " + url + " Proxy: " + proxy);
-            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy);
+            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy.getProxy());
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
 
             String responseBody = response.body().string(); // contains body both in case of success or failure
@@ -217,11 +208,14 @@ public class HkpKeyserver extends Keyserver {
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
-            throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!" +
-                    (proxy == Proxy.NO_PROXY ? "" : " Using proxy " + proxy));
+            throw new Keyserver.QueryFailedException("Keyserver '" + mUrl + "' is unavailable. Check your Internet connection!" +
+                    (proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy()));
         } catch (TlsHelper.TlsHelperException e) {
             Log.e(Constants.TAG, "Exception in pinning certs", e);
-            throw new QueryFailedException("Exception in pinning certs");
+            throw new Keyserver.QueryFailedException("Exception in pinning certs");
+        } catch (URISyntaxException e) {
+            Log.e(Constants.TAG, "Unsupported keyserver URI", e);
+            throw new Keyserver.QueryFailedException("Unsupported keyserver URI");
         }
     }
 
@@ -229,12 +223,12 @@ public class HkpKeyserver extends Keyserver {
      * Results are sorted by creation date of key!
      */
     @Override
-    public ArrayList<ImportKeysListEntry> search(String query) throws QueryFailedException,
-            QueryNeedsRepairException {
+    public ArrayList<ImportKeysListEntry> search(String query, ParcelableProxy proxy) throws Keyserver.QueryFailedException,
+            Keyserver.QueryNeedsRepairException {
         ArrayList<ImportKeysListEntry> results = new ArrayList<>();
 
         if (query.length() < 3) {
-            throw new QueryTooShortException();
+            throw new Keyserver.QueryTooShortException();
         }
 
         String encodedQuery;
@@ -247,7 +241,7 @@ public class HkpKeyserver extends Keyserver {
 
         String data;
         try {
-            data = query(request, mProxy);
+            data = query(request, proxy);
         } catch (HttpError e) {
             if (e.getData() != null) {
                 Log.d(Constants.TAG, "returned error data: " + e.getData().toLowerCase(Locale.ENGLISH));
@@ -256,26 +250,26 @@ public class HkpKeyserver extends Keyserver {
                     // NOTE: This is also a 404 error for some keyservers!
                     return results;
                 } else if (e.getData().toLowerCase(Locale.ENGLISH).contains("too many")) {
-                    throw new TooManyResponsesException();
+                    throw new Keyserver.TooManyResponsesException();
                 } else if (e.getData().toLowerCase(Locale.ENGLISH).contains("insufficient")) {
-                    throw new QueryTooShortException();
+                    throw new Keyserver.QueryTooShortException();
                 } else if (e.getCode() == 404) {
                     // NOTE: handle this 404 at last, maybe it was a "no keys found" error
-                    throw new QueryFailedException("Keyserver '" + mHost + "' not found. Error 404");
+                    throw new Keyserver.QueryFailedException("Keyserver '" + mUrl + "' not found. Error 404");
                 } else {
                     // NOTE: some keyserver do not provide a more detailed error response
-                    throw new QueryTooShortOrTooManyResponsesException();
+                    throw new Keyserver.QueryTooShortOrTooManyResponsesException();
                 }
             }
 
-            throw new QueryFailedException("Querying server(s) for '" + mHost + "' failed.");
+            throw new Keyserver.QueryFailedException("Querying server(s) for '" + mUrl + "' failed.");
         }
 
         final Matcher matcher = PUB_KEY_LINE.matcher(data);
         while (matcher.find()) {
             final ImportKeysListEntry entry = new ImportKeysListEntry();
             entry.setQuery(query);
-            entry.addOrigin(getUrlPrefix() + mHost + ":" + mPort);
+            entry.addOrigin(getHostID());
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
@@ -351,37 +345,37 @@ public class HkpKeyserver extends Keyserver {
     }
 
     @Override
-    public String get(String keyIdHex) throws QueryFailedException {
+    public String get(String keyIdHex, ParcelableProxy proxy) throws Keyserver.QueryFailedException {
         String request = "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
-        Log.d(Constants.TAG, "hkp keyserver get: " + request + " using Proxy: " + mProxy);
+        Log.d(Constants.TAG, "hkp keyserver get: " + request + " using Proxy: " + proxy);
         String data;
         try {
-            data = query(request, mProxy);
+            data = query(request, proxy);
         } catch (HttpError httpError) {
             Log.d(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
-            throw new QueryFailedException("not found");
+            throw new Keyserver.QueryFailedException("not found");
         }
         if (data == null) {
-            throw new QueryFailedException("data is null");
+            throw new Keyserver.QueryFailedException("data is null");
         }
         Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(data);
         if (matcher.find()) {
             return matcher.group(1);
         }
-        throw new QueryFailedException("data is null");
+        throw new Keyserver.QueryFailedException("data is null");
     }
 
     @Override
-    public void add(String armoredKey) throws AddKeyException {
+    public void add(String armoredKey, ParcelableProxy proxy) throws Keyserver.AddKeyException {
         try {
             String path = "/pks/add";
             String params;
             try {
                 params = "keytext=" + URLEncoder.encode(armoredKey, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                throw new AddKeyException();
+                throw new Keyserver.AddKeyException();
             }
-            URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + path);
+            URL url = new URL(getProxiedURL(proxy).toString() + path);
 
             Log.d(Constants.TAG, "hkp keyserver add: " + url);
             Log.d(Constants.TAG, "params: " + params);
@@ -396,27 +390,40 @@ public class HkpKeyserver extends Keyserver {
                     .post(body)
                     .build();
 
-            Response response = OkHttpClientFactory.getClientPinnedIfAvailable(url, mProxy).newCall(request).execute();
+            Response response =
+                    OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy.getProxy())
+                            .newCall(request).execute();
 
             Log.d(Constants.TAG, "response code: " + response.code());
             Log.d(Constants.TAG, "answer: " + response.body().string());
 
             if (response.code() != 200) {
-                throw new AddKeyException();
+                throw new Keyserver.AddKeyException();
             }
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
-            throw new AddKeyException();
+            throw new Keyserver.AddKeyException();
         } catch (TlsHelper.TlsHelperException e) {
             Log.e(Constants.TAG, "Exception in pinning certs", e);
-            throw new AddKeyException();
+            throw new Keyserver.AddKeyException();
+        } catch (URISyntaxException e) {
+            Log.e(Constants.TAG, "Unsupported keyserver URI", e);
+            throw new Keyserver.AddKeyException();
+        }
+    }
+
+    private String getHostID() {
+        try {
+            return (new URI(mUrl)).getHost();
+        } catch (URISyntaxException e) {
+            return mUrl;
         }
     }
 
     @Override
     public String toString() {
-        return getUrlPrefix() + mHost + ":" + mPort;
+        return getHostID();
     }
 
     /**
@@ -424,7 +431,7 @@ public class HkpKeyserver extends Keyserver {
      *
      * @return A responsible Keyserver or null if not found.
      */
-    public static HkpKeyserver resolve(String domain, Proxy proxy) {
+    public static ParcelableHkpKeyserver resolve(String domain) {
         try {
             Record[] records = new Client().query(new Question("_hkp._tcp." + domain, Record.TYPE.SRV)).getAnswers();
             if (records.length > 0) {
@@ -438,12 +445,60 @@ public class HkpKeyserver extends Keyserver {
                 });
                 Record record = records[0]; // This is our best choice
                 if (record.getPayload().getType() == Record.TYPE.SRV) {
-                    return new HkpKeyserver(((SRV) record.getPayload()).getName(),
-                            (short) ((SRV) record.getPayload()).getPort(), proxy);
+                    SRV payload = (SRV) record.getPayload();
+                    return new ParcelableHkpKeyserver(payload.getName() + ":" + payload.getPort());
                 }
             }
         } catch (Exception ignored) {
         }
         return null;
     }
+
+    private static class HttpError extends Exception {
+        private static final long serialVersionUID = 1718783705229428893L;
+        private int mCode;
+        private String mData;
+
+        HttpError(int code, String data) {
+            super("" + code + ": " + data);
+            mCode = code;
+            mData = data;
+        }
+
+        public int getCode() {
+            return mCode;
+        }
+
+        public String getData() {
+            return mData;
+        }
+    }
+
+    protected ParcelableHkpKeyserver(Parcel in) {
+        mUrl = in.readString();
+        mOnion = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mUrl);
+        dest.writeString(mOnion);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<ParcelableHkpKeyserver> CREATOR = new Creator<ParcelableHkpKeyserver>() {
+        @Override
+        public ParcelableHkpKeyserver createFromParcel(Parcel in) {
+            return new ParcelableHkpKeyserver(in);
+        }
+
+        @Override
+        public ParcelableHkpKeyserver[] newArray(int size) {
+            return new ParcelableHkpKeyserver[size];
+        }
+    };
 }

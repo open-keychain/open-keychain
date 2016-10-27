@@ -18,26 +18,20 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import android.app.Activity;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,18 +44,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
-import java.net.Proxy;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 public class AddEditKeyserverDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "arg_messenger";
@@ -91,21 +90,22 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
         EDIT
     }
 
-    public enum FailureReason {
+    public enum VerifyReturn {
         INVALID_URL,
         CONNECTION_FAILED,
-        NO_PINNED_CERTIFICATE
+        NO_PINNED_CERTIFICATE,
+        GOOD
     }
 
     public static AddEditKeyserverDialogFragment newInstance(Messenger messenger,
                                                              DialogAction action,
-                                                             String keyserver,
+                                                             ParcelableHkpKeyserver keyserver,
                                                              int position) {
         AddEditKeyserverDialogFragment frag = new AddEditKeyserverDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_MESSENGER, messenger);
         args.putSerializable(ARG_ACTION, action);
-        args.putString(ARG_KEYSERVER, keyserver);
+        args.putParcelable(ARG_KEYSERVER, keyserver);
         args.putInt(ARG_POSITION, position);
 
         frag.setArguments(args);
@@ -146,7 +146,8 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
             }
             case EDIT: {
                 alert.setTitle(R.string.edit_keyserver_dialog_title);
-                mKeyserverEditText.setText(getArguments().getString(ARG_KEYSERVER));
+                ParcelableHkpKeyserver keyserver = getArguments().getParcelable(ARG_KEYSERVER);
+                mKeyserverEditText.setText(keyserver.getUrl());
                 break;
             }
         }
@@ -226,16 +227,19 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                     mKeyserverEditTextLayout.setErrorEnabled(false);
 
                     // behaviour same for edit and add
-                    final String keyserverUrl = mKeyserverEditText.getText().toString();
+                    String keyserverUrl = mKeyserverEditText.getText().toString();
+                    // TODO!
+                    String keyserverOnion = mKeyserverEditText.getText().toString();
+                    final ParcelableHkpKeyserver keyserver = new ParcelableHkpKeyserver(keyserverUrl, keyserverOnion);
                     if (mVerifyKeyserverCheckBox.isChecked()) {
-                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity())
-                                .getProxyPrefs();
+                        final ParcelableProxy proxy = Preferences.getPreferences(getActivity())
+                                .getParcelableProxy();
                         OrbotHelper.DialogActions dialogActions = new OrbotHelper.DialogActions() {
                             @Override
                             public void onOrbotStarted() {
                                 verifyConnection(
-                                        keyserverUrl,
-                                        proxyPrefs.parcelableProxy.getProxy(),
+                                        keyserver,
+                                        proxy,
                                         mOnlyTrustedKeyserverCheckBox.isChecked()
                                 );
                             }
@@ -243,7 +247,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                             @Override
                             public void onNeutralButton() {
                                 verifyConnection(
-                                        keyserverUrl,
+                                        keyserver,
                                         null,
                                         mOnlyTrustedKeyserverCheckBox.isChecked()
                                 );
@@ -257,26 +261,26 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
 
                         if (OrbotHelper.putOrbotInRequiredState(dialogActions, getActivity())) {
                             verifyConnection(
-                                    keyserverUrl,
-                                    proxyPrefs.parcelableProxy.getProxy(),
+                                    keyserver,
+                                    proxy,
                                     mOnlyTrustedKeyserverCheckBox.isChecked()
                             );
                         }
                     } else {
                         dismiss();
                         // return unverified keyserver back to activity
-                        keyserverEdited(keyserverUrl, false);
+                        keyserverEdited(new ParcelableHkpKeyserver(keyserverUrl, null), false);
                     }
                 }
             });
         }
     }
 
-    public void keyserverEdited(String keyserver, boolean verified) {
+    public void keyserverEdited(ParcelableHkpKeyserver keyserver, boolean verified) {
         dismiss();
         Bundle data = new Bundle();
         data.putSerializable(MESSAGE_DIALOG_ACTION, mDialogAction);
-        data.putString(MESSAGE_KEYSERVER, keyserver);
+        data.putParcelable(MESSAGE_KEYSERVER, keyserver);
         data.putBoolean(MESSAGE_VERIFIED, verified);
 
         if (mDialogAction == DialogAction.EDIT) {
@@ -296,8 +300,8 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
         sendMessageToHandler(MESSAGE_OKAY, data);
     }
 
-    public void verificationFailed(FailureReason failureReason) {
-        switch (failureReason) {
+    public void verificationFailed(VerifyReturn verifyReturn) {
+        switch (verifyReturn) {
             case CONNECTION_FAILED: {
                 mKeyserverEditTextLayout.setError(
                         getString(R.string.add_keyserver_connection_failed));
@@ -317,11 +321,11 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
 
     }
 
-    public void verifyConnection(String keyserver, final Proxy proxy, final boolean onlyTrustedKeyserver) {
+    public void verifyConnection(ParcelableHkpKeyserver keyserver, final ParcelableProxy proxy, final boolean onlyTrustedKeyserver) {
 
-        new AsyncTask<String, Void, FailureReason>() {
+        new AsyncTask<ParcelableHkpKeyserver, Void, VerifyReturn>() {
             ProgressDialog mProgressDialog;
-            String mKeyserver;
+            ParcelableHkpKeyserver mKeyserver;
 
             @Override
             protected void onPreExecute() {
@@ -332,59 +336,60 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
             }
 
             @Override
-            protected FailureReason doInBackground(String... keyservers) {
+            protected VerifyReturn doInBackground(ParcelableHkpKeyserver... keyservers) {
                 mKeyserver = keyservers[0];
-                FailureReason reason = null;
-                try {
-                    // replace hkps/hkp scheme and reconstruct Uri
-                    Uri keyserverUri = Uri.parse(mKeyserver);
-                    String scheme = keyserverUri.getScheme();
-                    String schemeSpecificPart = keyserverUri.getSchemeSpecificPart();
-                    String fragment = keyserverUri.getFragment();
-                    if (scheme == null) {
-                        throw new MalformedURLException();
-                    }
-                    if ("hkps".equalsIgnoreCase(scheme)) {
-                        scheme = "https";
-                    } else if ("hkp".equalsIgnoreCase(scheme)) {
-                        scheme = "http";
-                    }
-                    URI newKeyserver = new URI(scheme, schemeSpecificPart, fragment);
 
-                    Log.d("Converted URL", newKeyserver.toString());
-
-                    if (onlyTrustedKeyserver
-                            && TlsHelper.getPinnedSslSocketFactory(newKeyserver.toURL()) == null) {
-                        Log.w(Constants.TAG, "No pinned certificate for this host in OpenKeychain's assets.");
-                        reason = FailureReason.NO_PINNED_CERTIFICATE;
-                        return reason;
-                    }
-
-                    OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(newKeyserver.toURL(), proxy);
-
-                    client.newCall(new Request.Builder().url(newKeyserver.toURL()).build()).execute();
-                } catch (TlsHelper.TlsHelperException e) {
-                    reason = FailureReason.CONNECTION_FAILED;
-                } catch (MalformedURLException | URISyntaxException e) {
-                    Log.w(Constants.TAG, "Invalid keyserver URL entered by user.");
-                    reason = FailureReason.INVALID_URL;
-                } catch (IOException e) {
-                    Log.w(Constants.TAG, "Could not connect to entered keyserver url");
-                    reason = FailureReason.CONNECTION_FAILED;
-                }
-                return reason;
+                return verifyKeyserver(mKeyserver, proxy, onlyTrustedKeyserver);
             }
 
             @Override
-            protected void onPostExecute(FailureReason failureReason) {
+            protected void onPostExecute(VerifyReturn verifyReturn) {
                 mProgressDialog.dismiss();
-                if (failureReason == null) {
+                if (verifyReturn == VerifyReturn.GOOD) {
                     keyserverEdited(mKeyserver, true);
                 } else {
-                    verificationFailed(failureReason);
+                    verificationFailed(verifyReturn);
                 }
             }
         }.execute(keyserver);
+    }
+
+    private VerifyReturn verifyKeyserver(ParcelableHkpKeyserver keyserver, final ParcelableProxy proxy, final boolean onlyTrustedKeyserver) {
+        VerifyReturn reason = VerifyReturn.GOOD;
+        try {
+            URI keyserverUriHttp = keyserver.getUrlURI();
+
+            // check TLS pinning only for non-Tor keyservers
+            if (onlyTrustedKeyserver
+                    && TlsHelper.getPinnedSslSocketFactory(keyserverUriHttp.toURL()) == null) {
+                Log.w(Constants.TAG, "No pinned certificate for this host in OpenKeychain's assets.");
+                reason = VerifyReturn.NO_PINNED_CERTIFICATE;
+                return reason;
+            }
+
+            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(
+                    keyserverUriHttp.toURL(), proxy.getProxy());
+            client.newCall(new Request.Builder().url(keyserverUriHttp.toURL()).build()).execute();
+
+            // try out onion keyserver if Tor is enabled
+            if (proxy.isTorEnabled()) {
+                URI keyserverUriOnion = keyserver.getOnionURI();
+
+                OkHttpClient clientTor = OkHttpClientFactory.getClientPinnedIfAvailable(
+                        keyserverUriOnion.toURL(), proxy.getProxy());
+                clientTor.newCall(new Request.Builder().url(keyserverUriOnion.toURL()).build()).execute();
+            }
+        } catch (TlsHelper.TlsHelperException e) {
+            reason = VerifyReturn.CONNECTION_FAILED;
+        } catch (MalformedURLException | URISyntaxException e) {
+            Log.w(Constants.TAG, "Invalid keyserver URL entered by user.");
+            reason = VerifyReturn.INVALID_URL;
+        } catch (IOException e) {
+            Log.w(Constants.TAG, "Could not connect to entered keyserver url");
+            reason = VerifyReturn.CONNECTION_FAILED;
+        }
+
+        return reason;
     }
 
     @Override

@@ -23,27 +23,29 @@ package org.sufficientlysecure.keychain.service;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+
 
 public class UploadKeyringParcel implements Parcelable {
-    public String mKeyserver;
+    public ParcelableHkpKeyserver mKeyserver;
 
     public final Long mMasterKeyId;
     public final byte[] mUncachedKeyringBytes;
 
-    public UploadKeyringParcel(String keyserver, long masterKeyId) {
+    public UploadKeyringParcel(ParcelableHkpKeyserver keyserver, long masterKeyId) {
         mKeyserver = keyserver;
         mMasterKeyId = masterKeyId;
         mUncachedKeyringBytes = null;
     }
 
-    public UploadKeyringParcel(String keyserver, byte[] uncachedKeyringBytes) {
+    public UploadKeyringParcel(ParcelableHkpKeyserver keyserver, byte[] uncachedKeyringBytes) {
         mKeyserver = keyserver;
         mMasterKeyId = null;
         mUncachedKeyringBytes = uncachedKeyringBytes;
     }
 
     protected UploadKeyringParcel(Parcel in) {
-        mKeyserver = in.readString();
+        mKeyserver = in.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
         mMasterKeyId = in.readInt() != 0 ? in.readLong() : null;
         mUncachedKeyringBytes = in.createByteArray();
     }
@@ -55,7 +57,7 @@ public class UploadKeyringParcel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mKeyserver);
+        dest.writeParcelable(mKeyserver, flags);
         if (mMasterKeyId != null) {
             dest.writeInt(1);
             dest.writeLong(mMasterKeyId);

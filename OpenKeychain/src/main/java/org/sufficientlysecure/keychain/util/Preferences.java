@@ -27,19 +27,17 @@ import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-import org.sufficientlysecure.keychain.util.orbot.OrbotStatusReceiver;
 
 import java.io.Serializable;
 import java.net.Proxy;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,7 +45,6 @@ import java.util.HashSet;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * Singleton Implementation of a Preference Helper
@@ -131,40 +128,50 @@ public class Preferences {
         editor.commit();
     }
 
-    public String[] getKeyServers() {
+    public ArrayList<ParcelableHkpKeyserver> getKeyServers() {
         String rawData = mSharedPreferences.getString(Constants.Pref.KEY_SERVERS,
                 Constants.Defaults.KEY_SERVERS);
         if ("".equals(rawData)) {
-            return new String[0];
+            return new ArrayList<>();
         }
-        Vector<String> servers = new Vector<>();
-        String chunks[] = rawData.split(",");
-        for (String c : chunks) {
-            String tmp = c.trim();
-            if (tmp.length() > 0) {
-                servers.add(tmp);
-            }
-        }
-        return servers.toArray(chunks);
-    }
+        ArrayList<ParcelableHkpKeyserver> servers = new ArrayList<>();
+        String[] entries = rawData.split(",");
+        for (String entry : entries) {
 
-    public String getPreferredKeyserver() {
-        String[] keyservers = getKeyServers();
-        return keyservers.length == 0 ? null : keyservers[0];
-    }
+            String[] addresses = entry.trim().split(";");
+            String url = addresses[0];
+            String onion = addresses.length == 1 ? null : addresses[1];
 
-    public void setKeyServers(String[] value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        String rawData = "";
-        for (String v : value) {
-            String tmp = v.trim();
-            if (tmp.length() == 0) {
+            if (url.isEmpty()) {
                 continue;
             }
+
+            servers.add(new ParcelableHkpKeyserver(url, onion));
+        }
+        return servers;
+    }
+
+    public ParcelableHkpKeyserver getPreferredKeyserver() {
+        ArrayList<ParcelableHkpKeyserver> keyservers = getKeyServers();
+        return keyservers.size() == 0 ? null : keyservers.get(0);
+    }
+
+    public void setKeyServers(ArrayList<ParcelableHkpKeyserver> keyservers) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        String rawData = "";
+        for (ParcelableHkpKeyserver server : keyservers) {
+            if (server.getUrl().isEmpty()) {
+                continue;
+            }
+            rawData += server.getUrl();
+
+            if (server.getOnion() != null && !server.getOnion().isEmpty()) {
+                rawData += ";" + server.getOnion();
+            }
+
             if (!"".equals(rawData)) {
                 rawData += ",";
             }
-            rawData += tmp;
         }
         editor.putString(Constants.Pref.KEY_SERVERS, rawData);
         editor.commit();
@@ -249,7 +256,7 @@ public class Preferences {
         return Integer.parseInt(mSharedPreferences.getString(Pref.PROXY_PORT, "-1"));
     }
 
-    public Proxy.Type getProxyType() {
+    Proxy.Type getProxyType() {
         final String typeHttp = Pref.ProxyType.TYPE_HTTP;
         final String typeSocks = Pref.ProxyType.TYPE_SOCKS;
 
@@ -266,45 +273,22 @@ public class Preferences {
         }
     }
 
-    public ProxyPrefs getProxyPrefs() {
+    public ParcelableProxy getParcelableProxy() {
         boolean useTor = getUseTorProxy();
         boolean useNormalProxy = getUseNormalProxy();
 
         if (useTor) {
             //TODO: Replace Constants.Orbot.PROXY_PORT with OrbotStatusReceiver.getProxyPortHttp()
             //TODO: in order to always have the actual port Orbot is offering?
-            return new ProxyPrefs(true, false, Constants.Orbot.PROXY_HOST, Constants.Orbot.PROXY_PORT,
-                    Constants.Orbot.PROXY_TYPE);
+
+            return new ParcelableProxy(Constants.Orbot.PROXY_HOST, Constants.Orbot.PROXY_PORT,
+                    Constants.Orbot.PROXY_TYPE, ParcelableProxy.PROXY_MODE_TOR);
         } else if (useNormalProxy) {
-            return new ProxyPrefs(false, true, getProxyHost(), getProxyPort(), getProxyType());
+            return new ParcelableProxy(getProxyHost(), getProxyPort(), getProxyType(),
+                    ParcelableProxy.PROXY_MODE_NORMAL);
         } else {
-            return new ProxyPrefs(false, false, null, -1, null);
+            return new ParcelableProxy(null, -1, null, ParcelableProxy.PROXY_MODE_NORMAL);
         }
-    }
-
-    public static class ProxyPrefs {
-        public final ParcelableProxy parcelableProxy;
-        public final boolean torEnabled;
-        public final boolean normalPorxyEnabled;
-
-        /**
-         * torEnabled and normalProxyEnabled are not expected to both be true
-         *
-         * @param torEnabled         if Tor is to be used
-         * @param normalPorxyEnabled if user-specified proxy is to be used
-         */
-        public ProxyPrefs(boolean torEnabled, boolean normalPorxyEnabled, String hostName, int port, Proxy.Type type) {
-            this.torEnabled = torEnabled;
-            this.normalPorxyEnabled = normalPorxyEnabled;
-            if (!torEnabled && !normalPorxyEnabled) this.parcelableProxy = new ParcelableProxy(null, -1, null);
-            else this.parcelableProxy = new ParcelableProxy(hostName, port, type);
-        }
-
-        @NonNull
-        public Proxy getProxy() {
-            return parcelableProxy.getProxy();
-        }
-
     }
 
     /**
@@ -339,10 +323,11 @@ public class Preferences {
     }
 
     public static class CacheTTLPrefs implements Serializable {
-        public static final Map<Integer,Integer> CACHE_TTL_NAMES;
+        public static final Map<Integer, Integer> CACHE_TTL_NAMES;
         public static final ArrayList<Integer> CACHE_TTLS;
+
         static {
-            HashMap<Integer,Integer> cacheTtlNames = new HashMap<>();
+            HashMap<Integer, Integer> cacheTtlNames = new HashMap<>();
             cacheTtlNames.put(0, R.string.cache_ttl_lock_screen);
             cacheTtlNames.put(60 * 10, R.string.cache_ttl_ten_minutes);
             cacheTtlNames.put(60 * 30, R.string.cache_ttl_thirty_minutes);
@@ -397,7 +382,7 @@ public class Preferences {
         public final boolean searchKeyserver;
         public final boolean searchKeybase;
         public final boolean searchFacebook;
-        public final String keyserver;
+        public final ParcelableHkpKeyserver keyserver;
 
         /**
          * @param searchKeyserver should passed keyserver be searched
@@ -405,7 +390,7 @@ public class Preferences {
          * @param keyserver       the keyserver url authority to search on
          */
         public CloudSearchPrefs(boolean searchKeyserver, boolean searchKeybase,
-                                boolean searchFacebook, String keyserver) {
+                                boolean searchFacebook, ParcelableHkpKeyserver keyserver) {
             this.searchKeyserver = searchKeyserver;
             this.searchKeybase = searchKeybase;
             this.searchFacebook = searchFacebook;
@@ -416,7 +401,7 @@ public class Preferences {
             searchKeyserver = in.readByte() != 0x00;
             searchKeybase = in.readByte() != 0x00;
             searchFacebook = in.readByte() != 0x00;
-            keyserver = in.readString();
+            keyserver = in.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
         }
 
         @Override
@@ -429,7 +414,7 @@ public class Preferences {
             dest.writeByte((byte) (searchKeyserver ? 0x01 : 0x00));
             dest.writeByte((byte) (searchKeybase ? 0x01 : 0x00));
             dest.writeByte((byte) (searchFacebook ? 0x01 : 0x00));
-            dest.writeString(keyserver);
+            dest.writeParcelable(keyserver, flags);
         }
 
         public static final Parcelable.Creator<CloudSearchPrefs> CREATOR
@@ -476,22 +461,21 @@ public class Preferences {
                     // fall through
                 case 3: {
                     // migrate keyserver to hkps
-                    String[] serversArray = getKeyServers();
-                    ArrayList<String> servers = new ArrayList<>(Arrays.asList(serversArray));
-                    ListIterator<String> it = servers.listIterator();
+                    ArrayList<ParcelableHkpKeyserver> servers = getKeyServers();
+                    ListIterator<ParcelableHkpKeyserver> it = servers.listIterator();
                     while (it.hasNext()) {
-                        String server = it.next();
+                        ParcelableHkpKeyserver server = it.next();
                         if (server == null) {
                             continue;
                         }
-                        switch (server) {
+                        switch (server.getUrl()) {
                             case "pool.sks-keyservers.net":
                                 // use HKPS!
-                                it.set("hkps://hkps.pool.sks-keyservers.net");
+                                it.set(new ParcelableHkpKeyserver("hkps://hkps.pool.sks-keyservers.net", null));
                                 break;
                             case "pgp.mit.edu":
                                 // use HKPS!
-                                it.set("hkps://pgp.mit.edu");
+                                it.set(new ParcelableHkpKeyserver("hkps://pgp.mit.edu", null));
                                 break;
                             case "subkeys.pgp.net":
                                 // remove, because often down and no HKPS!
@@ -500,7 +484,7 @@ public class Preferences {
                         }
 
                     }
-                    setKeyServers(servers.toArray(new String[servers.size()]));
+                    setKeyServers(servers);
                 }
                 // fall through
                 case 4: {
@@ -512,6 +496,27 @@ public class Preferences {
                 }
                 // fall through
                 case 6: {
+                }
+                // fall through
+                case 7: {
+                    // add onion address to sks-keyservers.net
+                    ArrayList<ParcelableHkpKeyserver> servers = getKeyServers();
+                    ListIterator<ParcelableHkpKeyserver> it = servers.listIterator();
+                    while (it.hasNext()) {
+                        ParcelableHkpKeyserver server = it.next();
+                        if (server == null) {
+                            continue;
+                        }
+                        switch (server.getUrl()) {
+                            case "hkps://hkps.pool.sks-keyservers.net":
+                                it.set(new ParcelableHkpKeyserver(
+                                        "hkps://hkps.pool.sks-keyservers.net",
+                                        "hkp://jirk5u4osbsr34t5.onion"));
+                                break;
+                        }
+
+                    }
+                    setKeyServers(servers);
                 }
             }
 

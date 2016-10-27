@@ -26,22 +26,19 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.OkHttpKeybaseClient;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
 public class KeybaseKeyserver extends Keyserver {
     public static final String ORIGIN = "keybase:keybase.io";
 
-    Proxy mProxy;
-
-    public KeybaseKeyserver(Proxy proxy) {
-        mProxy = proxy;
+    public KeybaseKeyserver() {
     }
 
     @Override
-    public ArrayList<ImportKeysListEntry> search(String query) throws QueryFailedException,
+    public ArrayList<ImportKeysListEntry> search(String query, ParcelableProxy proxy) throws QueryFailedException,
             QueryNeedsRepairException {
         ArrayList<ImportKeysListEntry> results = new ArrayList<>();
 
@@ -55,7 +52,7 @@ public class KeybaseKeyserver extends Keyserver {
 
         try {
             KeybaseQuery keybaseQuery = new KeybaseQuery(new OkHttpKeybaseClient());
-            keybaseQuery.setProxy(mProxy);
+            keybaseQuery.setProxy(proxy.getProxy());
             Iterable<Match> matches = keybaseQuery.search(query);
             for (Match match : matches) {
                 results.add(makeEntry(match, query));
@@ -107,10 +104,10 @@ public class KeybaseKeyserver extends Keyserver {
     }
 
     @Override
-    public String get(String id) throws QueryFailedException {
+    public String get(String id, ParcelableProxy proxy) throws QueryFailedException {
         try {
             KeybaseQuery keybaseQuery = new KeybaseQuery(new OkHttpKeybaseClient());
-            keybaseQuery.setProxy(mProxy);
+            keybaseQuery.setProxy(proxy.getProxy());
             return User.keyForUsername(keybaseQuery, id);
         } catch (KeybaseException e) {
             throw new QueryFailedException(e.getMessage());
@@ -118,7 +115,7 @@ public class KeybaseKeyserver extends Keyserver {
     }
 
     @Override
-    public void add(String armoredKey) throws AddKeyException {
+    public void add(String armoredKey, ParcelableProxy proxy) throws AddKeyException {
         throw new AddKeyException();
     }
 }

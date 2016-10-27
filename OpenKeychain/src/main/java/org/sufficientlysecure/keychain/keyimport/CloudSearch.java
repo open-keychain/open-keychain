@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.keyimport;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.net.Proxy;
@@ -35,7 +36,7 @@ public class CloudSearch {
     private final static long SECONDS = 1000;
 
     public static ArrayList<ImportKeysListEntry> search(
-            @NonNull final String query, Preferences.CloudSearchPrefs cloudPrefs, @NonNull Proxy proxy)
+            @NonNull final String query, Preferences.CloudSearchPrefs cloudPrefs, @NonNull final ParcelableProxy proxy)
             throws Keyserver.CloudSearchFailureException {
         final ArrayList<Keyserver> servers = new ArrayList<>();
 
@@ -43,13 +44,13 @@ public class CloudSearch {
         final Vector<Keyserver.CloudSearchFailureException> problems = new Vector<>();
 
         if (cloudPrefs.searchKeyserver) {
-            servers.add(new HkpKeyserver(cloudPrefs.keyserver, proxy));
+            servers.add(cloudPrefs.keyserver);
         }
         if (cloudPrefs.searchKeybase) {
-            servers.add(new KeybaseKeyserver(proxy));
+            servers.add(new KeybaseKeyserver());
         }
         if (cloudPrefs.searchFacebook) {
-            servers.add(new FacebookKeyserver(proxy));
+            servers.add(new FacebookKeyserver());
         }
         final ImportKeysList results = new ImportKeysList(servers.size());
 
@@ -59,7 +60,7 @@ public class CloudSearch {
                 @Override
                 public void run() {
                     try {
-                        results.addAll(keyserver.search(query));
+                        results.addAll(keyserver.search(query, proxy));
                     } catch (Keyserver.CloudSearchFailureException e) {
                         problems.add(e);
                     }
@@ -74,7 +75,7 @@ public class CloudSearch {
         // wait for either all the searches to come back, or 10 seconds. If using proxy, wait 30 seconds.
         synchronized (results) {
             try {
-                if (proxy == Proxy.NO_PROXY) {
+                if (proxy.getProxy() == Proxy.NO_PROXY) {
                     results.wait(30 * SECONDS);
                 } else {
                     results.wait(10 * SECONDS);

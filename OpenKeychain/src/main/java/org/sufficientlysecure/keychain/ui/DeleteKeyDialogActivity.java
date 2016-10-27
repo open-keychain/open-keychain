@@ -38,6 +38,7 @@ import android.widget.TextView;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.RevokeResult;
@@ -154,7 +155,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             @Override
             public RevokeKeyringParcel createOperationInput() {
                 return new RevokeKeyringParcel(mMasterKeyIds[0], true,
-                        getIntent().getStringExtra(EXTRA_KEYSERVER));
+                        (ParcelableHkpKeyserver) getIntent().getParcelableExtra(EXTRA_KEYSERVER));
             }
 
             @Override

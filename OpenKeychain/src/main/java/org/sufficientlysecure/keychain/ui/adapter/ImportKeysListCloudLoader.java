@@ -112,13 +112,12 @@ public class ImportKeysListCloudLoader
      * Query keyserver
      */
     private void queryServer(boolean enforceFingerprint) {
-        ParcelableProxy parcelableProxy;
+        ParcelableProxy proxy;
 
         if (mParcelableProxy == null) {
             // no explicit proxy specified, fetch from preferences
             if (OrbotHelper.isOrbotInRequiredState(mContext)) {
-                parcelableProxy = Preferences.getPreferences(mContext).getProxyPrefs()
-                        .parcelableProxy;
+                proxy = Preferences.getPreferences(mContext).getParcelableProxy();
             } else {
                 // user needs to enable/install orbot
                 mEntryList.clear();
@@ -129,14 +128,14 @@ public class ImportKeysListCloudLoader
                 return;
             }
         } else {
-            parcelableProxy = mParcelableProxy;
+            proxy = mParcelableProxy;
         }
 
         try {
             ArrayList<ImportKeysListEntry> searchResult = CloudSearch.search(
                     mServerQuery,
                     mCloudPrefs,
-                    parcelableProxy.getProxy()
+                    proxy
             );
 
             mEntryList.clear();

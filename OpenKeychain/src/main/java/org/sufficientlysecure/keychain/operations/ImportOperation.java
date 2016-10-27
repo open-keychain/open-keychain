@@ -39,9 +39,9 @@ import android.support.annotation.NonNull;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
@@ -60,6 +60,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
@@ -83,7 +84,7 @@ import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
  */
 public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
-    public static final int MAX_THREADS = 10;
+    private static final int MAX_THREADS = 10;
 
     public ImportOperation(Context context, ProviderHelper providerHelper, Progressable
             progressable) {
@@ -97,20 +98,20 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     // Overloaded functions for using progressable supplied in constructor during import
     public ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
-                                               String keyServerUri, Proxy proxy) {
-        return serialKeyRingImport(entries, num, keyServerUri, mProgressable, proxy);
+                                               ParcelableHkpKeyserver hkpKeyserver, ParcelableProxy proxy) {
+        return serialKeyRingImport(entries, num, hkpKeyserver, mProgressable, proxy);
     }
 
     @NonNull
     private ImportKeyResult serialKeyRingImport(ParcelableFileCache<ParcelableKeyRing> cache,
-                                                String keyServerUri, Proxy proxy) {
+                                                ParcelableHkpKeyserver hkpKeyserver, ParcelableProxy proxy) {
 
         // get entries from cached file
         try {
             IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
             int numEntries = it.getSize();
 
-            return serialKeyRingImport(it, numEntries, keyServerUri, mProgressable, proxy);
+            return serialKeyRingImport(it, numEntries, hkpKeyserver, mProgressable, proxy);
         } catch (IOException e) {
 
             // Special treatment here, we need a lot
@@ -129,14 +130,14 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
      *
      * @param entries      keys to import
      * @param num          number of keys to import
-     * @param keyServerUri contains uri of keyserver to import from, if it is an import from cloud
+     * @param hkpKeyserver contains uri of keyserver to import from, if it is an import from cloud
      * @param progressable Allows multi-threaded import to supply a progressable that ignores the
      *                     progress of a single key being imported
      */
     @NonNull
     private ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
-                                                String keyServerUri, Progressable progressable,
-                                                @NonNull Proxy proxy) {
+                                                ParcelableHkpKeyserver hkpKeyserver, Progressable progressable,
+                                                @NonNull ParcelableProxy proxy) {
         if (progressable != null) {
             progressable.setProgress(R.string.progress_importing, 0, 100);
         }
@@ -158,7 +159,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
         KeybaseKeyserver keybaseServer = null;
         FacebookKeyserver facebookServer = null;
-        HkpKeyserver keyServer = null;
+        ParcelableHkpKeyserver keyServer = null;
 
         // iterate over all entries
         while (entries.hasNext()) {
@@ -187,12 +188,12 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
                     // If we have a keyServerUri and a fingerprint or at least a keyId,
                     // download from HKP
-                    if (keyServerUri != null
+                    if (hkpKeyserver != null
                             && (entry.mKeyIdHex != null || entry.mExpectedFingerprint != null)) {
                         // Make sure we have the keyserver instance cached
                         if (keyServer == null) {
-                            log.add(LogType.MSG_IMPORT_KEYSERVER, 1, keyServerUri);
-                            keyServer = new HkpKeyserver(keyServerUri, proxy);
+                            log.add(LogType.MSG_IMPORT_KEYSERVER, 1, hkpKeyserver);
+                            keyServer = hkpKeyserver;
                         }
 
                         try {
@@ -201,10 +202,10 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                             if (entry.mExpectedFingerprint != null) {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" +
                                         entry.mExpectedFingerprint.substring(24));
-                                data = keyServer.get("0x" + entry.mExpectedFingerprint).getBytes();
+                                data = keyServer.get("0x" + entry.mExpectedFingerprint, proxy).getBytes();
                             } else {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
-                                data = keyServer.get(entry.mKeyIdHex).getBytes();
+                                data = keyServer.get(entry.mKeyIdHex, proxy).getBytes();
                             }
                             key = UncachedKeyRing.decodeFromData(data);
                             if (key != null) {
@@ -222,12 +223,12 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     if (entry.mKeybaseName != null) {
                         // Make sure we have this cached
                         if (keybaseServer == null) {
-                            keybaseServer = new KeybaseKeyserver(proxy);
+                            keybaseServer = new KeybaseKeyserver();
                         }
 
                         try {
                             log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.mKeybaseName);
-                            byte[] data = keybaseServer.get(entry.mKeybaseName).getBytes();
+                            byte[] data = keybaseServer.get(entry.mKeybaseName, proxy).getBytes();
                             UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
 
                             if (keybaseKey != null) {
@@ -260,12 +261,12 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     if (entry.mFbUsername != null) {
                         // Make sure we have this cached
                         if (facebookServer == null) {
-                            facebookServer = new FacebookKeyserver(proxy);
+                            facebookServer = new FacebookKeyserver();
                         }
 
                         try {
                             log.add(LogType.MSG_IMPORT_FETCH_FACEBOOK, 2, entry.mFbUsername);
-                            byte[] data = facebookServer.get(entry.mFbUsername).getBytes();
+                            byte[] data = facebookServer.get(entry.mFbUsername, proxy).getBytes();
                             UncachedKeyRing facebookKey = UncachedKeyRing.decodeFromData(data);
 
                             if (facebookKey != null) {
@@ -425,7 +426,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     @Override
     public ImportKeyResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
         ArrayList<ParcelableKeyRing> keyList = importInput.mKeyList;
-        String keyServer = importInput.mKeyserver;
+        ParcelableHkpKeyserver keyServer = importInput.mKeyserver;
 
         ImportKeyResult result;
 
@@ -435,7 +436,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
             result = serialKeyRingImport(cache, null, null);
         } else {
-            Proxy proxy;
+            ParcelableProxy proxy;
             if (cryptoInput.getParcelableProxy() == null) {
                 // explicit proxy not set
                 if(!OrbotHelper.isOrbotInRequiredState(mContext)) {
@@ -443,9 +444,9 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     return new ImportKeyResult(null,
                             RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
                 }
-                proxy = Preferences.getPreferences(mContext).getProxyPrefs().getProxy();
+                proxy = Preferences.getPreferences(mContext).getParcelableProxy();
             } else {
-                proxy = cryptoInput.getParcelableProxy().getProxy();
+                proxy = cryptoInput.getParcelableProxy();
             }
 
             result = multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer, proxy);
@@ -457,8 +458,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     @NonNull
     private ImportKeyResult multiThreadedKeyImport(@NonNull Iterator<ParcelableKeyRing> keyListIterator,
-                                                   int totKeys, final String keyServer,
-                                                   final Proxy proxy) {
+                                                   int totKeys, final ParcelableHkpKeyserver hkpKeyserver,
+                                                   final ParcelableProxy proxy) {
         Log.d(Constants.TAG, "Multi-threaded key import starting");
         KeyImportAccumulator accumulator = new KeyImportAccumulator(totKeys, mProgressable);
 
@@ -487,7 +488,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     ArrayList<ParcelableKeyRing> list = new ArrayList<>();
                     list.add(pkRing);
 
-                    return serialKeyRingImport(list.iterator(), 1, keyServer, ignoreProgressable, proxy);
+                    return serialKeyRingImport(list.iterator(), 1, hkpKeyserver, ignoreProgressable, proxy);
                 }
             };
 

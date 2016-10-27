@@ -100,6 +100,7 @@ import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -128,7 +129,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     protected Uri mDataUri;
 
     // For CryptoOperationHelper.Callback
-    private String mKeyserver;
+    private ParcelableHkpKeyserver mKeyserver;
     private ArrayList<ParcelableKeyRing> mKeyList;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
     private CryptoOperationHelper<ChangeUnlockParcel, EditKeyResult> mEditOpHelper;

@@ -18,6 +18,8 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,12 +70,12 @@ public abstract class Keyserver {
         private static final long serialVersionUID = -507574859137295530L;
     }
 
-    public abstract List<ImportKeysListEntry> search(String query)
+    public abstract List<ImportKeysListEntry> search(String query, ParcelableProxy proxy)
             throws QueryFailedException, QueryNeedsRepairException;
 
-    public abstract String get(String keyIdHex) throws QueryFailedException;
+    public abstract String get(String keyIdHex, ParcelableProxy proxy) throws QueryFailedException;
 
-    public abstract void add(String armoredKey) throws AddKeyException;
+    public abstract void add(String armoredKey, ParcelableProxy proxy) throws AddKeyException;
 
     public static String readAll(InputStream in, String encoding) throws IOException {
         ByteArrayOutputStream raw = new ByteArrayOutputStream();

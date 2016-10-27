@@ -147,7 +147,7 @@ public final class Constants {
 
     public static final class Defaults {
         public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu";
-        public static final int PREF_VERSION = 6;
+        public static final int PREF_VERSION = 7;
     }
 
     public static final class key {

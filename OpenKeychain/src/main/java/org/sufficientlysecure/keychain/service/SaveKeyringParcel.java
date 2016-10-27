@@ -22,6 +22,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.Serializable;
@@ -66,7 +67,7 @@ public class SaveKeyringParcel implements Parcelable {
     // private because they have to be set together with setUpdateOptions
     private boolean mUpload;
     private boolean mUploadAtomic;
-    private String mKeyserver;
+    private ParcelableHkpKeyserver mKeyserver;
 
     // private because we have to set other details like key id
     private ChangeUnlockParcel mNewUnlock;
@@ -97,10 +98,10 @@ public class SaveKeyringParcel implements Parcelable {
         mKeyserver = null;
     }
 
-    public void setUpdateOptions(boolean upload, boolean uploadAtomic, String keysever) {
+    public void setUpdateOptions(boolean upload, boolean uploadAtomic, ParcelableHkpKeyserver keyserver) {
         mUpload = upload;
         mUploadAtomic = uploadAtomic;
-        mKeyserver = keysever;
+        mKeyserver = keyserver;
     }
 
     public void setNewUnlock(ChangeUnlockParcel parcel) {
@@ -123,7 +124,7 @@ public class SaveKeyringParcel implements Parcelable {
         return mUploadAtomic;
     }
 
-    public String getUploadKeyserver() {
+    public ParcelableHkpKeyserver getUploadKeyserver() {
         return mKeyserver;
     }
 
@@ -278,7 +279,7 @@ public class SaveKeyringParcel implements Parcelable {
 
         mUpload = source.readByte() != 0;
         mUploadAtomic = source.readByte() != 0;
-        mKeyserver = source.readString();
+        mKeyserver = source.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
     }
 
     @Override
@@ -307,7 +308,7 @@ public class SaveKeyringParcel implements Parcelable {
 
         destination.writeByte((byte) (mUpload ? 1 : 0));
         destination.writeByte((byte) (mUploadAtomic ? 1 : 0));
-        destination.writeString(mKeyserver);
+        destination.writeParcelable(mKeyserver, flags);
     }
 
     public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {

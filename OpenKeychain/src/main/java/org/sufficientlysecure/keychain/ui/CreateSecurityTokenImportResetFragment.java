@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.SecurityTokenListenerFragment;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
@@ -73,7 +74,7 @@ public class CreateSecurityTokenImportResetFragment
     private View mResetWarning;
 
     // for CryptoOperationFragment key import
-    private String mKeyserver;
+    private ParcelableHkpKeyserver mKeyserver;
     private ArrayList<ParcelableKeyRing> mKeyList;
 
     public static Fragment newInstance(byte[] scannedFingerprints, byte[] nfcAid, String userId) {

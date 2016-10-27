@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
@@ -79,7 +80,7 @@ public class ImportKeysActivity extends BaseActivity
     public static final String TAG_FRAG_TOP = "frag_top";
 
     // for CryptoOperationHelper.Callback
-    private String mKeyserver;
+    private ParcelableHkpKeyserver mKeyserver;
     private ArrayList<ParcelableKeyRing> mKeyList;
 
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
@@ -233,8 +234,9 @@ public class ImportKeysActivity extends BaseActivity
                     Notify.create(this, R.string.import_url_warn_no_search_parameter, Notify.LENGTH_INDEFINITE,
                             Notify.Style.WARN).show();
                 }
+                ParcelableHkpKeyserver keyserver = new ParcelableHkpKeyserver(dataUri.getAuthority());
                 Preferences.CloudSearchPrefs cloudSearchPrefs = new Preferences.CloudSearchPrefs(
-                        true, true, true, dataUri.getAuthority());
+                        true, true, true, keyserver);
                 // we allow our users to edit the query if they wish
                 startTopCloudFragment(query, false, cloudSearchPrefs);
                 // search immediately (if query is not null)

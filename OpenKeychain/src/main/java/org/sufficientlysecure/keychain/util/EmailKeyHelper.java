@@ -19,15 +19,14 @@ package org.sufficientlysecure.keychain.util;
 
 import android.content.Context;
 
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,14 +40,15 @@ public class EmailKeyHelper {
             implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
         private ArrayList<ParcelableKeyRing> mKeyList;
-        private String mKeyserver;
+        private ParcelableHkpKeyserver mKeyserver;
 
-        public ImportContactKeysCallback(Context context, String keyserver, Proxy proxy) {
+        public ImportContactKeysCallback(Context context, ParcelableHkpKeyserver keyserver,
+                                         ParcelableProxy proxy) {
             this(context, new ContactHelper(context).getContactMails(), keyserver, proxy);
         }
 
-        public ImportContactKeysCallback(Context context, List<String> mails, String keyserver,
-                                         Proxy proxy) {
+        public ImportContactKeysCallback(Context context, List<String> mails,
+                                         ParcelableHkpKeyserver keyserver, ParcelableProxy proxy) {
             Set<ImportKeysListEntry> entries = new HashSet<>();
             for (String mail : mails) {
                 entries.addAll(getEmailKeys(context, mail, proxy));
@@ -62,39 +62,41 @@ public class EmailKeyHelper {
             mKeyList = keys;
             mKeyserver = keyserver;
         }
+
         @Override
         public ImportKeyringParcel createOperationInput() {
             return new ImportKeyringParcel(mKeyList, mKeyserver);
         }
     }
 
-    public static Set<ImportKeysListEntry> getEmailKeys(Context context, String mail, Proxy proxy) {
+    public static Set<ImportKeysListEntry> getEmailKeys(Context context, String mail,
+                                                        ParcelableProxy proxy) {
         Set<ImportKeysListEntry> keys = new HashSet<>();
 
         // Try _hkp._tcp SRV record first
         String[] mailparts = mail.split("@");
         if (mailparts.length == 2) {
-            HkpKeyserver hkp = HkpKeyserver.resolve(mailparts[1], proxy);
+            ParcelableHkpKeyserver hkp = ParcelableHkpKeyserver.resolve(mailparts[1]);
             if (hkp != null) {
-                keys.addAll(getEmailKeys(mail, hkp));
+                keys.addAll(getEmailKeys(mail, hkp, proxy));
             }
         }
 
         if (keys.isEmpty()) {
             // Most users don't have the SRV record, so ask a default server as well
-            String server = Preferences.getPreferences(context).getPreferredKeyserver();
+            ParcelableHkpKeyserver server = Preferences.getPreferences(context).getPreferredKeyserver();
             if (server != null) {
-                HkpKeyserver hkp = new HkpKeyserver(server, proxy);
-                keys.addAll(getEmailKeys(mail, hkp));
+                keys.addAll(getEmailKeys(mail, server, proxy));
             }
         }
         return keys;
     }
 
-    public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer) {
+    public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer,
+                                                         ParcelableProxy proxy) {
         Set<ImportKeysListEntry> keys = new HashSet<>();
         try {
-            for (ImportKeysListEntry key : keyServer.search(mail)) {
+            for (ImportKeysListEntry key : keyServer.search(mail, proxy)) {
                 if (key.isRevoked() || key.isExpired()) continue;
                 for (String userId : key.getUserIds()) {
                     if (userId.toLowerCase().contains(mail.toLowerCase(Locale.ENGLISH))) {

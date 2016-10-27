@@ -22,13 +22,15 @@ package org.sufficientlysecure.keychain.service;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+
 public class RevokeKeyringParcel implements Parcelable {
 
     final public long mMasterKeyId;
     final public boolean mUpload;
-    final public String mKeyserver;
+    final public ParcelableHkpKeyserver mKeyserver;
 
-    public RevokeKeyringParcel(long masterKeyId, boolean upload, String keyserver) {
+    public RevokeKeyringParcel(long masterKeyId, boolean upload, ParcelableHkpKeyserver keyserver) {
         mMasterKeyId = masterKeyId;
         mUpload = upload;
         mKeyserver = keyserver;
@@ -37,7 +39,7 @@ public class RevokeKeyringParcel implements Parcelable {
     protected RevokeKeyringParcel(Parcel in) {
         mMasterKeyId = in.readLong();
         mUpload = in.readByte() != 0x00;
-        mKeyserver = in.readString();
+        mKeyserver = in.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
     }
 
     @Override
@@ -49,7 +51,7 @@ public class RevokeKeyringParcel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(mMasterKeyId);
         dest.writeByte((byte) (mUpload ? 0x01 : 0x00));
-        dest.writeString(mKeyserver);
+        dest.writeParcelable(mKeyserver, flags);
     }
 
     public static final Parcelable.Creator<RevokeKeyringParcel> CREATOR = new Parcelable.Creator<RevokeKeyringParcel>() {
