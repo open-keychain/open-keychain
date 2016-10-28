@@ -279,7 +279,6 @@ android {
     }
 
     dexOptions {
-        incremental = true
         preDexLibraries = true
         // dexInProcess requires much RAM, which is not available on all dev systems
         dexInProcess = false
