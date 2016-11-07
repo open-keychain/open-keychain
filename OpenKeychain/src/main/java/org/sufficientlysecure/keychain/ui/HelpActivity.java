@@ -104,6 +104,9 @@ public class HelpActivity extends BaseActivity {
             donationsBundle.putString(DonationsFragment.ARG_PAYPAL_USER, BuildConfig.PAYPAL_USER);
             donationsBundle.putString(DonationsFragment.ARG_PAYPAL_ITEM_NAME,
                     getString(R.string.help_donation_paypal_item));
+            donationsBundle.putBoolean(DonationsFragment.ARG_FLATTR_ENABLED, true);
+            donationsBundle.putString(DonationsFragment.ARG_FLATTR_PROJECT_URL, BuildConfig.FLATTR_PROJECT_URL);
+            donationsBundle.putString(DonationsFragment.ARG_FLATTR_URL, BuildConfig.FLATTR_URL);
             donationsBundle.putBoolean(DonationsFragment.ARG_BITCOIN_ENABLED, true);
             donationsBundle.putString(DonationsFragment.ARG_BITCOIN_ADDRESS, BuildConfig.BITCOIN_ADDRESS);
         }
