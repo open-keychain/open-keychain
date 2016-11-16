@@ -28,6 +28,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
@@ -285,6 +286,9 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
+            if (Constants.DEBUG_LOG_DB_QUERIES) {
+                DatabaseUtils.dumpCursor(cursor);
+            }
         }
 
         Log.d(Constants.TAG,
