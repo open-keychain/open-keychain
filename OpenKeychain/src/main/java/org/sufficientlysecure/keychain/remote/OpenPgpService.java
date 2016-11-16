@@ -519,11 +519,11 @@ public class OpenPgpService extends Service {
                                         signatureResult.getKeyId()));
                         break;
                     }
-                    case OpenPgpSignatureResult.RESULT_VALID_CONFIRMED:
-                    case OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED:
+                    case OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED:
+                    case OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED:
                     case OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED:
                     case OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED:
-                    case OpenPgpSignatureResult.RESULT_INVALID_INSECURE: {
+                    case OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE: {
                         // If signature key is known, return PendingIntent to show key
                         result.putExtra(OpenPgpApi.RESULT_INTENT,
                                 piFactory.createShowKeyPendingIntent(data, signatureResult.getKeyId()));
@@ -546,7 +546,7 @@ public class OpenPgpService extends Service {
 
                 if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 8) {
                     // RESULT_INVALID_INSECURE has been added in version 8, fallback to RESULT_INVALID_SIGNATURE
-                    if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_INSECURE) {
+                    if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE) {
                         signatureResult = OpenPgpSignatureResult.createWithInvalidSignature();
                     }
 

@@ -28,6 +28,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.apache.tools.ant.util.StringUtils;
+import org.bouncycastle.bcpg.BCPGInputStream;
+import org.bouncycastle.bcpg.Packet;
+import org.bouncycastle.bcpg.PacketTags;
+import org.bouncycastle.bcpg.PublicKeyEncSessionPacket;
+import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,13 +46,6 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.bcpg.BCPGInputStream;
-import org.bouncycastle.bcpg.Packet;
-import org.bouncycastle.bcpg.PacketTags;
-import org.bouncycastle.bcpg.PublicKeyEncSessionPacket;
-import org.bouncycastle.bcpg.sig.KeyFlags;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openpgp.PGPKeyFlags;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -336,7 +335,7 @@ public class PgpEncryptDecryptTest {
             Assert.assertEquals("decryptionResult should be RESULT_NOT_ENCRYPTED",
                     OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED, result.getDecryptionResult().getResult());
             Assert.assertEquals("signatureResult should be RESULT_VALID_CONFIRMED",
-                    OpenPgpSignatureResult.RESULT_VALID_CONFIRMED, result.getSignatureResult().getResult());
+                    OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED, result.getSignatureResult().getResult());
 
             OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
@@ -398,7 +397,7 @@ public class PgpEncryptDecryptTest {
             Assert.assertEquals("decryptionResult should be RESULT_NOT_ENCRYPTED",
                     OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED, result.getDecryptionResult().getResult());
             Assert.assertEquals("signatureResult should be RESULT_VALID_CONFIRMED",
-                    OpenPgpSignatureResult.RESULT_VALID_CONFIRMED, result.getSignatureResult().getResult());
+                    OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED, result.getSignatureResult().getResult());
 
             OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
@@ -454,7 +453,7 @@ public class PgpEncryptDecryptTest {
             Assert.assertEquals("decryptionResult should be RESULT_NOT_ENCRYPTED",
                     OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED, result.getDecryptionResult().getResult());
             Assert.assertEquals("signatureResult should be RESULT_VALID_CONFIRMED",
-                    OpenPgpSignatureResult.RESULT_VALID_CONFIRMED, result.getSignatureResult().getResult());
+                    OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED, result.getSignatureResult().getResult());
 
             // TODO should detached verify return any metadata?
             // OpenPgpMetadata metadata = result.getDecryptionMetadata();
@@ -901,7 +900,7 @@ public class PgpEncryptDecryptTest {
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertEquals("signature should be verified and certified",
-                    OpenPgpSignatureResult.RESULT_VALID_CONFIRMED, result.getSignatureResult().getResult());
+                    OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED, result.getSignatureResult().getResult());
 
             OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
