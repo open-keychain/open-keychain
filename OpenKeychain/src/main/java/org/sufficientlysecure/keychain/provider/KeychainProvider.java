@@ -79,6 +79,10 @@ public class KeychainProvider extends ContentProvider {
     private static final int UPDATED_KEYS = 500;
     private static final int UPDATED_KEYS_SPECIFIC = 501;
 
+    private static final int TRUST_IDS_BY_MASTER_KEY_ID = 601;
+    private static final int TRUST_IDS_BY_PACKAGE_NAME = 602;
+    private static final int TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID = 603;
+
     protected UriMatcher mUriMatcher;
 
     /**
@@ -190,6 +194,22 @@ public class KeychainProvider extends ContentProvider {
 
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
                 + KeychainContract.PATH_ALLOWED_KEYS, API_ALLOWED_KEYS);
+
+        /**
+         * Trust Identity access
+         *
+         * <pre>
+         * trust_ids/by_key_id/_
+         *
+         * </pre>
+         */
+        matcher.addURI(authority, KeychainContract.BASE_TRUST_IDENTITIES + "/" +
+                KeychainContract.PATH_BY_KEY_ID + "/*", TRUST_IDS_BY_MASTER_KEY_ID);
+        matcher.addURI(authority, KeychainContract.BASE_TRUST_IDENTITIES + "/" +
+                KeychainContract.PATH_BY_PACKAGE_NAME + "/*", TRUST_IDS_BY_PACKAGE_NAME);
+        matcher.addURI(authority, KeychainContract.BASE_TRUST_IDENTITIES + "/" +
+                KeychainContract.PATH_BY_PACKAGE_NAME + "/*/*", TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID);
+
 
         /**
          * to access table containing last updated dates of keys
@@ -631,6 +651,45 @@ public class KeychainProvider extends ContentProvider {
                     qb.appendWhereEscapeString(uri.getPathSegments().get(3));
                 } else {
                     qb.appendWhere(" AND " + Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
+                }
+
+                break;
+            }
+
+            case TRUST_IDS_BY_MASTER_KEY_ID:
+            case TRUST_IDS_BY_PACKAGE_NAME:
+            case TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID: {
+                if (selection != null || selectionArgs != null) {
+                    throw new UnsupportedOperationException();
+                }
+
+                HashMap<String, String> projectionMap = new HashMap<>();
+                projectionMap.put(ApiTrustIdentity._ID, "oid AS " + ApiTrustIdentity._ID);
+                projectionMap.put(ApiTrustIdentity.PACKAGE_NAME, ApiTrustIdentity.PACKAGE_NAME);
+                projectionMap.put(ApiTrustIdentity.IDENTIFIER, ApiTrustIdentity.IDENTIFIER);
+                projectionMap.put(ApiTrustIdentity.MASTER_KEY_ID, ApiTrustIdentity.MASTER_KEY_ID);
+                projectionMap.put(ApiTrustIdentity.LAST_UPDATED, ApiTrustIdentity.LAST_UPDATED);
+                qb.setProjectionMap(projectionMap);
+
+                qb.setTables(Tables.API_TRUST_IDENTITIES);
+
+                if (match == TRUST_IDS_BY_MASTER_KEY_ID) {
+                    long masterKeyId = Long.parseLong(uri.getLastPathSegment());
+
+                    selection = Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.MASTER_KEY_ID + " = ?";
+                    selectionArgs = new String[] { Long.toString(masterKeyId) };
+                } else if (match == TRUST_IDS_BY_PACKAGE_NAME) {
+                    String packageName = uri.getPathSegments().get(2);
+
+                    selection = Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.PACKAGE_NAME + " = ?";
+                    selectionArgs = new String[] { packageName };
+                } else { // TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID
+                    String packageName = uri.getPathSegments().get(2);
+                    String trustId = uri.getPathSegments().get(3);
+
+                    selection = Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.PACKAGE_NAME + " = ? AND " +
+                            Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.IDENTIFIER + " = ?";
+                    selectionArgs = new String[] { packageName, trustId };
                 }
 
                 break;

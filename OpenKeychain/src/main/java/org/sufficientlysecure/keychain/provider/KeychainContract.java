@@ -127,6 +127,9 @@ public class KeychainContract {
     public static final String BASE_API_APPS = "api_apps";
     public static final String PATH_ALLOWED_KEYS = "allowed_keys";
 
+    public static final String PATH_BY_PACKAGE_NAME = "by_package_name";
+    public static final String PATH_BY_KEY_ID = "by_key_id";
+
     public static final String BASE_TRUST_IDENTITIES = "trust_ids";
 
     public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
@@ -344,24 +347,12 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_TRUST_IDENTITIES).build();
 
-        /**
-         * Use if multiple items get returned
-         */
-        public static final String CONTENT_TYPE
-                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.trust_ids";
-
-        /**
-         * Use if a single item is returned
-         */
-        public static final String CONTENT_ITEM_TYPE
-                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.trust_ids";
-
-        public static Uri buildByPackageNameUri(String packageName) {
-            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).build();
+        public static Uri buildByKeyUri(Uri uri) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(uri.getPathSegments().get(1)).build();
         }
 
-        public static Uri buildByPackageNameAndTrustIdUri(String packageName, String trustId) {
-            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendEncodedPath(trustId).build();
+        public static Uri buildByPackageNameAndTrustId(String packageName, String trustId) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName).appendPath(trustId).build();
         }
     }
 

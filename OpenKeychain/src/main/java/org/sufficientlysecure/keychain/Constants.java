@@ -32,7 +32,7 @@ import java.net.Proxy;
 public final class Constants {
 
     public static final boolean DEBUG = BuildConfig.DEBUG;
-    public static final boolean DEBUG_LOG_DB_QUERIES = false;
+    public static final boolean DEBUG_LOG_DB_QUERIES = true;
     public static final boolean DEBUG_EXPLAIN_QUERIES = false;
     public static final boolean DEBUG_SYNC_REMOVE_CONTACTS = false;
     public static final boolean DEBUG_KEYSERVER_SYNC = false;
