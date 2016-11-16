@@ -158,8 +158,8 @@ public class InteropTest {
             // Certain keys are too short, so we check appropriately.
             int code = result.getSignatureResult().getResult();
             Assert.assertTrue(base + ": should have a signature",
-                    (code == OpenPgpSignatureResult.RESULT_INVALID_INSECURE) ||
-                    (code == OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED));
+                    (code == OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE) ||
+                    (code == OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED));
         }
         OpenPgpMetadata metadata = result.getDecryptionMetadata();
         Assert.assertEquals(base + ": filesize must be correct",

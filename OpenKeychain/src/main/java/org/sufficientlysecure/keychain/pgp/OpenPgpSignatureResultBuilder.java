@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.pgp;
 import java.util.ArrayList;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.openintents.openpgp.OpenPgpSignatureResult.SenderStatusResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
@@ -42,7 +43,7 @@ public class OpenPgpSignatureResultBuilder {
     private ArrayList<String> mUserIds = new ArrayList<>();
     private ArrayList<String> mConfirmedUserIds;
     private long mKeyId;
-    private int mSenderStatus;
+    private SenderStatusResult mSenderStatusResult;
 
     // builder
     private boolean mSignatureAvailable = false;
@@ -125,14 +126,14 @@ public class OpenPgpSignatureResultBuilder {
 
             if (mSenderAddress != null) {
                 if (userIdListContainsAddress(mSenderAddress, confirmedUserIds)) {
-                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_CONFIRMED);
+                    mSenderStatusResult = SenderStatusResult.USER_ID_CONFIRMED;
                 } else if (userIdListContainsAddress(mSenderAddress, allUserIds)) {
-                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_UNCONFIRMED);
+                    mSenderStatusResult = SenderStatusResult.USER_ID_UNCONFIRMED;
                 } else {
-                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_MISSING);
+                    mSenderStatusResult = SenderStatusResult.USER_ID_MISSING;
                 }
             } else {
-                setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_NO_SENDER);
+                mSenderStatusResult = SenderStatusResult.UNKNOWN;
             }
 
         } catch (NotFoundException e) {
@@ -189,14 +190,11 @@ public class OpenPgpSignatureResultBuilder {
         }
 
         return OpenPgpSignatureResult.createWithValidSignature(
-                signatureStatus, mPrimaryUserId, mKeyId, mUserIds, mConfirmedUserIds, mSenderStatus);
+                signatureStatus, mPrimaryUserId, mKeyId, mUserIds, mConfirmedUserIds, mSenderStatusResult);
     }
 
     public void setSenderAddress(String senderAddress) {
         mSenderAddress = senderAddress;
     }
 
-    public void setSenderStatus(int senderStatus) {
-        mSenderStatus = senderStatus;
-    }
 }
