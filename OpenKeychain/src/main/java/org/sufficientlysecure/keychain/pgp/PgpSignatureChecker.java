@@ -237,6 +237,7 @@ class PgpSignatureChecker {
             signatureResultBuilder.setInsecure(true);
         }
 
+        signatureResultBuilder.setSignatureTimestamp(signature.getCreationTime());
         signatureResultBuilder.setValidSignature(validSignature);
 
     }
@@ -271,6 +272,7 @@ class PgpSignatureChecker {
             signatureResultBuilder.setInsecure(true);
         }
 
+        signatureResultBuilder.setSignatureTimestamp(messageSignature.getCreationTime());
         signatureResultBuilder.setValidSignature(validSignature);
 
         return true;

@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.SenderStatusResult;
@@ -54,6 +55,7 @@ public class OpenPgpSignatureResultBuilder {
     private boolean mIsKeyExpired = false;
     private boolean mInsecure = false;
     private String mSenderAddress;
+    private Date mSignatureTimestamp;
 
     public OpenPgpSignatureResultBuilder(ProviderHelper providerHelper) {
         this.mProviderHelper = providerHelper;
@@ -65,6 +67,10 @@ public class OpenPgpSignatureResultBuilder {
 
     public void setKeyId(long keyId) {
         this.mKeyId = keyId;
+    }
+
+    public void setSignatureTimestamp(Date signatureTimestamp) {
+        mSignatureTimestamp = signatureTimestamp;
     }
 
     public void setKnownKey(boolean knownKey) {
@@ -163,7 +169,7 @@ public class OpenPgpSignatureResultBuilder {
 
         if (!mKnownKey) {
             Log.d(Constants.TAG, "RESULT_KEY_MISSING");
-            return OpenPgpSignatureResult.createWithKeyMissing(mKeyId);
+            return OpenPgpSignatureResult.createWithKeyMissing(mKeyId, mSignatureTimestamp);
         }
 
         if (!mValidSignature) {
@@ -190,7 +196,7 @@ public class OpenPgpSignatureResultBuilder {
         }
 
         return OpenPgpSignatureResult.createWithValidSignature(
-                signatureStatus, mPrimaryUserId, mKeyId, mUserIds, mConfirmedUserIds, mSenderStatusResult);
+                signatureStatus, mPrimaryUserId, mKeyId, mUserIds, mConfirmedUserIds, mSenderStatusResult, mSignatureTimestamp);
     }
 
     public void setSenderAddress(String senderAddress) {
