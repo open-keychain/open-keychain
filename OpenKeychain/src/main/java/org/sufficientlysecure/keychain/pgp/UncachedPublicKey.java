@@ -105,6 +105,24 @@ public class UncachedPublicKey {
      *
      */
     public String getPrimaryUserId() {
+        byte[] found = getRawPrimaryUserId();
+        if (found != null) {
+            return Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(found);
+        } else {
+            return null;
+        }
+    }
+
+    /** Returns the primary user id, as indicated by the public key's self certificates.
+     *
+     * This is an expensive operation, since potentially a lot of certificates (and revocations)
+     * have to be checked, and even then the result is NOT guaranteed to be constant through a
+     * canonicalization operation.
+     *
+     * Returns null if there is no primary user id (as indicated by certificates)
+     *
+     */
+    public byte[] getRawPrimaryUserId() {
         byte[] found = null;
         PGPSignature foundSig = null;
         // noinspection unchecked
@@ -161,11 +179,7 @@ public class UncachedPublicKey {
                 }
             }
         }
-        if (found != null) {
-            return Utf8Util.fromUTF8ByteArrayReplaceBadEncoding(found);
-        } else {
-            return null;
-        }
+        return found;
     }
 
     /**

@@ -61,6 +61,10 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return getRing().getPublicKey().getFingerprint();
     }
 
+    public byte[] getRawPrimaryUserId() throws PgpKeyNotFoundException {
+        return getPublicKey().getRawPrimaryUserId();
+    }
+
     public String getPrimaryUserId() throws PgpKeyNotFoundException {
         return getPublicKey().getPrimaryUserId();
     }
@@ -133,6 +137,15 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         } catch (PgpKeyNotFoundException e) {
             return false;
         }
+    }
+
+    public long getSigningId() throws PgpKeyNotFoundException {
+        for(CanonicalizedPublicKey key : publicKeyIterator()) {
+            if (key.canSign() && key.isValid()) {
+                return key.getKeyId();
+            }
+        }
+        throw new PgpKeyNotFoundException("No valid signing key found!");
     }
 
     public void encode(OutputStream stream) throws IOException {

@@ -532,6 +532,11 @@ public class OpenPgpService extends Service {
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
 
+                if (data.getBooleanExtra(OpenPgpApi.EXTRA_MINIMIZE, false)) {
+                    String userIdToKeep = data.getStringExtra(OpenPgpApi.EXTRA_MINIMIZE_USER_ID);
+                    keyRing = keyRing.minimize(userIdToKeep);
+                }
+
                 boolean requestedKeyData = outputStream != null;
                 if (requestedKeyData) {
                     boolean requestAsciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, false);
