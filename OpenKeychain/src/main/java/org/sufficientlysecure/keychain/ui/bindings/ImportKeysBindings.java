@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class ImportKeysBindings {
 
-    @BindingAdapter({"app:keyUserId", "app:keySecret", "app:keyRevokedOrExpired", "app:query"})
+    @BindingAdapter({"keyUserId", "keySecret", "keyRevokedOrExpired", "query"})
     public static void setUserId(TextView textView, CharSequence userId, boolean secret,
                                  boolean revokedOrExpired, String query) {
 
@@ -38,7 +38,7 @@ public class ImportKeysBindings {
         }
     }
 
-    @BindingAdapter({"app:keyUserEmail", "app:keyRevokedOrExpired", "app:query"})
+    @BindingAdapter({"keyUserEmail", "keyRevokedOrExpired", "query"})
     public static void setUserEmail(TextView textView, CharSequence userEmail,
                                     boolean revokedOrExpired, String query) {
 
@@ -52,7 +52,7 @@ public class ImportKeysBindings {
         textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpired));
     }
 
-    @BindingAdapter({"app:keyCreation", "app:keyRevokedOrExpired"})
+    @BindingAdapter({"keyCreation", "keyRevokedOrExpired"})
     public static void setCreation(TextView textView, Date creationDate, boolean revokedOrExpired) {
         Context context = textView.getContext();
 

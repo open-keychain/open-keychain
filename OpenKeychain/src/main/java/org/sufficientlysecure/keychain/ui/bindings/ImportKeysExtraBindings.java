@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class ImportKeysExtraBindings {
 
-    @BindingAdapter({"app:keyRevoked", "app:keyExpired"})
+    @BindingAdapter({"keyRevoked", "keyExpired"})
     public static void setStatus(ImageView imageView, boolean revoked, boolean expired) {
         Context context = imageView.getContext();
 
@@ -32,7 +32,7 @@ public class ImportKeysExtraBindings {
         }
     }
 
-    @BindingAdapter({"app:keyId"})
+    @BindingAdapter({"keyId"})
     public static void setKeyId(TextView textView, String keyId) {
         Context context = textView.getContext();
         String text;
@@ -45,7 +45,7 @@ public class ImportKeysExtraBindings {
         textView.setText(text);
     }
 
-    @BindingAdapter({"app:keyUserIds", "app:query"})
+    @BindingAdapter({"keyUserIds", "query"})
     public static void setUserIds(LinearLayout linearLayout, ArrayList userIds, String query) {
 
         linearLayout.removeAllViews();
