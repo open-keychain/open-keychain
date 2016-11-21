@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:paddingLeft="4dp"
     android:paddingRight="?android:attr/scrollbarSize"
-    android:singleLine="true">
+    android:maxLines="1">
 
     <CheckBox
         android:id="@+id/selected"
@@ -27,21 +30,21 @@
             android:id="@+id/select_key_item_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Alice"
+            tools:text="Alice"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             android:id="@+id/select_key_item_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="alice@example.com"
+            tools:text="alice@example.com"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/select_key_item_creation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0xBBBBBBBBBBBBBBB"
+            tools:text="0xBBBBBBBBBBBBBBB"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 

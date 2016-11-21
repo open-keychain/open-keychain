@@ -39,7 +39,7 @@ public class SelectSignKeyIdActivity extends BaseActivity {
     public static final String EXTRA_USER_ID = OpenPgpApi.EXTRA_USER_ID;
     public static final String EXTRA_DATA = "data";
 
-    private static final int REQUEST_CODE_CREATE_KEY = 0x00008884;
+    protected static final int REQUEST_CODE_CREATE_KEY = 0x00008884;
 
     private String mPreferredUserId;
     private Intent mData;
@@ -58,13 +58,6 @@ public class SelectSignKeyIdActivity extends BaseActivity {
                     }
                 });
 
-        TextView createKeyButton = (TextView) findViewById(R.id.api_select_sign_key_create_key);
-        createKeyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createKey(mPreferredUserId);
-            }
-        });
         TextView noneButton = (TextView) findViewById(R.id.api_select_sign_key_none);
         noneButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,20 +79,11 @@ public class SelectSignKeyIdActivity extends BaseActivity {
             return;
         } else {
             Log.d(Constants.TAG, "uri: " + appUri);
-            startListFragments(savedInstanceState, appUri, mData);
+            startListFragments(savedInstanceState, appUri, mData, mPreferredUserId);
         }
     }
 
-    private void createKey(String userId) {
-        OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
-
-        Intent intent = new Intent(this, CreateKeyActivity.class);
-        intent.putExtra(CreateKeyActivity.EXTRA_NAME, userIdSplit.name);
-        intent.putExtra(CreateKeyActivity.EXTRA_EMAIL, userIdSplit.email);
-        startActivityForResult(intent, REQUEST_CODE_CREATE_KEY);
-    }
-
-    private void startListFragments(Bundle savedInstanceState, Uri dataUri, Intent data) {
+    private void startListFragments(Bundle savedInstanceState, Uri dataUri, Intent data, String preferredUserId) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -108,7 +92,8 @@ public class SelectSignKeyIdActivity extends BaseActivity {
         }
 
         // Create an instance of the fragments
-        SelectSignKeyIdListFragment listFragment = SelectSignKeyIdListFragment.newInstance(dataUri, data);
+        SelectSignKeyIdListFragment listFragment = SelectSignKeyIdListFragment
+                .newInstance(dataUri, data, preferredUserId);
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
