@@ -83,7 +83,7 @@ public class FacebookKeyserver extends Keyserver {
 
     @Override
     public String get(String fbUsername, ParcelableProxy proxy) throws QueryFailedException {
-        Log.d(Constants.TAG, "FacebookKeyserver get: " + fbUsername + " using Proxy: " + proxy);
+        Log.d(Constants.TAG, "FacebookKeyserver get: " + fbUsername + " using Proxy: " + proxy.getProxy());
 
         String data = query(fbUsername, proxy);
 
@@ -100,14 +100,21 @@ public class FacebookKeyserver extends Keyserver {
 
     private String query(String fbUsername, ParcelableProxy proxy) throws QueryFailedException {
         try {
-            String request = String.format(FB_KEY_URL_FORMAT, fbUsername);
-            Log.d(Constants.TAG, "fetching from Facebook with: " + request + " proxy: " + proxy);
+            URL url = new URL(String.format(FB_KEY_URL_FORMAT, fbUsername));
+            Log.d(Constants.TAG, "fetching from Facebook with: " + url + " proxy: " + proxy.getProxy());
 
-            URL url = new URL(request);
+            /*
+             * For some URLs such as https://www.facebook.com/adithya.abraham/publickey/download
+             * Facebook redirects to a mobile version (302) and then errors out (500).
+             * Using a desktop User-Agent solves that!
+             */
+            Request request = new Request.Builder()
+                    .url(url)
+                    .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0")
+                    .build();
 
             OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy.getProxy());
-
-            Response response = client.newCall(new Request.Builder().url(url).build()).execute();
+            Response response = client.newCall(request).execute();
 
             // contains body both in case of success or failure
             String responseBody = response.body().string();
@@ -116,7 +123,8 @@ public class FacebookKeyserver extends Keyserver {
                 return responseBody;
             } else {
                 // probably a 404 indicating that the key does not exist
-                throw new QueryFailedException("key for " + fbUsername + " not found on Facebook");
+                throw new QueryFailedException("key for " + fbUsername + " not found on Facebook." +
+                        "response:" + response);
             }
 
         } catch (IOException e) {
@@ -126,7 +134,7 @@ public class FacebookKeyserver extends Keyserver {
                     + (proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy()));
         } catch (TlsHelper.TlsHelperException e) {
             Log.e(Constants.TAG, "Exception in cert pinning", e);
-            throw new QueryFailedException("Exception in cert pinning. ");
+            throw new QueryFailedException("Exception in cert pinning.");
         }
     }
 
