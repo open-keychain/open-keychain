@@ -1,4 +1,3 @@
-[![Stories in Ready](https://badge.waffle.io/open-keychain/open-keychain.png?label=ready&title=Ready)](https://waffle.io/open-keychain/open-keychain)
 # OpenKeychain (for Android)
 
 OpenKeychain is an OpenPGP implementation for Android.  
