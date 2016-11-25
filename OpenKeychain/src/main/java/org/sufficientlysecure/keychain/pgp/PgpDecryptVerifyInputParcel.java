@@ -19,8 +19,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,18 +62,25 @@ public abstract class PgpDecryptVerifyInputParcel implements Parcelable {
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract Builder setInputBytes(byte[] inputBytes);
+
         public abstract Builder setInputUri(Uri inputUri);
+
         public abstract Builder setOutputUri(Uri outputUri);
 
         public abstract Builder setAllowSymmetricDecryption(boolean allowSymmetricDecryption);
+
         public abstract Builder setDecryptMetadataOnly(boolean decryptMetadataOnly);
+
         public abstract Builder setDetachedSignature(byte[] detachedSignature);
+
         public abstract Builder setSenderAddress(String senderAddress);
 
         public abstract Builder setAllowedKeyIds(List<Long> allowedKeyIds);
+
         abstract List<Long> getAllowedKeyIds();
 
         abstract PgpDecryptVerifyInputParcel autoBuild();
+
         public PgpDecryptVerifyInputParcel build() {
             List<Long> allowedKeyIds = getAllowedKeyIds();
             if (allowedKeyIds != null) {

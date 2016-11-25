@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiTrustIdentity;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -909,6 +910,27 @@ public class KeychainProvider extends ContentProvider {
                 case API_APPS_BY_PACKAGE_NAME: {
                     count = db.update(Tables.API_APPS, values,
                             buildDefaultApiAppsSelection(uri, selection), selectionArgs);
+                    break;
+                }
+                case TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID: {
+                    Long masterKeyId = values.getAsLong(ApiTrustIdentity.MASTER_KEY_ID);
+                    long updateTime = values.getAsLong(KeychainContract.ApiTrustIdentity.LAST_UPDATED);
+                    if (masterKeyId == null) {
+                        throw new IllegalArgumentException("master_key_id must be a non-null value!");
+                    }
+
+                    ContentValues actualValues = new ContentValues();
+                    String packageName = uri.getPathSegments().get(2);
+                    actualValues.put(ApiTrustIdentity.PACKAGE_NAME, packageName);
+                    actualValues.put(ApiTrustIdentity.IDENTIFIER, uri.getLastPathSegment());
+                    actualValues.put(ApiTrustIdentity.MASTER_KEY_ID, masterKeyId);
+                    actualValues.put(ApiTrustIdentity.LAST_UPDATED, updateTime);
+
+                    try {
+                        db.replace(Tables.API_TRUST_IDENTITIES, null, actualValues);
+                    } finally {
+                        db.close();
+                    }
                     break;
                 }
                 default: {
