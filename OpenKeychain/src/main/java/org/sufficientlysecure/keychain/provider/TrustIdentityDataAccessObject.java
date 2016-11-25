@@ -19,6 +19,8 @@
 package org.sufficientlysecure.keychain.provider;
 
 
+import java.util.Date;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -82,5 +84,34 @@ public class TrustIdentityDataAccessObject {
         }
 
         return null;
+    }
+
+    public Date getLastUpdateForTrustId(String trustId) {
+        Cursor cursor = mQueryInterface.query(ApiTrustIdentity.buildByPackageNameAndTrustId(packageName, trustId),
+                null, null, null, null);
+
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                long lastUpdated = cursor.getColumnIndex(ApiTrustIdentity.LAST_UPDATED);
+                return new Date(lastUpdated);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    public void setMasterKeyIdForTrustId(String trustId, long masterKeyId, Date date) {
+        Date lastUpdated = getLastUpdateForTrustId(trustId);
+        if (lastUpdated != null && lastUpdated.after(date)) {
+            throw new IllegalArgumentException("Database entry was newer than the one to be inserted! Cannot backdate");
+        }
+
+        ContentValues cv = new ContentValues();
+        cv.put(ApiTrustIdentity.MASTER_KEY_ID, masterKeyId);
+        cv.put(ApiTrustIdentity.LAST_UPDATED, date.getTime());
+        mQueryInterface.update(ApiTrustIdentity.buildByPackageNameAndTrustId(packageName, trustId), cv, null, null);
     }
 }
