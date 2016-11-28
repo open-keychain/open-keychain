@@ -127,6 +127,8 @@ public class KeychainContract {
     public static final String BASE_API_APPS = "api_apps";
     public static final String PATH_ALLOWED_KEYS = "allowed_keys";
 
+    public static final String BASE_TRUST_IDENTITIES = "trust_ids";
+
     public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
         public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
@@ -335,6 +337,31 @@ public class KeychainContract {
         public static Uri buildBaseUri(String packageName) {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ALLOWED_KEYS)
                     .build();
+        }
+    }
+
+    public static class ApiTrustIdentity implements ApiTrustIdentityColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_TRUST_IDENTITIES).build();
+
+        /**
+         * Use if multiple items get returned
+         */
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.trust_ids";
+
+        /**
+         * Use if a single item is returned
+         */
+        public static final String CONTENT_ITEM_TYPE
+                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.trust_ids";
+
+        public static Uri buildByPackageNameUri(String packageName) {
+            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).build();
+        }
+
+        public static Uri buildByPackageNameAndTrustIdUri(String packageName, String trustId) {
+            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendEncodedPath(trustId).build();
         }
     }
 
