@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.remote;
 
 import java.security.AccessControlException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,6 +46,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
+import org.sufficientlysecure.keychain.provider.KeychainExternalContract.ApiTrustIdentity;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
 import org.sufficientlysecure.keychain.util.Log;
@@ -52,6 +54,7 @@ import org.sufficientlysecure.keychain.util.Log;
 public class KeychainExternalProvider extends ContentProvider implements SimpleContentResolverInterface {
     private static final int EMAIL_STATUS = 101;
     private static final int EMAIL_STATUS_INTERNAL = 102;
+    private static final int TRUST_IDENTITY = 201;
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 302;
 
@@ -81,6 +84,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
          */
         matcher.addURI(authority, KeychainExternalContract.BASE_EMAIL_STATUS, EMAIL_STATUS);
         matcher.addURI(authority, KeychainExternalContract.BASE_EMAIL_STATUS + "/*", EMAIL_STATUS_INTERNAL);
+
+        matcher.addURI(authority, KeychainExternalContract.BASE_TRUST_IDENTITIES + "/*", TRUST_IDENTITY);
 
         // can only query status of calling app - for internal use only!
         matcher.addURI(KeychainContract.CONTENT_AUTHORITY, KeychainContract.BASE_API_APPS + "/*", API_APPS_BY_PACKAGE_NAME);
@@ -174,9 +179,12 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                         + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
                         + " WHEN NULL THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
                         + " END AS " + EmailStatus.USER_ID_STATUS);
-                projectionMap.put(EmailStatus.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
                 projectionMap.put(EmailStatus.MASTER_KEY_ID,
                         Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + EmailStatus.MASTER_KEY_ID);
+                projectionMap.put(EmailStatus.USER_ID,
+                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
+                projectionMap.put(EmailStatus.TRUST_ID_LAST_UPDATE, Tables.API_TRUST_IDENTITIES + "." +
+                        ApiTrustIdentity.LAST_UPDATED + " AS " + EmailStatus.TRUST_ID_LAST_UPDATE);
                 qb.setProjectionMap(projectionMap);
 
                 if (projection == null) {
@@ -189,13 +197,18 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                                 + Tables.USER_PACKETS + "." + UserPackets.USER_ID + " IS NOT NULL"
                                 + " AND " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " LIKE " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
                                 + ")"
+                                + " LEFT JOIN " + Tables.API_TRUST_IDENTITIES + " ON ("
+                                + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.IDENTIFIER + " LIKE queried_addresses.address"
+                                + " AND " + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.PACKAGE_NAME + " = \"" + callingPackageName + "\""
+                                + ")"
                                 + " LEFT JOIN " + Tables.CERTS + " ON ("
-                                + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
-                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = " + Tables.CERTS + "." + Certs.RANK
+                                + "(" + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
+                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = " + Tables.CERTS + "." + Certs.RANK + ")"
                                 + ")"
                 );
                 // in case there are multiple verifying certificates
-                groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES;
+                groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
+                        + ", " + Tables.CERTS + "." + UserPackets.MASTER_KEY_ID;
                 List<String> plist = Arrays.asList(projection);
                 if (plist.contains(EmailStatus.USER_ID)) {
                     groupBy += ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID;
@@ -211,6 +224,34 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
                 // uri to watch is all /key_rings/
                 uri = KeyRings.CONTENT_URI;
+                break;
+            }
+
+            case TRUST_IDENTITY: {
+                boolean callerIsAllowed = mApiPermissionHelper.isAllowedIgnoreErrors();
+                if (!callerIsAllowed) {
+                    throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
+                }
+
+                if (projection == null) {
+                    throw new IllegalArgumentException("Please provide a projection!");
+                }
+
+                HashMap<String, String> projectionMap = new HashMap<>();
+                projectionMap.put(ApiTrustIdentity._ID, "oid AS " + ApiTrustIdentity._ID);
+                projectionMap.put(ApiTrustIdentity.IDENTIFIER, ApiTrustIdentity.IDENTIFIER);
+                projectionMap.put(ApiTrustIdentity.MASTER_KEY_ID, ApiTrustIdentity.MASTER_KEY_ID);
+                projectionMap.put(ApiTrustIdentity.LAST_UPDATED, ApiTrustIdentity.LAST_UPDATED);
+                qb.setProjectionMap(projectionMap);
+
+                qb.setTables(Tables.API_TRUST_IDENTITIES);
+
+                // allow access to columns of the calling package exclusively!
+                qb.appendWhere(Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.PACKAGE_NAME +
+                        " = " + mApiPermissionHelper.getCurrentCallingPackage());
+
+                qb.appendWhere(Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.IDENTIFIER + " = ");
+                qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 break;
             }
@@ -273,12 +314,64 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        throw new UnsupportedOperationException();
+        Log.v(Constants.TAG, "insert(uri=" + uri + ")");
+
+        int match = mUriMatcher.match(uri);
+        if (match != TRUST_IDENTITY) {
+            throw new UnsupportedOperationException();
+        }
+
+        boolean callerIsAllowed = mApiPermissionHelper.isAllowedIgnoreErrors();
+        if (!callerIsAllowed) {
+            throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
+        }
+
+        Long masterKeyId = values.getAsLong(ApiTrustIdentity.MASTER_KEY_ID);
+        if (masterKeyId == null) {
+            throw new IllegalArgumentException("master_key_id must be a non-null value!");
+        }
+
+        ContentValues actualValues = new ContentValues();
+        actualValues.put(ApiTrustIdentity.PACKAGE_NAME, mApiPermissionHelper.getCurrentCallingPackage());
+        actualValues.put(ApiTrustIdentity.IDENTIFIER, uri.getLastPathSegment());
+        actualValues.put(ApiTrustIdentity.MASTER_KEY_ID, masterKeyId);
+        actualValues.put(ApiTrustIdentity.LAST_UPDATED, new Date().getTime() / 1000);
+
+        SQLiteDatabase db = getDb().getWritableDatabase();
+        try {
+            db.insert(Tables.API_TRUST_IDENTITIES, null, actualValues);
+            return uri;
+        } finally {
+            db.close();
+        }
     }
 
     @Override
-    public int delete(@NonNull Uri uri, String additionalSelection, String[] selectionArgs) {
-        throw new UnsupportedOperationException();
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+        Log.v(Constants.TAG, "delete(uri=" + uri + ")");
+
+        int match = mUriMatcher.match(uri);
+        if (match != TRUST_IDENTITY || selection != null || selectionArgs != null) {
+            throw new UnsupportedOperationException();
+        }
+
+        boolean callerIsAllowed = mApiPermissionHelper.isAllowedIgnoreErrors();
+        if (!callerIsAllowed) {
+            throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
+        }
+
+        String actualSelection = ApiTrustIdentity.PACKAGE_NAME + " = ? AND " + ApiTrustIdentity.IDENTIFIER + " = ?";
+        String[] actualSelectionArgs = new String[] {
+                mApiPermissionHelper.getCurrentCallingPackage(),
+                uri.getLastPathSegment()
+        };
+
+        SQLiteDatabase db = getDb().getWritableDatabase();
+        try {
+            return db.delete(Tables.API_TRUST_IDENTITIES, actualSelection, actualSelectionArgs);
+        } finally {
+            db.close();
+        }
     }
 
     @Override
