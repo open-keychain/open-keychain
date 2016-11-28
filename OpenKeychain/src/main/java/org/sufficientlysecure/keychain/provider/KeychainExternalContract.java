@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiTrustIdentityColumns;
 
 
 public class KeychainExternalContract {
@@ -31,26 +32,39 @@ public class KeychainExternalContract {
     // this is in KeychainExternalContract already, but we want to be double
     // sure this isn't mixed up with the internal one!
     public static final String CONTENT_AUTHORITY_EXTERNAL = Constants.PROVIDER_AUTHORITY + ".exported";
-
     private static final Uri BASE_CONTENT_URI_EXTERNAL = Uri
             .parse("content://" + CONTENT_AUTHORITY_EXTERNAL);
-
     public static final String BASE_EMAIL_STATUS = "email_status";
+    public static final String BASE_TRUST_IDENTITIES = "trust_ids";
+
 
     public static class EmailStatus implements BaseColumns {
         public static final String EMAIL_ADDRESS = "email_address";
         public static final String USER_ID = "user_id";
         public static final String USER_ID_STATUS = "email_status";
         public static final String MASTER_KEY_ID = "master_key_id";
+        public static final String TRUST_ID_LAST_UPDATE = "trust_id_last_update";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_EXTERNAL.buildUpon()
                 .appendPath(BASE_EMAIL_STATUS).build();
 
-        public static final String CONTENT_TYPE
-                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.email_status";
+        public static final String CONTENT_TYPE =
+                "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.email_status";
+    }
+
+    public static class ApiTrustIdentity implements ApiTrustIdentityColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_EXTERNAL.buildUpon()
+                .appendPath(BASE_TRUST_IDENTITIES).build();
+
+        public static Uri buildByPackageNameUri(String packageName) {
+            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).build();
+        }
+
+        public static Uri buildByPackageNameAndTrustIdUri(String packageName, String trustId) {
+            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendEncodedPath(trustId).build();
+        }
     }
 
     private KeychainExternalContract() {
     }
-
 }
