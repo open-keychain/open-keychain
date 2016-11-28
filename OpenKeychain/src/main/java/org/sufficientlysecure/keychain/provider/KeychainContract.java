@@ -94,6 +94,13 @@ public class KeychainContract {
         String IDENTIFIER = "identifier";
     }
 
+    interface ApiTrustIdentityColumns {
+        String PACKAGE_NAME = "package_name";
+        String IDENTIFIER = "identifier";
+        String LAST_UPDATED = "last_updated";
+        String MASTER_KEY_ID = "master_key_id";
+    }
+
     public static final String CONTENT_AUTHORITY = Constants.PROVIDER_AUTHORITY;
 
     private static final Uri BASE_CONTENT_URI_INTERNAL = Uri
