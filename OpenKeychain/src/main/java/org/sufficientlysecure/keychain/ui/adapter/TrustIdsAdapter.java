@@ -21,7 +21,9 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import java.util.HashMap;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -31,10 +33,12 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiTrustIdentity;
 
@@ -59,16 +63,35 @@ public class TrustIdsAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-        String packageName = cursor.getString(INDEX_PACKAGE_NAME);
-        String trustId = cursor.getString(INDEX_TRUST_ID);
+    public void bindView(View view, final Context context, Cursor cursor) {
+        final String packageName = cursor.getString(INDEX_PACKAGE_NAME);
+        final String trustId = cursor.getString(INDEX_TRUST_ID);
 
         TextView vTrustId = (TextView) view.findViewById(R.id.trust_id_name);
         ImageView vAppIcon = (ImageView) view.findViewById(R.id.trust_id_app_icon);
+        ImageView vActionIcon = (ImageView) view.findViewById(R.id.trust_id_action);
 
         Drawable drawable = getDrawableForPackageName(packageName);
         vTrustId.setText(trustId);
         vAppIcon.setImageDrawable(drawable);
+        vActionIcon.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchTrustIdActivity(packageName, trustId, context);
+            }
+        });
+    }
+
+    private void launchTrustIdActivity(String packageName, String trustId, Context context) {
+        try {
+            Intent intent = new Intent();
+            intent.setAction(packageName + ".TRUST_ID_ACTION");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(OpenPgpApi.EXTRA_TRUST_IDENTITY, trustId);
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            // can't help it
+        }
     }
 
     private Drawable getDrawableForPackageName(String packageName) {

@@ -27,4 +27,14 @@
         tools:text="alice@example.com"
         />
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:padding="8dp"
+        android:id="@+id/trust_id_action"
+        android:background="?selectableItemBackground"
+        android:src="@drawable/ic_chat_black_24dp"
+        />
+
 </LinearLayout>
