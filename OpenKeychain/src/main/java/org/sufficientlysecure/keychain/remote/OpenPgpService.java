@@ -46,6 +46,7 @@ import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.openintents.openpgp.OpenPgpSignatureResult.TrustIdentityResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
@@ -68,6 +69,7 @@ import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
+import org.sufficientlysecure.keychain.provider.TrustIdentityDataAccessObject;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResultStatus;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
@@ -82,23 +84,26 @@ public class OpenPgpService extends Service {
     public static final int API_VERSION_WITHOUT_SIGNATURE_ONLY_FLAG = 8;
     public static final int API_VERSION_WITH_DECRYPTION_RESULT = 8;
     public static final int API_VERSION_WITH_RESULT_NO_SIGNATURE = 8;
+    public static final int API_VERSION_WITH_TRUST_IDENTITIES = 12;
 
     public static final List<Integer> SUPPORTED_VERSIONS =
-            Collections.unmodifiableList(Arrays.asList(7, 8, 9, 10, 11));
+            Collections.unmodifiableList(Arrays.asList(7, 8, 9, 10, 11, 12));
 
     private ApiPermissionHelper mApiPermissionHelper;
     private KeyRepository mKeyRepository;
     private ApiDataAccessObject mApiDao;
     private OpenPgpServiceKeyIdExtractor mKeyIdExtractor;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
+    private TrustIdentityDataAccessObject mTrustIdentityDao;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mApiPermissionHelper = new ApiPermissionHelper(this, new ApiDataAccessObject(this));
         mKeyRepository = KeyRepository.createDatabaseInteractor(this);
         mApiDao = new ApiDataAccessObject(this);
-
+        mApiPermissionHelper = new ApiPermissionHelper(this, mApiDao);
+        mTrustIdentityDao = new TrustIdentityDataAccessObject(getBaseContext(),
+                mApiPermissionHelper.getCurrentCallingPackage());
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
         mKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(getContentResolver(), mApiPendingIntentFactory);
     }
@@ -528,7 +533,36 @@ public class OpenPgpService extends Service {
             }
         }
 
+        String trustIdentity = data.getStringExtra(OpenPgpApi.EXTRA_TRUST_IDENTITY);
+        if (trustIdentity != null) {
+            if (targetApiVersion < API_VERSION_WITH_TRUST_IDENTITIES) {
+                throw new IllegalStateException("API version conflict, trust identities are supported v12 and up!");
+            }
+            signatureResult = addTrustIdentityInfoToSignatureResult(signatureResult, trustIdentity);
+        }
+
         result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
+    }
+
+    private OpenPgpSignatureResult addTrustIdentityInfoToSignatureResult(OpenPgpSignatureResult signatureResult,
+            String trustIdentity) {
+        boolean hasValidSignature =
+                signatureResult.getResult() == OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED ||
+                signatureResult.getResult() == OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED;
+        if (!hasValidSignature) {
+            return signatureResult;
+        }
+
+        Long tofuTrustedMasterKeyId = mTrustIdentityDao.getMasterKeyIdForTrustId(trustIdentity);
+
+        long masterKeyId = signatureResult.getKeyId();
+        if (tofuTrustedMasterKeyId == null) {
+            return signatureResult.withTrustIdentityResult(TrustIdentityResult.NEW);
+        } else  if (masterKeyId == tofuTrustedMasterKeyId) {
+            return signatureResult.withTrustIdentityResult(TrustIdentityResult.OK);
+        } else {
+            return signatureResult.withTrustIdentityResult(TrustIdentityResult.MISMATCH);
+        }
     }
 
     private Intent getKeyImpl(Intent data, OutputStream outputStream) {
