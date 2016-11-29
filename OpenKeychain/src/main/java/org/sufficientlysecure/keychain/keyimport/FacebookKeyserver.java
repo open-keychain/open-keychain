@@ -52,10 +52,6 @@ public class FacebookKeyserver extends Keyserver {
     private static final String FB_HOST = "facebook.com";
     private static final String FB_HOST_WWW = "www." + FB_HOST;
 
-    public static final String FB_URL = "https://" + FB_HOST_WWW;
-
-    public static final String ORIGIN = FB_URL;
-
     public FacebookKeyserver() {
     }
 

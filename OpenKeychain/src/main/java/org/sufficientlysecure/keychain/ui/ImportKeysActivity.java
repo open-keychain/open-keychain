@@ -172,7 +172,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
 
                     if (query != null && query.length() > 0) {
                         // display keyserver fragment with query
-                        startTopCloudFragment(query, false, null);
+                        startTopCloudFragment(query, null);
 
                         // action: search immediately
                         startListFragment(null, null, query, null);
@@ -189,9 +189,6 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                     String fingerprint = extras.getString(EXTRA_FINGERPRINT);
                     if (isFingerprintValid(fingerprint)) {
                         String query = "0x" + fingerprint;
-
-                        // display keyserver fragment with query
-                        startTopCloudFragment(query, true, null);
 
                         // action: search immediately
                         startListFragment(null, null, query, null);
@@ -210,27 +207,35 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
 
                 Preferences.CloudSearchPrefs cloudSearchPrefs =
                         new Preferences.CloudSearchPrefs(false, true, true, null);
-                // we allow our users to edit the query if they wish
-                startTopCloudFragment(fbUsername, false, cloudSearchPrefs);
                 // search immediately
                 startListFragment(null, null, fbUsername, cloudSearchPrefs);
                 break;
             }
             case ACTION_SEARCH_KEYSERVER_FROM_URL: {
-                // need to process URL to get search query and keyserver authority
-                String query = dataUri.getQueryParameter("search");
-                // if query not specified, we still allow users to search the keyserver in the link
-                if (query == null) {
-                    Notify.create(this, R.string.import_url_warn_no_search_parameter, Notify.LENGTH_INDEFINITE,
-                            Notify.Style.WARN).show();
-                }
-                ParcelableHkpKeyserver keyserver = new ParcelableHkpKeyserver(dataUri.getAuthority());
+                // get keyserver from URL
+                ParcelableHkpKeyserver keyserver = new ParcelableHkpKeyserver(
+                        dataUri.getScheme() + "://" + dataUri.getAuthority());
                 Preferences.CloudSearchPrefs cloudSearchPrefs = new Preferences.CloudSearchPrefs(
-                        true, true, true, keyserver);
-                // we allow our users to edit the query if they wish
-                startTopCloudFragment(query, false, cloudSearchPrefs);
-                // search immediately (if query is not null)
-                startListFragment(null, null, query, cloudSearchPrefs);
+                        true, false, false, keyserver);
+                Log.d(Constants.TAG, "Using keyserver: " + keyserver);
+
+                // process URL to get operation and query
+                String operation = dataUri.getQueryParameter("op");
+                String query = dataUri.getQueryParameter("search");
+
+                // if query or operation not specified, we still allow users to search
+                if (query == null || operation == null) {
+                    startTopCloudFragment(null, cloudSearchPrefs);
+                    startListFragment(null, null, null, cloudSearchPrefs);
+                } else {
+                    if (operation.equalsIgnoreCase("get")) {
+                        // don't allow searching here, only one key!
+                        startListFragment(null, null, query, cloudSearchPrefs);
+                    } else { // for example: operation: index
+                        startTopCloudFragment(query, cloudSearchPrefs);
+                        startListFragment(null, null, query, cloudSearchPrefs);
+                    }
+                }
                 break;
             }
             case ACTION_IMPORT_KEY_FROM_FILE:
@@ -241,7 +246,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 break;
             }
             default: {
-                startTopCloudFragment(null, false, null);
+                startTopCloudFragment(null, null);
                 startListFragment(null, null, null, null);
                 break;
             }
@@ -279,21 +284,19 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     }
 
     /**
-     * loads the CloudFragment, which consists of the search bar, search button and settings icon
-     * visually.
+     * loads the CloudFragment, which enables the search bar
      *
      * @param query            search query
-     * @param disableQueryEdit if true, user will not be able to edit the search query
      * @param cloudSearchPrefs keyserver authority to use for search, if null will use keyserver
      *                         specified in user preferences
      */
-    private void startTopCloudFragment(String query, boolean disableQueryEdit,
+    private void startTopCloudFragment(String query,
                                        Preferences.CloudSearchPrefs cloudSearchPrefs) {
 
         FragmentManager fM = getSupportFragmentManager();
         if (fM.findFragmentByTag(TAG_FRAG_TOP) == null) {
             Fragment importCloudFragment = ImportKeysCloudFragment.newInstance(query,
-                    disableQueryEdit, cloudSearchPrefs);
+                    cloudSearchPrefs);
             fM.beginTransaction().add(importCloudFragment, TAG_FRAG_TOP).commit();
         }
     }

@@ -57,7 +57,6 @@ import static android.support.v7.widget.SearchView.OnSuggestionListener;
 public class ImportKeysCloudFragment extends Fragment {
 
     public static final String ARG_QUERY = "query";
-    public static final String ARG_DISABLE_QUERY_EDIT = "disable_query_edit";
     public static final String ARG_CLOUD_SEARCH_PREFS = "cloud_search_prefs";
 
     private static final String CURSOR_SUGGESTION = "suggestion";
@@ -74,18 +73,16 @@ public class ImportKeysCloudFragment extends Fragment {
      * Creates new instance of this fragment
      *
      * @param query            query to search for
-     * @param disableQueryEdit if true, user cannot edit query
      * @param cloudSearchPrefs search parameters to use. If null will retrieve from user's
      *                         preferences.
      */
-    public static ImportKeysCloudFragment newInstance(String query, boolean disableQueryEdit,
+    public static ImportKeysCloudFragment newInstance(String query,
                                                       CloudSearchPrefs cloudSearchPrefs) {
 
         ImportKeysCloudFragment frag = new ImportKeysCloudFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_QUERY, query);
-        args.putBoolean(ARG_DISABLE_QUERY_EDIT, disableQueryEdit);
         args.putParcelable(ARG_CLOUD_SEARCH_PREFS, cloudSearchPrefs);
 
         frag.setArguments(args);
@@ -104,6 +101,8 @@ public class ImportKeysCloudFragment extends Fragment {
                 new int[]{android.R.id.text1}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         setHasOptionsMenu(true);
+
+        // no view, just search view
         return null;
     }
 
@@ -172,6 +171,11 @@ public class ImportKeysCloudFragment extends Fragment {
         });
 
         searchItem.expandActionView();
+
+        String query = getArguments().getString(ARG_QUERY);
+        if (query != null) {
+            searchView.setQuery(query, false);
+        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
