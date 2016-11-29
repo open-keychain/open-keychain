@@ -107,17 +107,17 @@ public class ImportKeysCloudFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        mActivity = activity;
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
         try {
-            mCallback = (ImportKeysListener) activity;
+            mCallback = (ImportKeysListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement ImportKeysListener");
         }
+
+        mActivity = (Activity) context;
     }
 
     @Override

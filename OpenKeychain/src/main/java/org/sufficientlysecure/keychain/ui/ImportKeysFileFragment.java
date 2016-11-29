@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -72,17 +73,17 @@ public class ImportKeysFileFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        mActivity = activity;
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
         try {
-            mCallback = (ImportKeysListener) activity;
+            mCallback = (ImportKeysListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement ImportKeysListener");
         }
+
+        mActivity = (Activity) context;
     }
 
     @Override

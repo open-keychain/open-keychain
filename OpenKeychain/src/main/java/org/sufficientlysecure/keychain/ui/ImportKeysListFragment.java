@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
@@ -157,8 +158,7 @@ public class ImportKeysListFragment extends Fragment implements
         if (dataUri != null || bytes != null) {
             loadState(new BytesLoaderState(bytes, dataUri));
         } else if (query != null) {
-            CloudSearchPrefs cloudSearchPrefs
-                    = args.getParcelable(ARG_CLOUD_SEARCH_PREFS);
+            CloudSearchPrefs cloudSearchPrefs = args.getParcelable(ARG_CLOUD_SEARCH_PREFS);
             if (cloudSearchPrefs == null) {
                 cloudSearchPrefs = Preferences.getPreferences(mActivity).getCloudSearchPrefs();
             }
@@ -183,13 +183,13 @@ public class ImportKeysListFragment extends Fragment implements
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
         try {
-            mListener = (ImportKeysListener) activity;
+            mListener = (ImportKeysListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement ImportKeysListener");
         }
     }
