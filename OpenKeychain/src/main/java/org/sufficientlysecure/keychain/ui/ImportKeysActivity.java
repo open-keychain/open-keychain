@@ -295,7 +295,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
 
         FragmentManager fM = getSupportFragmentManager();
         if (fM.findFragmentByTag(TAG_FRAG_TOP) == null) {
-            Fragment importCloudFragment = ImportKeysCloudFragment.newInstance(query,
+            Fragment importCloudFragment = ImportKeysSearchFragment.newInstance(query,
                     cloudSearchPrefs);
             fM.beginTransaction().add(importCloudFragment, TAG_FRAG_TOP).commit();
         }

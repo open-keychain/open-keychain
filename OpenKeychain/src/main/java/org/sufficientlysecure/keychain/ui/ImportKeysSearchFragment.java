@@ -54,7 +54,7 @@ import static android.support.v7.widget.SearchView.OnSuggestionListener;
 /**
  * Consists of the search bar, search button, and search settings button
  */
-public class ImportKeysCloudFragment extends Fragment {
+public class ImportKeysSearchFragment extends Fragment {
 
     public static final String ARG_QUERY = "query";
     public static final String ARG_CLOUD_SEARCH_PREFS = "cloud_search_prefs";
@@ -76,10 +76,10 @@ public class ImportKeysCloudFragment extends Fragment {
      * @param cloudSearchPrefs search parameters to use. If null will retrieve from user's
      *                         preferences.
      */
-    public static ImportKeysCloudFragment newInstance(String query,
-                                                      CloudSearchPrefs cloudSearchPrefs) {
+    public static ImportKeysSearchFragment newInstance(String query,
+                                                       CloudSearchPrefs cloudSearchPrefs) {
 
-        ImportKeysCloudFragment frag = new ImportKeysCloudFragment();
+        ImportKeysSearchFragment frag = new ImportKeysSearchFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_QUERY, query);
