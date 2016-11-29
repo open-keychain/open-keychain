@@ -38,8 +38,9 @@ public class ImportKeysBindings {
         Context context = textView.getContext();
         Resources resources = context.getResources();
 
-        if (userId == null)
+        if (userId == null) {
             userId = resources.getString(R.string.user_id_no_name);
+        }
 
         if (secret) {
             userId = resources.getString(R.string.secret_key) + " " + userId;
@@ -61,8 +62,9 @@ public class ImportKeysBindings {
 
         Context context = textView.getContext();
 
-        if (userEmail == null)
+        if (userEmail == null) {
             userEmail = "";
+        }
 
         Highlighter highlighter = ImportKeysBindingsUtils.getHighlighter(context, query);
         textView.setText(highlighter.highlight(userEmail));

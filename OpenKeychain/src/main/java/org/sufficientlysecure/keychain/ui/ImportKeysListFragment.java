@@ -36,7 +36,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.databinding.ImportKeysListBasicItemBinding;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListFragmentBinding;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.processing.AsyncTaskResultWrapper;
@@ -70,7 +69,6 @@ public class ImportKeysListFragment extends Fragment implements
     private ImportKeysListener mListener;
 
     private ImportKeysListFragmentBinding mBinding;
-    private ImportKeysListBasicItemBinding mBindingBasic;
     private ParcelableProxy mParcelableProxy;
 
     private ImportKeysAdapter mAdapter;
@@ -138,7 +136,6 @@ public class ImportKeysListFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.import_keys_list_fragment, container, false);
         mBinding.setStatus(STATUS_FIRST);
-        mBindingBasic = mBinding.basic;
         View view = mBinding.getRoot();
 
         mActivity = getActivity();
@@ -148,7 +145,7 @@ public class ImportKeysListFragment extends Fragment implements
         byte[] bytes = args.getByteArray(ARG_BYTES);
         String query = args.getString(ARG_SERVER_QUERY);
         boolean nonInteractive = args.getBoolean(ARG_NON_INTERACTIVE, false);
-        mBindingBasic.setNonInteractive(nonInteractive);
+        mBinding.basic.setNonInteractive(nonInteractive);
 
         // Create an empty adapter we will use to display the loaded data.
         mAdapter = new ImportKeysAdapter(mActivity, mListener, nonInteractive);
@@ -165,13 +162,13 @@ public class ImportKeysListFragment extends Fragment implements
             loadState(new CloudLoaderState(query, cloudSearchPrefs));
         }
 
+        // mBinding.basic is only used for file import
         mBinding.basic.importKeys.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 mListener.importKeys(mAdapter.getEntries());
             }
         });
-
         mBinding.basic.listKeys.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
