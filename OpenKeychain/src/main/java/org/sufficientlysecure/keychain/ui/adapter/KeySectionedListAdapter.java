@@ -299,7 +299,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                 if (TextUtils.isEmpty(userId)) {
                     return null;
                 } else {
-                    return userId.substring(0, 1);
+                    return userId.substring(0, 1).toUpperCase();
                 }
             }
         } else {

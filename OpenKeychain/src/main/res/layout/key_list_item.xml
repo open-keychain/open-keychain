@@ -76,7 +76,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:src="@drawable/ic_repeat_grey_24dp"
-            android:padding="12dp"
+            android:padding="16dp"
             android:background="?android:selectableItemBackground"
             android:contentDescription="@string/cd_exchange_keys"/>
 

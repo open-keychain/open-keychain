@@ -43,6 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
+                    android:paddingBottom="72dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="32dp"
                     android:paddingStart="16dp" />
@@ -53,8 +54,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:orientation="vertical"
-                    app:fastscroll__bubbleColor="@color/primary"
-                    app:fastscroll__handleColor="@color/md_white_1000" />
+                    app:fastscroll__bubbleColor="@color/primary" />
 
             </RelativeLayout>
 
