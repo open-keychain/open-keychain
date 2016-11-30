@@ -69,6 +69,8 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -614,6 +616,34 @@ public class OpenPgpService extends Service {
         }
     }
 
+    private Intent decodeKeyImpl(InputStream inputStream) {
+        Intent result = new Intent();
+
+        UncachedKeyRing.IteratorWithIOThrow<UncachedKeyRing> iterator =
+                UncachedKeyRing.fromStream(inputStream);
+        try {
+            if (iterator.hasNext()) {
+                UncachedPublicKey publicKey = iterator.next().getPublicKey();
+
+                result.putExtra(OpenPgpApi.RESULT_KEY_ID, publicKey.getKeyId());
+
+                ArrayList<String> userIds = publicKey.getUnorderedUserIds();
+                result.putExtra(OpenPgpApi.RESULT_USER_IDS,
+                        userIds.toArray(new String[userIds.size()]));
+
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+            } else {
+                // not even a single keyring present
+                throw new IOException("No valid key data!");
+            }
+        } catch (IOException e) {
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+            result.putExtra(OpenPgpApi.RESULT_ERROR,
+                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
+        }
+        return result;
+    }
+
     private Intent getKeyImpl(Intent data, OutputStream outputStream) {
         try {
             ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
@@ -963,6 +993,9 @@ public class OpenPgpService extends Service {
             }
             case OpenPgpApi.ACTION_GET_KEY: {
                 return getKeyImpl(data, outputStream);
+            }
+            case OpenPgpApi.ACTION_DECODE_PUBLIC_KEY: {
+                return decodeKeyImpl(inputStream);
             }
             case OpenPgpApi.ACTION_BACKUP: {
                 return backupImpl(data, outputStream);
