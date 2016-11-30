@@ -517,7 +517,7 @@ public class KeyFormattingUtils {
                 break;
             }
 
-            case OpenPgpSignatureResult.RESULT_VALID_CONFIRMED: {
+            case OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED: {
                 sigText = R.string.decrypt_result_signature_certified;
                 sigIcon = R.drawable.status_signature_verified_cutout_24dp;
                 sigColor = R.color.key_flag_green;
@@ -526,7 +526,7 @@ public class KeyFormattingUtils {
                 break;
             }
 
-            case OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED: {
+            case OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED: {
                 sigText = R.string.decrypt_result_signature_uncertified;
                 sigIcon = R.drawable.status_signature_unverified_cutout_24dp;
                 sigColor = R.color.key_flag_orange;
@@ -562,7 +562,7 @@ public class KeyFormattingUtils {
                 break;
             }
 
-            case OpenPgpSignatureResult.RESULT_INVALID_INSECURE: {
+            case OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE: {
                 sigText = R.string.decrypt_result_insecure_cryptography;
                 sigIcon = R.drawable.status_signature_invalid_cutout_24dp;
                 sigColor = R.color.key_flag_red;
