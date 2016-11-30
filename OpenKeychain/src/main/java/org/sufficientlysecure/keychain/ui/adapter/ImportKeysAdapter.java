@@ -102,7 +102,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         // If there is only one key, get it automatically
         if (mData.size() == 1) {
             mCurrent = 0;
-            getKey(mData.get(0), true);
+            getKeyWithProgress(0, mData.get(0), true);
         }
 
         notifyDataSetChanged();
@@ -158,17 +158,16 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.setEntry(entry);
 
         final KeyState keyState = mKeyStates[position];
-        final boolean downloaded = keyState.mDownloaded;
-        final boolean showed = keyState.mShowed;
 
         b.card.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!downloaded) {
+                if (!keyState.mDownloaded) {
                     mCurrent = position;
-                    getKey(entry, true);
+
+                    getKeyWithProgress(position, entry, true);
                 } else {
-                    changeState(position, !showed);
+                    changeShowed(position, !keyState.mShowed);
                 }
             }
         });
@@ -176,7 +175,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.extra.importKey.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                getKey(entry, false);
+                getKeyWithProgress(position, entry, false);
             }
         });
 
@@ -190,7 +189,9 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             }
         });
 
-        b.extraContainer.setVisibility(showed ? View.VISIBLE : View.GONE);
+        b.extraContainer.setVisibility(keyState.mShowed ? View.VISIBLE : View.GONE);
+
+        b.progress.setVisibility(keyState.mProgress ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -198,12 +199,16 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         return mData != null ? mData.size() : 0;
     }
 
-    public void getKey(ImportKeysListEntry entry, boolean skipSave) {
+    private void getKeyWithProgress(int position, ImportKeysListEntry entry, boolean skipSave) {
+        changeProgress(position, true);
+        getKey(entry, skipSave);
+    }
+
+    private void getKey(ImportKeysListEntry entry, boolean skipSave) {
         ImportKeyringParcel inputParcel = prepareKeyOperation(entry, skipSave);
         ImportKeysResultListener listener = skipSave ? this : mListener;
         ImportKeysOperationCallback cb = new ImportKeysOperationCallback(listener, inputParcel);
-        int message = skipSave ? R.string.progress_downloading : R.string.progress_importing;
-        CryptoOperationHelper opHelper = new CryptoOperationHelper<>(1, mActivity, cb, message);
+        CryptoOperationHelper opHelper = new CryptoOperationHelper<>(1, mActivity, cb, null);
         opHelper.cryptoOperation();
     }
 
@@ -252,7 +257,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 mergeEntryWithKey(entry, keyRing);
 
                 mKeyStates[mCurrent].mDownloaded = true;
-                changeState(mCurrent, true);
+                changeShowed(mCurrent, true);
             } else {
                 throw new RuntimeException("getKey retrieved more than one key ("
                         + canKeyRings.size() + ")");
@@ -260,6 +265,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         } else {
             result.createNotify(mActivity).show();
         }
+
+        changeProgress(mCurrent, false);
     }
 
     private void mergeEntryWithKey(ImportKeysListEntry entry, CanonicalizedKeyRing keyRing) {
@@ -281,16 +288,23 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     }
 
     private class KeyState {
-        public boolean mAlreadyPresent = false;
-        public boolean mVerified = false;
+        boolean mAlreadyPresent = false;
+        boolean mVerified = false;
 
-        public boolean mDownloaded = false;
-        public boolean mShowed = false;
+        boolean mProgress = false;
+        boolean mDownloaded = false;
+        boolean mShowed = false;
     }
 
-    private void changeState(int position, boolean showed) {
+    private void changeShowed(int position, boolean showed) {
         KeyState keyState = mKeyStates[position];
         keyState.mShowed = showed;
+        notifyItemChanged(position);
+    }
+
+    private void changeProgress(int position, boolean progress) {
+        KeyState keyState = mKeyStates[position];
+        keyState.mProgress = progress;
         notifyItemChanged(position);
     }
 

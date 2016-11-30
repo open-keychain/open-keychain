@@ -20,22 +20,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="8dp">
+            android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="16dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="24dp">
+                android:layout_height="wrap_content">
 
                 <LinearLayout
+                    android:id="@+id/container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingBottom="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -64,22 +64,32 @@
 
                 </LinearLayout>
 
+                <FrameLayout
+                    android:id="@+id/extra_container"
+                    android:layout_below="@id/container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <include
+                        android:id="@+id/extra"
+                        layout="@layout/import_keys_list_item_extra"
+                        app:entry="@{entry}" />
+
+                </FrameLayout>
+
+                <ProgressBar
+                    android:id="@+id/progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
             </RelativeLayout>
-
-            <FrameLayout
-                android:id="@+id/extra_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <include
-                    android:id="@+id/extra"
-                    layout="@layout/import_keys_list_item_extra"
-                    app:entry="@{entry}" />
-
-            </FrameLayout>
 
         </LinearLayout>
 
