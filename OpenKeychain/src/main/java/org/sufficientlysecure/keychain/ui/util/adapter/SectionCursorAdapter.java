@@ -1,6 +1,7 @@
 package org.sufficientlysecure.keychain.ui.util.adapter;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -9,6 +10,10 @@ import android.view.ViewGroup;
 import com.tonicartos.superslim.LayoutManager;
 
 import org.sufficientlysecure.keychain.util.Log;
+
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Objects;
 
 /**
  * @param <T> section type.

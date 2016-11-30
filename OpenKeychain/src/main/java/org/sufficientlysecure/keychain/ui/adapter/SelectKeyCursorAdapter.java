@@ -166,7 +166,7 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.select_key_item, null);
+        View view = mInflater.inflate(R.layout.select_encrypt_key_item, null);
         ViewHolderItem holder = new ViewHolderItem();
         holder.view = view;
         holder.mainUserId = (TextView) view.findViewById(R.id.select_key_item_name);

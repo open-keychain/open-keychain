@@ -7,7 +7,7 @@ dependencies {
     // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
     // NOTE: libraries are pinned to a specific build, see below
 
-    // from local Android SDK
+    // from local Android SDKre
     compile 'com.android.support:support-v4:25.0.0'
     compile 'com.android.support:appcompat-v7:25.0.0'
     compile 'com.android.support:design:25.0.0'
@@ -18,22 +18,24 @@ dependencies {
     // JCenter etc.
     compile 'com.journeyapps:zxing-android-embedded:3.4.0@aar'
     compile 'com.google.zxing:core:3.3.0'
-    compile 'com.jpardogo.materialtabstrip:library:1.1.1'
-    compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
-    compile 'com.splitwise:tokenautocomplete:2.0.8@aar'
-    compile 'org.sufficientlysecure:html-textview:2.0'
     compile 'org.sufficientlysecure:donations:2.4'
-    compile 'com.nispok:snackbar:2.11.0'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.2.0'
     compile 'org.apache.james:apache-mime4j-core:0.8.0'
     compile 'org.apache.james:apache-mime4j-dom:0.8.0'
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
+
+    // UI
+    compile 'org.sufficientlysecure:html-textview:2.0'
+    compile 'com.splitwise:tokenautocomplete:2.0.8@aar'
+    compile 'com.jpardogo.materialtabstrip:library:1.1.1'
+    compile 'com.getbase:floatingactionbutton:1.10.1'
+    compile 'com.nispok:snackbar:2.11.0'
     compile 'com.cocosw:bottomsheet:1.3.0@aar'
 
-    compile 'se.emilsjolander:stickylistheaders:2.7.0'
+    // RecyclerView
     compile 'com.tonicartos:superslim:0.4.13'
     compile 'com.futuremind.recyclerfastscroll:fastscroll:0.2.4'
 
@@ -113,7 +115,6 @@ dependencyVerification {
             'org.apache.james:apache-mime4j-dom:e18717fe6d36f32e5c5f7cbeea1a9bf04645fdabc84e7e8374d9da10fd52e78d',
             'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
             'com.cocosw:bottomsheet:4af6112a7f4cad4e2b70e5fdf1edc39f51275523a0f53011a012837dc103e597',
-            'se.emilsjolander:stickylistheaders:a08ca948aa6b220f09d82f16bbbac395f6b78897e9eeac6a9f0b0ba755928eeb',
             'com.tonicartos:superslim:ca89b5c674660cc6918a8f8fd385065bffeee27983e0d33c7c2f0ad7b34d2d49',
             'com.futuremind.recyclerfastscroll:fastscroll:ae655201885a9dbb5fabecb4adfefbb23ffdbca26a2b4ea255ec1bf6f214c606',
             'com.mikepenz:materialdrawer:8bba1428dcef5ad7c2decf49c612ad980b38e2f1031cbd66c152a8a104793929',
