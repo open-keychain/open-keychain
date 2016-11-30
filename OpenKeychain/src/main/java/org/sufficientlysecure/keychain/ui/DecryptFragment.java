@@ -17,8 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -58,6 +56,8 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.util.ArrayList;
 
 public abstract class DecryptFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -145,7 +145,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
 
         {
             ParcelableKeyRing keyEntry = new ParcelableKeyRing(null,
-                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId));
+                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId), null, null);
             ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
             selectedEntries.add(keyEntry);
 
@@ -320,7 +320,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
             mSignatureEmail.setText(userIdSplit.email);
         } else {
             mSignatureEmail.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(
-                    getActivity(), mSignatureResult.getKeyId()));
+                    mSignatureResult.getKeyId()));
         }
 
         // NOTE: Don't use revoked and expired fields from database, they don't show
@@ -430,7 +430,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
             mSignatureEmail.setText(userIdSplit.email);
         } else {
             mSignatureEmail.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(
-                    getActivity(), mSignatureResult.getKeyId()));
+                    mSignatureResult.getKeyId()));
         }
 
         switch (mSignatureResult.getResult()) {

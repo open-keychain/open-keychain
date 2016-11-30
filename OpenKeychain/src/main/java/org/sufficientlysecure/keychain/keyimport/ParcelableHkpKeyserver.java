@@ -22,6 +22,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import android.support.annotation.NonNull;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -172,9 +173,11 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
         URI originalURI = new URI(keyserverUrl);
 
         String scheme = originalURI.getScheme();
-        if (scheme == null
-                || (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)
-                && !"hkp".equalsIgnoreCase(scheme) && !"hkps".equalsIgnoreCase(scheme))) {
+        if (scheme == null) {
+            throw new URISyntaxException("", "scheme null!");
+        }
+        if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)
+                && !"hkp".equalsIgnoreCase(scheme) && !"hkps".equalsIgnoreCase(scheme)) {
             throw new URISyntaxException(scheme, "unsupported scheme!");
         }
 
@@ -269,7 +272,6 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
         while (matcher.find()) {
             final ImportKeysListEntry entry = new ImportKeysListEntry();
             entry.setQuery(query);
-            entry.addOrigin(getHostID());
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
@@ -293,10 +295,10 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
                 int algorithmId = Integer.decode(matcher.group(2));
                 entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitSize, null));
 
-                final long creationDate = Long.parseLong(matcher.group(4));
-                final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-                tmpGreg.setTimeInMillis(creationDate * 1000);
-                entry.setDate(tmpGreg.getTime());
+                long creationDate = Long.parseLong(matcher.group(4));
+                GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                calendar.setTimeInMillis(creationDate * 1000);
+                entry.setDate(calendar.getTime());
             } catch (NumberFormatException e) {
                 Log.e(Constants.TAG, "Conversation for bit size, algorithm, or creation date failed.", e);
                 // skip this key
@@ -305,7 +307,18 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
 
             try {
                 entry.setRevoked(matcher.group(6).contains("r"));
-                entry.setExpired(matcher.group(6).contains("e"));
+                boolean expired = matcher.group(6).contains("e");
+
+                // It may be expired even without flag, thus check expiration date
+                String expiration;
+                if (!expired && !(expiration = matcher.group(5)).isEmpty()) {
+                    long expirationDate = Long.parseLong(expiration);
+                    TimeZone timeZoneUTC = TimeZone.getTimeZone("UTC");
+                    GregorianCalendar calendar = new GregorianCalendar(timeZoneUTC);
+                    calendar.setTimeInMillis(expirationDate * 1000);
+                    expired = new GregorianCalendar(timeZoneUTC).compareTo(calendar) >= 0;
+                }
+                entry.setExpired(expired);
             } catch (NullPointerException e) {
                 Log.e(Constants.TAG, "Check for revocation or expiry failed.", e);
                 // skip this key
@@ -338,6 +351,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
             }
             entry.setUserIds(userIds);
             entry.setPrimaryUserId(userIds.get(0));
+            entry.setKeyserver(this);
 
             results.add(entry);
         }

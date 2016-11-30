@@ -909,7 +909,7 @@
   <string name="key_unavailable">nedostupný</string>
   <string name="secret_cannot_multiple">Vaše vlastní klíče lze mazat pouze jednotlivě!</string>
   <string name="title_view_cert">Zobrazit detaily certifikátu</string>
-  <string name="unknown_algorithm">neznámý</string>
+  <string name="unknown">neznámý</string>
   <string name="can_sign_not">nelze podepsat</string>
   <string name="error_no_encrypt_subkey">Není dostupný šifrovací podklíč!</string>
   <string name="contact_show_key">Zobrazit klíč (%s)</string>

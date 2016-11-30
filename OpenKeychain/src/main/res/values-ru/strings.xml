@@ -1433,7 +1433,7 @@
   <string name="key_unavailable">недоступно</string>
   <string name="secret_cannot_multiple">Ваши собственные ключи можно удалять только по одному!</string>
   <string name="title_view_cert">Просмотреть детали сертификации</string>
-  <string name="unknown_algorithm">неизв.</string>
+  <string name="unknown">неизв.</string>
   <string name="can_sign_not">не для подписания</string>
   <string name="error_no_encrypt_subkey">Нет доп. ключа для шифрования!</string>
   <string name="contact_show_key">Показать ключ (%s)</string>

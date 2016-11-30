@@ -46,8 +46,8 @@ public class OkHttpClientFactory {
                 .build();
     }
 
-    public static OkHttpClient getClientPinnedIfAvailable(URL url, Proxy proxy) throws IOException,
-            TlsHelper.TlsHelperException {
+    public static OkHttpClient getClientPinnedIfAvailable(URL url, Proxy proxy)
+            throws IOException, TlsHelper.TlsHelperException {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         // don't follow any redirects for keyservers, as discussed in the security audit

@@ -18,11 +18,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,6 +33,7 @@ import android.widget.TextView;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
@@ -47,6 +45,10 @@ import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 
 public class CreateSecurityTokenImportResetFragment
@@ -194,8 +196,8 @@ public class CreateSecurityTokenImportResetFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         mCreateKeyActivity = (CreateKeyActivity) getActivity();
     }
 
@@ -211,14 +213,14 @@ public class CreateSecurityTokenImportResetFragment
     }
 
     public void refreshSearch() {
-        mListFragment.loadNew(new ImportKeysListFragment.CloudLoaderState("0x" + mTokenFingerprint,
+        mListFragment.loadState(new CloudLoaderState("0x" + mTokenFingerprint,
                 Preferences.getPreferences(getActivity()).getCloudSearchPrefs()));
     }
 
     public void importKey() {
 
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
-        keyList.add(new ParcelableKeyRing(mTokenFingerprint, null));
+        keyList.add(new ParcelableKeyRing(mTokenFingerprint, null, null, null));
         mKeyList = keyList;
 
         mKeyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();

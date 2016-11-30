@@ -30,13 +30,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
-import org.openintents.openpgp.OpenPgpDecryptionResult;
-import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.util.encoders.Hex;
+import org.openintents.openpgp.OpenPgpDecryptionResult;
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.DigestException;
 import java.security.MessageDigest;
@@ -99,7 +100,7 @@ public class KeyFormattingUtils {
 
             default: {
                 if (context != null) {
-                    algorithmStr = context.getResources().getString(R.string.unknown_algorithm);
+                    algorithmStr = context.getResources().getString(R.string.unknown);
                 } else {
                     algorithmStr = "unknown";
                 }
@@ -154,7 +155,7 @@ public class KeyFormattingUtils {
 
             default: {
                 if (context != null) {
-                    algorithmStr = context.getResources().getString(R.string.unknown_algorithm);
+                    algorithmStr = context.getResources().getString(R.string.unknown);
                 } else {
                     algorithmStr = "unknown";
                 }
@@ -189,7 +190,7 @@ public class KeyFormattingUtils {
             */
         }
         if (context != null) {
-            return context.getResources().getString(R.string.unknown_algorithm);
+            return context.getResources().getString(R.string.unknown);
         } else {
             return "unknown";
         }
@@ -208,7 +209,7 @@ public class KeyFormattingUtils {
             return name;
         }
         if (context != null) {
-            return context.getResources().getString(R.string.unknown_algorithm);
+            return context.getResources().getString(R.string.unknown);
         } else {
             return "unknown";
         }
@@ -272,6 +273,10 @@ public class KeyFormattingUtils {
         return hexString;
     }
 
+    public static long convertKeyIdHexToKeyId(String hex) {
+        return new BigInteger(hex.substring(2), 16).longValue();
+    }
+
     public static long convertFingerprintToKeyId(byte[] fingerprint) {
         return ByteBuffer.wrap(fingerprint, 12, 8).getLong();
     }
@@ -312,12 +317,12 @@ public class KeyFormattingUtils {
         return beautifyKeyId(convertKeyIdToHex(keyId));
     }
 
-    public static String beautifyKeyIdWithPrefix(Context context, String idHex) {
+    public static String beautifyKeyIdWithPrefix(String idHex) {
         return "Key ID: " + beautifyKeyId(idHex);
     }
 
-    public static String beautifyKeyIdWithPrefix(Context context, long keyId) {
-        return beautifyKeyIdWithPrefix(context, convertKeyIdToHex(keyId));
+    public static String beautifyKeyIdWithPrefix(long keyId) {
+        return beautifyKeyIdWithPrefix(convertKeyIdToHex(keyId));
     }
 
     public static SpannableStringBuilder colorizeFingerprint(String fingerprint) {
@@ -434,14 +439,19 @@ public class KeyFormattingUtils {
 
     public interface StatusHolder {
         ImageView getEncryptionStatusIcon();
+
         TextView getEncryptionStatusText();
 
         ImageView getSignatureStatusIcon();
+
         TextView getSignatureStatusText();
 
         View getSignatureLayout();
+
         TextView getSignatureUserName();
+
         TextView getSignatureUserEmail();
+
         ViewAnimator getSignatureAction();
 
         boolean hasEncrypt();
@@ -450,7 +460,7 @@ public class KeyFormattingUtils {
 
     @SuppressWarnings("deprecation") // context.getDrawable is api lvl 21, need to use deprecated
     public static void setStatus(Resources resources, StatusHolder holder, DecryptVerifyResult result,
-            boolean processingkeyLookup) {
+                                 boolean processingkeyLookup) {
 
         if (holder.hasEncrypt()) {
             OpenPgpDecryptionResult decryptionResult = result.getDecryptionResult();

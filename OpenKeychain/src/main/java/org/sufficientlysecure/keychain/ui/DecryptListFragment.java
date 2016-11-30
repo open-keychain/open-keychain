@@ -68,6 +68,7 @@ import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.cocosw.bottomsheet.BottomSheet;
+
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.BuildConfig;
@@ -98,24 +99,24 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
-/** Displays a list of decrypted inputs.
- *
+/**
+ * Displays a list of decrypted inputs.
+ * <p/>
  * This class has a complex control flow to manage its input URIs. Each URI
  * which is in mInputUris is also in exactly one of mPendingInputUris,
  * mCancelledInputUris, mCurrentInputUri, or a key in mInputDataResults.
- *
+ * <p/>
  * Processing of URIs happens using a looping approach:
  * - There is always exactly one method running which works on mCurrentInputUri
  * - Processing starts in cryptoOperation(), which pops a new mCurrentInputUri
- *   from the list of mPendingInputUris.
+ * from the list of mPendingInputUris.
  * - Once a mCurrentInputUri is finished processing, it should be set to null and
- *   control handed back to cryptoOperation()
+ * control handed back to cryptoOperation()
  * - Control flow can move through asynchronous calls, and resume in callbacks
- *   like onActivityResult() or onPermissionRequestResult().
- *
+ * like onActivityResult() or onPermissionRequestResult().
  */
 public class DecryptListFragment
-        extends QueueingCryptoOperationFragment<InputDataParcel,InputDataResult>
+        extends QueueingCryptoOperationFragment<InputDataParcel, InputDataResult>
         implements OnMenuItemClickListener {
 
     public static final String ARG_INPUT_URIS = "input_uris";
@@ -189,7 +190,7 @@ public class DecryptListFragment
 
         outState.putParcelableArrayList(ARG_INPUT_URIS, mInputUris);
 
-        HashMap<Uri,InputDataResult> results = new HashMap<>(mInputUris.size());
+        HashMap<Uri, InputDataResult> results = new HashMap<>(mInputUris.size());
         for (Uri uri : mInputUris) {
             if (mPendingInputUris.contains(uri)) {
                 continue;
@@ -219,7 +220,7 @@ public class DecryptListFragment
 
         ArrayList<Uri> inputUris = getArguments().getParcelableArrayList(ARG_INPUT_URIS);
         ArrayList<Uri> cancelledUris = args.getParcelableArrayList(ARG_CANCELLED_URIS);
-        ParcelableHashMap<Uri,InputDataResult> results = args.getParcelable(ARG_RESULTS);
+        ParcelableHashMap<Uri, InputDataResult> results = args.getParcelable(ARG_RESULTS);
 
         mCanDelete = args.getBoolean(ARG_CAN_DELETE, false);
 
@@ -231,11 +232,11 @@ public class DecryptListFragment
     private void displayInputUris(
             ArrayList<Uri> inputUris,
             ArrayList<Uri> cancelledUris,
-            HashMap<Uri,InputDataResult> results) {
+            HashMap<Uri, InputDataResult> results) {
 
         mInputUris = inputUris;
         mCurrentInputUri = null;
-        mInputDataResults = results != null ? results : new HashMap<Uri,InputDataResult>(inputUris.size());
+        mInputDataResults = results != null ? results : new HashMap<Uri, InputDataResult>(inputUris.size());
         mCancelledInputUris = cancelledUris != null ? cancelledUris : new ArrayList<Uri>();
 
         mPendingInputUris = new ArrayList<>();
@@ -295,7 +296,7 @@ public class DecryptListFragment
         String filename = metadata.getFilename();
         if (TextUtils.isEmpty(filename)) {
             String ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(metadata.getMimeType());
-            filename = "decrypted" + (ext != null ? "."+ext : "");
+            filename = "decrypted" + (ext != null ? "." + ext : "");
         }
 
         // requires >=kitkat
@@ -395,7 +396,7 @@ public class DecryptListFragment
 
     }
 
-    HashMap<Uri,Drawable> mIconCache = new HashMap<>();
+    HashMap<Uri, Drawable> mIconCache = new HashMap<>();
 
     private void processResult(final Uri uri) {
 
@@ -562,7 +563,7 @@ public class DecryptListFragment
 
                 Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
                 chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-                        new Parcelable[] { internalIntent });
+                        new Parcelable[]{internalIntent});
 
                 startActivity(chooserIntent);
 
@@ -606,7 +607,7 @@ public class DecryptListFragment
                                 .putExtra(DisplayTextActivity.EXTRA_METADATA, metadata),
                         BuildConfig.APPLICATION_ID, R.string.view_internal, R.mipmap.ic_launcher);
                 chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-                        new Parcelable[] { internalIntent });
+                        new Parcelable[]{internalIntent});
             }
 
             startActivity(chooserIntent);
@@ -633,7 +634,7 @@ public class DecryptListFragment
 
         Log.d(Constants.TAG, "mCurrentInputUri=" + mCurrentInputUri);
 
-        if ( ! checkAndRequestReadPermission(activity, mCurrentInputUri)) {
+        if (!checkAndRequestReadPermission(activity, mCurrentInputUri)) {
             return null;
         }
 
@@ -645,15 +646,15 @@ public class DecryptListFragment
 
     /**
      * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.
-     *
+     * <p/>
      * This method returns true on Android < 6, or if permission is already granted. It
      * requests the permission and returns false otherwise, taking over responsibility
      * for mCurrentInputUri.
-     *
+     * <p/>
      * see https://commonsware.com/blog/2015/10/07/runtime-permissions-files-action-send.html
      */
     private boolean checkAndRequestReadPermission(Activity activity, final Uri uri) {
-        if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+        if (!ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
             return true;
         }
 
@@ -668,7 +669,7 @@ public class DecryptListFragment
         }
 
         requestPermissions(
-                new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                 REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
 
         return false;
@@ -677,8 +678,8 @@ public class DecryptListFragment
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-            @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
 
         if (requestCode != REQUEST_PERMISSION_READ_EXTERNAL_STORAGE) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -694,7 +695,7 @@ public class DecryptListFragment
             Iterator<Uri> it = mCancelledInputUris.iterator();
             while (it.hasNext()) {
                 Uri uri = it.next();
-                if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+                if (!ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
                     continue;
                 }
                 it.remove();
@@ -712,7 +713,7 @@ public class DecryptListFragment
             Iterator<Uri> it = mPendingInputUris.iterator();
             while (it.hasNext()) {
                 Uri uri = it.next();
-                if ( ! ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+                if (!ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
                     continue;
                 }
                 it.remove();
@@ -767,7 +768,7 @@ public class DecryptListFragment
 
         {
             ParcelableKeyRing keyEntry = new ParcelableKeyRing(null,
-                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId));
+                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId), null, null);
             ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
             selectedEntries.add(keyEntry);
 
@@ -975,7 +976,7 @@ public class DecryptListFragment
                 String filename;
                 if (metadata == null) {
                     filename = getString(R.string.filename_unknown);
-                } else if ( ! TextUtils.isEmpty(metadata.getFilename())) {
+                } else if (!TextUtils.isEmpty(metadata.getFilename())) {
                     filename = metadata.getFilename();
                 } else if (ClipDescription.compareMimeTypes(metadata.getMimeType(), Constants.MIME_TYPE_KEYS)) {
                     filename = getString(R.string.filename_keys);
@@ -1227,7 +1228,7 @@ public class DecryptListFragment
             vSigStatusText = (TextView) itemView.findViewById(R.id.result_signature_text);
             vSignatureLayout = itemView.findViewById(R.id.result_signature_layout);
             vSignatureName = (TextView) itemView.findViewById(R.id.result_signature_name);
-            vSignatureMail= (TextView) itemView.findViewById(R.id.result_signature_email);
+            vSignatureMail = (TextView) itemView.findViewById(R.id.result_signature_email);
             vSignatureAction = (ViewAnimator) itemView.findViewById(R.id.result_signature_action);
 
             vFileList = (LinearLayout) itemView.findViewById(R.id.file_list);

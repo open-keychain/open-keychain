@@ -23,11 +23,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -40,12 +35,15 @@ import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.io.IOException;
-
 import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class FacebookKeyserver extends Keyserver {
 
@@ -53,10 +51,6 @@ public class FacebookKeyserver extends Keyserver {
             = "https://www.facebook.com/%s/publickey/download";
     private static final String FB_HOST = "facebook.com";
     private static final String FB_HOST_WWW = "www." + FB_HOST;
-
-    public static final String FB_URL = "https://" + FB_HOST_WWW;
-
-    public static final String ORIGIN = FB_URL;
 
     public FacebookKeyserver() {
     }
@@ -85,7 +79,7 @@ public class FacebookKeyserver extends Keyserver {
 
     @Override
     public String get(String fbUsername, ParcelableProxy proxy) throws QueryFailedException {
-        Log.d(Constants.TAG, "FacebookKeyserver get: " + fbUsername + " using Proxy: " + proxy);
+        Log.d(Constants.TAG, "FacebookKeyserver get: " + fbUsername + " using Proxy: " + proxy.getProxy());
 
         String data = query(fbUsername, proxy);
 
@@ -102,14 +96,21 @@ public class FacebookKeyserver extends Keyserver {
 
     private String query(String fbUsername, ParcelableProxy proxy) throws QueryFailedException {
         try {
-            String request = String.format(FB_KEY_URL_FORMAT, fbUsername);
-            Log.d(Constants.TAG, "fetching from Facebook with: " + request + " proxy: " + proxy);
+            URL url = new URL(String.format(FB_KEY_URL_FORMAT, fbUsername));
+            Log.d(Constants.TAG, "fetching from Facebook with: " + url + " proxy: " + proxy.getProxy());
 
-            URL url = new URL(request);
+            /*
+             * For some URLs such as https://www.facebook.com/adithya.abraham/publickey/download
+             * Facebook redirects to a mobile version (302) and then errors out (500).
+             * Using a desktop User-Agent solves that!
+             */
+            Request request = new Request.Builder()
+                    .url(url)
+                    .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0")
+                    .build();
 
             OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy.getProxy());
-
-            Response response = client.newCall(new Request.Builder().url(url).build()).execute();
+            Response response = client.newCall(request).execute();
 
             // contains body both in case of success or failure
             String responseBody = response.body().string();
@@ -118,7 +119,8 @@ public class FacebookKeyserver extends Keyserver {
                 return responseBody;
             } else {
                 // probably a 404 indicating that the key does not exist
-                throw new QueryFailedException("key for " + fbUsername + " not found on Facebook");
+                throw new QueryFailedException("key for " + fbUsername + " not found on Facebook." +
+                        "response:" + response);
             }
 
         } catch (IOException e) {
@@ -128,7 +130,7 @@ public class FacebookKeyserver extends Keyserver {
                     + (proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy()));
         } catch (TlsHelper.TlsHelperException e) {
             Log.e(Constants.TAG, "Exception in cert pinning", e);
-            throw new QueryFailedException("Exception in cert pinning. ");
+            throw new QueryFailedException("Exception in cert pinning.");
         }
     }
 
@@ -148,7 +150,6 @@ public class FacebookKeyserver extends Keyserver {
             throws UnsupportedOperationException {
         ImportKeysListEntry entry = new ImportKeysListEntry();
         entry.setSecretKey(false); // keys imported from Facebook must be public
-        entry.addOrigin(ORIGIN);
 
         // so we can query for the Facebook username directly, and to identify the source to
         // download the key from
@@ -156,17 +157,11 @@ public class FacebookKeyserver extends Keyserver {
 
         UncachedPublicKey key = ring.getPublicKey();
 
-        entry.setPrimaryUserId(key.getPrimaryUserIdWithFallback());
         entry.setUserIds(key.getUnorderedUserIds());
-        entry.updateMergedUserIds();
-
         entry.setPrimaryUserId(key.getPrimaryUserIdWithFallback());
 
         entry.setKeyId(key.getKeyId());
-        entry.setKeyIdHex(KeyFormattingUtils.convertKeyIdToHex(key.getKeyId()));
-
-        entry.setFingerprintHex(KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint()));
-
+        entry.setFingerprint(key.getFingerprint());
 
         try {
             if (key.isEC()) { // unsupported key format (ECDH or ECDSA)

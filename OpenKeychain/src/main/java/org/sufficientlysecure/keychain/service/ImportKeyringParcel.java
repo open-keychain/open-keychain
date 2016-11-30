@@ -27,13 +27,21 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import java.util.ArrayList;
 
 public class ImportKeyringParcel implements Parcelable {
-    // if null, keys are expected to be read from a cache file in ImportExportOperations
+    // If null, keys are expected to be read from a cache file in ImportExportOperations
     public ArrayList<ParcelableKeyRing> mKeyList;
     public ParcelableHkpKeyserver mKeyserver; // must be set if keys are to be imported from a keyserver
+
+    // If false, don't save the key, only return it as part of result
+    public boolean mSkipSave = false;
 
     public ImportKeyringParcel(ArrayList<ParcelableKeyRing> keyList, ParcelableHkpKeyserver keyserver) {
         mKeyList = keyList;
         mKeyserver = keyserver;
+    }
+
+    public ImportKeyringParcel(ArrayList<ParcelableKeyRing> keyList, ParcelableHkpKeyserver keyserver, boolean skipSave) {
+        this(keyList, keyserver);
+        mSkipSave = skipSave;
     }
 
     protected ImportKeyringParcel(Parcel in) {
@@ -44,6 +52,7 @@ public class ImportKeyringParcel implements Parcelable {
             mKeyList = null;
         }
         mKeyserver = in.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
+        mSkipSave = in.readInt() != 0;
     }
 
     @Override
@@ -60,6 +69,7 @@ public class ImportKeyringParcel implements Parcelable {
             dest.writeList(mKeyList);
         }
         dest.writeParcelable(mKeyserver, flags);
+        dest.writeInt(mSkipSave ? 1 : 0);
     }
 
     public static final Parcelable.Creator<ImportKeyringParcel> CREATOR = new Parcelable.Creator<ImportKeyringParcel>() {

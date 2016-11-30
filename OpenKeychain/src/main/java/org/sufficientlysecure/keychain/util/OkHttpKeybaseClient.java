@@ -36,7 +36,7 @@ public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
 
     @Override
     public Response getUrlResponse(URL url, Proxy proxy, boolean isKeybase) throws IOException {
-        OkHttpClient client = null;
+        OkHttpClient client;
 
         try {
             if (proxy != null) {

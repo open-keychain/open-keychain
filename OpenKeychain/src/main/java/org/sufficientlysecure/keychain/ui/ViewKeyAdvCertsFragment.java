@@ -237,7 +237,8 @@ public class ViewKeyAdvCertsFragment extends LoaderFragment implements
             TextView wSignerName = (TextView) view.findViewById(R.id.signerName);
             TextView wSignStatus = (TextView) view.findViewById(R.id.signStatus);
 
-            String signerKeyId = KeyFormattingUtils.beautifyKeyIdWithPrefix(getActivity(), cursor.getLong(mIndexSignerKeyId));
+            String signerKeyId = KeyFormattingUtils.beautifyKeyIdWithPrefix(
+                    cursor.getLong(mIndexSignerKeyId));
             OpenPgpUtils.UserId userId = KeyRing.splitUserId(cursor.getString(mIndexSignerUserId));
             if (userId.name != null) {
                 wSignerName.setText(userId.name);

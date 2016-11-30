@@ -82,10 +82,11 @@ public class EncryptTextFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if ( ! (activity instanceof EncryptActivity) ) {
-            throw new AssertionError(activity + " must inherit from EncryptionActivity");
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if ( ! (context instanceof EncryptActivity) ) {
+            throw new AssertionError(context + " must inherit from EncryptionActivity");
         }
     }
 

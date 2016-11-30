@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
+import android.support.annotation.NonNull;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
@@ -25,8 +27,6 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Vector;
-
-import android.support.annotation.NonNull;
 
 /**
  * Search two or more types of server for online keys.
@@ -38,8 +38,8 @@ public class CloudSearch {
     public static ArrayList<ImportKeysListEntry> search(
             @NonNull final String query, Preferences.CloudSearchPrefs cloudPrefs, @NonNull final ParcelableProxy proxy)
             throws Keyserver.CloudSearchFailureException {
-        final ArrayList<Keyserver> servers = new ArrayList<>();
 
+        final ArrayList<Keyserver> servers = new ArrayList<>();
         // it's a Vector for sync, multiple threads might report problems
         final Vector<Keyserver.CloudSearchFailureException> problems = new Vector<>();
 
@@ -52,46 +52,48 @@ public class CloudSearch {
         if (cloudPrefs.searchFacebook) {
             servers.add(new FacebookKeyserver());
         }
-        final ImportKeysList results = new ImportKeysList(servers.size());
 
-        ArrayList<Thread> searchThreads = new ArrayList<>();
-        for (final Keyserver keyserver : servers) {
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        results.addAll(keyserver.search(query, proxy));
-                    } catch (Keyserver.CloudSearchFailureException e) {
-                        problems.add(e);
+        int numberOfServers = servers.size();
+        final ImportKeysList results = new ImportKeysList(numberOfServers);
+
+        if (numberOfServers > 0) {
+            ArrayList<Thread> searchThreads = new ArrayList<>();
+            for (final Keyserver keyserver : servers) {
+                Runnable r = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            results.addAll(keyserver.search(query, proxy));
+                        } catch (Keyserver.CloudSearchFailureException e) {
+                            problems.add(e);
+                        }
+                        results.finishedAdding(); // notifies if all searchers done
                     }
-                    results.finishedAdding(); // notifies if all searchers done
-                }
-            };
-            Thread searchThread = new Thread(r);
-            searchThreads.add(searchThread);
-            searchThread.start();
-        }
-
-        // wait for either all the searches to come back, or 10 seconds. If using proxy, wait 30 seconds.
-        synchronized (results) {
-            try {
-                if (proxy.getProxy() == Proxy.NO_PROXY) {
-                    results.wait(30 * SECONDS);
-                } else {
-                    results.wait(10 * SECONDS);
-                }
-                for (Thread thread : searchThreads) {
-                    // kill threads that haven't returned yet
-                    thread.interrupt();
-                }
-            } catch (InterruptedException ignored) {
+                };
+                Thread searchThread = new Thread(r);
+                searchThreads.add(searchThread);
+                searchThread.start();
             }
-        }
 
-        if (results.outstandingSuppliers() > 0) {
-            String message = "Launched " + servers.size() + " cloud searchers, but " +
-                    results.outstandingSuppliers() + "failed to complete.";
-            problems.add(new Keyserver.QueryFailedException(message));
+            // wait for either all the searches to come back, or 10 seconds. If using proxy, wait 30 seconds.
+            synchronized (results) {
+                try {
+                    results.wait((proxy.getProxy() == Proxy.NO_PROXY ? 30 : 10) * SECONDS);
+                    for (Thread thread : searchThreads) {
+                        // kill threads that haven't returned yet
+                        thread.interrupt();
+                    }
+                } catch (InterruptedException ignored) {
+                }
+            }
+
+            if (results.outstandingSuppliers() > 0) {
+                String message = "Launched " + servers.size() + " cloud searchers, but " +
+                        results.outstandingSuppliers() + "failed to complete.";
+                problems.add(new Keyserver.QueryFailedException(message));
+            }
+        } else {
+            problems.add(new Keyserver.QueryNoEnabledSourceException());
         }
 
         if (!problems.isEmpty()) {

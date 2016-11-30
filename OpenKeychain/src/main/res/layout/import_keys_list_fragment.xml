@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View" alias="V" />
+        <import type="org.sufficientlysecure.keychain.ui.ImportKeysListFragment" alias="I" />
+
+        <variable name="status" type="int" />
+        <variable name="number" type="int" />
+        <variable name="advanced" type="boolean" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/md_grey_100">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="@{status == I.STATUS_LOADING ? V.VISIBLE : V.GONE}" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/error_nothing"
+            android:visibility="@{status == I.STATUS_FIRST ? V.VISIBLE : V.GONE}" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/error_nothing_import"
+            android:visibility="@{status == I.STATUS_EMPTY ? V.VISIBLE : V.GONE}" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:visibility="@{status == I.STATUS_LOADED ? V.VISIBLE : V.GONE}">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{advanced || (number == 1) ? V.GONE : V.VISIBLE}">
+
+                <include
+                    android:id="@+id/basic"
+                    layout="@layout/import_keys_list_basic_item"
+                    app:number="@{number}" />
+
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:visibility="@{advanced || (number == 1) ? V.VISIBLE : V.GONE}" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</layout>

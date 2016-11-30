@@ -527,7 +527,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="key_unavailable">niedostepne</string>
   <string name="secret_cannot_multiple">Twoje klucze mogą być usuwane tylko pojedynczo!</string>
   <string name="title_view_cert">Zweryfikuj szczegóły certyfikatu</string>
-  <string name="unknown_algorithm">nieznany</string>
+  <string name="unknown">nieznany</string>
   <string name="can_sign_not">nie może podpisać</string>
   <string name="error_no_encrypt_subkey">Brak pod-klucza szyfrowania!</string>
   <string name="contact_show_key">Pokaż klucz (%s)</string>

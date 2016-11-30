@@ -19,11 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -89,10 +84,10 @@ import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.ContentDescriptionHint;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
-import org.sufficientlysecure.keychain.ui.util.ContentDescriptionHint;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -103,6 +98,11 @@ import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 
 
 public class ViewKeyActivity extends BaseSecurityTokenActivity implements
@@ -115,7 +115,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({REQUEST_QR_FINGERPRINT, REQUEST_BACKUP, REQUEST_CERTIFY, REQUEST_DELETE})
-    private @interface RequestType {}
+    private @interface RequestType {
+    }
+
     static final int REQUEST_QR_FINGERPRINT = 1;
     static final int REQUEST_BACKUP = 2;
     static final int REQUEST_CERTIFY = 3;
@@ -565,7 +567,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private void startBackupActivity() {
         Intent intent = new Intent(this, BackupActivity.class);
-        intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[] { mMasterKeyId });
+        intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[]{mMasterKeyId});
         intent.putExtra(BackupActivity.EXTRA_SECRET, true);
         startActivity(intent);
     }
@@ -722,7 +724,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 manager.beginTransaction()
                         .addToBackStack("security_token")
                         .replace(R.id.view_key_fragment, frag)
-                                // if this is called while the activity wasn't resumed, just forget it happened
+                        // if this is called while the activity wasn't resumed, just forget it happened
                         .commitAllowingStateLoss();
             }
         });
@@ -1105,7 +1107,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
 
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null);
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null, null);
         ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
         entries.add(keyEntry);
         mKeyList = entries;

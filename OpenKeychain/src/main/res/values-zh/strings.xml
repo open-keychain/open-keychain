@@ -1095,7 +1095,7 @@
   <string name="key_unavailable">不可用</string>
   <string name="secret_cannot_multiple">只能逐个删除您的密钥！</string>
   <string name="title_view_cert">查看认证详情</string>
-  <string name="unknown_algorithm">未知</string>
+  <string name="unknown">未知</string>
   <string name="can_sign_not">无法签署</string>
   <string name="exchange_description">在开始密钥交换之前，在右侧指定参与者的数量，然后点击“开始交换”按钮。\n\n您将被要求回答两个问题以确认由正确的参与者参与交换过程，并且他们的指纹是正确的。</string>
   <string name="btn_start_exchange">开始交换</string>
