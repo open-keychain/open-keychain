@@ -19,8 +19,10 @@ package org.sufficientlysecure.keychain.pgp;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.openintents.openpgp.OpenPgpSignatureResult.SenderStatusResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
@@ -42,7 +44,7 @@ public class OpenPgpSignatureResultBuilder {
     private ArrayList<String> mUserIds = new ArrayList<>();
     private ArrayList<String> mConfirmedUserIds;
     private long mKeyId;
-    private int mSenderStatus;
+    private SenderStatusResult mSenderStatusResult;
 
     // builder
     private boolean mSignatureAvailable = false;
@@ -53,6 +55,7 @@ public class OpenPgpSignatureResultBuilder {
     private boolean mIsKeyExpired = false;
     private boolean mInsecure = false;
     private String mSenderAddress;
+    private Date mSignatureTimestamp;
 
     public OpenPgpSignatureResultBuilder(ProviderHelper providerHelper) {
         this.mProviderHelper = providerHelper;
@@ -64,6 +67,10 @@ public class OpenPgpSignatureResultBuilder {
 
     public void setKeyId(long keyId) {
         this.mKeyId = keyId;
+    }
+
+    public void setSignatureTimestamp(Date signatureTimestamp) {
+        mSignatureTimestamp = signatureTimestamp;
     }
 
     public void setKnownKey(boolean knownKey) {
@@ -125,14 +132,14 @@ public class OpenPgpSignatureResultBuilder {
 
             if (mSenderAddress != null) {
                 if (userIdListContainsAddress(mSenderAddress, confirmedUserIds)) {
-                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_CONFIRMED);
+                    mSenderStatusResult = SenderStatusResult.USER_ID_CONFIRMED;
                 } else if (userIdListContainsAddress(mSenderAddress, allUserIds)) {
-                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_UNCONFIRMED);
+                    mSenderStatusResult = SenderStatusResult.USER_ID_UNCONFIRMED;
                 } else {
-                    setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_UID_MISSING);
+                    mSenderStatusResult = SenderStatusResult.USER_ID_MISSING;
                 }
             } else {
-                setSenderStatus(OpenPgpSignatureResult.SENDER_RESULT_NO_SENDER);
+                mSenderStatusResult = SenderStatusResult.UNKNOWN;
             }
 
         } catch (NotFoundException e) {
@@ -162,7 +169,7 @@ public class OpenPgpSignatureResultBuilder {
 
         if (!mKnownKey) {
             Log.d(Constants.TAG, "RESULT_KEY_MISSING");
-            return OpenPgpSignatureResult.createWithKeyMissing(mKeyId);
+            return OpenPgpSignatureResult.createWithKeyMissing(mKeyId, mSignatureTimestamp);
         }
 
         if (!mValidSignature) {
@@ -189,14 +196,11 @@ public class OpenPgpSignatureResultBuilder {
         }
 
         return OpenPgpSignatureResult.createWithValidSignature(
-                signatureStatus, mPrimaryUserId, mKeyId, mUserIds, mConfirmedUserIds, mSenderStatus);
+                signatureStatus, mPrimaryUserId, mKeyId, mUserIds, mConfirmedUserIds, mSenderStatusResult, mSignatureTimestamp);
     }
 
     public void setSenderAddress(String senderAddress) {
         mSenderAddress = senderAddress;
     }
 
-    public void setSenderStatus(int senderStatus) {
-        mSenderStatus = senderStatus;
-    }
 }

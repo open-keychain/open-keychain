@@ -327,7 +327,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         // revoked/expired subkeys
         boolean isRevoked = mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED;
         boolean isExpired = mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED;
-        boolean isInsecure = mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_INSECURE;
+        boolean isInsecure = mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE;
         boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
         boolean isYours = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
 
