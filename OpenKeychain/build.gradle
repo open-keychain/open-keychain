@@ -23,7 +23,6 @@ dependencies {
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     compile 'com.splitwise:tokenautocomplete:2.0.8@aar'
-    compile 'se.emilsjolander:stickylistheaders:2.7.0'
     compile 'org.sufficientlysecure:html-textview:2.0'
     compile 'org.sufficientlysecure:donations:2.4'
     compile 'com.nispok:snackbar:2.11.0'
@@ -33,6 +32,10 @@ dependencies {
     compile 'org.apache.james:apache-mime4j-dom:0.8.0'
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
     compile 'com.cocosw:bottomsheet:1.3.0@aar'
+
+    compile 'se.emilsjolander:stickylistheaders:2.7.0'
+    compile 'com.tonicartos:superslim:0.4.13'
+    compile 'com.futuremind.recyclerfastscroll:fastscroll:0.2.4'
 
     // Material Drawer
     compile 'com.mikepenz:materialdrawer:5.6.0@aar'
@@ -101,7 +104,6 @@ dependencyVerification {
             'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
             'org.ocpsoft.prettytime:prettytime:ef7098d973ae78b57d1a22dc37d3b8a771bf030301300e24055d676b6cdc5e75',
             'com.splitwise:tokenautocomplete:f921f83ee26b5265f719b312c30452ef8e219557826c5ce5bf02e29647967939',
-            'se.emilsjolander:stickylistheaders:a08ca948aa6b220f09d82f16bbbac395f6b78897e9eeac6a9f0b0ba755928eeb',
             'org.sufficientlysecure:html-textview:302c449167f9573313e5293ccab689010e028e4d09aee2ccc2682b3211227ce7',
             'org.sufficientlysecure:donations:96f8197bab26dfe41900d824f10f8f1914519cd62eedb77bdac5b223eccdf0a6',
             'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
@@ -111,6 +113,9 @@ dependencyVerification {
             'org.apache.james:apache-mime4j-dom:e18717fe6d36f32e5c5f7cbeea1a9bf04645fdabc84e7e8374d9da10fd52e78d',
             'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
             'com.cocosw:bottomsheet:4af6112a7f4cad4e2b70e5fdf1edc39f51275523a0f53011a012837dc103e597',
+            'se.emilsjolander:stickylistheaders:a08ca948aa6b220f09d82f16bbbac395f6b78897e9eeac6a9f0b0ba755928eeb',
+            'com.tonicartos:superslim:ca89b5c674660cc6918a8f8fd385065bffeee27983e0d33c7c2f0ad7b34d2d49',
+            'com.futuremind.recyclerfastscroll:fastscroll:ae655201885a9dbb5fabecb4adfefbb23ffdbca26a2b4ea255ec1bf6f214c606',
             'com.mikepenz:materialdrawer:8bba1428dcef5ad7c2decf49c612ad980b38e2f1031cbd66c152a8a104793929',
             'com.mikepenz:fastadapter:21d4ecb5c128bcda37b14e7998d799ed52cfc768b72cdf3d5578bb6775769ebd',
             'com.mikepenz:materialize:942ccf5e2aa1a46803aa884e8dc7bbaf2a9e8e9996a0cf92e3fe2f44a8592ba4',
@@ -119,14 +124,14 @@ dependencyVerification {
             'com.mikepenz:fontawesome-typeface:ee47b7fe97b90412f01f2fcdd78f65a4edb0ab00006f5ef59ed00516baca9309',
             'com.mikepenz:community-material-typeface:d6035d261c5eba880cd7fe5dcb8cc00b09bfe6d41063b881b759e9897dc7b7c9',
             'com.fidesmo:nordpol-android:56f43fe2b1676817bcb4085926de14a08282ef6729c855c198d81aec62b20d65',
-//            'OpenKeychain:openpgp-api-lib:43d7e67e8ae19ae46e228393a7c4f5861da64db47da2fbb398817bde774669f7',
-//            'OpenKeychain:openkeychain-api-lib:d2e66ce4828c47cb6081cfb8e7352681cc5d337404aec87e156cbc5a6e732587',
-//            'OpenKeychain.extern.bouncycastle:core:20bd3036f93758c5ed937fc172b5e7e8d82d071e7b435bd9b6fa3869d5788095',
-//            'OpenKeychain.extern.bouncycastle:pg:97b7318ee208b8fe552425aac9ffdcc8723032a78784ecc82c999ee09161e2e8',
-//            'OpenKeychain.extern.bouncycastle:prov:76a8d07e88a557f91fad5c01f1f827085bde12ee924fa4d186a65d80e39d42a2',
-//            'OpenKeychain.extern:minidns:8183e688b754b9e64ea498b735890a3ece9af1e240d949b804bf7b12a0d5b830',
-//            'OpenKeychain:KeybaseLib:a870229a22779dfe433d6e48970822b0dfcd351c3cc885cfb94816d064c10fb0',
-//            'OpenKeychain:safeslinger-exchange:2cbff71ec5d59c824dd244042539cfc5cfbf450ab813c95b9dc83fbb50401ba9',
+//            'OpenKeychain:openpgp-api-lib:8ee931094b4c596fce55907b226616b0adae614b2877a0e530f726898bf63259',
+//            'OpenKeychain:openkeychain-api-lib:a61e822cca9f7b34ea7750532ecd3bad7e05e6872bf218583f2a25d98c8b3c68',
+//            'OpenKeychain.extern.bouncycastle:core:72c07a72f304b9ff96bc4027861df5adbfbeb5dfccc740198c1d5de393980d8b',
+//            'OpenKeychain.extern.bouncycastle:pg:f61645e289fdbcc38b24dc2c5e9186eb9460d3eb76b7607e2dd68ed3f2115202',
+//            'OpenKeychain.extern.bouncycastle:prov:2dc9e69d1a2a91096716af024b02d1e29af19243127eae71f00a957be52d7f69',
+//            'OpenKeychain.extern:minidns:5349807fe5b2134862ad05cadc8be3fd3fb7aa55c2b129d7ba8f4904faf3333b',
+//            'OpenKeychain:KeybaseLib:75c70462e244d99c647da6638dea4b790455fb9f539574398ea9da7571f5ee8f',
+//            'OpenKeychain:safeslinger-exchange:be515e3012549b07bfdf779a262d1f8bb335a98c35c059db6563c1d0b58bde75',
 //            'com.android.databinding:library:def2976cb30dd5abf9f3a35d70c70cfb5485af4fb4ae022f5b9a6e2f8cff6386',
 //            'com.android.databinding:baseLibrary:47cb0d2d4d1aae4af3f860c31540493332a26278c016bbae90d22fdde3b0b83d',
 //            'com.android.databinding:adapters:0dd06349dad760f3cb56769f8e9f46451634be6a8a1bfdb2e88a5ca10afcebd6',

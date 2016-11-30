@@ -27,8 +27,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
+import android.support.v7.widget.RecyclerView;
 import android.widget.AdapterView;
 
 import org.junit.Before;
@@ -36,6 +38,7 @@ import org.junit.Rule;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.TestHelpers;
+import org.sufficientlysecure.keychain.matcher.CustomMatchers;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -49,6 +52,7 @@ import static android.support.test.espresso.Espresso.openActionBarOverflowOrOpti
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnHolderItem;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCategories;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasType;
@@ -71,6 +75,7 @@ import static org.sufficientlysecure.keychain.TestHelpers.pickRandom;
 import static org.sufficientlysecure.keychain.TestHelpers.randomString;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.isRecyclerItemView;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withDisplayedChild;
+import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyHolderId;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItemId;
 import static org.sufficientlysecure.keychain.matcher.DrawableMatcher.withDrawable;
 
@@ -206,12 +211,12 @@ public class MiscCryptOperationTests {
 
     //@Test
     public void testEncryptTokenFromKeyView() throws Exception {
+        onView(allOf(
+                isAssignableFrom(RecyclerView.class),
+                withId(android.R.id.list)))
+                .perform(actionOnHolderItem(
+                        withKeyHolderId(0x9D604D2F310716A3L), click()));
 
-        // navigate to edit key dialog
-        onData(withKeyItemId(0x9D604D2F310716A3L))
-                .inAdapterView(allOf(isAssignableFrom(AdapterView.class),
-                        isDescendantOfA(withId(R.id.key_list_list))))
-                .perform(click());
         onView(withId(R.id.view_key_action_encrypt_text)).perform(click());
 
         // make sure the encrypt is correctly set
