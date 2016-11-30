@@ -33,6 +33,7 @@ dependencies {
     compile 'org.apache.james:apache-mime4j-dom:0.8.0'
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
     compile 'com.cocosw:bottomsheet:1.3.0@aar'
+    compile 'com.tonicartos:superslim:0.4.13'
 
     // Material Drawer
     compile 'com.mikepenz:materialdrawer:5.6.0@aar'
@@ -140,6 +141,7 @@ dependencyVerification {
             'com.android.support:transition:331d4152f878442b7bf92c4320335ec7f707d1f6248da2fb3667be436dd508d1',
             'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
             'com.fidesmo:nordpol-core:3de58e850a00bba5b4d3a604d1399bcd89f695ea191ec0b03a57222e18062d15',
+            'com.tonicartos:superslim:ca89b5c674660cc6918a8f8fd385065bffeee27983e0d33c7c2f0ad7b34d2d49',
     ]
 }
 
