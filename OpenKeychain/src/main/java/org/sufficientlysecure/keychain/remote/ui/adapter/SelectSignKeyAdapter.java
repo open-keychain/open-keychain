@@ -35,12 +35,12 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
 
     @Override
     public int getItemCount() {
-        return super.getItemCount() + 1;
+        return super.getItemCount() + 1; // received items + 1 dummy key
     }
 
     @Override
     public long getItemId(int pos) {
-        if(pos < super.getItemCount()) {
+        if(pos < (super.getItemCount() - 1)) {
             return super.getItemId(pos);
         } else {
             return 0L;
@@ -49,7 +49,7 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
 
     @Override
     public int getItemViewType(int position) {
-        return position == getItemCount() -1 ?
+        return position == super.getItemCount() ?
                 VIEW_TYPE_DUMMY : VIEW_TYPE_KEY;
     }
 
@@ -73,7 +73,7 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if(holder.getItemViewType() == VIEW_TYPE_KEY) {
-            super.onBindViewHolder(holder, position - 1);
+            super.onBindViewHolder(holder, position);
         }
     }
 
