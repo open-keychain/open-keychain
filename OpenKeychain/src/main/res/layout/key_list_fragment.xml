@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:fab="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,10 +10,10 @@
 
     <LinearLayout
         android:id="@android:id/progress"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
 
         <ProgressBar
             style="?android:attr/progressBarStyleLarge"
@@ -25,8 +25,8 @@
 
     <RelativeLayout
         android:id="@android:id/widget_frame"
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:visibility="gone">
 
         <!--rebuild functionality of ListFragment -->
@@ -34,27 +34,37 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <org.sufficientlysecure.keychain.ui.util.recyclerview.fastscroll.FastScrollRecyclerView
-                android:id="@android:id/list"
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="16dp"
-                android:paddingStart="16dp"
-                android:paddingRight="32dp"
-                android:paddingEnd="32dp"
-                android:paddingBottom="72dp"
-                android:clipToPadding="false"
-                custom:fastScrollScrollBarWidth="8dp"
-                custom:fastScrollThumbColorNormal="@color/selected_gray"
-                custom:fastScrollThumbColorDragging="@color/accent" />
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@android:id/list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="32dp"
+                    android:paddingStart="16dp" />
+
+                <com.futuremind.recyclerviewfastscroll.FastScroller
+                    android:id="@+id/fastscroll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:orientation="vertical"
+                    app:fastscroll__bubbleColor="@color/primary"
+                    app:fastscroll__handleColor="@color/md_white_1000" />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@android:id/empty"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
+                android:animateLayoutChanges="true"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:animateLayoutChanges="true" >
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -64,25 +74,25 @@
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+                    android:id="@+id/search_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/search_container"
                     android:inAnimation="@anim/fade_in_delayed"
-                    android:outAnimation="@anim/fade_out"
                     android:measureAllChildren="true"
-                    custom:initialView="1">
+                    android:outAnimation="@anim/fade_out"
+                    app:initialView="1">
 
                     <Space
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
                     <Button
+                        android:id="@+id/search_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
-                        android:id="@+id/search_button"
                         android:gravity="center"
-                        tools:text="@string/btn_search_for_query"/>
+                        tools:text="@string/btn_search_for_query" />
 
                 </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
@@ -93,48 +103,48 @@
             android:id="@+id/fab_main"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             fab:fab_addButtonColorNormal="?attr/colorPrimary"
             fab:fab_addButtonColorPressed="?attr/colorPrimaryDark"
-            fab:fab_addButtonSize="normal"
             fab:fab_addButtonPlusIconColor="@color/icons"
+            fab:fab_addButtonSize="normal"
             fab:fab_expandDirection="up"
-            fab:fab_labelStyle="@style/FabMenuStyle"
-            android:layout_marginBottom="8dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp">
+            fab:fab_labelStyle="@style/FabMenuStyle">
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_add_qr_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fab:fab_icon="@drawable/ic_qrcode_white_24dp"
                 fab:fab_colorNormal="?attr/colorPrimary"
                 fab:fab_colorPressed="?attr/colorPrimaryDark"
-                fab:fab_title="@string/key_list_fab_qr_code"
-                fab:fab_size="mini" />
+                fab:fab_icon="@drawable/ic_qrcode_white_24dp"
+                fab:fab_size="mini"
+                fab:fab_title="@string/key_list_fab_qr_code" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_add_cloud"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fab:fab_icon="@drawable/ic_cloud_search_24dp"
                 fab:fab_colorNormal="?attr/colorPrimary"
                 fab:fab_colorPressed="?attr/colorPrimaryDark"
-                fab:fab_title="@string/key_list_fab_search"
-                fab:fab_size="mini" />
+                fab:fab_icon="@drawable/ic_cloud_search_24dp"
+                fab:fab_size="mini"
+                fab:fab_title="@string/key_list_fab_search" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_add_file"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fab:fab_icon="@drawable/ic_folder_white_24dp"
                 fab:fab_colorNormal="?attr/colorPrimary"
                 fab:fab_colorPressed="?attr/colorPrimaryDark"
-                fab:fab_title="@string/key_list_fab_import"
-                fab:fab_size="mini" />
+                fab:fab_icon="@drawable/ic_folder_white_24dp"
+                fab:fab_size="mini"
+                fab:fab_title="@string/key_list_fab_import" />
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
     </RelativeLayout>

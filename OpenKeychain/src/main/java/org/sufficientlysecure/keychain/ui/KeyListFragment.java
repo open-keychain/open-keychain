@@ -44,6 +44,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ViewAnimator;
 
+import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.tonicartos.superslim.LayoutManager;
@@ -267,6 +268,9 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
         setAdapter(adapter);
         setLayoutManager(new LayoutManager(getActivity()));
+
+        FastScroller fastScroller = (FastScroller) getActivity().findViewById(R.id.fastscroll);
+        fastScroller.setRecyclerView(getRecyclerView());
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.

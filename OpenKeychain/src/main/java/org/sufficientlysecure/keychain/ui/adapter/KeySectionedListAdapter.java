@@ -15,6 +15,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
+
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -28,9 +30,10 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedListAdapter.KeyListCursor, Character,
-        SectionCursorAdapter.ViewHolder, KeySectionedListAdapter.KeyHeaderViewHolder> {
+        SectionCursorAdapter.ViewHolder, KeySectionedListAdapter.KeyHeaderViewHolder> implements SectionTitleProvider {
 
     private static final short VIEW_ITEM_TYPE_KEY = 0x0;
     private static final short VIEW_ITEM_TYPE_DUMMY = 0x1;
@@ -61,7 +64,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
         mHasDummy = false;
         mSelected.clear();
 
-        if(mListener != null) {
+        if (mListener != null) {
             mListener.onSelectionStateChanged(0);
         }
 
@@ -116,9 +119,9 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
     public long[] getSelectedMasterKeyIds() {
         long[] keys = new long[mSelected.size()];
-        for(int i = 0; i < keys.length; i++) {
+        for (int i = 0; i < keys.length; i++) {
             int index = getCursorPositionWithoutSections(mSelected.get(i));
-            if(!moveCursor(index)) {
+            if (!moveCursor(index)) {
                 return keys;
             }
 
@@ -129,13 +132,13 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
     }
 
     public boolean isAnySecretKeySelected() {
-        for(int i = 0; i < mSelected.size(); i++) {
+        for (int i = 0; i < mSelected.size(); i++) {
             int index = getCursorPositionWithoutSections(mSelected.get(i));
-            if(!moveCursor(index)) {
+            if (!moveCursor(index)) {
                 return false;
             }
 
-            if(getCursor().isSecret()) {
+            if (getCursor().isSecret()) {
                 return true;
             }
         }
@@ -146,6 +149,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
     /**
      * Returns the number of database entries displayed.
+     *
      * @return The item count
      */
     public int getCount() {
@@ -171,7 +175,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             return '#';
         } else {
             String userId = cursor.getRawUserId();
-            if(TextUtils.isEmpty(userId)) {
+            if (TextUtils.isEmpty(userId)) {
                 return '?';
             } else {
                 return Character.toUpperCase(userId.charAt(0));
@@ -273,13 +277,40 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
         mSelected.clear();
 
-        for(int i = 0; i < selected.length; i++) {
-            notifyItemChanged(selected[i]);
+        for (Integer aSelected : selected) {
+            notifyItemChanged(aSelected);
+        }
+    }
+
+    @Override
+    public String getSectionTitle(int position) {
+        // this String will be shown in a bubble for specified position
+        if (moveCursor(getCursorPositionWithoutSections(position))) {
+            KeyListCursor cursor = getCursor();
+
+            if (cursor.isSecret()) {
+                if (cursor.getKeyId() == 0L) {
+                    mHasDummy = true;
+                }
+
+                return "My";
+            } else {
+                String userId = cursor.getRawUserId();
+                if (TextUtils.isEmpty(userId)) {
+                    return null;
+                } else {
+                    return userId.substring(0, 1);
+                }
+            }
+        } else {
+            Log.w(Constants.TAG, "Unable to determine section title. "
+                    + "Reason: Could not move cursor over dataset.");
+            return null;
         }
     }
 
     private class KeyDummyViewHolder extends SectionCursorAdapter.ViewHolder
-            implements View.OnClickListener{
+            implements View.OnClickListener {
 
         KeyDummyViewHolder(View itemView) {
             super(itemView);
@@ -291,7 +322,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
         @Override
         public void onClick(View view) {
-            if(mListener != null) {
+            if (mListener != null) {
                 mListener.onKeyDummyItemClicked();
             }
         }
@@ -546,8 +577,11 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
     public interface KeyListListener {
         void onKeyDummyItemClicked();
+
         void onKeyItemClicked(long masterKeyId);
+
         void onSlingerButtonClicked(long masterKeyId);
+
         void onSelectionStateChanged(int selectedCount);
     }
 }
