@@ -23,6 +23,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
@@ -105,10 +108,34 @@ public class DisplayTextFragment extends DecryptFragment {
         String plaintext = args.getString(ARG_PLAINTEXT);
         DecryptVerifyResult result =  args.getParcelable(ARG_DECRYPT_VERIFY_RESULT);
 
+        if (result == null) {
+            throw new IllegalStateException("Missing decryption result argument!");
+        }
+
         // display signature result in activity
+        setAutoLinkFromSignatureResult(result.getSignatureResult());
         mText.setText(plaintext);
         loadVerifyResult(result);
+    }
 
+    private void setAutoLinkFromSignatureResult(@Nullable OpenPgpSignatureResult signatureResult) {
+        if (signatureResult == null) {
+            mText.setAutoLinkMask(0);
+            return;
+        }
+
+        switch (signatureResult.getResult()) {
+            case OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED:
+            case OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED: {
+                mText.setAutoLinkMask(Linkify.ALL);
+                break;
+            }
+
+            default: {
+                mText.setAutoLinkMask(0);
+                break;
+            }
+        }
     }
 
     @Override
