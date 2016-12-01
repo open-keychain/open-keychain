@@ -35,12 +35,10 @@ import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
-import android.os.Parcelable;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -84,6 +82,13 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class OpenPgpService extends Service {
+    public static final int API_VERSION_WITH_RESULT_METADATA = 4;
+    public static final int API_VERSION_WITH_KEY_REVOKED_EXPIRED = 5;
+    public static final int API_VERSION_HIGHEST_WITH_ACCOUNTS = 6;
+    public static final int API_VERSION_WITH_KEY_INVALID_INSECURE = 8;
+    public static final int API_VERSION_WITHOUT_SIGNATURE_ONLY_FLAG = 8;
+    public static final int API_VERSION_WITH_DECRYPTION_RESULT = 8;
+    public static final int API_VERSION_WITH_RESULT_NO_SIGNATURE = 8;
 
     public static final List<Integer> SUPPORTED_VERSIONS =
             Collections.unmodifiableList(Arrays.asList(3, 4, 5, 6, 7, 8, 9, 10, 11));
@@ -453,7 +458,8 @@ public class OpenPgpService extends Service {
             HashSet<Long> allowedKeyIds = mApiDao.getAllowedKeyIdsForApp(
                     KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
 
-            if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 7) {
+            int targetApiVersion = data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1);
+            if (targetApiVersion <= API_VERSION_HIGHEST_WITH_ACCOUNTS) {
                 allowedKeyIds.addAll(mApiDao.getAllKeyIdsForApp(
                         ApiAccounts.buildBaseUri(currentPkg)));
             }
@@ -509,81 +515,10 @@ public class OpenPgpService extends Service {
             } else if (pgpResult.success()) {
                 Intent result = new Intent();
 
-                OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
+                processDecryptionResultForResultIntent(targetApiVersion, result, pgpResult.getDecryptionResult());
+                processMetadataForResultIntent(targetApiVersion, result, pgpResult.getDecryptionMetadata());
+                processSignatureResultForResultIntent(targetApiVersion, data, piFactory, result, pgpResult);
 
-                switch (signatureResult.getResult()) {
-                    case OpenPgpSignatureResult.RESULT_KEY_MISSING: {
-                        // If signature key is missing we return a PendingIntent to retrieve the key
-                        result.putExtra(OpenPgpApi.RESULT_INTENT,
-                                piFactory.createImportFromKeyserverPendingIntent(data,
-                                        signatureResult.getKeyId()));
-                        break;
-                    }
-                    case OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED:
-                    case OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED:
-                    case OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED:
-                    case OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED:
-                    case OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE: {
-                        // If signature key is known, return PendingIntent to show key
-                        result.putExtra(OpenPgpApi.RESULT_INTENT,
-                                piFactory.createShowKeyPendingIntent(data, signatureResult.getKeyId()));
-                        break;
-                    }
-                    default:
-                    case OpenPgpSignatureResult.RESULT_NO_SIGNATURE:
-                    case OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE: {
-                        // no key id -> no PendingIntent
-                    }
-                }
-
-                if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 5) {
-                    // RESULT_INVALID_KEY_REVOKED and RESULT_INVALID_KEY_EXPIRED have been added in version 5
-                    if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED
-                            || signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED) {
-                        signatureResult = OpenPgpSignatureResult.createWithInvalidSignature();
-                    }
-                }
-
-                if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 8) {
-                    // RESULT_INVALID_INSECURE has been added in version 8, fallback to RESULT_INVALID_SIGNATURE
-                    if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE) {
-                        signatureResult = OpenPgpSignatureResult.createWithInvalidSignature();
-                    }
-
-                    // RESULT_NO_SIGNATURE has been added in version 8, before the signatureResult was null
-                    if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
-                        result.putExtra(OpenPgpApi.RESULT_SIGNATURE, (Parcelable[]) null);
-                    }
-                }
-
-                boolean apiHasOpenPgpDecryptionResult = data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 8;
-                if (apiHasOpenPgpDecryptionResult) {
-                    OpenPgpDecryptionResult decryptionResult = pgpResult.getDecryptionResult();
-                    if (decryptionResult != null) {
-                        result.putExtra(OpenPgpApi.RESULT_DECRYPTION, decryptionResult);
-                    }
-                } else {
-                    // this info was kept in OpenPgpSignatureResult, so put it there for compatibility
-                    OpenPgpDecryptionResult decryptionResult = pgpResult.getDecryptionResult();
-                    boolean signatureOnly = decryptionResult.getResult() == OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED
-                            && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE;
-                    // noinspection deprecation, this is for backwards compatibility
-                    signatureResult = signatureResult.withSignatureOnlyFlag(signatureOnly);
-                }
-
-                OpenPgpMetadata metadata = pgpResult.getDecryptionMetadata();
-                if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 4) {
-                    if (metadata != null) {
-                        result.putExtra(OpenPgpApi.RESULT_METADATA, metadata);
-                    }
-                }
-
-                String charset = metadata != null ? metadata.getCharset() : null;
-                if (charset != null) {
-                    result.putExtra(OpenPgpApi.RESULT_CHARSET, charset);
-                }
-
-                result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
             } else {
@@ -612,6 +547,103 @@ public class OpenPgpService extends Service {
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
         }
+    }
+
+    private void processDecryptionResultForResultIntent(int targetApiVersion, Intent result,
+            OpenPgpDecryptionResult decryptionResult) {
+        if (targetApiVersion < API_VERSION_WITH_DECRYPTION_RESULT) {
+            return;
+        }
+
+        if (decryptionResult != null) {
+            result.putExtra(OpenPgpApi.RESULT_DECRYPTION, decryptionResult);
+        }
+    }
+
+    private OpenPgpSignatureResult getSignatureResultWithApiCompatibilityFallbacks(
+            int targetApiVersion, DecryptVerifyResult pgpResult) {
+        OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
+
+        if (targetApiVersion < API_VERSION_WITH_KEY_REVOKED_EXPIRED) {
+            // RESULT_INVALID_KEY_REVOKED and RESULT_INVALID_KEY_EXPIRED have been added in version 5
+            if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED
+                    || signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED) {
+                signatureResult = OpenPgpSignatureResult.createWithInvalidSignature();
+            }
+        }
+
+        if (targetApiVersion < API_VERSION_WITH_KEY_INVALID_INSECURE) {
+            // RESULT_INVALID_INSECURE has been added in version 8, fallback to RESULT_INVALID_SIGNATURE
+            if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE) {
+                signatureResult = OpenPgpSignatureResult.createWithInvalidSignature();
+            }
+        }
+
+        if (targetApiVersion < API_VERSION_WITHOUT_SIGNATURE_ONLY_FLAG) {
+            // this info was kept in OpenPgpSignatureResult, so put it there for compatibility
+            OpenPgpDecryptionResult decryptionResult = pgpResult.getDecryptionResult();
+            boolean signatureOnly = decryptionResult.getResult() == OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED
+                    && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE;
+            // noinspection deprecation, this is for backwards compatibility
+            signatureResult = signatureResult.withSignatureOnlyFlag(signatureOnly);
+        }
+
+        return signatureResult;
+    }
+
+    private void processMetadataForResultIntent(int targetApiVersion, Intent result, OpenPgpMetadata metadata) {
+        String charset = metadata != null ? metadata.getCharset() : null;
+        if (charset != null) {
+            result.putExtra(OpenPgpApi.RESULT_CHARSET, charset);
+        }
+
+        if (targetApiVersion < API_VERSION_WITH_RESULT_METADATA) {
+            return;
+        }
+
+        if (metadata != null) {
+            result.putExtra(OpenPgpApi.RESULT_METADATA, metadata);
+        }
+    }
+
+    private void processSignatureResultForResultIntent(int targetApiVersion, Intent data,
+            ApiPendingIntentFactory piFactory, Intent result, DecryptVerifyResult pgpResult) {
+        OpenPgpSignatureResult signatureResult =
+                getSignatureResultWithApiCompatibilityFallbacks(targetApiVersion, pgpResult);
+
+        switch (signatureResult.getResult()) {
+            case OpenPgpSignatureResult.RESULT_KEY_MISSING: {
+                // If signature key is missing we return a PendingIntent to retrieve the key
+                result.putExtra(OpenPgpApi.RESULT_INTENT,
+                        piFactory.createImportFromKeyserverPendingIntent(data,
+                                signatureResult.getKeyId()));
+                break;
+            }
+            case OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED:
+            case OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED:
+            case OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED:
+            case OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED:
+            case OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE: {
+                // If signature key is known, return PendingIntent to show key
+                result.putExtra(OpenPgpApi.RESULT_INTENT,
+                        piFactory.createShowKeyPendingIntent(data, signatureResult.getKeyId()));
+                break;
+            }
+            default:
+            case OpenPgpSignatureResult.RESULT_NO_SIGNATURE: {
+                if (targetApiVersion < API_VERSION_WITH_RESULT_NO_SIGNATURE) {
+                    // RESULT_NO_SIGNATURE has been added in version 8, before the signatureResult was null
+                    signatureResult = null;
+                }
+                // otherwise, no pending intent
+            }
+
+            case OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE: {
+                // no key id -> no PendingIntent
+            }
+        }
+
+        result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
     }
 
     private Intent getKeyImpl(Intent data, OutputStream outputStream) {
