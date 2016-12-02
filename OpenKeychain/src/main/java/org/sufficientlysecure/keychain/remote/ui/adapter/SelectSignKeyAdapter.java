@@ -109,6 +109,8 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
 
         public SignKeyItemHolder(View itemView) {
             super(itemView);
+            itemView.setClickable(true);
+            itemView.setOnClickListener(this);
 
             mUserIdText = (TextView) itemView.findViewById(R.id.select_key_item_name);
             mUserIdRestText = (TextView) itemView.findViewById(R.id.select_key_item_email);
