@@ -109,7 +109,7 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
 
         public SignKeyItemHolder(View itemView) {
             super(itemView);
-            itemView.setClickable(true);
+            itemView.setClickable(false);
             itemView.setOnClickListener(this);
 
             mUserIdText = (TextView) itemView.findViewById(R.id.select_key_item_name);
@@ -162,6 +162,7 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
                     mStatusIcon.setVisibility(View.VISIBLE);
                     textColor = ContextCompat.getColor(context, R.color.key_flag_gray);
                 } else {
+                    itemView.setClickable(true);
                     mStatusIcon.setVisibility(View.GONE);
                     textColor = FormattingUtils.getColorFromAttr(context, R.attr.colorText);
                 }
