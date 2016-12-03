@@ -76,7 +76,6 @@ public class SelectSignKeyIdActivity extends BaseActivity {
         if (appUri == null) {
             Log.e(Constants.TAG, "Intent data missing. Should be Uri of app!");
             finish();
-            return;
         } else {
             Log.d(Constants.TAG, "uri: " + appUri);
             startListFragments(savedInstanceState, appUri, mData, mPreferredUserId);
