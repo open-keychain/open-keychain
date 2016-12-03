@@ -8,6 +8,7 @@
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:paddingLeft="4dp"
     android:paddingRight="?android:attr/scrollbarSize"
+    android:background="?android:selectableItemBackground"
     android:maxLines="1">
 
     <LinearLayout

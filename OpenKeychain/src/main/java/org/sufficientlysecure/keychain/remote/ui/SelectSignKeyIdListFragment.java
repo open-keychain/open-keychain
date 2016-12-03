@@ -179,6 +179,7 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyA
         mApiDao.addAllowedKeyIdForApp(allowedKeysUri, masterKeyId);
         mResult.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, masterKeyId);
 
+        Log.d(Constants.TAG, "allowedKeyId: " + masterKeyId);
         Log.d(Constants.TAG, "allowedKeysUri: " + allowedKeysUri);
 
         getActivity().setResult(Activity.RESULT_OK, mResult);

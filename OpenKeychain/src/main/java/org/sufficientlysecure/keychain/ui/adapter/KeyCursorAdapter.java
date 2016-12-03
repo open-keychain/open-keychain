@@ -14,6 +14,7 @@ public abstract class KeyCursorAdapter<C extends CursorAdapter.KeyCursor, VH ext
 
     public KeyCursorAdapter(Context context, C cursor){
         super(context, cursor, 0);
+        setHasStableIds(true);
     }
 
     public void setQuery(String query) {

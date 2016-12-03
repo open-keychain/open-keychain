@@ -40,10 +40,10 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
 
     @Override
     public long getItemId(int pos) {
-        if(pos < (super.getItemCount() - 1)) {
+        if(pos < super.getItemCount()) {
             return super.getItemId(pos);
         } else {
-            return 0L;
+            return RecyclerView.NO_ID;
         }
     }
 
