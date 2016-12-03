@@ -91,7 +91,10 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyA
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
 
-        setAdapter(new SelectSignKeyAdapter(getContext(), null));
+        SelectSignKeyAdapter adapter = new SelectSignKeyAdapter(getContext(), null);
+        adapter.setListener(this);
+
+        setAdapter(adapter);
         setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Start out with a progress indicator.
@@ -149,6 +152,12 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyA
         // above is about to be closed. We need to make sure we are no
         // longer using it.
         getAdapter().swapCursor(null);
+    }
+
+    @Override
+    public void onDestroy() {
+        getAdapter().setListener(null);
+        super.onDestroy();
     }
 
     @Override
