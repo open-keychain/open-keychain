@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -67,11 +68,11 @@ public class CreateSecurityTokenImportResetFragment
     private byte[] mTokenAid;
     private String mTokenUserId;
     private String mTokenFingerprint;
-    private ImportKeysListFragment mListFragment;
     private TextView vSerNo;
     private TextView vUserId;
     private TextView mNextButton;
     private RadioButton mRadioImport;
+    private RadioButton mRadioFile;
     private RadioButton mRadioReset;
     private View mResetWarning;
 
@@ -116,6 +117,7 @@ public class CreateSecurityTokenImportResetFragment
         vUserId = (TextView) view.findViewById(R.id.token_userid);
         mNextButton = (TextView) view.findViewById(R.id.create_key_next_button);
         mRadioImport = (RadioButton) view.findViewById(R.id.token_decision_import);
+        mRadioFile = (RadioButton) view.findViewById(R.id.token_decision_file);
         mRadioReset = (RadioButton) view.findViewById(R.id.token_decision_reset);
         mResetWarning = view.findViewById(R.id.token_import_reset_warning);
 
@@ -137,14 +139,13 @@ public class CreateSecurityTokenImportResetFragment
             public void onClick(View v) {
                 if (mRadioReset.isChecked()) {
                     resetCard();
-                } else {
+                } else if (mRadioImport.isChecked()){
                     importKey();
+                } else {
+                    importFile();
                 }
             }
         });
-
-        mListFragment = ImportKeysListFragment.newInstance(null, null,
-                "0x" + mTokenFingerprint, true, null);
 
         mRadioImport.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -154,13 +155,17 @@ public class CreateSecurityTokenImportResetFragment
                     mNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_key_plus_grey600_24dp, 0);
                     mNextButton.setVisibility(View.VISIBLE);
                     mResetWarning.setVisibility(View.GONE);
-
-                    getFragmentManager().beginTransaction()
-                            .replace(R.id.security_token_import_fragment, mListFragment, "token_import")
-                            .commit();
-
-                    getFragmentManager().executePendingTransactions();
-                    refreshSearch();
+                }
+            }
+        });
+        mRadioFile.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mNextButton.setText(R.string.key_list_fab_import);
+                    mNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_folder_grey_24dp, 0);
+                    mNextButton.setVisibility(View.VISIBLE);
+                    mResetWarning.setVisibility(View.GONE);
                 }
             }
         });
@@ -172,10 +177,6 @@ public class CreateSecurityTokenImportResetFragment
                     mNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_close_grey_24dp, 0);
                     mNextButton.setVisibility(View.VISIBLE);
                     mResetWarning.setVisibility(View.VISIBLE);
-
-                    getFragmentManager().beginTransaction()
-                            .remove(mListFragment)
-                            .commit();
                 }
             }
         });
@@ -212,13 +213,7 @@ public class CreateSecurityTokenImportResetFragment
         }
     }
 
-    public void refreshSearch() {
-        mListFragment.loadState(new CloudLoaderState("0x" + mTokenFingerprint,
-                Preferences.getPreferences(getActivity()).getCloudSearchPrefs()));
-    }
-
     public void importKey() {
-
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
         keyList.add(new ParcelableKeyRing(mTokenFingerprint, null, null, null));
         mKeyList = keyList;
@@ -228,7 +223,12 @@ public class CreateSecurityTokenImportResetFragment
         super.setProgressMessageResource(R.string.progress_importing);
 
         super.cryptoOperation();
+    }
 
+    public void importFile() {
+        Intent intent = new Intent(getActivity(), ImportKeysActivity.class);
+        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE);
+        startActivity(intent);
     }
 
     public void resetCard() {
