@@ -7,13 +7,13 @@ dependencies {
     // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
     // NOTE: libraries are pinned to a specific build, see below
 
-    // from local Android SDKre
-    compile 'com.android.support:support-v4:25.0.0'
-    compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.android.support:design:25.0.0'
-    compile 'com.android.support:recyclerview-v7:25.0.0'
-    compile 'com.android.support:cardview-v7:25.0.0'
-    compile 'com.android.support:support-annotations:25.0.0'
+    // from local Android SDK
+    compile 'com.android.support:support-v4:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.android.support:cardview-v7:25.0.1'
+    compile 'com.android.support:support-annotations:25.0.1'
 
     // JCenter etc.
     compile 'com.journeyapps:zxing-android-embedded:3.4.0@aar'
@@ -74,9 +74,9 @@ dependencies {
     // UI testing with Espresso
     // Force usage of support libs in the test app, since they are internally used by the runner module.
     // https://github.com/googlesamples/android-testing/blob/master/ui/espresso/BasicSample/app/build.gradle#L28
-    androidTestCompile 'com.android.support:support-annotations:25.0.0'
-    androidTestCompile 'com.android.support:appcompat-v7:25.0.0'
-    androidTestCompile 'com.android.support:design:25.0.0'
+    androidTestCompile 'com.android.support:support-annotations:25.0.1'
+    androidTestCompile 'com.android.support:appcompat-v7:25.0.1'
+    androidTestCompile 'com.android.support:design:25.0.1'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
@@ -93,27 +93,27 @@ dependencies {
 // Comment out the libs referenced as git submodules!
 dependencyVerification {
     verify = [
-            'com.android.support:support-v4:c25c657954152c4315584572f5008a6780b086169519f67acd20c2617b9da325',
-            'com.android.support:appcompat-v7:bc0b13b1ba63ed226ae509044c880fdfe225cb86d21924ef19f2fb97a71c877e',
-            'com.android.support:design:2fc13bacb1d293e3f35d9de509da6be6f5f0f50cf8c3796296fabbd63d76e9ab',
-            'com.android.support:recyclerview-v7:fc6d6a9b802ed3a26789812f29167135cac7b4d956f4deda54fc1f317721da64',
-            'com.android.support:cardview-v7:b9b214512995fd98490466bd98af08404866369e9526b450c0e2cf7b1e607bb5',
-            'com.android.support:support-annotations:18766c4a12f18a0d96a383bc8c84d7a9c31ba2d1721622e0af814f8413ff06ec',
+            'com.android.support:support-v4:50da261acc4ca3d2dea9a43106bf65488711ca97b20a4daa095dba381c205c98',
+            'com.android.support:appcompat-v7:7fead560a22ea4b15848ce3000f312ef611fac0953bf90ca8710a72a1f6e36ea',
+            'com.android.support:design:07a72eb68c888b38d7b78e450e1af8a84e571406e0cf911889e0645d5a41f1e4',
+            'com.android.support:recyclerview-v7:803baba7be537ace8c5cb8a775e37547c22a04c4b028833796c45c26ec1deca2',
+            'com.android.support:cardview-v7:50d88fae8cd1076cb90504d36ca5ee9df4018555c8f041bd28f43274c0fc9e1f',
+            'com.android.support:support-annotations:bd94ab42c841db16fb480f4c65d33d297e544655ecc498b37c5cf33a0c5f1968',
             'com.journeyapps:zxing-android-embedded:2422d83c2c09a7b645f516c8458ececba6a7da47b94e40778d876facf495c660',
             'com.google.zxing:core:bba7724e02a997cec38213af77133ee8e24b0d5cf5fa7ecbc16a4fa93f11ee0d',
-            'com.jpardogo.materialtabstrip:library:4ee2f1211c302b45fb8c627cc5b240dc6b38b7aaaab1b8bffc81663e1b108013',
-            'com.getbase:floatingactionbutton:3edefa511aac4d90794c7b0496aca59cff2eee1e32679247b4f85acbeee05240',
             'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
             'org.ocpsoft.prettytime:prettytime:ef7098d973ae78b57d1a22dc37d3b8a771bf030301300e24055d676b6cdc5e75',
-            'com.splitwise:tokenautocomplete:f921f83ee26b5265f719b312c30452ef8e219557826c5ce5bf02e29647967939',
-            'org.sufficientlysecure:html-textview:302c449167f9573313e5293ccab689010e028e4d09aee2ccc2682b3211227ce7',
             'org.sufficientlysecure:donations:96f8197bab26dfe41900d824f10f8f1914519cd62eedb77bdac5b223eccdf0a6',
-            'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
             'com.squareup.okhttp3:okhttp:a41cdb7b024c56436a21e38f00b4d12e3b7e01451ffe6c4f545acba805bba03b',
             'com.squareup.okhttp3:okhttp-urlconnection:7d6598a6665c166e2d4b78956a96056b9be7de192b3c923ccf4695d08e580833',
             'org.apache.james:apache-mime4j-core:561987f604911e1870b2b4eabf0b0658d666c66cb1e65fba3e9e4bffe63acab9',
             'org.apache.james:apache-mime4j-dom:e18717fe6d36f32e5c5f7cbeea1a9bf04645fdabc84e7e8374d9da10fd52e78d',
             'org.thoughtcrime.ssl.pinning:AndroidPinning:afa1d74e699257fa75cb109ff29bac50726ef269c6e306bdeffe8223cee06ef4',
+            'org.sufficientlysecure:html-textview:302c449167f9573313e5293ccab689010e028e4d09aee2ccc2682b3211227ce7',
+            'com.splitwise:tokenautocomplete:f921f83ee26b5265f719b312c30452ef8e219557826c5ce5bf02e29647967939',
+            'com.jpardogo.materialtabstrip:library:4ee2f1211c302b45fb8c627cc5b240dc6b38b7aaaab1b8bffc81663e1b108013',
+            'com.getbase:floatingactionbutton:3edefa511aac4d90794c7b0496aca59cff2eee1e32679247b4f85acbeee05240',
+            'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
             'com.cocosw:bottomsheet:4af6112a7f4cad4e2b70e5fdf1edc39f51275523a0f53011a012837dc103e597',
             'com.tonicartos:superslim:ca89b5c674660cc6918a8f8fd385065bffeee27983e0d33c7c2f0ad7b34d2d49',
             'com.futuremind.recyclerfastscroll:fastscroll:ae655201885a9dbb5fabecb4adfefbb23ffdbca26a2b4ea255ec1bf6f214c606',
@@ -125,25 +125,25 @@ dependencyVerification {
             'com.mikepenz:fontawesome-typeface:ee47b7fe97b90412f01f2fcdd78f65a4edb0ab00006f5ef59ed00516baca9309',
             'com.mikepenz:community-material-typeface:d6035d261c5eba880cd7fe5dcb8cc00b09bfe6d41063b881b759e9897dc7b7c9',
             'com.fidesmo:nordpol-android:56f43fe2b1676817bcb4085926de14a08282ef6729c855c198d81aec62b20d65',
-//            'OpenKeychain:openpgp-api-lib:8ee931094b4c596fce55907b226616b0adae614b2877a0e530f726898bf63259',
+//            'OpenKeychain:openpgp-api-lib:80b55c5da2ebc343a4fc11a141446539a411a5602639278e37ad6f6a7f2c5a7f',
 //            'OpenKeychain:openkeychain-api-lib:a61e822cca9f7b34ea7750532ecd3bad7e05e6872bf218583f2a25d98c8b3c68',
 //            'OpenKeychain.extern.bouncycastle:core:72c07a72f304b9ff96bc4027861df5adbfbeb5dfccc740198c1d5de393980d8b',
 //            'OpenKeychain.extern.bouncycastle:pg:f61645e289fdbcc38b24dc2c5e9186eb9460d3eb76b7607e2dd68ed3f2115202',
 //            'OpenKeychain.extern.bouncycastle:prov:2dc9e69d1a2a91096716af024b02d1e29af19243127eae71f00a957be52d7f69',
 //            'OpenKeychain.extern:minidns:5349807fe5b2134862ad05cadc8be3fd3fb7aa55c2b129d7ba8f4904faf3333b',
-//            'OpenKeychain:KeybaseLib:75c70462e244d99c647da6638dea4b790455fb9f539574398ea9da7571f5ee8f',
+//            'OpenKeychain:KeybaseLib:1882c7c92e4f2780a0a59e18ddc61856b0b3300137b74903b85d1b552c9581e8',
 //            'OpenKeychain:safeslinger-exchange:be515e3012549b07bfdf779a262d1f8bb335a98c35c059db6563c1d0b58bde75',
 //            'com.android.databinding:library:def2976cb30dd5abf9f3a35d70c70cfb5485af4fb4ae022f5b9a6e2f8cff6386',
 //            'com.android.databinding:baseLibrary:47cb0d2d4d1aae4af3f860c31540493332a26278c016bbae90d22fdde3b0b83d',
 //            'com.android.databinding:adapters:0dd06349dad760f3cb56769f8e9f46451634be6a8a1bfdb2e88a5ca10afcebd6',
-            'com.android.support:support-compat:94648aef50a1938b541465d6d126769f20e77e247c7bca10b9b8cb61caa43398',
-            'com.android.support:support-media-compat:8665ae69c74b2879bdce2bdea6d3b7296126487d0ea6fa2f9dd9ffdd5a5cee86',
-            'com.android.support:support-core-utils:1808deca97864e78066d93d998f71bf71b0a774b6ea39c4e91fc1376d090728d',
-            'com.android.support:support-core-ui:cdd0e8ec4d82e30f4c8ff2897997d59330992b670023fd2793a89a226ac960d6',
-            'com.android.support:support-fragment:e47441b6a0e01b20cf744e3a8383ab60d922badcfde37c0b35fb078c84f2eae0',
-            'com.android.support:support-vector-drawable:0758104bc324c1638705cd3cddf773639679bab5af28e3a63093655113d75d20',
-            'com.android.support:animated-vector-drawable:9539f5dd8a919692cef064f72658034bf921a19ec14a4ff4abdfa3b478f3a3f9',
-            'com.android.support:transition:331d4152f878442b7bf92c4320335ec7f707d1f6248da2fb3667be436dd508d1',
+            'com.android.support:support-compat:d04f15aa5f2ae9e8cb7d025bf02dfd4fd6f6800628ceb107e0589634c9e4e537',
+            'com.android.support:support-media-compat:01cac57af687bed9a6cb4ce803bebd1b7e6b8469c14f1f9ac6b4596637ff73d6',
+            'com.android.support:support-core-utils:632c3750bd991da8b591f24a8916e74ca6063ae7f525f005c96981725c9bf491',
+            'com.android.support:support-core-ui:29205ac978a1839d92be3d32db2385dac10f8688bba649e51650023c76de2f00',
+            'com.android.support:support-fragment:da47261a1d7c3d33e6e911335a7f4ce01135923bb221d3ab84625d005fa1969f',
+            'com.android.support:support-vector-drawable:071ae3695bf8427d3cbfc8791492a3d9c804a4b111aa2a72fbfe7790ea268e5d',
+            'com.android.support:animated-vector-drawable:70443a2857f9968c4e2c27c107657ce2291d774f8a50f03444e12ab637451175',
+            'com.android.support:transition:9fd1e6d27cb70b3c5cd19f842b48bbb05cb4e5c93a22372769c342523393e8ea',
             'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
             'com.fidesmo:nordpol-core:3de58e850a00bba5b4d3a604d1399bcd89f695ea191ec0b03a57222e18062d15',
     ]
