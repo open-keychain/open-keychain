@@ -7,20 +7,11 @@
         android:id="@+id/toolbar_include"
         layout="@layout/toolbar_standalone" />
 
-    <LinearLayout
+    <fragment
+        android:id="@+id/list"
         android:layout_below="@id/toolbar_include"
-        android:orientation="vertical"
+        android:name="org.sufficientlysecure.keychain.ui.LogDisplayFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp">
+        android:layout_height="match_parent" />
 
-        <fragment
-            android:id="@+id/list"
-            android:name="org.sufficientlysecure.keychain.ui.LogDisplayFragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.9" />
-
-    </LinearLayout>
 </RelativeLayout>
