@@ -21,7 +21,7 @@
             <TextView
                 style="@style/SectionHeader"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/section_user_ids"
                 android:layout_weight="1" />
@@ -29,7 +29,7 @@
             <org.sufficientlysecure.keychain.ui.widget.FixedListView
                 android:id="@+id/view_key_user_ids"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:layout_weight="1" />
 
