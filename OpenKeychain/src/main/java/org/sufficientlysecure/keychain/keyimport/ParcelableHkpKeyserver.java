@@ -36,6 +36,7 @@ import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -222,6 +223,9 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
         } catch (TlsHelper.TlsHelperException e) {
             Log.e(Constants.TAG, "Exception in pinning certs", e);
             throw new Keyserver.QueryFailedException("Exception in pinning certs");
+        } catch (UnsupportedCharsetException e) {
+            Log.e(Constants.TAG, "UnsupportedCharsetException", e);
+            throw new Keyserver.QueryFailedException("Unsupported charset");
         }
     }
 
