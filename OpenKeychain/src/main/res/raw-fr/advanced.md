@@ -1,9 +1,9 @@
-[//] : # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
+[//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
 L'écran Avancé vous permet de
-* partager la clef de façons non recommandées
+* partager la clé de façons non recommandées
 * modifier les identités
-* modifier les sous-clefs
-* examiner les certificats en détail 
+* modifier les sous-clés
+* examiner les certificats en détail
 
 Ne continuer que si vous savez ce que vous faites !

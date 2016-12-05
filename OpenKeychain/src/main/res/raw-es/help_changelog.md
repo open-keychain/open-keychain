@@ -2,46 +2,46 @@
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * Mejor detección de correos electrónicos y otros contenidos cuando está abierto
 
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
-  * Allow password changing of stripped keys
+  * Soporte experimental para credenciales (tokens) de seguridad sobre USB
+  * Permite el cambio de contraseña de claves desnudas
 
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Detección y manejo de datos de texto
+  * Mejoras de rendimiento
+  * Mejoras de la interfaz de usuario para el manejo de credenciales (tokens) de seguridad
 
 
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Edición de clave rediseñada
+  * Escoger recordar hora individualmente al introducir contraseñas
+  * Importación de clave de Facebook
 
 
 ## 3.7
 
-  * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * Soporte para Android 6 mejorado (permisos, integración en la selección de texto)
+  * API: Versión 10
 
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
-  * API: Version 9
+  * Copias de seguridad cifradas
+  * Reparación de fallos de seguridad basadas en auditorias de seguridad externas
+  * Asistente de creación de clave YubiKey NEO
+  * Soporte MIME interno básico
+  * Sincronización automática de clave
+  * Característica experimental: Vincular claves a cuentas de Github y Twitter
+  * Característica experimental: Confirmación de claves mediante frases
+  * Característica experimental: Tema decorativo oscuro
+  * API: Versión 9
 
 
 ## 3.5
@@ -121,7 +121,7 @@
   * Interfaz de usuario para generar claves personalizadas
   * Repara certificados de revocación de identificación de usuario
   * Nueva búsqueda en la nube (busca sobre servidores de claves tradicionales y keybase.io)
-  * Soporte para desvestir claves dentro de OpenKeychain
+  * Soporte para desnudar claves dentro de OpenKeychain
   * Soporte experimental para YubiKey: Soporte para generación de firma y descifrado
 
 
@@ -273,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Soporte para servidor de claves básico
   * App2sd
   * Más opciones para la caché de frase-contraseña: 1,2,4,8 horas
-  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+  * Traducciones: Noruego Bokmål (gracias a Sander Danielsen), Chino (gracias a Zhang Fredrick)
   * Reparaciones de fallos
   * Optimizaciones
 

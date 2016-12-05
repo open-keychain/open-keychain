@@ -232,6 +232,8 @@
   <string name="orbot_start_dialog_start">Orbot starten</string>
   <string name="orbot_start_dialog_cancel">Annuleren</string>
   <string name="orbot_start_dialog_ignore_tor">Gebruik Tor niet</string>
+  <string name="user_id_no_name"><![CDATA[<geen naam>]]></string>
+  <string name="none"><![CDATA[<niets>]]></string>
   <plurals name="n_keys">
     <item quantity="one">1 sleutel</item>
     <item quantity="other">%d sleutels</item>
@@ -275,6 +277,7 @@
   <string name="error_message">Fout: %s</string>
   <string name="theme_dark">Donker</string>
   <string name="theme_light">Licht</string>
+  <string name="strip">Strippen</string>
   <!--sentences-->
   <string name="wrong_passphrase">Wachtwoord verkeerd.</string>
   <string name="no_filemanager_installed">Geen compatibele bestandsbeheerder geïnstalleerd.</string>
@@ -285,6 +288,10 @@
   <string name="passphrase_for">Voer het wachtwoord in voor \'%s\'</string>
   <string name="pin_for">Voer PIN in voor \'%s\'</string>
   <string name="security_token_pin_for">Voeg PIN in om toegang te krijgen tot beveligingscode voor \'%s\'</string>
+  <string name="security_token_nfc_text">Houd het Security Token tegen de NFC-lezer.</string>
+  <string name="security_token_nfc_wait">Houd het Security Token aan de achterkant!</string>
+  <string name="security_token_nfc_finished">Haal het Security Token nu weg.</string>
+  <string name="security_token_nfc_try_again_text">Haal het Security Token nu weg en klik Probeer Opnieuw.</string>
   <string name="file_delete_confirmation_title">Oorspronkelijke bestanden verwijderen?</string>
   <string name="file_delete_confirmation">De volgende bestanden zullen worden verwijderd:%s</string>
   <string name="file_delete_successful">%1$d van %2$d bestanden zijn verwijderd.%3$s</string>
@@ -295,10 +302,16 @@
   <string name="error_no_encryption_or_signature_key">Kies ten minste één versleutelingssleutel of een ondertekeningssleutel.</string>
   <string name="specify_file_to_encrypt_to">Gelieve aan te geven naar welk bestand versleuteld moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
   <string name="specify_file_to_decrypt_to">Gelieve aan te geven naar welk bestand ontsleuteld moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
+  <string name="specify_backup_dest">Een backup zonder uw sleutels zal gemaakt worden, geef een bestemming op.\nLET OP: Als het bestand al bestaat zal het overschreven worden!</string>
+  <string name="specify_backup_dest_single">Deze sleutel zal gedeeld worden, geef een bestemming op.\nLET OP: Als het bestand al bestaat zal het overschreven worden!</string>
+  <string name="specify_backup_dest_secret_single">Een volledige backup van uw sleutel zal worden gemaakt, geef een bestemming op.\nLET OP: Als het bestand al bestaat zal het overschreven worden!</string>
+  <string name="specify_backup_dest_secret">Een volledige backup van alle sleutels inclusief uw sleutel zal worden gemaakt, geef een bestemming op.\nLET OP: Als het bestand al bestaat zal het overschreven worden!</string>
   <string name="key_deletion_confirmation_multi">Ben je zeker dat je alle geselecteerde sleutels wil verwijderen?</string>
+  <string name="secret_key_deletion_confirmation">Na verwijdering bent u niet meer in staat om berichten/bestanden te ontsleutelen die met deze sleutel versleuteld waren. Ook verliest u alle sleutelbevestigingen die gedaan zijn met deze sleutel!</string>
   <string name="public_key_deletetion_confirmation">Sleutel \'%s\' verwijderen?</string>
   <string name="also_export_secret_keys">Exporteer ook geheime sleutels</string>
   <string name="reinstall_openkeychain">Je bent een gekende Android-bug tegengekomen. Gelieve OpenKeychain opnieuw te installeren als je je contacten met sleutels wil verbinden.</string>
+  <string name="alert_strip">Het strippen van deze subsleutel zal deze onbruikbaar maken op dit apparaat!</string>
   <string name="key_exported">1 sleutel succesvol geëxporteerd.</string>
   <string name="keys_exported">Succesvol %d sleutels geëxporteerd.</string>
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
@@ -314,12 +327,14 @@
   <string name="fingerprint_copied_to_clipboard">Sleutel is gekopieerd naar het klembord!</string>
   <string name="select_key_to_certify">Gelieve een sleutel te selecteren om te gebruiken voor bevestiging!</string>
   <string name="text_copied_to_clipboard">Tekst is gekopieerd naar klembord!</string>
+  <string name="how_to_import">Hoe importeren op mijn PC?</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_delete_failed">zijn niet verwijderd. Verwijder ze handmatig!</string>
   <string name="error_file_added_already">%s is al toegevoegd.</string>
   <string name="error_file_not_found">bestand niet gevonden</string>
+  <string name="error_bad_data">Foutieve data!</string>
   <string name="error_no_secret_key_found">geen geschikte privésleutel gevonden</string>
   <string name="error_external_storage_not_ready">externe opslag niet gereed</string>
   <string name="error_key_size_minimum512bit">sleutelgrootte moet minstens 512-bits zijn</string>
@@ -340,9 +355,11 @@
   <string name="error_nothing_import_selected">Geen sleutels geselecteerd voor importeren!</string>
   <string name="error_contacts_key_id_missing">Sleutel-ID van contacten ophalen mislukt!</string>
   <string name="error_generic_report_bug">Een algemene fout is opgetreden, gelieve een nieuw bug-verslag te maken voor OpenKeychain.</string>
+  <string name="error_denied_storage_permission">Kan geen bestanden uit de opslag lezen omdat de toegang geweigerd is!</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Niet ondertekend</string>
   <string name="decrypt_result_invalid_signature">Ongeldige handtekening!</string>
+  <string name="decrypt_result_insecure_cryptography">Ongeldige handtekening (Insecure Cryptography)!</string>
   <string name="decrypt_result_signature_uncertified">Ondertekend door <b>niet bevestigde</b> sleutel</string>
   <string name="decrypt_result_signature_secret">Ondertekend door jouw sleutel</string>
   <string name="decrypt_result_signature_certified">Ondertekend door bevestigde sleutel</string>
@@ -351,6 +368,7 @@
   <string name="decrypt_result_signature_missing_key">Ondertekend door <b>onbekende publieke sleutel</b></string>
   <string name="decrypt_result_encrypted">Versleuteld</string>
   <string name="decrypt_result_not_encrypted">Niet versleuteld</string>
+  <string name="decrypt_result_insecure">Onveilige Versleuteling</string>
   <string name="decrypt_result_action_show">Toon</string>
   <string name="decrypt_result_action_Lookup">Zoek</string>
   <string name="decrypt_invalid_text">De ondertekening is ongeldig of de sleutel is ingetrokken/verlopen. Je kan niet zeker zijn wie de tekst geschreven heeft. Ben je zeker dat je ze wil weergeven?</string>
@@ -363,6 +381,8 @@
   <string name="progress_cancelling">bezig met annuleren…</string>
   <string name="progress_saving">opslaan…</string>
   <string name="progress_importing">importeren…</string>
+  <string name="progress_benchmarking">testen...</string>
+  <string name="progress_revoking_uploading">Intrekken en uploaden van sleutel...</string>
   <string name="progress_updating">Bezig met bijwerken van sleutels…</string>
   <string name="progress_exporting">exporteren…</string>
   <string name="progress_uploading">bezig met uploaden…</string>
@@ -410,6 +430,8 @@
   <string name="progress_deleting">bezig met verwijderen van sleutels…</string>
   <string name="progress_con_saving">consolidatie: bezig met opslaan naar cache…</string>
   <string name="progress_con_reimport">consolidatie: bezig met opnieuw importeren…</string>
+  <string name="progress_verifying_keyserver_connection">verbinding verifieren...</string>
+  <string name="progress_starting_orbot">Orbot starten...</string>
   <!--action strings-->
   <string name="hint_cloud_search_hint">Zoeken via naam, e-mail, ...</string>
   <!--key bit length selections-->
@@ -440,8 +462,10 @@
   <string name="help_tab_changelog">Lijst van wijzigingen</string>
   <string name="help_tab_about">Over</string>
   <string name="help_about_version">Versie:</string>
+  <string name="help_tab_donations">Doneren</string>
   <!--Import-->
   <string name="import_tab_keyserver">Sleutelserver</string>
+  <string name="import_tab_cloud">Zoek Sleutel</string>
   <string name="import_tab_direct">Bestand/klembord</string>
   <string name="import_tab_qr_code">QR code/NFC</string>
   <string name="import_import">Geselecteerde sleutels importeren</string>
@@ -457,6 +481,14 @@
   <string name="with_warnings">, met waarschuwingen</string>
   <string name="with_cancelled">, tot annulatie</string>
   <!--Import result toast-->
+  <plurals name="import_keys_added_and_updated_1">
+    <item quantity="one">Sleutel succesvol geïmporteerd</item>
+    <item quantity="other">Succesvol %1$d sleutels geïmporteerd</item>
+  </plurals>
+  <plurals name="import_keys_added_and_updated_2">
+    <item quantity="one">en een sleutel bijgewerkt%2$s.</item>
+    <item quantity="other">en %1$d sleutels bijgewerkt%2$s.</item>
+  </plurals>
   <plurals name="import_keys_added">
     <item quantity="one">Sleutel%2$s succesvol geïmporteerd.</item>
     <item quantity="other">%1$d sleutels%2$s succesvol geïmporteerd.</item>
@@ -495,7 +527,15 @@
   <string name="delete_nothing">Niets te verwijderen.</string>
   <string name="delete_cancelled">Verwijderen geannuleerd.</string>
   <!--Revoke result toast (snackbar)-->
+  <string name="revoke_ok">Sleutel succesvol ingetrokken.</string>
+  <string name="revoke_fail">Fout bij intrekken van sleutel!</string>
+  <string name="revoke_nothing">Niets om in te trekken.</string>
+  <string name="revoke_cancelled">Intrekken geannuleerd.</string>
   <!--Certify result toast-->
+  <plurals name="certify_keys_ok">
+    <item quantity="one">Succesvol een sleutel bevestigd%2$s.</item>
+    <item quantity="other">Succesvol %1$d sleutels bevestigd%2$s.</item>
+  </plurals>
   <plurals name="certify_keys_with_errors">
     <item quantity="one">Certificatie mislukt!</item>
     <item quantity="other">Certificatie mislukt voor %d sleutels!</item>
@@ -510,6 +550,8 @@
   <string name="intent_send_encrypt">Codeer met OpenKeychain</string>
   <string name="intent_send_decrypt">Ontsleutelen met OpenKeychain</string>
   <!--Remote API-->
+  <string name="api_settings_show_info">Toon geavanceerde informatie</string>
+  <string name="api_settings_hide_info">Verberg geavanceerde informatie</string>
   <string name="api_settings_no_key">Geen sleutel geselecteerd</string>
   <string name="api_settings_select_key">Sleutel selecteren</string>
   <string name="api_settings_create_key">Nieuwe sleutel aanmaken</string>
@@ -522,6 +564,7 @@
   <string name="api_settings_package_name">Pakketnaam</string>
   <string name="api_settings_package_certificate">SHA-256 van Pakketcertificaat</string>
   <string name="api_settings_accounts">Accounts (oude API)</string>
+  <string name="api_settings_advanced">Geavanceerd</string>
   <string name="api_settings_allowed_keys">Toegestane sleutels</string>
   <string name="api_settings_settings">Instellingen</string>
   <string name="api_settings_key">Accountsleutel:</string>
@@ -543,8 +586,18 @@
   <string name="share_qr_code_dialog_title">Delen met QR-code</string>
   <string name="share_nfc_dialog">Deel met NFC</string>
   <!--retry upload dialog-->
+  <string name="retry_up_dialog_title">Uploaden mislukt</string>
+  <string name="retry_up_dialog_message">Uploaden mislukt. Wilt u het opnieuw proberen?</string>
+  <string name="retry_up_dialog_btn_reupload">Opnieuw proberen</string>
+  <string name="retry_up_dialog_btn_cancel">Annuleren</string>
   <!--Delete or revoke private key dialog-->
+  <string name="del_rev_dialog_message">Als u deze sleutel niet langer wilt gebruiken moet u deze intrekken en uploaden. Kies \'Alleen verwijderen\' als u de sleutel enkel uit OpenKeyChain wilt verwijderen maar deze nog wel ergens anders wilt blijven gebruiken.</string>
+  <string name="del_rev_dialog_title">Intrekken/Verwijderen sleutel \'%s\'</string>
+  <string name="del_rev_dialog_btn_revoke">Intrekken en uploaden</string>
+  <string name="del_rev_dialog_btn_delete">Alleen verwijderen</string>
   <!--Delete Or Revoke Dialog spinner-->
+  <string name="del_rev_dialog_choice_delete">Alleen verwijderen</string>
+  <string name="del_rev_dialog_choice_rev_upload">Intrekken en Uploaden</string>
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 sleutel geselecteerd.</item>
@@ -552,6 +605,7 @@
   </plurals>
   <string name="key_list_empty_text1">Geen sleutels gevonden!</string>
   <string name="key_list_filter_show_all">Alle sleutels weergeven</string>
+  <string name="key_list_filter_show_certified">Toon alleen bevestigde sleutels</string>
   <!--Key view-->
   <string name="key_view_action_encrypt">Versleutel tekst</string>
   <string name="key_view_action_encrypt_files">bestanden</string>
@@ -1161,7 +1215,7 @@
   <string name="key_unavailable">niet beschikbaar</string>
   <string name="secret_cannot_multiple">Je eigen sleutels kunnen enkel individueel verwijderd worden!</string>
   <string name="title_view_cert">Toon Certificaat Details</string>
-  <string name="unknown">onbekend</string>
+  <string name="unknown_algorithm">onbekend</string>
   <string name="can_sign_not">kan niet ondertekenen</string>
   <string name="error_no_encrypt_subkey">Geen codeer-subsleutel beschikbaar!</string>
   <string name="contact_show_key">Toon sleutel (%s)</string>

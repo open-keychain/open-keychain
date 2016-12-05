@@ -2,13 +2,13 @@
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * Mejor detección de correos electrónicos y otros contenidos cuando se abre
 
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
-  * Allow password changing of stripped keys
+  * Compatibilidad experimental para tokens de seguridad sobre USB
+  * Se permite cambio de contraseña para claves particionadas
 
 
 ## 3.9
@@ -28,7 +28,7 @@
 ## 3.7
 
   * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * API: Versión 10
 
 
 ## 3.6
@@ -91,12 +91,12 @@
 ## 3.1.1
 
   * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * Error en Android 2.3 corregido
 
 
 ## 3.1
 
-  * Fix crash on Android 5
+  * Error en Android 5 corregido
   * New certify screen
   * Secure Exchange directly from key list (SafeSlinger library)
   * New QR Code program flow
@@ -274,8 +274,8 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * App2sd
   * More choices for passphrase cache: 1, 2, 4, 8, hours
   * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Bugfixes
-  * Optimizations
+  * Errores corregidos
+  * Mejoras
 
 
 ## 1.0.7
@@ -292,7 +292,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Stream encryption/decryption (gallery, etc.)
   * New options (language, force v3 signatures)
   * Interface changes
-  * Bugfixes
+  * Errores corregidos
 
 
 ## 1.0.5
@@ -324,14 +324,14 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.1
 
-  * GMail account listing was broken in 1.0.0, fixed again
+  * Lista de contactos de GMail se corrompió en 1.0.0 y se solucionó de nuevo
 
 
 ## 1.0.0
 
-  * K-9 Mail integration, APG supporting beta build of K-9 Mail
-  * Support of more file managers (including ASTRO)
-  * Slovenian translation
-  * New database, much faster, less memory usage
-  * Defined Intents and content provider for other apps
-  * Bugfixes
+  * Integración con K-9 Mail, compatibilidad con empaquetado beta de APG de K-9 Mail
+  * Compatibilidad para otros administradores de archivos (incluido ASTRO)
+  * Traducción eslovaca
+  * Nueva base de datos, más rápida y con menos consumo de memoria
+  * Intents y content provider definidos para otras aplicaciones
+  * Errores corregidos

@@ -1,8 +1,8 @@
-[//] : # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
+[//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * Meilleure détection des courriels et autres contenus à l'ouverture
 
 
 ## 4.0
@@ -20,9 +20,9 @@
 
 ## 3.8
 
-  * Nouvelle conception de la modification des clefs
+  * Nouvelle conception de la modification des clés
   * Choisir les délais de mémorisation individuellement lors de la saisie des mots de passe
-  * Importation de clef Facebook
+  * Importation de clé Facebook
 
 
 ## 3.7
@@ -35,18 +35,18 @@
 
   * Sauvegardes chiffrées
   * Correctifs de sécurité suite à un audit externe de sécurité
-  * Assistant de création de clefs YubiKey NEO
+  * Assistant de création de clés YubiKey NEO
   * Prise en charge interne MIME de base
-  * Synchronisation automatique des clefs
-  * Fonction expérimentale : relier les clefs aux comptes GitHub, Twitter
-  * Fonction expérimentale : confirmation des clefs par des phrases
+  * Synchronisation automatique des clés
+  * Fonction expérimentale : relier les clés aux comptes GitHub, Twitter
+  * Fonction expérimentale : confirmation des clés par des phrases
   * Fonction expérimentale : thème foncé
   * API : version 9
 
 
 ## 3.5
 
-  * révocation de la clef lors de la suppression de la clef
+  * révocation de la clé lors de la suppression de la clé
   * Vérifications améliorées à la recherche d'une cryptographie non fiable
   * Correctif : ne pas fermer OpenKeychain après une réussite de l'assistant de première utilisation
   * API : version 8
@@ -54,7 +54,7 @@
 
 ## 3.4
 
-  * Téléchargement anonyme de clefs avec Tor
+  * Téléchargement anonyme de clés avec Tor
   * Prise en charge des serveurs mandataires
   * Meilleur gestion des erreurs YubiKey
 
@@ -68,29 +68,29 @@
 
 ## 3.2
 
-  * Première version avec prise en charge complète de la YubiKey, proposée dans l'interface utilisateur : modifier les clefs, relier la YubiKey aux clefs...
+  * Première version avec prise en charge complète de la YubiKey, proposée dans l'interface utilisateur : modifier les clés, relier la YubiKey aux clés...
   * Conception matérielle
   * Intégration de la lecture de code QR (nouvelles permissions exigées)
-  * Amélioration de l'assistant de création de clef
+  * Amélioration de l'assistant de création de clé
   * Correctif - Contacts manquants après la synchro
   * Android 4 exigé
-  * Nouvelle conception de l'écran des clefs
+  * Nouvelle conception de l'écran des clés
   * Simplification des préférences cryptographiques, meilleure sélection de codes de chiffrement sécurisés
-  * API : signatures détachées, sélection libre de la clef de signature...
-  * Correctif - Certaines clefs valides apparaissaient comme révoquées ou expirées
-  * Ne pas accepter de signatures par des sous-clefs expirées ou révoquées
+  * API : signatures détachées, sélection libre de la clé de signature...
+  * Correctif - Certaines clés valides apparaissaient comme révoquées ou expirées
+  * Ne pas accepter de signatures par des sous-clés expirées ou révoquées
   * Prise en charge de keybase.io dans la vue avancée
-  * Méthode pour mettre toutes les clefs à jour en même temps
+  * Méthode pour mettre toutes les clés à jour en même temps
 
 
 ## 3.1.2
 
-  * Correctif - Exportation des clefs vers des fichiers (vraiment, maintenant)
+  * Correctif - Exportation des clés vers des fichiers (vraiment, maintenant)
 
 
 ## 3.1.1
 
-  * Correctif - Exportation des clefs vers des fichiers (elles n'étaient écrites que partiellement)
+  * Correctif - Exportation des clés vers des fichiers (elles n'étaient écrites que partiellement)
   * Correctif - Plantage sur Android 2.3
 
 
@@ -98,78 +98,78 @@
 
   * Correctif - Plantage sur Android 5
   * Nouvel écran de certification
-  * Échange sécurisé directement de la liste des clefs (bibliothèque SafeSlinger)
+  * Échange sécurisé directement de la liste des clés (bibliothèque SafeSlinger)
   * Nouveau flux de programme pour les codes QR
   * Écran de déchiffrement redessiné
   * Nouveaux agencement et couleurs d'icônes
-  * Importation des clefs secrètes corrigée de Symantec Encryption Desktop
-  * Prise en charge expérimentale de la YubiKey : les ID de sous-clefs sont maintenant vérifiés correctement
+  * Importation des clés secrètes corrigée de Symantec Encryption Desktop
+  * Prise en charge expérimentale de la YubiKey : les ID de sous-clés sont maintenant vérifiés correctement
 
 
 ## 3.0.1
 
-  * Meilleure gestion de l'importation de nombreuses clefs
-  * Sélection des sous-clefs améliorée
+  * Meilleure gestion de l'importation de nombreuses clés
+  * Sélection des sous-clés améliorée
 
 
 ## 3.0
 
   * Des applis compatibles installables sont proposées dans la liste des applis
   * Nouvelle conception pour les écrans de déchiffrement
-  * Nombreux correctifs d'importation des clefs, corrigent aussi les clefs dépouillées
-  * Accepter et afficher les drapeaux d'authentification des clefs
-  * Interface utilisateur pour générer des clefs personnalisées
+  * Nombreux correctifs d'importation des clés, corrigent aussi les clés dépouillées
+  * Accepter et afficher les drapeaux d'authentification des clés
+  * Interface utilisateur pour générer des clés personnalisées
   * Corrigé - Certificats de révocation des ID utilisateurs
-  * Nouvelle recherche nuagique (sur les serveurs de clefs habituels et dans keybase.io)
-  * Prise en charge du dépouillement des clefs dans OpenKeychain
+  * Nouvelle recherche nuagique (sur les serveurs de clés habituels et dans keybase.io)
+  * Prise en charge du dépouillement des clés dans OpenKeychain
   * Prise en charge expérimentale de la YubiKey : prise en charge de la génération de signature et le déchiffrement
 
 
 ## 2.9.2
 
-  * Correctif - Clefs brisées dans 2.9.1
+  * Correctif - Clés brisées dans 2.9.1
   * Prise en charge expérimentale de la YubiKey : le déchiffrement fonctionne maintenant avec l'API
 
 
 ## 2.9.1
 
   * Partage de l'écran de chiffrement en deux
-  * Correctif - Gestion des drapeaux de clefs (prend maintenant en charge les clefs Mailvelope 0.7)
+  * Correctif - Gestion des drapeaux de clés (prend maintenant en charge les clés Mailvelope 0.7)
   * Gestion des phrases de passe améliorée
-  * Partage de clefs par SafeSlinger
+  * Partage de clés par SafeSlinger
   * Prise en charge expérimentale de la YubiKey : préférence pour permettre d'autres NIP, seule la signature par l'API OpenPGP fonctionne actuellement, mais pas dans OpenKeychain
-  * Correctif - Utilisation de clefs dépouillées
+  * Correctif - Utilisation de clés dépouillées
   * SHA256 par défaut pour la compatibilité
   * L'API des intentions a changé, voir https://github.com/open-keychain/open-keychain/wiki/Intent-API
-  * L'API d'OpenPGP gère maintenant les clefs révoquées/expirées et retourne tous les ID utilisateurs
+  * L'API d'OpenPGP gère maintenant les clés révoquées/expirées et retourne tous les ID utilisateurs
 
 
 ## 2.9
 
   * Correction des plantages présents dans v2.8
   * Prise en charge expérimentale CCE
-  * Prise en charge expérimentale de la YubiKey : signature seulement avec les clefs importées
+  * Prise en charge expérimentale de la YubiKey : signature seulement avec les clés importées
 
 
 ## 2.8
 
   * Tellement de bogues ont été réglés dans cette version que nous nous concentrons sur les nouvelles caractéristiques principales.
-  * Modification des clefs : nouvelle et superbe conception, révocations des clefs
-  * Importation des clefs : nouvelle et superbe conception, connexion sécurisé aux serveurs de clefs par hkps, résolution des serveurs de clefs par transactions DNS SRV
+  * Modification des clés : nouvelle et superbe conception, révocations des clés
+  * Importation des clés : nouvelle et superbe conception, connexion sécurisé aux serveurs de clés par hkps, résolution des serveurs de clés par transactions DNS SRV
   * Nouvel écran de premier lancement
-  * Nouvel écran de création de clef : auto-remplissage du nom et du courriel d'après vos coordonnées Android
+  * Nouvel écran de création de clé : auto-remplissage du nom et du courriel d'après vos coordonnées Android
   * Chiffrement des fichiers : nouvelle et superbe conception, prise en charge du chiffrement de fichiers multiples
-  * Nouvelles icônes d'état des clefs (par Brennan Novak)
-  * Correctif important de bogue : l'importation de grandes collections de clefs à partir d'un fichier est maintenant possible
+  * Nouvelles icônes d'état des clés (par Brennan Novak)
+  * Correctif important de bogue : l'importation de grandes collections de clés à partir d'un fichier est maintenant possible
   * Notification montrant les phrases de passe en cache
-  * Les clefs sont connectées aux contacts d'Android
+  * Les clés sont connectées aux contacts d'Android
 
 Cette version ne serait pas possible sans le travail de Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
 
 ## 2.7
 
   * Violet ! (Dominik, Vincent)
-  * Nouvelle présentation de la visualisation des clefs (Dominik, Vincent)
+  * Nouvelle présentation de la visualisation des clés (Dominik, Vincent)
   * Nouveaux boutons Android plats (Dominik, Vincent)
   * Correctifs de l'API (Dominik)
   * Importation de Keybase.io (Tim Bray)
@@ -182,19 +182,19 @@ Cette version ne serait pas possible sans le travail de Vincent Breitmoser (GSoC
 
 ## 2.6
 
-  * Certifications des clefs (merci à Vincent Breitmoser)
-  * Prise en charge clefs secrètes partielles de GnuPG (merci à Vincent Breitmoser)
+  * Certifications des clés (merci à Vincent Breitmoser)
+  * Prise en charge clés secrètes partielles de GnuPG (merci à Vincent Breitmoser)
   * Nouvelle conception de la vérification de signatures
-  * Longueur de clef personnalisée (merci à Greg Witczak)
+  * Longueur de clé personnalisée (merci à Greg Witczak)
   * Correctif - Fonctionnalités partagées d'autres applis
 
 
 ## 2.5
 
   * Correctif - Déchiffrement des messages/fichiers symétriques OpenPGP
-  * Écran de modification des clefs remanié (merci à Ash Hughes)
+  * Écran de modification des clés remanié (merci à Ash Hughes)
   * Nouvelle conception moderne pour les écrans de chiffrement/déchiffrement
-  * API OpenPGP version 3 (comptes multiples d'api, correctifs internes, recherche de clefs)
+  * API OpenPGP version 3 (comptes multiples d'api, correctifs internes, recherche de clés)
 
 
 ## 2.4
@@ -202,16 +202,16 @@ Merci à tous les participants de « Google Summer of Code 2014 » qui ont rendu
 À part plusieurs petits correctifs, un nombre notable de correctifs ont été apportés par les personnes suivantes (par ordre alphabétique) :
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
-  * Nouvelle liste de clefs unifiée
-  * Empreintes de clefs colorées
-  * Prise en charge des ports des serveurs de clefs
-  * Désactiver la possibilité de générer des clefs faibles
+  * Nouvelle liste de clés unifiée
+  * Empreintes de clés colorées
+  * Prise en charge des ports des serveurs de clés
+  * Désactiver la possibilité de générer des clés faibles
   * Encore plus de travail interne dans l'API
   * Certifier les ID utilisateurs
-  * Requêtes des serveurs de clefs basées sur des sorties assimilables par la machine
+  * Requêtes des serveurs de clés basées sur des sorties assimilables par la machine
   * Verrouiller les tiroirs de navigation sur les tablettes
-  * Suggestion de courriels à la création de clefs
-  * Rechercher dans les listes de clefs publiques
+  * Suggestion de courriels à la création de clés
+  * Rechercher dans les listes de clés publiques
   * Et bien plus d'améliorations et de correctifs
 
 
@@ -222,27 +222,27 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 2.3
 
-  * Suppressions de l'exportation non nécessaire des clefs publiques lors de l'exportation de clefs secrètes (merci à Ash Hughes)
-  * Correctif - Définition de la date de péremption des clefs (merci à Ash Hughes)
-  * Plus de correctifs internes affectant la modifications des clefs (merci à Ash hughes)
-  * Interrogation des serveurs de clefs directement de l'écran d'importation
+  * Suppressions de l'exportation non nécessaire des clés publiques lors de l'exportation de clés secrètes (merci à Ash Hughes)
+  * Correctif - Définition de la date de péremption des clés (merci à Ash Hughes)
+  * Plus de correctifs internes affectant la modifications des clés (merci à Ash hughes)
+  * Interrogation des serveurs de clés directement de l'écran d'importation
   * Correctif - Mise en page et du style des fenêtres de dialogue sur Android 2.2-3.0
-  * Correctif - Plantage pour les clefs avec des ID utilisateur vides
+  * Correctif - Plantage pour les clés avec des ID utilisateur vides
   * Correctif - Plantage et listes vides en revenant de l'écran de signature
   * Bouncy Castle (bibliothèque cryptographique) mise à jour de 1.47 à 1.50 et compilée de la source
-  * Correctif - Téléversement d'une clef de l'écran de signature
+  * Correctif - Téléversement d'une clé de l'écran de signature
 
 
 ## 2.2
 
   * Nouvelle conception avec tiroir de navigation
-  * Nouvelle conception de la liste des clefs publics
-  * Nouvelle vue des clefs publics
-  * Correctif de bogues d'importation de clefs
-  * Certification croisée des clefs (merci à Ash Hughes)
+  * Nouvelle conception de la liste des clés publics
+  * Nouvelle vue des clés publics
+  * Correctif de bogues d'importation de clés
+  * Certification croisée des clés (merci à Ash Hughes)
   * Bonne gestion des mots de passe UTF-8 (merci à Ash Hughes)
   * Première version avec de nouvelles langues (merci aux contributeurs sur Transifex)
-  * Correctif et amélioration du partage de clefs par codes QR
+  * Correctif et amélioration du partage de clés par codes QR
   * Vérification de la signature des paquets pour l'API
 
 
@@ -261,19 +261,19 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 2.0
 
   * Conception complètement repensée
-  * Partage de clefs publiques par codes QR, faisceau NFC
-  * Signer les clefs
-  * Téléverser les clefs vers le serveur
+  * Partage de clés publiques par codes QR, faisceau NFC
+  * Signer les clés
+  * Téléverser les clés vers le serveur
   * Corrige des problèmes d'importation
   * Nouvelle API AIDL
 
 
 ## 1.0.8
 
-  * Prise en charge de base du serveur de clefs
+  * Prise en charge de base du serveur de clés
   * App2sd
   * Plus de choix pour le cache de la phrase de passe : 1, 2, 4, 8 heures
-  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+  * Traduction : Bokmål (merci à Sander Danielsen), Chinois (merci à Zhang Fredrick)
   * Correctifs de bogues
   * Optimisations
 
@@ -288,7 +288,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * Correctif - Plantage lors de l'ajout de compte sur Froyo
   * Suppression sécurisée de fichiers
-  * Option de suppression du fichier de clef après l'importation
+  * Option de suppression du fichier clé après l'importation
   * Chiffrement/déchiffrement de flux (galerie, etc.)
   * Nouvelles options (langue, forcer les signatures v3)
   * Changements dans l'interface
@@ -311,15 +311,15 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.3
 
-  * Corrections de plantages durant le chiffrement/la signature et possiblement l'exportation de clefs
+  * Corrections de plantages durant le chiffrement/la signature et possiblement l'exportation de clés
 
 
 ## 1.0.2
 
-  * Listes de clefs filtrables
-  * Présélection plus intelligente des clefs de chiffrement
+  * Listes de clés filtrables
+  * Présélection plus intelligente des clés de chiffrement
   * Nouvelle gestion des intentions pour VIEW et SEND, permet le chiffrement/déchiffrement des fichiers du gestionnaires de fichiers
-  * Correctifs et fonctions additionnelles (présélection des clefs) pour Courriel K-9 Mail, nouvelle version bêta proposée
+  * Correctifs et fonctions additionnelles (présélection des clés) pour Courriel K-9 Mail, nouvelle version bêta proposée
 
 
 ## 1.0.1

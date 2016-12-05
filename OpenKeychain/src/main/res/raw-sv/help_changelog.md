@@ -7,7 +7,7 @@
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
+  * Experimentellt stöd för säkerhetstoken via USB
   * Tillåt lösenord byte av avskalade nycklar
 
 
@@ -15,38 +15,38 @@
 
   * Detektering och hantering av textdata
   * Prestandaförbättringar 
-  * UI förbättringar för säkerhetstoken hantering
+  * UI-förbättringar för hantering av säkerhetstoken
 
 
 ## 3.8
 
-  * Omgjort nyckel redigering
+  * Gjort om nyckelredigering
   * Välj kom ihåg tid individuellt när du skriver lösenord
   * Facebook nyckelimport
 
 
 ## 3.7
 
-  * Förbättrad Android 6 stöd (behörigheter, integration i textmarkeringen )
+  * Förbättrat stöd för Android 6 (behörigheter, integration i textmarkeringen )
   * API: Version 10
 
 
 ## 3.6
 
   * Krypterade säkerhetskopior
-  * Säkerhets korrigeringar baserade på extern säkerhetsrevision
-  * YubiKey NEO guide för att skapa nyckel
-  * Grundläggande internt MIME stöd
+  * Säkerhetskorrigeringar baserade på extern säkerhetsrevision
+  * YubiKey NEO-guide för att skapa nyckel
+  * Grundläggande internt MIME-stöd
   * Automatisk nyckelsynkronisering
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimentell funktion: nyckel bekräftelse via fraser
-  * Experimental feature: dark theme
+  * Experimentell funktion: länka nycklar till Github- och Twitter-konton
+  * Experimentell funktion: nyckelbekräftelse via fraser
+  * Experimentell funktion: mörkt tema
   * API: Version 9
 
 
 ## 3.5
 
-  * Key revocation on key deletion
+  * Nyckelåterkallelse vid nyckelradering
   * Improved checks for insecure cryptography
   * Fix: Don't close OpenKeychain after first time wizard succeeds
   * API: Version 8

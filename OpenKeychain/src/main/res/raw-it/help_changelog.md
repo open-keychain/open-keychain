@@ -14,7 +14,7 @@
 ## 3.9
 
   * Detection and handling of text data
-  * Performance improvements
+  * Miglioramento delle prestazioni
   * UI improvements for Security Token handling
 
 
@@ -254,7 +254,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 2.1
 
   * Correzione di molti bug
-  * New API for developers
+  * Nuove API per sviluppatori
   * PRNG bug fix by Google
 
 

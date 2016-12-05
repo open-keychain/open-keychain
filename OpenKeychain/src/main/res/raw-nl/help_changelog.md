@@ -2,46 +2,46 @@
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * Betere herkenning van e-mails en andere inhoud bij openen
 
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
-  * Allow password changing of stripped keys
+  * Experimentele ondersteuning voor Security Tokens via USB
+  * Sta wachtwoordverandering to van gestripte sleutels
 
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Detectie en afhandeling van tekstuele data
+  * Snelheidsverbeteringen
+  * Verbeteringen aan de gebruikersinterface voor afhandeling van het Security Token
 
 
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Sleutelbewerking opnieuw ontworpen
+  * Kies tijdsduur voor het onthouden van wachtwoorden individueel
+  * Importeren van Facebook-sleutels
 
 
 ## 3.7
 
-  * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * Verbetering van ondersteuning voor Android 6 (permissies, integratie in tekstselectie)
+  * API: Versie 10
 
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
-  * API: Version 9
+  * Versleutelde backups
+  * Beveiligingsoplossingen gebaseerd op externe audit
+  * Sleutelaanmaakwizard voor YubiKey NEO 
+  * Basisondersteuning interne MIME
+  * Automatische sleutelsynchronisatie
+  * Experimentele functionaliteit: koppel sleutels aan accounts op Github, Twitter.
+  * Experimentele functionaliteit: sleutelbevestiging via zinnen
+  * Experimentele functionaliteit: donker thema
+  * API: Versie 9
 
 
 ## 3.5
@@ -273,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Basisondersteuning voor sleutelservers
   * App2SD
   * Meer keuzes voor wachtwoordcache: 1, 2, 4, 8 uur
-  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+  * Vertalingen: Noors (Bokmål) (bedankt Sander Danielsen), Chinees (bedankt Zhang Fredrick)
   * Bugfixes
   * Optimalisaties
 

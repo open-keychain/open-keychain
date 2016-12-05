@@ -2,7 +2,7 @@
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](https://www.openkeychain.org) 是一個給 Android 的 OpenPGP 實作
 
 授權：GPLv3+
 

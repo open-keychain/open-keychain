@@ -2,7 +2,7 @@
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * メールやその他のコンテンツを開いた時の検出を改良
 
 
 ## 4.0
@@ -273,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * 鍵サーバの基本サポート
   * App2SD
   * パスフレーズのキャッシュ時間についての選択肢追加: 1,2,4,8時間
-  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+  * 翻訳: ノルウェー語 (ありがとう、Sander Danielsen)、中国語 (ありがとう、Zhang Fredrick)
   * バグ修正
   * 最適化
 

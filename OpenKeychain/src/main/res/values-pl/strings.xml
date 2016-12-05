@@ -26,19 +26,26 @@
   <string name="title_help">Pomoc</string>
   <string name="title_log_display">Logi</string>
   <string name="title_exchange_keys">Wymień się kluczami</string>
+  <string name="title_advanced_key_info">Zaawansowane</string>
   <string name="title_manage_my_keys">Zarządzaj kluczami</string>
   <!--section-->
   <string name="section_user_ids">Tożsamości</string>
   <string name="section_keys">Pod-klucze</string>
+  <string name="section_gui">Interfejs</string>
+  <string name="section_sync_settings">Synchronizacja</string>
+  <string name="section_experimental_features">Funkcje eksperymentalne</string>
   <string name="section_certify">Zatwierdź</string>
   <string name="section_actions">Działania</string>
   <string name="section_share_key">Klucz</string>
   <string name="section_key_server">Serwer kluczy</string>
   <string name="section_fingerprint">Odcisk klucza</string>
   <string name="section_encrypt">Zaszyfruj</string>
+  <string name="section_decrypt">Odszyfruj / weryfikuj</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Odszyfruj, weryfikuj i zapisz plik</string>
   <string name="btn_encrypt_share_file">Szyfruj i podziel się plikiem</string>
+  <string name="btn_save_file">Zapisz plik</string>
+  <string name="btn_save">Zapisz</string>
   <string name="btn_do_not_save">Anuluj</string>
   <string name="btn_delete">Usuń</string>
   <string name="btn_no_date">Bez wygaśnięcia</string>
@@ -46,35 +53,65 @@
   <string name="btn_export_to_server">Wyślij do serwera kluczy</string>
   <string name="btn_next">Dalej</string>
   <string name="btn_back">Wstecz</string>
+  <string name="btn_no">Nie</string>
+  <string name="btn_share_encrypted_signed">Zaszyfruj/podpisz i udostępnij tekst</string>
+  <string name="btn_copy_encrypted_signed">Zaszyfruj/podpisz i kopiuj tekst</string>
+  <string name="btn_paste_encrypted_signed">Zaszyfruj/podpisz i wklej tekst</string>
   <string name="btn_view_cert_key">Wyświetl klucz certyfikacji</string>
   <string name="btn_create_key">Utwórz klucz</string>
   <string name="btn_add_files">Dodaj plik(i)</string>
+  <string name="btn_share_decrypted_text">Udostępnij</string>
+  <string name="btn_open_with">Otwórz za pomocą...</string>
+  <string name="btn_copy_decrypted_text">Kopiuj do schowka</string>
+  <string name="btn_decrypt_clipboard">Odczytaj ze schowka</string>
   <string name="btn_encrypt_files">Zaszyfruj pliki</string>
   <string name="btn_encrypt_text">Zaszyfruj tekst</string>
+  <string name="btn_add_email">Dodaj dodatkowy adres email</string>
+  <string name="btn_unlock">Odblokuj</string>
+  <string name="btn_add_keyserver">Dodaj</string>
+  <string name="btn_save_default">Zapisz jako domyślny</string>
+  <string name="btn_saved">Zapisano!</string>
   <!--Content Description-->
+  <string name="cd_encrypt_files">Zaszyfruj pliki</string>
+  <string name="cd_share_nfc">Udostępnij przez NFC</string>
   <!--menu-->
   <string name="menu_preferences">Ustawienia</string>
   <string name="menu_help">Pomoc</string>
   <string name="menu_delete_key">Usuń klucz</string>
+  <string name="menu_manage_keys">Zarządzaj kluczami</string>
   <string name="menu_search">Szukaj</string>
+  <string name="menu_nfc_preferences">Ustawienia NFC</string>
   <string name="menu_beam_preferences">Ustawienia Beam</string>
   <string name="menu_encrypt_to">Zaszyfruj do...</string>
   <string name="menu_select_all">Wybierz wszystko</string>
   <string name="menu_export_all_keys">Eksportuj wszystkie klucze</string>
+  <string name="menu_advanced">Zaawansowane</string>
+  <string name="menu_change_password">Zmień hasło</string>
+  <string name="menu_keyserver_add">Dodaj</string>
   <!--label-->
+  <string name="label_message">Tekst</string>
   <string name="label_file">Plik</string>
   <string name="label_files">Plik(i)</string>
   <string name="label_file_colon">Plik:</string>
+  <string name="label_no_passphrase">Brak hasła</string>
+  <string name="label_passphrase">Hasło</string>
+  <string name="label_pin">PIN</string>
   <string name="label_unlock">Odblokowywanie...</string>
+  <string name="label_passphrase_again">Powtórz hasło</string>
+  <string name="label_show_passphrase">Pokaż hasło</string>
   <string name="label_algorithm">Algorytm</string>
   <string name="label_ascii_armor">Plik ASCII Armor</string>
   <string name="label_file_ascii_armor">Włącz ASCII Armor</string>
   <string name="label_write_version_header">Niech inni wiedzą, że używasz OpenKeychain</string>
   <string name="label_write_version_header_summary">Wpisuje \'\'OpenKeychain v2.7\' do podpisów, szyfrogramów i wyeksportowanych kluczy OpenPGP.</string>
+  <string name="label_delete_after_encryption">Usuń pliki po zaszyfrowaniu</string>
   <string name="label_delete_after_decryption">Usuń po odszyfrowaniu</string>
   <string name="label_encryption_algorithm">Algorytm szyfrowania</string>
   <string name="label_hash_algorithm">Funkcja skrótu</string>
+  <string name="label_symmetric">Zaszyfruj za pomocą hasła</string>
+  <string name="label_message_compression">Kompresja tekstu</string>
   <string name="label_file_compression">Kompresja pliku</string>
+  <string name="label_keyservers">Wybierz serwery kluczy OpenPGP</string>
   <string name="label_key_id">Identyfikator klucza</string>
   <string name="label_creation">Utworzenia</string>
   <string name="label_expiry">Wygaśnięcia</string>
@@ -87,13 +124,28 @@
   <string name="label_email">Adres email</string>
   <string name="label_fingerprint">Odcisk</string>
   <string name="expiry_date_dialog_title">Ustaw datę wygaśnięcia</string>
+  <string name="label_keyservers_title">Serwery kluczy</string>
   <string name="label_preferred">preferowany</string>
+  <string name="label_enable_compression">Włącz kompresję</string>
+  <string name="label_encrypt_filenames">Zaszyfruj nazwy plików</string>
+  <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_keyserver_dialog_delete">Usuń serwer kluczy</string>
+  <string name="label_theme">Motyw</string>
+  <string name="pref_keyserver">Serwery kluczy OpenPGP</string>
+  <string name="pref_keybase">keybase.io</string>
+  <string name="pref_keybase_summary">Szukaj kluczy na keybase.io</string>
+  <string name="pref_facebook">Facebook</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="label_experimental_settings_desc_title">Ostrzeżenie</string>
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_install">Instaluj</string>
+  <string name="orbot_install_dialog_cancel">Anuluj</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">Anuluj</string>
   <plurals name="n_keys">
     <item quantity="one">1 klucz</item>
     <item quantity="few">%d klucze</item>
@@ -119,11 +171,24 @@
   <string name="choice_4hours">4 godziny</string>
   <string name="choice_8hours">8 godzin</string>
   <string name="choice_forever">na zawsze</string>
+  <string name="choice_select_cert">Wybierz klucz</string>
   <string name="filemanager_title_open">Otwórz...</string>
+  <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_2048_description_html">mniejszy rozmiar pliku, uważany za bezpieczny do 2030</string>
+  <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_3072_description_html">zalecany, uważany za bezpieczny do 2040</string>
+  <string name="rsa_4096">RSA 4096</string>
+  <string name="rsa_4096_description_html">większy rozmiar pliku, uważany za bezpieczny do 2040+</string>
+  <string name="ecc_p256">ECC P-256</string>
+  <string name="ecc_p521">ECC P-521</string>
   <string name="error">Błąd</string>
   <string name="error_message">Błąd: %s</string>
+  <string name="theme_dark">Ciemny</string>
+  <string name="theme_light">Jasny</string>
   <!--sentences-->
   <string name="no_filemanager_installed">Nie zainstalowano żadnego kompatybilnego menadżera plików.</string>
+  <string name="passphrase_for_symmetric_encryption">Wpisz hasło</string>
+  <string name="passphrase_for">Wpisz hasło dla \'%s\'</string>
   <string name="pin_for">Wpisz PIN dla \'%s\'</string>
   <string name="encrypt_sign_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
   <string name="encrypt_sign_clipboard_successful">Pomyslnie podpisano i/lub zaszyfrowano do schowka.</string>
@@ -527,7 +592,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="key_unavailable">niedostepne</string>
   <string name="secret_cannot_multiple">Twoje klucze mogą być usuwane tylko pojedynczo!</string>
   <string name="title_view_cert">Zweryfikuj szczegóły certyfikatu</string>
-  <string name="unknown">nieznany</string>
+  <string name="unknown_algorithm">nieznany</string>
   <string name="can_sign_not">nie może podpisać</string>
   <string name="error_no_encrypt_subkey">Brak pod-klucza szyfrowania!</string>
   <string name="contact_show_key">Pokaż klucz (%s)</string>

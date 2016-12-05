@@ -8,7 +8,7 @@ Licens: GPLv3+
 
 [//]: # (OBS: Alfabetisk ordning)
 
-## Huvudsakliga utvecklare
+## Huvudutvecklare
   * Dominik Schürmann (Projektledare)
   * Vincent Breitmoser
 

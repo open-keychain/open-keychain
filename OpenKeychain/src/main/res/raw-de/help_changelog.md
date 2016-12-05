@@ -2,7 +2,7 @@
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  Bessere Erkennung von E-Mails und anderen Inhalten beim Öffnen
 
 
 ## 4.0
@@ -273,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Grundlegende Schlüsselserverunterstützung
   * App2SD
   * Mehr Auswahlmöglichkeiten für den Passwortzwischenspeicher: 1, 2, 4, 8, Stunden
-  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+  * Übersetzungen: Norwegisch (Dank an Sander Danielsen), Chinesisch (Dank an Zhang Fredrick)
   * Fehlerbehebungen
   * Optimierungen
 

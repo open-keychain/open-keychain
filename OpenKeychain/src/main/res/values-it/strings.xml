@@ -146,6 +146,7 @@
   <string name="label_encryption_algorithm">Algoritmo di codifica</string>
   <string name="label_hash_algorithm">Algoritmo Hash</string>
   <string name="label_symmetric">Codifica con password</string>
+  <string name="label_passphrase_cache_ttl">Cambia le scelte da \'Ricordare\'</string>
   <string name="label_passphrase_cache_subs">Ricorda le password di sottochiave</string>
   <string name="label_message_compression">Compressione testo</string>
   <string name="label_file_compression">Compressione file</string>
@@ -362,6 +363,7 @@
   <string name="decrypt_result_not_encrypted">Non Codificato</string>
   <string name="decrypt_result_insecure">Cifratura non sicura</string>
   <string name="decrypt_result_action_show">Mostra</string>
+  <string name="decrypt_result_action_Lookup">Ricerca</string>
   <string name="decrypt_invalid_text">La firma non è valida oppure la chiave è stata revocata. Non puoi essere certo di chi abbia scritto il testo. Vuoi vederlo comunque?</string>
   <string name="decrypt_invalid_button">Capisco i rischi, visualizza!</string>
   <!--Add keys-->
@@ -876,6 +878,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
     <item quantity="one">Canonicalizzazione portachiavi con successo, rimosso un certificato ridondante</item>
     <item quantity="other">Canonicalizzazione portachiavi con successo, rimossi %d certificati ridondanti</item>
   </plurals>
+  <string name="msg_kc_uid_remove">Rimozione ID utente non valido \'%s\'</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_heterogeneous">Tentativo di unire portachiavi con impronte digitali diverse!</string>
   <string name="msg_mg_error_encode">Errore fatale nella codifica della firma!</string>
@@ -889,6 +892,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_cr_error_no_master">Nessuna opzione della chiave principale specificata!</string>
   <string name="msg_cr_error_no_certify">La chiave principale deve avere la caratteristica di certificazione!</string>
   <string name="msg_cr_error_null_expiry">La data di scadenza non può essere \'come prima\' sulla creazione di chiavi. Questo è un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
+  <string name="msg_cr_error_keysize_2048">La lunghezza della chiave deve essere di almeno 2048 bit!</string>
   <string name="msg_cr_error_no_keysize">Nessuna curva ellittica specificata! Questo è un errore di programmazione, per favore invia una segnalazione!</string>
   <string name="msg_cr_error_internal_pgp">Errore interno di PGP!</string>
   <!--modifySecretKeyRing-->
@@ -906,11 +910,14 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_mf_error_subkey_missing">Tentativo di operare su sottochiave %s mancante!</string>
   <string name="msg_mf_master">Modifica delle certificazioni principali</string>
   <string name="msg_mf_subkey_change">Modifica sottochiave %s</string>
+  <string name="msg_mf_require_passphrase">Per queste azioni è necessaria la password</string>
   <string name="msg_mf_subkey_new_id">Nuovo ID sottochiave: %s</string>
   <string name="msg_mf_error_past_expiry">La data di scadenza non può essere nel passato!</string>
   <string name="msg_mf_subkey_revoke">Revoca sottochiave %s</string>
   <string name="msg_mf_subkey_strip">Pulitura sottochiave %s</string>
   <string name="msg_mf_success">Portachiavi modificato con successo</string>
+  <string name="msg_mf_uid_add">Aggiunta in corso dell\'utente ID %s</string>
+  <string name="msg_mf_uid_revoke">Revoca in corso dell\'utente ID %s</string>
   <string name="msg_mf_uid_error_empty">ID Utente non può essere vuoto!</string>
   <string name="msg_mf_unlock_error">Errore di apertura portachiavi!</string>
   <string name="msg_mf_unlock">Apertura portachiavi</string>
@@ -958,28 +965,38 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_dc_clear_signature_bad">Controllo firma NON OK!</string>
   <string name="msg_dc_clear_signature_check">Verifica dati firma</string>
   <string name="msg_dc_clear_signature_ok">Controllo firma OK</string>
+  <string name="msg_dc_error_corrupt_data">Dati danneggiati!</string>
   <string name="msg_dc_error_integrity_check">Errore di controllo di integrità!</string>
+  <string name="msg_dc_error_no_signature">Manca la firma!</string>
   <string name="msg_dc_integrity_check_ok">Controllo integrità OK!</string>
   <string name="msg_dc">Inizio operazione di decodifica...</string>
   <string name="msg_dc_sym_skip">Dati simmetrici non permessi, proseguo...</string>
   <string name="msg_dc_unlocking">Sblocco chiave segreta</string>
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl">Inizio verifica della firma</string>
+  <string name="msg_vl_error_no_signature">Manca la firma!</string>
   <string name="msg_vl_clear_meta_file">Nome file: %s</string>
   <string name="msg_vl_clear_meta_mime">Tipo MIME: %s</string>
   <string name="msg_vl_clear_meta_time">Ultima modifica: %s</string>
   <string name="msg_vl_clear_meta_size">Dimesione file: %s</string>
+  <string name="msg_vl_error_integrity_check">Errore di controllo d\'integrità!</string>
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <string name="msg_pse_encrypting">Codifica dati in corso</string>
   <string name="msg_pse_error_bad_passphrase">Password errata!</string>
+  <string name="msg_crt_error_nothing">Nessuna chiave certificata!</string>
   <string name="msg_crt_success">Identità certificata correttamente</string>
   <string name="msg_crt_warn_not_found">Chiave non trovata!</string>
   <string name="msg_crt_upload_success">Chiave caricata con successo sul server</string>
+  <string name="msg_backup_error_db">Errore banca dati!</string>
+  <string name="msg_backup_error_io">Errore di input/output!</string>
   <string name="msg_upload_server">Server: %s</string>
   <string name="msg_upload_error_not_found">Chiave non trovata!</string>
   <string name="msg_del_error_empty">Niente da cancellare!</string>
   <!--Linked Identity verification-->
   <string name="msg_lv_fetch_error_io">Errore di input output!</string>
+  <string name="msg_lv_fetch_error_format">Errore di formato!</string>
   <string name="msg_data_mime_filename">Nome file: \'%s\'</string>
   <string name="msg_data_mime_charset">Il set di caratteri è \'%s\'</string>
   <string name="msg_data_mime_charset_unknown">Il set di caratteri è sconosciuto, oppure i dati non sono testo.</string>
@@ -988,13 +1005,16 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_clear">Cancella password</string>
   <string name="passp_cache_notif_pwd">Password</string>
   <!--Keyserver sync-->
   <string name="keyserver_sync_orbot_notif_msg">Fai click per avviare Orbot</string>
   <string name="keyserver_sync_orbot_notif_start">Avvia Orbot</string>
   <!--First Time-->
   <string name="first_time_text1">Riappropriati della tua privacy con OpenKeychain!</string>
+  <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">Salta Installazione</string>
+  <string name="backup_section">Backup</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certificatore</string>
   <string name="section_cert">Dettagli Certificato</string>
@@ -1006,10 +1026,11 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="error_key_not_found">Chiave non trovata!</string>
   <string name="error_key_processing">Errore di elaborazione chiave!</string>
   <string name="key_stripped">ripulito</string>
+  <string name="key_no_passphrase">nessuna password</string>
   <string name="key_unavailable">non disponibile</string>
   <string name="secret_cannot_multiple">Le vostre chiavi possono essere eliminate solo singolarmente!</string>
   <string name="title_view_cert">Visualizza Dettagli Certificati</string>
-  <string name="unknown">sconosciuto</string>
+  <string name="unknown_algorithm">sconosciuto</string>
   <string name="can_sign_not">non può firmare</string>
   <string name="error_no_encrypt_subkey">Nessuna sottochiave di codifica disponibile!</string>
   <string name="contact_show_key">Mostra chiave (%s)</string>
@@ -1017,17 +1038,35 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="key_colon">Chiave:</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
+  <string name="account_privacy_title">Riservatezza</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">Inserire password</string>
   <string name="passphrase">Password</string>
+  <string name="noPassphrase">Nessuna password</string>
+  <string name="no_passphrase_set">Nessuna password è stata salvata</string>
+  <string name="passphrases_match">Password non corrispondente</string>
+  <string name="passphrase_saved">Password salvata</string>
+  <string name="passphrase_invalid">Password non valida</string>
+  <string name="passphrase_again">Ancora</string>
+  <string name="set_passphrase">Imposta password</string>
   <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">Impostazioni</string>
+  <string name="snack_security_token_import">Importa</string>
   <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
+  <string name="btn_import">Importa</string>
+  <string name="security_token_import_radio">Importa chiave</string>
   <string name="security_token_error">Errore: %s</string>
   <string name="security_token_error_unknown">Errore sconosciuto</string>
   <string name="security_token_error_try_again">Riprovare</string>
+  <string name="btn_delete_original">Cancella file originale</string>
+  <string name="progress_processing">Elaborazione in corso...</string>
+  <string name="error_saving_file">Errore durante il salvataggio del file!</string>
   <string name="file_saved">File salvato!</string>
+  <string name="file_delete_ok">Il file originale è stato cancellato.</string>
+  <string name="linked_create_verify">Verifica</string>
   <!--Other Linked Identity strings-->
   <string name="linked_verifying">Verifica in corso...</string>
   <string name="linked_verify_success">Verificato!</string>
@@ -1035,7 +1074,11 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="linked_title_github">GitHub</string>
   <string name="linked_title_twitter">Twitter</string>
   <string name="linked_button_verify">Verifica</string>
+  <string name="linked_button_retry">Riprova</string>
+  <string name="linked_text_verifying">Verifica in corso...</string>
   <string name="linked_text_error">Errore</string>
+  <string name="linked_error_network">Si è verificato un errore di rete!</string>
+  <string name="snack_btn_overwrite">Sovrascrivi</string>
   <string name="share_log_dialog_cancel_button">Cancella</string>
   <string name="menu_uids_save">Salva</string>
   <string name="cache_ttl_ten_minutes">per dieci minuti</string>

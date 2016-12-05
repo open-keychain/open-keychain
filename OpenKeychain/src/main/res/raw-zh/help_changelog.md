@@ -2,13 +2,13 @@
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * 改进启动时对电子邮件和其他内容的检测
 
 
 ## 4.0
 
-  USB安全令牌的试验性支持
-  * Allow password changing of stripped keys
+  * USB安全令牌的试验性支持
+  * 允许修改剥离密钥的密码
 
 
 ## 3.9
@@ -273,7 +273,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * 基本密钥服务器支持
   *  APP2SD
   * 密码缓存时间提供更多的选择：1，2，4，8，小时
-  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+  * 翻译：挪威语（感谢 Sander Danielsen），中文（感谢 Zhang Fredrick）
   *  Bug修复
   * 优化
 

@@ -558,11 +558,9 @@
   <string name="key_view_action_share_with">Sdílet pomocí...</string>
   <string name="key_view_action_share_nfc">Sdílet přes NFC</string>
   <string name="key_view_action_upload">Nahrát na keyserver</string>
-  <string name="key_view_tab_main">Hlavní info</string>
   <string name="key_view_tab_start">Začít</string>
   <string name="key_view_tab_share">Sdílet</string>
   <string name="key_view_tab_keys">Podklíče</string>
-  <string name="key_view_tab_certs">Certifikáty</string>
   <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Zneplatněno</string>
   <string name="user_id_info_revoked_text">Tato identity byla zneplatněna vlastníkem klíče. Klíč již není platný.</string>
@@ -909,7 +907,7 @@
   <string name="key_unavailable">nedostupný</string>
   <string name="secret_cannot_multiple">Vaše vlastní klíče lze mazat pouze jednotlivě!</string>
   <string name="title_view_cert">Zobrazit detaily certifikátu</string>
-  <string name="unknown">neznámý</string>
+  <string name="unknown_algorithm">neznámý</string>
   <string name="can_sign_not">nelze podepsat</string>
   <string name="error_no_encrypt_subkey">Není dostupný šifrovací podklíč!</string>
   <string name="contact_show_key">Zobrazit klíč (%s)</string>

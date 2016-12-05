@@ -8,7 +8,9 @@
   <string name="title_encrypt_files">Salaa</string>
   <string name="title_decrypt">Pura salaus</string>
   <string name="title_add_subkey">Lisää aliavain</string>
+  <string name="title_change_master_key">Vaihda yleisavain</string>
   <string name="title_edit_key">Muokkaa avainta</string>
+  <string name="title_linked_create">Luo linkitetty identiteetti</string>
   <string name="title_preferences">Asetukset</string>
   <string name="title_api_registered_apps">Sovellukset</string>
   <string name="title_key_server_preference">OpenPGP-avainpalvelimet</string>
@@ -24,6 +26,7 @@
   <string name="title_export_keys">Varmuuskopioi avaimet</string>
   <string name="title_key_not_found">Avainta ei löydy</string>
   <string name="title_send_key">Lähetä avainpalvelimelle</string>
+  <string name="title_backup">Varmuuskopioi avain</string>
   <string name="title_certify_key">Vahvista avain</string>
   <string name="title_key_details">Avaimen tiedot</string>
   <string name="title_help">Apua</string>
@@ -33,6 +36,7 @@
   <!--section-->
   <string name="section_user_ids">Identiteetit</string>
   <string name="section_keys">Aliavaimet</string>
+  <string name="section_cloud_search_summary">Avainpalvelin, keybase.io</string>
   <string name="section_gui">Käyttöliittymä</string>
   <string name="section_experimental_features">Kokeelliset ominaisuudet</string>
   <string name="section_certify">Vahvista</string>
@@ -61,11 +65,20 @@
   <string name="btn_view_cert_key">Näytä varmennusavain</string>
   <string name="btn_create_key">Luo avain</string>
   <string name="btn_add_files">Lisää tiedosto(ja)</string>
+  <string name="btn_share_decrypted_text">Jaa</string>
+  <string name="btn_copy_decrypted_text">Kopioi leikepöydälle</string>
+  <string name="btn_decrypt_clipboard">Lue leikepöydältä</string>
+  <string name="btn_decrypt_files">Valitse syötetiedosto</string>
+  <string name="btn_encrypt_files">Salaa Tiedostoja</string>
+  <string name="btn_encrypt_text">Salaa Tekstiä</string>
   <string name="btn_unlock">Avaa lukitus</string>
-  <string name="btn_add_keyserver">Lisä</string>
+  <string name="btn_add_keyserver">Lisää</string>
   <string name="btn_save_default">Tallenna oletukseksi</string>
   <string name="btn_saved">Tallennettu!</string>
   <!--Content Description-->
+  <string name="cd_encrypt_files">Salaa Tiedostoja</string>
+  <string name="cd_exchange_keys">Vaihda Avaimia</string>
+  <string name="cd_encrypt_text">Salaa Tekstiä</string>
   <!--menu-->
   <string name="menu_preferences">Asetukset</string>
   <string name="menu_help">Apua</string>
@@ -253,7 +266,7 @@
   <string name="label_cert_type">Tyyppi</string>
   <string name="key_no_passphrase">ei salasanaa</string>
   <string name="key_unavailable">ei saatavilla</string>
-  <string name="unknown">tunnistamaton</string>
+  <string name="unknown_algorithm">tunnistamaton</string>
   <string name="contact_show_key">Näytä avain (%s)</string>
   <string name="key_colon">Avain:</string>
   <!--Android Account-->

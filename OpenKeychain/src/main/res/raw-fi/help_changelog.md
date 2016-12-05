@@ -2,7 +2,7 @@
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * parantaa sähköpostien ja muun avatun sisällön tunnistamisen
 
 
 ## 4.0
@@ -14,8 +14,8 @@
 ## 3.9
 
   * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Suorituksen parannukset
+  * UI parannukset suojaustunnuksen käsittelyyn 
 
 
 ## 3.8
@@ -28,41 +28,41 @@
 ## 3.7
 
   * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * API: Versio 10
 
 
 ## 3.6
 
-  * Encrypted backups
+  * salatut varmuuskopiot
   * Security fixes based on external security audit
   * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
+  * sisäinen MIME perustuki
+  * Automaattinen avainten synkronointi
   * Experimental feature: link keys to Github, Twitter accounts
   * Experimental feature: key confirmation via phrases
   * Experimental feature: dark theme
-  * API: Version 9
+  * API: Versio 9
 
 
 ## 3.5
 
   * Key revocation on key deletion
-  * Improved checks for insecure cryptography
+  * paransi turvattoman salauksen tarkastukset
   * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  * API: Versio 8
 
 
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
+  * Anonyyminen avaimen lataus Tor verkon kautta
+  * Proxy tuki
   * Better YubiKey error handling
 
 
 ## 3.3
 
   * New decryption screen
-  * Decryption of multiple files at once
+  * Useamman salatun tiedoston avaaminen samanaikaisesti
   * Better handling of YubiKey errors
 
 
@@ -73,7 +73,7 @@
   * Integration of QR Code Scanning (New permissions required)
   * Improved key creation wizard
   * Fix missing contacts after sync
-  * Requires Android 4
+  * Vaatii Android 4
   * Redesigned key screen
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...
@@ -136,7 +136,7 @@
   * Split encrypt screen into two
   * Fix key flags handling (now supporting Mailvelope 0.7 keys)
   * Improved passphrase handling
-  * Key sharing via SafeSlinger
+  * Avainten jako SafeSlinger kautta
   * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Fix usage of stripped keys
   * SHA256 as default for compatibility
@@ -331,7 +331,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * K-9 Mail integration, APG supporting beta build of K-9 Mail
   * Support of more file managers (including ASTRO)
-  * Slovenian translation
+  * Sloveeni käännös
   * New database, much faster, less memory usage
   * Defined Intents and content provider for other apps
   * Bugfixes

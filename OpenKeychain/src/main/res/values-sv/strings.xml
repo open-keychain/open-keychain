@@ -14,7 +14,7 @@
   <string name="title_preferences">Inställningar</string>
   <string name="title_api_registered_apps">Appar</string>
   <string name="title_key_server_preference">OpenPGP-nyckelservrar</string>
-  <string name="title_cache_ttl_preference">Anpassa \"Kom ihåg\" val</string>
+  <string name="title_cache_ttl_preference">Anpassa \"Kom ihåg\"-val</string>
   <string name="title_change_passphrase">Ändra lösenord</string>
   <string name="title_share_fingerprint_with">Dela fingeravtryck med…</string>
   <string name="title_share_key">Dela nyckel med…</string>
@@ -124,6 +124,7 @@
   <string name="label_file_colon">Fil:</string>
   <string name="label_no_passphrase">Inget lösenord</string>
   <string name="label_passphrase">Lösenord</string>
+  <string name="label_pin">PIN</string>
   <string name="label_unlock">Låser upp…</string>
   <string name="label_passphrase_again">Upprepa lösenord</string>
   <string name="label_show_passphrase">Visa lösenord</string>
@@ -243,6 +244,8 @@
   <string name="passphrase_for_backup">Ange säkerhetskopieringskod</string>
   <string name="passphrase_for">Ange lösenord för \'%s\'</string>
   <string name="pin_for">Ange PIN för \'%s\'</string>
+  <string name="security_token_pin_for">Ange PIN-kod för att få tillgång till säkerhetstoken för \'%s\'</string>
+  <string name="security_token_nfc_text">Håll Säkerhetstoken mot NFC markören på baksidan av enheten.</string>
   <string name="file_delete_confirmation_title">Radera orginalfiler?</string>
   <string name="file_delete_confirmation">Följande filer kommer raderas:%s</string>
   <string name="file_delete_successful">%1$d av %2$d filer har raderats.%3$s</string>
@@ -958,7 +961,7 @@
   <string name="key_unavailable">otillgänglig</string>
   <string name="secret_cannot_multiple">Dina egna nycklar kan bara raderas var för sig!</string>
   <string name="title_view_cert">Visa certifikatinformation</string>
-  <string name="unknown">okänd</string>
+  <string name="unknown_algorithm">okänd</string>
   <string name="can_sign_not">kan inte signera</string>
   <string name="error_no_encrypt_subkey">Ingen krypteringsundernyckel tillgänglig!</string>
   <string name="contact_show_key">Visa nyckel (%s)</string>

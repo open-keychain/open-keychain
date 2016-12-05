@@ -679,9 +679,11 @@
   <string name="keybase_message_payload_mismatch">Расшифрованная доказательная запись не соответствует ожидаемому значению</string>
   <string name="keybase_message_fetching_data">Получение подтверждения</string>
   <string name="keybase_proof_succeeded">Подтверждение успешно проверено!</string>
+  <string name="keybase_a_post">Пост</string>
   <string name="keybase_fetched_from">извлечено из</string>
   <string name="keybase_for_the_domain">для домена</string>
   <string name="keybase_contained_signature">содержит сообщение, которое могло быть создано только владельцем этого ключа.</string>
+  <string name="keybase_twitter_proof">Твит</string>
   <string name="keybase_dns_proof">Запись DNS TXT</string>
   <string name="keybase_web_site_proof">Текстовый файл</string>
   <string name="keybase_github_proof">Gist</string>
@@ -1433,7 +1435,7 @@
   <string name="key_unavailable">недоступно</string>
   <string name="secret_cannot_multiple">Ваши собственные ключи можно удалять только по одному!</string>
   <string name="title_view_cert">Просмотреть детали сертификации</string>
-  <string name="unknown">неизв.</string>
+  <string name="unknown_algorithm">неизв.</string>
   <string name="can_sign_not">не для подписания</string>
   <string name="error_no_encrypt_subkey">Нет доп. ключа для шифрования!</string>
   <string name="contact_show_key">Показать ключ (%s)</string>

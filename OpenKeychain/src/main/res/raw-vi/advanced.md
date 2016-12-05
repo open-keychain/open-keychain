@@ -1,9 +1,9 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (CHÚ Ý: Xin hãy để mỗi câu văn bản trên một dòng, Transifex sẽ chuyển từng dòng vào cho từng trường đã được dịch sang các ngôn ngữ!)
 
-Advanced screen allows you to
-* share key in non-recommended ways
-* edit identities
-* edit subkeys
-* examine certificates in detail
+Màn hình Nâng cao cho phép bạn
+* chia sẻ khóa theo cách không được khuyến nghị
+* sửa định danh
+sửa các khóa con
+* xem chi tiết chứng thư số
 
-Only proceed if you know what you are doing!
+Chỉ thực hiện khi bạn hiểu rõ những gì sẽ làm!

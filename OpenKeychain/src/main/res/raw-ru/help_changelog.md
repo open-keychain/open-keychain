@@ -13,9 +13,9 @@
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Идентификация и обработка текстовых данных
+  * Улучшена производительность
+  * Улучшения пользовательского интерфейса работы с токенами безопасности
 
 
 ## 3.8
@@ -27,8 +27,8 @@
 
 ## 3.7
 
-  * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * Улучшенная поддержка Android 6 (права доступа, интеграция в выделенный текст)
+  * API: Версия 10
 
 
 ## 3.6
@@ -49,14 +49,14 @@
   * Key revocation on key deletion
   * Улучшенная проверка небезопасной криптографии
   * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  API: Версия 8
 
 
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
-  * Better YubiKey error handling
+  * Анонимное скачивание ключей через Tor
+  * Поддержка прокси
+  Улучшенная обработка ошибок YubiKey
 
 
 ## 3.3
@@ -69,11 +69,11 @@
 ## 3.2
 
   * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
-  * Material design
+  * Материальный дизайн
   * Integration of QR Code Scanning (New permissions required)
   * Improved key creation wizard
   * Fix missing contacts after sync
-  * Requires Android 4
+  * Требуется Android 4
   * Redesigned key screen
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...
@@ -91,17 +91,17 @@
 ## 3.1.1
 
   * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  Исправление падений на Android 2.3
 
 
 ## 3.1
 
-  * Fix crash on Android 5
-  * New certify screen
+  Исправление падений на Android 5
+  Новое окно подтверждения
   * Secure Exchange directly from key list (SafeSlinger library)
   * New QR Code program flow
   * Redesigned decrypt screen
-  * New icon usage and colors
+  Использование новых иконок и цевтов
   * Fix import of secret keys from Symantec Encryption Desktop
   * Experimental YubiKey support: Subkey IDs are now checked correctly
 
@@ -118,11 +118,11 @@
   * New design for decryption screens
   * Many fixes for key import, also fixes stripped keys
   * Honor and display key authenticate flags
-  * User interface to generate custom keys
+  Пользовательский интерфейс для генерации пользовательских ключей
   * Fixing user id revocation certificates
-  * New cloud search (searches over traditional keyservers and keybase.io)
+  Новый облачный поиск (по традиционным серверам ключей и по keybase.io)
   * Support for stripping keys inside OpenKeychain
-  * Experimental YubiKey support: Support for signature generation and decryption
+  Экспериментальная поддержка YubiKey: Поддержка генерации и расшифровка подписей
 
 
 ## 2.9.2
@@ -297,9 +297,9 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.5
 
-  * German and Italian translation
+  * Немецкий и итальянский переводы
   * Much smaller package, due to reduced BC sources
-  * New preferences GUI
+  * Новый интерфейс настроек
   * Layout adjustment for localization
   * Signature bugfix
 

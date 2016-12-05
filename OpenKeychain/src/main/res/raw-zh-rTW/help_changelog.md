@@ -7,14 +7,14 @@
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
+  * 實驗性的支援：經由USB給予安全口令
   * Allow password changing of stripped keys
 
 
 ## 3.9
 
   * Detection and handling of text data
-  * Performance improvements
+  *改善性能
   * UI improvements for Security Token handling
 
 
@@ -27,7 +27,7 @@
 
 ## 3.7
 
-  * Improved Android 6 support (permissions, integration into text selection)
+  *改進對於Android 6的支援 (權限, 整合在文字選單中)
   * API: Version 10
 
 
@@ -36,11 +36,11 @@
   * Encrypted backups
   * Security fixes based on external security audit
   * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
+  *支援基本的檔案表頭
+  *自動金鑰同步
+  * 實驗性的功能：連結金鑰到Github, Twitter的帳戶
   * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
+  * 實驗性的功能：暗色主題
   * API: Version 9
 
 
@@ -54,16 +54,16 @@
 
 ## 3.4
 
-  * Anonymous key download over Tor
+  *支援下載匿名的要使經由Tor路由
   *支援代理伺服器
-  * Better YubiKey error handling
+  * 更好的處理YubiKey 的錯誤
 
 
 ## 3.3
 
   *新的解密畫面
   *可同時解密多個檔案
-  * Better handling of YubiKey errors
+  * 更好的處理YubiKey 的錯誤
 
 
 ## 3.2
@@ -139,7 +139,7 @@
   * Key sharing via SafeSlinger
   * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Fix usage of stripped keys
-  * SHA256 as default for compatibility
+  *支援將SHA256設為預設
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
   * OpenPGP API now handles revoked/expired keys and returns all user ids
 
@@ -156,7 +156,7 @@
   * So many bugs have been fixed in this release that we focus on the main new features
   * Key edit: awesome new design, key revocation
   * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
-  * New first time screen
+  * 新的初始畫面
   * New key creation screen: autocompletion of name and email based on your personal Android accounts
   * File encryption: awesome new design, support for encrypting multiple files
   * New icons to show status of key (by Brennan Novak)
@@ -242,8 +242,8 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Key cross-certification (thanks to Ash Hughes)
   * Handle UTF-8 passwords properly (thanks to Ash Hughes)
   * First version with new languages (thanks to the contributors on Transifex)
-  * Sharing of keys via QR Codes fixed and improved
-  * Package signature verification for API
+  * 改善及修正經由 QR codes分享公鑰的功能
+  *新增驗證打包的簽章的API
 
 
 ## 2.1.1
@@ -253,29 +253,29 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 2.1
 
-  * Lots of bug fixes
-  * New API for developers
+  *修復多個錯誤
+  *提供開發者新的API
   * PRNG bug fix by Google
 
 
 ## 2.0
 
-  * Complete redesign
-  * Share public keys via QR codes, NFC beam
-  * Sign keys
-  * Upload keys to server
+  *徹底的重新設計
+  * 經由 QR codes, NFC beam分享公鑰
+  *簽署金鑰
+  *上傳到金鑰伺服器
   * Fixes import issues
   * New AIDL API
 
 
 ## 1.0.8
 
-  * Basic keyserver support
+  *支援基本的金鑰伺服器
   * App2sd
   * More choices for passphrase cache: 1, 2, 4, 8, hours
   * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Bugfixes
-  * Optimizations
+  *錯誤修正
+  * 最佳化
 
 
 ## 1.0.7
@@ -291,17 +291,17 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Option to delete key file after import
   * Stream encryption/decryption (gallery, etc.)
   * New options (language, force v3 signatures)
-  * Interface changes
-  * Bugfixes
+  *介面改變
+  *錯誤修正
 
 
 ## 1.0.5
 
-  * German and Italian translation
+  * 德語和義大利文翻譯
   * Much smaller package, due to reduced BC sources
   * New preferences GUI
   * Layout adjustment for localization
-  * Signature bugfix
+  *修正驗證簽名的錯誤
 
 
 ## 1.0.4
@@ -324,14 +324,14 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.1
 
-  * GMail account listing was broken in 1.0.0, fixed again
+  *再次修正在1.0.0版GMail帳戶清單破損的問題
 
 
 ## 1.0.0
 
   * K-9 Mail integration, APG supporting beta build of K-9 Mail
-  * Support of more file managers (including ASTRO)
-  * Slovenian translation
-  * New database, much faster, less memory usage
+  *支援更多檔案管理員(像是ASTRO)
+  * 斯洛文尼亞語翻譯
+  *新的資料庫，更快，使用較少的記憶體
   * Defined Intents and content provider for other apps
-  * Bugfixes
+  *錯誤修正

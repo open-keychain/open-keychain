@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">Enkripsi</string>
   <string name="title_decrypt">Dekripsi</string>
   <string name="title_add_subkey">Tambah kunci tambahan</string>
+  <string name="title_change_master_key">Ubah kunci master</string>
   <string name="title_edit_key">Edit kunci</string>
   <string name="title_linked_create">Buat identitas yang tersambung</string>
   <string name="title_preferences">Pengaturan</string>

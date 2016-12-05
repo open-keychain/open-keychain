@@ -1,4 +1,4 @@
-[//] : # (NOTE : veuillez mettre chaque phrase dans sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
+[//]: # (NOTE : veuillez mettre chaque phrase dans sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
 ## Comment puis-je activer OpenKeychain dans Courriel K-9 Mail ?
 Pour utiliser OpenKeychain avec Courriel K-9 Mail, vous devez suivre ces étapes :

@@ -8,8 +8,8 @@ License: GPLv3+
 
 [//]: # (NOTE: Alphabetic ordering)
 
-## Main Developers
-  * Dominik Schürmann (Maintainer)
+## Pääkehittäjät
+  * Dominik Schürmann (Ylläpitäjä)
   * Vincent Breitmoser
 
 ## Top Contributors

@@ -25,18 +25,28 @@
   <string name="title_export_keys">匯出金鑰</string>
   <string name="title_key_not_found">找不到金鑰</string>
   <string name="title_send_key">上傳到金鑰伺服器</string>
+  <string name="title_backup">備份金鑰</string>
   <string name="title_certify_key">認證金鑰</string>
   <string name="title_key_details">詳細內容</string>
   <string name="title_help">說明</string>
   <string name="title_log_display">紀錄</string>
   <string name="title_exchange_keys">交換金鑰</string>
+  <string name="title_advanced_key_info">進階</string>
   <string name="title_delete_secret_key">刪除您的金鑰 \'%s\'？</string>
   <string name="title_manage_my_keys">管理我的金鑰</string>
   <!--section-->
   <string name="section_user_ids">身份</string>
+  <string name="section_security_token">安全口令</string>
   <string name="section_linked_system_contact">已關聯帳戶</string>
   <string name="section_should_you_trust">您信任這把金鑰嗎？</string>
   <string name="section_keys">子金鑰</string>
+  <string name="section_cloud_search">金鑰搜尋</string>
+  <string name="section_cloud_search_summary">金鑰伺服器, keybase.io</string>
+  <string name="section_passphrase_cache">密碼與 PIN 碼</string>
+  <string name="section_proxy_settings_summary">Tor,代理伺服器設定</string>
+  <string name="section_gui">介面</string>
+  <string name="section_sync_settings">同步</string>
+  <string name="section_experimental_features">實驗性功能</string>
   <string name="section_certify">確認</string>
   <string name="section_actions">操作</string>
   <string name="section_share_key">金鑰</string>
@@ -62,9 +72,13 @@
   <string name="btn_back">返回</string>
   <string name="btn_no">不</string>
   <string name="btn_match">指紋相符</string>
+  <string name="btn_match_phrases">口令相符</string>
   <string name="btn_view_cert_key">檢視簽署的金鑰</string>
   <string name="btn_create_key">建立金鑰</string>
   <string name="btn_add_files">加入檔案</string>
+  <string name="btn_share_decrypted_text">分享</string>
+  <string name="btn_open_with">用…開啟</string>
+  <string name="btn_copy_decrypted_text">複製到剪貼簿</string>
   <string name="btn_decrypt_clipboard">從剪貼簿中讀取</string>
   <string name="btn_decrypt_files">選擇要解密的檔案</string>
   <string name="btn_encrypt_files">加密檔案</string>
@@ -74,10 +88,16 @@
   <string name="btn_add_keyserver">加入新伺服器</string>
   <string name="btn_save_default">設為預設值</string>
   <string name="btn_saved">已儲存</string>
+  <string name="btn_not_matching">ㄅ</string>
   <!--Content Description-->
+  <string name="cd_encrypt_files">加密檔案</string>
+  <string name="cd_exchange_keys">交換金鑰</string>
+  <string name="cd_encrypt_text">加密文字</string>
+  <string name="cd_share_nfc">以 NFC 分享</string>
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">說明</string>
+  <string name="menu_export_key">備份金鑰</string>
   <string name="menu_delete_key">刪除金鑰</string>
   <string name="menu_manage_keys">管理我的金鑰</string>
   <string name="menu_search">搜尋</string>
@@ -87,6 +107,9 @@
   <string name="menu_select_all">全選</string>
   <string name="menu_export_all_keys">匯出所有金鑰</string>
   <string name="menu_update_all_keys">更新所有金鑰</string>
+  <string name="menu_advanced">進階</string>
+  <string name="menu_share_log">分享紀錄</string>
+  <string name="menu_change_password">修改密碼</string>
   <string name="menu_keyserver_add">新增</string>
   <!--label-->
   <string name="label_message">文字</string>
@@ -95,14 +118,17 @@
   <string name="label_file_colon">檔案：</string>
   <string name="label_no_passphrase">沒有密碼</string>
   <string name="label_passphrase">密碼</string>
+  <string name="label_pin">PIN碼</string>
   <string name="label_unlock">解鎖中...</string>
   <string name="label_passphrase_again">再次輸入密碼</string>
   <string name="label_show_passphrase">顯示密碼</string>
   <string name="label_algorithm">演算法</string>
+  <string name="label_ascii_armor">保護ASCII檔</string>
   <string name="label_file_ascii_armor">以ASCII輸出</string>
   <string name="label_write_version_header">讓別人知道我在使用OpenKeychain</string>
   <string name="label_write_version_header_summary">在簽名、密文與匯出的金鑰裡寫入\'OpenKeychain v2.7\'</string>
   <string name="label_asymmetric_from">簽名：</string>
+  <string name="label_to">加密到</string>
   <string name="label_delete_after_encryption">加密後刪除檔案</string>
   <string name="label_delete_after_decryption">解密後刪除檔案</string>
   <string name="label_encryption_algorithm">加密演算法</string>
@@ -113,6 +139,7 @@
   <string name="label_keyservers">選擇OpenPGP金鑰伺服器</string>
   <string name="label_key_id">金鑰ID</string>
   <string name="label_key_created">金鑰 %s 已建立</string>
+  <string name="label_key_type">類型</string>
   <string name="label_creation">建立</string>
   <string name="label_expiry">有效期限</string>
   <string name="label_usage">用途</string>
@@ -131,13 +158,22 @@
   <string name="label_enable_compression">啓用壓縮</string>
   <string name="label_encrypt_filenames">加密檔名</string>
   <string name="label_hidden_recipients">隱藏收件人</string>
+  <string name="label_only_trusted_keyserver">只有信任的金鑰伺服器</string>
+  <string name="label_enter_keyserver_url">網址</string>
   <string name="label_keyserver_dialog_delete">刪除金鑰伺服器</string>
   <string name="label_theme">主題</string>
   <string name="pref_keyserver">OpenPGP金鑰伺服器</string>
   <string name="pref_keyserver_summary">透過已選擇的金鑰伺服器搜尋金鑰(HKP 協定)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">在keybase.io上搜尋金鑰</string>
+  <string name="pref_facebook">Facebook</string>
+  <string name="pref_facebook_summary">在 Facebook 上以使用者名稱搜尋金鑰</string>
+  <string name="label_sync_settings_keyserver_summary_off">金鑰不會自動更新</string>
+  <string name="label_sync_settings_wifi_title">只以 Wi-Fi 同步</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="keyserver_sync_settings_title">自動金鑰同步</string>
+  <string name="label_experimental_settings_desc_title">警告</string>
+  <string name="label_experimental_settings_linked_identities_title">連結身份</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">啟用洋蔥(Tor)網路</string>
   <string name="pref_proxy_tor_summary">必須已安裝 Orbot</string>
@@ -151,16 +187,19 @@
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">不使用 Tor</string>
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_title">是否安裝Orbot以使用Tor?</string>
   <string name="orbot_install_dialog_install">安裝</string>
   <string name="orbot_install_dialog_content">您必須安裝Orbot並透過它進行網路代理。您是否要安裝Orbot？</string>
   <string name="orbot_install_dialog_cancel">取消</string>
+  <string name="orbot_install_dialog_ignore_tor">不使用 Tor</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">啟動Orbot?</string>
   <string name="orbot_start_btn">啟動Orbot</string>
   <string name="orbot_start_dialog_start">啟動Orbot</string>
   <string name="orbot_start_dialog_cancel">取消</string>
+  <string name="orbot_start_dialog_ignore_tor">不使用 Tor</string>
   <plurals name="n_keys">
     <item quantity="other">%d 金鑰</item>
   </plurals>
@@ -182,7 +221,12 @@
   <string name="choice_4hours">4小時</string>
   <string name="choice_8hours">8小時</string>
   <string name="choice_forever">永久</string>
+  <string name="choice_select_cert">選擇一個金鑰</string>
   <string name="filemanager_title_open">開啟…</string>
+  <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_4096">RSA 4096</string>
+  <string name="usage_encrypt">加密</string>
   <string name="error">錯誤</string>
   <string name="error_message">錯誤: %s</string>
   <string name="theme_dark">深色</string>
@@ -192,6 +236,7 @@
   <string name="no_filemanager_installed">找不到相容的檔案管理員。</string>
   <string name="passphrases_do_not_match">密碼不相符。</string>
   <string name="passphrase_must_not_be_empty">請輸入密碼。</string>
+  <string name="passphrase_for_symmetric_encryption">輸入密碼</string>
   <string name="passphrase_for">輸入 %s 的密碼</string>
   <string name="pin_for">輸入 \'%s\' 的 PIN</string>
   <string name="file_delete_confirmation_title">刪除原始檔案？</string>
@@ -352,6 +397,7 @@
   <string name="help_tab_changelog">更新紀錄</string>
   <string name="help_tab_about">關於</string>
   <string name="help_about_version">版本：</string>
+  <string name="help_tab_donations">捐贈</string>
   <!--Import-->
   <string name="import_tab_keyserver">金鑰伺服器</string>
   <string name="import_tab_direct">檔案/剪貼簿</string>
@@ -456,19 +502,29 @@
   <string name="del_rev_dialog_choice_delete">只刪除金鑰</string>
   <!--Key list-->
   <string name="key_list_empty_text1">找不到金鑰！</string>
+  <string name="key_list_filter_show_all">顯示所有金鑰</string>
+  <string name="key_list_filter_show_certified">只顯示已確認的金鑰</string>
+  <string name="key_list_fab_qr_code">掃描二維條碼</string>
+  <string name="key_list_fab_search">金鑰搜尋</string>
+  <string name="key_list_fab_import">從檔案匯入</string>
   <!--Key view-->
+  <string name="key_view_action_edit">編輯</string>
   <string name="key_view_action_encrypt">加密文字</string>
   <string name="key_view_action_encrypt_files">檔案</string>
+  <string name="key_view_action_certify">確認金鑰</string>
+  <string name="key_view_action_update">從金鑰伺服器更新</string>
   <string name="key_view_action_share_with">分享...</string>
   <string name="key_view_action_share_nfc">以NFC分享</string>
   <string name="key_view_action_upload">上傳到金鑰伺服器</string>
   <string name="key_view_tab_main">摘要</string>
+  <string name="key_view_tab_start">快速上手</string>
   <string name="key_view_tab_share">分享</string>
   <string name="key_view_tab_keys">子金鑰</string>
   <string name="key_view_tab_certs">簽署</string>
   <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">已撤銷</string>
   <string name="user_id_info_revoked_text">這個身分識別被金鑰持有人撤銷，已不再有效。</string>
+  <string name="user_id_info_certified_title">已確認</string>
   <string name="user_id_info_invalid_title">無效</string>
   <string name="user_id_info_invalid_text">這個身份有些錯誤！</string>
   <!--Key trust-->
@@ -548,6 +604,7 @@
   <string name="drawer_open">開啟導航列</string>
   <string name="drawer_close">關閉導航列</string>
   <string name="my_keys">我的金鑰</string>
+  <string name="nav_backup">備份/還原</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">輸入文字</string>
   <!--certs-->
@@ -645,6 +702,7 @@
   <string name="msg_import_fetch_keyserver_ok">成功取得金鑰</string>
   <string name="msg_import_keyserver">使用金鑰伺服器%s</string>
   <string name="msg_import_merge">正在合併取得的資料</string>
+  <string name="msg_backup_success">備份處理成功</string>
   <string name="msg_del_error_empty">沒有東西可以刪除！</string>
   <string name="msg_del_error_multi_secret">私鑰只能分別刪除！</string>
   <!--Linked Identity verification-->
@@ -654,10 +712,12 @@
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <!--Keyserver sync-->
+  <string name="keyserver_sync_orbot_notif_msg">按一下來啟動Orbot</string>
   <!--First Time-->
   <string name="first_time_create_key">建立金鑰</string>
   <string name="first_time_import_key">從檔案匯入金鑰</string>
   <string name="first_time_skip">跳過設置</string>
+  <string name="backup_section">備份</string>
   <!--unsorted-->
   <string name="empty_certs">這把金鑰未經過認證</string>
   <string name="certs_text">只有有效的自簽署認證以及經由你的金鑰簽署的有效認證會被顯示在這。</string>
@@ -666,7 +726,7 @@
   <string name="key_unavailable">無法使用</string>
   <string name="secret_cannot_multiple">您的金鑰只能個別地刪除！</string>
   <string name="title_view_cert">查看認證內容</string>
-  <string name="unknown">未知</string>
+  <string name="unknown_algorithm">未知</string>
   <string name="error_no_encrypt_subkey">沒有可供加密的子金鑰！</string>
   <string name="exchange_description">要發起金鑰交換，先在右邊選擇與會人數，然後點選〝開始交換〞。\n\n接下來會詢問你兩個問題，以確保會議成員與交換的指紋是正確的。</string>
   <string name="btn_start_exchange">開始交換</string>
@@ -684,4 +744,22 @@
   <string name="unlocked">解鎖</string>
   <string name="nfc_settings">設定</string>
   <!--Other Linked Identity strings-->
+  <string name="linked_button_confirm">確認</string>
+  <string name="linked_button_view">查看</string>
+  <string name="linked_text_verifying">驗證中...</string>
+  <string name="linked_text_error">錯誤</string>
+  <string name="linked_text_confirming">確認中...</string>
+  <string name="btn_backup_share">分享備份</string>
+  <string name="snack_backup_saved">備份已儲存</string>
+  <string name="snack_backup_exists">備份已存在</string>
+  <string name="btn_backup_back">返回確認</string>
+  <string name="share_log_dialog_share_button">分享</string>
+  <string name="share_log_dialog_cancel_button">取消</string>
+  <string name="menu_uids_save">儲存</string>
+  <string name="cache_ttl_forever">永久</string>
+  <string name="remember">記住</string>
+  <string name="prompt_fidesmo_pgp_install_title">安裝 PGP？</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">安裝</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">取消</string>
+  <string name="prompt_fidesmo_app_install_button_negative">取消</string>
 </resources>

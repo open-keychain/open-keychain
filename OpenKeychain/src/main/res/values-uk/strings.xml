@@ -483,7 +483,7 @@
   <string name="key_stripped">голий</string>
   <string name="secret_cannot_multiple">Ваші власні ключі можна вилучити лише окремо!</string>
   <string name="title_view_cert">Переглянути дані сертифікату</string>
-  <string name="unknown">невідомий</string>
+  <string name="unknown_algorithm">невідомий</string>
   <string name="can_sign_not">не можна підписати</string>
   <string name="error_no_encrypt_subkey">Жодний підключ шифрування недоступний!</string>
   <string name="contact_show_key">Показати ключ (%s)</string>
