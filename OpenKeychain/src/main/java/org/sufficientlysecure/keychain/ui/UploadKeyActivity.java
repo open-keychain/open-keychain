@@ -119,7 +119,9 @@ public class UploadKeyActivity extends BaseActivity
     }
 
     private void uploadKey() {
-        mKeyserver = (ParcelableHkpKeyserver) mKeyServerSpinner.getSelectedItem();
+        String keyserverUrl = (String) mKeyServerSpinner.getSelectedItem();
+        // TODO: Currently, not using onion addresses here!
+        mKeyserver = new ParcelableHkpKeyserver(keyserverUrl);
 
         mUploadOpHelper = new CryptoOperationHelper<>(1, this, this, R.string.progress_uploading);
         mUploadOpHelper.cryptoOperation();

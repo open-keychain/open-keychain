@@ -35,9 +35,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -51,7 +49,8 @@ import de.measite.minidns.Client;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
 import de.measite.minidns.record.SRV;
-import okhttp3.MediaType;
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -155,14 +154,6 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
         return getURI(mOnion);
     }
 
-    private URI getProxiedURL(ParcelableProxy proxy) throws URISyntaxException {
-        if (proxy.isTorEnabled()) {
-            return getOnionURI();
-        } else {
-            return getUrlURI();
-        }
-    }
-
     /**
      * @param keyserverUrl "<code>hostname</code>" (eg. "<code>pool.sks-keyservers.net</code>"), then it will
      *                     connect using {@link #PORT_DEFAULT}. However, port may be specified after colon
@@ -194,14 +185,30 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
                 originalURI.getPath(), originalURI.getQuery(), originalURI.getFragment());
     }
 
-    private String query(String request, @NonNull ParcelableProxy proxy) throws Keyserver.QueryFailedException, HttpError {
-        try {
-            URL url = new URL(getProxiedURL(proxy).toString() + request);
-            Log.d(Constants.TAG, "hkp keyserver query: " + url + " Proxy: " + proxy.getProxy());
-            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy.getProxy());
-            Response response = client.newCall(new Request.Builder().url(url).build()).execute();
+    private HttpUrl getHttpUrl(ParcelableProxy proxy) throws URISyntaxException {
+        HttpUrl base = proxy.isTorEnabled() ? HttpUrl.get(getOnionURI())
+                : HttpUrl.get(getUrlURI());
 
-            String responseBody = response.body().string(); // contains body both in case of success or failure
+        return base.newBuilder()
+                .addPathSegment("pks")
+                .build();
+    }
+
+    private String query(HttpUrl url, @NonNull ParcelableProxy proxy) throws Keyserver.QueryFailedException, HttpError {
+        try {
+            OkHttpClient client =
+                    OkHttpClientFactory.getClientPinnedIfAvailable(url.url(), proxy.getProxy());
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+
+            Response response = client
+                    .newCall(request)
+                    .execute();
+
+            // contains body both in case of success or failure
+            String responseBody = response.body().string();
 
             if (response.isSuccessful()) {
                 return responseBody;
@@ -215,9 +222,6 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
         } catch (TlsHelper.TlsHelperException e) {
             Log.e(Constants.TAG, "Exception in pinning certs", e);
             throw new Keyserver.QueryFailedException("Exception in pinning certs");
-        } catch (URISyntaxException e) {
-            Log.e(Constants.TAG, "Unsupported keyserver URI", e);
-            throw new Keyserver.QueryFailedException("Unsupported keyserver URI");
         }
     }
 
@@ -225,25 +229,27 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
      * Results are sorted by creation date of key!
      */
     @Override
-    public ArrayList<ImportKeysListEntry> search(String query, ParcelableProxy proxy) throws Keyserver.QueryFailedException,
-            Keyserver.QueryNeedsRepairException {
+    public ArrayList<ImportKeysListEntry> search(String query, ParcelableProxy proxy)
+            throws Keyserver.QueryFailedException, Keyserver.QueryNeedsRepairException {
         ArrayList<ImportKeysListEntry> results = new ArrayList<>();
 
         if (query.length() < 3) {
             throw new Keyserver.QueryTooShortException();
         }
 
-        String encodedQuery;
-        try {
-            encodedQuery = URLEncoder.encode(query, "UTF8");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
-        String request = "/pks/lookup?op=index&options=mr&search=" + encodedQuery;
-
         String data;
         try {
-            data = query(request, proxy);
+            HttpUrl url = getHttpUrl(proxy).newBuilder()
+                    .addPathSegment("lookup")
+                    .addQueryParameter("op", "index")
+                    .addQueryParameter("options", "mr")
+                    .addQueryParameter("search", query)
+                    .build();
+
+            data = query(url, proxy);
+        } catch (URISyntaxException e) {
+            Log.e(Constants.TAG, "Unsupported keyserver URI", e);
+            throw new Keyserver.QueryFailedException("Unsupported keyserver URI");
         } catch (HttpError e) {
             if (e.getData() != null) {
                 Log.d(Constants.TAG, "returned error data: " + e.getData().toLowerCase(Locale.ENGLISH));
@@ -359,11 +365,21 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
 
     @Override
     public String get(String keyIdHex, ParcelableProxy proxy) throws Keyserver.QueryFailedException {
-        String request = "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
-        Log.d(Constants.TAG, "hkp keyserver get: " + request + " using Proxy: " + proxy.getProxy());
         String data;
         try {
-            data = query(request, proxy);
+            HttpUrl url = getHttpUrl(proxy).newBuilder()
+                    .addPathSegment("lookup")
+                    .addQueryParameter("op", "get")
+                    .addQueryParameter("options", "mr")
+                    .addQueryParameter("search", keyIdHex)
+                    .build();
+
+            Log.d(Constants.TAG, "Keyserver get: " + url + " using Proxy: " + proxy.getProxy());
+
+            data = query(url, proxy);
+        } catch (URISyntaxException e) {
+            Log.e(Constants.TAG, "Unsupported keyserver URI", e);
+            throw new Keyserver.QueryFailedException("Unsupported keyserver URI");
         } catch (HttpError httpError) {
             Log.d(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
             throw new Keyserver.QueryFailedException("not found");
@@ -371,6 +387,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
         if (data == null) {
             throw new Keyserver.QueryFailedException("data is null");
         }
+
         Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(data);
         if (matcher.find()) {
             return matcher.group(1);
@@ -381,34 +398,27 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
     @Override
     public void add(String armoredKey, ParcelableProxy proxy) throws Keyserver.AddKeyException {
         try {
-            String path = "/pks/add";
-            String params;
-            try {
-                params = "keytext=" + URLEncoder.encode(armoredKey, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new Keyserver.AddKeyException();
-            }
-            URL url = new URL(getProxiedURL(proxy).toString() + path);
+            HttpUrl url = getHttpUrl(proxy).newBuilder()
+                    .addPathSegment("add")
+                    .build();
 
-            Log.d(Constants.TAG, "hkp keyserver add: " + url);
-            Log.d(Constants.TAG, "params: " + params);
-
-
-            RequestBody body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), params);
+            RequestBody formBody = new FormBody.Builder()
+                    .add("keytext", armoredKey)
+                    .build();
 
             Request request = new Request.Builder()
                     .url(url)
-                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                    .addHeader("Content-Length", Integer.toString(params.getBytes().length))
-                    .post(body)
+                    .post(formBody)
                     .build();
 
             Response response =
-                    OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy.getProxy())
-                            .newCall(request).execute();
+                    OkHttpClientFactory.getClientPinnedIfAvailable(url.url(), proxy.getProxy())
+                            .newCall(request)
+                            .execute();
 
-            Log.d(Constants.TAG, "response code: " + response.code());
-            Log.d(Constants.TAG, "answer: " + response.body().string());
+            Log.d(Constants.TAG, "Adding key with URL: " + url
+                    + ", response code: " + response.code()
+                    + ", body: " + response.body().string());
 
             if (response.code() != 200) {
                 throw new Keyserver.AddKeyException();
