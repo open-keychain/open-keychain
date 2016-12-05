@@ -40,13 +40,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
             android:visibility="@{status == I.STATUS_LOADED ? V.VISIBLE : V.GONE}">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
                 android:visibility="@{advanced || (number == 1) ? V.GONE : V.VISIBLE}">
 
                 <include
@@ -61,6 +61,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="16dp"
+                android:scrollbarStyle="outsideOverlay"
                 android:visibility="@{advanced || (number == 1) ? V.VISIBLE : V.GONE}" />
 
         </LinearLayout>
