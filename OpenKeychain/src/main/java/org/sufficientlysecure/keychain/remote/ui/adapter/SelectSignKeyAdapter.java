@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2016 Tobias Erthal
+ * Copyright (C) 2014-2016 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.sufficientlysecure.keychain.remote.ui.adapter;
 
 import android.content.Context;
@@ -40,7 +58,7 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
 
     @Override
     public long getItemId(int pos) {
-        if(pos < super.getItemCount()) {
+        if (pos < super.getItemCount()) {
             return super.getItemId(pos);
         } else {
             return RecyclerView.NO_ID;
@@ -72,18 +90,18 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if(holder.getItemViewType() == VIEW_TYPE_KEY) {
+        if (holder.getItemViewType() == VIEW_TYPE_KEY) {
             super.onBindViewHolder(holder, position);
         }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, KeyCursor cursor, String query) {
-        ((SignKeyItemHolder)holder).bind(cursor, query);
+        ((SignKeyItemHolder) holder).bind(cursor, query);
     }
 
     private class DummyViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener{
+            implements View.OnClickListener {
 
         public DummyViewHolder(View itemView) {
             super(itemView);
@@ -200,6 +218,7 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
 
     public interface SelectSignKeyListener {
         void onCreateKeyDummyClicked();
+
         void onSelectKeyItemClicked(long masterKeyId);
     }
 }

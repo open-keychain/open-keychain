@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.remote;
 
-
 import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,7 +47,6 @@ import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
 import org.sufficientlysecure.keychain.util.Log;
-
 
 public class KeychainExternalProvider extends ContentProvider implements SimpleContentResolverInterface {
     private static final int EMAIL_STATUS = 101;

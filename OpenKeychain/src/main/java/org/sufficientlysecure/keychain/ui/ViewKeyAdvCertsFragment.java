@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.CertSectionedListAdapter;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class ViewKeyAdvCertsFragment extends RecyclerFragment<CertSectionedListAdapter>

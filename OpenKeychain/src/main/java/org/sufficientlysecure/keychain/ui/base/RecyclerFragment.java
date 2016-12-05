@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.keychain.ui.util.recyclerview;
+package org.sufficientlysecure.keychain.ui.base;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -32,7 +32,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 

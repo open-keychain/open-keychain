@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2016 Tobias Erthal
+ * Copyright (C) 2014-2016 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.sufficientlysecure.keychain.remote.ui.adapter;
 
 import android.content.Context;
@@ -40,7 +58,7 @@ public class SelectEncryptKeyAdapter extends KeyCursorAdapter<SelectEncryptKeyAd
     }
 
     private void select(int position) {
-        if(!isSelected(position)) {
+        if (!isSelected(position)) {
             mSelected.add(position);
             notifyItemChanged(position);
         }
@@ -48,7 +66,7 @@ public class SelectEncryptKeyAdapter extends KeyCursorAdapter<SelectEncryptKeyAd
 
     private void switchSelected(int position) {
         int index = mSelected.indexOf(position);
-        if(index < 0) {
+        if (index < 0) {
             mSelected.add(position);
         } else {
             mSelected.remove(index);
@@ -59,9 +77,9 @@ public class SelectEncryptKeyAdapter extends KeyCursorAdapter<SelectEncryptKeyAd
 
     public long[] getMasterKeyIds() {
         long[] selected = new long[mSelected.size()];
-        for(int i = 0; i < selected.length; i++) {
+        for (int i = 0; i < selected.length; i++) {
             int position = mSelected.get(i);
-            if(!moveCursor(position)) {
+            if (!moveCursor(position)) {
                 return selected;
             }
 
@@ -72,22 +90,23 @@ public class SelectEncryptKeyAdapter extends KeyCursorAdapter<SelectEncryptKeyAd
     }
 
     public void preselectMasterKeyIds(long[] keyIds) {
-        if(keyIds != null) {
+        if (keyIds != null) {
             int count = 0;
-            for(int i = 0; i < getItemCount(); i++) {
-                if(!moveCursor(i)) {
+            for (int i = 0; i < getItemCount(); i++) {
+                if (!moveCursor(i)) {
                     continue;
                 }
 
                 long id = getCursor().getKeyId();
-                for(int l = 0; l < keyIds.length; l++) {
-                    if(id == keyIds[l]) {
-                        select(i); count ++;
+                for (long keyId : keyIds) {
+                    if (id == keyId) {
+                        select(i);
+                        count++;
                         break;
                     }
                 }
 
-                if(count >= keyIds.length) {
+                if (count >= keyIds.length) {
                     return;
                 }
             }
@@ -96,9 +115,9 @@ public class SelectEncryptKeyAdapter extends KeyCursorAdapter<SelectEncryptKeyAd
 
     public String[] getRawUserIds() {
         String[] selected = new String[mSelected.size()];
-        for(int i = 0; i < selected.length; i++) {
+        for (int i = 0; i < selected.length; i++) {
             int position = mSelected.get(i);
-            if(!moveCursor(position)) {
+            if (!moveCursor(position)) {
                 return selected;
             }
 
@@ -110,9 +129,9 @@ public class SelectEncryptKeyAdapter extends KeyCursorAdapter<SelectEncryptKeyAd
 
     public OpenPgpUtils.UserId[] getUserIds() {
         OpenPgpUtils.UserId[] selected = new OpenPgpUtils.UserId[mSelected.size()];
-        for(int i = 0; i < selected.length; i++) {
+        for (int i = 0; i < selected.length; i++) {
             int position = mSelected.get(i);
-            if(!moveCursor(position)) {
+            if (!moveCursor(position)) {
                 return selected;
             }
 

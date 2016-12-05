@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;

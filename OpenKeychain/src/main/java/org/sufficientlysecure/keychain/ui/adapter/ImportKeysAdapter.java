@@ -55,7 +55,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder> implements ImportKeysResultListener {
+public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder>
+        implements ImportKeysResultListener {
 
     private FragmentActivity mActivity;
     private ImportKeysResultListener mListener;

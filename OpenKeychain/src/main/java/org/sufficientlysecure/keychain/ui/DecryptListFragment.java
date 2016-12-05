@@ -169,7 +169,6 @@ public class DecryptListFragment
         vFilesList.addItemDecoration(new SpacesItemDecoration(
                 FormattingUtils.dpToPx(getActivity(), 4)));
         vFilesList.setHasFixedSize(true);
-        // TODO make this a grid, for tablets!
         vFilesList.setLayoutManager(new LinearLayoutManager(getActivity()));
         vFilesList.setItemAnimator(new DefaultItemAnimator() {
             @Override
@@ -209,7 +208,6 @@ public class DecryptListFragment
         // this does not save mCurrentInputUri - if anything is being
         // processed at fragment recreation time, the operation in
         // progress will be lost!
-
     }
 
     @Override

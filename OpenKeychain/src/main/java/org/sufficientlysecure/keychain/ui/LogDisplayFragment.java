@@ -19,39 +19,24 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.tonicartos.superslim.LayoutManager;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.adapter.NestedLogAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.ShareLogDialogFragment;
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 
 import java.io.IOException;
 import java.io.OutputStream;

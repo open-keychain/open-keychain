@@ -1,5 +1,22 @@
-package org.sufficientlysecure.keychain.ui.adapter;
+/*
+ * Copyright (C) 2016 Tobias Erthal
+ * Copyright (C) 2014-2016 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
+package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -17,10 +34,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-
 public class KeySelectableAdapter extends KeyAdapter implements OnItemClickListener {
 
-    HashSet<Long> mSelectedItems = new HashSet<>();
+    private HashSet<Long> mSelectedItems = new HashSet<>();
 
     public KeySelectableAdapter(Context context, Cursor c, int flags, Set<Long> initialChecked) {
         super(context, c, flags);
@@ -73,7 +89,6 @@ public class KeySelectableAdapter extends KeyAdapter implements OnItemClickListe
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.d(Constants.TAG, "clicked id: " + id);
         long masterKeyId = getMasterKeyId(position);
         if (mSelectedItems.contains(masterKeyId)) {
             mSelectedItems.remove(masterKeyId);

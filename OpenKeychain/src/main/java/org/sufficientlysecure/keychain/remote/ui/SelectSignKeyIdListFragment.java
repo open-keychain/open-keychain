@@ -39,7 +39,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.remote.ui.adapter.SelectSignKeyAdapter;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyAdapter>

@@ -18,7 +18,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -42,7 +41,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-
 
 public class ViewKeySecurityTokenFragment
         extends QueueingCryptoOperationFragment<PromoteKeyringParcel, PromoteKeyResult>

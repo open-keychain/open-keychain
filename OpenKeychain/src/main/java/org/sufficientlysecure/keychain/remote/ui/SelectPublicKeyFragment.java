@@ -48,7 +48,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.remote.ui.adapter.SelectEncryptKeyAdapter;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 
 public class SelectPublicKeyFragment extends RecyclerFragment<SelectEncryptKeyAdapter>
         implements TextWatcher, LoaderManager.LoaderCallbacks<Cursor> {

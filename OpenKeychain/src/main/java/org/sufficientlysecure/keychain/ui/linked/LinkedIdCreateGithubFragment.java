@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
  */
 
 package org.sufficientlysecure.keychain.ui.linked;
-
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -81,7 +80,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator.Status;
 import org.sufficientlysecure.keychain.util.Log;
-
 
 public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKeyringParcel,EditKeyResult> {
 
