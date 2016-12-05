@@ -3,3 +3,7 @@ platform:
     'com.nispok:snackbar':
       tests:
         deprecated: skip
+    'com.cocosw:bottomsheet':
+      tests:
+        deprecated: skip
+        unlicensed: skip
