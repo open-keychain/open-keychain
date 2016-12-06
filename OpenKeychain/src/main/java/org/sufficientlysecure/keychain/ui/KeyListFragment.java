@@ -197,7 +197,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
 
     /**
-     * Load custom layout with StickyListView from library
+     * Load custom layout
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -319,11 +319,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         }
 
         // The list should now be shown.
-        if (isResumed()) {
-            showList(true);
-        } else {
-            showList(false);
-        }
+        showList(isResumed());
     }
 
     @Override
@@ -380,16 +376,15 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
-            case R.id.menu_key_list_create:
+            case R.id.menu_key_list_create: {
                 createKey();
                 return true;
-
-            case R.id.menu_key_list_update_all_keys:
+            }
+            case R.id.menu_key_list_update_all_keys: {
                 updateAllKeys();
                 return true;
-
-            case R.id.menu_key_list_debug_read:
+            }
+            case R.id.menu_key_list_debug_read: {
                 try {
                     KeychainDatabase.debugBackup(getActivity(), true);
                     Notify.create(getActivity(), "Restored debug_backup.db", Notify.Style.OK).show();
@@ -399,8 +394,8 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                     Notify.create(getActivity(), "IO Error " + e.getMessage(), Notify.Style.ERROR).show();
                 }
                 return true;
-
-            case R.id.menu_key_list_debug_write:
+            }
+            case R.id.menu_key_list_debug_write: {
                 try {
                     KeychainDatabase.debugBackup(getActivity(), false);
                     Notify.create(getActivity(), "Backup to debug_backup.db completed", Notify.Style.OK).show();
@@ -409,8 +404,8 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                     Notify.create(getActivity(), "IO Error: " + e.getMessage(), Notify.Style.ERROR).show();
                 }
                 return true;
-
-            case R.id.menu_key_list_debug_first_time:
+            }
+            case R.id.menu_key_list_debug_first_time: {
                 Preferences prefs = Preferences.getPreferences(getActivity());
                 prefs.setFirstTime(true);
                 Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
@@ -418,17 +413,18 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                 startActivity(intent);
                 getActivity().finish();
                 return true;
-
-            case R.id.menu_key_list_debug_cons:
+            }
+            case R.id.menu_key_list_debug_cons: {
                 consolidate();
                 return true;
-
-            case R.id.menu_key_list_debug_bench:
+            }
+            case R.id.menu_key_list_debug_bench: {
                 benchmark();
                 return true;
-
-            default:
+            }
+            default: {
                 return super.onOptionsItemSelected(item);
+            }
         }
     }
 
