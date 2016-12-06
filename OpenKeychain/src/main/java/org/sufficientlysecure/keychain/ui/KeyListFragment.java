@@ -77,8 +77,7 @@ import java.util.ArrayList;
 
 public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         implements SearchView.OnQueryTextListener,
-        LoaderManager.LoaderCallbacks<Cursor>, FabContainer,
-        CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
+        LoaderManager.LoaderCallbacks<Cursor>, FabContainer {
 
     static final int REQUEST_ACTION = 1;
     private static final int REQUEST_DELETE = 2;
@@ -515,7 +514,35 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         // search config
         mKeyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
 
-        mImportOpHelper = new CryptoOperationHelper<>(1, this, this, R.string.progress_updating);
+        CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> callback
+                = new CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult>() {
+
+            @Override
+            public ImportKeyringParcel createOperationInput() {
+                return new ImportKeyringParcel(mKeyList, mKeyserver);
+            }
+
+            @Override
+            public void onCryptoOperationSuccess(ImportKeyResult result) {
+                result.createNotify(getActivity()).show();
+            }
+
+            @Override
+            public void onCryptoOperationCancelled() {
+            }
+
+            @Override
+            public void onCryptoOperationError(ImportKeyResult result) {
+                result.createNotify(getActivity()).show();
+            }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
+        };
+
+        mImportOpHelper = new CryptoOperationHelper<>(1, this, callback, R.string.progress_updating);
         mImportOpHelper.setProgressCancellable(true);
         mImportOpHelper.cryptoOperation();
     }
@@ -536,7 +563,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
             @Override
             public void onCryptoOperationCancelled() {
-
             }
 
             @Override
@@ -570,7 +596,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
             @Override
             public void onCryptoOperationCancelled() {
-
             }
 
             @Override
@@ -651,29 +676,4 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         anim.start();
     }
 
-    // CryptoOperationHelper.Callback methods
-    @Override
-    public ImportKeyringParcel createOperationInput() {
-        return new ImportKeyringParcel(mKeyList, mKeyserver);
-    }
-
-    @Override
-    public void onCryptoOperationSuccess(ImportKeyResult result) {
-        result.createNotify(getActivity()).show();
-    }
-
-    @Override
-    public void onCryptoOperationCancelled() {
-
-    }
-
-    @Override
-    public void onCryptoOperationError(ImportKeyResult result) {
-        result.createNotify(getActivity()).show();
-    }
-
-    @Override
-    public boolean onCryptoSetProgress(String msg, int progress, int max) {
-        return false;
-    }
 }
