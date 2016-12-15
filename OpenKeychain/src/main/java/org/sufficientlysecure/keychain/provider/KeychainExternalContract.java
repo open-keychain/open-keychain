@@ -36,6 +36,7 @@ public class KeychainExternalContract {
     public static final String BASE_EMAIL_STATUS = "email_status";
 
     public static class EmailStatus implements BaseColumns {
+        public static final String QUERY_STRING = "query_string";
         public static final String EMAIL_ADDRESS = "email_address";
         public static final String EMAIL_STATUS = "email_status";
 
