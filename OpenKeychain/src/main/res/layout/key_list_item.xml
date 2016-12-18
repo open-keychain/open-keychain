@@ -11,7 +11,8 @@
     android:orientation="horizontal"
     android:descendantFocusability="blocksDescendants"
     android:background="@drawable/list_item_ripple"
-    android:focusable="false">
+    android:focusable="false"
+    tools:layout_marginTop="30dp">
 
     <LinearLayout
         android:id="@+id/key_list_item_data"
@@ -24,8 +25,7 @@
         android:paddingLeft="8dp"
         android:paddingRight="4dp"
         android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        tools:visibility="gone">
+        android:paddingBottom="4dp">
 
         <TextView
             android:id="@+id/key_list_item_name"
@@ -56,11 +56,25 @@
     </LinearLayout>
 
     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:id="@+id/key_list_item_tid_icon"
+        android:gravity="center_vertical">
+
+        <!--
+        <include layout="@layout/trust_id_icon" />
+        -->
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/key_list_item_slinger_view"
         android:layout_width="wrap_content"
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:layout_gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:visibility="gone">
 
         <View
             android:layout_width="1dip"

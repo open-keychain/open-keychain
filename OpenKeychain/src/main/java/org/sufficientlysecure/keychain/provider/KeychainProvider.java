@@ -342,6 +342,9 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.IS_EXPIRED,
                         "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
                                 + " < " + new Date().getTime() / 1000 + ") AS " + KeyRings.IS_EXPIRED);
+                projectionMap.put(KeyRings.API_KNOWN_TO_PACKAGE_NAMES,
+                        "GROUP_CONCAT(aTI." + ApiTrustIdentity.PACKAGE_NAME + ") AS "
+                        + KeyRings.API_KNOWN_TO_PACKAGE_NAMES);
                 qb.setProjectionMap(projectionMap);
 
                 if (projection == null) {
@@ -410,6 +413,11 @@ public class KeychainProvider extends ContentProvider {
                                 + " AND ( kC." + Keys.EXPIRY + " IS NULL OR kC." + Keys.EXPIRY
                                 + " >= " + new Date().getTime() / 1000 + " )"
                                 + ")" : "")
+                        + (plist.contains(KeyRings.API_KNOWN_TO_PACKAGE_NAMES) ?
+                            " LEFT JOIN " + Tables.API_TRUST_IDENTITIES + " AS aTI ON ("
+                                    +"aTI." + Keys.MASTER_KEY_ID
+                                    + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                    + ")" : "")
                     );
                 qb.appendWhere(Tables.KEYS + "." + Keys.RANK + " = 0");
                 // in case there are multiple verifying certificates
