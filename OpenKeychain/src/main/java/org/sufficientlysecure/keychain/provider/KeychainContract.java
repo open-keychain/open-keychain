@@ -144,6 +144,7 @@ public class KeychainContract {
         public static final String HAS_CERTIFY = "has_certify";
         public static final String HAS_AUTHENTICATE = "has_authenticate";
         public static final String HAS_DUPLICATE_USER_ID = "has_duplicate_user_id";
+        public static final String API_KNOWN_TO_PACKAGE_NAMES = "known_to_apps";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();

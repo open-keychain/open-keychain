@@ -19,10 +19,13 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -38,6 +41,7 @@ import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -47,6 +51,8 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedListAdapter.KeyListCursor, Character,
@@ -348,12 +354,13 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
     public class KeyItemViewHolder extends SectionCursorAdapter.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
 
-        private TextView mMainUserId;
-        private TextView mMainUserIdRest;
-        private TextView mCreationDate;
-        private ImageView mStatus;
-        private View mSlinger;
-        private ImageButton mSlingerButton;
+        private final ViewGroup mTrustIdIcons;
+        private final TextView mMainUserId;
+        private final TextView mMainUserIdRest;
+        private final TextView mCreationDate;
+        private final ImageView mStatus;
+        private final View mSlinger;
+        private final ImageButton mSlingerButton;
 
         KeyItemViewHolder(View itemView) {
             super(itemView);
@@ -364,6 +371,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             mSlinger = itemView.findViewById(R.id.key_list_item_slinger_view);
             mSlingerButton = (ImageButton) itemView.findViewById(R.id.key_list_item_slinger_button);
             mCreationDate = (TextView) itemView.findViewById(R.id.key_list_item_creation);
+            mTrustIdIcons = (ViewGroup) itemView.findViewById(R.id.key_list_item_tid_icon);
 
             itemView.setClickable(true);
             itemView.setLongClickable(true);
@@ -485,6 +493,31 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                 } else {
                     mCreationDate.setVisibility(View.GONE);
                 }
+            }
+
+            { // set icons
+                List<String> packageNames = keyItem.getTrustIdPackages();
+
+                LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+                while (mTrustIdIcons.getChildCount() < packageNames.size()) {
+                    layoutInflater.inflate(R.layout.trust_id_icon, mTrustIdIcons, true);
+                }
+
+                int visibleIcons = 0;
+                for (int i = 0; i < packageNames.size(); i++) {
+                    ImageView imageView = (ImageView) mTrustIdIcons.getChildAt(i);
+                    Drawable drawable = getDrawableForPackageName(packageNames.get(i));
+                    if (drawable == null) {
+                        continue;
+                    }
+
+                    imageView.setImageDrawable(drawable);
+                    imageView.setVisibility(View.VISIBLE);
+                    visibleIcons += 1;
+                }
+                for (int i = visibleIcons; i < mTrustIdIcons.getChildCount(); i++) {
+                    mTrustIdIcons.getChildAt(i).setVisibility(View.GONE);
+                }
 
             }
         }
@@ -562,7 +595,8 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                     KeychainContract.KeyRings.VERIFIED,
                     KeychainContract.KeyRings.HAS_ANY_SECRET,
                     KeychainContract.KeyRings.FINGERPRINT,
-                    KeychainContract.KeyRings.HAS_ENCRYPT
+                    KeychainContract.KeyRings.HAS_ENCRYPT,
+                    KeychainContract.KeyRings.API_KNOWN_TO_PACKAGE_NAMES
             ));
 
             PROJECTION = arr.toArray(new String[arr.size()]);
@@ -603,6 +637,15 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             int index = getColumnIndexOrThrow(KeychainContract.KeyRings.VERIFIED);
             return getInt(index) > 0;
         }
+
+        public List<String> getTrustIdPackages() {
+            int index = getColumnIndexOrThrow(KeyRings.API_KNOWN_TO_PACKAGE_NAMES);
+            String packageNames = getString(index);
+            if (packageNames == null) {
+                return Collections.EMPTY_LIST;
+            }
+            return Arrays.asList(packageNames.split(","));
+        }
     }
 
     public interface KeyListListener {
@@ -613,5 +656,25 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
         void onSlingerButtonClicked(long masterKeyId);
 
         void onSelectionStateChanged(int selectedCount);
+    }
+
+    private HashMap<String, Drawable> appIconCache = new HashMap<>();
+
+    private Drawable getDrawableForPackageName(String packageName) {
+        if (appIconCache.containsKey(packageName)) {
+            return appIconCache.get(packageName);
+        }
+
+        PackageManager pm = getContext().getPackageManager();
+        try {
+            ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
+
+            Drawable appIcon = pm.getApplicationIcon(ai);
+            appIconCache.put(packageName, appIcon);
+
+            return appIcon;
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
     }
 }
