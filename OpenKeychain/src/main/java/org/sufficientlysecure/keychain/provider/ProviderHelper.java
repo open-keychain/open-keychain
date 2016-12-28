@@ -1001,11 +1001,12 @@ public class ProviderHelper {
             }
 
             int result;
-            if (!skipSave) {
-                result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);
-            } else {
+            if (skipSave) {
+                // skip save method, set fixed result
                 result = SaveKeyringResult.SAVED_PUBLIC
                         | (alreadyExists ? SaveKeyringResult.UPDATED : 0);
+            } else {
+                result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);
             }
 
             // Save the saved keyring (if any)
@@ -1013,10 +1014,11 @@ public class ProviderHelper {
                 progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
 
                 int secretResult;
-                if (!skipSave) {
-                    secretResult = saveCanonicalizedSecretKeyRing(canSecretRing);
-                } else {
+                if (skipSave) {
+                    // skip save method, set fixed result
                     secretResult = SaveKeyringResult.SAVED_SECRET;
+                } else {
+                    secretResult = saveCanonicalizedSecretKeyRing(canSecretRing);
                 }
 
                 if ((secretResult & SaveKeyringResult.RESULT_ERROR) != SaveKeyringResult.RESULT_ERROR) {
@@ -1138,10 +1140,11 @@ public class ProviderHelper {
             }
 
             int publicResult;
-            if (!skipSave) {
-                publicResult = saveCanonicalizedPublicKeyRing(canPublicRing, progress, true);
-            } else {
+            if (skipSave) {
+                // skip save method, set fixed result
                 publicResult = SaveKeyringResult.SAVED_PUBLIC;
+            } else {
+                publicResult = saveCanonicalizedPublicKeyRing(canPublicRing, progress, true);
             }
 
             if ((publicResult & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
@@ -1151,11 +1154,12 @@ public class ProviderHelper {
             progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
 
             int result;
-            if (!skipSave) {
-                result = saveCanonicalizedSecretKeyRing(canSecretRing);
-            } else {
+            if (skipSave) {
+                // skip save method, set fixed result
                 result = SaveKeyringResult.SAVED_SECRET
                         | (alreadyExists ? SaveKeyringResult.UPDATED : 0);
+            } else {
+                result = saveCanonicalizedSecretKeyRing(canSecretRing);
             }
 
             return new SaveKeyringResult(result, mLog, canSecretRing);
