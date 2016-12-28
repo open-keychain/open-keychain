@@ -477,6 +477,9 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                 new ExecutorCompletionService<>(importExecutor);
 
         while (keyListIterator.hasNext()) { // submit all key rings to be imported
+
+            final ParcelableKeyRing pkRing = keyListIterator.next();
+
             Callable<ImportKeyResult> importOperationCallable = new Callable<ImportKeyResult>
                     () {
 
@@ -487,7 +490,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     }
 
                     ArrayList<ParcelableKeyRing> list = new ArrayList<>();
-                    list.add(keyListIterator.next());
+                    list.add(pkRing);
                     ProgressScaler ignoreProgressable = new ProgressScaler();
 
                     return serialKeyRingImport(list.iterator(), 1, keyServer, ignoreProgressable,
