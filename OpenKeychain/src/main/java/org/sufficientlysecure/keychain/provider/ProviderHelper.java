@@ -906,9 +906,11 @@ public class ProviderHelper {
 
     /**
      * Save a public keyring into the database.
-     * <p/>
+     * <p>
      * This is a high level method, which takes care of merging all new information into the old and
      * keep public and secret keyrings in sync.
+     * <p>
+     * If you want to merge keys in-memory only and not save in database set skipSave=true.
      */
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, Progressable progress,
                                                String expectedFingerprint,
