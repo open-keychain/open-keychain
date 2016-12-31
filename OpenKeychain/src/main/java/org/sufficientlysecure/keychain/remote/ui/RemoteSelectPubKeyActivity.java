@@ -103,7 +103,7 @@ public class RemoteSelectPubKeyActivity extends BaseActivity {
                     public void onClick(View v) {
                         // add key ids to params Bundle for new request
                         Intent resultData = extras.getParcelable(EXTRA_DATA);
-                        resultData.putExtra(OpenPgpApi.EXTRA_KEY_IDS,
+                        resultData.putExtra(OpenPgpApi.EXTRA_KEY_IDS_SELECTED,
                                 mSelectFragment.getSelectedMasterKeyIds());
 
                         RemoteSelectPubKeyActivity.this.setResult(RESULT_OK, resultData);

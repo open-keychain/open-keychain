@@ -131,14 +131,12 @@ public class OpenPgpService extends Service {
     }
 
     private KeyIdResult returnKeyIdsFromEmails(Intent data, String[] encryptionUserIds, boolean isOpportunistic) {
-        boolean noUserIdsCheck = (encryptionUserIds == null || encryptionUserIds.length == 0);
-        boolean missingUserIdsCheck = false;
-        boolean duplicateUserIdsCheck = false;
+        boolean hasUserIds = (encryptionUserIds != null && encryptionUserIds.length > 0);
 
         HashSet<Long> keyIds = new HashSet<>();
         ArrayList<String> missingEmails = new ArrayList<>();
         ArrayList<String> duplicateEmails = new ArrayList<>();
-        if (!noUserIdsCheck) {
+        if (hasUserIds) {
             for (String rawUserId : encryptionUserIds) {
                 OpenPgpUtils.UserId userId = KeyRing.splitUserId(rawUserId);
                 String email = userId.email != null ? userId.email : rawUserId;
@@ -151,19 +149,17 @@ public class OpenPgpService extends Service {
                         long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
                         keyIds.add(id);
                     } else {
-                        missingUserIdsCheck = true;
                         missingEmails.add(email);
                         Log.d(Constants.TAG, "user id missing");
                     }
                     // another entry for this email -> two keys with the same email inside user id
                     if (cursor != null && cursor.moveToNext()) {
-                        duplicateUserIdsCheck = true;
                         duplicateEmails.add(email);
 
                         // also pre-select
-                        long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
-                        keyIds.add(id);
-                        Log.d(Constants.TAG, "more than one user id with the same email");
+                         long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
+                         keyIds.add(id);
+                         Log.d(Constants.TAG, "more than one user id with the same email");
                     }
                 } finally {
                     if (cursor != null) {
@@ -173,7 +169,9 @@ public class OpenPgpService extends Service {
             }
         }
 
-        if (isOpportunistic && (noUserIdsCheck || missingUserIdsCheck)) {
+        boolean hasMissingUserIds = !missingEmails.isEmpty();
+        boolean hasDuplicateUserIds = !duplicateEmails.isEmpty();
+        if (isOpportunistic && (!hasUserIds || hasMissingUserIds)) {
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.OPPORTUNISTIC_MISSING_KEYS, "missing keys in opportunistic mode"));
@@ -181,12 +179,12 @@ public class OpenPgpService extends Service {
             return new KeyIdResult(result);
         }
 
-        if (noUserIdsCheck || missingUserIdsCheck || duplicateUserIdsCheck) {
+        if (!hasUserIds || hasMissingUserIds || hasDuplicateUserIds) {
             // convert ArrayList<Long> to long[]
             long[] keyIdsArray = getUnboxedLongArray(keyIds);
             ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
             PendingIntent pi = piFactory.createSelectPublicKeyPendingIntent(data, keyIdsArray,
-                    missingEmails, duplicateEmails, noUserIdsCheck);
+                    missingEmails, duplicateEmails, hasUserIds);
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -197,7 +195,7 @@ public class OpenPgpService extends Service {
 
         // everything was easy, we have exactly one key for every email
         if (keyIds.isEmpty()) {
-            Log.e(Constants.TAG, "keyIdsArray.length == 0, should never happen!");
+            throw new AssertionError("keyIdsArray.length == 0, should never happen!");
         }
 
         return new KeyIdResult(keyIds);
@@ -321,9 +319,12 @@ public class OpenPgpService extends Service {
             long[] keyIds;
             {
                 HashSet<Long> encryptKeyIds = new HashSet<>();
-
-                // get key ids based on given user ids
-                if (data.hasExtra(OpenPgpApi.EXTRA_USER_IDS)) {
+                boolean hasKeysFromSelectPubkeyActivity = data.hasExtra(OpenPgpApi.EXTRA_KEY_IDS_SELECTED);
+                if (hasKeysFromSelectPubkeyActivity) {
+                    for (long keyId : data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS_SELECTED)) {
+                        encryptKeyIds.add(keyId);
+                    }
+                } else if (data.hasExtra(OpenPgpApi.EXTRA_USER_IDS)) {
                     String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
                     boolean isOpportunistic = data.getBooleanExtra(OpenPgpApi.EXTRA_OPPORTUNISTIC_ENCRYPTION, false);
                     // give params through to activity...
