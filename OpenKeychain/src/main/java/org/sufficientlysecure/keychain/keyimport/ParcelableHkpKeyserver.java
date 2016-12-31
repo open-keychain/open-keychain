@@ -18,17 +18,6 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.annotation.NonNull;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
-import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -36,6 +25,7 @@ import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +35,10 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import de.measite.minidns.Client;
 import de.measite.minidns.Question;
@@ -56,6 +50,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
+import org.sufficientlysecure.keychain.util.TlsHelper;
 
 public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
 
@@ -126,6 +127,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
 
     private static final short PORT_DEFAULT = 11371;
     private static final short PORT_DEFAULT_HKPS = 443;
+    private static final Charset UTF_8 = Charset.forName("utf-8");
 
     private String mUrl;
     private String mOnion;
@@ -209,7 +211,13 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
                     .execute();
 
             // contains body both in case of success or failure
-            String responseBody = response.body().string();
+            String responseBody;
+            byte[] responseBytes = response.body().bytes();
+            try {
+                responseBody = new String(responseBytes, response.body().contentType().charset(UTF_8));
+            } catch (UnsupportedCharsetException e) {
+                responseBody = new String(responseBytes, UTF_8);
+            }
 
             if (response.isSuccessful()) {
                 return responseBody;
