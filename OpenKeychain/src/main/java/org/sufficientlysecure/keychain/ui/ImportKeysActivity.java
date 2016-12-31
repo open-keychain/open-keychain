@@ -359,13 +359,13 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
         }
 
         ImportKeyringParcel inputParcel = new ImportKeyringParcel(null, null);
-        ImportKeysOperationCallback callback = new ImportKeysOperationCallback(this, inputParcel);
+        ImportKeysOperationCallback callback = new ImportKeysOperationCallback(this, inputParcel, null);
         mOpHelper = new CryptoOperationHelper<>(1, this, callback, R.string.progress_importing);
         mOpHelper.cryptoOperation();
     }
 
     @Override
-    public void handleResult(ImportKeyResult result) {
+    public void handleResult(ImportKeyResult result, Integer position) {
         String intentAction = getIntent().getAction();
 
         if (ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(intentAction)

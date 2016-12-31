@@ -24,15 +24,18 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 public class ImportKeysOperationCallback implements
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
-    private ImportKeysResultListener mResultListener;
-    private ImportKeyringParcel mKeyringParcel;
+    private final ImportKeysResultListener mResultListener;
+    private final ImportKeyringParcel mKeyringParcel;
+    private final Integer mPosition;
 
     public ImportKeysOperationCallback(
             ImportKeysResultListener resultListener,
-            ImportKeyringParcel inputParcel
+            ImportKeyringParcel inputParcel,
+            Integer position
     ) {
         this.mResultListener = resultListener;
         this.mKeyringParcel = inputParcel;
+        this.mPosition = position;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class ImportKeysOperationCallback implements
 
     @Override
     public void onCryptoOperationSuccess(ImportKeyResult result) {
-        mResultListener.handleResult(result);
+        mResultListener.handleResult(result, mPosition);
     }
 
     @Override
@@ -52,7 +55,7 @@ public class ImportKeysOperationCallback implements
 
     @Override
     public void onCryptoOperationError(ImportKeyResult result) {
-        mResultListener.handleResult(result);
+        mResultListener.handleResult(result, mPosition);
     }
 
     @Override

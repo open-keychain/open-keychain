@@ -21,6 +21,6 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 
 public interface ImportKeysResultListener {
 
-    void handleResult(ImportKeyResult result);
+    void handleResult(ImportKeyResult result, Integer position);
 
 }
