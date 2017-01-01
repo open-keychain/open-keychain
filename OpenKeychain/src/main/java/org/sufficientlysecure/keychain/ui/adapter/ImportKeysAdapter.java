@@ -64,7 +64,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     private List<ImportKeysListEntry> mData;
     private KeyState[] mKeyStates;
-    private int mCurrent;
 
     private ProviderHelper mProviderHelper;
 
@@ -83,9 +82,9 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
         mKeyStates = new KeyState[data.size()];
         for (int i = 0; i < mKeyStates.length; i++) {
-            mKeyStates[i] = new KeyState();
-
             ImportKeysListEntry entry = mData.get(i);
+
+            KeyState keyState = new KeyState();
             long keyId = KeyFormattingUtils.convertKeyIdHexToKeyId(entry.getKeyIdHex());
             try {
                 KeyRing keyRing;
@@ -94,15 +93,16 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 } else {
                     keyRing = mProviderHelper.getCachedPublicKeyRing(keyId);
                 }
-                mKeyStates[i].mAlreadyPresent = true;
-                mKeyStates[i].mVerified = keyRing.getVerified() > 0;
+                keyState.mAlreadyPresent = true;
+                keyState.mVerified = keyRing.getVerified() > 0;
             } catch (ProviderHelper.NotFoundException | PgpKeyNotFoundException ignored) {
             }
+
+            mKeyStates[i] = keyState;
         }
 
         // If there is only one key, get it automatically
         if (mData.size() == 1) {
-            mCurrent = 0;
             getKeyWithProgress(0, mData.get(0), true);
         }
 
@@ -164,8 +164,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             @Override
             public void onClick(View v) {
                 if (!keyState.mDownloaded) {
-                    mCurrent = position;
-
                     getKeyWithProgress(position, entry, true);
                 } else {
                     changeShowed(position, !keyState.mShowed);
@@ -202,13 +200,13 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
 
     private void getKeyWithProgress(int position, ImportKeysListEntry entry, boolean skipSave) {
         changeProgress(position, true);
-        getKey(entry, skipSave);
+        getKey(position, entry, skipSave);
     }
 
-    private void getKey(ImportKeysListEntry entry, boolean skipSave) {
+    private void getKey(int position, ImportKeysListEntry entry, boolean skipSave) {
         ImportKeyringParcel inputParcel = prepareKeyOperation(entry, skipSave);
         ImportKeysResultListener listener = skipSave ? this : mListener;
-        ImportKeysOperationCallback cb = new ImportKeysOperationCallback(listener, inputParcel);
+        ImportKeysOperationCallback cb = new ImportKeysOperationCallback(listener, inputParcel, position);
         CryptoOperationHelper opHelper = new CryptoOperationHelper<>(1, mActivity, cb, null);
         opHelper.cryptoOperation();
     }
@@ -242,7 +240,11 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     }
 
     @Override
-    public void handleResult(ImportKeyResult result) {
+    public void handleResult(ImportKeyResult result, Integer position) {
+        if (position == null) {
+            throw new IllegalArgumentException("position parameter must be non-null!");
+        }
+
         boolean resultStatus = result.success();
         Log.e(Constants.TAG, "getKey result: " + resultStatus);
         if (resultStatus) {
@@ -252,13 +254,13 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 Log.e(Constants.TAG, "Key ID: " + keyRing.getMasterKeyId() +
                         "| isRev: " + keyRing.isRevoked() + "| isExp: " + keyRing.isExpired());
 
-                ImportKeysListEntry entry = mData.get(mCurrent);
+                ImportKeysListEntry entry = mData.get(position);
                 entry.setUpdated(result.isOkUpdated());
 
                 mergeEntryWithKey(entry, keyRing);
 
-                mKeyStates[mCurrent].mDownloaded = true;
-                changeShowed(mCurrent, true);
+                mKeyStates[position].mDownloaded = true;
+                changeShowed(position, true);
             } else {
                 throw new RuntimeException("getKey retrieved more than one key ("
                         + canKeyRings.size() + ")");
@@ -267,7 +269,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             result.createNotify(mActivity).show();
         }
 
-        changeProgress(mCurrent, false);
+        changeProgress(position, false);
     }
 
     private void mergeEntryWithKey(ImportKeysListEntry entry, CanonicalizedKeyRing keyRing) {
@@ -308,5 +310,4 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         keyState.mProgress = progress;
         notifyItemChanged(position);
     }
-
 }
