@@ -1467,10 +1467,10 @@
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_touch_to_clear">"Touch to clear passwords."</string>
     <plurals name="passp_cache_notif_n_keys">
-        <item quantity="one">"%d password remembered"</item>
-        <item quantity="other">"%d passwords remembered"</item>
+        <item quantity="one">"%d password cached"</item>
+        <item quantity="other">"%d passwords cached"</item>
     </plurals>
-    <string name="passp_cache_notif_keys">"Remembered passwords"</string>
+    <string name="passp_cache_notif_keys">"Cached passwords"</string>
     <string name="passp_cache_notif_clear">"Clear Passwords"</string>
     <string name="passp_cache_notif_pwd">"Password"</string>
 
