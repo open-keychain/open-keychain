@@ -390,7 +390,10 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         } else {
             // try to guess from file ending
             String extension = MimeTypeMap.getFileExtensionFromUrl(originalFilename);
-            if (extension != null) {
+            if (TextUtils.isEmpty(extension) && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf(".") +1);
+            }
+            if (!TextUtils.isEmpty(extension)) {
                 MimeTypeMap mime = MimeTypeMap.getSingleton();
                 mimeType = mime.getMimeTypeFromExtension(extension);
             }
