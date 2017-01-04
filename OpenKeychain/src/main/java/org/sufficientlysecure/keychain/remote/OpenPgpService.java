@@ -143,28 +143,32 @@ public class OpenPgpService extends Service {
                 // try to find the key for this specific email
                 Uri uri = KeyRings.buildUnifiedKeyRingsFindByEmailUri(email);
                 Cursor cursor = getContentResolver().query(uri, KEY_SEARCH_PROJECTION, KEY_SEARCH_WHERE, null, null);
+                if (cursor == null) {
+                    throw new IllegalStateException("Internal error, received null cursor!");
+                }
                 try {
                     // result should be one entry containing the key id
-                    if (cursor != null && cursor.moveToFirst()) {
+                    if (cursor.moveToFirst()) {
                         long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
                         keyIds.add(id);
+
+                        // another entry for this email -> two keys with the same email inside user id
+                        if (!cursor.isLast()) {
+                            Log.d(Constants.TAG, "more than one user id with the same email");
+                            duplicateEmails.add(email);
+
+                            // also pre-select
+                            while (cursor.moveToNext()) {
+                                long duplicateId = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
+                                keyIds.add(duplicateId);
+                            }
+                        }
                     } else {
                         missingEmails.add(email);
                         Log.d(Constants.TAG, "user id missing");
                     }
-                    // another entry for this email -> two keys with the same email inside user id
-                    if (cursor != null && cursor.moveToNext()) {
-                        duplicateEmails.add(email);
-
-                        // also pre-select
-                         long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
-                         keyIds.add(id);
-                         Log.d(Constants.TAG, "more than one user id with the same email");
-                    }
                 } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
+                    cursor.close();
                 }
             }
         }
