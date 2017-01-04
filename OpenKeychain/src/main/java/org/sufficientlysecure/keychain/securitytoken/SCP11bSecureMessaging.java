@@ -170,11 +170,11 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
     private static final ECParameterSpec getAlgorithmParameterSpec(final ECKeyFormat kf)
             throws NoSuchProviderException, NoSuchAlgorithmException, InvalidParameterSpecException {
-        final AlgorithmParameters algo_params = AlgorithmParameters.getInstance(SCP11B_KEY_AGREEMENT_KEY_ALGO, PROVIDER);
+        final AlgorithmParameters algoParams = AlgorithmParameters.getInstance(SCP11B_KEY_AGREEMENT_KEY_ALGO, PROVIDER);
 
-        algo_params.init(new ECGenParameterSpec(ECNamedCurveTable.getName(kf.getCurveOID())));
+        algoParams.init(new ECGenParameterSpec(ECNamedCurveTable.getName(kf.getCurveOID())));
 
-        return algo_params.getParameterSpec(ECParameterSpec.class);
+        return algoParams.getParameterSpec(ECParameterSpec.class);
     }
 
 
@@ -228,17 +228,17 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
             final ECParameterSpec kfParams = getAlgorithmParameterSpec(kf);
 
-            final Certificate _cardCert = certFactory.generateCertificate(new ByteArrayInputStream(data));
-            if (!(_cardCert instanceof X509Certificate)) {
+            final Certificate cert = certFactory.generateCertificate(new ByteArrayInputStream(data));
+            if (!(cert instanceof X509Certificate)) {
                 throw new IOException("invalid card certificate");
             }
-            final X509Certificate cardCert = (X509Certificate) _cardCert;
+            final X509Certificate cardCert = (X509Certificate) cert;
 
-            final PublicKey _cardPk = cardCert.getPublicKey();
-            if (!(_cardPk instanceof ECPublicKey)) {
+            final PublicKey pk = cardCert.getPublicKey();
+            if (!(pk instanceof ECPublicKey)) {
                 throw new IOException("invalid card public key");
             }
-            final ECPublicKey cardPk = (ECPublicKey) _cardPk;
+            final ECPublicKey cardPk = (ECPublicKey) pk;
             final ECParameterSpec cardPkParams = cardPk.getParams();
 
             if (!kfParams.getCurve().equals(cardPkParams.getCurve())) {
