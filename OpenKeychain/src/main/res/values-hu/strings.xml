@@ -3,7 +3,31 @@
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
+  <string name="title_encrypt_text">Titkosítás</string>
+  <string name="title_encrypt_files">Titkosítás</string>
+  <string name="title_decrypt">Visszafejtés</string>
+  <string name="title_add_subkey">Alkulcs hozzáadása</string>
+  <string name="title_change_master_key">Mester kulcs cseréje</string>
+  <string name="title_edit_key">Kulcs szerkesztése</string>
+  <string name="title_preferences">Beállítások</string>
+  <string name="title_api_registered_apps">Alkalmazások</string>
+  <string name="title_key_server_preference">OpenPGP kulcsszerverek</string>
+  <string name="title_change_passphrase">Jelszó megváltoztatása</string>
+  <string name="title_share_fingerprint_with">Ujjlenyomat megosztása</string>
+  <string name="title_share_key">Kulcs meosztása</string>
+  <string name="title_share_file">Fájl megosztása</string>
+  <string name="title_share_message">Szöveg megosztása</string>
+  <string name="title_import_keys">Kulcsok importálása</string>
+  <string name="title_export_key">Kulcs exportálása</string>
+  <string name="title_export_keys">Kulcsok exportálása</string>
+  <string name="title_key_not_found">Kulcs nem található</string>
+  <string name="title_send_key">Feltöltés kulcsszerverre</string>
+  <string name="title_backup">Kulcs exportálása</string>
+  <string name="title_key_details">Kulcs adatai</string>
+  <string name="title_manage_my_keys">Kulcsaim kezelés</string>
   <!--section-->
+  <string name="section_security_token">Biztonsági token</string>
+  <string name="section_keys">Alkulcsok</string>
   <!--button-->
   <!--Content Description-->
   <!--menu-->

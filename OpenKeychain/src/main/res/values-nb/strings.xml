@@ -139,6 +139,9 @@
   <string name="label_encryption_algorithm">Krypteringsalgoritme</string>
   <string name="label_symmetric">Krypter med passord</string>
   <string name="label_passphrase_cache_ttl">Tilpass \'husk\'-valg</string>
+  <string name="label_message_compression">Tekstkomprimering</string>
+  <string name="label_file_compression">Filkomprimering</string>
+  <string name="label_keyservers">Velg OpenPGP-nøkkeltjenere</string>
   <string name="label_key_id">Nøkkel-ID</string>
   <string name="label_key_created">Nøkkel opprettet %s</string>
   <string name="label_key_type">Type</string>
@@ -185,6 +188,7 @@
   <string name="pref_proxy_type_title">Mellomtjeningstype</string>
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
   <string name="orbot_ignore_tor">Ikke bruk Tor</string>
   <!--InstallDialogFragment strings-->
@@ -257,9 +261,11 @@
   <string name="public_key_deletetion_confirmation">Slett nøkkel \'%s\'?</string>
   <string name="also_export_secret_keys">Eksporter også hemmelige nøkler</string>
   <string name="no_keys_exported">Ingen nøkler eksportert.</string>
+  <string name="list_empty">Listen er tom!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_added_already">%s har allerede blitt lagt til.</string>
   <string name="error_file_not_found">Fant ikke fila</string>
   <string name="error_bad_data">Ugyldig data!</string>
   <string name="error_no_secret_key_found">ingen passende hemmelig nøkkel funnet</string>
@@ -279,6 +285,10 @@
   <string name="error_nothing_import">Fant ingen nøkler!</string>
   <string name="error_nothing_import_selected">Ingen nøkler valgt for import!</string>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_no_signature">Ikke signert</string>
+  <string name="decrypt_result_invalid_signature">Ugyldig signatur!</string>
+  <string name="decrypt_result_insecure_cryptography">Ugyldig signatur (Usikker kryptografi)!</string>
+  <string name="decrypt_result_signature_certified">Signert av bekreftet nøkkel</string>
   <string name="decrypt_result_encrypted">Kryptert</string>
   <string name="decrypt_result_not_encrypted">Ikke kryptert</string>
   <string name="decrypt_result_insecure">Usikker kryptering</string>
@@ -295,6 +305,7 @@
   <string name="progress_exporting">eksporterer…</string>
   <string name="progress_uploading">laster opp…</string>
   <string name="progress_building_key">bygger nøkkel…</string>
+  <string name="progress_modify_adduid">Legger til nye brukerID-er…</string>
   <string name="progress_modify_pin">endrer PIN…</string>
   <string name="progress_modify_admin_pin">endrer administrator-PIN…</string>
   <plurals name="progress_exporting_key">

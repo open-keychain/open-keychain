@@ -1,8 +1,8 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (Merk: Putt hver setning på en egen linje, Transifex putter hver linje i sitt eget oversettelsesfelt!)
 
 ## Hvordan aktiverer jeg OpenKeychain i K-9 e-post?
-To use OpenKeychain with K-9 Mail, you want to follow these steps:
-  1. Open K-9 Mail and long-tap on the account you want to use OpenKeychain with.
+For å bruke OpenKeychain med K-9 Mail, må du utføre følgende:
+  1. Åpne K-9 Mail og trykk lenge på kontoen du ønsker å bruke OpenKeychain med.
   2. Velg "Kontoinnstillinger", rull ned til bunnen og klikk "Kryptografi".
   3. Klikk på "OpenPGP-tilbyder" og vel OpenKeychain fra listen.
 

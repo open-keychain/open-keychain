@@ -1,4 +1,4 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
 ## Hoe activeer ik OpenKeychain in K-9 Mail?
 Volg deze stappen om OpenKeychain te gebruiken met K-9 Mail:

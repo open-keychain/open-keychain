@@ -1190,7 +1190,7 @@
   <string name="msg_crt_error_nothing">Keine beglaubigten Schlüssel!</string>
   <string name="msg_crt_error_unlock">Fehler beim Entsperren des Hauptschlüssels!</string>
   <string name="msg_crt">Schlüsselbünde werden beglaubigt</string>
-  <string name="msg_crt_master_fetch">Beglaubigender Hauptschlüssel wird abgerfufen</string>
+  <string name="msg_crt_master_fetch">Beglaubigender Hauptschlüssel wird abgerufen</string>
   <string name="msg_crt_nfc_return">Kehre zu NFC-Bildschirm zurück</string>
   <string name="msg_crt_save">Beglaubigter Schlüssel %s wird gespeichert</string>
   <string name="msg_crt_saving">Schlüsselbünde werden gespeichert</string>
@@ -1581,7 +1581,7 @@
   <string name="snack_backup_exists">Backup existiert bereits!</string>
   <string name="snack_backup_saved_dir">In den OpenKeychain-Ordner gespeichert</string>
   <string name="btn_backup_back">Zurück zum Überprüfen</string>
-  <string name="snack_text_too_long">Text ist zu lange um vollständig angezeigt zu werden</string>
+  <string name="snack_text_too_long">Text ist zu lange, um vollständig angezeigt zu werden</string>
   <string name="snack_shared_text_too_long">Geteilter Text wurde gekürzt, weil er zu lange ist!</string>
   <string name="share_log_dialog_title">Protokoll teilen?</string>
   <string name="share_log_dialog_message">Protokolle können sehr hilfreich für Entwickler sein, um Fehler in OpenKeychain zu finden. Sie können aber auch potentiell private Informationen, wie Daten über aktualisierte Schlüssel enthalten. Vergewissere dich, dass die Weitergabe solcher Informationen für dich in Ordnung ist.</string>
