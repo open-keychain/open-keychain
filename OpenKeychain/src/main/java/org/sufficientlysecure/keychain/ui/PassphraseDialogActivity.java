@@ -291,17 +291,14 @@ public class PassphraseDialogActivity extends FragmentActivity {
             final ImageButton keyboard = (ImageButton) mLayout.findViewById(R.id.passphrase_keyboard);
 
             if (keyType == CanonicalizedSecretKey.SecretKeyType.PIN) {
-                mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                 keyboard.setVisibility(View.GONE);
             } else if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD) {
                 if (Preferences.getPreferences(activity).useNumKeypadForSecurityTokenPin()) {
-                    mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    keyboard.setImageResource(R.drawable.ic_alphabetical_black_24dp);
-                    keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_alpha));
+                    setKeyboardNumeric(keyboard);
                 } else {
-                    mPassphraseEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                    keyboard.setImageResource(R.drawable.ic_numeric_black_24dp);
-                    keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_numeric));
+                    setKeyboardAlphabetic(keyboard);
                 }
 
                 keyboard.setVisibility(View.VISIBLE);
@@ -312,15 +309,11 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         if (prefs.useNumKeypadForSecurityTokenPin()) {
                             prefs.setUseNumKeypadForSecurityTokenPin(false);
 
-                            mPassphraseEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                            keyboard.setImageResource(R.drawable.ic_numeric_black_24dp);
-                            keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_alpha));
+                            setKeyboardAlphabetic(keyboard);
                         } else {
                             prefs.setUseNumKeypadForSecurityTokenPin(true);
 
-                            mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                            keyboard.setImageResource(R.drawable.ic_alphabetical_black_24dp);
-                            keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_numeric));
+                            setKeyboardNumeric(keyboard);
                         }
                     }
                 });
@@ -337,6 +330,22 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     activity.getString(R.string.btn_unlock), (DialogInterface.OnClickListener) null);
 
             return dialog;
+        }
+
+        private void setKeyboardNumeric(ImageButton keyboard) {
+            mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            // somehow InputType.TYPE_TEXT_VARIATION_PASSWORD is not enough...
+            mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            keyboard.setImageResource(R.drawable.ic_alphabetical_black_24dp);
+            keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_alpha));
+        }
+
+        private void setKeyboardAlphabetic(ImageButton keyboard) {
+            mPassphraseEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            // somehow InputType.TYPE_TEXT_VARIATION_PASSWORD is not enough...
+            mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            keyboard.setImageResource(R.drawable.ic_numeric_black_24dp);
+            keyboard.setContentDescription(getString(R.string.passphrase_keyboard_hint_numeric));
         }
 
         /**
