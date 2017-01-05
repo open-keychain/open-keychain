@@ -97,7 +97,7 @@
         android:theme="@style/Theme.Keychain.Light">
         <!-- broadcast receiver for Wi-Fi Connection -->
         <receiver
-            android:name=".receiver.NetworkReceiver"
+            android:name=".network.NetworkReceiver"
             android:enabled="false"
             android:exported="true" >
             <intent-filter>

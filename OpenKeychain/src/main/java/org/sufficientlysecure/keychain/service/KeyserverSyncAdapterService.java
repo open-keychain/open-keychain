@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.receiver.NetworkReceiver;
+import org.sufficientlysecure.keychain.network.NetworkReceiver;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
