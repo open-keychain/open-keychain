@@ -47,10 +47,10 @@ public class RSAKeyFormat extends KeyFormat {
     }
 
     public enum RSAAlgorithmFormat {
-        STANDARD((byte)0, false, false),
-        STANDARD_WITH_MODULUS((byte)1, false, true),
-        CRT((byte)2, true, false),
-        CRT_WITH_MODULUS((byte)3, true, true);
+        STANDARD((byte) 0, false, false),
+        STANDARD_WITH_MODULUS((byte) 1, false, true),
+        CRT((byte) 2, true, false),
+        CRT_WITH_MODULUS((byte) 3, true, true);
 
         private byte mValue;
         private boolean mIncludeModulus;
@@ -71,7 +71,9 @@ public class RSAKeyFormat extends KeyFormat {
             return null;
         }
 
-        public byte getValue() { return mValue; }
+        public byte getValue() {
+            return mValue;
+        }
 
         public boolean isIncludeModulus() {
             return mIncludeModulus;

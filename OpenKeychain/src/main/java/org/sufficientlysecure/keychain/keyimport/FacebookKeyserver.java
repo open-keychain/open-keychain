@@ -30,9 +30,9 @@ import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
+import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
-import org.sufficientlysecure.keychain.util.TlsHelper;
+import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -128,7 +128,7 @@ public class FacebookKeyserver extends Keyserver {
             throw new QueryFailedException("Cannot connect to Facebook. "
                     + "Check your Internet connection!"
                     + (proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy()));
-        } catch (TlsHelper.TlsHelperException e) {
+        } catch (TlsCertificatePinning.TlsCertificatePinningException e) {
             Log.e(Constants.TAG, "Exception in cert pinning", e);
             throw new QueryFailedException("Exception in cert pinning.");
         }

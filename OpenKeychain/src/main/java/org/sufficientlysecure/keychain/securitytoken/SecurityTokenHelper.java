@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2016 Nikita Mikhailov <nikita.s.mikhailov@gmail.com>
- * Copyright (C) 2013-2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2017 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2015 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  * Copyright (C) 2013-2014 Signe Rüsch
  * Copyright (C) 2013-2014 Philipp Jakubeit
@@ -48,11 +48,10 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
+
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
-import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.SecurityTokenUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -101,7 +100,7 @@ public class SecurityTokenHelper {
     private boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
     private boolean mPw3Validated;
 
-    protected SecurityTokenHelper() {
+    private SecurityTokenHelper() {
     }
 
     public static double parseOpenPgpVersion(final byte[] aid) {
@@ -169,12 +168,14 @@ public class SecurityTokenHelper {
     private boolean isSlotEmpty(KeyType keyType) throws IOException {
         // Note: special case: This should not happen, but happens with
         // https://github.com/FluffyKaon/OpenPGP-Card, thus for now assume true
-        if (getKeyFingerprint(keyType) == null) return true;
+        if (getKeyFingerprint(keyType) == null) {
+            return true;
+        }
 
         return keyMatchesFingerPrint(keyType, BLANK_FINGERPRINT);
     }
 
-    public boolean keyMatchesFingerPrint(KeyType keyType, byte[] fingerprint) throws IOException {
+    private boolean keyMatchesFingerPrint(KeyType keyType, byte[] fingerprint) throws IOException {
         return java.util.Arrays.equals(getKeyFingerprint(keyType), fingerprint);
     }
 
@@ -208,7 +209,7 @@ public class SecurityTokenHelper {
         if (mOpenPgpCapabilities.isHasSM()) {
             try {
                 SCP11bSecureMessaging.establish(this, ctx);
-            } catch(SecureMessagingException e) {
+            } catch (SecureMessagingException e) {
                 mSecureMessaging = null;
                 Log.e(Constants.TAG, "failed to establish secure messaging", e);
             }
@@ -276,7 +277,7 @@ public class SecurityTokenHelper {
         byte[] data;
         int pLen = 0;
 
-        X9ECParameters x9Params = null;
+        X9ECParameters x9Params;
 
         switch (kf.keyFormatType()) {
             case RSAKeyFormatType:
@@ -292,7 +293,7 @@ public class SecurityTokenHelper {
 
                 System.arraycopy(encryptedSessionKey, 2, data, 0, pLen);
 
-                final ECKeyFormat eckf = (ECKeyFormat)kf;
+                final ECKeyFormat eckf = (ECKeyFormat) kf;
                 x9Params = NISTNamedCurves.getByOID(eckf.getCurveOID());
 
                 final ECPoint p = x9Params.getCurve().decodePoint(data);
@@ -303,15 +304,15 @@ public class SecurityTokenHelper {
                 data = p.getEncoded(false);
                 data = Arrays.concatenate(
                         Hex.decode("86"),
-                        new byte[]{ (byte)data.length },
+                        new byte[]{(byte) data.length},
                         data);
                 data = Arrays.concatenate(
                         Hex.decode("7F49"),
-                        new byte[] { (byte)data.length },
+                        new byte[]{(byte) data.length},
                         data);
                 data = Arrays.concatenate(
                         Hex.decode("A6"),
-                        new byte[] { (byte)data.length },
+                        new byte[]{(byte) data.length},
                         data);
                 break;
 
@@ -353,7 +354,7 @@ public class SecurityTokenHelper {
                 try {
                     final MessageDigest kdf = MessageDigest.getInstance(MessageDigestUtils.getDigestName(publicKey.getSecurityTokenHashAlgorithm()));
 
-                    kdf.update(new byte[]{ (byte)0, (byte)0, (byte)0, (byte)1 });
+                    kdf.update(new byte[]{(byte) 0, (byte) 0, (byte) 0, (byte) 1});
                     kdf.update(data);
                     kdf.update(publicKey.createUserKeyingMaterial(fingerprintCalculator));
 
@@ -364,7 +365,7 @@ public class SecurityTokenHelper {
 
                     final Key paddedSessionKey = c.unwrap(keyEnc, "Session", Cipher.SECRET_KEY);
 
-                    Arrays.fill(kek, (byte)0);
+                    Arrays.fill(kek, (byte) 0);
 
                     return PGPPad.unpadSessionData(paddedSessionKey.getEncoded());
                 } catch (NoSuchAlgorithmException e) {
@@ -443,7 +444,7 @@ public class SecurityTokenHelper {
 
 
     private void setKeyAttributes(final KeyType slot, final CanonicalizedSecretKey secretKey)
-             throws IOException {
+            throws IOException {
 
         if (mOpenPgpCapabilities.isAttributesChangable()) {
             int tag;
@@ -619,10 +620,10 @@ public class SecurityTokenHelper {
                 }
                 dsi = Arrays.concatenate(Hex.decode(
                         "3021" // Tag/Length of Sequence, the 0x21 includes all following 33 bytes
-                        + "3009" // Tag/Length of Sequence, the 0x09 are the following header bytes
-                        + "0605" + "2B0E03021A" // OID of SHA1
-                        + "0500" // TLV coding of ZERO
-                        + "0414"), hash); // 0x14 are 20 hash bytes
+                                + "3009" // Tag/Length of Sequence, the 0x09 are the following header bytes
+                                + "0605" + "2B0E03021A" // OID of SHA1
+                                + "0500" // TLV coding of ZERO
+                                + "0414"), hash); // 0x14 are 20 hash bytes
                 break;
             case HashAlgorithmTags.RIPEMD160:
                 if (hash.length != 20) {
@@ -700,13 +701,13 @@ public class SecurityTokenHelper {
                 }
                 final byte[] br = new byte[signature.length / 2];
                 final byte[] bs = new byte[signature.length / 2];
-                for(int i = 0; i < br.length; ++i) {
+                for (int i = 0; i < br.length; ++i) {
                     br[i] = signature[i];
                     bs[i] = signature[br.length + i];
                 }
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ASN1OutputStream out = new ASN1OutputStream(baos);
-                out.writeObject(new DERSequence(new ASN1Encodable[] { new ASN1Integer(br), new ASN1Integer(bs) }));
+                out.writeObject(new DERSequence(new ASN1Encodable[]{new ASN1Integer(br), new ASN1Integer(bs)}));
                 out.flush();
                 signature = baos.toByteArray();
                 break;
@@ -720,6 +721,7 @@ public class SecurityTokenHelper {
      * Transceives APDU
      * Splits extended APDU into short APDUs and chains them if necessary
      * Performs GET RESPONSE command(ISO/IEC 7816-4 par.7.6.1) on retrieving if necessary
+     *
      * @param apdu short or extended APDU to transceive
      * @return response from the card
      * @throws IOException
@@ -730,7 +732,7 @@ public class SecurityTokenHelper {
                 apdu = mSecureMessaging.encryptAndSign(apdu);
             } catch (SecureMessagingException e) {
                 clearSecureMessaging();
-                throw new IOException("secure messaging encrypt/sign failure : " + e. getMessage());
+                throw new IOException("secure messaging encrypt/sign failure : " + e.getMessage());
             }
         }
 
@@ -787,7 +789,7 @@ public class SecurityTokenHelper {
                 lastResponse = mSecureMessaging.verifyAndDecrypt(lastResponse);
             } catch (SecureMessagingException e) {
                 clearSecureMessaging();
-                throw new IOException("secure messaging verify/decrypt failure : " + e. getMessage());
+                throw new IOException("secure messaging verify/decrypt failure : " + e.getMessage());
             }
         }
 
@@ -923,7 +925,7 @@ public class SecurityTokenHelper {
         return mTransport != null &&
                 mTransport.isPersistentConnectionAllowed() &&
                 (mSecureMessaging == null ||
-                 !mSecureMessaging.isEstablished());
+                        !mSecureMessaging.isEstablished());
     }
 
     public boolean isConnected() {
@@ -931,7 +933,7 @@ public class SecurityTokenHelper {
     }
 
     public void clearSecureMessaging() {
-        if(mSecureMessaging != null) {
+        if (mSecureMessaging != null) {
             mSecureMessaging.clearSession();
         }
         mSecureMessaging = null;

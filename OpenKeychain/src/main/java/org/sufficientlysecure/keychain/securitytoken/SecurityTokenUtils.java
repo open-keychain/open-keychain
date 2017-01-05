@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.securitytoken;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.util.Arrays;
@@ -41,11 +41,11 @@ public class SecurityTokenUtils {
             final byte[] attrs = new byte[6];
             int i = 0;
 
-            attrs[i++] = (byte)0x01;
-            attrs[i++] = (byte)((mModulusLength >> 8) & 0xff);
-            attrs[i++] = (byte)(mModulusLength & 0xff);
-            attrs[i++] = (byte)((mExponentLength >> 8) & 0xff);
-            attrs[i++] = (byte)(mExponentLength & 0xff);
+            attrs[i++] = (byte) 0x01;
+            attrs[i++] = (byte) ((mModulusLength >> 8) & 0xff);
+            attrs[i++] = (byte) (mModulusLength & 0xff);
+            attrs[i++] = (byte) ((mExponentLength >> 8) & 0xff);
+            attrs[i++] = (byte) (mExponentLength & 0xff);
             attrs[i++] = RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS.getValue();
 
             return attrs;
@@ -61,7 +61,7 @@ public class SecurityTokenUtils {
 
             System.arraycopy(oid, 2, attrs, 1, (oid.length - 2));
 
-            attrs[attrs.length - 1] = (byte)0xff;
+            attrs[attrs.length - 1] = (byte) 0xff;
 
             return attrs;
         } else {
@@ -143,7 +143,7 @@ public class SecurityTokenUtils {
                 data = new ByteArrayOutputStream(),
                 res = new ByteArrayOutputStream();
 
-        final int csize = (int)Math.ceil(publicKey.getParams().getCurve().getField().getFieldSize() / 8.0);
+        final int csize = (int) Math.ceil(publicKey.getParams().getCurve().getField().getFieldSize() / 8.0);
 
         writeBits(data, secretKey.getS(), csize);
         template.write(Hex.decode("92"));
@@ -222,7 +222,7 @@ public class SecurityTokenUtils {
         final byte[] prime = value.toByteArray();
         int skip = 0;
 
-        while((skip < prime.length) && (prime[skip] == 0)) ++skip;
+        while ((skip < prime.length) && (prime[skip] == 0)) ++skip;
 
         if ((prime.length - skip) > width) {
             throw new IllegalArgumentException("not enough width to fit value: "
@@ -232,8 +232,8 @@ public class SecurityTokenUtils {
         byte[] res = new byte[width];
 
         System.arraycopy(prime, skip,
-                         res, width - (prime.length - skip),
-                         prime.length - skip);
+                res, width - (prime.length - skip),
+                prime.length - skip);
 
         stream.write(res, 0, width);
         Arrays.fill(res, (byte) 0);

@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.util.orbot;
+package org.sufficientlysecure.keychain.network.orbot;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

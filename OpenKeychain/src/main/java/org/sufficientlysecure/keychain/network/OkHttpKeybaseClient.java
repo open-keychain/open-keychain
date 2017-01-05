@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.util;
-
+package org.sufficientlysecure.keychain.network;
 
 import com.textuality.keybase.lib.KeybaseUrlConnectionClient;
 
@@ -24,6 +23,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -44,7 +44,7 @@ public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
             } else {
                 client = OkHttpClientFactory.getSimpleClient();
             }
-        } catch (TlsHelper.TlsHelperException e) {
+        } catch (TlsCertificatePinning.TlsCertificatePinningException e) {
             Log.e(Constants.TAG, "TlsHelper failed", e);
             throw new IOException("TlsHelper failed");
         }

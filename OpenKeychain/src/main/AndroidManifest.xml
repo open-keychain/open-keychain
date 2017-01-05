@@ -105,7 +105,7 @@
             </intent-filter>
         </receiver>
         <!-- broadcast receiver for Orbots status -->
-        <receiver android:name=".util.orbot.OrbotStatusReceiver">
+        <receiver android:name=".network.orbot.OrbotStatusReceiver">
             <intent-filter>
                 <action android:name="org.torproject.android.intent.action.STATUS"/>
             </intent-filter>

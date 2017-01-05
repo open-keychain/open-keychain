@@ -48,11 +48,11 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
+import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.TlsHelper;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
+import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -367,7 +367,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
 
             // check TLS pinning only for non-Tor keyservers
             if (onlyTrustedKeyserver
-                    && TlsHelper.getPinnedSslSocketFactory(keyserverUriHttp.toURL()) == null) {
+                    && TlsCertificatePinning.getPinnedSslSocketFactory(keyserverUriHttp.toURL()) == null) {
                 Log.w(Constants.TAG, "No pinned certificate for this host in OpenKeychain's assets.");
                 reason = VerifyReturn.NO_PINNED_CERTIFICATE;
                 return reason;
@@ -385,7 +385,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                         keyserverUriOnion.toURL(), proxy.getProxy());
                 clientTor.newCall(new Request.Builder().url(keyserverUriOnion.toURL()).build()).execute();
             }
-        } catch (TlsHelper.TlsHelperException e) {
+        } catch (TlsCertificatePinning.TlsCertificatePinningException e) {
             reason = VerifyReturn.CONNECTION_FAILED;
         } catch (MalformedURLException | URISyntaxException e) {
             Log.w(Constants.TAG, "Invalid keyserver URL entered by user.");

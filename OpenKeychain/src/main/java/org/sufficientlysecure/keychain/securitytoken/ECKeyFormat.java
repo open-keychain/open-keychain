@@ -42,13 +42,15 @@ public class ECKeyFormat extends KeyFormat {
         return mECAlgorithmFormat;
     }
 
-    public ASN1ObjectIdentifier getCurveOID() { return mECCurveOID; }
+    public ASN1ObjectIdentifier getCurveOID() {
+        return mECCurveOID;
+    }
 
     public enum ECAlgorithmFormat {
-        ECDH((byte)18, true, false),
-        ECDH_WITH_PUBKEY((byte)18, true, true),
-        ECDSA((byte)19, false, false),
-        ECDSA_WITH_PUBKEY((byte)19, false, true);
+        ECDH((byte) 18, true, false),
+        ECDH_WITH_PUBKEY((byte) 18, true, true),
+        ECDSA((byte) 19, false, false),
+        ECDSA_WITH_PUBKEY((byte) 19, false, true);
 
         private final byte mValue;
         private final boolean mIsECDH;
@@ -62,16 +64,24 @@ public class ECKeyFormat extends KeyFormat {
 
         public static ECKeyFormat.ECAlgorithmFormat from(final byte bFirst, final byte bLast) {
             for (ECKeyFormat.ECAlgorithmFormat format : values()) {
-                if (format.mValue == bFirst && ((bLast == (byte)0xff) == format.isWithPubkey())) {
+                if (format.mValue == bFirst && ((bLast == (byte) 0xff) == format.isWithPubkey())) {
                     return format;
                 }
             }
             return null;
         }
 
-        public final byte getValue() { return mValue; }
-        public final boolean isECDH() { return mIsECDH; }
-        public final boolean isWithPubkey() { return mWithPubkey; }
+        public final byte getValue() {
+            return mValue;
+        }
+
+        public final boolean isECDH() {
+            return mIsECDH;
+        }
+
+        public final boolean isWithPubkey() {
+            return mWithPubkey;
+        }
     }
 
     public void addToSaveKeyringParcel(SaveKeyringParcel keyring, int keyFlags) {
@@ -80,7 +90,7 @@ public class ECKeyFormat extends KeyFormat {
 
         SaveKeyringParcel.Algorithm algo = SaveKeyringParcel.Algorithm.ECDSA;
         if (((keyFlags & KeyFlags.ENCRYPT_COMMS) == KeyFlags.ENCRYPT_COMMS)
-            || ((keyFlags & KeyFlags.ENCRYPT_STORAGE) == KeyFlags.ENCRYPT_STORAGE)) {
+                || ((keyFlags & KeyFlags.ENCRYPT_STORAGE) == KeyFlags.ENCRYPT_STORAGE)) {
             algo = SaveKeyringParcel.Algorithm.ECDH;
         }
 

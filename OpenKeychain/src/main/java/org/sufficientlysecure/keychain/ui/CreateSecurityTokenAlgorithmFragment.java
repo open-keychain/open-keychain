@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2016 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,14 +35,11 @@ import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.util.Choice;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.SecurityTokenUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CreateSecurityTokenAlgorithmFragment extends Fragment {
-
 
     public enum SupportedKeyType {
         RSA_2048, RSA_3072, RSA_4096, ECC_P256, ECC_P384, ECC_P521
@@ -56,7 +53,6 @@ public class CreateSecurityTokenAlgorithmFragment extends Fragment {
     private Spinner mSignKeySpinner;
     private Spinner mDecKeySpinner;
     private Spinner mAuthKeySpinner;
-
 
     /**
      * Creates new instance of this fragment
@@ -75,8 +71,8 @@ public class CreateSecurityTokenAlgorithmFragment extends Fragment {
         final FragmentActivity context = getActivity();
         View view = inflater.inflate(R.layout.create_yubi_key_algorithm_fragment, container, false);
 
-        mBackButton = (TextView) view.findViewById(R.id.create_key_back_button);
-        mNextButton = (TextView) view.findViewById(R.id.create_key_next_button);
+        mBackButton = view.findViewById(R.id.create_key_back_button);
+        mNextButton = view.findViewById(R.id.create_key_next_button);
 
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,19 +150,17 @@ public class CreateSecurityTokenAlgorithmFragment extends Fragment {
     }
 
     private void nextClicked() {
-        mCreateKeyActivity.mSecurityTokenSign = KeyFormat.fromCreationKeyType(((Choice<SupportedKeyType>)mSignKeySpinner.getSelectedItem()).getId(), false);
-        mCreateKeyActivity.mSecurityTokenDec = KeyFormat.fromCreationKeyType(((Choice<SupportedKeyType>)mDecKeySpinner.getSelectedItem()).getId(), true);
-        mCreateKeyActivity.mSecurityTokenAuth = KeyFormat.fromCreationKeyType(((Choice<SupportedKeyType>)mAuthKeySpinner.getSelectedItem()).getId(), false);
+        mCreateKeyActivity.mSecurityTokenSign = KeyFormat.fromCreationKeyType(((Choice<SupportedKeyType>) mSignKeySpinner.getSelectedItem()).getId(), false);
+        mCreateKeyActivity.mSecurityTokenDec = KeyFormat.fromCreationKeyType(((Choice<SupportedKeyType>) mDecKeySpinner.getSelectedItem()).getId(), true);
+        mCreateKeyActivity.mSecurityTokenAuth = KeyFormat.fromCreationKeyType(((Choice<SupportedKeyType>) mAuthKeySpinner.getSelectedItem()).getId(), false);
 
         CreateKeyFinalFragment frag = CreateKeyFinalFragment.newInstance();
         mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
     }
 
 
-
-
     private class TwoLineArrayAdapter extends ArrayAdapter<Choice<SupportedKeyType>> {
-        public TwoLineArrayAdapter(Context context, int resource, List<Choice<SupportedKeyType>> objects) {
+        TwoLineArrayAdapter(Context context, int resource, List<Choice<SupportedKeyType>> objects) {
             super(context, resource, objects);
         }
 

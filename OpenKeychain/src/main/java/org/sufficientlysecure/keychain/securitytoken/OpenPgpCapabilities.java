@@ -17,8 +17,6 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
-import org.sufficientlysecure.keychain.util.Iso7816TLV;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,7 +106,7 @@ public class OpenPgpCapabilities {
     private void parseExtendedCaps(byte[] v) {
         mHasSM = (v[0] & MASK_SM) != 0;
         mHasKeyImport = (v[0] & MASK_KEY_IMPORT) != 0;
-        mAttriburesChangable =(v[0] & MASK_ATTRIBUTES_CHANGABLE) != 0;
+        mAttriburesChangable = (v[0] & MASK_ATTRIBUTES_CHANGABLE) != 0;
 
         mSMAESKeySize = (v[1] == 1) ? 16 : 32;
 

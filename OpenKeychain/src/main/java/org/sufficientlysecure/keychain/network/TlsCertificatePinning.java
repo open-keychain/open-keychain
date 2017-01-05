@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.network;
 
 import android.content.res.AssetManager;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,7 +41,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-public class TlsHelper {
+public class TlsCertificatePinning {
 
     private static Map<String, byte[]> sPinnedCertificates = new HashMap<>();
 
@@ -70,10 +71,10 @@ public class TlsHelper {
      * Use pinned certificate for OkHttpClient if we have one.
      *
      * @return true, if certificate is available, false if not
-     * @throws TlsHelperException
+     * @throws TlsCertificatePinningException
      * @throws IOException
      */
-    public static SSLSocketFactory getPinnedSslSocketFactory(URL url) throws TlsHelperException, IOException {
+    public static SSLSocketFactory getPinnedSslSocketFactory(URL url) throws TlsCertificatePinningException, IOException {
         if (url.getProtocol().equals("https")) {
             // use certificate PIN from assets if we have one
             for (String host : sPinnedCertificates.keySet()) {
@@ -92,11 +93,11 @@ public class TlsHelper {
      * to URLs with passed certificate.
      *
      * @param certificate certificate to pin
-     * @throws TlsHelperException
+     * @throws TlsCertificatePinningException
      * @throws IOException
      */
     private static SSLSocketFactory pinCertificate(byte[] certificate)
-            throws TlsHelperException, IOException {
+            throws TlsCertificatePinningException, IOException {
         // We don't use OkHttp's CertificatePinner since it can not be used to pin self-signed
         // certificate if such certificate is not accepted by TrustManager.
         // (Refer to note at end of description:
@@ -124,12 +125,12 @@ public class TlsHelper {
 
             return context.getSocketFactory();
         } catch (CertificateException | KeyStoreException | KeyManagementException | NoSuchAlgorithmException e) {
-            throw new TlsHelperException(e);
+            throw new TlsCertificatePinningException(e);
         }
     }
 
-    public static class TlsHelperException extends Exception {
-        public TlsHelperException(Exception e) {
+    public static class TlsCertificatePinningException extends Exception {
+        TlsCertificatePinningException(Exception e) {
             super(e);
         }
     }

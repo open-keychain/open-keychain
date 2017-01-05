@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.securitytoken;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

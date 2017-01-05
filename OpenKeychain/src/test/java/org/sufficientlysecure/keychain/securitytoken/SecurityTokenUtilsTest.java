@@ -30,7 +30,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
-import org.sufficientlysecure.keychain.util.SecurityTokenUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

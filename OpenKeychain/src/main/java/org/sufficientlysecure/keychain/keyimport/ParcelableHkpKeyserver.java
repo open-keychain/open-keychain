@@ -54,9 +54,9 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.OkHttpClientFactory;
+import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
-import org.sufficientlysecure.keychain.util.TlsHelper;
+import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 
 public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
 
@@ -228,7 +228,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
             Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
             throw new Keyserver.QueryFailedException("Keyserver '" + mUrl + "' is unavailable. Check your Internet connection!" +
                     (proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy()));
-        } catch (TlsHelper.TlsHelperException e) {
+        } catch (TlsCertificatePinning.TlsCertificatePinningException e) {
             Log.e(Constants.TAG, "Exception in pinning certs", e);
             throw new Keyserver.QueryFailedException("Exception in pinning certs");
         } catch (UnsupportedCharsetException e) {
@@ -439,7 +439,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
             throw new Keyserver.AddKeyException();
-        } catch (TlsHelper.TlsHelperException e) {
+        } catch (TlsCertificatePinning.TlsCertificatePinningException e) {
             Log.e(Constants.TAG, "Exception in pinning certs", e);
             throw new Keyserver.AddKeyException();
         } catch (URISyntaxException e) {
