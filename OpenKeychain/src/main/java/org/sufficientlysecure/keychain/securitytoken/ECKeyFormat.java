@@ -74,7 +74,7 @@ public class ECKeyFormat extends KeyFormat {
         public final boolean isWithPubkey() { return mWithPubkey; }
     }
 
-    public void addToKeyring(SaveKeyringParcel keyring, int keyFlags) {
+    public void addToSaveKeyringParcel(SaveKeyringParcel keyring, int keyFlags) {
         final X9ECParameters params = NISTNamedCurves.getByOID(mECCurveOID);
         final ECCurve curve = params.getCurve();
 

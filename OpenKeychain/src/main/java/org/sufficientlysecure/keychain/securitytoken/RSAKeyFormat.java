@@ -82,7 +82,7 @@ public class RSAKeyFormat extends KeyFormat {
         }
     }
 
-    public void addToKeyring(SaveKeyringParcel keyring, int keyFlags) {
+    public void addToSaveKeyringParcel(SaveKeyringParcel keyring, int keyFlags) {
         keyring.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
                 mModulusLength, null, keyFlags, 0L));
     }

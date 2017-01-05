@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -283,19 +284,19 @@ public class CreateKeyFinalFragment extends Fragment {
         SaveKeyringParcel saveKeyringParcel = new SaveKeyringParcel();
 
         if (createKeyActivity.mCreateSecurityToken) {
-            createKeyActivity.mSecurityTokenSign.addToKeyring(saveKeyringParcel, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER);
-            createKeyActivity.mSecurityTokenDec.addToKeyring(saveKeyringParcel, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE);
-            createKeyActivity.mSecurityTokenAuth.addToKeyring(saveKeyringParcel, KeyFlags.AUTHENTICATION);
+            if (createKeyActivity.mSecurityTokenSign == null) {
+                createKeyActivity.mSecurityTokenSign = Constants.SECURITY_TOKEN_V2_SIGN;
+                createKeyActivity.mSecurityTokenDec = Constants.SECURITY_TOKEN_V2_DEC;
+                createKeyActivity.mSecurityTokenAuth = Constants.SECURITY_TOKEN_V2_AUTH;
+            }
+            createKeyActivity.mSecurityTokenSign.addToSaveKeyringParcel(saveKeyringParcel, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER);
+            createKeyActivity.mSecurityTokenDec.addToSaveKeyringParcel(saveKeyringParcel, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE);
+            createKeyActivity.mSecurityTokenAuth.addToSaveKeyringParcel(saveKeyringParcel, KeyFlags.AUTHENTICATION);
 
             // use empty passphrase
             saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));
         } else {
-            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    3072, null, KeyFlags.CERTIFY_OTHER, 0L));
-            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    3072, null, KeyFlags.SIGN_DATA, 0L));
-            saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
-                    3072, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+            Constants.addDefaultSubkeys(saveKeyringParcel);
 
             if (createKeyActivity.mPassphrase != null) {
                 saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(createKeyActivity.mPassphrase));
