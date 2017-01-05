@@ -785,7 +785,7 @@
     <string name="edit_key_error_add_identity">"Add at least one identity!"</string>
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
     <string name="edit_key_error_bad_security_token_algo">"Algorithm not supported by Security Token!"</string>
-    <string name="edit_key_error_bad_security_token_size">"Key size not supported by Security Token!"</string>
+    <string name="edit_key_error_bad_security_token_size">"RSA key lower than 2048 bits is not supported by Security Token since OpenPGP card specification 3.x!"</string>
     <string name="edit_key_error_bad_security_token_curve">"Curve not supported by Security Token!"</string>
     <string name="edit_key_error_bad_security_token_stripped">"Cannot move key to Security Token (either stripped or already on Security Token)!"</string>
 

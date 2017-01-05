@@ -1657,9 +1657,9 @@ public class PgpKeyOperation {
             case PublicKeyAlgorithmTags.RSA_ENCRYPT:
             case PublicKeyAlgorithmTags.RSA_SIGN:
             case PublicKeyAlgorithmTags.RSA_GENERAL:
-                // Key size must be at least 2048
+                // Key size must be at least 2048 since OpenPGP card specification 3.x
                 if (publicKey.getBitStrength() < 2048) {
-                    log.add(LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_SIZE, indent + 1);
+                    log.add(LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_RSA_KEY_SIZE, indent + 1);
                     return false;
                 }
                 break;
