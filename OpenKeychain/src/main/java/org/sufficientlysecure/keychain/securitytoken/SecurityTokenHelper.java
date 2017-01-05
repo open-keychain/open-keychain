@@ -338,7 +338,7 @@ public class SecurityTokenHelper {
                 System.arraycopy(encryptedSessionKey, 2 + pLen + 1, keyEnc, 0, keyEnc.length);
 
                 try {
-                    final MessageDigest kdf = MessageDigest.getInstance(MessageDigestUtils.getDigestName(publicKey.getHashAlgorithm()));
+                    final MessageDigest kdf = MessageDigest.getInstance(MessageDigestUtils.getDigestName(publicKey.getSecurityTokenHashAlgorithm()));
 
                     kdf.update(new byte[]{ (byte)0, (byte)0, (byte)0, (byte)1 });
                     kdf.update(data);
@@ -347,7 +347,7 @@ public class SecurityTokenHelper {
                     final byte[] kek = kdf.digest();
                     final Cipher c = Cipher.getInstance("AESWrap");
 
-                    c.init(Cipher.UNWRAP_MODE, new SecretKeySpec(kek, 0, publicKey.getSymmetricKeySize() / 8, "AES"));
+                    c.init(Cipher.UNWRAP_MODE, new SecretKeySpec(kek, 0, publicKey.getSecurityTokenSymmetricKeySize() / 8, "AES"));
 
                     final Key paddedSessionKey = c.unwrap(keyEnc, "Session", Cipher.SECRET_KEY);
 
@@ -489,7 +489,7 @@ public class SecurityTokenHelper {
                     if (!secretKey.isRSA()) {
                         throw new IOException("Security Token not configured for RSA key.");
                     }
-                    crtSecretKey = secretKey.getCrtSecretKey();
+                    crtSecretKey = secretKey.getSecurityTokenRSASecretKey();
 
                     // Should happen only rarely; all GnuPG keys since 2006 use public exponent 65537.
                     if (!crtSecretKey.getPublicExponent().equals(new BigInteger("65537"))) {
@@ -506,8 +506,8 @@ public class SecurityTokenHelper {
                     }
 
                     secretKey.unlock(passphrase);
-                    ecSecretKey = secretKey.getECSecretKey();
-                    ecPublicKey = secretKey.getECPublicKey();
+                    ecSecretKey = secretKey.getSecurityTokenECSecretKey();
+                    ecPublicKey = secretKey.getSecurityTokenECPublicKey();
 
                     keyBytes = SecurityTokenUtils.createECPrivKeyTemplate(ecSecretKey, ecPublicKey, slot,
                             (ECKeyFormat) (mOpenPgpCapabilities.getFormatForKeyType(slot)));

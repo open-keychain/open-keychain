@@ -300,7 +300,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     // For use only in card export; returns the secret key in Chinese Remainder Theorem format.
-    public RSAPrivateCrtKey getCrtSecretKey() throws PgpGeneralException {
+    public RSAPrivateCrtKey getSecurityTokenRSASecretKey() throws PgpGeneralException {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PgpGeneralException("Cannot get secret key attributes while key is locked.");
         }
@@ -321,7 +321,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     // For use only in card export; returns the secret key.
-    public ECPrivateKey getECSecretKey()
+    public ECPrivateKey getSecurityTokenECSecretKey()
             throws PgpGeneralException {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PgpGeneralException("Cannot get secret key attributes while key is locked.");

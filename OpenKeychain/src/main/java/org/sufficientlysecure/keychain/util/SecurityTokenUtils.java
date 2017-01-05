@@ -37,7 +37,7 @@ public class SecurityTokenUtils {
     public static byte[] attributesFromSecretKey(final KeyType slot, final CanonicalizedSecretKey secretKey) throws IOException, PgpGeneralException {
         if (secretKey.isRSA()) {
             final int mModulusLength = secretKey.getBitStrength();
-            final int mExponentLength = secretKey.getCrtSecretKey().getPublicExponent().bitLength();
+            final int mExponentLength = secretKey.getSecurityTokenRSASecretKey().getPublicExponent().bitLength();
             final byte[] attrs = new byte[6];
             int i = 0;
 

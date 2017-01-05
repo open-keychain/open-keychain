@@ -203,7 +203,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
     }
 
     // For use only in card export; returns the public key.
-    public ECPublicKey getECPublicKey()
+    public ECPublicKey getSecurityTokenECPublicKey()
             throws PgpGeneralException {
         JcaPGPKeyConverter keyConverter = new JcaPGPKeyConverter();
         PublicKey retVal;
@@ -216,7 +216,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         return (ECPublicKey) retVal;
     }
 
-    public ASN1ObjectIdentifier getHashAlgorithm()
+    public ASN1ObjectIdentifier getSecurityTokenHashAlgorithm()
             throws PGPException {
         if (!isEC()) {
             throw new PGPException("Key encryption OID is valid only for EC key!");
@@ -236,7 +236,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         }
     }
 
-    public int getSymmetricKeySize()
+    public int getSecurityTokenSymmetricKeySize()
             throws PGPException {
         if (!isEC()) {
             throw new PGPException("Key encryption OID is valid only for EC key!");
