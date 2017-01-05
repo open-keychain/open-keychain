@@ -450,6 +450,10 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_KEYBASE, false);
     }
 
+    public boolean getExperimentalSmartPGPAuthoritiesEnable() {
+        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_SMARTPGP_VERIFY_AUTHORITY, false);
+    }
+
     public void upgradePreferences(Context context) {
         Log.d(Constants.TAG, "Upgrading preferences…");
         int oldVersion = mSharedPreferences.getInt(Constants.Pref.PREF_VERSION, 0);

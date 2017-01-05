@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
+import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.util.Date;
 import java.util.HashMap;
@@ -299,7 +300,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     // For use only in card export; returns the secret key in Chinese Remainder Theorem format.
-    public RSAPrivateCrtKey getCrtSecretKey() throws PgpGeneralException {
+    public RSAPrivateCrtKey getSecurityTokenRSASecretKey() throws PgpGeneralException {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PgpGeneralException("Cannot get secret key attributes while key is locked.");
         }
@@ -317,6 +318,28 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         }
 
         return (RSAPrivateCrtKey)retVal;
+    }
+
+    // For use only in card export; returns the secret key.
+    public ECPrivateKey getSecurityTokenECSecretKey()
+            throws PgpGeneralException {
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
+            throw new PgpGeneralException("Cannot get secret key attributes while key is locked.");
+        }
+
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
+            throw new PgpGeneralException("Cannot get secret key attributes of divert-to-card key.");
+        }
+
+        JcaPGPKeyConverter keyConverter = new JcaPGPKeyConverter();
+        PrivateKey retVal;
+        try {
+            retVal = keyConverter.getPrivateKey(mPrivateKey);
+        } catch (PGPException e) {
+            throw new PgpGeneralException("Error converting private key! " + e.getMessage(), e);
+        }
+
+        return (ECPrivateKey) retVal;
     }
 
     public byte[] getIv() {

@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -66,6 +67,7 @@ public class CreateSecurityTokenImportResetFragment
 
     private byte[] mTokenFingerprints;
     private byte[] mTokenAid;
+    private double mTokenVersion;
     private String mTokenUserId;
     private String mTokenFingerprint;
     private TextView vSerNo;
@@ -254,6 +256,7 @@ public class CreateSecurityTokenImportResetFragment
 
         mTokenFingerprints = mCreateKeyActivity.getSecurityTokenHelper().getFingerprints();
         mTokenAid = mCreateKeyActivity.getSecurityTokenHelper().getAid();
+        mTokenVersion = SecurityTokenHelper.parseOpenPgpVersion(mTokenAid);
         mTokenUserId = mCreateKeyActivity.getSecurityTokenHelper().getUserId();
 
         byte[] fp = new byte[20];
@@ -290,6 +293,7 @@ public class CreateSecurityTokenImportResetFragment
         viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyIds[0]));
         viewKeyIntent.putExtra(ViewKeyActivity.EXTRA_DISPLAY_RESULT, result);
         viewKeyIntent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mTokenAid);
+        viewKeyIntent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_VERSION, mTokenVersion);
         viewKeyIntent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mTokenUserId);
         viewKeyIntent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mTokenFingerprints);
 

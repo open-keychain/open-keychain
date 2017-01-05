@@ -45,7 +45,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

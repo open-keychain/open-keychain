@@ -53,10 +53,10 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.OkHttpKeybaseClient;
+import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 
 import java.util.ArrayList;
 import java.util.Hashtable;

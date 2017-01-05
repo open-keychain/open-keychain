@@ -40,7 +40,7 @@ import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.TlsHelper;
+import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 
 import java.security.Security;
 import java.util.HashMap;
@@ -114,9 +114,9 @@ public class KeychainApplication extends Application {
         // Update keyserver list as needed
         Preferences.getPreferences(this).upgradePreferences(this);
 
-        TlsHelper.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
-        TlsHelper.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
-        TlsHelper.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
+        TlsCertificatePinning.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
+        TlsCertificatePinning.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
+        TlsCertificatePinning.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
 
         TemporaryFileProvider.cleanUp(this);
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.network;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -47,7 +47,7 @@ public class OkHttpClientFactory {
     }
 
     public static OkHttpClient getClientPinnedIfAvailable(URL url, Proxy proxy)
-            throws IOException, TlsHelper.TlsHelperException {
+            throws IOException, TlsCertificatePinning.TlsCertificatePinningException {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         // don't follow any redirects for keyservers, as discussed in the security audit
@@ -66,8 +66,8 @@ public class OkHttpClientFactory {
 
         // If a pinned cert is available, use it!
         // NOTE: this fails gracefully back to "no pinning" if no cert is available.
-        if (url != null && TlsHelper.getPinnedSslSocketFactory(url) != null) {
-            builder.sslSocketFactory(TlsHelper.getPinnedSslSocketFactory(url));
+        if (url != null && TlsCertificatePinning.getPinnedSslSocketFactory(url) != null) {
+            builder.sslSocketFactory(TlsCertificatePinning.getPinnedSslSocketFactory(url));
         }
 
         return builder.build();

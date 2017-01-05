@@ -40,9 +40,9 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.util.OkHttpKeybaseClient;
+import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

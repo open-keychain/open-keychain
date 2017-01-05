@@ -97,7 +97,7 @@
         android:theme="@style/Theme.Keychain.Light">
         <!-- broadcast receiver for Wi-Fi Connection -->
         <receiver
-            android:name=".receiver.NetworkReceiver"
+            android:name=".network.NetworkReceiver"
             android:enabled="false"
             android:exported="true" >
             <intent-filter>
@@ -105,7 +105,7 @@
             </intent-filter>
         </receiver>
         <!-- broadcast receiver for Orbots status -->
-        <receiver android:name=".util.orbot.OrbotStatusReceiver">
+        <receiver android:name=".network.orbot.OrbotStatusReceiver">
             <intent-filter>
                 <action android:name="org.torproject.android.intent.action.STATUS"/>
             </intent-filter>
@@ -482,6 +482,11 @@
             android:name=".ui.SettingsKeyServerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_server_preference"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ui.SettingsSmartPGPAuthoritiesActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_smartpgp_authorities_preference"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.SettingsCacheTTLActivity"

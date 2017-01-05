@@ -37,14 +37,14 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.receiver.NetworkReceiver;
+import org.sufficientlysecure.keychain.network.NetworkReceiver;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;

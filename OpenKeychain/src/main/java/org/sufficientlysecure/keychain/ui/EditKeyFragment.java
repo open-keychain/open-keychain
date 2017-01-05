@@ -35,6 +35,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -449,19 +451,31 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                             break;
                         }
 
-                        int algorithm = mSubkeysAdapter.getAlgorithm(position);
-                        if (algorithm != PublicKeyAlgorithmTags.RSA_GENERAL
-                                && algorithm != PublicKeyAlgorithmTags.RSA_ENCRYPT
-                                && algorithm != PublicKeyAlgorithmTags.RSA_SIGN) {
-                            Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_algo, Notify.Style.ERROR)
-                                    .show();
-                            break;
-                        }
+                        switch (mSubkeysAdapter.getAlgorithm(position)) {
+                            case PublicKeyAlgorithmTags.RSA_GENERAL:
+                            case PublicKeyAlgorithmTags.RSA_ENCRYPT:
+                            case PublicKeyAlgorithmTags.RSA_SIGN:
+                                if (mSubkeysAdapter.getKeySize(position) < 2048) {
+                                    Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_size, Notify.Style.ERROR)
+                                            .show();
+                                }
+                                break;
 
-                        if (mSubkeysAdapter.getKeySize(position) != 2048) {
-                            Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_size, Notify.Style.ERROR)
-                                    .show();
-                            break;
+                            case PublicKeyAlgorithmTags.ECDH:
+                            case PublicKeyAlgorithmTags.ECDSA:
+                                final ASN1ObjectIdentifier curve = NISTNamedCurves.getOID(mSubkeysAdapter.getCurveOid(position));
+                                if (!curve.equals(NISTNamedCurves.getByName("P-256")) &&
+                                        !curve.equals(NISTNamedCurves.getByName("P-384")) &&
+                                        !curve.equals(NISTNamedCurves.getByName("P-521"))) {
+                                    Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_curve, Notify.Style.ERROR)
+                                            .show();
+                                }
+                                break;
+
+                            default:
+                                Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_algo, Notify.Style.ERROR)
+                                        .show();
+                                break;
                         }
 
                         SubkeyChange change;

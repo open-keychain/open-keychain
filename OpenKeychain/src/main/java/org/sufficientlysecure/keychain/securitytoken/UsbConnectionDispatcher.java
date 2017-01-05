@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.securitytoken;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -27,6 +27,7 @@ import android.hardware.usb.UsbManager;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.UsbEventReceiverActivity;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class UsbConnectionDispatcher {
     private Activity mActivity;

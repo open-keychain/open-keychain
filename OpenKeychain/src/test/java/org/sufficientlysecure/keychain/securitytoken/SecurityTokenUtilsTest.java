@@ -30,7 +30,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
-import org.sufficientlysecure.keychain.util.SecurityTokenUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -128,7 +127,6 @@ public class SecurityTokenUtilsTest extends Mockito {
 
     @Test
     public void testPrivateKeyTemplateSimple2048() throws Exception {
-        KeyFormat format = new KeyFormat(Hex.decode("010000001800"));
         RSAPrivateCrtKey key2048 = mock(RSAPrivateCrtKey.class);
         byte[] tmp = new byte[128];
         Arrays.fill(tmp, (byte) 0x11);
@@ -137,7 +135,8 @@ public class SecurityTokenUtilsTest extends Mockito {
         Arrays.fill(tmp, (byte) 0x12);
         when(key2048.getPrimeQ()).thenReturn(new BigInteger(tmp));
 
-        when(key2048.getPublicExponent()).thenReturn(new BigInteger("65537"));
+        BigInteger exp = new BigInteger("65537");
+        when(key2048.getPublicExponent()).thenReturn(exp);
 
         Assert.assertArrayEquals(
                 Hex.decode("4d820115" + // Header TL
@@ -160,7 +159,7 @@ public class SecurityTokenUtilsTest extends Mockito {
                         "1212121212121212121212121212121212121212121212121212121212121212" +
                         "1212121212121212121212121212121212121212121212121212121212121212"
                 ),
-                SecurityTokenUtils.createPrivKeyTemplate(key2048, KeyType.AUTH, format));
+                SecurityTokenUtils.createRSAPrivKeyTemplate(key2048, KeyType.AUTH, new RSAKeyFormat(2048, exp.bitLength(), RSAKeyFormat.RSAAlgorithmFormat.STANDARD)));
     }
 
     @Test

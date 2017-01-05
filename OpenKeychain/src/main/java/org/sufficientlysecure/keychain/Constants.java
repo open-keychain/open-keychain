@@ -19,7 +19,11 @@ package org.sufficientlysecure.keychain;
 
 import android.os.Environment;
 
+import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 
 import java.io.File;
 import java.net.Proxy;
@@ -123,6 +127,8 @@ public final class Constants {
         public static final String EXPERIMENTAL_ENABLE_WORD_CONFIRM = "experimentalEnableWordConfirm";
         public static final String EXPERIMENTAL_ENABLE_LINKED_IDENTITIES = "experimentalEnableLinkedIdentities";
         public static final String EXPERIMENTAL_ENABLE_KEYBASE = "experimentalEnableKeybase";
+        public static final String EXPERIMENTAL_SMARTPGP_VERIFY_AUTHORITY = "smartpgp_authorities_pref";
+        public static final String EXPERIMENTAL_SMARTPGP_AUTHORITIES = "smartpgp_authorities";
 
         public static final class Theme {
             public static final String LIGHT = "light";
@@ -155,5 +161,25 @@ public final class Constants {
         public static final long symmetric = -1;
         public static final long backup_code = -2;
     }
+
+    /**
+     * Default key configuration: 3072 bit RSA (certify, sign, encrypt)
+     */
+    public static void addDefaultSubkeys(SaveKeyringParcel saveKeyringParcel) {
+        saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
+                3072, null, KeyFlags.CERTIFY_OTHER, 0L));
+        saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
+                3072, null, KeyFlags.SIGN_DATA, 0L));
+        saveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
+                3072, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+    }
+
+    /**
+     * Default key format for OpenPGP smart cards v2: 2048 bit RSA (sign+certify, decrypt, auth)
+     */
+    private static final int ELEN = 17; //65537
+    public static final KeyFormat SECURITY_TOKEN_V2_SIGN = new RSAKeyFormat(2048, ELEN, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
+    public static final KeyFormat SECURITY_TOKEN_V2_DEC = new RSAKeyFormat(2048, ELEN, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
+    public static final KeyFormat SECURITY_TOKEN_V2_AUTH = new RSAKeyFormat(2048, ELEN, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
 
 }

@@ -25,7 +25,7 @@ import com.textuality.keybase.lib.User;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.OkHttpKeybaseClient;
+import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 
 import java.util.ArrayList;

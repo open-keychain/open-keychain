@@ -121,6 +121,11 @@ public class SubkeysAdapter extends CursorAdapter {
         return mCursor.getInt(INDEX_KEY_SIZE);
     }
 
+    public String getCurveOid(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getString(INDEX_KEY_CURVE_OID);
+    }
+
     public SecretKeyType getSecretKeyType(int position) {
         mCursor.moveToPosition(position);
         return SecretKeyType.fromNum(mCursor.getInt(INDEX_HAS_SECRET));

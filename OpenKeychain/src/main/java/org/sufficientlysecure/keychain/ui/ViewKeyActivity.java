@@ -111,6 +111,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     public static final String EXTRA_SECURITY_TOKEN_USER_ID = "security_token_user_id";
     public static final String EXTRA_SECURITY_TOKEN_AID = "security_token_aid";
+    public static final String EXTRA_SECURITY_TOKEN_VERSION = "security_token_version";
     public static final String EXTRA_SECURITY_TOKEN_FINGERPRINTS = "security_token_fingerprints";
 
     @Retention(RetentionPolicy.SOURCE)
@@ -178,6 +179,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private byte[] mSecurityTokenFingerprints;
     private String mSecurityTokenUserId;
     private byte[] mSecurityTokenAid;
+    private double mSecurityTokenVersion;
 
     @SuppressLint("InflateParams")
     @Override
@@ -671,7 +673,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
             // if the master key of that key matches this one, just show the token dialog
             if (KeyFormattingUtils.convertFingerprintToHex(candidateFp).equals(mFingerprintString)) {
-                showSecurityTokenFragment(mSecurityTokenFingerprints, mSecurityTokenUserId, mSecurityTokenAid);
+                showSecurityTokenFragment(mSecurityTokenFingerprints, mSecurityTokenUserId, mSecurityTokenAid, mSecurityTokenVersion);
                 return;
             }
 
@@ -685,6 +687,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                                     ViewKeyActivity.this, ViewKeyActivity.class);
                             intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
                             intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_VERSION, mSecurityTokenVersion);
                             intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
                             intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mSecurityTokenFingerprints);
                             startActivity(intent);
@@ -700,6 +703,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                             Intent intent = new Intent(
                                     ViewKeyActivity.this, CreateKeyActivity.class);
                             intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
+                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_VERSION, mSecurityTokenVersion);
                             intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
                             intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mSecurityTokenFingerprints);
                             startActivity(intent);
@@ -710,13 +714,13 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     }
 
     public void showSecurityTokenFragment(
-            final byte[] tokenFingerprints, final String tokenUserId, final byte[] tokenAid) {
+            final byte[] tokenFingerprints, final String tokenUserId, final byte[] tokenAid, final double tokenVersion) {
 
         new Handler().post(new Runnable() {
             @Override
             public void run() {
                 ViewKeySecurityTokenFragment frag = ViewKeySecurityTokenFragment.newInstance(
-                        mMasterKeyId, tokenFingerprints, tokenUserId, tokenAid);
+                        mMasterKeyId, tokenFingerprints, tokenUserId, tokenAid, tokenVersion);
 
                 FragmentManager manager = getSupportFragmentManager();
 
@@ -899,7 +903,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         byte[] tokenFingerprints = intent.getByteArrayExtra(EXTRA_SECURITY_TOKEN_FINGERPRINTS);
                         String tokenUserId = intent.getStringExtra(EXTRA_SECURITY_TOKEN_USER_ID);
                         byte[] tokenAid = intent.getByteArrayExtra(EXTRA_SECURITY_TOKEN_AID);
-                        showSecurityTokenFragment(tokenFingerprints, tokenUserId, tokenAid);
+                        double tokenVersion = intent.getDoubleExtra(EXTRA_SECURITY_TOKEN_VERSION, 2.0);
+                        showSecurityTokenFragment(tokenFingerprints, tokenUserId, tokenAid, tokenVersion);
                     }
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;

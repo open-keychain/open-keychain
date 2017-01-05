@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.receiver;
+package org.sufficientlysecure.keychain.network;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;

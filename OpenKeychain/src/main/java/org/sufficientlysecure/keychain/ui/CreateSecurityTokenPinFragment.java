@@ -30,6 +30,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -200,7 +201,14 @@ public class CreateSecurityTokenPinFragment extends Fragment {
 
             mCreateKeyActivity.mSecurityTokenPin = new Passphrase(mPin.getText().toString());
 
-            CreateKeyFinalFragment frag = CreateKeyFinalFragment.newInstance();
+            final double version = SecurityTokenHelper.parseOpenPgpVersion(mCreateKeyActivity.mSecurityTokenAid);
+
+            Fragment frag;
+            if (version >= 3.0) {
+                frag = CreateSecurityTokenAlgorithmFragment.newInstance();
+            } else {
+                frag = CreateKeyFinalFragment.newInstance();
+            }
             hideKeyboard();
             mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
         }

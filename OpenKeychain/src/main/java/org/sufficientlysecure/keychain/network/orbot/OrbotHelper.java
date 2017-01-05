@@ -47,7 +47,7 @@
         *****
 */
 
-package org.sufficientlysecure.keychain.util.orbot;
+package org.sufficientlysecure.keychain.network.orbot;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
