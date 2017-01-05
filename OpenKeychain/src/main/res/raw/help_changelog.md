@@ -1,5 +1,12 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.2
+
+  * Experimental support for Elliptic Curve Encryption with Security Tokens
+  * Redesigned key import screen
+  * Design improvements to key lists
+  * Support for keyserver onion addresses
+
 ## 4.1
 
   * Better detection of emails and other content when opened
