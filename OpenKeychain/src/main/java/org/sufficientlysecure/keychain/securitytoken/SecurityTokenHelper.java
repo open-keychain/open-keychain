@@ -330,6 +330,19 @@ public class SecurityTokenHelper {
             case RSAKeyFormatType:
                 return response.getData();
 
+            /* From 3.x OpenPGP card specification :
+               In case of ECDH the card supports a partial decrypt only.
+               With its own private key and the given public key the card calculates a shared secret
+               in compliance with the Elliptic Curve Key Agreement Scheme from Diffie-Hellman.
+               The shared secret is returned in the response, all other calculation for deciphering
+               are done outside of the card.
+
+               The shared secret obtained is a KEK (Key Encryption Key) that is used to wrap the
+               session key.
+
+               From rfc6637#section-13 :
+               This document explicitly discourages the use of algorithms other than AES as a KEK algorithm.
+               */
             case ECKeyFormatType:
                 data = response.getData();
 
