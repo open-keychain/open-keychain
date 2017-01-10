@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.markdown4j.Markdown4jProcessor;
+import org.sufficientlysecure.htmltextview.HtmlResImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -44,7 +45,7 @@ public class ViewKeyAdvStartFragment extends Fragment {
         try {
             String html = new Markdown4jProcessor().process(
                     getActivity().getResources().openRawResource(R.raw.advanced));
-            textView.setHtmlFromString(html, new HtmlTextView.LocalImageGetter());
+            textView.setHtml(html, new HtmlResImageGetter(textView));
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
         }
