@@ -154,7 +154,7 @@ public class OpenPgpSignatureResultBuilder {
     private static boolean userIdListContainsAddress(String senderAddress, ArrayList<String> confirmedUserIds) {
         for (String rawUserId : confirmedUserIds) {
             UserId userId = OpenPgpUtils.splitUserId(rawUserId);
-            if (senderAddress.equals(userId.email)) {
+            if (senderAddress.equalsIgnoreCase(userId.email)) {
                 return true;
             }
         }
