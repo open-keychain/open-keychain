@@ -63,6 +63,7 @@ import java.io.IOException;
 
 import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
+import nordpol.android.TagDispatcherBuilder;
 
 public abstract class BaseSecurityTokenActivity extends BaseActivity
         implements OnDiscoveredTagListener, UsbConnectionDispatcher.OnDiscoveredUsbDeviceListener {
@@ -202,7 +203,13 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mNfcTagDispatcher = TagDispatcher.get(this, this, false, false, true, false);
+        mNfcTagDispatcher = new TagDispatcherBuilder(this, this)
+                .enableUnavailableNfcUserPrompt(false)
+                .enableSounds(true)
+                .enableDispatchingOnUiThread(true)
+                .enableBroadcomWorkaround(false)
+                .build();
+
         mUsbDispatcher = new UsbConnectionDispatcher(this, this);
 
         // Check whether we're recreating a previously destroyed instance
