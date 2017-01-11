@@ -22,9 +22,7 @@ package org.sufficientlysecure.keychain.remote;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -33,8 +31,6 @@ import java.util.List;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -51,7 +47,6 @@ import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
@@ -59,7 +54,6 @@ import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
@@ -72,8 +66,8 @@ import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -93,20 +87,11 @@ public class OpenPgpService extends Service {
     public static final List<Integer> SUPPORTED_VERSIONS =
             Collections.unmodifiableList(Arrays.asList(3, 4, 5, 6, 7, 8, 9, 10, 11));
 
-    static final String[] KEY_SEARCH_PROJECTION = new String[]{
-            KeyRings._ID,
-            KeyRings.MASTER_KEY_ID,
-            KeyRings.IS_EXPIRED,
-            KeyRings.IS_REVOKED,
-    };
-
-    // do not pre-select revoked or expired keys
-    static final String KEY_SEARCH_WHERE = Tables.KEYS + "." + KeychainContract.KeyRings.IS_REVOKED
-            + " = 0 AND " + KeychainContract.KeyRings.IS_EXPIRED + " = 0";
-
     private ApiPermissionHelper mApiPermissionHelper;
     private ProviderHelper mProviderHelper;
     private ApiDataAccessObject mApiDao;
+    private OpenPgpServiceKeyIdExtractor mKeyIdExtractor;
+    private ApiPendingIntentFactory mApiPendingIntentFactory;
 
     @Override
     public void onCreate() {
@@ -114,95 +99,9 @@ public class OpenPgpService extends Service {
         mApiPermissionHelper = new ApiPermissionHelper(this, new ApiDataAccessObject(this));
         mProviderHelper = new ProviderHelper(this);
         mApiDao = new ApiDataAccessObject(this);
-    }
 
-    private static class KeyIdResult {
-        final Intent mResultIntent;
-        final HashSet<Long> mKeyIds;
-
-        KeyIdResult(Intent resultIntent) {
-            mResultIntent = resultIntent;
-            mKeyIds = null;
-        }
-        KeyIdResult(HashSet<Long> keyIds) {
-            mResultIntent = null;
-            mKeyIds = keyIds;
-        }
-    }
-
-    private KeyIdResult returnKeyIdsFromEmails(Intent data, String[] encryptionUserIds, boolean isOpportunistic) {
-        boolean hasUserIds = (encryptionUserIds != null && encryptionUserIds.length > 0);
-
-        HashSet<Long> keyIds = new HashSet<>();
-        ArrayList<String> missingEmails = new ArrayList<>();
-        ArrayList<String> duplicateEmails = new ArrayList<>();
-        if (hasUserIds) {
-            for (String rawUserId : encryptionUserIds) {
-                OpenPgpUtils.UserId userId = KeyRing.splitUserId(rawUserId);
-                String email = userId.email != null ? userId.email : rawUserId;
-                // try to find the key for this specific email
-                Uri uri = KeyRings.buildUnifiedKeyRingsFindByEmailUri(email);
-                Cursor cursor = getContentResolver().query(uri, KEY_SEARCH_PROJECTION, KEY_SEARCH_WHERE, null, null);
-                if (cursor == null) {
-                    throw new IllegalStateException("Internal error, received null cursor!");
-                }
-                try {
-                    // result should be one entry containing the key id
-                    if (cursor.moveToFirst()) {
-                        long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
-                        keyIds.add(id);
-
-                        // another entry for this email -> two keys with the same email inside user id
-                        if (!cursor.isLast()) {
-                            Log.d(Constants.TAG, "more than one user id with the same email");
-                            duplicateEmails.add(email);
-
-                            // also pre-select
-                            while (cursor.moveToNext()) {
-                                long duplicateId = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
-                                keyIds.add(duplicateId);
-                            }
-                        }
-                    } else {
-                        missingEmails.add(email);
-                        Log.d(Constants.TAG, "user id missing");
-                    }
-                } finally {
-                    cursor.close();
-                }
-            }
-        }
-
-        boolean hasMissingUserIds = !missingEmails.isEmpty();
-        boolean hasDuplicateUserIds = !duplicateEmails.isEmpty();
-        if (isOpportunistic && (!hasUserIds || hasMissingUserIds)) {
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_ERROR,
-                    new OpenPgpError(OpenPgpError.OPPORTUNISTIC_MISSING_KEYS, "missing keys in opportunistic mode"));
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-            return new KeyIdResult(result);
-        }
-
-        if (!hasUserIds || hasMissingUserIds || hasDuplicateUserIds) {
-            // convert ArrayList<Long> to long[]
-            long[] keyIdsArray = getUnboxedLongArray(keyIds);
-            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
-            PendingIntent pi = piFactory.createSelectPublicKeyPendingIntent(data, keyIdsArray,
-                    missingEmails, duplicateEmails, hasUserIds);
-
-            // return PendingIntent to be executed by client
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-            return new KeyIdResult(result);
-        }
-
-        // everything was easy, we have exactly one key for every email
-        if (keyIds.isEmpty()) {
-            throw new AssertionError("keyIdsArray.length == 0, should never happen!");
-        }
-
-        return new KeyIdResult(keyIds);
+        mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
+        mKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(getContentResolver(), mApiPendingIntentFactory);
     }
 
     private Intent signImpl(Intent data, InputStream inputStream,
@@ -269,10 +168,8 @@ public class OpenPgpService extends Service {
             PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
-                ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
-
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
-                PendingIntent pIntent = piFactory.requiredInputPi(data,
+                PendingIntent pIntent = mApiPendingIntentFactory.requiredInputPi(data,
                         requiredInput, pgpResult.mCryptoInputParcel);
 
                 // return PendingIntent to be executed by client
@@ -320,35 +217,11 @@ public class OpenPgpService extends Service {
                 compressionId = PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED;
             }
 
-            long[] keyIds;
-            {
-                HashSet<Long> encryptKeyIds = new HashSet<>();
-                boolean hasKeysFromSelectPubkeyActivity = data.hasExtra(OpenPgpApi.EXTRA_KEY_IDS_SELECTED);
-                if (hasKeysFromSelectPubkeyActivity) {
-                    for (long keyId : data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS_SELECTED)) {
-                        encryptKeyIds.add(keyId);
-                    }
-                } else if (data.hasExtra(OpenPgpApi.EXTRA_USER_IDS)) {
-                    String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
-                    boolean isOpportunistic = data.getBooleanExtra(OpenPgpApi.EXTRA_OPPORTUNISTIC_ENCRYPTION, false);
-                    // give params through to activity...
-                    KeyIdResult result = returnKeyIdsFromEmails(data, userIds, isOpportunistic);
-
-                    if (result.mResultIntent != null) {
-                        return result.mResultIntent;
-                    }
-                    encryptKeyIds.addAll(result.mKeyIds);
-                }
-
-                // add key ids from non-ambiguous key id extra
-                if (data.hasExtra(OpenPgpApi.EXTRA_KEY_IDS)) {
-                    for (long keyId : data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS)) {
-                        encryptKeyIds.add(keyId);
-                    }
-                }
-
-                keyIds = getUnboxedLongArray(encryptKeyIds);
+            KeyIdResult keyIdResult = mKeyIdExtractor.returnKeyIdsFromIntent(data, false);
+            if (keyIdResult.hasResultIntent()) {
+                return keyIdResult.getResultIntent();
             }
+            long[] keyIds = keyIdResult.getKeyIds();
 
             // TODO this is not correct!
             long inputLength = inputStream.available();
@@ -422,10 +295,8 @@ public class OpenPgpService extends Service {
             PgpSignEncryptResult pgpResult = op.execute(pseInput, inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
-                ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
-
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
-                PendingIntent pIntent = piFactory.requiredInputPi(data,
+                PendingIntent pIntent = mApiPendingIntentFactory.requiredInputPi(data,
                         requiredInput, pgpResult.mCryptoInputParcel);
 
                 // return PendingIntent to be executed by client
@@ -504,12 +375,10 @@ public class OpenPgpService extends Service {
 
             DecryptVerifyResult pgpResult = op.execute(input, cryptoInput, inputData, outputStream);
 
-            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
-
             if (pgpResult.isPending()) {
                 // prepare and return PendingIntent to be executed by client
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
-                PendingIntent pIntent = piFactory.requiredInputPi(data,
+                PendingIntent pIntent = mApiPendingIntentFactory.requiredInputPi(data,
                         requiredInput, pgpResult.mCryptoInputParcel);
 
                 Intent result = new Intent();
@@ -522,7 +391,7 @@ public class OpenPgpService extends Service {
 
                 processDecryptionResultForResultIntent(targetApiVersion, result, pgpResult.getDecryptionResult());
                 processMetadataForResultIntent(targetApiVersion, result, pgpResult.getDecryptionMetadata());
-                processSignatureResultForResultIntent(targetApiVersion, data, piFactory, result, pgpResult);
+                processSignatureResultForResultIntent(targetApiVersion, data, result, pgpResult);
 
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
@@ -533,7 +402,7 @@ public class OpenPgpService extends Service {
                     Intent result = new Intent();
                     String packageName = mApiPermissionHelper.getCurrentCallingPackage();
                     result.putExtra(OpenPgpApi.RESULT_INTENT,
-                            piFactory.createSelectAllowedKeysPendingIntent(data, packageName));
+                            mApiPendingIntentFactory.createSelectAllowedKeysPendingIntent(data, packageName));
                     result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                     return result;
                 }
@@ -612,7 +481,7 @@ public class OpenPgpService extends Service {
     }
 
     private void processSignatureResultForResultIntent(int targetApiVersion, Intent data,
-            ApiPendingIntentFactory piFactory, Intent result, DecryptVerifyResult pgpResult) {
+            Intent result, DecryptVerifyResult pgpResult) {
         OpenPgpSignatureResult signatureResult =
                 getSignatureResultWithApiCompatibilityFallbacks(targetApiVersion, pgpResult);
 
@@ -620,7 +489,7 @@ public class OpenPgpService extends Service {
             case OpenPgpSignatureResult.RESULT_KEY_MISSING: {
                 // If signature key is missing we return a PendingIntent to retrieve the key
                 result.putExtra(OpenPgpApi.RESULT_INTENT,
-                        piFactory.createImportFromKeyserverPendingIntent(data,
+                        mApiPendingIntentFactory.createImportFromKeyserverPendingIntent(data,
                                 signatureResult.getKeyId()));
                 break;
             }
@@ -631,7 +500,7 @@ public class OpenPgpService extends Service {
             case OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE: {
                 // If signature key is known, return PendingIntent to show key
                 result.putExtra(OpenPgpApi.RESULT_INTENT,
-                        piFactory.createShowKeyPendingIntent(data, signatureResult.getKeyId()));
+                        mApiPendingIntentFactory.createShowKeyPendingIntent(data, signatureResult.getKeyId()));
                 break;
             }
             default:
@@ -653,8 +522,6 @@ public class OpenPgpService extends Service {
 
     private Intent getKeyImpl(Intent data, OutputStream outputStream) {
         try {
-            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
-
             long masterKeyId = data.getLongExtra(OpenPgpApi.EXTRA_KEY_ID, 0);
 
             try {
@@ -686,7 +553,7 @@ public class OpenPgpService extends Service {
 
                 // also return PendingIntent that opens the key view activity
                 result.putExtra(OpenPgpApi.RESULT_INTENT,
-                        piFactory.createShowKeyPendingIntent(data, masterKeyId));
+                        mApiPendingIntentFactory.createShowKeyPendingIntent(data, masterKeyId));
 
                 return result;
             } catch (ProviderHelper.NotFoundException e) {
@@ -694,7 +561,7 @@ public class OpenPgpService extends Service {
                 // to retrieve the missing key
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_INTENT,
-                        piFactory.createImportFromKeyserverPendingIntent(data, masterKeyId));
+                        mApiPendingIntentFactory.createImportFromKeyserverPendingIntent(data, masterKeyId));
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                 return result;
             }
@@ -723,8 +590,7 @@ public class OpenPgpService extends Service {
             String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
             String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
 
-            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
-            PendingIntent pi = piFactory.createSelectSignKeyIdPendingIntent(data, currentPkg, preferredUserId);
+            PendingIntent pi = mApiPendingIntentFactory.createSelectSignKeyIdPendingIntent(data, currentPkg, preferredUserId);
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -736,34 +602,16 @@ public class OpenPgpService extends Service {
     }
 
     private Intent getKeyIdsImpl(Intent data) {
-        // if data already contains EXTRA_KEY_IDS, it has been executed again
-        // after user interaction. Then, we just need to return the array again!
-        if (data.hasExtra(OpenPgpApi.EXTRA_KEY_IDS)) {
-            long[] keyIdsArray = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
-
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_KEY_IDS, keyIdsArray);
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-            return result;
-        } else {
-            // get key ids based on given user ids
-            String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
-            KeyIdResult keyResult = returnKeyIdsFromEmails(data, userIds, false);
-            if (keyResult.mResultIntent != null) {
-                return keyResult.mResultIntent;
-            }
-
-            if (keyResult.mKeyIds == null) {
-                throw new AssertionError("one of requiredUserInteraction and keyIds must be non-null, this is a bug!");
-            }
-
-            long[] keyIds = getUnboxedLongArray(keyResult.mKeyIds);
-
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-            resultIntent.putExtra(OpenPgpApi.RESULT_KEY_IDS, keyIds);
-            return resultIntent;
+        KeyIdResult keyIdResult = mKeyIdExtractor.returnKeyIdsFromIntent(data, true);
+        if (keyIdResult.hasResultIntent()) {
+            return keyIdResult.getResultIntent();
         }
+        long[] keyIds = keyIdResult.getKeyIds();
+
+        Intent result = new Intent();
+        result.putExtra(OpenPgpApi.RESULT_KEY_IDS, keyIds);
+        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+        return result;
     }
 
     private Intent backupImpl(Intent data, OutputStream outputStream) {
@@ -771,12 +619,10 @@ public class OpenPgpService extends Service {
             long[] masterKeyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
             boolean backupSecret = data.getBooleanExtra(OpenPgpApi.EXTRA_BACKUP_SECRET, false);
 
-            ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(getBaseContext());
-
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
                 Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_INTENT, piFactory.createBackupPendingIntent(data, masterKeyIds, backupSecret));
+                result.putExtra(OpenPgpApi.RESULT_INTENT, mApiPendingIntentFactory.createBackupPendingIntent(data, masterKeyIds, backupSecret));
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                 return result;
             }
@@ -807,16 +653,6 @@ public class OpenPgpService extends Service {
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
         }
-    }
-
-    @NonNull
-    private static long[] getUnboxedLongArray(@NonNull Collection<Long> arrayList) {
-        long[] result = new long[arrayList.size()];
-        int i = 0;
-        for (Long e : arrayList) {
-            result[i++] = e;
-        }
-        return result;
     }
 
     private Intent checkPermissionImpl(@NonNull Intent data) {
