@@ -9,6 +9,12 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/menu_import_keys_file_device"
+        android:icon="@drawable/ic_action_encrypt_copy_24dp"
+        android:title="@string/menu_device"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/menu_import_keys_file_paste"
         android:title="@string/menu_read_clipboard" />
 

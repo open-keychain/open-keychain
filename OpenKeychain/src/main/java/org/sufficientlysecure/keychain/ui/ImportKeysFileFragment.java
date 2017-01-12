@@ -104,6 +104,11 @@ public class ImportKeysFileFragment extends Fragment {
                 FileHelper.openDocument(ImportKeysFileFragment.this,
                         Uri.fromFile(Constants.Path.APP_DIR), "*/*", false, REQUEST_CODE_FILE);
                 return true;
+            case R.id.menu_import_keys_file_device:
+
+                // TODO Import key from other device
+
+                return true;
             case R.id.menu_import_keys_file_paste:
                 CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
                 String sendText = "";
