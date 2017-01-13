@@ -512,7 +512,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     // Since serialKeyRingImport does not throw any exceptions, this is what
                     // would have happened if
                     // we were importing the key on this thread
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             }
         }
