@@ -22,7 +22,7 @@ Translations are managed at Transifex, please contribute there at https://www.tr
 1. Lookout for interesting issues on Github. We have tagged issues were we explicitly like to see contributions: https://github.com/open-keychain/open-keychain/labels/help-wanted
 2. Read this README, especially the notes about coding style
 3. Fork OpenKeychain and contribute code (the best part :sunglasses: )
-4. Open a pull request on Github. We will help with occuring problems and merge your changes back into the main project.
+4. Open a pull request on Github. We will help with occurring problems and merge your changes back into the main project.
 5. PROFIT
 
 ### For bigger changes

@@ -278,7 +278,7 @@
   <string name="error_no_signature_key">ingen signaturnøkkel oppgitt</string>
   <string name="error_wrong_passphrase">feil passord</string>
   <string name="error_could_not_extract_private_key">kunne ikke pakke ut privat nøkkel</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Du trenger Android 4.1 for å bruke Androids NFC-strålingsfunksjon!</string>
   <string name="error_nfc_needed">NFC må være påslått!</string>
   <string name="error_beam_needed">Stråling må være påslått!</string>

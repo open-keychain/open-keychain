@@ -344,7 +344,7 @@
   <string name="error_integrity_check_failed">完整性检查失败! 数据已被篡改!</string>
   <string name="error_wrong_passphrase">密码错误</string>
   <string name="error_could_not_extract_private_key">不能提取私钥</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">只有 Android 4.1 及以上才支持 Android\'s NFC Beam 功能</string>
   <string name="error_nfc_needed">必须开启 NFC!</string>
   <string name="error_beam_needed">必须开启 Beam!</string>

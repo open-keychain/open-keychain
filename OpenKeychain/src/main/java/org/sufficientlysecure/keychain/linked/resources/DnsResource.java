@@ -93,7 +93,7 @@ public class DnsResource extends LinkedTokenResource {
         // There may be a query part
         /*
         if (pieces.length > 1) {
-            // parse CLASS and TYPE query paramters
+            // parse CLASS and TYPE query parameters
         }
         */
 

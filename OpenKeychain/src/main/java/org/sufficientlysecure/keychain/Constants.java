@@ -70,7 +70,7 @@ public final class Constants {
     public static final String FILE_EXTENSION_ENCRYPTED_BACKUP_SECRET = ".sec.pgp";
     public static final String FILE_EXTENSION_ENCRYPTED_BACKUP_PUBLIC = ".pub.pgp";
 
-    // used by QR Codes (Guardian Project, Monkeysphere compatiblity)
+    // used by QR Codes (Guardian Project, Monkeysphere compatibility)
     public static final String FINGERPRINT_SCHEME = "openpgp4fpr";
 
     public static final String BOUNCY_CASTLE_PROVIDER_NAME = BouncyCastleProvider.PROVIDER_NAME;

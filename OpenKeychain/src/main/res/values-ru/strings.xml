@@ -354,7 +354,7 @@
   <string name="error_integrity_check_failed">Проверка целостности не удалась! Данные изменились!</string>
   <string name="error_wrong_passphrase">неправильный пароль</string>
   <string name="error_could_not_extract_private_key">не удалось извлечь личный ключ</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Для использования NFC Beam требуется Android 4.1+ !</string>
   <string name="error_nfc_needed">Необходимо включить NFC!</string>
   <string name="error_beam_needed">Необходимо включить Beam!</string>
