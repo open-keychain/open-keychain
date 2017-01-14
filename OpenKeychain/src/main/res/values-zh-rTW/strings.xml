@@ -288,7 +288,7 @@
   <string name="error_integrity_check_failed">完整性檢查失敗！資料已被修改！</string>
   <string name="error_wrong_passphrase">密碼錯誤</string>
   <string name="error_could_not_extract_private_key">無法抽取私鑰</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">需要Android 4.1以上才能使用NFC Beam功能！</string>
   <string name="error_nfc_needed">NFC 必須開啓 !</string>
   <string name="error_beam_needed">Bean 必須開啓 !</string>

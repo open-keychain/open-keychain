@@ -195,7 +195,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
     private static class EncryptStreamResult {
 
-        // this is non-null iff an error occured, return directly
+        // this is non-null iff an error occurred, return directly
         DecryptVerifyResult errorResult;
 
         // for verification

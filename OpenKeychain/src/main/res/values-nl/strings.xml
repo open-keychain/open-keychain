@@ -347,7 +347,7 @@
   <string name="error_integrity_check_failed">integriteitcheck niet geslaagd! Data is bewerkt!</string>
   <string name="error_wrong_passphrase">wachtwoord verkeerd</string>
   <string name="error_could_not_extract_private_key">kan privésleutel niet uitpakken</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">U heeft minstens Android 4.1 nodig om Androids NFC Beam eigenschap te gebruiken!</string>
   <string name="error_nfc_needed">NFC moet aangezet zijn!</string>
   <string name="error_beam_needed">Beam moet aangezet zijn!</string>

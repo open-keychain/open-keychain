@@ -143,7 +143,7 @@
   <string name="error_invalid_data">Geçerli olan şifrelenmiş ya da imzalanmış OpenPGP içeriği yok!</string>
   <string name="error_integrity_check_failed">Bütünlük kontrolü başarısız! Veri değiştirilmiş!</string>
   <string name="error_could_not_extract_private_key">özel anahtar çıkarılamadı</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Android\'in NFC Beam özelliğini kullanabilmek için Android 4.1 kullanmalısınız!</string>
   <string name="error_nothing_import">Anahtar bulunamadı!</string>
   <string name="error_contacts_key_id_missing">Kişilerden anahtar ID getirme işlemi başarısız!</string>

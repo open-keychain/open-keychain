@@ -165,7 +165,7 @@ public class KeychainApplication extends Application {
     }
 
     /**
-     * Restart consolidate process if it has been interruped before
+     * Restart consolidate process if it has been interrupted before
      */
     public boolean checkConsolidateRecovery() {
         if (Preferences.getPreferences(this).getCachedConsolidate()) {

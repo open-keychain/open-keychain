@@ -338,7 +338,7 @@
   <string name="error_integrity_check_failed">osotasun egiaztapen hutsegitea! Datuak aldatuak izan dira!</string>
   <string name="error_wrong_passphrase">sarhitz okerra</string>
   <string name="error_could_not_extract_private_key">ezin da giltza pribatua atera</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Android 4.1 behar duzu Android-ren NFC Beam ezaugarria erabiltzeko!</string>
   <string name="error_nfc_needed">NFC gaitua izan behar da!</string>
   <string name="error_beam_needed">Beam gaitua izan behar da!</string>

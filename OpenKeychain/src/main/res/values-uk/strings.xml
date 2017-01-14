@@ -147,7 +147,7 @@
   <string name="error_no_signature_key">не подано ключ підпису</string>
   <string name="error_integrity_check_failed">Невдала перевірка цілісності! Дані вже змінено!</string>
   <string name="error_could_not_extract_private_key">не можна витягти секретний ключ</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Вам потрібний Android 4.1 для використання функції Androids NFC промінь!</string>
   <string name="error_nothing_import">Ключ не знайдено!</string>
   <string name="error_generic_report_bug">Трапилася загальна помилка, будь ласка, створіть новий звіт про помилку для OpenKeychain.</string>
