@@ -380,14 +380,15 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             Context context = itemView.getContext();
 
             { // set name and stuff, common to both key types
-                OpenPgpUtils.UserId userIdSplit = keyItem.getUserId();
-                if (userIdSplit.name != null) {
-                    mMainUserId.setText(highlighter.highlight(userIdSplit.name));
+                String name = keyItem.getName();
+                String email = keyItem.getEmail();
+                if (name != null) {
+                    mMainUserId.setText(highlighter.highlight(name));
                 } else {
                     mMainUserId.setText(R.string.user_id_no_name);
                 }
-                if (userIdSplit.email != null) {
-                    mMainUserIdRest.setText(highlighter.highlight(userIdSplit.email));
+                if (email != null) {
+                    mMainUserIdRest.setText(highlighter.highlight(email));
                     mMainUserIdRest.setVisibility(View.VISIBLE);
                 } else {
                     mMainUserIdRest.setVisibility(View.GONE);

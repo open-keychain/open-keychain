@@ -109,6 +109,40 @@ public class CachedPublicKeyRing extends KeyRing {
         return getPrimaryUserId();
     }
 
+    public String getName() throws PgpKeyNotFoundException {
+        try {
+            Object data = mProviderHelper.getGenericData(mUri,
+                    KeyRings.NAME,
+                    ProviderHelper.FIELD_TYPE_STRING);
+            return (String) data;
+        } catch(ProviderHelper.NotFoundException e) {
+            throw new PgpKeyNotFoundException(e);
+        }
+    }
+
+    public String getEmail() throws PgpKeyNotFoundException {
+        try {
+            Object data = mProviderHelper.getGenericData(mUri,
+                    KeyRings.EMAIL,
+                    ProviderHelper.FIELD_TYPE_STRING);
+            return (String) data;
+        } catch(ProviderHelper.NotFoundException e) {
+            throw new PgpKeyNotFoundException(e);
+        }
+    }
+
+
+    public String getComment() throws PgpKeyNotFoundException {
+        try {
+            Object data = mProviderHelper.getGenericData(mUri,
+                    KeyRings.COMMENT,
+                    ProviderHelper.FIELD_TYPE_STRING);
+            return (String) data;
+        } catch(ProviderHelper.NotFoundException e) {
+            throw new PgpKeyNotFoundException(e);
+        }
+    }
+
     @Override
     public boolean isRevoked() throws PgpKeyNotFoundException {
         try {

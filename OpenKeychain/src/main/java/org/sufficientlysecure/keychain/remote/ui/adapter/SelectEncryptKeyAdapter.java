@@ -181,14 +181,15 @@ public class SelectEncryptKeyAdapter extends KeyCursorAdapter<SelectEncryptKeyAd
             Context context = itemView.getContext();
 
             { // set name and stuff, common to both key types
-                OpenPgpUtils.UserId userIdSplit = cursor.getUserId();
-                if (userIdSplit.name != null) {
-                    mUserIdText.setText(highlighter.highlight(userIdSplit.name));
+                String name = cursor.getName();
+                String email = cursor.getEmail();
+                if (name != null) {
+                    mUserIdText.setText(highlighter.highlight(name));
                 } else {
                     mUserIdText.setText(R.string.user_id_no_name);
                 }
-                if (userIdSplit.email != null) {
-                    mUserIdRestText.setText(highlighter.highlight(userIdSplit.email));
+                if (email != null) {
+                    mUserIdRestText.setText(highlighter.highlight(email));
                     mUserIdRestText.setVisibility(View.VISIBLE);
                 } else {
                     mUserIdRestText.setVisibility(View.GONE);

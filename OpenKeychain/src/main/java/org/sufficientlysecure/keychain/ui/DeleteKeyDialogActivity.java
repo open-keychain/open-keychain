@@ -93,7 +93,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             try {
                 HashMap<String, Object> data = new ProviderHelper(this).getUnifiedData(
                         mMasterKeyIds[0], new String[]{
-                                KeychainContract.KeyRings.USER_ID,
+                                KeychainContract.KeyRings.NAME,
                                 KeychainContract.KeyRings.IS_REVOKED
                         }, new int[]{
                                 ProviderHelper.FIELD_TYPE_STRING,
@@ -102,11 +102,10 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 );
 
                 String name;
-                OpenPgpUtils.UserId mainUserId = KeyRing.splitUserId(
-                        (String) data.get(KeychainContract.KeyRings.USER_ID));
-                if (mainUserId.name != null) {
-                    name = mainUserId.name;
-                } else {
+
+                name = (String) data.get(KeychainContract.KeyRings.NAME);
+
+                if (name == null) {
                     name = getString(R.string.user_id_no_name);
                 }
 
@@ -274,7 +273,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 try {
                     HashMap<String, Object> data = new ProviderHelper(activity).getUnifiedData(
                             masterKeyId, new String[]{
-                                    KeychainContract.KeyRings.USER_ID,
+                                    KeychainContract.KeyRings.NAME,
                                     KeychainContract.KeyRings.HAS_ANY_SECRET
                             }, new int[]{
                                     ProviderHelper.FIELD_TYPE_STRING,
@@ -282,10 +281,9 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                             }
                     );
                     String name;
-                    OpenPgpUtils.UserId mainUserId = KeyRing.splitUserId((String) data.get(KeychainContract.KeyRings.USER_ID));
-                    if (mainUserId.name != null) {
-                        name = mainUserId.name;
-                    } else {
+
+                    name = (String) data.get(KeychainContract.KeyRings.NAME);
+                    if (name == null) {
                         name = getString(R.string.user_id_no_name);
                     }
 

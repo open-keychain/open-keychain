@@ -390,7 +390,10 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
                     KeychainContract.KeyRings.IS_REVOKED,
                     KeychainContract.KeyRings.IS_EXPIRED,
                     KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
-                    KeychainContract.KeyRings.CREATION
+                    KeychainContract.KeyRings.CREATION,
+                    KeychainContract.KeyRings.NAME,
+                    KeychainContract.KeyRings.EMAIL,
+                    KeychainContract.KeyRings.COMMENT
             ));
 
             PROJECTION = arr.toArray(new String[arr.size()]);
@@ -423,6 +426,22 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
             return getString(index);
         }
 
+        public String getName() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.NAME);
+            return getString(index);
+        }
+
+        public String getEmail() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.EMAIL);
+            return getString(index);
+        }
+
+        public String getComment() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.COMMENT);
+            return getString(index);
+        }
+
+        @Deprecated
         public OpenPgpUtils.UserId getUserId() {
             return KeyRing.splitUserId(getRawUserId());
         }

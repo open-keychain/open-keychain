@@ -33,7 +33,10 @@ public abstract class UserAttributesAdapter extends CursorAdapter {
             UserPackets.RANK,
             UserPackets.VERIFIED,
             UserPackets.IS_PRIMARY,
-            UserPackets.IS_REVOKED
+            UserPackets.IS_REVOKED,
+            UserPackets.NAME,
+            UserPackets.EMAIL,
+            UserPackets.COMMENT,
     };
     public static final int INDEX_ID = 0;
     public static final int INDEX_TYPE = 1;
@@ -43,6 +46,9 @@ public abstract class UserAttributesAdapter extends CursorAdapter {
     public static final int INDEX_VERIFIED = 5;
     public static final int INDEX_IS_PRIMARY = 6;
     public static final int INDEX_IS_REVOKED = 7;
+    public static final int INDEX_NAME = 8;
+    public static final int INDEX_EMAIL = 9;
+    public static final int INDEX_COMMENT = 10;
 
     public UserAttributesAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
