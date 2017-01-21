@@ -11,8 +11,14 @@ public class PackageUninstallReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String packageName = intent.getData().getEncodedSchemeSpecificPart();
-        Uri appUri = KeychainContract.ApiApps.buildByPackageNameUri(packageName);
-        context.getContentResolver().delete(appUri, null, null);
+        if (Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(intent.getAction())) {
+            Uri uri = intent.getData();
+            if (uri == null) {
+                return;
+            }
+            String packageName = intent.getData().getEncodedSchemeSpecificPart();
+            Uri appUri = KeychainContract.ApiApps.buildByPackageNameUri(packageName);
+            context.getContentResolver().delete(appUri, null, null);
+        }
     }
 }
