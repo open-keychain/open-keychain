@@ -146,6 +146,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private ImageButton mActionEncryptFile;
     private ImageButton mActionEncryptText;
     private ImageButton mActionNfc;
+    private ImageButton mActionWlan;
     private FloatingActionButton mFab;
     private ImageView mPhoto;
     private FrameLayout mPhotoLayout;
@@ -199,6 +200,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         mActionEncryptFile = (ImageButton) findViewById(R.id.view_key_action_encrypt_files);
         mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
         mActionNfc = (ImageButton) findViewById(R.id.view_key_action_nfc);
+        mActionWlan = (ImageButton) findViewById(R.id.view_key_action_wlan);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mPhoto = (ImageView) findViewById(R.id.view_key_photo);
         mPhotoLayout = (FrameLayout) findViewById(R.id.view_key_photo_layout);
@@ -212,6 +214,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         ContentDescriptionHint.setup(mActionEncryptFile);
         ContentDescriptionHint.setup(mActionEncryptText);
         ContentDescriptionHint.setup(mActionNfc);
+        ContentDescriptionHint.setup(mActionWlan);
         ContentDescriptionHint.setup(mFab);
 
 
@@ -312,6 +315,13 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             @Override
             public void onClick(View v) {
                 mNfcHelper.invokeNfcBeam();
+            }
+        });
+
+        mActionNfc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: Export Key Wlan
             }
         });
 
@@ -968,6 +978,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
                         mActionNfc.setVisibility(View.INVISIBLE);
+                        mActionWlan.setVisibility(View.INVISIBLE);
                         hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsSecret) {
@@ -1004,6 +1015,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
+                        mActionWlan.setVisibility(View.VISIBLE);
 
                         // invokeBeam is available from API 21
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
@@ -1020,6 +1032,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         mActionEncryptText.setVisibility(View.VISIBLE);
                         mQrCodeLayout.setVisibility(View.GONE);
                         mActionNfc.setVisibility(View.INVISIBLE);
+                        mActionWlan.setVisibility(View.INVISIBLE);
 
                         if (mIsVerified) {
                             mStatusText.setText(R.string.view_key_verified);

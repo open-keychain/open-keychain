@@ -122,6 +122,16 @@
                         android:visibility="invisible"
                         tools:visibility="visible" />
 
+                    <ImageButton
+                        android:id="@+id/view_key_action_wlan"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:contentDescription="@string/cd_share_nfc"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@drawable/ic_nfc_white_24dp"
+                        android:visibility="invisible"
+                        tools:visibility="visible" />
+
                 </LinearLayout>
 
                 <ImageView
