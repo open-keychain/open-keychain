@@ -21,7 +21,6 @@ package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
@@ -40,8 +39,6 @@ import org.bouncycastle.openpgp.operator.jcajce.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
@@ -228,6 +225,15 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 CanonicalizedSecretKeyRing signingKeyRing =
                         mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId);
                 signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
+
+                if (input.getAllowedKeyIds() != null) {
+                    if (!input.getAllowedKeyIds().contains(signingMasterKeyId)) {
+                        // this key is in our db, but NOT allowed!
+                        log.add(LogType.MSG_DC_ASKIP_NOT_ALLOWED, indent + 1);
+                        log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
+                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_KEY_DISALLOWED, log);
+                    }
+                }
 
 
                 // Make sure key is not expired or revoked

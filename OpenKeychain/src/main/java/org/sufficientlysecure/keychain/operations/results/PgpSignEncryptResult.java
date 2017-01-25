@@ -25,6 +25,8 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 public class PgpSignEncryptResult extends InputPendingResult {
 
+    public static final int RESULT_KEY_DISALLOWED = RESULT_ERROR + 32;
+
     byte[] mOutputBytes;
 
     byte[] mDetachedSignature;
