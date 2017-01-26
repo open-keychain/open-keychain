@@ -66,7 +66,10 @@ public class KeyAdapter extends CursorAdapter {
             KeyRings.HAS_DUPLICATE_USER_ID,
             KeyRings.FINGERPRINT,
             KeyRings.CREATION,
-            KeyRings.HAS_ENCRYPT
+            KeyRings.HAS_ENCRYPT,
+            KeyRings.NAME,
+            KeyRings.EMAIL,
+            KeyRings.COMMENT
     };
 
     public static final int INDEX_MASTER_KEY_ID = 1;
@@ -79,6 +82,9 @@ public class KeyAdapter extends CursorAdapter {
     public static final int INDEX_FINGERPRINT = 8;
     public static final int INDEX_CREATION = 9;
     public static final int INDEX_HAS_ENCRYPT = 10;
+    public static final int INDEX_NAME = 11;
+    public static final int INDEX_EMAIL = 12;
+    public static final int INDEX_COMMENT = 13;
 
     public KeyAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -266,6 +272,9 @@ public class KeyAdapter extends CursorAdapter {
 
         public final String mUserIdFull;
         public final OpenPgpUtils.UserId mUserId;
+        public final String mName;
+        public final String mEmail;
+        public final String mComment;
         public final long mKeyId;
         public final boolean mHasDuplicate;
         public final boolean mHasEncrypt;
@@ -276,6 +285,9 @@ public class KeyAdapter extends CursorAdapter {
         private KeyItem(Cursor cursor) {
             String userId = cursor.getString(INDEX_USER_ID);
             mUserId = KeyRing.splitUserId(userId);
+            mName = cursor.getString(INDEX_NAME);
+            mEmail = cursor.getString(INDEX_EMAIL);
+            mComment = cursor.getString(INDEX_COMMENT);
             mUserIdFull = userId;
             mKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
             mHasDuplicate = cursor.getLong(INDEX_HAS_DUPLICATE_USER_ID) > 0;
@@ -293,6 +305,9 @@ public class KeyAdapter extends CursorAdapter {
             CanonicalizedPublicKey key = ring.getPublicKey();
             String userId = key.getPrimaryUserIdWithFallback();
             mUserId = KeyRing.splitUserId(userId);
+            mName = mUserId.name;
+            mEmail = mUserId.email;
+            mComment = mUserId.comment;
             mUserIdFull = userId;
             mKeyId = ring.getMasterKeyId();
             mHasDuplicate = false;
@@ -309,10 +324,10 @@ public class KeyAdapter extends CursorAdapter {
         }
 
         public String getReadableName() {
-            if (mUserId.name != null) {
-                return mUserId.name;
+            if (mName != null) {
+                return mName;
             } else {
-                return mUserId.email;
+                return mEmail;
             }
         }
     }

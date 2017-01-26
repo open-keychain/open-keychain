@@ -71,20 +71,22 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         vDeleteButton.setVisibility(View.GONE); // not used
 
         String userId = cursor.getString(INDEX_USER_ID);
-        OpenPgpUtils.UserId splitUserId = KeyRing.splitUserId(userId);
-        if (splitUserId.name != null) {
-            vName.setText(splitUserId.name);
+        String name = cursor.getString(INDEX_NAME);
+        String email = cursor.getString(INDEX_EMAIL);
+        String comment = cursor.getString(INDEX_COMMENT);
+        if (name != null) {
+            vName.setText(name);
         } else {
             vName.setText(R.string.user_id_no_name);
         }
-        if (splitUserId.email != null) {
-            vAddress.setText(splitUserId.email);
+        if (email != null) {
+            vAddress.setText(email);
             vAddress.setVisibility(View.VISIBLE);
         } else {
             vAddress.setVisibility(View.GONE);
         }
-        if (splitUserId.comment != null) {
-            vComment.setText(splitUserId.comment);
+        if (comment != null) {
+            vComment.setText(comment);
             vComment.setVisibility(View.VISIBLE);
         } else {
             vComment.setVisibility(View.GONE);

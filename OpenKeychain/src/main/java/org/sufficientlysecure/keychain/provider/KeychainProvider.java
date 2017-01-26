@@ -526,6 +526,9 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(UserPackets.MASTER_KEY_ID, Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID);
                 projectionMap.put(UserPackets.TYPE, Tables.USER_PACKETS + "." + UserPackets.TYPE);
                 projectionMap.put(UserPackets.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID);
+                projectionMap.put(UserPackets.NAME, Tables.USER_PACKETS + "." + UserPackets.NAME);
+                projectionMap.put(UserPackets.EMAIL, Tables.USER_PACKETS + "." + UserPackets.EMAIL);
+                projectionMap.put(UserPackets.COMMENT, Tables.USER_PACKETS + "." + UserPackets.COMMENT);
                 projectionMap.put(UserPackets.ATTRIBUTE_DATA, Tables.USER_PACKETS + "." + UserPackets.ATTRIBUTE_DATA);
                 projectionMap.put(UserPackets.RANK, Tables.USER_PACKETS + "." + UserPackets.RANK);
                 projectionMap.put(UserPackets.IS_PRIMARY, Tables.USER_PACKETS + "." + UserPackets.IS_PRIMARY);

@@ -275,6 +275,9 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
             KeychainContract.KeyRings.USER_ID,
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET,
+            KeyRings.NAME,
+            KeyRings.EMAIL,
+            KeyRings.COMMENT,
     };
 
     @SuppressWarnings("unused")
@@ -282,6 +285,9 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
     static final int INDEX_USER_ID = 2;
     static final int INDEX_VERIFIED = 3;
     static final int INDEX_HAS_ANY_SECRET = 4;
+    static final int INDEX_NAME = 5;
+    static final int INDEX_EMAIL = 6;
+    static final int INDEX_COMMENT = 7;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -309,15 +315,15 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
 
         long signatureKeyId = mSignatureResult.getKeyId();
 
-        String userId = data.getString(INDEX_USER_ID);
-        OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
-        if (userIdSplit.name != null) {
-            mSignatureName.setText(userIdSplit.name);
+        String name = data.getString(INDEX_NAME);
+        String email = data.getString(INDEX_EMAIL);
+        if (name != null) {
+            mSignatureName.setText(name);
         } else {
             mSignatureName.setText(R.string.user_id_no_name);
         }
-        if (userIdSplit.email != null) {
-            mSignatureEmail.setText(userIdSplit.email);
+        if (email != null) {
+            mSignatureEmail.setText(email);
         } else {
             mSignatureEmail.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(
                     mSignatureResult.getKeyId()));
