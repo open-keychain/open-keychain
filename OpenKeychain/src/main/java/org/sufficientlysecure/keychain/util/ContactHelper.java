@@ -451,7 +451,10 @@ public class ContactHelper {
             KeychainContract.KeyRings.IS_REVOKED,
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_SECRET,
-            KeychainContract.KeyRings.HAS_ANY_SECRET};
+            KeychainContract.KeyRings.HAS_ANY_SECRET,
+            KeychainContract.KeyRings.NAME,
+            KeychainContract.KeyRings.EMAIL,
+            KeychainContract.KeyRings.COMMENT };
 
     public static final int INDEX_MASTER_KEY_ID = 0;
     public static final int INDEX_USER_ID = 1;
@@ -460,6 +463,9 @@ public class ContactHelper {
     public static final int INDEX_VERIFIED = 4;
     public static final int INDEX_HAS_SECRET = 5;
     public static final int INDEX_HAS_ANY_SECRET = 6;
+    public static final int INDEX_NAME = 7;
+    public static final int INDEX_EMAIL = 8;
+    public static final int INDEX_COMMENT = 9;
 
     /**
      * Write/Update the current OpenKeychain keys to the contact db
@@ -504,7 +510,7 @@ public class ContactHelper {
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
+                String name = cursor.getString(INDEX_NAME);
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
@@ -523,7 +529,7 @@ public class ContactHelper {
                     if (masterKeyId != -1) {
                         deleteRawContactByMasterKeyId(masterKeyId);
                     }
-                } else if (userIdSplit.name != null) {
+                } else if (name != null) {
 
                     // get raw contact to this master key id
                     long rawContactId = findRawContactId(masterKeyId);
@@ -534,12 +540,12 @@ public class ContactHelper {
                         Log.d(Constants.TAG, "Insert new raw contact with masterKeyId " + masterKeyId);
 
                         insertContact(ops, masterKeyId);
-                        writeContactKey(ops, rawContactId, masterKeyId, userIdSplit.name);
+                        writeContactKey(ops, rawContactId, masterKeyId, name);
                     }
 
                     // We always update the display name (which is derived from primary user id)
                     // and email addresses from user id
-                    writeContactDisplayName(ops, rawContactId, userIdSplit.name);
+                    writeContactDisplayName(ops, rawContactId, name);
                     writeContactEmail(ops, rawContactId, masterKeyId);
                     try {
                         mContentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
@@ -579,9 +585,9 @@ public class ContactHelper {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
+                String name = cursor.getString(INDEX_NAME);
 
-                if (!isExpired && !isRevoked && userIdSplit.name != null) {
+                if (!isExpired && !isRevoked && name != null) {
                     // if expired or revoked will not be removed from keysToDelete or inserted
                     // into main profile ("me" contact)
                     boolean existsInMainProfile = keysToDelete.remove(masterKeyId);
@@ -592,7 +598,7 @@ public class ContactHelper {
 
                         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
                         insertMainProfileRawContact(ops, masterKeyId);
-                        writeContactKey(ops, rawContactId, masterKeyId, userIdSplit.name);
+                        writeContactKey(ops, rawContactId, masterKeyId, name);
 
                         try {
                             mContentResolver.applyBatch(ContactsContract.AUTHORITY, ops);

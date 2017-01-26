@@ -822,7 +822,10 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET,
             KeychainContract.KeyRings.FINGERPRINT,
-            KeychainContract.KeyRings.HAS_ENCRYPT
+            KeychainContract.KeyRings.HAS_ENCRYPT,
+            KeyRings.NAME,
+            KeyRings.EMAIL,
+            KeyRings.COMMENT
     };
 
     static final int INDEX_MASTER_KEY_ID = 1;
@@ -833,6 +836,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     static final int INDEX_HAS_ANY_SECRET = 6;
     static final int INDEX_FINGERPRINT = 7;
     static final int INDEX_HAS_ENCRYPT = 8;
+    static final int INDEX_NAME = 9;
+    static final int INDEX_EMAIL = 10;
+    static final int INDEX_COMMENT = 11;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -885,12 +891,10 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
                 if (data.moveToFirst()) {
                     // get name, email, and comment from USER_ID
-                    OpenPgpUtils.UserId mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
-                    if (mainUserId.name != null) {
-                        mCollapsingToolbarLayout.setTitle(mainUserId.name);
-                    } else {
-                        mCollapsingToolbarLayout.setTitle(getString(R.string.user_id_no_name));
-                    }
+
+                    String name = data.getString(INDEX_NAME);
+
+                    mCollapsingToolbarLayout.setTitle(name != null ? name : getString(R.string.user_id_no_name));
 
                     mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                     mFingerprint = data.getBlob(INDEX_FINGERPRINT);

@@ -59,7 +59,10 @@ public class MultiUserIdsFragment extends Fragment implements LoaderManager.Load
             KeychainContract.UserPackets.MASTER_KEY_ID,
             KeychainContract.UserPackets.USER_ID,
             KeychainContract.UserPackets.IS_PRIMARY,
-            KeychainContract.UserPackets.IS_REVOKED
+            KeychainContract.UserPackets.IS_REVOKED,
+            KeychainContract.UserPackets.NAME,
+            KeychainContract.UserPackets.EMAIL,
+            KeychainContract.UserPackets.COMMENT,
     };
     private static final int INDEX_MASTER_KEY_ID = 1;
     private static final int INDEX_USER_ID = 2;
@@ -67,6 +70,9 @@ public class MultiUserIdsFragment extends Fragment implements LoaderManager.Load
     private static final int INDEX_IS_PRIMARY = 3;
     @SuppressWarnings("unused")
     private static final int INDEX_IS_REVOKED = 4;
+    private static final int INDEX_NAME = 5;
+    private static final int INDEX_EMAIL = 6;
+    private static final int INDEX_COMMENT = 7;
 
     @Nullable
     @Override
@@ -169,14 +175,14 @@ public class MultiUserIdsFragment extends Fragment implements LoaderManager.Load
         while (!data.isAfterLast()) {
             long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
             String userId = data.getString(INDEX_USER_ID);
-            OpenPgpUtils.UserId pieces = KeyRing.splitUserId(userId);
+            String name = data.getString(INDEX_NAME);
 
             // Two cases:
 
             boolean grouped = masterKeyId == lastMasterKeyId;
-            boolean subGrouped = data.isFirst() || grouped && lastName.equals(pieces.name);
+            boolean subGrouped = data.isFirst() || grouped && lastName.equals(name);
             // Remember for next loop
-            lastName = pieces.name;
+            lastName = name;
 
             Log.d(Constants.TAG, Long.toString(masterKeyId, 16) + (grouped ? "grouped" : "not grouped"));
 

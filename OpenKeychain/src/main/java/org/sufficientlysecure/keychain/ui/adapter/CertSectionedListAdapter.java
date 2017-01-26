@@ -233,8 +233,19 @@ public class CertSectionedListAdapter extends SectionCursorAdapter<CertSectioned
             return getString(index);
         }
 
-        public OpenPgpUtils.UserId getUserId() {
-            return KeyRing.splitUserId(getRawUserId());
+        public String getName() {
+            int index = getColumnIndexOrThrow(KeychainContract.Certs.NAME);
+            return getString(index);
+        }
+
+        public String getEmail() {
+            int index = getColumnIndexOrThrow(KeychainContract.Certs.EMAIL);
+            return getString(index);
+        }
+
+        public String getComment() {
+            int index = getColumnIndexOrThrow(KeychainContract.Certs.COMMENT);
+            return getString(index);
         }
 
         public OpenPgpUtils.UserId getSignerUserId() {
