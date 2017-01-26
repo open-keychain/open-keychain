@@ -32,58 +32,107 @@ import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 public class SplitUserIdTest {
 
     @Test
+    public void splitCompleteUserIdShouldReturnEmpty() throws Exception {
+        OpenPgpUtils.UserId info = KeyRing.splitUserId("");
+        Assert.assertNull(info.name);
+        Assert.assertNull(info.email);
+        Assert.assertNull(info.comment);
+    }
+
+    @Test
     public void splitCompleteUserIdShouldReturnAll3Components() throws Exception {
         OpenPgpUtils.UserId info = KeyRing.splitUserId("Max Mustermann (this is a comment) <max@example.com>");
         Assert.assertEquals("Max Mustermann", info.name);
-        Assert.assertEquals("this is a comment", info.comment);
         Assert.assertEquals("max@example.com", info.email);
+        Assert.assertEquals("this is a comment", info.comment);
     }
 
     @Test
     public void splitUserIdWithAllButCommentShouldReturnNameAndEmail() throws Exception {
         OpenPgpUtils.UserId info = KeyRing.splitUserId("Max Mustermann <max@example.com>");
         Assert.assertEquals("Max Mustermann", info.name);
-        Assert.assertNull(info.comment);
         Assert.assertEquals("max@example.com", info.email);
+        Assert.assertNull(info.comment);
     }
 
     @Test
     public void splitUserIdWithAllButEmailShouldReturnNameAndComment() throws Exception {
         OpenPgpUtils.UserId info = KeyRing.splitUserId("Max Mustermann (this is a comment)");
         Assert.assertEquals("Max Mustermann", info.name);
-        Assert.assertEquals("this is a comment", info.comment);
         Assert.assertNull(info.email);
+        Assert.assertEquals("this is a comment", info.comment);
     }
 
     @Test
     public void splitUserIdWithCommentAndEmailShouldReturnCommentAndEmail() throws Exception {
         OpenPgpUtils.UserId info = KeyRing.splitUserId(" (this is a comment) <max@example.com>");
         Assert.assertNull(info.name);
-        Assert.assertEquals("this is a comment", info.comment);
         Assert.assertEquals("max@example.com", info.email);
+        Assert.assertEquals("this is a comment", info.comment);
     }
 
     @Test
     public void splitUserIdWithEmailShouldReturnEmail() throws Exception {
         OpenPgpUtils.UserId info = KeyRing.splitUserId("max@example.com");
         Assert.assertNull(info.name);
-        Assert.assertNull(info.comment);
         Assert.assertEquals("max@example.com", info.email);
+        Assert.assertNull(info.comment);
+    }
+
+    @Test
+    public void splitUserIdWithQuotedEmailShouldReturnEmail() throws Exception {
+        OpenPgpUtils.UserId info = KeyRing.splitUserId("\"max@example.com\"");
+        Assert.assertNull(info.name);
+        Assert.assertEquals("max@example.com", info.email);
+        Assert.assertNull(info.comment);
+    }
+
+    @Test
+    public void splitUserIdWithEmailBracketsShouldReturnEmail() throws Exception {
+        OpenPgpUtils.UserId info = KeyRing.splitUserId("<max@example.com>");
+        Assert.assertNull(info.name);
+        Assert.assertEquals("max@example.com", info.email);
+        Assert.assertNull(info.comment);
+    }
+
+    @Test
+    public void splitUserIdWithEmailAsNameShouldReturnEmail() throws Exception {
+        OpenPgpUtils.UserId info = KeyRing.splitUserId("max@example.com <max@example.com>");
+        Assert.assertNull(info.name);
+        Assert.assertEquals("max@example.com", info.email);
+        Assert.assertNull(info.comment);
+    }
+
+    @Test
+    public void splitUserIdWithQuotedEmailAsNameShouldReturnEmail() throws Exception {
+        OpenPgpUtils.UserId info = KeyRing.splitUserId("\"max@example.com\" <max@example.com>");
+        Assert.assertNull(info.name);
+        Assert.assertEquals("max@example.com", info.email);
+        Assert.assertNull(info.comment);
+    }
+
+    @Test
+    public void splitUserIdWithEmailAndEmailLookingNameShouldReturnEmailAndName() throws Exception {
+        OpenPgpUtils.UserId info = KeyRing.splitUserId("Name@LooksLike.Email <max@example.com>");
+        Assert.assertEquals("Name@LooksLike.Email", info.name);
+        Assert.assertEquals("max@example.com", info.email);
+        Assert.assertNull(info.comment);
     }
 
     @Test
     public void splitUserIdWithNameShouldReturnName() throws Exception {
         OpenPgpUtils.UserId info = KeyRing.splitUserId("Max Mustermann");
         Assert.assertEquals("Max Mustermann", info.name);
-        Assert.assertNull(info.comment);
         Assert.assertNull(info.email);
+        Assert.assertNull(info.comment);
     }
 
     @Test
     public void splitUserIdWithCommentShouldReturnComment() throws Exception {
         OpenPgpUtils.UserId info = KeyRing.splitUserId(" (this is a comment)");
         Assert.assertNull(info.name);
-        Assert.assertEquals("this is a comment", info.comment);
         Assert.assertNull(info.email);
+        Assert.assertEquals("this is a comment", info.comment);
     }
+
 }

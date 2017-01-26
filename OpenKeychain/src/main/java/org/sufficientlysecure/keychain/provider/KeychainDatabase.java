@@ -54,7 +54,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 17;
+    private static final int DATABASE_VERSION = 18;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -318,6 +318,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     // no consolidate necessary
                     return;
                 }
+            case 16:
+                // splitUserId changed: Execute consolidate for new parsing of name, email
+            case 17:
+                // splitUserId changed: Execute consolidate for new parsing of name, email
         }
 
         // always do consolidate after upgrade
