@@ -3,6 +3,11 @@
 OpenKeychain is an OpenPGP implementation for Android.  
 For a more detailed description and installation instructions go to https://www.openkeychain.org .
 
+<a href="https://f-droid.org/repository/browse/?fdid=org.sufficientlysecure.keychain" target="_blank">
+<img src=/Graphics/get-it-on-f-droid.png alt="Get it on F-Droid" height="80"/></a>
+<a href="https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain" target="_blank">
+<img src=/Graphics/get-it-on-google-play.png alt="Get it on Google Play" height="80"/></a>
+
 ### Branches
 * The development of OpenKeychain happens in the "master" branch.
 * For every release a new branch, e.g., "3.2-fixes" is created to backport fixes from "master"
