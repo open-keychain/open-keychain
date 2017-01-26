@@ -23,16 +23,16 @@ public abstract class AsyncTaskLiveData<T> extends LiveData<T> {
     @Nullable
     private CancellationSignal cancellationSignal;
 
-    AsyncTaskLiveData(@NonNull Context context, @Nullable Uri observedUri) {
+    protected AsyncTaskLiveData(@NonNull Context context, @Nullable Uri observedUri) {
         super();
         this.context = context;
         this.observedUri = observedUri;
         this.observer = new ForceLoadContentObserver();
     }
 
-    abstract T asyncLoadData();
+    protected abstract T asyncLoadData();
 
-    private void loadDataInBackground() {
+    protected void updateDataInBackground() {
         new AsyncTask<Void, Void, T>() {
             @Override
             protected T doInBackground(Void... params) {
@@ -66,7 +66,7 @@ public abstract class AsyncTaskLiveData<T> extends LiveData<T> {
     protected void onActive() {
         T value = getValue();
         if (value == null) {
-            loadDataInBackground();
+            updateDataInBackground();
         }
 
         if (observedUri != null) {
@@ -105,7 +105,7 @@ public abstract class AsyncTaskLiveData<T> extends LiveData<T> {
 
         @Override
         public void onChange(boolean selfChange) {
-            loadDataInBackground();
+            updateDataInBackground();
         }
     }
 

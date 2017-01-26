@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.base;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -136,8 +137,6 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
         RecyclerView listView = new RecyclerView(context);
         listView.setId(INTERNAL_LIST_VIEW_ID);
 
-        int padding = FormattingUtils.dpToPx(context, 8);
-        listView.setPadding(padding, 0, padding, 0);
         listView.setClipToPadding(false);
 
         listContainer.addView(listView, new FrameLayout.LayoutParams(

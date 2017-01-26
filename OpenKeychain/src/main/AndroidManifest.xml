@@ -874,6 +874,11 @@
             android:exported="false"
             android:label="@string/app_name" />
         <activity
+            android:name=".remote.ui.dialog.RemoteSelectIdKeyActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Keychain.Transparent"
+            android:label="@string/app_name" />
+        <activity
             android:name=".remote.ui.SelectSignKeyIdActivity"
             android:exported="false"
             android:label="@string/app_name" />

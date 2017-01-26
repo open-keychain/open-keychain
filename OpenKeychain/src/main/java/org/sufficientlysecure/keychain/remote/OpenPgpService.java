@@ -196,8 +196,21 @@ public class OpenPgpService extends Service {
         }
     }
 
+    private Intent autocryptQueryImpl(Intent data) {
+        try {
+            KeyIdResult keyIdResult = mKeyIdExtractor.returnKeyIdsFromIntent(data, false,
+                    mApiPermissionHelper.getCurrentCallingPackage());
+            Intent resultIntent = getAutocryptStatusResult(keyIdResult);
+
+            return resultIntent;
+        } catch (Exception e) {
+            Timber.d(e, "encryptAndSignImpl");
+            return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
+        }
+    }
+
     private Intent encryptAndSignImpl(Intent data, InputStream inputStream,
-            OutputStream outputStream, boolean sign, boolean isQueryAutocryptStatus) {
+            OutputStream outputStream, boolean sign) {
         try {
             PgpSignEncryptData.Builder pgpData = PgpSignEncryptData.builder()
                     .setVersionHeader(null);
@@ -225,9 +238,6 @@ public class OpenPgpService extends Service {
                     mApiPermissionHelper.getCurrentCallingPackage());
 
             KeyIdResultStatus keyIdResultStatus = keyIdResult.getStatus();
-            if (isQueryAutocryptStatus) {
-                return getAutocryptStatusResult(keyIdResult);
-            }
 
             boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
             pgpData.setEnableAsciiArmorOutput(asciiArmor);
@@ -936,12 +946,12 @@ public class OpenPgpService extends Service {
                 return signImpl(data, inputStream, outputStream, false);
             }
             case OpenPgpApi.ACTION_QUERY_AUTOCRYPT_STATUS: {
-                return encryptAndSignImpl(data, inputStream, outputStream, false, true);
+                return autocryptQueryImpl(data);
             }
             case OpenPgpApi.ACTION_ENCRYPT:
             case OpenPgpApi.ACTION_SIGN_AND_ENCRYPT: {
                 boolean enableSign = action.equals(OpenPgpApi.ACTION_SIGN_AND_ENCRYPT);
-                return encryptAndSignImpl(data, inputStream, outputStream, enableSign, false);
+                return encryptAndSignImpl(data, inputStream, outputStream, enableSign);
             }
             case OpenPgpApi.ACTION_DECRYPT_VERIFY: {
                 return decryptAndVerifyImpl(data, inputStream, outputStream, false, progressable);

@@ -65,7 +65,7 @@ public class ApiPermissionHelper {
     /** Returns true iff the caller is allowed, or false on any type of problem.
      * This method should only be used in cases where error handling is dealt with separately.
      */
-    protected boolean isAllowedIgnoreErrors() {
+    public boolean isAllowedIgnoreErrors() {
         try {
             return isCallerAllowed();
         } catch (WrongPackageCertificateException e) {
