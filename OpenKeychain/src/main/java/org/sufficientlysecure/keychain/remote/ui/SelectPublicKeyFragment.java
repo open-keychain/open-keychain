@@ -174,16 +174,6 @@ public class SelectPublicKeyFragment extends RecyclerFragment<SelectEncryptKeyAd
                 getAdapter().getMasterKeyIds() : new long[0];
     }
 
-    public String[] getSelectedRawUserIds() {
-        return getAdapter() != null ?
-                getAdapter().getRawUserIds() : new String[0];
-    }
-
-    public OpenPgpUtils.UserId[] getSelectedUserIds() {
-        return getAdapter() != null ?
-                getAdapter().getUserIds() : new OpenPgpUtils.UserId[0];
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
@@ -199,6 +189,9 @@ public class SelectPublicKeyFragment extends RecyclerFragment<SelectEncryptKeyAd
                 KeyRings.VERIFIED,
                 KeyRings.HAS_DUPLICATE_USER_ID,
                 KeyRings.CREATION,
+                KeyRings.NAME,
+                KeyRings.EMAIL,
+                KeyRings.COMMENT
         };
 
         String inMasterKeyList = null;

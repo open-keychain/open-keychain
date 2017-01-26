@@ -192,11 +192,11 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
             return '#';
         } else {
-            String userId = cursor.getRawUserId();
-            if (TextUtils.isEmpty(userId)) {
-                return '?';
+            String name = cursor.getName();
+            if (name != null) {
+                return Character.toUpperCase(name.charAt(0));
             } else {
-                return Character.toUpperCase(userId.charAt(0));
+                return '?';
             }
         }
     }
@@ -313,11 +313,11 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
                 return "My";
             } else {
-                String userId = cursor.getRawUserId();
-                if (TextUtils.isEmpty(userId)) {
-                    return null;
+                String name = cursor.getName();
+                if (name != null) {
+                    return name.substring(0, 1).toUpperCase();
                 } else {
-                    return userId.substring(0, 1).toUpperCase();
+                    return null;
                 }
             }
         } else {
