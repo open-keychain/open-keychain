@@ -50,6 +50,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -154,7 +155,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
     }
 
     public URI getOnionURI() throws URISyntaxException {
-        return getURI(mOnion);
+        return mOnion != null ? getURI(mOnion) : null;
     }
 
     /**
@@ -189,10 +190,12 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
     }
 
     private HttpUrl getHttpUrl(ParcelableProxy proxy) throws URISyntaxException {
-        HttpUrl base = proxy.isTorEnabled() ? HttpUrl.get(getOnionURI())
-                : HttpUrl.get(getUrlURI());
+        URI base = getUrlURI();
+        if (proxy.isTorEnabled() && getOnionURI() != null) {
+            base = getOnionURI();
+        }
 
-        return base.newBuilder()
+        return HttpUrl.get(base).newBuilder()
                 .addPathSegment("pks")
                 .build();
     }
