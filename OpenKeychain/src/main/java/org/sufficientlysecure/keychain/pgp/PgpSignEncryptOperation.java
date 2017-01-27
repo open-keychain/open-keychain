@@ -229,8 +229,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 if (input.getAllowedKeyIds() != null) {
                     if (!input.getAllowedKeyIds().contains(signingMasterKeyId)) {
                         // this key is in our db, but NOT allowed!
-                        log.add(LogType.MSG_DC_ASKIP_NOT_ALLOWED, indent + 1);
-                        log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
+                        log.add(LogType.MSG_PSE_ERROR_KEY_NOT_ALLOWED, indent + 1);
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_KEY_DISALLOWED, log);
                     }
                 }
