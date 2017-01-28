@@ -174,7 +174,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
         PgpSignEncryptData data = new PgpSignEncryptData();
         data.setSymmetricPassphrase(cryptoInput.getPassphrase());
-        data.setEnableAsciiArmorOutput(true);
+        data.setEnableAsciiArmorOutput(backupInput.mEnableAsciiArmorOutput);
         data.setAddBackupHeader(true);
         PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(data);
 

@@ -19,15 +19,6 @@
 package org.sufficientlysecure.keychain.remote;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -74,6 +65,15 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 public class OpenPgpService extends Service {
     public static final int API_VERSION_WITH_RESULT_METADATA = 4;
@@ -618,6 +618,7 @@ public class OpenPgpService extends Service {
         try {
             long[] masterKeyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
             boolean backupSecret = data.getBooleanExtra(OpenPgpApi.EXTRA_BACKUP_SECRET, false);
+            boolean enableAsciiArmorOutput = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
@@ -629,7 +630,7 @@ public class OpenPgpService extends Service {
             // after user interaction with RemoteBackupActivity,
             // the backup code is cached in CryptoInputParcelCacheService, now we can proceed
 
-            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, null);
+            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, enableAsciiArmorOutput, null);
             BackupOperation op = new BackupOperation(this, mProviderHelper, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 
