@@ -346,7 +346,7 @@ public class CreateKeyFinalFragment extends Fragment {
     }
 
     private void createKey() {
-        final CreateKeyActivity activity = (CreateKeyActivity) getActivity();
+        CreateKeyActivity activity = (CreateKeyActivity) getActivity();
         if (activity == null) {
             // this is a ui-triggered action, nvm if it fails while detached!
             return;
