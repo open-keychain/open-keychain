@@ -731,6 +731,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_PSE_ERROR_PGP (LogLevel.ERROR, R.string.msg_pse_error_pgp),
         MSG_PSE_ERROR_SIG (LogLevel.ERROR, R.string.msg_pse_error_sig),
         MSG_PSE_ERROR_UNLOCK (LogLevel.ERROR, R.string.msg_pse_error_unlock),
+        MSG_PSE_ERROR_KEY_NOT_ALLOWED(LogLevel.ERROR, R.string.msg_pse_error_key_not_allowed),
         MSG_PSE_ERROR_REVOKED_OR_EXPIRED (LogLevel.ERROR, R.string.msg_pse_error_revoked_or_expired),
         MSG_PSE_KEY_OK (LogLevel.OK, R.string.msg_pse_key_ok),
         MSG_PSE_KEY_UNKNOWN (LogLevel.DEBUG, R.string.msg_pse_key_unknown),

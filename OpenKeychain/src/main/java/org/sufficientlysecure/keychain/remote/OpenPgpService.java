@@ -19,15 +19,6 @@
 package org.sufficientlysecure.keychain.remote;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -75,6 +66,15 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
 public class OpenPgpService extends Service {
     public static final int API_VERSION_WITH_RESULT_METADATA = 4;
     public static final int API_VERSION_WITH_KEY_REVOKED_EXPIRED = 5;
@@ -108,6 +108,8 @@ public class OpenPgpService extends Service {
                             OutputStream outputStream, boolean cleartextSign) {
         try {
             boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+
+            int targetApiVersion = data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1);
 
             // sign-only
             PgpSignEncryptData pgpData = new PgpSignEncryptData();
@@ -143,6 +145,7 @@ public class OpenPgpService extends Service {
 
 
             PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData);
+            pseInput.setAllowedKeyIds(getAllowedKeyIds(targetApiVersion));
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             if (!cleartextSign) {
@@ -204,6 +207,7 @@ public class OpenPgpService extends Service {
                                       OutputStream outputStream, boolean sign) {
         try {
             boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+            int targetApiVersion = data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1);
             String originalFilename = data.getStringExtra(OpenPgpApi.EXTRA_ORIGINAL_FILENAME);
             if (originalFilename == null) {
                 originalFilename = "";
@@ -278,6 +282,7 @@ public class OpenPgpService extends Service {
             }
 
             PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData);
+            pseInput.setAllowedKeyIds(getAllowedKeyIds(targetApiVersion));
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
@@ -330,15 +335,7 @@ public class OpenPgpService extends Service {
                 outputStream = null;
             }
 
-            String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-            HashSet<Long> allowedKeyIds = mApiDao.getAllowedKeyIdsForApp(
-                    KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
-
             int targetApiVersion = data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1);
-            if (targetApiVersion <= API_VERSION_HIGHEST_WITH_ACCOUNTS) {
-                allowedKeyIds.addAll(mApiDao.getAllKeyIdsForApp(
-                        ApiAccounts.buildBaseUri(currentPkg)));
-            }
 
             CryptoInputParcel cryptoInput = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (cryptoInput == null) {
@@ -368,7 +365,7 @@ public class OpenPgpService extends Service {
             // no support for symmetric encryption
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel()
                     .setAllowSymmetricDecryption(false)
-                    .setAllowedKeyIds(allowedKeyIds)
+                    .setAllowedKeyIds(getAllowedKeyIds(targetApiVersion))
                     .setDecryptMetadataOnly(decryptMetadataOnly)
                     .setDetachedSignature(detachedSignature)
                     .setSenderAddress(senderAddress);
@@ -692,6 +689,19 @@ public class OpenPgpService extends Service {
 
             return data;
         }
+    }
+
+    private HashSet<Long> getAllowedKeyIds(int targetApiVersion) {
+        String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
+        HashSet<Long> allowedKeyIds = mApiDao.getAllowedKeyIdsForApp(
+                KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
+
+        if (targetApiVersion <= API_VERSION_HIGHEST_WITH_ACCOUNTS) {
+            allowedKeyIds.addAll(mApiDao.getAllKeyIdsForApp(
+                    ApiAccounts.buildBaseUri(currentPkg)));
+        }
+
+        return allowedKeyIds;
     }
 
     /**
