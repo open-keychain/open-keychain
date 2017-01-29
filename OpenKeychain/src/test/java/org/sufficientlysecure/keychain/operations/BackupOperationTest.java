@@ -18,14 +18,6 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
-import java.security.Security;
-import java.util.Iterator;
-
 import android.app.Application;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -65,6 +57,14 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
+import java.security.Security;
+import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -255,7 +255,7 @@ public class BackupOperationTest {
                 new ProviderHelper(RuntimeEnvironment.application), null);
 
         BackupKeyringParcel parcel = new BackupKeyringParcel(
-                new long[] { mStaticRing1.getMasterKeyId() }, false, false, fakeOutputUri);
+                new long[] { mStaticRing1.getMasterKeyId() }, false, false, true, fakeOutputUri);
 
         ExportResult result = op.execute(parcel, null);
 
@@ -312,7 +312,7 @@ public class BackupOperationTest {
                     new ProviderHelper(RuntimeEnvironment.application), null);
 
             BackupKeyringParcel parcel = new BackupKeyringParcel(
-                    new long[] { mStaticRing1.getMasterKeyId() }, false, true, fakeOutputUri);
+                    new long[] { mStaticRing1.getMasterKeyId() }, false, true, true, fakeOutputUri);
             CryptoInputParcel inputParcel = new CryptoInputParcel(passphrase);
             ExportResult result = op.execute(parcel, inputParcel);
 
