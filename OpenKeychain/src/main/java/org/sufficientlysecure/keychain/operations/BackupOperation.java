@@ -37,7 +37,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import org.bouncycastle.bcpg.ArmoredOutputStream;
+import org.bouncycastle.bcpg.ArmoredWithoutVersionOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -269,10 +269,10 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
     private boolean writePublicKeyToStream(OperationLog log, OutputStream outStream, Cursor cursor)
             throws IOException {
-        ArmoredOutputStream arOutStream = null;
+        ArmoredWithoutVersionOutputStream arOutStream = null;
 
         try {
-            arOutStream = new ArmoredOutputStream(outStream);
+            arOutStream = new ArmoredWithoutVersionOutputStream(outStream);
             byte[] data = cursor.getBlob(INDEX_PUBKEY_DATA);
             CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
             ring.encode(arOutStream);
@@ -289,10 +289,10 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
     private boolean writeSecretKeyToStream(OperationLog log, OutputStream outStream, Cursor cursor)
             throws IOException {
-        ArmoredOutputStream arOutStream = null;
+        ArmoredWithoutVersionOutputStream arOutStream = null;
 
         try {
-            arOutStream = new ArmoredOutputStream(outStream);
+            arOutStream = new ArmoredWithoutVersionOutputStream(outStream);
             byte[] data = cursor.getBlob(INDEX_SECKEY_DATA);
             CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
             ring.encode(arOutStream);

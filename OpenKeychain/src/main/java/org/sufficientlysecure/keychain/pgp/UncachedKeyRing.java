@@ -37,7 +37,7 @@ import java.util.TreeSet;
 
 import android.support.annotation.VisibleForTesting;
 
-import org.bouncycastle.bcpg.ArmoredOutputStream;
+import org.bouncycastle.bcpg.ArmoredWithoutVersionOutputStream;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.bcpg.SignatureSubpacketTags;
 import org.bouncycastle.bcpg.UserAttributeSubpacketTags;
@@ -230,11 +230,8 @@ public class UncachedKeyRing {
         public boolean hasNext() throws IOException;
         public E next() throws IOException;
     }
-    public void encodeArmored(OutputStream out, String version) throws IOException {
-        ArmoredOutputStream aos = new ArmoredOutputStream(out);
-        if (version != null) {
-            aos.setHeader("Version", version);
-        }
+    public void encodeArmored(OutputStream out) throws IOException {
+        ArmoredWithoutVersionOutputStream aos = new ArmoredWithoutVersionOutputStream(out);
         aos.write(mRing.getEncoded());
         aos.close();
     }
