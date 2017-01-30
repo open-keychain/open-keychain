@@ -23,22 +23,22 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.sufficientlysecure.keychain.util.Passphrase;
-
 
 public class BackupKeyringParcel implements Parcelable {
     public Uri mCanonicalizedPublicKeyringUri;
 
     public final boolean mExportSecret;
     public final boolean mIsEncrypted;
+    public final boolean mEnableAsciiArmorOutput;
     public final long mMasterKeyIds[];
     public final Uri mOutputUri;
 
-    public BackupKeyringParcel(long[] masterKeyIds, boolean exportSecret, boolean isEncrypted, Uri outputUri) {
+    public BackupKeyringParcel(long[] masterKeyIds, boolean exportSecret, boolean isEncrypted, boolean enableAsciiArmorOutput, Uri outputUri) {
         mMasterKeyIds = masterKeyIds;
         mExportSecret = exportSecret;
         mOutputUri = outputUri;
         mIsEncrypted = isEncrypted;
+        mEnableAsciiArmorOutput = enableAsciiArmorOutput;
     }
 
     protected BackupKeyringParcel(Parcel in) {
@@ -47,6 +47,7 @@ public class BackupKeyringParcel implements Parcelable {
         mOutputUri = (Uri) in.readValue(Uri.class.getClassLoader());
         mMasterKeyIds = in.createLongArray();
         mIsEncrypted = in.readInt() != 0;
+        mEnableAsciiArmorOutput = in.readInt() != 0;
     }
 
     @Override
@@ -61,6 +62,7 @@ public class BackupKeyringParcel implements Parcelable {
         dest.writeValue(mOutputUri);
         dest.writeLongArray(mMasterKeyIds);
         dest.writeInt(mIsEncrypted ? 1 : 0);
+        dest.writeInt(mEnableAsciiArmorOutput ? 1 : 0);
     }
 
     public static final Parcelable.Creator<BackupKeyringParcel> CREATOR = new Parcelable.Creator<BackupKeyringParcel>() {
