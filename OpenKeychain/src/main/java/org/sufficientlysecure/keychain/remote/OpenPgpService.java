@@ -31,7 +31,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import org.bouncycastle.bcpg.ArmoredOutputStream;
+import org.bouncycastle.bcpg.ArmoredWithoutVersionOutputStream;
 import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpError;
@@ -116,7 +116,6 @@ public class OpenPgpService extends Service {
             pgpData.setEnableAsciiArmorOutput(asciiArmor)
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
-                    .setVersionHeader(null)
                     .setSignatureHashAlgorithm(PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT);
 
 
@@ -233,7 +232,6 @@ public class OpenPgpService extends Service {
 
             PgpSignEncryptData pgpData = new PgpSignEncryptData();
             pgpData.setEnableAsciiArmorOutput(asciiArmor)
-                    .setVersionHeader(null)
                     .setCompressionAlgorithm(compressionId)
                     .setSymmetricEncryptionAlgorithm(PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT)
                     .setEncryptionMasterKeyIds(keyIds);
@@ -536,7 +534,7 @@ public class OpenPgpService extends Service {
 
                     try {
                         if (requestAsciiArmor) {
-                            outputStream = new ArmoredOutputStream(outputStream);
+                            outputStream = new ArmoredWithoutVersionOutputStream(outputStream);
                         }
                         keyRing.encode(outputStream);
                     } finally {

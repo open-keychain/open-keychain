@@ -24,7 +24,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.bouncycastle.bcpg.ArmoredOutputStream;
+import org.bouncycastle.bcpg.ArmoredWithoutVersionOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
@@ -149,10 +149,10 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             ParcelableProxy proxy) {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ArmoredOutputStream aos = null;
+        ArmoredWithoutVersionOutputStream aos = null;
 
         try {
-            aos = new ArmoredOutputStream(bos);
+            aos = new ArmoredWithoutVersionOutputStream(bos);
             keyring.encode(aos);
             aos.close();
 

@@ -1528,7 +1528,7 @@ public class ProviderHelper {
         UncachedKeyRing keyRing = UncachedKeyRing.decodeFromData(data);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        keyRing.encodeArmored(bos, null);
+        keyRing.encodeArmored(bos);
         String armoredKey = bos.toString("UTF-8");
 
         Log.d(Constants.TAG, "armoredKey:" + armoredKey);

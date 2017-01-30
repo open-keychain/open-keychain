@@ -28,7 +28,6 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class PgpSignEncryptData implements Parcelable {
 
-    protected String mVersionHeader = null;
     protected boolean mEnableAsciiArmorOutput = false;
     protected int mCompressionAlgorithm = CompressionAlgorithmTags.UNCOMPRESSED;
     protected long[] mEncryptionMasterKeyIds = null;
@@ -51,7 +50,6 @@ public class PgpSignEncryptData implements Parcelable {
     PgpSignEncryptData(Parcel source) {
         ClassLoader loader = getClass().getClassLoader();
 
-        mVersionHeader = source.readString();
         mEnableAsciiArmorOutput = source.readInt() == 1;
         mCompressionAlgorithm = source.readInt();
         mEncryptionMasterKeyIds = source.createLongArray();
@@ -76,7 +74,6 @@ public class PgpSignEncryptData implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mVersionHeader);
         dest.writeInt(mEnableAsciiArmorOutput ? 1 : 0);
         dest.writeInt(mCompressionAlgorithm);
         dest.writeLongArray(mEncryptionMasterKeyIds);
@@ -181,15 +178,6 @@ public class PgpSignEncryptData implements Parcelable {
 
     public boolean isEnableAsciiArmorOutput() {
         return mEnableAsciiArmorOutput;
-    }
-
-    public String getVersionHeader() {
-        return mVersionHeader;
-    }
-
-    public PgpSignEncryptData setVersionHeader(String versionHeader) {
-        mVersionHeader = versionHeader;
-        return this;
     }
 
     public PgpSignEncryptData setEnableAsciiArmorOutput(boolean enableAsciiArmorOutput) {

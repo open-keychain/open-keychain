@@ -109,7 +109,7 @@ public class UncachedKeyringTest {
     @Test
     public void testArmorIdentity() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ring.encodeArmored(out, "OpenKeychain");
+        ring.encodeArmored(out);
 
         Assert.assertArrayEquals("armor encoded and decoded ring should be identical to original",
             ring.getEncoded(),
@@ -121,8 +121,8 @@ public class UncachedKeyringTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         // encode secret and public ring in here
-        ring.encodeArmored(out, "OpenKeychain");
-        pubRing.encodeArmored(out, "OpenKeychain");
+        ring.encodeArmored(out);
+        pubRing.encodeArmored(out);
 
         IteratorWithIOThrow<UncachedKeyRing> it =
                 UncachedKeyRing.fromStream(new ByteArrayInputStream(out.toByteArray()));
