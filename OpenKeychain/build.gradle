@@ -296,6 +296,10 @@ android {
         javaMaxHeapSize "2g"
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     packagingOptions {
         exclude 'LICENSE.txt'
         exclude 'META-INF/LICENSE.txt'
@@ -304,10 +308,6 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
         exclude '.readme'
-    }
-
-    dataBinding {
-        enabled = true
     }
 }
 
