@@ -149,8 +149,6 @@ dependencyVerification {
     ]
 }
 
-
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -290,15 +288,15 @@ android {
     }
 
     dexOptions {
-        preDexLibraries = true
+        preDexLibraries true
         // dexInProcess requires much RAM, which is not available on all dev systems
-        dexInProcess = false
-        jumboMode = true
+        dexInProcess false
+        jumboMode true
         javaMaxHeapSize "2g"
     }
 
     dataBinding {
-        enabled = true
+        enabled true
     }
 
     packagingOptions {
@@ -335,8 +333,8 @@ task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugWithTestCove
     executionData = fileTree(dir: "${buildDir}/jacoco", include: "**/*.exec")
 
     reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.enabled true
+        html.enabled true
     }
 }
 
