@@ -125,30 +125,35 @@ public class OpenPgpSignatureResultBuilder {
         }
         setSignatureKeyCertified(signingRing.getVerified() > 0);
 
+        ArrayList<String> allUserIds = signingRing.getUnorderedUserIds();
+        ArrayList<String> confirmedUserIds;
         try {
-            ArrayList<String> allUserIds = signingRing.getUnorderedUserIds();
-            ArrayList<String> confirmedUserIds = mKeyRepository.getConfirmedUserIds(signingRing.getMasterKeyId());
-            setUserIds(allUserIds, confirmedUserIds);
-
-            if (mSenderAddress != null) {
-                if (userIdListContainsAddress(mSenderAddress, confirmedUserIds)) {
-                    mSenderStatusResult = SenderStatusResult.USER_ID_CONFIRMED;
-                } else if (userIdListContainsAddress(mSenderAddress, allUserIds)) {
-                    mSenderStatusResult = SenderStatusResult.USER_ID_UNCONFIRMED;
-                } else {
-                    mSenderStatusResult = SenderStatusResult.USER_ID_MISSING;
-                }
-            } else {
-                mSenderStatusResult = SenderStatusResult.UNKNOWN;
-            }
-
+            confirmedUserIds = mKeyRepository.getConfirmedUserIds(signingRing.getMasterKeyId());
         } catch (NotFoundException e) {
             throw new IllegalStateException("Key didn't exist anymore for user id query!", e);
         }
+        setUserIds(allUserIds, confirmedUserIds);
+
+        mSenderStatusResult = processSenderStatusResult(allUserIds, confirmedUserIds);
 
         // either master key is expired/revoked or this specific subkey is expired/revoked
         setKeyExpired(signingRing.isExpired() || signingKey.isExpired());
         setKeyRevoked(signingRing.isRevoked() || signingKey.isRevoked());
+    }
+
+    private SenderStatusResult processSenderStatusResult(
+            ArrayList<String> allUserIds, ArrayList<String> confirmedUserIds) {
+        if (mSenderAddress == null) {
+            return SenderStatusResult.UNKNOWN;
+        }
+
+        if (userIdListContainsAddress(mSenderAddress, confirmedUserIds)) {
+            return SenderStatusResult.USER_ID_CONFIRMED;
+        } else if (userIdListContainsAddress(mSenderAddress, allUserIds)) {
+            return SenderStatusResult.USER_ID_UNCONFIRMED;
+        } else {
+            return SenderStatusResult.USER_ID_MISSING;
+        }
     }
 
     private static boolean userIdListContainsAddress(String senderAddress, ArrayList<String> confirmedUserIds) {
