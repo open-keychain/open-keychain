@@ -66,7 +66,7 @@ dependencies {
     // http://robolectric.org/getting-started/
     // http://www.vogella.com/tutorials/Robolectric/article.html
     testCompile 'junit:junit:4.12'
-    testCompile ('org.robolectric:robolectric:3.1.2') {
+    testCompile ('org.robolectric:robolectric:3.2.2') {
         exclude group: 'org.bouncycastle', module: 'bcprov-jdk16'
     }
     testCompile 'org.mockito:mockito-core:1.10.19'
@@ -149,8 +149,6 @@ dependencyVerification {
     ]
 }
 
-
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -201,9 +199,10 @@ android {
         }
 
         debug {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            testProguardFile('proguard-rules.pro')
+            // disable ProGuard for debug builds for faster compile times
+            minifyEnabled false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //testProguardFile('proguard-rules.pro')
 
             applicationIdSuffix ".debug"
 
@@ -289,11 +288,15 @@ android {
     }
 
     dexOptions {
-        preDexLibraries = true
+        preDexLibraries true
         // dexInProcess requires much RAM, which is not available on all dev systems
-        dexInProcess = false
-        jumboMode = true
+        dexInProcess false
+        jumboMode true
         javaMaxHeapSize "2g"
+    }
+
+    dataBinding {
+        enabled true
     }
 
     packagingOptions {
@@ -304,10 +307,6 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
         exclude '.readme'
-    }
-
-    dataBinding {
-        enabled = true
     }
 }
 
@@ -334,8 +333,8 @@ task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugWithTestCove
     executionData = fileTree(dir: "${buildDir}/jacoco", include: "**/*.exec")
 
     reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.enabled true
+        html.enabled true
     }
 }
 

@@ -23,7 +23,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import org.bouncycastle.bcpg.ArmoredOutputStream;
+import org.bouncycastle.bcpg.ArmoredWithoutVersionOutputStream;
 import org.bouncycastle.bcpg.BCPGOutputStream;
 import org.bouncycastle.bcpg.CompressionAlgorithmTags;
 import org.bouncycastle.openpgp.PGPCompressedDataGenerator;
@@ -32,10 +32,10 @@ import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPLiteralData;
 import org.bouncycastle.openpgp.PGPLiteralDataGenerator;
 import org.bouncycastle.openpgp.PGPSignatureGenerator;
+import org.bouncycastle.openpgp.PGPUtil;
 import org.bouncycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerator;
 import org.bouncycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
-import org.bouncycastle.openpgp.operator.jcajce.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
@@ -192,13 +192,10 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             data.getEncryptionMasterKeyIds()[data.getEncryptionMasterKeyIds().length - 1] = data.getAdditionalEncryptId();
         }
 
-        ArmoredOutputStream armorOut = null;
+        ArmoredWithoutVersionOutputStream armorOut = null;
         OutputStream out;
         if (data.isEnableAsciiArmorOutput()) {
-            armorOut = new ArmoredOutputStream(new BufferedOutputStream(outputStream, 1 << 16));
-            if (data.getVersionHeader() != null) {
-                armorOut.setHeader("Version", data.getVersionHeader());
-            }
+            armorOut = new ArmoredWithoutVersionOutputStream(new BufferedOutputStream(outputStream, 1 << 16));
             // if we have a charset, put it in the header
             if (data.getCharset() != null) {
                 armorOut.setHeader("Charset", data.getCharset());
@@ -389,7 +386,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
         BCPGOutputStream bcpgOut;
 
         ByteArrayOutputStream detachedByteOut = null;
-        ArmoredOutputStream detachedArmorOut = null;
+        ArmoredWithoutVersionOutputStream detachedArmorOut = null;
         BCPGOutputStream detachedBcpgOut = null;
 
         long opTime, startTime = System.currentTimeMillis();
@@ -505,11 +502,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 detachedByteOut = new ByteArrayOutputStream();
                 OutputStream detachedOut = detachedByteOut;
                 if (data.isEnableAsciiArmorOutput()) {
-                    detachedArmorOut = new ArmoredOutputStream(new BufferedOutputStream(detachedOut, 1 << 16));
-                    if (data.getVersionHeader() != null) {
-                        detachedArmorOut.setHeader("Version", data.getVersionHeader());
-                    }
-
+                    detachedArmorOut = new ArmoredWithoutVersionOutputStream(new BufferedOutputStream(detachedOut, 1 << 16));
                     detachedOut = detachedArmorOut;
                 }
                 detachedBcpgOut = new BCPGOutputStream(detachedOut);
@@ -665,7 +658,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
     /**
      * Remove whitespaces on line endings
      */
-    private static void processLine(final String pLine, final ArmoredOutputStream pArmoredOutput,
+    private static void processLine(final String pLine, final ArmoredWithoutVersionOutputStream pArmoredOutput,
                                     final PGPSignatureGenerator pSignatureGenerator)
             throws IOException, SignatureException {
 
