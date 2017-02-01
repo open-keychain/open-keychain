@@ -4,14 +4,11 @@ package org.sufficientlysecure.keychain.util;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class KeyFormattingUtilsTest {
 
     static final byte[] fp = new byte[] {

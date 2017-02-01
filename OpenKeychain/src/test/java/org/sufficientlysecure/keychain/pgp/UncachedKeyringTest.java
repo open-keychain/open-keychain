@@ -18,19 +18,15 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.bcpg.sig.KeyFlags;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.BuildConfig;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -46,8 +42,7 @@ import java.security.Security;
 import java.util.Iterator;
 import java.util.Random;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class UncachedKeyringTest {
 
     static UncachedKeyRing staticRing, staticPubRing;
