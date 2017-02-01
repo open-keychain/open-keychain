@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.provider;
 
 import android.net.Uri;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -27,12 +28,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
@@ -60,8 +58,7 @@ import java.net.URL;
 import java.security.Security;
 import java.util.ArrayList;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class InteropTest {
 
     @BeforeClass

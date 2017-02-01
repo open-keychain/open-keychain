@@ -18,15 +18,6 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 import org.bouncycastle.bcpg.BCPGInputStream;
 import org.bouncycastle.bcpg.PacketTags;
 import org.bouncycastle.bcpg.S2K;
@@ -34,11 +25,16 @@ import org.bouncycastle.bcpg.SecretKeyPacket;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.Strings;
-import org.sufficientlysecure.keychain.BuildConfig;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.shadows.ShadowLog;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
@@ -81,8 +77,7 @@ import java.util.Random;
  * packet will be copied regardless. Filtering out bad packets is done with canonicalization.
  *
  */
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class UncachedKeyringMergeTest {
 
     static UncachedKeyRing staticRingA, staticRingB;

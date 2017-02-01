@@ -18,14 +18,6 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
-import java.security.Security;
-import java.util.Iterator;
-
 import android.app.Application;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -38,11 +30,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -66,6 +56,14 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
+import java.security.Security;
+import java.util.Iterator;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -77,8 +75,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class BackupOperationTest {
 
     static Passphrase mPassphrase = TestingUtils.genPassphrase(true);

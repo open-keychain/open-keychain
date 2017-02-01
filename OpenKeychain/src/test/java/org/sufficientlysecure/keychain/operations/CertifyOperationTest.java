@@ -17,19 +17,16 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.bcpg.sig.KeyFlags;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.BuildConfig;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
@@ -55,8 +52,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class CertifyOperationTest {
 
     static UncachedKeyRing mStaticRing1, mStaticRing2;
