@@ -25,10 +25,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
 import java.io.ByteArrayOutputStream;
@@ -37,8 +35,7 @@ import java.math.BigInteger;
 import java.security.interfaces.RSAPrivateCrtKey;
 
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class SecurityTokenUtilsTest extends Mockito {
     @Before
     public void setUp() {
