@@ -6,7 +6,7 @@
     </item>
     <item>
         <selector>
-            <item android:state_selected="true" android:drawable="@color/pressed_gray"/>
+            <item android:state_activated="true" android:drawable="@color/pressed_gray"/>
         </selector>
     </item>
 </ripple>

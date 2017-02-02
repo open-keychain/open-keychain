@@ -64,13 +64,6 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     tools:visibility="visible"/>
-                <!--<com.futuremind.recyclerviewfastscroll.FastScroller
-                    android:id="@+id/fastscroll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
-                    android:orientation="vertical"
-                    app:fastscroll__bubbleColor="@color/primary" />-->
 
             </RelativeLayout>
 

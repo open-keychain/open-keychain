@@ -15,7 +15,6 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.Date;
@@ -23,7 +22,8 @@ import java.util.List;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractSectionableItem;
-import eu.davidea.flexibleadapter.utils.DrawableUtils;
+import eu.davidea.flexibleadapter.items.IFilterable;
+import eu.davidea.flexibleadapter.utils.Utils;
 import eu.davidea.viewholders.FlexibleViewHolder;
 
 /**
@@ -31,8 +31,9 @@ import eu.davidea.viewholders.FlexibleViewHolder;
  * Created by daquexian on 17-2-2.
  */
 
-public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHeaderItem> {
-    private int mId;
+public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHeaderItem>
+        implements IFilterable {
+
     private boolean mHasEncrypt;
     private byte[] mRawFingerPrint;
     private String mFingerPrint;
@@ -50,7 +51,7 @@ public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHead
 
     private KeyListListener mListener;
 
-    public KeyItem(int id, KeyHeaderItem headerItem, Cursor cursor, KeyListListener listener) {
+    public KeyItem(KeyHeaderItem headerItem, Cursor cursor, KeyListListener listener) {
         super(headerItem);
 
         mHasEncrypt = cursor.getInt(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.HAS_ENCRYPT)) != 0;
@@ -69,8 +70,6 @@ public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHead
         mCreationTime = cursor.getLong(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.CREATION)) * 1000;
         mCreationDate = new Date(mCreationTime);
 
-        mId = id;
-
         mListener = listener;
     }
 
@@ -81,7 +80,7 @@ public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHead
 
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder holder, int position, List payloads) {
-        holder.bindKey(this, new Highlighter(holder.itemView.getContext(), ""));
+        holder.bindKey(adapter, this);
     }
 
     @Override
@@ -91,31 +90,40 @@ public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHead
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof KeyItem) {
-            KeyItem kItem = (KeyItem) o;
-            return getId() == kItem.getId();
-        }
-        return false;
+        return o instanceof KeyItem && getKeyId() == ((KeyItem) o).getKeyId();
     }
 
-    public int getId() {
-        return mId;
+    @Override
+    public int hashCode() {
+        return (int) (getKeyId() % (long) Integer.MAX_VALUE);
     }
 
-    public static void setHeaders(List<KeyItem> keyItems) {
+    public static void setHeaders(Context context, List<KeyItem> keyItems) {
         String section = null;
-        KeyHeaderItem headerItem = null;
+        int secretKeyNum = 0;
         for (KeyItem keyItem : keyItems) {
-            if (section == null || !keyItem.getSection().equals(section)) {
+            if (keyItem.isSecret()) {
+                secretKeyNum++;
+            }
+        }
+        KeyHeaderItem headerItem = KeyHeaderItem.getInstance(context,
+                context.getResources().getQuantityString(R.plurals.n_keys, secretKeyNum, secretKeyNum), true);
+        for (KeyItem keyItem : keyItems) {
+            if (!keyItem.isSecret() && (section == null || !keyItem.getSection().equals(section))) {
                 section = keyItem.getSection();
-                headerItem = new KeyHeaderItem(section);
+                headerItem = KeyHeaderItem.getInstance(context, section, false);
             }
             keyItem.setHeader(headerItem);
         }
     }
 
     public String getSection() {
-        return isSecret() ? "My keys" : getName().substring(0, 1).toUpperCase();
+        return getName().substring(0, 1).toUpperCase();
+    }
+
+    @Override
+    public boolean filter(String constraint) {
+        return mName.toUpperCase().contains(constraint.toUpperCase()) || mEmail.toUpperCase().contains(constraint.toUpperCase());
     }
 
     static final class ViewHolder extends FlexibleViewHolder implements View.OnClickListener, View.OnLongClickListener{
@@ -147,20 +155,19 @@ public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHead
 
         private KeyListListener mListener;
 
-        void bindKey(KeyItem keyItem, Highlighter highlighter) {
-            // itemView.setSelected(isSelected(getAdapterPosition()));
+        void bindKey(FlexibleAdapter adapter, KeyItem keyItem) {
             Context context = itemView.getContext();
 
             { // set name and stuff, common to both key types
                 String name = keyItem.getName();
                 String email = keyItem.getEmail();
                 if (name != null) {
-                    mMainUserId.setText(highlighter.highlight(name));
+                    Utils.highlightText(mMainUserId, name, adapter.getSearchText());
                 } else {
                     mMainUserId.setText(R.string.user_id_no_name);
                 }
                 if (email != null) {
-                    mMainUserIdRest.setText(highlighter.highlight(email));
+                    Utils.highlightText(mMainUserIdRest, email, adapter.getSearchText());
                     mMainUserIdRest.setVisibility(View.VISIBLE);
                 } else {
                     mMainUserIdRest.setVisibility(View.GONE);
@@ -264,24 +271,6 @@ public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHead
                 default:
                     mListener.onKeyItemClicked(pos);
                     break;
-
-                /* default:
-                    if (getSelectedCount() == 0) {
-                        if (mListener != null) {
-                            mListener.onKeyItemClicked(getItemId());
-                        }
-                    } else {
-                        if (isSelected(pos)) {
-                            deselectPosition(pos);
-                        } else {
-                            selectPosition(pos);
-                        }
-
-                        if (mListener != null) {
-                            mListener.onSelectionStateChanged(getSelectedCount());
-                        }
-                    }
-                    break;*/
             }
 
         }

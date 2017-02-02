@@ -1,15 +1,14 @@
 package org.sufficientlysecure.keychain.ui.util.recyclerview.item;
 
-import android.database.Cursor;
-import android.support.v7.widget.RecyclerView;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
@@ -21,23 +20,43 @@ import eu.davidea.viewholders.FlexibleViewHolder;
  */
 
 public class KeyHeaderItem extends AbstractHeaderItem<KeyHeaderItem.ViewHolder> {
-    int mId;
-    String mTitle;
+    private int mContextHash;
+    private String mTitle;
+    private boolean mIsSecret;
 
-    public KeyHeaderItem(Cursor cursor) {
-        super();
-        boolean isSecret = cursor.getInt(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.HAS_ANY_SECRET)) != 0;
-        String name = cursor.getString(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.NAME));
-        setTitle(isSecret ? "My keys" : name.substring(0, 1).toUpperCase());
-    }
+    private static List<KeyHeaderItem> headerItemList = new ArrayList<>();
 
-    public KeyHeaderItem(String title) {
+    private KeyHeaderItem(Object object, String title, boolean isSecret) {
         super();
+        mContextHash = object.hashCode();
         mTitle = title;
+        mIsSecret = isSecret;
     }
 
-    public int getId() {
-        return mId;
+    @SuppressWarnings("unused")
+    private KeyHeaderItem() {}
+
+    /**
+     * guarantee there is only one HeaderItem instance for a group, or more than one header will
+     * be shown in some conditions.
+     * @param object Activty or Fragment, used to distinguish header in different Activity/Fragment
+     * @param title section title
+     * @param isSecret whether a private key
+     * @return a unique KeyHeaderItem
+     */
+    public static KeyHeaderItem getInstance(Object object, String title, boolean isSecret) {
+        KeyHeaderItem newItem = new KeyHeaderItem(object, title, isSecret);
+        for (KeyHeaderItem headerItem : headerItemList) {
+            if (headerItem.equals(newItem)) {
+                return headerItem;
+            }
+        }
+        headerItemList.add(newItem);
+        return newItem;
+    }
+
+    private int getContextHash() {
+        return mContextHash;
     }
 
     public String getTitle() {
@@ -51,14 +70,26 @@ public class KeyHeaderItem extends AbstractHeaderItem<KeyHeaderItem.ViewHolder> 
     @Override
     public boolean equals(Object o) {
         if (o instanceof KeyHeaderItem) {
-            return getTitle().equals(((KeyHeaderItem) o).getTitle());
+            final KeyHeaderItem another = (KeyHeaderItem) o;
+            return getContextHash() == another.getContextHash()
+                    && isSecret() == another.isSecret()
+                    && getTitle().equals(another.getTitle());
         }
         return false;
     }
 
     @Override
+    public int hashCode() {
+        return (getTitle().hashCode() << 1) + (isSecret() ? 1 : 0);
+    }
+
+    public boolean isSecret() {
+        return mIsSecret;
+    }
+
+    @Override
     public int getLayoutRes() {
-        return R.layout.key_list_header_private;
+        return mIsSecret ? R.layout.key_list_header_private : R.layout.key_list_header_public;
     }
 
     @Override
