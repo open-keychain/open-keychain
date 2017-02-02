@@ -13,9 +13,8 @@ public class KeychainTestRunner extends RobolectricTestRunner {
     @Override
     protected Config buildGlobalConfig() {
         return new Config.Builder()
-                .setSdk(23)
+                .setSdk(25)
                 .setConstants(WorkaroundBuildConfig.class)
-                .setManifest("src/main/AndroidManifest.xml")
                 .build();
     }
 }
