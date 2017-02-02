@@ -2,7 +2,6 @@ package org.sufficientlysecure.keychain.remote;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 
 import android.app.PendingIntent;
@@ -10,7 +9,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import org.openintents.openpgp.OpenPgpError;
@@ -21,6 +19,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 
@@ -146,7 +145,7 @@ class OpenPgpServiceKeyIdExtractor {
         }
 
         if (!hasUserIds || hasMissingUserIds || hasDuplicateUserIds) {
-            long[] keyIdsArray = getUnboxedLongArray(keyIds);
+            long[] keyIdsArray = KeyFormattingUtils.getUnboxedLongArray(keyIds);
             PendingIntent pi = apiPendingIntentFactory.createSelectPublicKeyPendingIntent(data, keyIdsArray,
                     missingEmails, duplicateEmails, hasUserIds);
 
@@ -162,16 +161,6 @@ class OpenPgpServiceKeyIdExtractor {
         }
 
         return new KeyIdResult(keyIds);
-    }
-
-    @NonNull
-    private static long[] getUnboxedLongArray(@NonNull Collection<Long> arrayList) {
-        long[] result = new long[arrayList.size()];
-        int i = 0;
-        for (Long e : arrayList) {
-            result[i++] = e;
-        }
-        return result;
     }
 
     static class KeyIdResult {
@@ -206,7 +195,7 @@ class OpenPgpServiceKeyIdExtractor {
             if (mKeyIds == null) {
                 throw new AssertionError("key ids must not be null when getKeyIds is called!");
             }
-            return getUnboxedLongArray(mKeyIds);
+            return KeyFormattingUtils.getUnboxedLongArray(mKeyIds);
         }
     }
 

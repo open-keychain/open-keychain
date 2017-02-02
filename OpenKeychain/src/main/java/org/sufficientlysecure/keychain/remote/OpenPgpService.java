@@ -393,13 +393,14 @@ public class OpenPgpService extends Service {
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
             } else {
-                //
                 if (pgpResult.isKeysDisallowed()) {
+                    long[] skippedDisallowedKeys = pgpResult.getSkippedDisallowedKeys();
                     // allow user to select allowed keys
                     Intent result = new Intent();
                     String packageName = mApiPermissionHelper.getCurrentCallingPackage();
                     result.putExtra(OpenPgpApi.RESULT_INTENT,
-                            mApiPendingIntentFactory.createSelectAllowedKeysPendingIntent(data, packageName));
+                            mApiPendingIntentFactory.createSelectAllowedKeysPendingIntent(
+                                    data, packageName, skippedDisallowedKeys));
                     result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                     return result;
                 }

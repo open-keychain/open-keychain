@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.security.SignatureException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -208,7 +209,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         int symmetricEncryptionAlgo = 0;
 
-        boolean skippedDisallowedKey = false;
+        HashSet<Long> skippedDisallowedKeys = new HashSet<>();
         boolean insecureEncryptionKey = false;
 
         // convenience method to return with error
@@ -607,7 +608,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         if (!input.getAllowedKeyIds().contains(masterKeyId)) {
                             // this key is in our db, but NOT allowed!
                             // continue with the next packet in the while loop
-                            result.skippedDisallowedKey = true;
+                            result.skippedDisallowedKeys.add(masterKeyId);
                             log.add(LogType.MSG_DC_ASKIP_NOT_ALLOWED, indent + 1);
                             continue;
                         }
@@ -816,9 +817,10 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_NO_DATA, log));
             }
             // there was data but key wasn't allowed
-            if (result.skippedDisallowedKey) {
+            if (!result.skippedDisallowedKeys.isEmpty()) {
                 log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
-                return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_KEY_DISALLOWED, log));
+                long[] skippedDisallowedKeys = KeyFormattingUtils.getUnboxedLongArray(result.skippedDisallowedKeys);
+                return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_KEY_DISALLOWED, log, skippedDisallowedKeys));
             }
             // no packet has been found where we have the corresponding secret key in our db
             log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);

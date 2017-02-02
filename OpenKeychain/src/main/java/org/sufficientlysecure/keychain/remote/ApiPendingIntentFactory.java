@@ -31,7 +31,7 @@ import org.sufficientlysecure.keychain.remote.ui.RemotePassphraseDialogActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteRegisterActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSelectPubKeyActivity;
-import org.sufficientlysecure.keychain.remote.ui.SelectAllowedKeysActivity;
+import org.sufficientlysecure.keychain.remote.ui.RequestKeyPermissionActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -103,9 +103,10 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectAllowedKeysPendingIntent(Intent data, String packageName) {
-        Intent intent = new Intent(mContext, SelectAllowedKeysActivity.class);
-        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
+    PendingIntent createSelectAllowedKeysPendingIntent(Intent data, String packageName, long[] skippedDisallowedKeys) {
+        Intent intent = new Intent(mContext, RequestKeyPermissionActivity.class);
+        intent.putExtra(RequestKeyPermissionActivity.EXTRA_PACKAGE_NAME, packageName);
+        intent.putExtra(RequestKeyPermissionActivity.EXTRA_REQUESTED_KEY_IDS, skippedDisallowedKeys);
 
         return createInternal(data, intent);
     }

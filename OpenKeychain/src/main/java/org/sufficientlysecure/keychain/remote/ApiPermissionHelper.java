@@ -230,7 +230,7 @@ public class ApiPermissionHelper {
      *
      * @throws WrongPackageCertificateException
      */
-    private boolean isPackageAllowed(String packageName) throws WrongPackageCertificateException {
+    public boolean isPackageAllowed(String packageName) throws WrongPackageCertificateException {
         Log.d(Constants.TAG, "isPackageAllowed packageName: " + packageName);
 
         byte[] storedPackageCert = mApiDao.getApiAppCertificate(packageName);
