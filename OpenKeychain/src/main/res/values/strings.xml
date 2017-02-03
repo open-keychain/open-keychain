@@ -655,7 +655,8 @@
     <string name="api_settings_accounts_empty">"No accounts attached to this app."</string>
     <string name="api_create_account_text">"No key is configured for this account. Please select one of your existing keys or create a new one.\nApps can only decrypt/sign with the keys selected here!"</string>
     <string name="api_update_account_text">"The key saved for this account has been deleted. Please select a different one!\nApps can only decrypt/sign with the keys selected here!"</string>
-    <string name="api_register_text">"The displayed app wants to encrypt/decrypt messages and sign them in your name.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the 'Apps' screen."</string>
+    <string name="api_register_title">"Allow access to OpenKeychain?"</string>
+    <string name="api_register_text">"%s requests to use OpenKeychain as a crypto provider. You will still be asked for permission before the app can use any of your keys for decryption.\n\nYou can revoke access later in the 'Apps' screen."</string>
     <string name="api_register_allow">"Allow access"</string>
     <string name="api_register_disallow">"Disallow access"</string>
     <string name="api_register_error_select_key">"Please select a key!"</string>

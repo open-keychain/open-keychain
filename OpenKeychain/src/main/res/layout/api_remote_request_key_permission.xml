@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:id="@+id/iconLayout"
         android:elevation="4dp"
         android:background="?attr/colorPrimary"
         android:gravity="center_horizontal"
@@ -43,82 +42,98 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
-        android:paddingTop="24dp"
-        android:paddingBottom="16dp"
-        >
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <ScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:text="@string/request_permission_title"
-            android:id="@+id/dialog_title"
-            />
-
-        <TextView
-            android:id="@+id/select_identity_key_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:gravity="center_vertical"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="@string/request_permission_msg"
-            />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal"
-            android:background="?selectableItemBackground"
-            android:id="@+id/key_info_layout"
-            >
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:padding="8dp"
-                android:paddingRight="8dp"
-                android:src="@drawable/ic_vpn_key_grey_24dp"
-                />
+            android:overScrollMode="ifContentScrolls"
+            tools:ignore="UselessParent">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:paddingTop="24dp"
+                android:paddingBottom="16dp"
+                >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/requested_key_label"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                    android:textAppearance="?android:textAppearanceLarge"
+                    android:text="@string/request_permission_title"
+                    android:id="@+id/dialog_title"
+                    />
 
                 <TextView
-                    android:id="@+id/select_key_item_name"
+                    android:id="@+id/select_identity_key_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Alice Skywalker"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    tools:text="@string/request_permission_msg"
+                    />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
+                    android:background="?selectableItemBackground"
+                    android:id="@+id/key_info_layout"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:padding="8dp"
+                        android:paddingRight="8dp"
+                        android:src="@drawable/ic_vpn_key_grey_24dp"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/requested_key_label"
+                            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                        <TextView
+                            android:id="@+id/select_key_item_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="Alice Skywalker"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/requested_key_unavailable_warning"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textColor="@color/android_red_dark"
+                    android:id="@+id/requested_key_unavailable_warning"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    />
 
             </LinearLayout>
-        </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/requested_key_unavailable_warning"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/android_red_dark"
-            android:id="@+id/requested_key_unavailable_warning"
-            android:visibility="gone"
-            tools:visibility="visible"
-            />
+        </ScrollView>
 
     </LinearLayout>
 
