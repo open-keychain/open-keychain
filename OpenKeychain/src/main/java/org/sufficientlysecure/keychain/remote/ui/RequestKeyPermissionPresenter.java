@@ -51,12 +51,8 @@ class RequestKeyPermissionPresenter {
         this.view = view;
     }
 
-    void setupFromIntentData(String packageName, long[] requestedMasterKeyIds) {
+    void setupFromIntentData(String packageName, long masterKeyId) {
         checkPackageAllowed(packageName);
-
-        if (requestedMasterKeyIds.length < 1) {
-            view.finishAsCancelled();
-        }
 
         try {
             setPackageInfo(packageName);
@@ -67,7 +63,7 @@ class RequestKeyPermissionPresenter {
         }
 
         this.packageName = packageName;
-        this.masterKeyId = requestedMasterKeyIds[0];
+        this.masterKeyId = masterKeyId;
         try {
             CachedPublicKeyRing cachedPublicKeyRing = new ProviderHelper(context).getCachedPublicKeyRing(masterKeyId);
 

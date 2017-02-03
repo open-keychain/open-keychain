@@ -37,6 +37,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.remote.ui.RequestKeyPermissionPresenter.RequestKeyPermissionMvpView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
@@ -45,7 +46,7 @@ import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
 public class RequestKeyPermissionActivity extends FragmentActivity {
     public static final String EXTRA_PACKAGE_NAME = "package_name";
-    public static final String EXTRA_REQUESTED_KEY_IDS = "requested_key_ids";
+    public static final String EXTRA_REQUESTED_KEY_ID = "requested_key_id";
 
 
     private RequestKeyPermissionPresenter presenter;
@@ -69,9 +70,9 @@ public class RequestKeyPermissionActivity extends FragmentActivity {
 
         Intent intent = getIntent();
         String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
-        long[] keyIds = intent.getLongArrayExtra(EXTRA_REQUESTED_KEY_IDS);
+        long masterKeyId = intent.getLongExtra(EXTRA_REQUESTED_KEY_ID, Constants.key.none);
 
-        presenter.setupFromIntentData(packageName, keyIds);
+        presenter.setupFromIntentData(packageName, masterKeyId);
     }
 
     public static class RequestKeyPermissionFragment extends DialogFragment {

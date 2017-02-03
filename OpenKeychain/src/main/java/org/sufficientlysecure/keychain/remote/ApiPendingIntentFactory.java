@@ -103,10 +103,10 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectAllowedKeysPendingIntent(Intent data, String packageName, long[] skippedDisallowedKeys) {
+    PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long masterKeyId) {
         Intent intent = new Intent(mContext, RequestKeyPermissionActivity.class);
         intent.putExtra(RequestKeyPermissionActivity.EXTRA_PACKAGE_NAME, packageName);
-        intent.putExtra(RequestKeyPermissionActivity.EXTRA_REQUESTED_KEY_IDS, skippedDisallowedKeys);
+        intent.putExtra(RequestKeyPermissionActivity.EXTRA_REQUESTED_KEY_ID, masterKeyId);
 
         return createInternal(data, intent);
     }
