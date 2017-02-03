@@ -52,6 +52,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private boolean mSecretKey;
     private boolean mRevoked;
     private boolean mExpired;
+    private boolean mSecure;
     private boolean mUpdated;
 
     private Date mDate;
@@ -111,8 +112,16 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mRevoked = revoked;
     }
 
-    public boolean isRevokedOrExpired() {
-        return mRevoked || mExpired;
+    public boolean isSecure() {
+        return mSecure;
+    }
+
+    public void setSecure(boolean secure) {
+        mSecure = secure;
+    }
+
+    public boolean isRevokedOrExpiredOrInsecure() {
+        return mRevoked || mExpired || !mSecure;
     }
 
     public Date getDate() {
@@ -284,6 +293,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         // NOTE: Dont use maybe methods for now, they can be wrong.
         mRevoked = false; //key.isMaybeRevoked();
         mExpired = false; //key.isMaybeExpired();
+        mSecure = true;
 
         mBitStrength = key.getBitStrength();
         mCurveOid = key.getCurveOid();

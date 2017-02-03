@@ -82,6 +82,10 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return getRing().getPublicKey().hasRevocation();
     }
 
+    public boolean isSecure() {
+        return getPublicKey().isSecure();
+    }
+
     public Date getCreationDate() {
         return getPublicKey().getCreationTime();
     }

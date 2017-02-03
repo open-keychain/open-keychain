@@ -70,6 +70,10 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
             existing.setExpired(true);
             modified = true;
         }
+        if (!incoming.isSecure()) {
+            existing.setSecure(false);
+            modified = true;
+        }
 
         if (incoming.getKeyserver() != null) {
             existing.setKeyserver(incoming.getKeyserver());

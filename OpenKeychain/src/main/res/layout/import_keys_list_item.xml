@@ -41,7 +41,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
+                        app:keyRevokedOrExpiredOrInsecure="@{entry.revokedOrExpiredOrInsecure}"
                         app:keySecret="@{entry.secretKey}"
                         app:keyUserId="@{entry.primaryUserId.name}"
                         app:query="@{entry.query}" />
@@ -51,7 +51,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        app:keyRevokedOrExpired="@{entry.revokedOrExpired}"
+                        app:keyRevokedOrExpiredOrInsecure="@{entry.revokedOrExpiredOrInsecure}"
                         app:keyUserEmail="@{entry.primaryUserId.email}"
                         app:query="@{entry.query}" />
 
@@ -60,7 +60,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         app:keyCreation="@{entry.date}"
-                        app:keyRevokedOrExpired="@{entry.revokedOrExpired}" />
+                        app:keyRevokedOrExpiredOrInsecure="@{entry.revokedOrExpiredOrInsecure}" />
 
                 </LinearLayout>
 
