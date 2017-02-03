@@ -20,9 +20,6 @@ package org.sufficientlysecure.keychain.remote.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
@@ -32,157 +29,127 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.remote.ApiPermissionHelper;
-import org.sufficientlysecure.keychain.remote.ApiPermissionHelper.WrongPackageCertificateException;
-import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
+import org.sufficientlysecure.keychain.remote.ui.RequestKeyPermissionPresenter.RequestKeyPermissionMvpView;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.util.Log;
 
 
 public class RequestKeyPermissionActivity extends BaseActivity {
     public static final String EXTRA_PACKAGE_NAME = "package_name";
     public static final String EXTRA_REQUESTED_KEY_IDS = "requested_key_ids";
 
-    private ViewAnimator viewAnimator;
 
-    private String packageName;
+    private RequestKeyPermissionPresenter presenter;
+
     private View keyInfoLayout;
+    private ViewAnimator viewAnimator;
+    private TextView titleText;
+    private ImageView iconClientApp;
+    private TextView keyUserIdView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
-
-        checkPackageAllowed(packageName);
-
-        // Inflate a "Done" custom action bar
         setFullScreenDialogClose(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        setResult(RESULT_CANCELED);
-                        finish();
+                        presenter.onClickCancelDialog();
                     }
                 });
 
-        ImageView iconClientApp = (ImageView) findViewById(R.id.icon_client_app);
-        Drawable appIcon;
-        CharSequence appName;
-        try {
-            PackageManager packageManager = getPackageManager();
-            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
-            appIcon = packageManager.getApplicationIcon(applicationInfo);
-            appName = packageManager.getApplicationLabel(applicationInfo);
-        } catch (NameNotFoundException e) {
-            Log.e(Constants.TAG, "Unable to find info of calling app!");
-            finish();
-            return;
-        }
-        iconClientApp.setImageDrawable(appIcon);
+        Intent intent = getIntent();
+        String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
+        long[] keyIds = intent.getLongArrayExtra(EXTRA_REQUESTED_KEY_IDS);
 
-        TextView titleText = (TextView) findViewById(R.id.select_identity_key_title);
-        titleText.setText(getString(R.string.request_permission_title, appName));
-
-        viewAnimator = (ViewAnimator) findViewById(R.id.status_animator);
-        keyInfoLayout = findViewById(R.id.key_info_layout);
-
-        long[] requestedMasterKeyIds = getIntent().getLongArrayExtra(EXTRA_REQUESTED_KEY_IDS);
-        long masterKeyId = requestedMasterKeyIds[0];
-//        long masterKeyId = 4817915339785265755L;
-        try {
-            CachedPublicKeyRing cachedPublicKeyRing = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
-
-            UserId userId = cachedPublicKeyRing.getSplitPrimaryUserIdWithFallback();
-            displayKeyInfo(masterKeyId, userId);
-
-            if (cachedPublicKeyRing.hasAnySecret()) {
-                displayRequestKeyChoice(masterKeyId);
-            } else {
-                displayNoSecretKeyError();
-            }
-        } catch (PgpKeyNotFoundException e) {
-            keyInfoLayout.setVisibility(View.GONE);
-            displayUnknownSecretKeyError();
-        }
-    }
-
-    private void displayKeyInfo(final long masterKeyId, UserId userId) {
-        keyInfoLayout.setVisibility(View.VISIBLE);
-        TextView keyUserIdView = (TextView) findViewById(R.id.select_key_item_name);
-        keyUserIdView.setText(userId.name);
-
-        findViewById(R.id.display_key).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(RequestKeyPermissionActivity.this, ViewKeyActivity.class);
-                intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-                startActivity(intent);
-            }
-        });
-    }
-
-    private void displayRequestKeyChoice(final long masterKeyId) {
-        viewAnimator.setDisplayedChild(0);
-
-        findViewById(R.id.button_allow).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                allowAndFinish(masterKeyId);
-            }
-        });
-
-        findViewById(R.id.button_disallow).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setResult(Activity.RESULT_CANCELED);
-                finish();
-            }
-        });
-    }
-
-    private void allowAndFinish(long masterKeyId) {
-        new ApiDataAccessObject(this).addAllowedKeyIdForApp(packageName, masterKeyId);
-
-        finish();
-    }
-
-    private void displayNoSecretKeyError() {
-        viewAnimator.setDisplayedChild(1);
-
-    }
-
-    private void displayUnknownSecretKeyError() {
-        viewAnimator.setDisplayedChild(2);
-
-    }
-
-    private void checkPackageAllowed(String packageName) {
-        ApiDataAccessObject apiDao = new ApiDataAccessObject(this);
-        ApiPermissionHelper apiPermissionHelper = new ApiPermissionHelper(this, apiDao);
-        boolean packageAllowed;
-        try {
-            packageAllowed = apiPermissionHelper.isPackageAllowed(packageName);
-        } catch (WrongPackageCertificateException e) {
-            packageAllowed = false;
-        }
-        if (!packageAllowed) {
-            throw new IllegalStateException("Pending intent launched by unknown app!");
-        }
+        presenter = RequestKeyPermissionPresenter.createRequestKeyPermissionPresenter(getBaseContext(), view);
+        presenter.setupFromIntentData(packageName, keyIds);
     }
 
     @Override
     protected void initLayout() {
         setContentView(R.layout.api_remote_request_key_permission);
+
+        keyUserIdView = (TextView) findViewById(R.id.select_key_item_name);
+        iconClientApp = (ImageView) findViewById(R.id.icon_client_app);
+        titleText = (TextView) findViewById(R.id.select_identity_key_title);
+        viewAnimator = (ViewAnimator) findViewById(R.id.status_animator);
+        keyInfoLayout = findViewById(R.id.key_info_layout);
+
+        findViewById(R.id.button_allow).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickAllow();
+            }
+        });
+
+        findViewById(R.id.button_deny).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickDeny();
+            }
+        });
+
+        findViewById(R.id.display_key).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onClickDisplayKey();
+            }
+        });
     }
+
+    RequestKeyPermissionMvpView view = new RequestKeyPermissionMvpView() {
+        @Override
+        public void switchToLayoutRequestKeyChoice() {
+            keyInfoLayout.setVisibility(View.VISIBLE);
+            viewAnimator.setDisplayedChild(0);
+        }
+
+        @Override
+        public void switchToLayoutNoSecret() {
+            keyInfoLayout.setVisibility(View.VISIBLE);
+            viewAnimator.setDisplayedChild(1);
+        }
+
+        @Override
+        public void switchToLayoutUnknownKey() {
+            keyInfoLayout.setVisibility(View.GONE);
+            viewAnimator.setDisplayedChild(2);
+        }
+
+        @Override
+        public void displayKeyInfo(UserId userId) {
+            keyUserIdView.setText(userId.name);
+        }
+
+        @Override
+        public void finish() {
+            setResult(Activity.RESULT_OK);
+            RequestKeyPermissionActivity.this.finish();
+        }
+
+        @Override
+        public void finishAsCancelled() {
+            setResult(Activity.RESULT_CANCELED);
+            RequestKeyPermissionActivity.this.finish();
+        }
+
+        @Override
+        public void startActivity(Intent intent) {
+            RequestKeyPermissionActivity.this.startActivity(intent);
+        }
+
+        @Override
+        public void setTitleText(String text) {
+            titleText.setText(text);
+        }
+
+        @Override
+        public void setTitleClientIcon(Drawable drawable) {
+            iconClientApp.setImageDrawable(drawable);
+        }
+    };
 
 }

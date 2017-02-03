@@ -144,7 +144,7 @@
                 android:drawablePadding="16dp"
                 android:gravity="center_vertical"
                 android:clickable="true"
-                android:id="@+id/button_disallow" />
+                android:id="@+id/button_deny" />
 
             <View
                 android:layout_width="match_parent"
