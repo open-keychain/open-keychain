@@ -22,14 +22,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.remote.AppSettings;
+import org.sufficientlysecure.keychain.remote.ui.RemoteRegisterPresenter.RemoteRegisterView;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.util.Log;
 
-public class RemoteRegisterActivity extends BaseActivity {
+
+public class RemoteRegisterActivity extends BaseActivity implements RemoteRegisterView {
 
     public static final String EXTRA_PACKAGE_NAME = "package_name";
     public static final String EXTRA_PACKAGE_SIGNATURE = "package_signature";
@@ -37,54 +35,59 @@ public class RemoteRegisterActivity extends BaseActivity {
     public static final String EXTRA_DATA = "data";
 
     private AppSettingsHeaderFragment mAppSettingsHeaderFragment;
-
-    @Override
-    protected void initLayout() {
-        setContentView(R.layout.api_remote_register_app);
-    }
+    private RemoteRegisterPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle extras = getIntent().getExtras();
+        this.presenter = new RemoteRegisterPresenter(getBaseContext());
 
-        final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
-        final byte[] packageSignature = extras.getByteArray(EXTRA_PACKAGE_SIGNATURE);
-        Log.d(Constants.TAG, "ACTION_REGISTER packageName: " + packageName);
+        Intent intent = getIntent();
+        Intent resultData = intent.getParcelableExtra(EXTRA_DATA);
+        String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
+        byte[] packageSignature = intent.getByteArrayExtra(EXTRA_PACKAGE_SIGNATURE);
 
-        final ApiDataAccessObject apiDao = new ApiDataAccessObject(this);
+        presenter.setupFromIntent(resultData, packageName, packageSignature);
+        presenter.setView(this);
 
         mAppSettingsHeaderFragment = (AppSettingsHeaderFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_app_settings_fragment);
+        // TODO unclean, fix later
+        mAppSettingsHeaderFragment.setAppSettings(presenter.appSettings);
 
-        AppSettings settings = new AppSettings(packageName, packageSignature);
-        mAppSettingsHeaderFragment.setAppSettings(settings);
-
-        // Inflate a "Done"/"Cancel" custom action bar view
         setFullScreenDialogTwoButtons(
                 R.string.api_register_allow, R.drawable.ic_check_white_24dp,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Allow
-                        apiDao.insertApiApp(mAppSettingsHeaderFragment.getAppSettings());
-
-                        // give data through for new service call
-                        Intent resultData = extras.getParcelable(EXTRA_DATA);
-                        RemoteRegisterActivity.this.setResult(RESULT_OK, resultData);
-                        RemoteRegisterActivity.this.finish();
+                        presenter.onClickAllow();
                     }
                 }, R.string.api_register_disallow, R.drawable.ic_close_white_24dp,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Disallow
-                        RemoteRegisterActivity.this.setResult(RESULT_CANCELED);
-                        RemoteRegisterActivity.this.finish();
+                        presenter.onClickCancel();
                     }
                 }
         );
+    }
+
+    @Override
+    public void finishWithResult(Intent resultIntent) {
+        setResult(RESULT_OK, resultIntent);
+        finish();
+    }
+
+    @Override
+    public void finishAsCancelled() {
+        setResult(RESULT_CANCELED);
+        finish();
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.api_remote_register_app);
     }
 
 }
