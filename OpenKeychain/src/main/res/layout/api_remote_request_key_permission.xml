@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    tools:layout_marginTop="24dp"
     >
 
-    <include
-        android:id="@+id/toolbar_include"
-        layout="@layout/toolbar_standalone" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center_horizontal"
         android:padding="16dp"
-        android:id="@+id/iconLayout">
+        android:id="@+id/iconLayout"
+        android:elevation="4dp"
+        android:background="?attr/colorPrimary"
+        android:gravity="center_horizontal"
+        tools:targetApi="lollipop">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -43,150 +41,111 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/select_identity_key_title"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:padding="12dp"
-        android:gravity="center_vertical"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="@string/request_permission_title"
-        />
+        android:orientation="vertical"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="16dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:text="@string/request_permission_title"
+            android:id="@+id/dialog_title"
+            />
+
+        <TextView
+            android:id="@+id/select_identity_key_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="@string/request_permission_msg"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:background="?selectableItemBackground"
+            android:id="@+id/key_info_layout"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="8dp"
+                android:paddingRight="8dp"
+                android:src="@drawable/ic_vpn_key_grey_24dp"
+                />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/requested_key_label"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <TextView
+                    android:id="@+id/select_key_item_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Alice Skywalker"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/requested_key_unavailable_warning"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/android_red_dark"
+            android:id="@+id/requested_key_unavailable_warning"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="32dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:minHeight="?listPreferredItemHeight"
         android:orientation="horizontal"
-        android:id="@+id/key_info_layout">
-
-        <LinearLayout
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Requested key:"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/select_key_item_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Alice Skywalker"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        </LinearLayout>
+        android:gravity="end"
+        android:padding="8dp"
+        style="?buttonBarStyle">
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:id="@+id/display_key"
-            android:text="Display"
-            style="@style/BorderlessButton" />
+            android:text="@string/button_cancel"
+            android:id="@+id/button_cancel"
+            style="?buttonBarButtonStyle"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_allow"
+            android:id="@+id/button_allow"
+            tools:enabled="false"
+            style="?buttonBarButtonStyle" />
 
     </LinearLayout>
-
-    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/status_animator"
-        custom:initialView="0">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="?android:attr/listPreferredItemHeight"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Allow access to this key"
-                android:background="?android:selectableItemBackground"
-                android:drawableLeft="@drawable/ic_vpn_key_grey_24dp"
-                android:drawablePadding="16dp"
-                android:gravity="center_vertical"
-                android:clickable="true"
-                android:id="@+id/button_allow" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="?android:attr/listPreferredItemHeight"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Deny access"
-                android:background="?android:selectableItemBackground"
-                android:drawableLeft="@drawable/ic_close_grey_24dp"
-                android:drawablePadding="16dp"
-                android:gravity="center_vertical"
-                android:clickable="true"
-                android:id="@+id/button_deny" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="?android:attr/listPreferredItemHeight"
-                android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Key but no secret!"
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="?android:attr/listPreferredItemHeight"
-                android:layout_gravity="center_vertical"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:gravity="center_vertical"
-                android:id="@+id/key_creation_done"
-                android:text="Unknown key! (Import?)"
-                />
-        </LinearLayout>
-
-    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
 </LinearLayout>

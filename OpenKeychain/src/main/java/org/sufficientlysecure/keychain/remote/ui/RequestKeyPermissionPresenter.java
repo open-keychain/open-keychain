@@ -2,62 +2,61 @@ package org.sufficientlysecure.keychain.remote.ui;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 
-import com.android.annotations.VisibleForTesting;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper.WrongPackageCertificateException;
-import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
 
 class RequestKeyPermissionPresenter {
     private final Context context;
-    private final RequestKeyPermissionMvpView view;
     private final PackageManager packageManager;
     private final ApiDataAccessObject apiDataAccessObject;
     private final ApiPermissionHelper apiPermissionHelper;
 
+    private RequestKeyPermissionMvpView view;
 
     private String packageName;
     private long masterKeyId;
 
 
-    static RequestKeyPermissionPresenter createRequestKeyPermissionPresenter(Context context,
-            RequestKeyPermissionMvpView view) {
+    static RequestKeyPermissionPresenter createRequestKeyPermissionPresenter(Context context) {
         PackageManager packageManager = context.getPackageManager();
         ApiDataAccessObject apiDataAccessObject = new ApiDataAccessObject(context);
         ApiPermissionHelper apiPermissionHelper = new ApiPermissionHelper(context, apiDataAccessObject);
 
-        return new RequestKeyPermissionPresenter(
-                context, view, apiDataAccessObject, apiPermissionHelper, packageManager);
+        return new RequestKeyPermissionPresenter(context, apiDataAccessObject, apiPermissionHelper, packageManager);
     }
 
-    @VisibleForTesting
-    RequestKeyPermissionPresenter(Context context, RequestKeyPermissionMvpView view,
-            ApiDataAccessObject apiDataAccessObject, ApiPermissionHelper apiPermissionHelper,
-            PackageManager packageManager) {
+    private RequestKeyPermissionPresenter(Context context, ApiDataAccessObject apiDataAccessObject,
+            ApiPermissionHelper apiPermissionHelper, PackageManager packageManager) {
         this.context = context;
-        this.view = view;
         this.apiDataAccessObject = apiDataAccessObject;
         this.apiPermissionHelper = apiPermissionHelper;
         this.packageManager = packageManager;
     }
 
+    void setView(RequestKeyPermissionMvpView view) {
+        this.view = view;
+    }
+
     void setupFromIntentData(String packageName, long[] requestedMasterKeyIds) {
         checkPackageAllowed(packageName);
+
+        if (requestedMasterKeyIds.length < 1) {
+            view.finishAsCancelled();
+        }
 
         try {
             setPackageInfo(packageName);
@@ -69,7 +68,6 @@ class RequestKeyPermissionPresenter {
 
         this.packageName = packageName;
         this.masterKeyId = requestedMasterKeyIds[0];
-//        long masterKeyId = 4817915339785265755L;
         try {
             CachedPublicKeyRing cachedPublicKeyRing = new ProviderHelper(context).getCachedPublicKeyRing(masterKeyId);
 
@@ -82,21 +80,17 @@ class RequestKeyPermissionPresenter {
                 view.switchToLayoutNoSecret();
             }
         } catch (PgpKeyNotFoundException e) {
-            view.switchToLayoutUnknownKey();
-
+            view.finishAsCancelled();
         }
     }
 
     private void setPackageInfo(String packageName) throws NameNotFoundException {
-        Drawable appIcon;
-        CharSequence appName;
-
         ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
-        appIcon = packageManager.getApplicationIcon(applicationInfo);
-        appName = packageManager.getApplicationLabel(applicationInfo);
+        Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
+        CharSequence appName = packageManager.getApplicationLabel(applicationInfo);
 
         view.setTitleClientIcon(appIcon);
-        view.setTitleText(context.getString(R.string.request_permission_title, appName));
+        view.setTitleText(context.getString(R.string.request_permission_msg, appName));
     }
 
     private void checkPackageAllowed(String packageName) {
@@ -116,23 +110,16 @@ class RequestKeyPermissionPresenter {
         view.finish();
     }
 
-    void onClickDeny() {
+    void onClickCancel() {
         view.finishAsCancelled();
     }
 
-    void onClickDisplayKey() {
-        Intent intent = new Intent(context, ViewKeyActivity.class);
-        intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-        view.startActivity(intent);
-    }
-
-    void onClickCancelDialog() {
+    void onCancel() {
         view.finishAsCancelled();
     }
 
     interface RequestKeyPermissionMvpView {
         void switchToLayoutRequestKeyChoice();
-        void switchToLayoutUnknownKey();
         void switchToLayoutNoSecret();
 
         void setTitleText(String text);
@@ -142,6 +129,5 @@ class RequestKeyPermissionPresenter {
 
         void finish();
         void finishAsCancelled();
-        void startActivity(Intent intent);
     }
 }

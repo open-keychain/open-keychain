@@ -1798,5 +1798,10 @@
     <string name="redirect_import_key_no">"Close"</string>
     <string name="title_activity_redirect_key">"Key import redirection"</string>
 
-    <string name="request_permission_title">%s wants to decrypt a message.</string>
+    <string name="request_permission_title">Allow access to your key?</string>
+    <string name="request_permission_msg">%1$s requests access to one of your keys, which allows it to decrypt messages sent to this key. You can revoke access later in OpenKeychain.</string>
+    <string name="requested_key_unavailable_warning">This key is not available. To use it, you must import it as one of your own!</string>
+    <string name="button_allow">Allow</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="requested_key_label">Requested key:</string>
 </resources>
