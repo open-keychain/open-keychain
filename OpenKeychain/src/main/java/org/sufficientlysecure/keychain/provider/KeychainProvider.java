@@ -299,6 +299,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.KEY_SIZE, Tables.KEYS + "." + Keys.KEY_SIZE);
                 projectionMap.put(KeyRings.KEY_CURVE_OID, Tables.KEYS + "." + Keys.KEY_CURVE_OID);
                 projectionMap.put(KeyRings.IS_REVOKED, Tables.KEYS + "." + Keys.IS_REVOKED);
+                projectionMap.put(KeyRings.IS_SECURE, Tables.KEYS + "." + Keys.IS_SECURE);
                 projectionMap.put(KeyRings.CAN_CERTIFY, Tables.KEYS + "." + Keys.CAN_CERTIFY);
                 projectionMap.put(KeyRings.CAN_ENCRYPT, Tables.KEYS + "." + Keys.CAN_ENCRYPT);
                 projectionMap.put(KeyRings.CAN_SIGN, Tables.KEYS + "." + Keys.CAN_SIGN);
@@ -383,6 +384,7 @@ public class KeychainProvider extends ContentProvider {
                                 +"kE." + Keys.MASTER_KEY_ID
                                     + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " AND kE." + Keys.IS_REVOKED + " = 0"
+                                + " AND kE." + Keys.IS_SECURE + " = 1"
                                 + " AND kE." + Keys.CAN_ENCRYPT + " = 1"
                                 + " AND ( kE." + Keys.EXPIRY + " IS NULL OR kE." + Keys.EXPIRY
                                     + " >= " + new Date().getTime() / 1000 + " )"
@@ -392,6 +394,7 @@ public class KeychainProvider extends ContentProvider {
                                 +"kS." + Keys.MASTER_KEY_ID
                                     + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " AND kS." + Keys.IS_REVOKED + " = 0"
+                                + " AND kS." + Keys.IS_SECURE + " = 1"
                                 + " AND kS." + Keys.CAN_SIGN + " = 1"
                                 + " AND kS." + Keys.HAS_SECRET + " > 1"
                                 + " AND ( kS." + Keys.EXPIRY + " IS NULL OR kS." + Keys.EXPIRY
@@ -402,6 +405,7 @@ public class KeychainProvider extends ContentProvider {
                                     +"kA." + Keys.MASTER_KEY_ID
                                     + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                     + " AND kA." + Keys.IS_REVOKED + " = 0"
+                                    + " AND kA." + Keys.IS_SECURE + " = 1"
                                     + " AND kA." + Keys.CAN_AUTHENTICATE + " = 1"
                                     + " AND kA." + Keys.HAS_SECRET + " > 1"
                                     + " AND ( kA." + Keys.EXPIRY + " IS NULL OR kA." + Keys.EXPIRY
@@ -412,6 +416,7 @@ public class KeychainProvider extends ContentProvider {
                                 +"kC." + Keys.MASTER_KEY_ID
                                 + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " AND kC." + Keys.IS_REVOKED + " = 0"
+                                + " AND kC." + Keys.IS_SECURE + " = 1"
                                 + " AND kC." + Keys.CAN_CERTIFY + " = 1"
                                 + " AND kC." + Keys.HAS_SECRET + " > 1"
                                 + " AND ( kC." + Keys.EXPIRY + " IS NULL OR kC." + Keys.EXPIRY
@@ -500,6 +505,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(Keys.KEY_SIZE, Keys.KEY_SIZE);
                 projectionMap.put(Keys.KEY_CURVE_OID, Keys.KEY_CURVE_OID);
                 projectionMap.put(Keys.IS_REVOKED, Tables.KEYS + "." + Keys.IS_REVOKED);
+                projectionMap.put(Keys.IS_SECURE, Tables.KEYS + "." + Keys.IS_SECURE);
                 projectionMap.put(Keys.CAN_CERTIFY, Keys.CAN_CERTIFY);
                 projectionMap.put(Keys.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
                 projectionMap.put(Keys.CAN_SIGN, Keys.CAN_SIGN);

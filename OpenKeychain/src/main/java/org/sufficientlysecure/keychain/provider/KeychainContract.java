@@ -45,6 +45,7 @@ public class KeychainContract {
         String CAN_CERTIFY = "can_certify";
         String CAN_AUTHENTICATE = "can_authenticate";
         String IS_REVOKED = "is_revoked";
+        String IS_SECURE = "is_secure";
         String HAS_SECRET = "has_secret";
 
         String CREATION = "creation";
@@ -128,6 +129,7 @@ public class KeychainContract {
     public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
         public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
+        public static final String IS_SECURE = KeysColumns.IS_SECURE;
         public static final String VERIFIED = CertsColumns.VERIFIED;
         public static final String IS_EXPIRED = "is_expired";
         public static final String HAS_ANY_SECRET = "has_any_secret";

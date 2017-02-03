@@ -62,15 +62,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -95,7 +94,6 @@ import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -163,6 +161,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private boolean mHasEncrypt = false;
     private boolean mIsVerified = false;
     private boolean mIsRevoked = false;
+    private boolean mIsSecure = true;
     private boolean mIsExpired = false;
 
     private boolean mShowSecurityTokenAfterCreation = false;
@@ -819,6 +818,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             KeychainContract.KeyRings.USER_ID,
             KeychainContract.KeyRings.IS_REVOKED,
             KeychainContract.KeyRings.IS_EXPIRED,
+            KeychainContract.KeyRings.IS_SECURE,
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET,
             KeychainContract.KeyRings.FINGERPRINT,
@@ -832,13 +832,14 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     static final int INDEX_USER_ID = 2;
     static final int INDEX_IS_REVOKED = 3;
     static final int INDEX_IS_EXPIRED = 4;
-    static final int INDEX_VERIFIED = 5;
-    static final int INDEX_HAS_ANY_SECRET = 6;
-    static final int INDEX_FINGERPRINT = 7;
-    static final int INDEX_HAS_ENCRYPT = 8;
-    static final int INDEX_NAME = 9;
-    static final int INDEX_EMAIL = 10;
-    static final int INDEX_COMMENT = 11;
+    static final int INDEX_IS_SECURE = 5;
+    static final int INDEX_VERIFIED = 6;
+    static final int INDEX_HAS_ANY_SECRET = 7;
+    static final int INDEX_FINGERPRINT = 8;
+    static final int INDEX_HAS_ENCRYPT = 9;
+    static final int INDEX_NAME = 10;
+    static final int INDEX_EMAIL = 11;
+    static final int INDEX_COMMENT = 12;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -915,6 +916,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
                     mIsRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
                     mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
+                    mIsSecure = data.getInt(INDEX_IS_SECURE) == 1;
                     mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
 
                     // if the refresh animation isn't playing
@@ -949,6 +951,19 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                 State.REVOKED, R.color.icons, true);
+                        // noinspection deprecation, fix requires api level 23
+                        color = getResources().getColor(R.color.key_flag_red);
+
+                        mActionEncryptFile.setVisibility(View.INVISIBLE);
+                        mActionEncryptText.setVisibility(View.INVISIBLE);
+                        mActionNfc.setVisibility(View.INVISIBLE);
+                        hideFab();
+                        mQrCodeLayout.setVisibility(View.GONE);
+                    } else if (!mIsSecure) {
+                        mStatusText.setText(R.string.view_key_insecure);
+                        mStatusImage.setVisibility(View.VISIBLE);
+                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                                State.INSECURE, R.color.icons, true);
                         // noinspection deprecation, fix requires api level 23
                         color = getResources().getColor(R.color.key_flag_red);
 
