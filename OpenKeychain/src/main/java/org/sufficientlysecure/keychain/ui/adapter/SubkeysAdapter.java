@@ -66,6 +66,7 @@ public class SubkeysAdapter extends CursorAdapter {
             Keys.CAN_SIGN,
             Keys.CAN_AUTHENTICATE,
             Keys.IS_REVOKED,
+            Keys.IS_SECURE,
             Keys.CREATION,
             Keys.EXPIRY,
             Keys.FINGERPRINT
@@ -82,9 +83,10 @@ public class SubkeysAdapter extends CursorAdapter {
     private static final int INDEX_CAN_SIGN = 9;
     private static final int INDEX_CAN_AUTHENTICATE = 10;
     private static final int INDEX_IS_REVOKED = 11;
-    private static final int INDEX_CREATION = 12;
-    private static final int INDEX_EXPIRY = 13;
-    private static final int INDEX_FINGERPRINT = 14;
+    private static final int INDEX_IS_SECURE = 12;
+    private static final int INDEX_CREATION = 13;
+    private static final int INDEX_EXPIRY = 14;
+    private static final int INDEX_FINGERPRINT = 15;
 
     public SubkeysAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -232,6 +234,7 @@ public class SubkeysAdapter extends CursorAdapter {
         vAuthenticateIcon.setVisibility(cursor.getInt(INDEX_CAN_AUTHENTICATE) != 0 ? View.VISIBLE : View.GONE);
 
         boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
+        boolean isSecure = cursor.getInt(INDEX_IS_SECURE) > 0;
 
         Date expiryDate = null;
         if (!cursor.isNull(INDEX_EXPIRY)) {
@@ -279,7 +282,7 @@ public class SubkeysAdapter extends CursorAdapter {
         }
 
         // if key is expired or revoked...
-        boolean isInvalid = isRevoked || isExpired;
+        boolean isInvalid = isRevoked || isExpired || !isSecure;
         if (isInvalid) {
             vStatus.setVisibility(View.VISIBLE);
 
@@ -303,6 +306,11 @@ public class SubkeysAdapter extends CursorAdapter {
                         PorterDuff.Mode.SRC_IN);
             } else if (isExpired) {
                 vStatus.setImageResource(R.drawable.status_signature_expired_cutout_24dp);
+                vStatus.setColorFilter(
+                        mContext.getResources().getColor(R.color.key_flag_gray),
+                        PorterDuff.Mode.SRC_IN);
+            } else if (!isSecure) {
+                vStatus.setImageResource(R.drawable.status_signature_invalid_cutout_24dp);
                 vStatus.setColorFilter(
                         mContext.getResources().getColor(R.color.key_flag_gray),
                         PorterDuff.Mode.SRC_IN);

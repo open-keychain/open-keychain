@@ -54,7 +54,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 18;
+    private static final int DATABASE_VERSION = 19;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -101,6 +101,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + KeysColumns.CAN_AUTHENTICATE + " INTEGER, "
                 + KeysColumns.IS_REVOKED + " INTEGER, "
                 + KeysColumns.HAS_SECRET + " INTEGER, "
+                + KeysColumns.IS_SECURE + " INTEGER, "
 
                 + KeysColumns.CREATION + " INTEGER, "
                 + KeysColumns.EXPIRY + " INTEGER, "
@@ -322,6 +323,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // splitUserId changed: Execute consolidate for new parsing of name, email
             case 17:
                 // splitUserId changed: Execute consolidate for new parsing of name, email
+            case 18:
+                db.execSQL("ALTER TABLE keys ADD COLUMN is_secure INTEGER");
         }
 
         // always do consolidate after upgrade

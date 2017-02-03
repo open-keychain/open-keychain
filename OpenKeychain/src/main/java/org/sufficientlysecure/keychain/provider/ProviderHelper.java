@@ -421,6 +421,7 @@ public class ProviderHelper {
                     values.put(Keys.CAN_SIGN, s);
                     values.put(Keys.CAN_AUTHENTICATE, a);
                     values.put(Keys.IS_REVOKED, key.isRevoked());
+                    values.put(Keys.IS_SECURE, key.isSecure());
 
                     // see above
                     if (masterKeyId == keyId) {
