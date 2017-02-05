@@ -111,7 +111,7 @@ public class CreateKeyFinalFragment extends Fragment {
         mCustomKeyLayout = view.findViewById(R.id.custom_key_layout);
         mCustomKeyRevertButton = (Button) view.findViewById(R.id.revert_key_configuration);
 
-        CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
+        final CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
 
         // set values
         if (createKeyActivity.mName != null) {
@@ -139,6 +139,12 @@ public class CreateKeyFinalFragment extends Fragment {
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                createKeyActivity.mSyncWithServer = mUploadCheckbox.isChecked();
+
+                if (mSaveKeyringParcel == null) {
+                    keyConfigRevertToDefault();
+                }
+
                 createKey();
             }
         });
@@ -248,10 +254,6 @@ public class CreateKeyFinalFragment extends Fragment {
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
-        if (mSaveKeyringParcel == null) {
-            keyConfigRevertToDefault();
-        }
-
         // handle queued actions
 
         if (mQueuedFinishResult != null) {
@@ -318,6 +320,8 @@ public class CreateKeyFinalFragment extends Fragment {
                 saveKeyringParcel.mAddUserIds.add(thisUserId);
             }
         }
+
+        saveKeyringParcel.mSyncWithServer = createKeyActivity.mSyncWithServer;
 
         return saveKeyringParcel;
     }

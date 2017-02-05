@@ -8,9 +8,6 @@ include ':extern:minidns'
 //include ':extern:safeslinger-exchange:safeslinger-exchange'
 include ':safeslinger-exchange'
 project(':safeslinger-exchange').projectDir = new File('extern/safeslinger-exchange/safeslinger-exchange')
-//include ':extern:openkeychain-api-lib:openkeychain-intents'
-include ':openkeychain-api-lib'
-project(':openkeychain-api-lib').projectDir = new File('extern/openkeychain-api-lib/openkeychain-intents')
 //include ':extern:openpgp-api-lib:openpgp-api'
 include ':openpgp-api-lib'
 project(':openpgp-api-lib').projectDir = new File('extern/openpgp-api-lib/openpgp-api')

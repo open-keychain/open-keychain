@@ -1,9 +1,6 @@
 package org.sufficientlysecure.keychain.remote;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -16,10 +13,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -29,10 +27,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 @SuppressWarnings("unchecked")
-@RunWith(RobolectricTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class OpenPgpServiceKeyIdExtractorTest {
 
     private static final long[] KEY_IDS = new long[] { 123L, 234L };

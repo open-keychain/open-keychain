@@ -20,14 +20,6 @@ package org.sufficientlysecure.keychain.pgp;
 
 import junit.framework.AssertionFailedError;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.robolectric.*;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 import org.bouncycastle.bcpg.BCPGInputStream;
 import org.bouncycastle.bcpg.Packet;
 import org.bouncycastle.bcpg.PacketTags;
@@ -41,7 +33,13 @@ import org.bouncycastle.bcpg.UserIDPacket;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPSignature;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.shadows.ShadowLog;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
@@ -71,8 +69,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class PgpKeyOperationTest {
 
     static UncachedKeyRing staticRing;

@@ -53,7 +53,6 @@ dependencies {
 
     // libs as submodules
     compile project(':openpgp-api-lib')
-    compile project(':openkeychain-api-lib')
     compile project(':extern:bouncycastle:core')
     compile project(':extern:bouncycastle:pg')
     compile project(':extern:bouncycastle:prov')
@@ -66,7 +65,7 @@ dependencies {
     // http://robolectric.org/getting-started/
     // http://www.vogella.com/tutorials/Robolectric/article.html
     testCompile 'junit:junit:4.12'
-    testCompile ('org.robolectric:robolectric:3.1.2') {
+    testCompile ('org.robolectric:robolectric:3.2.2') {
         exclude group: 'org.bouncycastle', module: 'bcprov-jdk16'
     }
     testCompile 'org.mockito:mockito-core:1.10.19'
@@ -149,8 +148,6 @@ dependencyVerification {
     ]
 }
 
-
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -158,8 +155,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 42201
-        versionName "4.2.2-beta"
+        versionCode 42202
+        versionName "4.2.2"
         applicationId "org.sufficientlysecure.keychain"
         // the androidjunitrunner is broken regarding coverage, see here:
         // https://code.google.com/p/android/issues/detail?id=170607
@@ -185,7 +182,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-release.pro'
 
             // Reference them in the java files with e.g. BuildConfig.ACCOUNT_TYPE.
             buildConfigField "String", "ACCOUNT_TYPE", "\"org.sufficientlysecure.keychain.account\""
@@ -201,9 +198,8 @@ android {
         }
 
         debug {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            testProguardFile('proguard-rules.pro')
+            // disable ProGuard for faster compile times for debug builds
+            minifyEnabled false
 
             applicationIdSuffix ".debug"
 
@@ -289,11 +285,15 @@ android {
     }
 
     dexOptions {
-        preDexLibraries = true
+        preDexLibraries true
         // dexInProcess requires much RAM, which is not available on all dev systems
-        dexInProcess = false
-        jumboMode = true
+        dexInProcess false
+        jumboMode true
         javaMaxHeapSize "2g"
+    }
+
+    dataBinding {
+        enabled true
     }
 
     packagingOptions {
@@ -304,10 +304,6 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
         exclude '.readme'
-    }
-
-    dataBinding {
-        enabled = true
     }
 }
 
@@ -334,8 +330,8 @@ task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugWithTestCove
     executionData = fileTree(dir: "${buildDir}/jacoco", include: "**/*.exec")
 
     reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.enabled true
+        html.enabled true
     }
 }
 

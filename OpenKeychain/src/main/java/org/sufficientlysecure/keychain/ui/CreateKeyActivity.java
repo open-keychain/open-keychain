@@ -63,6 +63,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
     Passphrase mPassphrase;
     boolean mFirstTime;
     boolean mCreateSecurityToken;
+    boolean mSyncWithServer;
     Passphrase mSecurityTokenPin;
     Passphrase mSecurityTokenAdminPin;
     KeyFormat mSecurityTokenSign;

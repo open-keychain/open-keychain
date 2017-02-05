@@ -25,9 +25,7 @@ import android.database.DataSetObserver;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -389,6 +387,7 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
                     KeychainContract.KeyRings.USER_ID,
                     KeychainContract.KeyRings.IS_REVOKED,
                     KeychainContract.KeyRings.IS_EXPIRED,
+                    KeychainContract.KeyRings.IS_SECURE,
                     KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
                     KeychainContract.KeyRings.CREATION,
                     KeychainContract.KeyRings.NAME,
@@ -448,6 +447,11 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
 
         public boolean isExpired() {
             int index = getColumnIndexOrThrow(KeychainContract.KeyRings.IS_EXPIRED);
+            return getInt(index) > 0;
+        }
+
+        public boolean isSecure() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.IS_SECURE);
             return getInt(index) > 0;
         }
 

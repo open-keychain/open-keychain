@@ -136,6 +136,10 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         return expiry != null && expiry.before(new Date());
     }
 
+    public boolean isSecure() {
+        return PgpSecurityConstants.isSecureKey(this);
+    }
+
     public long getValidSeconds() {
 
         long seconds;

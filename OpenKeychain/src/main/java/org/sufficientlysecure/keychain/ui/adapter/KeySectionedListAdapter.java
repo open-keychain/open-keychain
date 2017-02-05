@@ -35,20 +35,19 @@ import android.widget.TextView;
 
 import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.adapter.*;
+import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter;
+import org.sufficientlysecure.keychain.ui.util.adapter.SectionCursorAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedListAdapter.KeyListCursor, Character,
         SectionCursorAdapter.ViewHolder, KeySectionedListAdapter.KeyHeaderViewHolder> implements SectionTitleProvider {
@@ -415,6 +414,18 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                             mStatus,
                             null,
                             KeyFormattingUtils.State.EXPIRED,
+                            R.color.key_flag_gray
+                    );
+
+                    mStatus.setVisibility(View.VISIBLE);
+                    mSlinger.setVisibility(View.GONE);
+                    textColor = ContextCompat.getColor(context, R.color.key_flag_gray);
+                } else if (!keyItem.isSecure()) {
+                    KeyFormattingUtils.setStatusImage(
+                            context,
+                            mStatus,
+                            null,
+                            KeyFormattingUtils.State.INSECURE,
                             R.color.key_flag_gray
                     );
 

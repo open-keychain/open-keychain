@@ -543,7 +543,7 @@
     <string name="import_tab_direct">"File/Clipboard"</string>
     <string name="import_tab_qr_code">"QR Code/NFC"</string>
     <string name="import_found_keys">"Found %1$d keys"</string>
-    <string name="import_qr_code_wrong">"QR Code malformed! Please try again!"</string>
+    <string name="import_qr_code_wrong">"QR Code format not supported (format specification: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!"</string>
     <string name="import_qr_code_fp">"Fingerprint is malformed or too short!"</string>
     <string name="import_qr_code_too_short_fingerprint">"Fingerprint is too short!"</string>
     <string name="import_qr_code_button">"Scan QR Code"</string>
@@ -822,6 +822,7 @@
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
+    <string name="view_key_insecure">"Insecure: Key must not be used anymore!"</string>
     <string name="view_key_expired">"Expired: The contact needs to extend the key's validity!"</string>
     <string name="view_key_expired_secret">"Expired: You can extend the keys validity by editing it!"</string>
     <string name="view_key_my_key">"My Key"</string>

@@ -181,6 +181,11 @@ public class EditIdentitiesFragment extends Fragment
             }
 
             mSaveKeyringParcel = new SaveKeyringParcel(masterKeyId, keyRing.getFingerprint());
+
+            mSaveKeyringParcel.mSyncWithServer = new ProviderHelper(getContext()).isSyncWithServer(masterKeyId);
+            mUploadKeyCheckbox.setChecked(mSaveKeyringParcel.mSyncWithServer);
+            mUploadKeyCheckbox.setEnabled(false);
+
             mPrimaryUserId = keyRing.getPrimaryUserIdWithFallback();
 
         } catch (PgpKeyNotFoundException | NotFoundException e) {

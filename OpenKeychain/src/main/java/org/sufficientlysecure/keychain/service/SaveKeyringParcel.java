@@ -64,6 +64,8 @@ public class SaveKeyringParcel implements Parcelable {
     public Passphrase mSecurityTokenPin;
     public Passphrase mSecurityTokenAdminPin;
 
+    public boolean mSyncWithServer;
+
     // private because they have to be set together with setUpdateOptions
     private boolean mUpload;
     private boolean mUploadAtomic;
@@ -93,6 +95,7 @@ public class SaveKeyringParcel implements Parcelable {
         mRevokeSubKeys = new ArrayList<>();
         mSecurityTokenPin = null;
         mSecurityTokenAdminPin = null;
+        mSyncWithServer = false;
         mUpload = false;
         mUploadAtomic = false;
         mKeyserver = null;
@@ -277,6 +280,8 @@ public class SaveKeyringParcel implements Parcelable {
         mSecurityTokenPin = source.readParcelable(Passphrase.class.getClassLoader());
         mSecurityTokenAdminPin = source.readParcelable(Passphrase.class.getClassLoader());
 
+        mSyncWithServer = source.readByte() != 0;
+
         mUpload = source.readByte() != 0;
         mUploadAtomic = source.readByte() != 0;
         mKeyserver = source.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
@@ -305,6 +310,8 @@ public class SaveKeyringParcel implements Parcelable {
 
         destination.writeParcelable(mSecurityTokenPin, flags);
         destination.writeParcelable(mSecurityTokenAdminPin, flags);
+
+        destination.writeByte((byte) (mSyncWithServer ? 1 : 0));
 
         destination.writeByte((byte) (mUpload ? 1 : 0));
         destination.writeByte((byte) (mUploadAtomic ? 1 : 0));
@@ -338,7 +345,8 @@ public class SaveKeyringParcel implements Parcelable {
         out += "mRevokeUserIds: " + mRevokeUserIds + "\n";
         out += "mRevokeSubKeys: " + mRevokeSubKeys + "\n";
         out += "mSecurityTokenPin: " + mSecurityTokenPin + "\n";
-        out += "mSecurityTokenAdminPin: " + mSecurityTokenAdminPin;
+        out += "mSecurityTokenAdminPin: " + mSecurityTokenAdminPin + "\n";
+        out += "mSyncWithServer: " + mSyncWithServer;
 
         return out;
     }

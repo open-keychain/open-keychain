@@ -78,6 +78,9 @@ public class SignKeySpinner extends KeySpinner {
         if (cursor.getInt(KeyAdapter.INDEX_IS_EXPIRED) != 0) {
             return false;
         }
+        if (cursor.getInt(KeyAdapter.INDEX_IS_SECURE) == 0) {
+            return false;
+        }
         if (cursor.isNull(mIndexHasSign)) {
             return false;
         }

@@ -192,6 +192,27 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <CheckBox
+            android:id="@+id/view_key_action_sync"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@android:color/tab_indicator_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            android:background="?android:selectableItemBackground"
+            android:text="@string/section_sync_settings"
+            android:layout_weight="1"
+
+            android:gravity="center_vertical" />
+
     </LinearLayout>
 
 </ScrollView>
