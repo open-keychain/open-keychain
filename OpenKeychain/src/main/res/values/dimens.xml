@@ -5,4 +5,7 @@
     <dimen name="big_toolbar">120dp</dimen>
     <dimen name="huge_toolbar">222dp</dimen>
     <dimen name="minus_statusbar_height">0dp</dimen>
+
+    <dimen name="private_key_import_button_margin_bottom">20dp</dimen>
+    <dimen name="private_key_import_text_padding_bottom">70dp</dimen>
 </resources>

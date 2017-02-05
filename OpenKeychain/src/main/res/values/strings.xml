@@ -29,6 +29,8 @@
     <string name="title_encrypt_to_file">"Encrypt To File"</string>
     <string name="title_decrypt_to_file">"Decrypt To File"</string>
     <string name="title_import_keys">"Import Keys"</string>
+    <string name="title_import_private_key">"Import Private Key"</string>
+    <string name="title_share_private_key">"Share Private Key"</string>
     <string name="title_export_key">"Backup Key"</string>
     <string name="title_export_keys">"Backup Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
@@ -381,6 +383,13 @@
     <string name="select_key_to_certify">"Please select a key to be used for confirmation!"</string>
     <string name="text_copied_to_clipboard">"Text has been copied to the clipboard!"</string>
     <string name="how_to_import">"How to import this on my desktop PC?"</string>
+
+    <string name="private_key_import_ip_address">"Enter the IP address and port number that are shown on your other device."</string>
+    <string name="private_key_import_sentence">"Enter the sentence that is shown on your other device."</string>
+    <string name="private_key_export_qr">"Scan this QR code with the device that should receive the private key."</string>
+    <string name="private_key_export_ip">"IP address of this device:"</string>
+    <string name="private_key_export_port">"Port number of this device:"</string>
+    <string name="private_key_export_sentence">"Validation sentence:"</string>
     <!--
          errors
          no punctuation, all lowercase,
@@ -859,6 +868,9 @@
 
     <!-- hints -->
     <string name="encrypt_content_edit_text_hint">"Type text"</string>
+    <string name="private_key_import_ip_hint">"IP address"</string>
+    <string name="private_key_import_port_hint">"Port number"</string>
+    <string name="private_key_import_sentence_hint">"Sentence"</string>
 
     <!-- certs -->
     <string name="cert_default">"default"</string>
@@ -1797,4 +1809,6 @@
     <string name="redirect_import_key_yes">"Scan again"</string>
     <string name="redirect_import_key_no">"Close"</string>
     <string name="title_activity_redirect_key">"Key import redirection"</string>
+
+    <string name="private_key_import_button">"Doesn't work?"</string>
 </resources>

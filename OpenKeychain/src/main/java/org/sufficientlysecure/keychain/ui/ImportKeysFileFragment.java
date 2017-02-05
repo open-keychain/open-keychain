@@ -53,6 +53,8 @@ public class ImportKeysFileFragment extends Fragment {
     private Uri mCurrentUri;
 
     private static final int REQUEST_CODE_FILE = 0x00007003;
+    private static final int REQUEST_CODE_SCAN = 0x00007004;
+    private static final int REQUEST_CODE_WLAN = 0x00007005;
 
     /**
      * Creates new instance of this fragment
@@ -105,9 +107,9 @@ public class ImportKeysFileFragment extends Fragment {
                         Uri.fromFile(Constants.Path.APP_DIR), "*/*", false, REQUEST_CODE_FILE);
                 return true;
             case R.id.menu_import_keys_file_device:
-
-                // TODO Import key from other device
-
+                Intent scanQrCode = new Intent(getActivity(), ImportKeysProxyActivity.class);
+                scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_PRIVATE_KEY_IMPORT);
+                startActivityForResult(scanQrCode, REQUEST_CODE_SCAN);
                 return true;
             case R.id.menu_import_keys_file_paste:
                 CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
@@ -140,6 +142,19 @@ public class ImportKeysFileFragment extends Fragment {
                 }
                 break;
             }
+            case REQUEST_CODE_SCAN:
+                if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+                    // TODO
+                } else {
+                    Intent intent = new Intent(mActivity, PrivateKeyImportExportActivity.class);
+                    intent.putExtra(PrivateKeyImportExportActivity.EXTRA_IMPORT_KEY, true);
+                    startActivityForResult(intent, REQUEST_CODE_WLAN);
+                }
+                break;
+            case REQUEST_CODE_WLAN:
+                // TODO
+
+                break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }

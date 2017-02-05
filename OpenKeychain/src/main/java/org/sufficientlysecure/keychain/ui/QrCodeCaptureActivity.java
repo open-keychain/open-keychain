@@ -27,6 +27,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Button;
 
 import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -38,6 +40,9 @@ public class QrCodeCaptureActivity extends FragmentActivity {
     private CompoundBarcodeView barcodeScannerView;
 
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 42;
+    public static final String IMPORT_PRIVATE_KEY = "import_private_key";
+
+    private boolean importPrivateKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,24 @@ public class QrCodeCaptureActivity extends FragmentActivity {
 
         if (savedInstanceState != null) {
             init(barcodeScannerView, getIntent(), savedInstanceState);
+            importPrivateKey = savedInstanceState.getBoolean(IMPORT_PRIVATE_KEY);
+        } else if (getIntent() != null){
+            importPrivateKey = getIntent().getBooleanExtra(IMPORT_PRIVATE_KEY, false);
+        }
+
+        if (importPrivateKey) {
+            int paddingBottom = (int) getResources().getDimension(R.dimen.private_key_import_text_padding_bottom);
+            barcodeScannerView.getStatusView().setPadding(0, 0, 0, paddingBottom);
+
+            Button importFailButton = (Button) findViewById(R.id.private_key_import_button);
+            importFailButton.setVisibility(View.VISIBLE);
+            importFailButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    setResult(Activity.RESULT_CANCELED);
+                    finish();
+                }
+            });
         }
 
         // check Android 6 permission
@@ -116,6 +139,7 @@ public class QrCodeCaptureActivity extends FragmentActivity {
         if (capture != null) {
             capture.onSaveInstanceState(outState);
         }
+        outState.putBoolean(IMPORT_PRIVATE_KEY, importPrivateKey);
     }
 
     @Override

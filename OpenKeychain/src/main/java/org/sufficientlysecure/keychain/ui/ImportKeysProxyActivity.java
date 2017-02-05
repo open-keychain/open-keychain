@@ -59,6 +59,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     // implies activity returns scanned fingerprint as extra and does not import
     public static final String ACTION_SCAN_WITH_RESULT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_WITH_RESULT";
     public static final String ACTION_SCAN_IMPORT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_IMPORT";
+    public static final String ACTION_SCAN_PRIVATE_KEY_IMPORT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_PRIVATE_KEY_IMPORT";
 
     public static final String EXTRA_FINGERPRINT = "fingerprint";
 
@@ -66,6 +67,8 @@ public class ImportKeysProxyActivity extends FragmentActivity
     private ParcelableHkpKeyserver mKeyserver;
     private ArrayList<ParcelableKeyRing> mKeyList;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
+
+    private boolean mImportPrivateKey;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,8 +89,16 @@ public class ImportKeysProxyActivity extends FragmentActivity
 
             processScannedContent(dataUri);
         } else if (ACTION_SCAN_WITH_RESULT.equals(action)
-                || ACTION_SCAN_IMPORT.equals(action) || ACTION_QR_CODE_API.equals(action)) {
-            new IntentIntegrator(this).setCaptureActivity(QrCodeCaptureActivity.class).initiateScan();
+                || ACTION_SCAN_IMPORT.equals(action) || ACTION_QR_CODE_API.equals(action)
+                || ACTION_SCAN_PRIVATE_KEY_IMPORT.equals(action)) {
+            IntentIntegrator integrator = new IntentIntegrator(this).setCaptureActivity(QrCodeCaptureActivity.class);
+
+            if (ACTION_SCAN_PRIVATE_KEY_IMPORT.equals(action)) {
+                mImportPrivateKey = true;
+                integrator.addExtra(QrCodeCaptureActivity.IMPORT_PRIVATE_KEY, true);
+            }
+
+            integrator.initiateScan();
         } else if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             // Check to see if the Activity started due to an Android Beam
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -128,7 +139,15 @@ public class ImportKeysProxyActivity extends FragmentActivity
             }
 
             String scannedContent = scanResult.getContents();
-            processScannedContent(scannedContent);
+
+            if (!mImportPrivateKey) {
+                processScannedContent(scannedContent);
+            } else {
+                // TODO: import private key
+
+                setResult(RESULT_OK);
+                finish();
+            }
 
         }
     }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <LinearLayout
+        android:id="@+id/private_key_import_ip_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/private_key_import_ip_address"
+            android:paddingBottom="72dp"/>
+
+        <EditText
+            android:id="@+id/private_key_import_ip_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/private_key_import_ip_hint"
+            android:paddingBottom="32dp"/>
+
+        <EditText
+            android:id="@+id/private_key_import_port"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/private_key_import_port_hint"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/private_key_import_sentence_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/private_key_import_sentence"
+            android:paddingBottom="72dp"/>
+
+        <EditText
+            android:id="@+id/private_key_import_sentence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/private_key_import_sentence_hint"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/private_key_import_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/msg_vl_ok"
+        android:layout_gravity="center_horizontal"
+        android:padding="8dp"
+        android:layout_marginBottom="72dp"/>
+
+</LinearLayout>

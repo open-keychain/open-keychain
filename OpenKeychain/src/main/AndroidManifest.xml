@@ -540,6 +540,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.QrCodeCaptureActivity" />
+        <activity android:name=".ui.PrivateKeyImportExportActivity" />
         <activity
             android:name=".ui.ImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"

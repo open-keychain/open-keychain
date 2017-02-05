@@ -318,10 +318,12 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
         });
 
-        mActionNfc.setOnClickListener(new View.OnClickListener() {
+        mActionWlan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Export Key Wlan
+                Intent intent = new Intent(ViewKeyActivity.this, PrivateKeyImportExportActivity.class);
+                intent.putExtra(PrivateKeyImportExportActivity.EXTRA_IMPORT_KEY, false);
+                startActivity(intent);
             }
         });
 
