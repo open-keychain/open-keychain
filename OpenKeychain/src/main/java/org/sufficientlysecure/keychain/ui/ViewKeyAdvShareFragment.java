@@ -21,6 +21,7 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -46,6 +47,8 @@ import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -53,6 +56,10 @@ import android.widget.TextView;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -60,6 +67,9 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -68,6 +78,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 public class ViewKeyAdvShareFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -84,6 +95,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
     private Uri mDataUri;
 
+    private long mMasterKeyId;
     private byte[] mFingerprint;
     private String mUserId;
     private Bitmap mQrCodeBitmapCache;
@@ -93,7 +105,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_adv_share_fragment, getContainer());
 
-        ProviderHelper providerHelper = new ProviderHelper(ViewKeyAdvShareFragment.this.getActivity());
+        final ProviderHelper providerHelper = new ProviderHelper(ViewKeyAdvShareFragment.this.getActivity());
         mNfcHelper = new NfcHelper(getActivity(), providerHelper);
 
         mFingerprintView = (TextView) view.findViewById(R.id.view_key_fingerprint);
@@ -141,6 +153,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View vKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         ImageButton vKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
         View vKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
+        CheckBox vKeySyncButton = (CheckBox) view.findViewById(R.id.view_key_action_sync);
         vKeySafeSlingerButton.setColorFilter(FormattingUtils.getColorFromAttr(getActivity(), R.attr.colorTertiaryText),
                 PorterDuff.Mode.SRC_IN);
 
@@ -198,16 +211,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     }
 
     private void startSafeSlinger(Uri dataUri) {
-        long keyId = 0;
-        try {
-            keyId = new ProviderHelper(getActivity())
-                    .getCachedPublicKeyRing(dataUri)
-                    .extractOrGetMasterKeyId();
-        } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
-        }
         Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
-        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, keyId);
+        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, mMasterKeyId);
         startActivityForResult(safeSlingerIntent, 0);
     }
 
@@ -346,6 +351,32 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         }
 
         loadData(dataUri);
+
+        final ProviderHelper providerHelper = new ProviderHelper(getActivity());
+        CheckBox vKeySyncCheckBox = (CheckBox) view.findViewById(R.id.view_key_action_sync);
+
+        if (providerHelper.isSyncWithServer(mMasterKeyId)) {
+            vKeySyncCheckBox.setChecked(true);
+        } else {
+            vKeySyncCheckBox.setChecked(false);
+        }
+
+        vKeySyncCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                try {
+                    if (checked) {
+                        providerHelper.saveSync(mMasterKeyId, true);
+                        syncWithServer(providerHelper);
+                    } else {
+                        providerHelper.saveSync(mMasterKeyId, false);
+                    }
+                } catch (PgpKeyNotFoundException | ProviderHelper.NotFoundException e) {
+                    Log.e(Constants.TAG, "key not found!", e);
+                    Notify.create(getActivity(), R.string.key_not_found, Style.ERROR);
+                }
+            }
+        });
     }
 
     private void loadData(Uri dataUri) {
@@ -357,6 +388,15 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
         // Prepare the NfcHelper
         mNfcHelper.initNfc(mDataUri);
+
+        try {
+            mMasterKeyId = new ProviderHelper(getActivity())
+                    .getCachedPublicKeyRing(mDataUri)
+                    .extractOrGetMasterKeyId();
+        } catch (PgpKeyNotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+            Notify.create(getActivity(), "key not found", Style.ERROR).show();
+        }
     }
 
     static final String[] UNIFIED_PROJECTION = new String[]{
@@ -454,22 +494,101 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         loadTask.execute();
     }
 
+    // Called by SyncWithServer
+    private void updateFromKeyserver(ProviderHelper providerHelper)
+            throws ProviderHelper.NotFoundException {
+
+        byte[] blob = (byte[]) providerHelper.getGenericData(
+                KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri),
+                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
+
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null, null);
+        final ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
+        entries.add(keyEntry);
+        final ParcelableHkpKeyserver keyserver = Preferences.getPreferences(getContext()).getPreferredKeyserver();
+
+        CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> updateCallback
+                = new CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult>() {
+            @Override
+            public ImportKeyringParcel createOperationInput() {
+                return new ImportKeyringParcel(entries, keyserver);
+            }
+
+            @Override
+            public void onCryptoOperationSuccess(ImportKeyResult result) {
+                result.createNotify(getActivity()).show();
+            }
+
+            @Override
+            public void onCryptoOperationCancelled() {
+
+            }
+
+            @Override
+            public void onCryptoOperationError(ImportKeyResult result) {
+                result.createNotify(getActivity()).show();
+            }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
+        };
+
+        CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> importOpHelper =
+                new CryptoOperationHelper<>(1, this, updateCallback, R.string.progress_updating);
+        importOpHelper.cryptoOperation();
+    }
+
     private void uploadToKeyserver() {
-        long keyId;
-        try {
-            keyId = new ProviderHelper(getActivity())
-                    .getCachedPublicKeyRing(mDataUri)
-                    .extractOrGetMasterKeyId();
-        } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
-            Notify.create(getActivity(), "key not found", Style.ERROR).show();
-            return;
-        }
         Intent uploadIntent = new Intent(getActivity(), UploadKeyActivity.class);
         uploadIntent.setData(mDataUri);
-        uploadIntent.putExtra(MultiUserIdsFragment.EXTRA_KEY_IDS, new long[]{keyId});
+        uploadIntent.putExtra(MultiUserIdsFragment.EXTRA_KEY_IDS, new long[]{mMasterKeyId});
         startActivityForResult(uploadIntent, 0);
     }
 
+    private void syncWithServer(final ProviderHelper providerHelper)
+            throws PgpKeyNotFoundException, ProviderHelper.NotFoundException {
 
+        CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult> uploadCallback
+                = new CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult>() {
+
+            @Override
+            public UploadKeyringParcel createOperationInput() {
+                final ParcelableHkpKeyserver keyserver = Preferences.getPreferences(getContext()).getPreferredKeyserver();
+                return new UploadKeyringParcel(keyserver, mMasterKeyId);
+            }
+
+            @Override
+            public void onCryptoOperationSuccess(UploadResult result) {
+                try {
+                    updateFromKeyserver(providerHelper);
+                } catch (ProviderHelper.NotFoundException e) {
+                    Log.e(Constants.TAG, "not found!", e);
+                    Notify.create(getActivity(), "update failed!", Style.ERROR).show();
+                }
+            }
+
+            @Override
+            public void onCryptoOperationCancelled() {
+
+            }
+
+            @Override
+            public void onCryptoOperationError(UploadResult result) {
+                result.createNotify(getActivity()).show();
+            }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
+        };
+
+        CryptoOperationHelper uploadOpHelper =
+                new CryptoOperationHelper<>(2, this, uploadCallback, R.string.progress_uploading);
+        uploadOpHelper.cryptoOperation();
+
+    }
 }

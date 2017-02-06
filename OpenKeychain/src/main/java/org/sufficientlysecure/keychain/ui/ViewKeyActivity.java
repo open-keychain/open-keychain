@@ -107,6 +107,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
     public static final String EXTRA_SECURITY_TOKEN_USER_ID = "security_token_user_id";
     public static final String EXTRA_SECURITY_TOKEN_AID = "security_token_aid";
     public static final String EXTRA_SECURITY_TOKEN_VERSION = "security_token_version";
@@ -157,6 +158,10 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private static final int LOADER_ID_UNIFIED = 0;
 
+    private boolean mFirstLoadActivity = true;
+    private boolean mFirstLoadData = false;
+
+    private boolean mSyncWithServer = false;
     private boolean mIsSecret = false;
     private boolean mHasEncrypt = false;
     private boolean mIsVerified = false;
@@ -250,7 +255,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-                if (!mIsRefreshing) {
+                if (!mIsRefreshing && mRefreshItem.getActionView() != null) {
                     mRefreshItem.getActionView().clearAnimation();
                     mRefreshItem.getActionView().startAnimation(mRotateSpin);
                 }
@@ -273,6 +278,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 return;
             }
         }
+
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri);
 
@@ -354,7 +360,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         // need to postpone loading of the security token fragment until after mMasterKeyId
         // is available, but we mark here that this should be done
         mShowSecurityTokenAfterCreation = true;
-
     }
 
     @Override
@@ -366,7 +371,13 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.key_view, menu);
+
         mRefreshItem = menu.findItem(R.id.menu_key_view_refresh);
+        if (mFirstLoadData && mSyncWithServer) {
+            tryToUpdateFromKeyserver();
+            mFirstLoadData = false;
+        }
+
         return true;
     }
 
@@ -398,11 +409,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 return true;
             }
             case R.id.menu_key_view_refresh: {
-                try {
-                    updateFromKeyserver(mDataUri, mProviderHelper);
-                } catch (ProviderHelper.NotFoundException e) {
-                    Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
-                }
+                tryToUpdateFromKeyserver();
                 return true;
             }
             case R.id.menu_key_view_certify_fingerprint: {
@@ -918,6 +925,10 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
                     mIsSecure = data.getInt(INDEX_IS_SECURE) == 1;
                     mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
+                    mSyncWithServer = mProviderHelper.isSyncWithServer(mMasterKeyId);
+
+                    mFirstLoadData = mFirstLoadActivity;
+                    mFirstLoadActivity = false;
 
                     // if the refresh animation isn't playing
                     if (!mRotate.hasStarted() && !mRotateSpin.hasStarted()) {
@@ -1139,6 +1150,16 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         mKeyserver = Preferences.getPreferences(this).getPreferredKeyserver();
 
         mImportOpHelper.cryptoOperation();
+    }
+
+    private void tryToUpdateFromKeyserver() {
+        if (!mIsRefreshing) {
+            try {
+                updateFromKeyserver(mDataUri, mProviderHelper);
+            } catch (ProviderHelper.NotFoundException e) {
+                Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
+            }
+        }
     }
 
     @Override

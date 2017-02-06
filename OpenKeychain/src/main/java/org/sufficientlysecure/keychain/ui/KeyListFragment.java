@@ -165,7 +165,10 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         @Override
         public void onKeyItemClicked(long masterKeyId) {
             Intent viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
+
             viewIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+            viewIntent.putExtra(ViewKeyActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
+
             startActivityForResult(viewIntent, REQUEST_VIEW_KEY);
         }
 

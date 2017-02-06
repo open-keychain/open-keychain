@@ -166,6 +166,8 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                 .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 
+        mProviderHelper.saveSync(ring.getMasterKeyId(), saveParcel.mSyncWithServer);
+
         // If the save operation didn't succeed, exit here
         if (!saveResult.success()) {
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);

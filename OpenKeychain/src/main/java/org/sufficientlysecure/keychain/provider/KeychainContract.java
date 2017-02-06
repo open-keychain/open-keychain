@@ -55,6 +55,7 @@ public class KeychainContract {
     interface UpdatedKeysColumns {
         String MASTER_KEY_ID = "master_key_id"; // not a database id
         String LAST_UPDATED = "last_updated"; // time since epoch in seconds
+        String SYNC = "sync";
     }
 
     interface UserPacketsColumns {
@@ -261,6 +262,10 @@ public class KeychainContract {
                 = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.updated_keys";
         public static final String CONTENT_ITEM_TYPE
                 = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.updated_keys";
+
+        public static Uri buildUpdatedKeysUri(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath("" + masterKeyId).build();
+        }
     }
 
     public static class UserPackets implements UserPacketsColumns, BaseColumns {

@@ -54,7 +54,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 19;
+    private static final int DATABASE_VERSION = 20;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -154,6 +154,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS " + Tables.UPDATED_KEYS + " ("
                     + UpdatedKeysColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY, "
                     + UpdatedKeysColumns.LAST_UPDATED + " INTEGER, "
+                    + UpdatedKeysColumns.SYNC + " INTEGER, "
                     + "FOREIGN KEY(" + UpdatedKeysColumns.MASTER_KEY_ID + ") REFERENCES "
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
                     + ")";
@@ -325,6 +326,13 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // splitUserId changed: Execute consolidate for new parsing of name, email
             case 18:
                 db.execSQL("ALTER TABLE keys ADD COLUMN is_secure INTEGER");
+            case 19:
+                Cursor res = db.rawQuery("Select * from updated_keys limit 1",null);
+                Log.d("aaa", "onUpgrade: " + res.getColumnIndex("sync"));
+                if (res.getColumnIndex("sync") == -1) {
+                    db.execSQL("ALTER TABLE updated_keys ADD COLUMN sync INTEGER");
+                }
+                res.close();
         }
 
         // always do consolidate after upgrade

@@ -711,11 +711,13 @@ public class ProviderHelper {
         // before deleting key, retrieve it's last updated time
         final int INDEX_MASTER_KEY_ID = 0;
         final int INDEX_LAST_UPDATED = 1;
+        final int INDEX_SYNC = 2;
         Cursor lastUpdatedCursor = mContentResolver.query(
                 UpdatedKeys.CONTENT_URI,
                 new String[]{
                         UpdatedKeys.MASTER_KEY_ID,
-                        UpdatedKeys.LAST_UPDATED
+                        UpdatedKeys.LAST_UPDATED,
+                        UpdatedKeys.SYNC + " as " + UpdatedKeys.SYNC
                 },
                 UpdatedKeys.MASTER_KEY_ID + " = ?",
                 new String[]{"" + masterKeyId},
@@ -724,11 +726,13 @@ public class ProviderHelper {
         if (lastUpdatedCursor.moveToNext()) {
             // there was an entry to re-insert
             // this operation must happen after the new key is inserted
-            ContentValues lastUpdatedEntry = new ContentValues(2);
+            ContentValues lastUpdatedEntry = new ContentValues(3);
             lastUpdatedEntry.put(UpdatedKeys.MASTER_KEY_ID,
                     lastUpdatedCursor.getLong(INDEX_MASTER_KEY_ID));
             lastUpdatedEntry.put(UpdatedKeys.LAST_UPDATED,
                     lastUpdatedCursor.getLong(INDEX_LAST_UPDATED));
+            lastUpdatedEntry.put(UpdatedKeys.SYNC,
+                    lastUpdatedCursor.getInt(INDEX_SYNC));
             operations.add(
                     ContentProviderOperation
                             .newInsert(UpdatedKeys.CONTENT_URI)
@@ -1362,11 +1366,13 @@ public class ProviderHelper {
             ArrayList<ContentValues> updatedKeysValues = new ArrayList<>();
             final int INDEX_MASTER_KEY_ID = 0;
             final int INDEX_LAST_UPDATED = 1;
+            final int INDEX_SYNC = 2;
             Cursor lastUpdatedCursor = mContentResolver.query(
                     UpdatedKeys.CONTENT_URI,
                     new String[]{
                             UpdatedKeys.MASTER_KEY_ID,
-                            UpdatedKeys.LAST_UPDATED
+                            UpdatedKeys.LAST_UPDATED,
+                            UpdatedKeys.SYNC + " as " + UpdatedKeys.SYNC
                     },
                     null, null, null);
             while (lastUpdatedCursor.moveToNext()) {
@@ -1375,6 +1381,8 @@ public class ProviderHelper {
                         lastUpdatedCursor.getLong(INDEX_MASTER_KEY_ID));
                 values.put(UpdatedKeys.LAST_UPDATED,
                         lastUpdatedCursor.getLong(INDEX_LAST_UPDATED));
+                values.put(UpdatedKeys.SYNC,
+                        lastUpdatedCursor.getInt(INDEX_SYNC));
                 updatedKeysValues.add(values);
             }
             lastUpdatedCursor.close();
@@ -1544,10 +1552,32 @@ public class ProviderHelper {
         return getKeyRingAsArmoredString(data);
     }
 
+    public boolean isSyncWithServer(long masterKeyId) {
+        final Uri uri = KeychainContract.UpdatedKeys.buildUpdatedKeysUri(masterKeyId);
+        final String column = UpdatedKeys.SYNC + " as " + UpdatedKeys.SYNC;
+        try {
+            return (long) getGenericData(uri, column, FIELD_TYPE_INTEGER) == 1;
+        } catch (NotFoundException e) {
+            return false;
+        }
+    }
+
     public Uri renewKeyLastUpdatedTime(long masterKeyId, long time, TimeUnit timeUnit) {
         ContentValues values = new ContentValues();
         values.put(UpdatedKeys.MASTER_KEY_ID, masterKeyId);
         values.put(UpdatedKeys.LAST_UPDATED, timeUnit.toSeconds(time));
+
+        boolean syncWithServer = isSyncWithServer(masterKeyId);
+
+        values.put(UpdatedKeys.SYNC, syncWithServer);
+
+        return mContentResolver.insert(UpdatedKeys.CONTENT_URI, values);
+    }
+
+    public Uri saveSync(long masterKeyId, boolean sync) {
+        ContentValues values = new ContentValues();
+        values.put(UpdatedKeys.MASTER_KEY_ID, masterKeyId);
+        values.put(UpdatedKeys.SYNC, sync ? 1 : 0);
 
         return mContentResolver.insert(UpdatedKeys.CONTENT_URI, values);
     }
