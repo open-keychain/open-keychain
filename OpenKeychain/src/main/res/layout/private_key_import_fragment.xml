@@ -18,7 +18,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/private_key_import_ip_address"
-            android:paddingBottom="72dp"/>
+            android:paddingBottom="72dp"
+            android:textSize="@dimen/private_key_import_export_text_headline_size"
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/private_key_import_ip_address"
@@ -48,7 +50,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/private_key_import_sentence"
-            android:paddingBottom="72dp"/>
+            android:paddingBottom="72dp"
+            android:textSize="@dimen/private_key_import_export_text_headline_size"
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/private_key_import_sentence"

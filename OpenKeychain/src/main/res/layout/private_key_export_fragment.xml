@@ -18,7 +18,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/private_key_export_qr"
-            android:paddingBottom="72dp"/>
+            android:paddingBottom="72dp"
+            android:textSize="@dimen/private_key_import_export_text_headline_size"
+            android:textStyle="bold"/>
 
         <ImageView
             android:id="@+id/private_key_export_qr_image"
@@ -50,7 +52,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/private_key_export_ip"
-            android:paddingBottom="24dp"/>
+            android:paddingBottom="24dp"
+            android:textSize="@dimen/private_key_import_export_text_headline_size"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/private_key_export_ip"
@@ -63,7 +67,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/private_key_export_port"
-            android:paddingBottom="24dp"/>
+            android:paddingBottom="24dp"
+            android:textSize="@dimen/private_key_import_export_text_headline_size"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/private_key_export_port"
@@ -76,7 +82,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/private_key_export_sentence"
-            android:paddingBottom="24dp"/>
+            android:paddingBottom="24dp"
+            android:textSize="@dimen/private_key_import_export_text_headline_size"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/private_key_export_sentence"
