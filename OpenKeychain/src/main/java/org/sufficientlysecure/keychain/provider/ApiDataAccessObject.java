@@ -121,6 +121,10 @@ public class ApiDataAccessObject {
                 contentValueForApiApps(appSettings));
     }
 
+    public void deleteApiApp(String packageName) {
+        mQueryInterface.delete(ApiApps.buildByPackageNameUri(packageName), null, null);
+    }
+
     public void insertApiAccount(Uri uri, AccountSettings accSettings) {
         mQueryInterface.insert(uri, contentValueForApiAccounts(accSettings));
     }
