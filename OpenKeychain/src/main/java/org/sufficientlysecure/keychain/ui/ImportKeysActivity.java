@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -53,8 +52,8 @@ import java.util.List;
 
 public class ImportKeysActivity extends BaseActivity implements ImportKeysListener {
 
-    public static final String ACTION_IMPORT_KEY = OpenKeychainIntents.IMPORT_KEY;
-    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER;
+    public static final String ACTION_IMPORT_KEY = Constants.IMPORT_KEY;
+    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = Constants.IMPORT_KEY_FROM_KEYSERVER;
     public static final String ACTION_IMPORT_KEY_FROM_FACEBOOK
             = Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_FACEBOOK";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT =
@@ -70,12 +69,12 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     public static final String EXTRA_RESULT = "result";
 
     // only used by ACTION_IMPORT_KEY
-    public static final String EXTRA_KEY_BYTES = OpenKeychainIntents.IMPORT_EXTRA_KEY_EXTRA_KEY_BYTES;
+    public static final String EXTRA_KEY_BYTES = Constants.IMPORT_EXTRA_KEY_EXTRA_KEY_BYTES;
 
     // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER
-    public static final String EXTRA_QUERY = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER_EXTRA_QUERY;
+    public static final String EXTRA_QUERY = Constants.IMPORT_KEY_FROM_KEYSERVER_EXTRA_QUERY;
     public static final String EXTRA_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_KEY_ID";
-    public static final String EXTRA_FINGERPRINT = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER_EXTRA_FINGERPRINT;
+    public static final String EXTRA_FINGERPRINT = Constants.IMPORT_KEY_FROM_KEYSERVER_EXTRA_FINGERPRINT;
 
     public static final String TAG_FRAG_LIST = "frag_list";
     public static final String TAG_FRAG_TOP = "frag_top";
