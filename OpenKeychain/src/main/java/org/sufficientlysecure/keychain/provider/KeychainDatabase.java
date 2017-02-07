@@ -54,7 +54,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 19;
+    private static final int DATABASE_VERSION = 20;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -325,9 +325,17 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // splitUserId changed: Execute consolidate for new parsing of name, email
             case 18:
                 db.execSQL("ALTER TABLE keys ADD COLUMN is_secure INTEGER");
+            case 19:
+                // emergency fix for crashing consolidate
+                db.execSQL("UPDATE keys SET is_secure = 1;");
+                if (oldVersion == 18 || oldVersion == 19) {
+                    // no consolidate for now, often crashes!
+                    return;
+                }
         }
 
-        // always do consolidate after upgrade
+        // TODO: don't depend on consolidate! make migrations inline!
+        // consolidate after upgrade
         Intent consolidateIntent = new Intent(mContext.getApplicationContext(), ConsolidateDialogActivity.class);
         consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
         consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
