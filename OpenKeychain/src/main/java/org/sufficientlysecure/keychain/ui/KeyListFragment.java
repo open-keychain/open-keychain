@@ -76,6 +76,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import eu.davidea.fastscroller.FastScroller;
@@ -332,9 +333,53 @@ public class KeyListFragment extends RecyclerFragment<KeyListFragment.KeyFlexibl
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getActivity(), uri,
-                KeySectionedListAdapter.KeyListCursor.PROJECTION, null, null,
-                KeySectionedListAdapter.KeyListCursor.ORDER);
+                PROJECTION, null, null,
+                ORDER);
     }
+
+    public static final String ORDER = KeychainContract.KeyRings.HAS_ANY_SECRET
+            + " DESC, " + KeychainContract.KeyRings.USER_ID + " COLLATE NOCASE ASC";
+
+    public static final String[] PROJECTION = {
+            KeyRings._ID,
+            KeychainContract.KeyRings.MASTER_KEY_ID,
+            KeychainContract.KeyRings.USER_ID,
+            KeychainContract.KeyRings.IS_REVOKED,
+            KeychainContract.KeyRings.IS_EXPIRED,
+            KeychainContract.KeyRings.IS_SECURE,
+            KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
+            KeychainContract.KeyRings.CREATION,
+            KeychainContract.KeyRings.NAME,
+            KeychainContract.KeyRings.EMAIL,
+            KeychainContract.KeyRings.COMMENT,
+            KeychainContract.KeyRings.VERIFIED,
+            KeychainContract.KeyRings.HAS_ANY_SECRET,
+            KeychainContract.KeyRings.FINGERPRINT,
+            KeychainContract.KeyRings.HAS_ENCRYPT};
+
+    /* static {
+        ArrayList<String> arr = new ArrayList<>();
+        // arr.addAll(Arrays.asList(PROJECTION));
+        arr.addAll(Arrays.asList(
+                KeyRings._ID,
+                KeychainContract.KeyRings.MASTER_KEY_ID,
+                KeychainContract.KeyRings.USER_ID,
+                KeychainContract.KeyRings.IS_REVOKED,
+                KeychainContract.KeyRings.IS_EXPIRED,
+                KeychainContract.KeyRings.IS_SECURE,
+                KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
+                KeychainContract.KeyRings.CREATION,
+                KeychainContract.KeyRings.NAME,
+                KeychainContract.KeyRings.EMAIL,
+                KeychainContract.KeyRings.COMMENT,
+                KeychainContract.KeyRings.VERIFIED,
+                KeychainContract.KeyRings.HAS_ANY_SECRET,
+                KeychainContract.KeyRings.FINGERPRINT,
+                KeychainContract.KeyRings.HAS_ENCRYPT
+        ));
+
+        PROJECTION = arr.toArray(new String[arr.size()]);
+    } */
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
