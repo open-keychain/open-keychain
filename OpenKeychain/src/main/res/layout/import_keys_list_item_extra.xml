@@ -85,9 +85,10 @@
                     android:layout_centerVertical="true"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-                    android:visibility="@{entry.revokedOrExpired ? V.VISIBLE : V.GONE}"
+                    android:visibility="@{entry.revokedOrExpiredOrInsecure ? V.VISIBLE : V.GONE}"
                     app:keyExpired="@{entry.expired}"
-                    app:keyRevoked="@{entry.revoked}" />
+                    app:keyRevoked="@{entry.revoked}"
+                    app:keySecure="@{entry.secure}"/>
 
             </RelativeLayout>
 

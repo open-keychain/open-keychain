@@ -36,8 +36,8 @@ import java.util.Map;
 
 public class ImportKeysExtraBindings {
 
-    @BindingAdapter({"keyRevoked", "keyExpired"})
-    public static void setStatus(ImageView imageView, boolean revoked, boolean expired) {
+    @BindingAdapter({"keyRevoked", "keyExpired", "keySecure"})
+    public static void setStatus(ImageView imageView, boolean revoked, boolean expired, boolean secure) {
         Context context = imageView.getContext();
 
         if (revoked) {
@@ -46,6 +46,9 @@ public class ImportKeysExtraBindings {
         } else if (expired) {
             KeyFormattingUtils.setStatusImage(context, imageView, null,
                     KeyFormattingUtils.State.EXPIRED, R.color.key_flag_gray);
+        } else if (!secure) {
+            KeyFormattingUtils.setStatusImage(context, imageView, null,
+                    KeyFormattingUtils.State.INSECURE, R.color.key_flag_gray);
         }
     }
 
