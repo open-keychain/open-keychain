@@ -19,14 +19,18 @@ import eu.davidea.viewholders.FlexibleViewHolder;
  * Created by daquexian on 17-2-2.
  */
 
-public class KeyHeaderItem extends AbstractHeaderItem<KeyHeaderItem.ViewHolder> {
-    private int mContextHash;
-    private String mTitle;
+public class KeyHeaderItem extends BaseHeaderItem<KeyHeaderItem.ViewHolder> {
     private boolean mIsSecret;
 
     private static List<KeyHeaderItem> headerItemList = new ArrayList<>();
 
-    private KeyHeaderItem(Object object, String title, boolean isSecret) {
+    KeyHeaderItem(Object object, String title) {
+        super();
+        mContextHash = object.hashCode();
+        mTitle = title;
+    }
+
+    KeyHeaderItem(Object object, String title, boolean isSecret) {
         super();
         mContextHash = object.hashCode();
         mTitle = title;
@@ -44,7 +48,7 @@ public class KeyHeaderItem extends AbstractHeaderItem<KeyHeaderItem.ViewHolder> 
      * @param isSecret whether a private key
      * @return a unique KeyHeaderItem
      */
-    public static KeyHeaderItem getInstance(Object object, String title, boolean isSecret) {
+    /* public static KeyHeaderItem getInstance(Object object, String title, boolean isSecret) {
         KeyHeaderItem newItem = new KeyHeaderItem(object, title, isSecret);
         for (KeyHeaderItem headerItem : headerItemList) {
             if (headerItem.equals(newItem)) {
@@ -53,19 +57,7 @@ public class KeyHeaderItem extends AbstractHeaderItem<KeyHeaderItem.ViewHolder> 
         }
         headerItemList.add(newItem);
         return newItem;
-    }
-
-    private int getContextHash() {
-        return mContextHash;
-    }
-
-    public String getTitle() {
-        return mTitle;
-    }
-
-    public void setTitle(String title) {
-        this.mTitle = title;
-    }
+    } */
 
     @Override
     public boolean equals(Object o) {
@@ -87,6 +79,10 @@ public class KeyHeaderItem extends AbstractHeaderItem<KeyHeaderItem.ViewHolder> 
         return mIsSecret;
     }
 
+    public void setSecret(boolean isSecret) {
+        this.mIsSecret = isSecret;
+    }
+
     @Override
     public int getLayoutRes() {
         return mIsSecret ? R.layout.key_list_header_private : R.layout.key_list_header_public;
@@ -99,7 +95,7 @@ public class KeyHeaderItem extends AbstractHeaderItem<KeyHeaderItem.ViewHolder> 
 
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder holder, int position, List payloads) {
-        holder.textView.setText(mTitle);
+        holder.bind(mTitle);
     }
 
     static final class ViewHolder extends FlexibleViewHolder {
@@ -107,6 +103,10 @@ public class KeyHeaderItem extends AbstractHeaderItem<KeyHeaderItem.ViewHolder> 
         ViewHolder(View view, FlexibleAdapter adapter) {
             super(view, adapter, true);
             textView = (TextView) view.findViewById(android.R.id.text1);
+        }
+
+        public void bind(String text) {
+            textView.setText(text);
         }
     }
 }

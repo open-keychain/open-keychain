@@ -68,6 +68,7 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.cursor.KeyListCursor;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.item.KeyHeaderItem;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.item.KeyItem;
 import org.sufficientlysecure.keychain.util.FabContainer;
@@ -388,7 +389,7 @@ public class KeyListFragment extends RecyclerFragment<KeyListFragment.KeyFlexibl
 
         if (data.moveToFirst()) {
             while (!data.isAfterLast()) {
-                mKeyItems.add(new KeyItem(null, data, mKeyListener));
+                mKeyItems.add(new KeyItem(null, KeyListCursor.wrap(data), mKeyListener));
                 data.moveToNext();
             }
         }

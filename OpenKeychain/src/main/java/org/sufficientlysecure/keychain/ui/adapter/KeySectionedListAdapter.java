@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Deprecated
 public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedListAdapter.KeyListCursor, Character,
         SectionCursorAdapter.ViewHolder, KeySectionedListAdapter.KeyHeaderViewHolder> implements SectionTitleProvider {
 

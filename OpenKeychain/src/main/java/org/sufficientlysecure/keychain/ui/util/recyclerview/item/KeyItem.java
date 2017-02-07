@@ -16,6 +16,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.cursor.KeyCursor;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.cursor.KeyListCursor;
 
 import java.util.Date;
 import java.util.List;
@@ -51,24 +53,24 @@ public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHead
 
     private KeyListListener mListener;
 
-    public KeyItem(KeyHeaderItem headerItem, Cursor cursor, KeyListListener listener) {
+    public KeyItem(KeyHeaderItem headerItem, KeyListCursor cursor, KeyListListener listener) {
         super(headerItem);
 
-        mHasEncrypt = cursor.getInt(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.HAS_ENCRYPT)) != 0;
-        mRawFingerPrint = cursor.getBlob(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.FINGERPRINT));
-        mFingerPrint = KeyFormattingUtils.convertFingerprintToHex(mRawFingerPrint);
-        mIsSecret = cursor.getInt(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.HAS_ANY_SECRET)) != 0;
-        mIsVerified = cursor.getInt(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.VERIFIED)) > 0;
+        mHasEncrypt = cursor.hasEncrypt();
+        mRawFingerPrint = cursor.getRawFingerprint();
+        mFingerPrint = cursor.getFingerprint();
+        mIsSecret = cursor.isSecret();
+        mIsVerified = cursor.isVerified();
 
-        mKeyId = cursor.getLong(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.MASTER_KEY_ID));
-        mName = cursor.getString(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.NAME));
-        mEmail = cursor.getString(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.EMAIL));
-        mComment = cursor.getString(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.COMMENT));
-        mHasDuplicate = cursor.getLong(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID)) > 0L;
-        mIsRevoked = cursor.getInt(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.IS_REVOKED)) > 0;
-        mIsExpired = cursor.getInt(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.IS_EXPIRED)) > 0;
-        mCreationTime = cursor.getLong(cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.CREATION)) * 1000;
-        mCreationDate = new Date(mCreationTime);
+        mKeyId = cursor.getKeyId();
+        mName = cursor.getName();
+        mEmail = cursor.getEmail();
+        mComment = cursor.getComment();
+        mHasDuplicate = cursor.hasDuplicate();
+        mIsRevoked = cursor.isRevoked();
+        mIsExpired = cursor.isExpired();
+        mCreationTime = cursor.getCreationTime();
+        mCreationDate = cursor.getCreationDate();
 
         mListener = listener;
     }
@@ -106,12 +108,14 @@ public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHead
                 secretKeyNum++;
             }
         }
-        KeyHeaderItem headerItem = KeyHeaderItem.getInstance(context,
-                context.getResources().getQuantityString(R.plurals.n_keys, secretKeyNum, secretKeyNum), true);
+        KeyHeaderItem headerItem = BaseHeaderItem.getInstance(context,
+                context.getResources().getQuantityString(R.plurals.n_keys, secretKeyNum, secretKeyNum), KeyHeaderItem.class);
+        headerItem.setSecret(true);
+
         for (KeyItem keyItem : keyItems) {
             if (!keyItem.isSecret() && (section == null || !keyItem.getSection().equals(section))) {
                 section = keyItem.getSection();
-                headerItem = KeyHeaderItem.getInstance(context, section, false);
+                headerItem = BaseHeaderItem.getInstance(context, section, KeyHeaderItem.class);
             }
             keyItem.setHeader(headerItem);
         }
@@ -126,7 +130,7 @@ public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHead
         return mName.toUpperCase().contains(constraint.toUpperCase()) || mEmail.toUpperCase().contains(constraint.toUpperCase());
     }
 
-    static final class ViewHolder extends FlexibleViewHolder implements View.OnClickListener, View.OnLongClickListener{
+    public static final class ViewHolder extends FlexibleViewHolder implements View.OnClickListener, View.OnLongClickListener{
         public ViewHolder(View view, FlexibleAdapter adapter, KeyListListener listener) {
             super(view, adapter);
             mMainUserId = (TextView) itemView.findViewById(R.id.key_list_item_name);

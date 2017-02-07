@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.ui.util.adapter.SectionCursorAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+@Deprecated
 public class CertSectionedListAdapter extends SectionCursorAdapter<CertSectionedListAdapter.CertCursor, String,
         CertSectionedListAdapter.CertItemViewHolder, CertSectionedListAdapter.CertSectionViewHolder> {
 
