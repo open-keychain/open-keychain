@@ -6,14 +6,18 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper.WrongPackageCertificateException;
 import org.sufficientlysecure.keychain.util.Log;
@@ -29,29 +33,33 @@ class RequestKeyPermissionPresenter {
 
     private String packageName;
     private long masterKeyId;
+    private ProviderHelper providerHelper;
 
 
     static RequestKeyPermissionPresenter createRequestKeyPermissionPresenter(Context context) {
         PackageManager packageManager = context.getPackageManager();
         ApiDataAccessObject apiDataAccessObject = new ApiDataAccessObject(context);
         ApiPermissionHelper apiPermissionHelper = new ApiPermissionHelper(context, apiDataAccessObject);
+        ProviderHelper providerHelper = new ProviderHelper(context);
 
-        return new RequestKeyPermissionPresenter(context, apiDataAccessObject, apiPermissionHelper, packageManager);
+        return new RequestKeyPermissionPresenter(context, apiDataAccessObject, apiPermissionHelper, packageManager,
+                providerHelper);
     }
 
     private RequestKeyPermissionPresenter(Context context, ApiDataAccessObject apiDataAccessObject,
-            ApiPermissionHelper apiPermissionHelper, PackageManager packageManager) {
+            ApiPermissionHelper apiPermissionHelper, PackageManager packageManager, ProviderHelper providerHelper) {
         this.context = context;
         this.apiDataAccessObject = apiDataAccessObject;
         this.apiPermissionHelper = apiPermissionHelper;
         this.packageManager = packageManager;
+        this.providerHelper = providerHelper;
     }
 
     void setView(RequestKeyPermissionMvpView view) {
         this.view = view;
     }
 
-    void setupFromIntentData(String packageName, long masterKeyId) {
+    void setupFromIntentData(String packageName, long[] masterKeyIds) {
         checkPackageAllowed(packageName);
 
         try {
@@ -62,25 +70,58 @@ class RequestKeyPermissionPresenter {
             return;
         }
 
-        this.packageName = packageName;
-        this.masterKeyId = masterKeyId;
         try {
-            CachedPublicKeyRing cachedPublicKeyRing = new ProviderHelper(context).getCachedPublicKeyRing(masterKeyId);
-
-            UserId userId = cachedPublicKeyRing.getSplitPrimaryUserIdWithFallback();
-            view.displayKeyInfo(userId);
-
-            if (cachedPublicKeyRing.hasAnySecret()) {
-                view.switchToLayoutRequestKeyChoice();
-            } else {
-                view.switchToLayoutNoSecret();
-            }
+            setRequestedMasterKeyId(masterKeyIds);
         } catch (PgpKeyNotFoundException e) {
             view.finishAsCancelled();
         }
     }
 
+    private void setRequestedMasterKeyId(long[] subKeyIds) throws PgpKeyNotFoundException {
+        CachedPublicKeyRing secretKeyRingOrPublicFallback = findSecretKeyRingOrPublicFallback(subKeyIds);
+
+        if (secretKeyRingOrPublicFallback == null) {
+            throw new PgpKeyNotFoundException("No key found among requested!");
+        }
+
+        this.masterKeyId = secretKeyRingOrPublicFallback.getMasterKeyId();
+
+        UserId userId = secretKeyRingOrPublicFallback.getSplitPrimaryUserIdWithFallback();
+        view.displayKeyInfo(userId);
+
+        if (secretKeyRingOrPublicFallback.hasAnySecret()) {
+            view.switchToLayoutRequestKeyChoice();
+        } else {
+            view.switchToLayoutNoSecret();
+        }
+    }
+
+    @Nullable
+    private CachedPublicKeyRing findSecretKeyRingOrPublicFallback(long[] subKeyIds) {
+        CachedPublicKeyRing publicFallbackRing = null;
+        for (long candidateSubKeyId : subKeyIds) {
+            try {
+                CachedPublicKeyRing cachedPublicKeyRing = providerHelper.getCachedPublicKeyRing(
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(candidateSubKeyId)
+                );
+
+                SecretKeyType secretKeyType = cachedPublicKeyRing.getSecretKeyType(candidateSubKeyId);
+                if (secretKeyType.isUsable()) {
+                    return cachedPublicKeyRing;
+                }
+                if (publicFallbackRing == null) {
+                    publicFallbackRing = cachedPublicKeyRing;
+                }
+            } catch (PgpKeyNotFoundException | NotFoundException e) {
+                // no matter
+            }
+        }
+        return publicFallbackRing;
+    }
+
     private void setPackageInfo(String packageName) throws NameNotFoundException {
+        this.packageName = packageName;
+
         ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
         Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
         CharSequence appName = packageManager.getApplicationLabel(applicationInfo);

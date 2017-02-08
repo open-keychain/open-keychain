@@ -19,6 +19,15 @@
 package org.sufficientlysecure.keychain.remote;
 
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -65,15 +74,6 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 
 public class OpenPgpService extends Service {
     public static final int API_VERSION_WITH_RESULT_METADATA = 4;
@@ -393,16 +393,15 @@ public class OpenPgpService extends Service {
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
             } else {
-                long[] skippedDisallowedKeys = pgpResult.getSkippedDisallowedKeys();
-                if (pgpResult.isKeysDisallowed() && skippedDisallowedKeys.length > 0) {
-                    long masterKeyId = skippedDisallowedKeys[0];
-
+                long[] skippedDisallowedEncryptionKeys = pgpResult.getSkippedDisallowedKeys();
+                if (pgpResult.isKeysDisallowed() &&
+                        skippedDisallowedEncryptionKeys != null && skippedDisallowedEncryptionKeys.length > 0) {
                     // allow user to select allowed keys
                     Intent result = new Intent();
                     String packageName = mApiPermissionHelper.getCurrentCallingPackage();
                     result.putExtra(OpenPgpApi.RESULT_INTENT,
                             mApiPendingIntentFactory.createRequestKeyPermissionPendingIntent(
-                                    data, packageName, masterKeyId));
+                                    data, packageName, skippedDisallowedEncryptionKeys));
                     result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                     return result;
                 }

@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.remote;
 
+
+import java.util.ArrayList;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -36,8 +39,6 @@ import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
-
-import java.util.ArrayList;
 
 public class ApiPendingIntentFactory {
 
@@ -103,10 +104,10 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long masterKeyId) {
+    PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long[] masterKeyIds) {
         Intent intent = new Intent(mContext, RequestKeyPermissionActivity.class);
         intent.putExtra(RequestKeyPermissionActivity.EXTRA_PACKAGE_NAME, packageName);
-        intent.putExtra(RequestKeyPermissionActivity.EXTRA_REQUESTED_KEY_ID, masterKeyId);
+        intent.putExtra(RequestKeyPermissionActivity.EXTRA_REQUESTED_KEY_IDS, masterKeyIds);
 
         return createInternal(data, intent);
     }
