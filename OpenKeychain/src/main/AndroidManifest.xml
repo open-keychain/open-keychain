@@ -861,6 +861,7 @@
         <activity
             android:name=".remote.ui.RemoteRegisterActivity"
             android:exported="false"
+            android:theme="@style/Theme.Keychain.Transparent"
             android:label="@string/app_name" />
         <activity
             android:name=".remote.ui.RemoteSelectPubKeyActivity"
@@ -871,8 +872,9 @@
             android:exported="false"
             android:label="@string/app_name" />
         <activity
-            android:name=".remote.ui.SelectAllowedKeysActivity"
+            android:name=".remote.ui.RequestKeyPermissionActivity"
             android:exported="false"
+            android:theme="@style/Theme.Keychain.Transparent"
             android:label="@string/app_name" />
         <activity
             android:name=".remote.ui.AppSettingsActivity"

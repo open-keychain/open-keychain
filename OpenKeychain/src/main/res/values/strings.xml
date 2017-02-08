@@ -655,7 +655,8 @@
     <string name="api_settings_accounts_empty">"No accounts attached to this app."</string>
     <string name="api_create_account_text">"No key is configured for this account. Please select one of your existing keys or create a new one.\nApps can only decrypt/sign with the keys selected here!"</string>
     <string name="api_update_account_text">"The key saved for this account has been deleted. Please select a different one!\nApps can only decrypt/sign with the keys selected here!"</string>
-    <string name="api_register_text">"The displayed app wants to encrypt/decrypt messages and sign them in your name.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the 'Apps' screen."</string>
+    <string name="api_register_title">"Allow access to OpenKeychain?"</string>
+    <string name="api_register_text">"%s requests to use OpenKeychain as a crypto provider. You will still be asked for permission before the app can use any of your keys for decryption.\n\nYou can revoke access later in the 'Apps' screen."</string>
     <string name="api_register_allow">"Allow access"</string>
     <string name="api_register_disallow">"Disallow access"</string>
     <string name="api_register_error_select_key">"Please select a key!"</string>
@@ -1797,4 +1798,11 @@
     <string name="redirect_import_key_yes">"Scan again"</string>
     <string name="redirect_import_key_no">"Close"</string>
     <string name="title_activity_redirect_key">"Key import redirection"</string>
+
+    <string name="request_permission_title">Allow access to your key?</string>
+    <string name="request_permission_msg">%1$s requests access to one of your keys, which allows it to decrypt messages sent to this key. You can revoke access later in OpenKeychain.</string>
+    <string name="requested_key_unavailable_warning">This key is not available. To use it, you must import it as one of your own!</string>
+    <string name="button_allow">Allow</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="requested_key_label">Requested key:</string>
 </resources>

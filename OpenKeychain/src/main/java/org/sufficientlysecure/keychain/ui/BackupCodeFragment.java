@@ -293,7 +293,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         setupEditTextFocusNext(mCodeEditText);
         setupEditTextSuccessListener(mCodeEditText);
 
-        mStatusAnimator = (ToolableViewAnimator) view.findViewById(R.id.status_animator);
+        mStatusAnimator = (ToolableViewAnimator) view.findViewById(R.id.button_bar_animator);
         mTitleAnimator = (ToolableViewAnimator) view.findViewById(R.id.title_animator);
         mCodeFieldsAnimator = (ToolableViewAnimator) view.findViewById(R.id.code_animator);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2017 Vincent Breitmoser <look@my.amazin.horse>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,29 +36,29 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.remote.ui.RemoteRegisterPresenter.RemoteRegisterView;
+import org.sufficientlysecure.keychain.remote.ui.RequestKeyPermissionPresenter.RequestKeyPermissionMvpView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
 
-public class RemoteRegisterActivity extends FragmentActivity {
+public class RequestKeyPermissionActivity extends FragmentActivity {
     public static final String EXTRA_PACKAGE_NAME = "package_name";
-    public static final String EXTRA_PACKAGE_SIGNATURE = "package_signature";
-    public static final String EXTRA_DATA = "data";
+    public static final String EXTRA_REQUESTED_KEY_IDS = "requested_key_ids";
 
 
-    private RemoteRegisterPresenter presenter;
+    private RequestKeyPermissionPresenter presenter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.presenter = new RemoteRegisterPresenter(getBaseContext());
+        presenter = RequestKeyPermissionPresenter.createRequestKeyPermissionPresenter(getBaseContext());
 
         if (savedInstanceState == null) {
-            RemoteRegisterDialogFragment frag = new RemoteRegisterDialogFragment();
+            RequestKeyPermissionFragment frag = new RequestKeyPermissionFragment();
             frag.show(getSupportFragmentManager(), "requestKeyDialog");
         }
     }
@@ -68,19 +68,17 @@ public class RemoteRegisterActivity extends FragmentActivity {
         super.onStart();
 
         Intent intent = getIntent();
-        Intent resultData = intent.getParcelableExtra(EXTRA_DATA);
         String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
-        byte[] packageSignature = intent.getByteArrayExtra(EXTRA_PACKAGE_SIGNATURE);
+        long masterKeyIds[] = intent.getLongArrayExtra(EXTRA_REQUESTED_KEY_IDS);
 
-        presenter.setupFromIntentData(resultData, packageName, packageSignature);
+        presenter.setupFromIntentData(packageName, masterKeyIds);
     }
 
-    public static class RemoteRegisterDialogFragment extends DialogFragment {
-        private RemoteRegisterPresenter presenter;
-        private RemoteRegisterView mvpView;
-
-        private Button buttonAllow;
+    public static class RequestKeyPermissionFragment extends DialogFragment {
+        private RequestKeyPermissionMvpView mvpView;
+        private RequestKeyPermissionPresenter presenter;
         private Button buttonCancel;
+        private Button buttonAllow;
 
         @NonNull
         @Override
@@ -91,7 +89,7 @@ public class RemoteRegisterActivity extends FragmentActivity {
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
 
             @SuppressLint("InflateParams")
-            View view = LayoutInflater.from(theme).inflate(R.layout.api_remote_register_app, null, false);
+            View view = LayoutInflater.from(theme).inflate(R.layout.api_remote_request_key_permission, null, false);
             alert.setView(view);
 
             buttonAllow = (Button) view.findViewById(R.id.button_allow);
@@ -107,7 +105,7 @@ public class RemoteRegisterActivity extends FragmentActivity {
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            presenter = ((RemoteRegisterActivity) getActivity()).presenter;
+            presenter = ((RequestKeyPermissionActivity) getActivity()).presenter;
             presenter.setView(mvpView);
         }
 
@@ -131,19 +129,41 @@ public class RemoteRegisterActivity extends FragmentActivity {
         }
 
         @NonNull
-        private RemoteRegisterView createMvpView(View view) {
-            final TextView titleText = (TextView) view.findViewById(R.id.api_register_text);
+        private RequestKeyPermissionMvpView createMvpView(View view) {
+            final TextView titleText = (TextView) view.findViewById(R.id.select_identity_key_title);
+            final TextView keyUserIdView = (TextView) view.findViewById(R.id.select_key_item_name);
             final ImageView iconClientApp = (ImageView) view.findViewById(R.id.icon_client_app);
+            final View keyUnavailableWarning = view.findViewById(R.id.requested_key_unavailable_warning);
+            final View keyInfoLayout = view.findViewById(R.id.key_info_layout);
 
-            return new RemoteRegisterView() {
+            return new RequestKeyPermissionMvpView() {
                 @Override
-                public void finishWithResult(Intent resultIntent) {
+                public void switchToLayoutRequestKeyChoice() {
+                    keyInfoLayout.setVisibility(View.VISIBLE);
+                    keyUnavailableWarning.setVisibility(View.GONE);
+                    buttonAllow.setEnabled(true);
+                }
+
+                @Override
+                public void switchToLayoutNoSecret() {
+                    keyInfoLayout.setVisibility(View.VISIBLE);
+                    keyUnavailableWarning.setVisibility(View.VISIBLE);
+                    buttonAllow.setEnabled(false);
+                }
+
+                @Override
+                public void displayKeyInfo(UserId userId) {
+                    keyUserIdView.setText(userId.name);
+                }
+
+                @Override
+                public void finish() {
                     FragmentActivity activity = getActivity();
                     if (activity == null) {
                         return;
                     }
 
-                    activity.setResult(RESULT_OK, resultIntent);
+                    activity.setResult(Activity.RESULT_OK);
                     activity.finish();
                 }
 
@@ -154,7 +174,7 @@ public class RemoteRegisterActivity extends FragmentActivity {
                         return;
                     }
 
-                    activity.setResult(RESULT_CANCELED);
+                    activity.setResult(Activity.RESULT_CANCELED);
                     activity.finish();
                 }
 
@@ -186,5 +206,4 @@ public class RemoteRegisterActivity extends FragmentActivity {
             });
         }
     }
-
 }

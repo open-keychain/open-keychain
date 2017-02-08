@@ -241,6 +241,11 @@ public class ApiDataAccessObject {
         mQueryInterface.insert(uri, values);
     }
 
+    public void addAllowedKeyIdForApp(String packageName, long allowedKeyId) {
+        Uri uri = ApiAllowedKeys.buildBaseUri(packageName);
+        addAllowedKeyIdForApp(uri, allowedKeyId);
+    }
+
     public byte[] getApiAppCertificate(String packageName) {
         Uri queryUri = ApiApps.buildByPackageNameUri(packageName);
 
