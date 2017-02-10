@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -122,6 +123,9 @@ public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHead
     }
 
     public String getSection() {
+        if (TextUtils.isEmpty(getName())) {
+            return "?";
+        }
         return getName().substring(0, 1).toUpperCase();
     }
 

@@ -1,6 +1,7 @@
 package org.sufficientlysecure.keychain.ui.util.recyclerview.item;
 
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,6 +91,9 @@ public class CertItem extends AbstractSectionableItem<CertItem.CertViewHolder, C
     }
 
     public String getSection() {
+        if (TextUtils.isEmpty(mRawSignerUserId)) {
+            return "?";
+        }
         return mRawSignerUserId;
     }
 
