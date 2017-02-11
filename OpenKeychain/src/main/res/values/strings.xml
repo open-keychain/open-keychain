@@ -315,6 +315,8 @@
     <string name="ecc_p384_description_html">"very tiny file size, considered secure until 2040 &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
     <string name="ecc_p521">"ECC P-521"</string>
     <string name="ecc_p521_description_html">"tiny file size, considered secure until 2040+ &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
+    <string name="ecc_eddsa">"ECC EdDSA"</string>
+    <string name="ecc_eddsa_description_html">"tiny file size, considered secure until 2040+ &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
     <string name="usage_none">"None (subkey binding only)"</string>
     <string name="usage_sign">"Sign"</string>
     <string name="usage_encrypt">"Encrypt"</string>
@@ -452,6 +454,7 @@
     <string name="progress_generating_dsa">"generating new DSA key…"</string>
     <string name="progress_generating_elgamal">"generating new ElGamal key…"</string>
     <string name="progress_generating_ecdsa">"generating new ECDSA key…"</string>
+    <string name="progress_generating_eddsa">"generating new EdDSA key…"</string>
     <string name="progress_generating_ecdh">"generating new ECDH key…"</string>
 
     <string name="progress_modify">"modifying keyring…"</string>
@@ -1084,6 +1087,7 @@
     <string name="msg_cr_error_flags_dsa">"Bad key flags selected, DSA cannot be used for encryption!"</string>
     <string name="msg_cr_error_flags_elgamal">"Bad key flags selected, ElGamal cannot be used for signing!"</string>
     <string name="msg_cr_error_flags_ecdsa">"Bad key flags selected, ECDSA cannot be used for encryption!"</string>
+    <string name="msg_cr_error_flags_eddsa">"Bad key flags selected, EdDSA cannot be used for encryption!"</string>
     <string name="msg_cr_error_flags_ecdh">"Bad key flags selected, ECDH cannot be used for signing!"</string>
 
     <!-- modifySecretKeyRing -->

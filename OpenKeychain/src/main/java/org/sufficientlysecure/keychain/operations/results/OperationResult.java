@@ -533,6 +533,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_CR_ERROR_FLAGS_DSA (LogLevel.ERROR, R.string.msg_cr_error_flags_dsa),
         MSG_CR_ERROR_FLAGS_ELGAMAL (LogLevel.ERROR, R.string.msg_cr_error_flags_elgamal),
         MSG_CR_ERROR_FLAGS_ECDSA (LogLevel.ERROR, R.string.msg_cr_error_flags_ecdsa),
+        MSG_CR_ERROR_FLAGS_EDDSA (LogLevel.ERROR, R.string.msg_cr_error_flags_eddsa),
         MSG_CR_ERROR_FLAGS_ECDH (LogLevel.ERROR, R.string.msg_cr_error_flags_ecdh),
 
         // secret key modify

@@ -62,7 +62,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
     }
 
     public enum SupportedKeyType {
-        RSA_2048, RSA_3072, RSA_4096, ECC_P256, ECC_P521
+        RSA_2048, RSA_3072, RSA_4096, ECC_P256, ECC_P521, EDDSA
     }
 
     private static final String ARG_WILL_BE_MASTER_KEY = "will_be_master_key";
@@ -158,6 +158,8 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     R.string.ecc_p256), getResources().getString(R.string.ecc_p256_description_html)));
             choices.add(new Choice<>(SupportedKeyType.ECC_P521, getResources().getString(
                     R.string.ecc_p521), getResources().getString(R.string.ecc_p521_description_html)));
+            choices.add(new Choice<>(SupportedKeyType.EDDSA, getResources().getString(
+                    R.string.ecc_eddsa), getResources().getString(R.string.ecc_eddsa_description_html)));
             TwoLineArrayAdapter adapter = new TwoLineArrayAdapter(context,
                     android.R.layout.simple_spinner_item, choices);
             mKeyTypeSpinner.setAdapter(adapter);
@@ -198,6 +200,9 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     if (mWillBeMasterKey) {
                         mUsageEncrypt.setEnabled(false);
                     }
+                } else if (keyType == SupportedKeyType.EDDSA) {
+                    mUsageSignAndEncrypt.setEnabled(false);
+                    mUsageEncrypt.setEnabled(false);
                 } else {
                     // need to enable if previously disabled for ECC masterkey
                     mUsageEncrypt.setEnabled(true);
@@ -274,6 +279,9 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                                 algorithm = Algorithm.ECDSA;
                             }
                             break;
+                        }
+                        case EDDSA: {
+                            algorithm = Algorithm.EDDSA;
                         }
                     }
 

@@ -223,7 +223,8 @@ public class UncachedPublicKey {
 
     public boolean isEC() {
         return getAlgorithm() == PGPPublicKey.ECDH
-                || getAlgorithm() == PGPPublicKey.ECDSA;
+                || getAlgorithm() == PGPPublicKey.ECDSA
+                || getAlgorithm() == PGPPublicKey.EDDSA;
     }
 
     public byte[] getFingerprint() {

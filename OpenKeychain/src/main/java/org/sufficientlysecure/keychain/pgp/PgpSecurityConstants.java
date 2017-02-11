@@ -174,6 +174,9 @@ public class PgpSecurityConstants {
                 }
                 return null;
             }
+            case PublicKeyAlgorithmTags.EDDSA: {
+                return null;
+            }
             // ELGAMAL_GENERAL: deprecated in RFC 4880, use ELGAMAL_ENCRYPT
             // DIFFIE_HELLMAN: unsure
             // TODO specialize all cases!
