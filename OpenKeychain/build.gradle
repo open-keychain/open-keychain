@@ -52,6 +52,7 @@ dependencies {
     compile 'com.fidesmo:nordpol-android:0.1.20'
 
     // libs as submodules
+    compile project(':libkeychain')
     compile project(':openpgp-api-lib')
     compile project(':extern:bouncycastle:core')
     compile project(':extern:bouncycastle:pg')

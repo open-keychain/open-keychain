@@ -1,10 +1,14 @@
 include ':OpenKeychain'
+include ':libkeychain'
 include ':extern:bouncycastle:core'
 include ':extern:bouncycastle:pg'
 include ':extern:bouncycastle:prov'
 include ':extern:minidns'
 
 // Workaround for Android Gradle Plugin 2.0, as described in http://stackoverflow.com/a/36544850
+//include ':libkeychain'
+include ':libkeychain'
+project(':libkeychain').projectDir = new File('libkeychain')
 //include ':extern:safeslinger-exchange:safeslinger-exchange'
 include ':safeslinger-exchange'
 project(':safeslinger-exchange').projectDir = new File('extern/safeslinger-exchange/safeslinger-exchange')

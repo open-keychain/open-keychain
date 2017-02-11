@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2016 Vincent Breitmoser
+ *
+ * Licensed under the Bouncy Castle License (MIT license). See LICENSE file for details.
+ */
+
 package org.bouncycastle.openpgp.jcajce;
 
 
