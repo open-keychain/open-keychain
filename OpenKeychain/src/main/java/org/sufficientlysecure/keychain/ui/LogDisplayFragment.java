@@ -26,8 +26,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.tonicartos.superslim.LayoutManager;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
@@ -37,17 +35,32 @@ import org.sufficientlysecure.keychain.ui.dialog.ShareLogDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.LogAbstractItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.LogDummyItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.LogHeaderItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.LogItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.RegularLogHeaderItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.RegularLogItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.SublogHeaderItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.SublogItem;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import eu.davidea.flexibleadapter.FlexibleAdapter;
+import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
 
 
-public class LogDisplayFragment extends RecyclerFragment<NestedLogAdapter>
-        implements NestedLogAdapter.LogActionListener {
+public class LogDisplayFragment extends RecyclerFragment<FlexibleAdapter<LogItem>>
+        implements FlexibleAdapter.OnItemClickListener {
     private OperationResult mResult;
 
     public static final String EXTRA_RESULT = "log";
     private Uri mLogTempFile;
+
+    private List<LogItem> items = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,11 +89,39 @@ public class LogDisplayFragment extends RecyclerFragment<NestedLogAdapter>
             return;
         }
 
-        NestedLogAdapter adapter = new NestedLogAdapter(getContext(), mResult.getLog());
-        adapter.setListener(this);
+        final int ENTRY_TYPE_REGULAR = 0;
+        final int ENTRY_TYPE_SUBLOG = 1;
+        final int LOG_ENTRY_ITEM_INDENT = 2;
+
+        items.clear();
+
+        LogHeaderItem lastHeader = null;
+        for (OperationResult.LogEntryParcel parcel : mResult.getLog()) {
+            if (parcel.mIndent < LOG_ENTRY_ITEM_INDENT) {
+                if (parcel instanceof SubLogEntryParcel) {
+                    lastHeader = new SublogHeaderItem(parcel);
+                } else {
+                    lastHeader = new RegularLogHeaderItem(parcel);
+                }
+                items.add(new LogDummyItem(lastHeader));
+            } else {
+                if (parcel instanceof SubLogEntryParcel) {
+                    items.add(new SublogItem(lastHeader, parcel));
+                } else {
+                    items.add(new RegularLogItem(lastHeader, parcel));
+                }
+            }
+        }
+
+        List<LogItem> itemList = new ArrayList<>(items);
+
+        FlexibleAdapter<LogItem> adapter = new FlexibleAdapter<>(itemList);
+        adapter.setDisplayHeadersAtStartUp(true)
+                .setStickyHeaders(true);
+        adapter.addListener(this);
         setAdapter(adapter);
 
-        setLayoutManager(new LayoutManager(getContext()));
+        setLayoutManager(new SmoothScrollLinearLayoutManager(getContext()));
     }
 
     @Override
@@ -134,10 +175,53 @@ public class LogDisplayFragment extends RecyclerFragment<NestedLogAdapter>
         shareLogDialog.show(getActivity().getSupportFragmentManager(), "shareLogDialog");
     }
 
-    @Override
+    /* @Override
     public void onSubEntryClicked(SubLogEntryParcel subLogEntryParcel) {
         Intent intent = new Intent(getActivity(), LogDisplayActivity.class);
         intent.putExtra(LogDisplayFragment.EXTRA_RESULT, subLogEntryParcel.getSubResult());
         startActivity(intent);
+    } */
+
+    @Override
+    public boolean onItemClick(int position) {
+        LogItem item = getAdapter().getItem(position);
+        if (item instanceof SublogItem) {
+            Intent intent = new Intent(getActivity(), LogDisplayActivity.class);
+            intent.putExtra(LogDisplayFragment.EXTRA_RESULT,
+                    ((SubLogEntryParcel) item.getEntry()).getSubResult());
+            startActivity(intent);
+            return true;
+        }
+        return false;
     }
+
+    /* static class MyNestedLogAdapter extends FlexibleAdapter<LogAbstractItem> {
+
+        MyNestedLogAdapter(List<LogAbstractItem> logAbstractItems) {
+            super(logAbstractItems);
+        }
+
+
+        public void setLog(OperationResult.OperationLog log) {
+            List<OperationResult.LogEntryParcel> list = log.toList();
+
+            if (mLogEntries != null) {
+                mLogEntries.clear();
+            } else {
+                mLogEntries = new ArrayList<>(list.size());
+            }
+
+            int lastSection = 0;
+            for (int i = 0; i < list.size(); i++) {
+                OperationResult.LogEntryParcel parcel = list.get(i);
+                if(parcel.mIndent < LOG_ENTRY_ITEM_INDENT) {
+                    lastSection = i;
+                }
+
+                mLogEntries.add(new Pair<>(parcel, lastSection));
+            }
+
+            notifyDataSetChanged();
+        }
+    } */
 }

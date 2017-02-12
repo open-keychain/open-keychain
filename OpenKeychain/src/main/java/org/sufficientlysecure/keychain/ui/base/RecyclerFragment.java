@@ -124,6 +124,9 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
 
 
         FrameLayout listContainer = new FrameLayout(context);
+        int padding = FormattingUtils.dpToPx(context, 8);
+        // TODO: 17-2-11 any better solution?
+        listContainer.setPadding(padding, 0, padding, 0);
         listContainer.setId(INTERNAL_LIST_CONTAINER_ID);
 
         TextView textView = new TextView(context);
@@ -136,8 +139,6 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
         RecyclerView listView = new RecyclerView(context);
         listView.setId(INTERNAL_LIST_VIEW_ID);
 
-        int padding = FormattingUtils.dpToPx(context, 8);
-        listView.setPadding(padding, 0, padding, 0);
         listView.setClipToPadding(false);
 
         listContainer.addView(listView, new FrameLayout.LayoutParams(
