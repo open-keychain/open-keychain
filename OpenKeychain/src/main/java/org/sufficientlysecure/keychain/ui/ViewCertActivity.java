@@ -18,6 +18,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.Date;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -27,7 +30,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
-import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,8 +46,6 @@ import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.Date;
 
 public class ViewCertActivity extends BaseActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -162,14 +162,17 @@ public class ViewCertActivity extends BaseActivity
                     break;
                 case WrappedSignature.CERTIFICATION_REVOCATION: {
                     mType.setText(R.string.cert_revoke);
-                    try {
-                        if (! TextUtils.isEmpty(sig.getRevocationReason())) {
-                            mReason.setText(sig.getRevocationReason());
-                        } else {
+                    if (sig.isRevocation()) {
+                        try {
+                            String reason = sig.getRevocationReason();
+                            if (reason != null) {
+                                mReason.setText(reason);
+                            } else {
+                                mReason.setText(R.string.none);
+                            }
+                        } catch(PgpGeneralException e) {
                             mReason.setText(R.string.none);
                         }
-                    } catch (PgpGeneralException e) {
-                        mReason.setText(R.string.none);
                     }
                     mRowReason.setVisibility(View.VISIBLE);
                     break;

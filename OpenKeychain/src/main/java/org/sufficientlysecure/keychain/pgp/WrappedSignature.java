@@ -130,6 +130,9 @@ public class WrappedSignature {
         }
         SignatureSubpacket p = mSig.getHashedSubPackets().getSubpacket(
                 SignatureSubpacketTags.REVOCATION_REASON);
+        if (p == null) {
+            return null;
+        }
         // For some reason, this is missing in SignatureSubpacketInputStream:146
         if (!(p instanceof RevocationReason)) {
             p = new RevocationReason(false, false, p.getData());
