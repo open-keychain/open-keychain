@@ -62,6 +62,10 @@ public class KeyFormattingUtils {
         return getAlgorithmInfo(null, algorithm, keySize, oid);
     }
 
+    public static String getAlgorithmInfo(int algorithm) {
+        return getAlgorithmInfo(null, algorithm, null, null);
+    }
+
     /**
      * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
      */

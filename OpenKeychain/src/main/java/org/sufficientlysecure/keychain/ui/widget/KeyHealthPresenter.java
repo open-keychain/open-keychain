@@ -27,6 +27,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.ui.widget.KeyStatusList.KeyDisplayStatus;
 import org.sufficientlysecure.keychain.ui.widget.SubkeyStatusLoader.KeySubkeyStatus;
 import org.sufficientlysecure.keychain.ui.widget.SubkeyStatusLoader.SubKeyItem;
@@ -45,8 +46,8 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
             if (usability != 0) {
                 return usability;
             }
-            if (one.mIsSecure ^ two.mIsSecure) {
-                return one.mIsSecure ? -1 : 1;
+            if ((one.mSecurityProblem == null) ^ (two.mSecurityProblem == null)) {
+                return one.mSecurityProblem == null ? -1 : 1;
             }
             // otherwise, the newer one comes first
             return one.newerThan(two) ? -1 : 1;
@@ -94,11 +95,19 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         this.subkeyStatus = subkeyStatus;
 
         KeyHealthStatus keyHealthStatus = determineKeyHealthStatus(subkeyStatus);
-        boolean forceExpanded = keyHealthStatus == KeyHealthStatus.INSECURE;
-        if (forceExpanded) {
-            view.setKeyStatus(keyHealthStatus);
-            view.setShowExpander(false);
-            displayExpandedInfo(false);
+
+        boolean isInsecure = keyHealthStatus == KeyHealthStatus.INSECURE;
+        if (isInsecure) {
+            boolean primaryKeySecurityProblem = subkeyStatus.keyCertify.mSecurityProblem != null;
+            if (primaryKeySecurityProblem) {
+                view.setKeyStatus(keyHealthStatus);
+                view.setPrimarySecurityProblem(subkeyStatus.keyCertify.mSecurityProblem);
+                view.setShowExpander(false);
+            } else {
+                view.setKeyStatus(keyHealthStatus);
+                view.setShowExpander(false);
+                displayExpandedInfo(false);
+            }
         } else {
             view.setKeyStatus(keyHealthStatus);
             view.setShowExpander(
@@ -116,7 +125,7 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
             return KeyHealthStatus.EXPIRED;
         }
 
-        if (!keyCertify.mIsSecure) {
+        if (keyCertify.mSecurityProblem != null) {
             return KeyHealthStatus.INSECURE;
         }
 
@@ -126,7 +135,7 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
                 return KeyHealthStatus.SPECIAL;
             }
 
-            if (!keySign.mIsSecure) {
+            if (keySign.mSecurityProblem != null) {
                 return KeyHealthStatus.INSECURE;
             }
 
@@ -140,8 +149,8 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         SubKeyItem keySign = subkeyStatus.keysSign.get(0);
         SubKeyItem keyEncrypt = subkeyStatus.keysEncrypt.get(0);
 
-        if (!keySign.mIsSecure && keySign.isValid()
-                || !keyEncrypt.mIsSecure && keyEncrypt.isValid()) {
+        if (keySign.mSecurityProblem != null && keySign.isValid()
+                || keyEncrypt.mSecurityProblem != null && keyEncrypt.isValid()) {
             return KeyHealthStatus.INSECURE;
         }
 
@@ -224,7 +233,7 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         if (subKeyItem.mIsExpired) {
             return KeyDisplayStatus.EXPIRED;
         }
-        if (!subKeyItem.mIsSecure) {
+        if (subKeyItem.mSecurityProblem != null) {
             return KeyDisplayStatus.INSECURE;
         }
         if (subKeyItem.mSecretKeyType == SecretKeyType.GNU_DUMMY) {
@@ -243,13 +252,14 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
 
     interface KeyHealthMvpView {
         void setKeyStatus(KeyHealthStatus keyHealthStatus);
-        void setShowExpander(boolean showExpander);
-        void setOnHealthClickListener(KeyHealthClickListener keyHealthClickListener);
+        void setPrimarySecurityProblem(KeySecurityProblem securityProblem);
 
+        void setShowExpander(boolean showExpander);
         void showExpandedState(KeyDisplayStatus certifyStatus, KeyDisplayStatus signStatus,
                 KeyDisplayStatus encryptStatus);
-
         void hideExpandedInfo();
+
+        void setOnHealthClickListener(KeyHealthClickListener keyHealthClickListener);
     }
 
     interface KeyStatusMvpView {
