@@ -8,10 +8,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Created by daquexian on 17-2-7.
- */
-
+@SuppressWarnings("unused")
 public class KeyListCursor extends KeyCursor {
     public static final String ORDER = KeychainContract.KeyRings.HAS_ANY_SECRET
             + " DESC, " + KeychainContract.KeyRings.USER_ID + " COLLATE NOCASE ASC";

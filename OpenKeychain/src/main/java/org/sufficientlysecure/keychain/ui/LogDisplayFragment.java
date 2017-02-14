@@ -87,7 +87,9 @@ public class LogDisplayFragment extends RecyclerFragment<FlexibleAdapter<LogItem
             return;
         }
 
+        @SuppressWarnings("unused")
         final int ENTRY_TYPE_REGULAR = 0;
+        @SuppressWarnings("unused")
         final int ENTRY_TYPE_SUBLOG = 1;
         final int LOG_ENTRY_ITEM_INDENT = 2;
 
@@ -174,13 +176,6 @@ public class LogDisplayFragment extends RecyclerFragment<FlexibleAdapter<LogItem
         shareLogDialog.show(getActivity().getSupportFragmentManager(), "shareLogDialog");
     }
 
-    /* @Override
-    public void onSubEntryClicked(SubLogEntryParcel subLogEntryParcel) {
-        Intent intent = new Intent(getActivity(), LogDisplayActivity.class);
-        intent.putExtra(LogDisplayFragment.EXTRA_RESULT, subLogEntryParcel.getSubResult());
-        startActivity(intent);
-    } */
-
     @Override
     public boolean onItemClick(int position) {
         LogItem item = getAdapter().getItem(position);
@@ -194,33 +189,4 @@ public class LogDisplayFragment extends RecyclerFragment<FlexibleAdapter<LogItem
         return false;
     }
 
-    /* static class MyNestedLogAdapter extends FlexibleAdapter<LogAbstractItem> {
-
-        MyNestedLogAdapter(List<LogAbstractItem> logAbstractItems) {
-            super(logAbstractItems);
-        }
-
-
-        public void setLog(OperationResult.OperationLog log) {
-            List<OperationResult.LogEntryParcel> list = log.toList();
-
-            if (mLogEntries != null) {
-                mLogEntries.clear();
-            } else {
-                mLogEntries = new ArrayList<>(list.size());
-            }
-
-            int lastSection = 0;
-            for (int i = 0; i < list.size(); i++) {
-                OperationResult.LogEntryParcel parcel = list.get(i);
-                if(parcel.mIndent < LOG_ENTRY_ITEM_INDENT) {
-                    lastSection = i;
-                }
-
-                mLogEntries.add(new Pair<>(parcel, lastSection));
-            }
-
-            notifyDataSetChanged();
-        }
-    } */
 }

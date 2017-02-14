@@ -9,11 +9,8 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
-/**
- * Created by daquexian on 17-2-7.
- */
-
-public abstract class AbstractCursor extends CursorWrapper {
+@SuppressWarnings("unused")
+abstract class AbstractCursor extends CursorWrapper {
     public static final String[] PROJECTION = {"_id"};
 
     public static <T extends AbstractCursor> T wrap(Cursor cursor, Class<T> type) {
@@ -36,7 +33,7 @@ public abstract class AbstractCursor extends CursorWrapper {
      *
      * @param cursor The underlying cursor to wrap.
      */
-    protected AbstractCursor(Cursor cursor) {
+    AbstractCursor(Cursor cursor) {
         super(cursor);
         mColumnIndices = new HashMap<>(cursor.getColumnCount() * 4 / 3, 0.75f);
     }

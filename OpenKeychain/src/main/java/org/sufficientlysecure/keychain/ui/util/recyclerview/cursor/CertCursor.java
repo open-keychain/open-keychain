@@ -10,10 +10,7 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Created by daquexian on 17-2-7.
- */
-
+@SuppressWarnings("unused")
 public class CertCursor extends AbstractCursor {
     public static final String[] CERTS_PROJECTION;
     static {

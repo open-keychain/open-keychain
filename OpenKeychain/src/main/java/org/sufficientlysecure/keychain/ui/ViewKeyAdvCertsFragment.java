@@ -158,6 +158,6 @@ public class ViewKeyAdvCertsFragment extends RecyclerFragment<FlexibleAdapter<Ce
      * We need to make sure we are no longer using it.
      */
     public void onLoaderReset(Loader<Cursor> loader) {
-        // getAdapter().swapCursor(null);
+
     }
 }

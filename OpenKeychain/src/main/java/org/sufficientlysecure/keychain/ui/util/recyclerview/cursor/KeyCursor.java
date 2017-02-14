@@ -8,10 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-/**
- * Created by daquexian on 17-2-7.
- */
-
 public class KeyCursor extends AbstractCursor {
     public static final String[] PROJECTION;
 
@@ -47,7 +43,7 @@ public class KeyCursor extends AbstractCursor {
      *
      * @param cursor The underlying cursor to wrap.
      */
-    protected KeyCursor(Cursor cursor) {
+    KeyCursor(Cursor cursor) {
         super(cursor);
     }
 
