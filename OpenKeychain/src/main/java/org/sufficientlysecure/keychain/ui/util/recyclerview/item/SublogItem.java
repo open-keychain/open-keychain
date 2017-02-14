@@ -2,7 +2,6 @@ package org.sufficientlysecure.keychain.ui.util.recyclerview.item;
 
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +13,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 
-import java.util.List;
-
 import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.viewholders.FlexibleViewHolder;
 
 /**
  * Created by daquexian on 17-2-10.

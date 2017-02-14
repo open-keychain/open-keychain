@@ -1,6 +1,5 @@
 package org.sufficientlysecure.keychain.ui.util.recyclerview.item;
 
-import android.database.Cursor;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +17,6 @@ import java.util.List;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractSectionableItem;
 import eu.davidea.viewholders.FlexibleViewHolder;
-
-/**
- * Created by daquexian on 17-2-7.
- */
 
 public class CertItem extends AbstractSectionableItem<CertItem.CertViewHolder, CertHeaderItem> {
     private long mCertifierKeyId;

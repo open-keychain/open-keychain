@@ -341,7 +341,6 @@ public class KeyItem extends AbstractSectionableItem<KeyItem.ViewHolder, KeyHead
     }
 
     public interface KeyListListener {
-        void onKeyDummyItemClicked();
         void onKeyItemClicked(int position);
         void onSlingerButtonClicked(int position);
     }

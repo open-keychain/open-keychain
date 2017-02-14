@@ -63,7 +63,6 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.ui.adapter.KeySectionedListAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -77,7 +76,6 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import eu.davidea.fastscroller.FastScroller;
@@ -208,11 +206,6 @@ public class KeyListFragment extends RecyclerFragment<KeyListFragment.KeyFlexibl
 
     private final KeyItem.KeyListListener mKeyListener
             = new KeyItem.KeyListListener() {
-        @Override
-        public void onKeyDummyItemClicked() {
-            createKey();
-        }
-
         @Override
         public void onKeyItemClicked(int position) {
             if ((getAdapter().getMode() != FlexibleAdapter.MODE_IDLE && mActionModeHelper != null)

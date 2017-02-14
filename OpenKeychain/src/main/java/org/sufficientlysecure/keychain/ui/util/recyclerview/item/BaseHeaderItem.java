@@ -7,12 +7,15 @@ import eu.davidea.flexibleadapter.items.AbstractHeaderItem;
 import eu.davidea.viewholders.FlexibleViewHolder;
 
 /**
+ * Superclass of CertHeaderItem and KeyHeaderItem
+ * LogHeaderItem doesn't inherit this
  * Created by daquexian on 17-2-7.
  */
 
 public abstract class BaseHeaderItem<T extends FlexibleViewHolder> extends AbstractHeaderItem<T> {
-    static List<BaseHeaderItem> headerItemList = new ArrayList<>();
+    private static List<BaseHeaderItem> headerItemList = new ArrayList<>();
 
+    @SuppressWarnings("unchecked")
     public static <K extends BaseHeaderItem> K getInstance(Object object, String title, Class<K> myClass) {
         BaseHeaderItem headerItem;
         if (CertHeaderItem.class.equals(myClass)) {

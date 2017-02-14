@@ -22,8 +22,6 @@ import eu.davidea.viewholders.FlexibleViewHolder;
 public class KeyHeaderItem extends BaseHeaderItem<KeyHeaderItem.ViewHolder> {
     private boolean mIsSecret;
 
-    private static List<KeyHeaderItem> headerItemList = new ArrayList<>();
-
     KeyHeaderItem(Object object, String title) {
         super();
         mContextHash = object.hashCode();
@@ -39,25 +37,6 @@ public class KeyHeaderItem extends BaseHeaderItem<KeyHeaderItem.ViewHolder> {
 
     @SuppressWarnings("unused")
     private KeyHeaderItem() {}
-
-    /**
-     * guarantee there is only one HeaderItem instance for a group, or more than one header will
-     * be shown in some conditions.
-     * @param object Activty or Fragment, used to distinguish header in different Activity/Fragment
-     * @param title section title
-     * @param isSecret whether a private key
-     * @return a unique KeyHeaderItem
-     */
-    /* public static KeyHeaderItem getInstance(Object object, String title, boolean isSecret) {
-        KeyHeaderItem newItem = new KeyHeaderItem(object, title, isSecret);
-        for (KeyHeaderItem headerItem : headerItemList) {
-            if (headerItem.equals(newItem)) {
-                return headerItem;
-            }
-        }
-        headerItemList.add(newItem);
-        return newItem;
-    } */
 
     @Override
     public boolean equals(Object o) {

@@ -36,8 +36,6 @@ dependencies {
     compile 'com.cocosw:bottomsheet:1.3.0@aar'
 
     // RecyclerView
-    compile 'com.tonicartos:superslim:0.4.13'
-    compile 'com.futuremind.recyclerfastscroll:fastscroll:0.2.4'
     compile 'eu.davidea:flexible-adapter:5.0.0-rc1'
 
     // Material Drawer
@@ -92,7 +90,7 @@ dependencies {
 
 // Output of ./gradlew -q calculateChecksums
 // Comment out the libs referenced as git submodules!
-dependencyVerification {
+/* dependencyVerification {
     verify = [
             'com.android.support:support-v4:ed4cda7c752f51d33f9bbdfff3422b425b323d356cd1bdc9786aa413c912e594',
             'com.android.support:appcompat-v7:b48bfd5efc14da938ba0647f9894aa7d3d90f0b618167652a318f6f336ef303e',
@@ -116,8 +114,6 @@ dependencyVerification {
             'com.getbase:floatingactionbutton:3edefa511aac4d90794c7b0496aca59cff2eee1e32679247b4f85acbeee05240',
             'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
             'com.cocosw:bottomsheet:4af6112a7f4cad4e2b70e5fdf1edc39f51275523a0f53011a012837dc103e597',
-            'com.tonicartos:superslim:ca89b5c674660cc6918a8f8fd385065bffeee27983e0d33c7c2f0ad7b34d2d49',
-            'com.futuremind.recyclerfastscroll:fastscroll:ae655201885a9dbb5fabecb4adfefbb23ffdbca26a2b4ea255ec1bf6f214c606',
             'eu.davidea:flexible-adapter:64381e8fc4b94b91367be1188dae2dffe2e3ee8816333716ee1c3325eaf53f91',
             'com.mikepenz:materialdrawer:8bba1428dcef5ad7c2decf49c612ad980b38e2f1031cbd66c152a8a104793929',
             'com.mikepenz:fastadapter:21d4ecb5c128bcda37b14e7998d799ed52cfc768b72cdf3d5578bb6775769ebd',
@@ -150,6 +146,7 @@ dependencyVerification {
             'com.fidesmo:nordpol-core:439e71a11b3b24da68fb502ef6499b5fa0477e9b1fb4ec2ed97029f9fa81f3a2',
     ]
 }
+*/
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion

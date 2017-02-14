@@ -11,7 +11,7 @@ import eu.davidea.viewholders.FlexibleViewHolder;
  * Created by daquexian on 17-2-11.
  */
 
-public abstract class LogAbstractVH extends FlexibleViewHolder {
+abstract class LogAbstractVH extends FlexibleViewHolder {
     LogAbstractVH(View view, FlexibleAdapter adapter) {
         super(view, adapter);
     }

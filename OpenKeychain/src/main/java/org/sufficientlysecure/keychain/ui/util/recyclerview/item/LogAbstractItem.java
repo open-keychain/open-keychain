@@ -16,7 +16,7 @@ import eu.davidea.viewholders.FlexibleViewHolder;
  * Created by daquexian on 17-2-10.
  */
 
-public abstract class LogAbstractItem<VH extends LogAbstractVH> extends AbstractFlexibleItem<VH> {
+abstract class LogAbstractItem<VH extends LogAbstractVH> extends AbstractFlexibleItem<VH> {
     OperationResult.LogEntryParcel mEntry;
 
     LogAbstractItem(OperationResult.LogEntryParcel entry) {

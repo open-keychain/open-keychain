@@ -146,10 +146,6 @@ public class ViewKeyAdvCertsFragment extends RecyclerFragment<FlexibleAdapter<Ce
         List<CertItem> itemList = new ArrayList<>(mCertItemList);
         getAdapter().updateDataSet(itemList);
 
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        // getAdapter().swapCursor(CertSectionedListAdapter.CertCursor.wrap(data));
-
         if (isResumed()) {
             showList(true);
         } else {

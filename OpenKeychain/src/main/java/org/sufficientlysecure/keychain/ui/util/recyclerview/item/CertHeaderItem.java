@@ -10,12 +10,7 @@ import org.sufficientlysecure.keychain.R;
 import java.util.List;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.items.AbstractHeaderItem;
 import eu.davidea.viewholders.FlexibleViewHolder;
-
-/**
- * Created by daquexian on 17-2-7.
- */
 
 public class CertHeaderItem extends BaseHeaderItem<CertHeaderItem.CertHeaderViewHolder> {
     CertHeaderItem(Object object, String title) {

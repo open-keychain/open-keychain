@@ -49,6 +49,8 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
     protected static final int INTERNAL_LIST_CONTAINER_ID = android.R.id.widget_frame;
     protected static final int INTERNAL_PROGRESS_CONTAINER_ID = android.R.id.progress;
 
+    private static final int PADDING_DP = 8;
+
     private final Handler handler = new Handler();
     private final Runnable requestFocus = new Runnable() {
         @Override
@@ -126,7 +128,6 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
 
 
         FrameLayout listContainer = new FrameLayout(context);
-        int padding = FormattingUtils.dpToPx(context, 8);
         listContainer.setId(INTERNAL_LIST_CONTAINER_ID);
 
         TextView textView = new TextView(context);
@@ -137,6 +138,7 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         RecyclerView listView = new RecyclerView(context);
+        int padding = FormattingUtils.dpToPx(context, PADDING_DP);
         listView.setPadding(padding, 0, padding, 0);
         listView.setId(INTERNAL_LIST_VIEW_ID);
 
@@ -246,8 +248,7 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
      * see {@link #getHeaderContainerWithPadding(int, int)}
      */
     protected ViewGroup getHeaderContainerWithPadding() {
-        int padding = FormattingUtils.dpToPx(getContext(), 8);
-        return getHeaderContainerWithPadding(padding, padding);
+        return getHeaderContainerWithPadding(PADDING_DP, PADDING_DP);
     }
 
     /**

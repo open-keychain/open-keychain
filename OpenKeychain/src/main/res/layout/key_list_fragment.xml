@@ -40,8 +40,7 @@
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingBottom="72dp">
+                    android:layout_height="match_parent">
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@android:id/list"
@@ -51,6 +50,7 @@
                         android:paddingLeft="16dp"
                         android:paddingRight="32dp"
                         android:paddingEnd="32dp"
+                        android:paddingBottom="72dp"
                         android:clipToPadding="false"/>
                 </FrameLayout>
 

@@ -11,9 +11,9 @@ import eu.davidea.viewholders.FlexibleViewHolder;
  */
 
 public abstract class LogItem<T extends LogAbstractVH> extends LogAbstractItem<T> implements ISectionable<T, LogHeaderItem> {
-    LogHeaderItem mHeader;
+    private LogHeaderItem mHeader;
 
-    public LogItem(LogHeaderItem headerItem, OperationResult.LogEntryParcel entry) {
+    LogItem(LogHeaderItem headerItem, OperationResult.LogEntryParcel entry) {
         super(entry);
 
         setHeader(headerItem);

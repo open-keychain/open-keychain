@@ -101,6 +101,7 @@ public class LogDisplayFragment extends RecyclerFragment<FlexibleAdapter<LogItem
                 } else {
                     lastHeader = new RegularLogHeaderItem(parcel);
                 }
+                // force the header to be shown
                 items.add(new LogDummyItem(lastHeader));
             } else {
                 if (parcel instanceof SubLogEntryParcel) {
