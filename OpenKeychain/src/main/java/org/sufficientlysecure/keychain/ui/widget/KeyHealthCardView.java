@@ -32,6 +32,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyHealthClickListener;
 import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyHealthMvpView;
 import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyHealthStatus;
@@ -45,6 +49,9 @@ public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnC
     private final ImageView vExpander;
     private final KeyStatusList vKeyStatusList;
     private final View vKeyStatusDivider;
+    private final View vInsecureLayout;
+    private final TextView vInsecureProblem;
+    private final TextView vInsecureSolution;
 
     private KeyHealthClickListener keyHealthClickListener;
 
@@ -63,9 +70,13 @@ public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnC
 
         vKeyStatusDivider = view.findViewById(R.id.key_health_divider);
         vKeyStatusList = (KeyStatusList) view.findViewById(R.id.key_health_status_list);
+
+        vInsecureLayout = view.findViewById(R.id.key_insecure_layout);
+        vInsecureProblem = (TextView) view.findViewById(R.id.key_insecure_problem);
+        vInsecureSolution = (TextView) view.findViewById(R.id.key_insecure_solution);
     }
 
-    enum KeyHealthDisplayStatus {
+    private enum KeyHealthDisplayStatus {
         OK (R.string.key_health_ok_title, R.string.key_health_ok_subtitle,
                 R.drawable.ic_check_black_24dp, R.color.android_green_light),
         DIVERT (R.string.key_health_divert_title, R.string.key_health_divert_subtitle,
@@ -132,6 +143,26 @@ public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnC
                 setKeyStatus(KeyHealthDisplayStatus.PARTIAL_STRIPPED);
                 break;
         }
+    }
+
+    @Override
+    public void setPrimarySecurityProblem(KeySecurityProblem securityProblem) {
+        vInsecureLayout.setVisibility(View.VISIBLE);
+
+        if (securityProblem instanceof InsecureBitStrength) {
+            InsecureBitStrength insecureBitStrength = (InsecureBitStrength) securityProblem;
+            vInsecureProblem.setText(getResources().getString(R.string.key_insecure_bitstrength_2048_problem,
+                    KeyFormattingUtils.getAlgorithmInfo(insecureBitStrength.algorithm),
+                    Integer.toString(insecureBitStrength.bitStrength)));
+            vInsecureSolution.setText(R.string.key_insecure_bitstrength_2048_solution);
+        } else if (securityProblem instanceof NotWhitelistedCurve) {
+            NotWhitelistedCurve notWhitelistedCurve = (NotWhitelistedCurve) securityProblem;
+
+            String curveName = KeyFormattingUtils.getCurveInfo(getContext(), notWhitelistedCurve.curveOid);
+            vInsecureProblem.setText(getResources().getString(R.string.key_insecure_unknown_curve_problem, curveName));
+            vInsecureSolution.setText(R.string.key_insecure_unknown_curve_solution);
+        }
+
     }
 
     @Override

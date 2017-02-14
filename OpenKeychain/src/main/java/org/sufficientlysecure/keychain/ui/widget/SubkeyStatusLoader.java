@@ -16,6 +16,8 @@ import android.util.Log;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.ui.widget.SubkeyStatusLoader.KeySubkeyStatus;
 
@@ -30,7 +32,9 @@ class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
             Keys.HAS_SECRET,
             Keys.EXPIRY,
             Keys.IS_REVOKED,
-            Keys.IS_SECURE
+            Keys.ALGORITHM,
+            Keys.KEY_SIZE,
+            Keys.KEY_CURVE_OID
     };
     private static final int INDEX_KEY_ID = 0;
     private static final int INDEX_CREATION = 1;
@@ -40,7 +44,9 @@ class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
     private static final int INDEX_HAS_SECRET = 5;
     private static final int INDEX_EXPIRY = 6;
     private static final int INDEX_IS_REVOKED = 7;
-    private static final int INDEX_IS_SECURE = 8;
+    private static final int INDEX_ALGORITHM = 8;
+    private static final int INDEX_KEY_SIZE = 9;
+    private static final int INDEX_KEY_CURVE_OID = 10;
 
 
     private final ContentResolver contentResolver;
@@ -71,7 +77,7 @@ class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
             ArrayList<SubKeyItem> keysSign = new ArrayList<>();
             ArrayList<SubKeyItem> keysEncrypt = new ArrayList<>();
             while (cursor.moveToNext()) {
-                SubKeyItem ski = new SubKeyItem(cursor);
+                SubKeyItem ski = new SubKeyItem(masterKeyId, cursor);
 
                 if (ski.mKeyId == masterKeyId) {
                     keyCertify = ski;
@@ -138,9 +144,9 @@ class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
         final SecretKeyType mSecretKeyType;
         final boolean mIsRevoked, mIsExpired;
         final boolean mCanCertify, mCanSign, mCanEncrypt;
-        final boolean mIsSecure;
+        final KeySecurityProblem mSecurityProblem;
 
-        SubKeyItem(Cursor cursor) {
+        SubKeyItem(long masterKeyId, Cursor cursor) {
             mPosition = cursor.getPosition();
 
             mKeyId = cursor.getLong(INDEX_KEY_ID);
@@ -159,7 +165,12 @@ class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
             mCanSign = cursor.getInt(INDEX_CAN_SIGN) > 0;
             mCanEncrypt = cursor.getInt(INDEX_CAN_ENCRYPT) > 0;
 
-            mIsSecure = cursor.getInt(INDEX_IS_SECURE) > 0;
+            int algorithm = cursor.getInt(INDEX_ALGORITHM);
+            Integer bitStrength = cursor.isNull(INDEX_KEY_SIZE) ? null : cursor.getInt(INDEX_KEY_SIZE);
+            String curveOid = cursor.getString(INDEX_KEY_CURVE_OID);
+
+            mSecurityProblem = PgpSecurityConstants.getKeySecurityProblem(
+                    masterKeyId, mKeyId, algorithm, bitStrength, curveOid);
         }
 
         boolean newerThan(SubKeyItem other) {

@@ -147,7 +147,7 @@ public class PgpSecurityConstants {
     }
 
     @Nullable
-    private static KeySecurityProblem getKeySecurityProblem(long masterKeyId, long subKeyId, int algorithm,
+    public static KeySecurityProblem getKeySecurityProblem(long masterKeyId, long subKeyId, int algorithm,
             Integer bitStrength, String curveOid) {
         switch (algorithm) {
             case PublicKeyAlgorithmTags.RSA_GENERAL: {
