@@ -19,7 +19,9 @@ package org.sufficientlysecure.keychain.pgp;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.SenderStatusResult;
@@ -53,9 +55,9 @@ public class OpenPgpSignatureResultBuilder {
     private boolean mIsSignatureKeyCertified = false;
     private boolean mIsKeyRevoked = false;
     private boolean mIsKeyExpired = false;
-    private boolean mInsecure = false;
     private String mSenderAddress;
     private Date mSignatureTimestamp;
+    private ArrayList<SecurityProblem> mSecurityProblems;
 
     public OpenPgpSignatureResultBuilder(KeyRepository keyRepository) {
         this.mKeyRepository = keyRepository;
@@ -81,8 +83,15 @@ public class OpenPgpSignatureResultBuilder {
         this.mValidSignature = validSignature;
     }
 
-    public void setInsecure(boolean insecure) {
-        this.mInsecure = insecure;
+    public void addSecurityProblem(SecurityProblem securityProblem) {
+        if (mSecurityProblems == null) {
+            mSecurityProblems = new ArrayList<>();
+        }
+        mSecurityProblems.add(securityProblem);
+    }
+
+    public List<SecurityProblem> getSecurityProblems() {
+        return mSecurityProblems != null ? Collections.unmodifiableList(mSecurityProblems) : null;
     }
 
     public void setSignatureKeyCertified(boolean isSignatureKeyCertified) {
@@ -104,10 +113,6 @@ public class OpenPgpSignatureResultBuilder {
     public void setUserIds(ArrayList<String> userIds, ArrayList<String> confirmedUserIds) {
         this.mUserIds = userIds;
         this.mConfirmedUserIds = confirmedUserIds;
-    }
-
-    public boolean isInsecure() {
-        return mInsecure;
     }
 
     public void initValid(CanonicalizedPublicKey signingKey) {
@@ -184,7 +189,7 @@ public class OpenPgpSignatureResultBuilder {
         } else if (mIsKeyExpired) {
             Log.d(Constants.TAG, "RESULT_INVALID_KEY_EXPIRED");
             signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED;
-        } else if (mInsecure) {
+        } else if (mSecurityProblems != null && !mSecurityProblems.isEmpty()) {
             Log.d(Constants.TAG, "RESULT_INVALID_INSECURE");
             signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE;
         } else if (mIsSignatureKeyCertified) {
