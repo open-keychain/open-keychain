@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
 
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:gravity="center_vertical"
-    android:paddingLeft="24dp"
-    android:paddingStart="24dp"
-    android:paddingRight="16dp"
-    android:paddingEnd="16dp"
+    android:paddingLeft="8dp"
+    android:paddingStart="8dp"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
     android:maxLines="1"

@@ -86,7 +86,7 @@ public class ViewKeyAdvCertsFragment extends RecyclerFragment<FlexibleAdapter<Ce
 
         CertFlexibleAdapter adapter = new CertFlexibleAdapter(mCertItemList);
         adapter.setDisplayHeadersAtStartUp(true)
-                .setStickyHeaders(true)
+                .setStickyHeaders(true, getHeaderContainerWithPadding(16, 16))
                 .setAnimationOnScrolling(true);
         adapter.addListener(this);
 

@@ -30,12 +30,10 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
-import org.sufficientlysecure.keychain.ui.adapter.NestedLogAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.ShareLogDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.item.LogAbstractItem;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.item.LogDummyItem;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.item.LogHeaderItem;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.item.LogItem;
@@ -117,7 +115,7 @@ public class LogDisplayFragment extends RecyclerFragment<FlexibleAdapter<LogItem
 
         FlexibleAdapter<LogItem> adapter = new FlexibleAdapter<>(itemList);
         adapter.setDisplayHeadersAtStartUp(true)
-                .setStickyHeaders(true);
+                .setStickyHeaders(true, getHeaderContainerWithPadding());
         adapter.addListener(this);
         setAdapter(adapter);
 

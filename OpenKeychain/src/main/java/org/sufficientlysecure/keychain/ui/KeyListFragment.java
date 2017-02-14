@@ -402,7 +402,7 @@ public class KeyListFragment extends RecyclerFragment<KeyListFragment.KeyFlexibl
         if (getAdapter() == null) {
             KeyFlexibleAdapter<KeyItem> adapter = new KeyFlexibleAdapter<>(keyItemList);
             adapter.setDisplayHeadersAtStartUp(true)
-                    .setStickyHeaders(true)
+                    .setStickyHeaders(true, getHeaderContainerWithPadding(16, 32))
                     .setAnimationOnScrolling(true);
             setLayoutManager(new SmoothScrollLinearLayoutManager(getActivity()));
             setAdapter(adapter);

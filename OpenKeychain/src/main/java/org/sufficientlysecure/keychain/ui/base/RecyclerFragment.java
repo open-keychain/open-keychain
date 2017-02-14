@@ -17,6 +17,7 @@
 package org.sufficientlysecure.keychain.ui.base;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -32,6 +33,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -125,8 +127,6 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
 
         FrameLayout listContainer = new FrameLayout(context);
         int padding = FormattingUtils.dpToPx(context, 8);
-        // TODO: 17-2-11 any better solution?
-        listContainer.setPadding(padding, 0, padding, 0);
         listContainer.setId(INTERNAL_LIST_CONTAINER_ID);
 
         TextView textView = new TextView(context);
@@ -137,6 +137,7 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         RecyclerView listView = new RecyclerView(context);
+        listView.setPadding(padding, 0, padding, 0);
         listView.setId(INTERNAL_LIST_VIEW_ID);
 
         listView.setClipToPadding(false);
@@ -239,6 +240,53 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
     public RecyclerView getRecyclerView() {
         ensureList();
         return listView;
+    }
+
+    /**
+     * see {@link #getHeaderContainerWithPadding(int, int)}
+     */
+    protected ViewGroup getHeaderContainerWithPadding() {
+        int padding = FormattingUtils.dpToPx(getContext(), 8);
+        return getHeaderContainerWithPadding(padding, padding);
+    }
+
+    /**
+     *
+     * Create our own header container to following the padding of RecyclerView.
+     *
+     * One should always calls
+     * flexibleAdapter.setStickyHeaders(true, getHeaderContainerWithPadding())
+     * when using sticky headers if the fragment uses the default layout,
+     * or calls getHeaderContainerWithPadding(int, int) instead to use specific padding
+     *
+     * @param paddingStart paddingStart in dp
+     * @param paddingEnd paddingEnd in dp
+     * @return the header container with padding
+     */
+    protected ViewGroup getHeaderContainerWithPadding(int paddingStart, int paddingEnd) {
+        paddingStart = FormattingUtils.dpToPx(getContext(), paddingStart);
+        paddingEnd = FormattingUtils.dpToPx(getContext(), paddingEnd);
+
+        FrameLayout stickyContainer = new FrameLayout(getContext());
+        final ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        stickyContainer.setLayoutParams(params);
+
+        /**
+         * support right-to-left
+         */
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            stickyContainer.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
+        } else {
+            stickyContainer.setPadding(paddingStart, 0, paddingEnd, 0);
+        }
+
+        ViewGroup oldParent = (ViewGroup) getRecyclerView().getParent();
+        oldParent.addView(stickyContainer);
+
+        return (ViewGroup) LayoutInflater.from(
+                getContext()).inflate(R.layout.sticky_header_layout, stickyContainer);
     }
 
     public RecyclerView.LayoutManager getLayoutManager() {
