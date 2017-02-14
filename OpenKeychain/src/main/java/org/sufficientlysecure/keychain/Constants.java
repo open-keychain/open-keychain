@@ -87,6 +87,19 @@ public final class Constants {
 
     public static final String SAFESLINGER_SERVER = "safeslinger-openpgp.appspot.com";
 
+    // Intents API
+    public static final String ENCRYPT_TEXT = INTENT_PREFIX + "ENCRYPT_TEXT";
+    public static final String ENCRYPT_EXTRA_TEXT = EXTRA_PREFIX + "EXTRA_TEXT"; // String
+    public static final String ENCRYPT_DATA = INTENT_PREFIX + "ENCRYPT_DATA";
+    public static final String ENCRYPT_EXTRA_ASCII_ARMOR = EXTRA_PREFIX + "EXTRA_ASCII_ARMOR"; // boolean
+    public static final String DECRYPT_DATA = INTENT_PREFIX + "DECRYPT_DATA";
+    public static final String IMPORT_KEY = INTENT_PREFIX + "IMPORT_KEY";
+    public static final String IMPORT_EXTRA_KEY_EXTRA_KEY_BYTES = EXTRA_PREFIX + "EXTRA_KEY_BYTES"; // byte[]
+    public static final String IMPORT_KEY_FROM_KEYSERVER = INTENT_PREFIX + "IMPORT_KEY_FROM_KEYSERVER";
+    public static final String IMPORT_KEY_FROM_KEYSERVER_EXTRA_QUERY = EXTRA_PREFIX + "EXTRA_QUERY"; // String
+    public static final String IMPORT_KEY_FROM_KEYSERVER_EXTRA_FINGERPRINT = EXTRA_PREFIX + "EXTRA_FINGERPRINT"; // String
+    public static final String IMPORT_KEY_FROM_QR_CODE = INTENT_PREFIX + "IMPORT_KEY_FROM_QR_CODE";
+
     public static final class Path {
         public static final File APP_DIR = new File(Environment.getExternalStorageDirectory(), "OpenKeychain");
     }

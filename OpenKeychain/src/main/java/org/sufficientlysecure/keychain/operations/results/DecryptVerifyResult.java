@@ -40,14 +40,22 @@ public class DecryptVerifyResult extends InputPendingResult {
     byte[] mOutputBytes;
 
     public long mOperationTime;
+    private final long[] mSkippedDisallowedKeys;
 
     public DecryptVerifyResult(int result, OperationLog log) {
         super(result, log);
+        mSkippedDisallowedKeys = null;
+    }
+
+    public DecryptVerifyResult(int result, OperationLog log, long[] skippedDisallowedKeys) {
+        super(result, log);
+        mSkippedDisallowedKeys = skippedDisallowedKeys;
     }
 
     public DecryptVerifyResult(OperationLog log, RequiredInputParcel requiredInput,
                                CryptoInputParcel cryptoInputParcel) {
         super(log, requiredInput, cryptoInputParcel);
+        mSkippedDisallowedKeys = null;
     }
 
     public DecryptVerifyResult(Parcel source) {
@@ -56,6 +64,7 @@ public class DecryptVerifyResult extends InputPendingResult {
         mDecryptionResult = source.readParcelable(OpenPgpDecryptionResult.class.getClassLoader());
         mDecryptionMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
         mCachedCryptoInputParcel = source.readParcelable(CryptoInputParcel.class.getClassLoader());
+        mSkippedDisallowedKeys = source.createLongArray();
     }
 
 
@@ -103,6 +112,10 @@ public class DecryptVerifyResult extends InputPendingResult {
         return mOutputBytes;
     }
 
+    public long[] getSkippedDisallowedKeys() {
+        return mSkippedDisallowedKeys;
+    }
+
     public int describeContents() {
         return 0;
     }
@@ -113,6 +126,7 @@ public class DecryptVerifyResult extends InputPendingResult {
         dest.writeParcelable(mDecryptionResult, flags);
         dest.writeParcelable(mDecryptionMetadata, flags);
         dest.writeParcelable(mCachedCryptoInputParcel, flags);
+        dest.writeLongArray(mSkippedDisallowedKeys);
     }
 
     public static final Creator<DecryptVerifyResult> CREATOR = new Creator<DecryptVerifyResult>() {

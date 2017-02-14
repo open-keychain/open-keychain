@@ -252,7 +252,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             if (canKeyRings.size() == 1) {
                 CanonicalizedKeyRing keyRing = canKeyRings.get(0);
                 Log.e(Constants.TAG, "Key ID: " + keyRing.getMasterKeyId() +
-                        "| isRev: " + keyRing.isRevoked() + "| isExp: " + keyRing.isExpired());
+                        "| isRev: " + keyRing.isRevoked() + "| isExp: " + keyRing.isExpired()
+                        + "| isSec: " + keyRing.isSecure());
 
                 ImportKeysListEntry entry = mData.get(position);
                 entry.setUpdated(result.isOkUpdated());
@@ -275,6 +276,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     private void mergeEntryWithKey(ImportKeysListEntry entry, CanonicalizedKeyRing keyRing) {
         entry.setRevoked(keyRing.isRevoked());
         entry.setExpired(keyRing.isExpired());
+        entry.setSecure(keyRing.isSecure());
 
         Date expectedDate = entry.getDate();
         Date creationDate = keyRing.getCreationDate();

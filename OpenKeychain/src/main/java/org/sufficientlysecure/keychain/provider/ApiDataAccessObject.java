@@ -121,6 +121,10 @@ public class ApiDataAccessObject {
                 contentValueForApiApps(appSettings));
     }
 
+    public void deleteApiApp(String packageName) {
+        mQueryInterface.delete(ApiApps.buildByPackageNameUri(packageName), null, null);
+    }
+
     public void insertApiAccount(Uri uri, AccountSettings accSettings) {
         mQueryInterface.insert(uri, contentValueForApiAccounts(accSettings));
     }
@@ -235,6 +239,11 @@ public class ApiDataAccessObject {
         ContentValues values = new ContentValues();
         values.put(ApiAllowedKeys.KEY_ID, allowedKeyId);
         mQueryInterface.insert(uri, values);
+    }
+
+    public void addAllowedKeyIdForApp(String packageName, long allowedKeyId) {
+        Uri uri = ApiAllowedKeys.buildBaseUri(packageName);
+        addAllowedKeyIdForApp(uri, allowedKeyId);
     }
 
     public byte[] getApiAppCertificate(String packageName) {

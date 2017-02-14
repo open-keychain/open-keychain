@@ -175,7 +175,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                                 + " LEFT JOIN " + Tables.CERTS + " ON ("
                                 + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
                                 + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = " + Tables.CERTS + "." + Certs.RANK
-                                + " AND " + Tables.CERTS + "." + Certs.VERIFIED + " = " + Certs.VERIFIED_SECRET
                                 + ")"
                 );
                 // in case there are multiple verifying certificates

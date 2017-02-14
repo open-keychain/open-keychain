@@ -31,7 +31,6 @@ import android.widget.Toast;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -40,10 +39,10 @@ import org.sufficientlysecure.keychain.util.Log;
 public class EncryptTextActivity extends EncryptActivity {
 
     /* Intents */
-    public static final String ACTION_ENCRYPT_TEXT = OpenKeychainIntents.ENCRYPT_TEXT;
+    public static final String ACTION_ENCRYPT_TEXT = Constants.ENCRYPT_TEXT;
 
     /* EXTRA keys for input */
-    public static final String EXTRA_TEXT = OpenKeychainIntents.ENCRYPT_EXTRA_TEXT;
+    public static final String EXTRA_TEXT = Constants.ENCRYPT_EXTRA_TEXT;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

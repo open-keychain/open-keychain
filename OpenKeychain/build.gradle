@@ -53,6 +53,7 @@ dependencies {
     compile 'com.fidesmo:nordpol-android:0.1.20'
 
     // libs as submodules
+    compile project(':libkeychain')
     compile project(':openpgp-api-lib')
     compile project(':extern:bouncycastle:core')
     compile project(':extern:bouncycastle:pg')
@@ -157,8 +158,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 42202
-        versionName "4.2.2"
+        versionCode 42400
+        versionName "4.2.4"
         applicationId "org.sufficientlysecure.keychain"
         // the androidjunitrunner is broken regarding coverage, see here:
         // https://code.google.com/p/android/issues/detail?id=170607

@@ -4,7 +4,8 @@
 
     android:background="?android:colorBackground"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?android:colorBackground">
 
     <TextView
         android:id="@+id/stickylist_header_text"

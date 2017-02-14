@@ -82,7 +82,7 @@ public class OpenPgpServiceTest {
             pi.send();
 
             Thread.sleep(ACTIVITY_WAIT_TIME); // Wait for activity to start
-            onView(withText(R.string.api_register_allow)).perform(click());
+            onView(withText(R.string.button_allow)).perform(click());
         }
 
         byte[] ciphertext;
@@ -121,10 +121,7 @@ public class OpenPgpServiceTest {
             pi.send();
 
             Thread.sleep(ACTIVITY_WAIT_TIME); // Wait for activity to start
-            onData(withKeyItemId(0x9D604D2F310716A3L))
-                    .inAdapterView(isAssignableFrom(AdapterView.class))
-                    .perform(click());
-            onView(withText(R.string.api_settings_save)).perform(click());
+            onView(withText(R.string.button_allow)).perform(click());
         }
 
         { // decrypt again, this time pending passphrase

@@ -33,7 +33,6 @@ import com.google.zxing.integration.android.IntentResult;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -55,7 +54,7 @@ import java.util.Locale;
 public class ImportKeysProxyActivity extends FragmentActivity
         implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
-    public static final String ACTION_QR_CODE_API = OpenKeychainIntents.IMPORT_KEY_FROM_QR_CODE;
+    public static final String ACTION_QR_CODE_API = Constants.IMPORT_KEY_FROM_QR_CODE;
     // implies activity returns scanned fingerprint as extra and does not import
     public static final String ACTION_SCAN_WITH_RESULT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_WITH_RESULT";
     public static final String ACTION_SCAN_IMPORT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_IMPORT";

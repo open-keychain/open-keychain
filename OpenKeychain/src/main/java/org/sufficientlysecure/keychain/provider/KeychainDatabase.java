@@ -20,14 +20,11 @@ package org.sufficientlysecure.keychain.provider;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAccountsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
@@ -54,8 +51,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 19;
-    static Boolean apgHack = false;
+    private static final int DATABASE_VERSION = 20;
     private Context mContext;
 
     public interface Tables {
@@ -196,19 +192,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     public KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
-
-        // make sure this is only done once, on the first instance!
-        boolean iAmIt = false;
-        synchronized (KeychainDatabase.class) {
-            if (!KeychainDatabase.apgHack) {
-                iAmIt = true;
-                KeychainDatabase.apgHack = true;
-            }
-        }
-        // if it's us, do the import
-        if (iAmIt) {
-            checkAndImportApg(context);
-        }
     }
 
     @Override
@@ -325,9 +308,17 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // splitUserId changed: Execute consolidate for new parsing of name, email
             case 18:
                 db.execSQL("ALTER TABLE keys ADD COLUMN is_secure INTEGER");
+            case 19:
+                // emergency fix for crashing consolidate
+                db.execSQL("UPDATE keys SET is_secure = 1;");
+                if (oldVersion == 18 || oldVersion == 19) {
+                    // no consolidate for now, often crashes!
+                    return;
+                }
         }
 
-        // always do consolidate after upgrade
+        // TODO: don't depend on consolidate! make migrations inline!
+        // consolidate after upgrade
         Intent consolidateIntent = new Intent(mContext.getApplicationContext(), ConsolidateDialogActivity.class);
         consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
         consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -343,111 +334,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         // NOTE: downgrading the database is explicitly not allowed to prevent
         // someone from exploiting old bugs to export the database
         throw new RuntimeException("Downgrading the database is not allowed!");
-    }
-
-    /** This method tries to import data from a provided database.
-     *
-     * The sole assumptions made on this db are that there is a key_rings table
-     * with a key_ring_data, a master_key_id and a type column, the latter of
-     * which should be 1 for secret keys and 0 for public keys.
-     */
-    public void checkAndImportApg(Context context) {
-
-        boolean hasApgDb = false;
-        {
-            // It's the Java way =(
-            String[] dbs = context.databaseList();
-            for (String db : dbs) {
-                if ("apg.db".equals(db)) {
-                    hasApgDb = true;
-                } else if ("apg_old.db".equals(db)) {
-                    Log.d(Constants.TAG, "Found apg_old.db, delete it!");
-                    // noinspection ResultOfMethodCallIgnored - if it doesn't happen, it doesn't happen.
-                    context.getDatabasePath("apg_old.db").delete();
-                }
-            }
-        }
-
-        if (!hasApgDb) {
-            return;
-        }
-
-        Log.d(Constants.TAG, "apg.db exists! Importing...");
-
-        SQLiteDatabase db = new SQLiteOpenHelper(context, "apg.db", null, 1) {
-            @Override
-            public void onCreate(SQLiteDatabase db) {
-                // should never happen
-                throw new AssertionError();
-            }
-            @Override
-            public void onDowngrade(SQLiteDatabase db, int old, int nu) {
-                // don't care
-            }
-            @Override
-            public void onUpgrade(SQLiteDatabase db, int old, int nu) {
-                // don't care either
-            }
-        }.getReadableDatabase();
-
-        Cursor cursor = null;
-        ProviderHelper providerHelper = new ProviderHelper(context);
-
-        try {
-            // we insert in two steps: first, all public keys that have secret keys
-            cursor = db.rawQuery("SELECT key_ring_data FROM key_rings WHERE type = 1 OR EXISTS ("
-                    + " SELECT 1 FROM key_rings d2 WHERE key_rings.master_key_id = d2.master_key_id"
-                    + " AND d2.type = 1) ORDER BY type ASC", null);
-            if (cursor != null) {
-                Log.d(Constants.TAG, "Importing " + cursor.getCount() + " secret keyrings from apg.db...");
-                for (int i = 0; i < cursor.getCount(); i++) {
-                    cursor.moveToPosition(i);
-                    byte[] data = cursor.getBlob(0);
-                    try {
-                        UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
-                        providerHelper.savePublicKeyRing(ring);
-                    } catch(PgpGeneralException e) {
-                        Log.e(Constants.TAG, "Error decoding keyring blob!");
-                    }
-                }
-            }
-            if (cursor != null) {
-                cursor.close();
-            }
-
-            // afterwards, insert all keys, starting with public keys that have secret keys, then
-            // secret keys, then all others. this order is necessary to ensure all certifications
-            // are recognized properly.
-            cursor = db.rawQuery("SELECT key_ring_data FROM key_rings ORDER BY (type = 0 AND EXISTS ("
-                    + " SELECT 1 FROM key_rings d2 WHERE key_rings.master_key_id = d2.master_key_id AND"
-                    + " d2.type = 1)) DESC, type DESC", null);
-            // import from old database
-            if (cursor != null) {
-                Log.d(Constants.TAG, "Importing " + cursor.getCount() + " keyrings from apg.db...");
-                for (int i = 0; i < cursor.getCount(); i++) {
-                    cursor.moveToPosition(i);
-                    byte[] data = cursor.getBlob(0);
-                    try {
-                        UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
-                        providerHelper.savePublicKeyRing(ring);
-                    } catch(PgpGeneralException e) {
-                        Log.e(Constants.TAG, "Error decoding keyring blob!");
-                    }
-                }
-            }
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "Error importing apg.db!", e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            if (db != null) {
-                db.close();
-            }
-        }
-
-        // noinspection ResultOfMethodCallIgnored - not much we can do if this doesn't work
-        context.getDatabasePath("apg.db").delete();
     }
 
     private static void copy(File in, File out) throws IOException {
