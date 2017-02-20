@@ -240,8 +240,7 @@ public class CachedPublicKeyRing extends KeyRing {
 
     public byte[] getEncoded() throws PgpKeyNotFoundException {
         try {
-            return (byte[]) mDatabaseInteractor.getGenericData(mUri, KeyRingData.KEY_RING_DATA,
-                    DatabaseInteractor.FIELD_TYPE_BLOB);
+            return mDatabaseInteractor.getPublicKeyRingData(getMasterKeyId());
         } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }

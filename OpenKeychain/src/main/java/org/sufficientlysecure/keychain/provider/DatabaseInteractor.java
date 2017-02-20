@@ -10,12 +10,10 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -23,7 +21,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.util.Log;
 
 
 public class DatabaseInteractor {
@@ -148,19 +145,55 @@ public class DatabaseInteractor {
     }
 
     public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(long id) throws NotFoundException {
-        return (CanonicalizedPublicKeyRing) getCanonicalizedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), false);
+        return getCanonicalizedPublicKeyRing(KeyRings.buildUnifiedKeyRingUri(id));
     }
 
     public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri queryUri) throws NotFoundException {
-        return (CanonicalizedPublicKeyRing) getCanonicalizedKeyRing(queryUri, false);
+        Cursor cursor = mContentResolver.query(queryUri,
+                new String[] { KeyRings.MASTER_KEY_ID, KeyRings.VERIFIED }, null, null, null);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                long masterKeyId = cursor.getLong(0);
+                int verified = cursor.getInt(1);
+
+                byte[] publicKeyData = getPublicKeyRingData(masterKeyId);
+                return new CanonicalizedPublicKeyRing(publicKeyData, verified);
+            } else {
+                throw new NotFoundException("Key not found!");
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long id) throws NotFoundException {
-        return (CanonicalizedSecretKeyRing) getCanonicalizedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), true);
+        return getCanonicalizedSecretKeyRing(KeyRings.buildUnifiedKeyRingUri(id));
     }
 
     public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri queryUri) throws NotFoundException {
-        return (CanonicalizedSecretKeyRing) getCanonicalizedKeyRing(queryUri, true);
+        Cursor cursor = mContentResolver.query(queryUri,
+                new String[] { KeyRings.MASTER_KEY_ID, KeyRings.VERIFIED, KeyRings.HAS_ANY_SECRET }, null, null, null);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                long masterKeyId = cursor.getLong(0);
+                int verified = cursor.getInt(1);
+                int hasAnySecret = cursor.getInt(2);
+                if (hasAnySecret == 0) {
+                    throw new NotFoundException("No secret key available or unknown public key!");
+                }
+
+                byte[] secretKeyData = getSecretKeyRingData(masterKeyId);
+                return new CanonicalizedSecretKeyRing(secretKeyData, verified);
+            } else {
+                throw new NotFoundException("Key not found!");
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     public ArrayList<String> getConfirmedUserIds(long masterKeyId) throws NotFoundException {
@@ -184,53 +217,18 @@ public class DatabaseInteractor {
         }
     }
 
-    private KeyRing getCanonicalizedKeyRing(Uri queryUri, boolean secret) throws NotFoundException {
-        Cursor cursor = mContentResolver.query(queryUri,
-                new String[]{
-                        // we pick from cache only information that is not easily available from keyrings
-                        KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED,
-                        // and of course, ring data
-                        secret ? KeyRings.PRIVKEY_DATA : KeyRings.PUBKEY_DATA
-                }, null, null, null
-        );
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-
-                boolean hasAnySecret = cursor.getInt(0) > 0;
-                int verified = cursor.getInt(1);
-                byte[] blob = cursor.getBlob(2);
-                if (secret & !hasAnySecret) {
-                    throw new NotFoundException("Secret key not available!");
-                }
-                return secret
-                        ? new CanonicalizedSecretKeyRing(blob, true, verified)
-                        : new CanonicalizedPublicKeyRing(blob, verified);
-            } else {
-                throw new NotFoundException("Key not found!");
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
     private String getKeyRingAsArmoredString(byte[] data) throws IOException, PgpGeneralException {
         UncachedKeyRing keyRing = UncachedKeyRing.decodeFromData(data);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         keyRing.encodeArmored(bos, null);
-        String armoredKey = bos.toString("UTF-8");
 
-        Log.d(Constants.TAG, "armoredKey:" + armoredKey);
-
-        return armoredKey;
+        return bos.toString("UTF-8");
     }
 
-    public String getKeyRingAsArmoredString(Uri uri)
+    public String getPublicKeyRingAsArmoredString(long masterKeyId)
             throws NotFoundException, IOException, PgpGeneralException {
-        byte[] data = (byte[]) getGenericData(
-                uri, KeyRingData.KEY_RING_DATA, FIELD_TYPE_BLOB);
+        byte[] data = getPublicKeyRingData(masterKeyId);
         return getKeyRingAsArmoredString(data);
     }
 

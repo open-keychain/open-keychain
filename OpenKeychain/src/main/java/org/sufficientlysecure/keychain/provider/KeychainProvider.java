@@ -323,16 +323,12 @@ public class KeychainProvider extends ContentProvider {
                                     + " = " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " COLLATE NOCASE"
                                 + ")) AS " + KeyRings.HAS_DUPLICATE_USER_ID);
                 projectionMap.put(KeyRings.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
-                projectionMap.put(KeyRings.PUBKEY_DATA,
-                        Tables.KEY_RINGS_PUBLIC + "." + KeyRingData.KEY_RING_DATA
-                                + " AS " + KeyRings.PUBKEY_DATA);
-                projectionMap.put(KeyRings.PRIVKEY_DATA,
-                        Tables.KEY_RINGS_SECRET + "." + KeyRingData.KEY_RING_DATA
-                                + " AS " + KeyRings.PRIVKEY_DATA);
                 projectionMap.put(KeyRings.HAS_SECRET, Tables.KEYS + "." + KeyRings.HAS_SECRET);
                 projectionMap.put(KeyRings.HAS_ANY_SECRET,
-                        "(" + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NOT NULL)" +
-                                " AS " + KeyRings.HAS_ANY_SECRET);
+                        "(EXISTS (SELECT * FROM " + Tables.KEY_RINGS_SECRET + " WHERE "
+                                + Tables.KEYS + "." + Keys.MASTER_KEY_ID + " = "
+                                + Tables.KEY_RINGS_SECRET + "." + KeyRingData.MASTER_KEY_ID
+                                + ")) AS " + KeyRings.HAS_ANY_SECRET);
                 projectionMap.put(KeyRings.HAS_ENCRYPT,
                         "kE." + Keys.KEY_ID + " AS " + KeyRings.HAS_ENCRYPT);
                 projectionMap.put(KeyRings.HAS_SIGN,
@@ -367,18 +363,6 @@ public class KeychainProvider extends ContentProvider {
                                 + " = " + Certs.VERIFIED_SECRET
                         + ")"
                         // fairly expensive joins following, only do when requested
-                        + (plist.contains(KeyRings.PUBKEY_DATA) ?
-                            " INNER JOIN " + Tables.KEY_RINGS_PUBLIC + " ON ("
-                                    + Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                                + " = "
-                                    + Tables.KEY_RINGS_PUBLIC + "." + KeyRingData.MASTER_KEY_ID
-                                + ")" : "")
-                        + (plist.contains(KeyRings.PRIVKEY_DATA) || plist.contains(KeyRings.HAS_ANY_SECRET) ?
-                            " LEFT JOIN " + Tables.KEY_RINGS_SECRET + " ON ("
-                                    + Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                                + " = "
-                                    + Tables.KEY_RINGS_SECRET + "." + KeyRingData.MASTER_KEY_ID
-                                + ")" : "")
                         + (plist.contains(KeyRings.HAS_ENCRYPT) ?
                             " LEFT JOIN " + Tables.KEYS + " AS kE ON ("
                                 +"kE." + Keys.MASTER_KEY_ID

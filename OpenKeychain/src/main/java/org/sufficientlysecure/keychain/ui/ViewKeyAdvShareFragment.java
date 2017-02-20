@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -57,9 +58,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -221,8 +221,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         DatabaseInteractor databaseInteractor = new DatabaseInteractor(activity.getContentResolver());
 
         try {
-            String content = databaseInteractor.getKeyRingAsArmoredString(
-                    KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri));
+            long masterKeyId = databaseInteractor.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
+            String content = databaseInteractor.getPublicKeyRingAsArmoredString(masterKeyId);
 
             if (toClipboard) {
                 ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -275,7 +275,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
-        } catch (DatabaseInteractor.NotFoundException e) {
+        } catch (PgpKeyNotFoundException | DatabaseInteractor.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
             Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
         }

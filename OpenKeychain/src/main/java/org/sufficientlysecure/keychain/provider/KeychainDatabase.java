@@ -18,6 +18,12 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -35,11 +41,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColu
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  * SQLite Datatypes (from http://www.sqlite.org/datatype3.html)

@@ -105,29 +105,33 @@ public class DatabaseReadWriteInteractor extends DatabaseInteractor {
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
-        Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
+        Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
                 KeyRings.MASTER_KEY_ID,
                 // we pick from cache only information that is not easily available from keyrings
-                KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED,
-                // and of course, ring data
-                KeyRings.PUBKEY_DATA
+                KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED
         }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
         try {
             LongSparseArray<CanonicalizedPublicKey> result = new LongSparseArray<>();
 
-            if (cursor != null && cursor.moveToFirst()) do {
-                long masterKeyId = cursor.getLong(0);
-                int verified = cursor.getInt(2);
-                byte[] blob = cursor.getBlob(3);
-                if (blob != null) {
-                    result.put(masterKeyId,
-                            new CanonicalizedPublicKeyRing(blob, verified).getPublicKey());
+            if (cursor == null) {
+                return result;
+            }
+
+            while (cursor.moveToNext()) {
+                try {
+                    long masterKeyId = cursor.getLong(0);
+                    int verified = cursor.getInt(2);
+                    byte[] blob = getPublicKeyRingData(masterKeyId);
+                    if (blob != null) {
+                        result.put(masterKeyId, new CanonicalizedPublicKeyRing(blob, verified).getPublicKey());
+                    }
+                } catch (NotFoundException e) {
+                    throw new IllegalStateException("Error reading secret key data, this should not happen!", e);
                 }
-            } while (cursor.moveToNext());
+            }
 
             return result;
-
         } finally {
             if (cursor != null) {
                 cursor.close();

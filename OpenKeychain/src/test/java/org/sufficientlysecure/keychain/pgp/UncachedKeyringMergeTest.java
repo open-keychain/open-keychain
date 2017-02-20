@@ -185,7 +185,7 @@ public class UncachedKeyringMergeTest {
 
         UncachedKeyRing modifiedA, modifiedB; {
             CanonicalizedSecretKeyRing secretRing =
-                    new CanonicalizedSecretKeyRing(ringA.getEncoded(), false, 0);
+                    new CanonicalizedSecretKeyRing(ringA.getEncoded(), 0);
 
             parcel.reset();
             parcel.mAddUserIds.add("flim");
@@ -225,7 +225,7 @@ public class UncachedKeyringMergeTest {
         UncachedKeyRing modifiedA, modifiedB;
         long subKeyIdA, subKeyIdB;
         {
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ringA.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ringA.getEncoded(), 0);
 
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
@@ -271,7 +271,7 @@ public class UncachedKeyringMergeTest {
             parcel.reset();
             parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(ringA, 1));
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
-                    ringA.getEncoded(), false, 0);
+                    ringA.getEncoded(), 0);
             modified = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
         }
 
@@ -296,7 +296,7 @@ public class UncachedKeyringMergeTest {
                     pubRing.getEncoded(), 0);
 
             CanonicalizedSecretKey secretKey = new CanonicalizedSecretKeyRing(
-                    ringB.getEncoded(), false, 0).getSecretKey();
+                    ringB.getEncoded(), 0).getSecretKey();
             secretKey.unlock(new Passphrase());
             PgpCertifyOperation op = new PgpCertifyOperation();
             CertifyAction action = new CertifyAction(pubRing.getMasterKeyId(), publicRing.getPublicKey().getUnorderedUserIds(), null);
@@ -370,7 +370,7 @@ public class UncachedKeyringMergeTest {
             parcel.mAddUserAttribute.add(uat);
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
-                    ringA.getEncoded(), false, 0);
+                    ringA.getEncoded(), 0);
             modified = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
         }
 

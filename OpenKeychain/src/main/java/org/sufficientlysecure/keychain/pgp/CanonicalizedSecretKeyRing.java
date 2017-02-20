@@ -25,7 +25,6 @@ import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSignature;
 import org.bouncycastle.openpgp.jcajce.JcaPGPObjectFactory;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -42,7 +41,7 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
         mRing = ring;
     }
 
-    public CanonicalizedSecretKeyRing(byte[] blob, boolean isRevoked, int verified)
+    public CanonicalizedSecretKeyRing(byte[] blob, int verified)
     {
         super(verified);
         JcaPGPObjectFactory factory = new JcaPGPObjectFactory(blob);
