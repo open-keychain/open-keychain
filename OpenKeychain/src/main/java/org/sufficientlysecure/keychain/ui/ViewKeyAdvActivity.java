@@ -41,13 +41,11 @@ import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -57,7 +55,7 @@ import org.sufficientlysecure.keychain.util.Log;
 public class ViewKeyAdvActivity extends BaseActivity implements
         LoaderCallbacks<Cursor>, OnPageChangeListener {
 
-    ProviderHelper mProviderHelper;
+    DatabaseInteractor mDatabaseInteractor;
 
     protected Uri mDataUri;
 
@@ -90,7 +88,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             }
         });
 
-        mProviderHelper = new ProviderHelper(this);
+        mDatabaseInteractor = new DatabaseInteractor(this);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.sliding_tab_layout);

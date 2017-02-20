@@ -29,7 +29,7 @@ import android.widget.ImageView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -74,11 +74,11 @@ public class QrCodeViewActivity extends BaseActivity {
             }
         });
 
-        ProviderHelper providerHelper = new ProviderHelper(this);
+        DatabaseInteractor databaseInteractor = new DatabaseInteractor(this);
         try {
-            byte[] blob = (byte[]) providerHelper.getGenericData(
+            byte[] blob = (byte[]) databaseInteractor.getGenericData(
                     KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                    KeychainContract.KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+                    KeychainContract.KeyRings.FINGERPRINT, DatabaseInteractor.FIELD_TYPE_BLOB);
             if (blob == null) {
                 Log.e(Constants.TAG, "key not found!");
                 Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
@@ -102,7 +102,7 @@ public class QrCodeViewActivity extends BaseActivity {
                             mQrCode.setImageBitmap(scaled);
                         }
                     });
-        } catch (ProviderHelper.NotFoundException e) {
+        } catch (DatabaseInteractor.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
             Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
             ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);

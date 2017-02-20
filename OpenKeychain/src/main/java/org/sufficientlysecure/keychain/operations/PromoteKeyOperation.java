@@ -33,8 +33,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -49,9 +49,9 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
  */
 public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
 
-    public PromoteKeyOperation(Context context, ProviderHelper providerHelper,
+    public PromoteKeyOperation(Context context, DatabaseInteractor databaseInteractor,
                                Progressable progressable, AtomicBoolean cancelled) {
-        super(context, providerHelper, progressable, cancelled);
+        super(context, databaseInteractor, progressable, cancelled);
     }
 
     @NonNull
@@ -70,7 +70,7 @@ public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
                 log.add(LogType.MSG_PR_FETCHING, 1,
                         KeyFormattingUtils.convertKeyIdToHex(promoteKeyringParcel.mKeyRingId));
                 CanonicalizedPublicKeyRing pubRing =
-                        mProviderHelper.getCanonicalizedPublicKeyRing(promoteKeyringParcel.mKeyRingId);
+                        mDatabaseInteractor.getCanonicalizedPublicKeyRing(promoteKeyringParcel.mKeyRingId);
 
                 if (promoteKeyringParcel.mSubKeyIds == null) {
                     log.add(LogType.MSG_PR_ALL, 1);
@@ -114,7 +114,7 @@ public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
         setPreventCancel();
 
         // Save the new keyring.
-        SaveKeyringResult saveResult = mProviderHelper
+        SaveKeyringResult saveResult = mDatabaseInteractor
                 .saveSecretKeyRing(promotedRing, new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 

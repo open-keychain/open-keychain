@@ -53,7 +53,7 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -86,14 +86,14 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
     private static final int INDEX_SECKEY_DATA = 2;
     private static final int INDEX_HAS_ANY_SECRET = 3;
 
-    public BackupOperation(Context context, ProviderHelper providerHelper, Progressable
+    public BackupOperation(Context context, DatabaseInteractor databaseInteractor, Progressable
             progressable) {
-        super(context, providerHelper, progressable);
+        super(context, databaseInteractor, progressable);
     }
 
-    public BackupOperation(Context context, ProviderHelper providerHelper,
+    public BackupOperation(Context context, DatabaseInteractor databaseInteractor,
                            Progressable progressable, AtomicBoolean cancelled) {
-        super(context, providerHelper, progressable, cancelled);
+        super(context, databaseInteractor, progressable, cancelled);
     }
 
     @NonNull
@@ -170,7 +170,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
     private PgpSignEncryptResult encryptBackupData(@NonNull BackupKeyringParcel backupInput,
             @NonNull CryptoInputParcel cryptoInput, @Nullable OutputStream outputStream, Uri plainUri, long exportedDataSize)
             throws FileNotFoundException {
-        PgpSignEncryptOperation signEncryptOperation = new PgpSignEncryptOperation(mContext, mProviderHelper, mProgressable, mCancelled);
+        PgpSignEncryptOperation signEncryptOperation = new PgpSignEncryptOperation(mContext, mDatabaseInteractor, mProgressable, mCancelled);
 
         PgpSignEncryptData data = new PgpSignEncryptData();
         data.setSymmetricPassphrase(cryptoInput.getPassphrase());
@@ -326,7 +326,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                     + " IN (" + placeholders + ")";
         }
 
-        return mProviderHelper.getContentResolver().query(
+        return mDatabaseInteractor.getContentResolver().query(
                 KeyRings.buildUnifiedKeyRingsUri(), PROJECTION, selection, selectionArgs,
                 Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
         );

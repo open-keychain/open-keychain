@@ -27,7 +27,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -43,8 +43,8 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
  */
 public class DeleteOperation extends BaseOperation<DeleteKeyringParcel> {
 
-    public DeleteOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
-        super(context, providerHelper, progressable);
+    public DeleteOperation(Context context, DatabaseInteractor databaseInteractor, Progressable progressable) {
+        super(context, databaseInteractor, progressable);
     }
 
     @NonNull
@@ -81,7 +81,7 @@ public class DeleteOperation extends BaseOperation<DeleteKeyringParcel> {
                 cancelled = true;
                 break;
             }
-            int count = mProviderHelper.getContentResolver().delete(
+            int count = mDatabaseInteractor.getContentResolver().delete(
                     KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null
             );
             if (count > 0) {
@@ -95,7 +95,7 @@ public class DeleteOperation extends BaseOperation<DeleteKeyringParcel> {
 
         if (isSecret && success > 0) {
             log.add(LogType.MSG_DEL_CONSOLIDATE, 1);
-            ConsolidateResult sub = mProviderHelper.consolidateDatabaseStep1(mProgressable);
+            ConsolidateResult sub = mDatabaseInteractor.consolidateDatabaseStep1(mProgressable);
             log.add(sub, 2);
         }
 

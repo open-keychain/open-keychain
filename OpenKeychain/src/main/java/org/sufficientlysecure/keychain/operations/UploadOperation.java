@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -58,9 +58,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
-    public UploadOperation(Context context, ProviderHelper providerHelper,
+    public UploadOperation(Context context, DatabaseInteractor databaseInteractor,
                            Progressable progressable, AtomicBoolean cancelled) {
-        super(context, providerHelper, progressable, cancelled);
+        super(context, databaseInteractor, progressable, cancelled);
     }
 
     @NonNull
@@ -120,7 +120,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
             if (hasMasterKeyId) {
                 log.add(LogType.MSG_UPLOAD_KEY, 0, KeyFormattingUtils.convertKeyIdToHex(uploadInput.mMasterKeyId));
-                return mProviderHelper.getCanonicalizedPublicKeyRing(uploadInput.mMasterKeyId);
+                return mDatabaseInteractor.getCanonicalizedPublicKeyRing(uploadInput.mMasterKeyId);
             }
 
             CanonicalizedKeyRing canonicalizedRing =
@@ -132,7 +132,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             log.add(LogType.MSG_UPLOAD_KEY, 0, KeyFormattingUtils.convertKeyIdToHex(canonicalizedRing.getMasterKeyId()));
             return (CanonicalizedPublicKeyRing) canonicalizedRing;
 
-        } catch (ProviderHelper.NotFoundException e) {
+        } catch (DatabaseInteractor.NotFoundException e) {
             log.add(LogType.MSG_UPLOAD_ERROR_NOT_FOUND, 1);
             return null;
         } catch (IOException | PgpGeneralException e) {

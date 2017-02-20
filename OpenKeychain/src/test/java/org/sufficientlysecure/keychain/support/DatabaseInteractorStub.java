@@ -21,10 +21,10 @@ import android.content.Context;
 import android.net.Uri;
 
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 
-class ProviderHelperStub extends ProviderHelper {
-    public ProviderHelperStub(Context context) {
+class DatabaseInteractorStub extends DatabaseInteractor {
+    public DatabaseInteractorStub(Context context) {
         super(context);
     }
 

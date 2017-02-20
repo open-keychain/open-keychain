@@ -36,9 +36,8 @@ import android.provider.Settings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.lang.ref.WeakReference;
 
@@ -49,7 +48,7 @@ import java.lang.ref.WeakReference;
 public class NfcHelper {
 
     private Activity mActivity;
-    private ProviderHelper mProviderHelper;
+    private DatabaseInteractor mDatabaseInteractor;
 
     /**
      * NFC: This handler receives a message from onNdefPushComplete
@@ -65,9 +64,9 @@ public class NfcHelper {
     /**
      * Initializes the NfcHelper.
      */
-    public NfcHelper(final Activity activity, final ProviderHelper providerHelper) {
+    public NfcHelper(final Activity activity, final DatabaseInteractor databaseInteractor) {
         mActivity = activity;
-        mProviderHelper = providerHelper;
+        mDatabaseInteractor = databaseInteractor;
 
         mNfcHandler = new NfcHandler(mActivity);
     }
@@ -129,11 +128,11 @@ public class NfcHelper {
                                 try {
                                     Uri blobUri =
                                             KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                                    mNfcKeyringBytes = (byte[]) mProviderHelper.getGenericData(
+                                    mNfcKeyringBytes = (byte[]) mDatabaseInteractor.getGenericData(
                                             blobUri,
                                             KeychainContract.KeyRingData.KEY_RING_DATA,
-                                            ProviderHelper.FIELD_TYPE_BLOB);
-                                } catch (ProviderHelper.NotFoundException e) {
+                                            DatabaseInteractor.FIELD_TYPE_BLOB);
+                                } catch (DatabaseInteractor.NotFoundException e) {
                                     Log.e(Constants.TAG, "key not found!", e);
                                 }
 

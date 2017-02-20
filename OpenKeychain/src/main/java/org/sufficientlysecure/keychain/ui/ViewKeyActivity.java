@@ -74,8 +74,8 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -125,7 +125,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
     public static final String EXTRA_LINKED_TRANSITION = "linked_transition";
 
-    ProviderHelper mProviderHelper;
+    DatabaseInteractor mDatabaseInteractor;
 
     protected Uri mDataUri;
 
@@ -185,7 +185,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mProviderHelper = new ProviderHelper(this);
+        mDatabaseInteractor = new DatabaseInteractor(this);
         mImportOpHelper = new CryptoOperationHelper<>(1, this, this, null);
 
         setTitle(null);
@@ -318,7 +318,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         // or start new ones.
         getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
 
-        mNfcHelper = new NfcHelper(this, mProviderHelper);
+        mNfcHelper = new NfcHelper(this, mDatabaseInteractor);
         mNfcHelper.initNfc(mDataUri);
 
         if (savedInstanceState == null && getIntent().hasExtra(EXTRA_DISPLAY_RESULT)) {
@@ -399,8 +399,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
             case R.id.menu_key_view_refresh: {
                 try {
-                    updateFromKeyserver(mDataUri, mProviderHelper);
-                } catch (ProviderHelper.NotFoundException e) {
+                    updateFromKeyserver(mDataUri, mDatabaseInteractor);
+                } catch (DatabaseInteractor.NotFoundException e) {
                     Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
                 }
                 return true;
@@ -550,7 +550,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private boolean keyHasPassphrase() {
         try {
             SecretKeyType secretKeyType =
-                    mProviderHelper.getCachedPublicKeyRing(mMasterKeyId).getSecretKeyType(mMasterKeyId);
+                    mDatabaseInteractor.getCachedPublicKeyRing(mMasterKeyId).getSecretKeyType(mMasterKeyId);
             switch (secretKeyType) {
                 // all of these make no sense to ask
                 case PASSPHRASE_EMPTY:
@@ -666,7 +666,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         try {
 
             // if the security token matches a subkey in any key
-            CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(
+            CachedPublicKeyRing ring = mDatabaseInteractor.getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(tokenId));
             byte[] candidateFp = ring.getFingerprint();
 
@@ -741,7 +741,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             return;
         }
         try {
-            long keyId = new ProviderHelper(this)
+            long keyId = new DatabaseInteractor(this)
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
             long[] encryptionKeyIds = new long[]{keyId};
@@ -765,7 +765,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private void startSafeSlinger(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = new ProviderHelper(this)
+            keyId = new DatabaseInteractor(this)
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
@@ -1118,17 +1118,17 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     // CryptoOperationHelper.Callback functions
 
 
-    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
-            throws ProviderHelper.NotFoundException {
+    private void updateFromKeyserver(Uri dataUri, DatabaseInteractor databaseInteractor)
+            throws DatabaseInteractor.NotFoundException {
 
         mIsRefreshing = true;
         mRefreshItem.setEnabled(false);
         mRefreshItem.setActionView(mRefresh);
         mRefresh.startAnimation(mRotate);
 
-        byte[] blob = (byte[]) providerHelper.getGenericData(
+        byte[] blob = (byte[]) databaseInteractor.getGenericData(
                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+                KeychainContract.Keys.FINGERPRINT, DatabaseInteractor.FIELD_TYPE_BLOB);
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
 
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null, null);

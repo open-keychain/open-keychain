@@ -36,7 +36,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -193,12 +193,12 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
-                ProviderHelper providerHelper = new ProviderHelper(this);
+                DatabaseInteractor databaseInteractor = new DatabaseInteractor(this);
                 CanonicalizedPublicKeyRing publicKeyRing;
                 try {
-                    publicKeyRing = providerHelper.getCanonicalizedPublicKeyRing(
+                    publicKeyRing = databaseInteractor.getCanonicalizedPublicKeyRing(
                             KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId()));
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (DatabaseInteractor.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 }
 
@@ -232,13 +232,13 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 mSecurityTokenHelper.setPin(new Passphrase("123456"));
                 mSecurityTokenHelper.setAdminPin(new Passphrase("12345678"));
 
-                ProviderHelper providerHelper = new ProviderHelper(this);
+                DatabaseInteractor databaseInteractor = new DatabaseInteractor(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
-                    secretKeyRing = providerHelper.getCanonicalizedSecretKeyRing(
+                    secretKeyRing = databaseInteractor.getCanonicalizedSecretKeyRing(
                             KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId())
                     );
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (DatabaseInteractor.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 }
 

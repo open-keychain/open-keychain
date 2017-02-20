@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RunWith(KeychainTestRunner.class)
-public class ProviderHelperKeyringTest {
+public class DatabaseInteractorKeyringTest {
 
     @Test
     public void testSavePublicKeyring() throws Exception {

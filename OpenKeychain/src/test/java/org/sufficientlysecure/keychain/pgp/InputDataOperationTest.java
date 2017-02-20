@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.InputDataOperation;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -126,7 +126,7 @@ public class InputDataOperationTest {
         when(spyApplication.getContentResolver()).thenReturn(mockResolver);
 
         InputDataOperation op = new InputDataOperation(spyApplication,
-                new ProviderHelper(RuntimeEnvironment.application), null);
+                new DatabaseInteractor(RuntimeEnvironment.application), null);
 
         InputDataParcel input = new InputDataParcel(fakeInputUri, null);
 
@@ -306,7 +306,7 @@ public class InputDataOperationTest {
         when(spyApplication.getContentResolver()).thenReturn(mockResolver);
 
         InputDataOperation op = new InputDataOperation(spyApplication,
-                new ProviderHelper(RuntimeEnvironment.application), null);
+                new DatabaseInteractor(RuntimeEnvironment.application), null);
 
         InputDataParcel input = new InputDataParcel(FAKE_CONTENT_INPUT_URI_1, null);
         return op.execute(input, new CryptoInputParcel());

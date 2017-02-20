@@ -21,8 +21,8 @@ import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelperSaveTest;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractorSaveTest;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -45,7 +45,7 @@ public class KeychainExternalProviderTest {
     static final long KEY_ID_PUBLIC = 0x9A282CE2AB44A382L;
 
 
-    ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
+    DatabaseInteractor databaseInteractor = new DatabaseInteractor(RuntimeEnvironment.application);
     ContentResolver contentResolver = RuntimeEnvironment.application.getContentResolver();
     ApiPermissionHelper apiPermissionHelper;
     ApiDataAccessObject apiDao;
@@ -187,7 +187,7 @@ public class KeychainExternalProviderTest {
         CertifyActionsParcel certifyActionsParcel = new CertifyActionsParcel(secretMasterKeyId);
         certifyActionsParcel.add(new CertifyAction(publicMasterKeyId, Collections.singletonList(userId), null));
         CertifyOperation op = new CertifyOperation(
-                RuntimeEnvironment.application, providerHelper, new ProgressScaler(), null);
+                RuntimeEnvironment.application, databaseInteractor, new ProgressScaler(), null);
         CertifyResult certifyResult = op.execute(certifyActionsParcel, new CryptoInputParcel());
 
         assertTrue(certifyResult.success());
@@ -195,17 +195,17 @@ public class KeychainExternalProviderTest {
 
     private void insertPublicKeyringFrom(String filename) throws Exception {
         UncachedKeyRing ring = readRingFromResource(filename);
-        SaveKeyringResult saveKeyringResult = providerHelper.savePublicKeyRing(ring);
+        SaveKeyringResult saveKeyringResult = databaseInteractor.savePublicKeyRing(ring);
         assertTrue(saveKeyringResult.success());
     }
 
     private void insertSecretKeyringFrom(String filename) throws Exception {
         UncachedKeyRing ring = readRingFromResource(filename);
-        SaveKeyringResult saveKeyringResult = providerHelper.saveSecretKeyRing(ring, new ProgressScaler());
+        SaveKeyringResult saveKeyringResult = databaseInteractor.saveSecretKeyRing(ring, new ProgressScaler());
         assertTrue(saveKeyringResult.success());
     }
 
     UncachedKeyRing readRingFromResource(String name) throws Exception {
-        return UncachedKeyRing.fromStream(ProviderHelperSaveTest.class.getResourceAsStream(name)).next();
+        return UncachedKeyRing.fromStream(DatabaseInteractorSaveTest.class.getResourceAsStream(name)).next();
     }
 }

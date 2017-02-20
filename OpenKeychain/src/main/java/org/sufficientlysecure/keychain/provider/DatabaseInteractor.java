@@ -91,21 +91,21 @@ import java.util.concurrent.TimeUnit;
  * the lifetime of the executing ProviderHelper object unless the resetLog()
  * method is called to start a new one specifically.
  */
-public class ProviderHelper {
+public class DatabaseInteractor {
     private final Context mContext;
     private final ContentResolver mContentResolver;
     private OperationLog mLog;
     private int mIndent;
 
-    public ProviderHelper(Context context) {
+    public DatabaseInteractor(Context context) {
         this(context, new OperationLog(), 0);
     }
 
-    public ProviderHelper(Context context, OperationLog log) {
+    public DatabaseInteractor(Context context, OperationLog log) {
         this(context, log, 0);
     }
 
-    public ProviderHelper(Context context, OperationLog log, int indent) {
+    public DatabaseInteractor(Context context, OperationLog log, int indent) {
         mContext = context;
         mContentResolver = context.getContentResolver();
         mLog = log;
@@ -1335,7 +1335,7 @@ public class ProviderHelper {
     private ConsolidateResult consolidateDatabaseStep2(
             OperationLog log, int indent, Progressable progress, boolean recovery) {
 
-        synchronized (ProviderHelper.class) {
+        synchronized (DatabaseInteractor.class) {
             if (mConsolidateCritical) {
                 log.add(LogType.MSG_CON_ERROR_CONCURRENT, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
@@ -1540,7 +1540,7 @@ public class ProviderHelper {
     public String getKeyRingAsArmoredString(Uri uri)
             throws NotFoundException, IOException, PgpGeneralException {
         byte[] data = (byte[]) getGenericData(
-                uri, KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
+                uri, KeyRingData.KEY_RING_DATA, DatabaseInteractor.FIELD_TYPE_BLOB);
         return getKeyRingAsArmoredString(data);
     }
 

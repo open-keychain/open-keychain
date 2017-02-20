@@ -72,7 +72,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -87,8 +87,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
     public static final int PROGRESS_STRIDE_MILLISECONDS = 200;
 
-    public PgpDecryptVerifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
-        super(context, providerHelper, progressable);
+    public PgpDecryptVerifyOperation(Context context, DatabaseInteractor databaseInteractor, Progressable progressable) {
+        super(context, databaseInteractor, progressable);
     }
 
     /** Decrypts and/or verifies data based on parameters of PgpDecryptVerifyInputParcel. */
@@ -355,7 +355,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             plainFact = fact;
         }
 
-        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper, input.getSenderAddress());
+        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mDatabaseInteractor, input.getSenderAddress());
         if (signatureChecker.initializeOnePassSignature(dataChunk, log, indent +1)) {
             dataChunk = plainFact.nextObject();
         }
@@ -594,7 +594,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 CachedPublicKeyRing cachedPublicKeyRing;
                 try {
                     // get actual keyring object based on master key id
-                    cachedPublicKeyRing = mProviderHelper.getCachedPublicKeyRing(
+                    cachedPublicKeyRing = mDatabaseInteractor.getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId)
                     );
                     long masterKeyId = cachedPublicKeyRing.getMasterKeyId();
@@ -622,7 +622,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     }
 
                     // get actual subkey which has been used for this encryption packet
-                    CanonicalizedSecretKeyRing canonicalizedSecretKeyRing = mProviderHelper
+                    CanonicalizedSecretKeyRing canonicalizedSecretKeyRing = mDatabaseInteractor
                             .getCanonicalizedSecretKeyRing(masterKeyId);
                     CanonicalizedSecretKey candidateDecryptionKey = canonicalizedSecretKeyRing.getSecretKey(subKeyId);
 
@@ -668,7 +668,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     encryptedDataAsymmetric = encData;
                     decryptionKey = candidateDecryptionKey;
 
-                } catch (PgpKeyNotFoundException | ProviderHelper.NotFoundException e) {
+                } catch (PgpKeyNotFoundException | DatabaseInteractor.NotFoundException e) {
                     // continue with the next packet in the while loop
                     log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
                     continue;
@@ -879,7 +879,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         updateProgress(R.string.progress_processing_signature, 60, 100);
         JcaSkipMarkerPGPObjectFactory pgpFact = new JcaSkipMarkerPGPObjectFactory(aIn);
 
-        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper, input.getSenderAddress());
+        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mDatabaseInteractor, input.getSenderAddress());
 
         Object o = pgpFact.nextObject();
         if (!signatureChecker.initializeSignature(o, log, indent+1)) {
@@ -934,7 +934,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             o = pgpFact.nextObject();
         }
 
-        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper, input.getSenderAddress());
+        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mDatabaseInteractor, input.getSenderAddress());
 
         if ( ! signatureChecker.initializeSignature(o, log, indent+1)) {
             log.add(LogType.MSG_DC_ERROR_INVALID_DATA, 0);
