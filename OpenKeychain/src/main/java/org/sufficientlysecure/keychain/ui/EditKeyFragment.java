@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
@@ -203,7 +204,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
         try {
             Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
             CachedPublicKeyRing keyRing =
-                    new DatabaseReadWriteInteractor(getActivity()).getCachedPublicKeyRing(secretUri);
+                    new DatabaseInteractor(getActivity().getContentResolver()).getCachedPublicKeyRing(secretUri);
             long masterKeyId = keyRing.getMasterKeyId();
 
             // check if this is a master secret key we can work with

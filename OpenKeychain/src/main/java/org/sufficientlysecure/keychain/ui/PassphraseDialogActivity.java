@@ -57,7 +57,6 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
@@ -113,7 +112,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
         // handle empty passphrases by directly returning an empty crypto input parcel
         try {
             CachedPublicKeyRing pubRing =
-                    new DatabaseReadWriteInteractor(this).getCachedPublicKeyRing(requiredInput.getMasterKeyId());
+                    new DatabaseInteractor(getContentResolver()).getCachedPublicKeyRing(requiredInput.getMasterKeyId());
             // use empty passphrase for empty passphrase
             if (pubRing.getSecretKeyType(requiredInput.getSubKeyId()) == SecretKeyType.PASSPHRASE_EMPTY) {
                 // also return passphrase back to activity
@@ -232,7 +231,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 try {
                     long subKeyId = mRequiredInput.getSubKeyId();
 
-                    DatabaseInteractor helper = new DatabaseReadWriteInteractor(activity);
+                    DatabaseInteractor helper = new DatabaseInteractor(activity.getContentResolver());
                     CachedPublicKeyRing cachedPublicKeyRing = helper.getCachedPublicKeyRing(
                             KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
                     // yes the inner try/catch block is necessary, otherwise the final variable
@@ -267,7 +266,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                             throw new AssertionError("Unhandled SecretKeyType (should not happen)");
                     }
 
-                } catch (PgpKeyNotFoundException | DatabaseReadWriteInteractor.NotFoundException e) {
+                } catch (PgpKeyNotFoundException | DatabaseInteractor.NotFoundException e) {
                     alert.setTitle(R.string.title_key_not_found);
                     alert.setMessage(getString(R.string.key_not_found, mRequiredInput.getSubKeyId()));
                     alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -458,7 +457,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
                                 Long subKeyId = mRequiredInput.getSubKeyId();
                                 CanonicalizedSecretKeyRing secretKeyRing =
-                                        new DatabaseReadWriteInteractor(getActivity()).getCanonicalizedSecretKeyRing(
+                                        new DatabaseInteractor(getActivity().getContentResolver()).getCanonicalizedSecretKeyRing(
                                                 KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
                                 CanonicalizedSecretKey secretKeyToUnlock =
                                         secretKeyRing.getSecretKey(subKeyId);

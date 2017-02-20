@@ -17,6 +17,12 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.FragmentActivity;
@@ -40,9 +46,8 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -50,11 +55,6 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder>
         implements ImportKeysResultListener {
@@ -75,7 +75,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         mListener = listener;
         mNonInteractive = nonInteractive;
 
-        mDatabaseInteractor = new DatabaseReadWriteInteractor(activity);
+        mDatabaseInteractor = new DatabaseInteractor(activity.getContentResolver());
     }
 
     public void setData(List<ImportKeysListEntry> data) {
@@ -96,7 +96,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 }
                 keyState.mAlreadyPresent = true;
                 keyState.mVerified = keyRing.getVerified() > 0;
-            } catch (DatabaseReadWriteInteractor.NotFoundException | PgpKeyNotFoundException ignored) {
+            } catch (DatabaseInteractor.NotFoundException | PgpKeyNotFoundException ignored) {
             }
 
             mKeyStates[i] = keyState;

@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -56,7 +57,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
@@ -94,7 +94,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_adv_share_fragment, getContainer());
 
-        DatabaseInteractor databaseInteractor = new DatabaseReadWriteInteractor(ViewKeyAdvShareFragment.this.getActivity());
+        ContentResolver contentResolver = ViewKeyAdvShareFragment.this.getActivity().getContentResolver();
+        DatabaseInteractor databaseInteractor = new DatabaseInteractor(contentResolver);
         mNfcHelper = new NfcHelper(getActivity(), databaseInteractor);
 
         mFingerprintView = (TextView) view.findViewById(R.id.view_key_fingerprint);
@@ -201,7 +202,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private void startSafeSlinger(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = new DatabaseReadWriteInteractor(getActivity())
+            keyId = new DatabaseInteractor(getActivity().getContentResolver())
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
@@ -217,7 +218,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         if (activity == null || mFingerprint == null) {
             return;
         }
-        DatabaseInteractor databaseInteractor = new DatabaseReadWriteInteractor(activity);
+        DatabaseInteractor databaseInteractor = new DatabaseInteractor(activity.getContentResolver());
 
         try {
             String content = databaseInteractor.getKeyRingAsArmoredString(
@@ -274,7 +275,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
-        } catch (DatabaseReadWriteInteractor.NotFoundException e) {
+        } catch (DatabaseInteractor.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
             Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
         }
@@ -458,7 +459,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private void uploadToKeyserver() {
         long keyId;
         try {
-            keyId = new DatabaseReadWriteInteractor(getActivity())
+            keyId = new DatabaseInteractor(getActivity().getContentResolver())
                     .getCachedPublicKeyRing(mDataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {

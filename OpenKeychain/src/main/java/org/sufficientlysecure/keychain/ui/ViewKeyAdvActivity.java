@@ -40,13 +40,11 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -89,7 +87,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             }
         });
 
-        mDatabaseInteractor = new DatabaseReadWriteInteractor(this);
+        mDatabaseInteractor = new DatabaseInteractor(getContentResolver());
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.sliding_tab_layout);

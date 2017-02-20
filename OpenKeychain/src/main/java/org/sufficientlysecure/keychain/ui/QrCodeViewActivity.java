@@ -75,7 +75,7 @@ public class QrCodeViewActivity extends BaseActivity {
             }
         });
 
-        DatabaseInteractor databaseInteractor = new DatabaseReadWriteInteractor(this);
+        DatabaseInteractor databaseInteractor = new DatabaseInteractor(getContentResolver());
         try {
             byte[] blob = (byte[]) databaseInteractor.getGenericData(
                     KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),

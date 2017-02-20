@@ -17,6 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,20 +34,15 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner.OnKeyChangedListener;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
@@ -115,7 +115,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mDatabaseInteractor = new DatabaseReadWriteInteractor(getActivity());
+        mDatabaseInteractor = new DatabaseInteractor(getActivity().getContentResolver());
 
         // preselect keys given, from state or arguments
         if (savedInstanceState == null) {

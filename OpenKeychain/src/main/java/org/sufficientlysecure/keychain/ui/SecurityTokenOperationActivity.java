@@ -21,6 +21,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,14 +35,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import nordpol.android.NfcGuideView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -48,12 +53,6 @@ import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.OrientationUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
-import nordpol.android.NfcGuideView;
 
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
@@ -194,12 +193,12 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
-                DatabaseInteractor databaseInteractor = new DatabaseReadWriteInteractor(this);
+                DatabaseInteractor databaseInteractor = new DatabaseInteractor(getContentResolver());
                 CanonicalizedPublicKeyRing publicKeyRing;
                 try {
                     publicKeyRing = databaseInteractor.getCanonicalizedPublicKeyRing(
                             KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId()));
-                } catch (DatabaseReadWriteInteractor.NotFoundException e) {
+                } catch (DatabaseInteractor.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 }
 
@@ -233,13 +232,13 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 mSecurityTokenHelper.setPin(new Passphrase("123456"));
                 mSecurityTokenHelper.setAdminPin(new Passphrase("12345678"));
 
-                DatabaseInteractor databaseInteractor = new DatabaseReadWriteInteractor(this);
+                DatabaseInteractor databaseInteractor = new DatabaseInteractor(getContentResolver());
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
                     secretKeyRing = databaseInteractor.getCanonicalizedSecretKeyRing(
                             KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId())
                     );
-                } catch (DatabaseReadWriteInteractor.NotFoundException e) {
+                } catch (DatabaseInteractor.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 }
 

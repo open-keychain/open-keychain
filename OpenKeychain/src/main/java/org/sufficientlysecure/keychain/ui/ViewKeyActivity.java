@@ -19,6 +19,11 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -72,11 +77,10 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -97,11 +101,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
-
-import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 
 
 public class ViewKeyActivity extends BaseSecurityTokenActivity implements
@@ -186,7 +185,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDatabaseInteractor = new DatabaseReadWriteInteractor(this);
+        mDatabaseInteractor = new DatabaseInteractor(getContentResolver());
         mImportOpHelper = new CryptoOperationHelper<>(1, this, this, null);
 
         setTitle(null);
@@ -401,7 +400,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             case R.id.menu_key_view_refresh: {
                 try {
                     updateFromKeyserver(mDataUri, mDatabaseInteractor);
-                } catch (DatabaseReadWriteInteractor.NotFoundException e) {
+                } catch (DatabaseInteractor.NotFoundException e) {
                     Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
                 }
                 return true;
@@ -742,7 +741,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             return;
         }
         try {
-            long keyId = new DatabaseReadWriteInteractor(this)
+            long keyId = new DatabaseInteractor(getContentResolver())
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
             long[] encryptionKeyIds = new long[]{keyId};
@@ -766,7 +765,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private void startSafeSlinger(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = new DatabaseReadWriteInteractor(this)
+            keyId = new DatabaseInteractor(getContentResolver())
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
@@ -1120,7 +1119,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
 
     private void updateFromKeyserver(Uri dataUri, DatabaseInteractor databaseInteractor)
-            throws DatabaseReadWriteInteractor.NotFoundException {
+            throws DatabaseInteractor.NotFoundException {
 
         mIsRefreshing = true;
         mRefreshItem.setEnabled(false);

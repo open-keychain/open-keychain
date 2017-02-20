@@ -18,6 +18,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+import java.util.Date;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -35,19 +39,16 @@ import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 public class CertifyKeyFragment
         extends CachingCryptoOperationFragment<CertifyActionsParcel, CertifyResult> {
@@ -68,7 +69,7 @@ public class CertifyKeyFragment
                     .getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
             if (certifyKeyId != Constants.key.none) {
                 try {
-                    CachedPublicKeyRing key = (new DatabaseReadWriteInteractor(getActivity()))
+                    CachedPublicKeyRing key = (new DatabaseInteractor(getActivity().getContentResolver()))
                             .getCachedPublicKeyRing(certifyKeyId);
                     if (key.canCertify()) {
                         mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);

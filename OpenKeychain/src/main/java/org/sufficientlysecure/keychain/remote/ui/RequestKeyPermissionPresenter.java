@@ -15,10 +15,9 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper.WrongPackageCertificateException;
 import org.sufficientlysecure.keychain.util.Log;
@@ -41,7 +40,7 @@ class RequestKeyPermissionPresenter {
         PackageManager packageManager = context.getPackageManager();
         ApiDataAccessObject apiDataAccessObject = new ApiDataAccessObject(context);
         ApiPermissionHelper apiPermissionHelper = new ApiPermissionHelper(context, apiDataAccessObject);
-        DatabaseInteractor databaseInteractor = new DatabaseReadWriteInteractor(context);
+        DatabaseInteractor databaseInteractor = new DatabaseInteractor(context.getContentResolver());
 
         return new RequestKeyPermissionPresenter(context, apiDataAccessObject, apiPermissionHelper, packageManager,
                 databaseInteractor);

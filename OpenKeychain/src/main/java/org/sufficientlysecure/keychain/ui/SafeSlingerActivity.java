@@ -106,7 +106,7 @@ public class SafeSlingerActivity extends BaseActivity
         // retrieve public key blob and start SafeSlinger
         Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId);
         try {
-            byte[] keyBlob = (byte[]) new DatabaseReadWriteInteractor(this).getGenericData(
+            byte[] keyBlob = (byte[]) new DatabaseInteractor(getContentResolver()).getGenericData(
                     uri, KeychainContract.KeyRingData.KEY_RING_DATA, DatabaseInteractor.FIELD_TYPE_BLOB);
 
             Intent slingerIntent = new Intent(this, ExchangeActivity.class);
