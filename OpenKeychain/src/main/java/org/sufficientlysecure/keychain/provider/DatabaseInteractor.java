@@ -238,6 +238,16 @@ public class DatabaseInteractor {
         return mContentResolver;
     }
 
+    public byte[] getPublicKeyRingData(long masterKeyId) throws NotFoundException {
+        return (byte[]) getGenericData(KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId),
+                KeyRingData.KEY_RING_DATA, FIELD_TYPE_BLOB);
+    }
+
+    public byte[] getSecretKeyRingData(long masterKeyId) throws NotFoundException {
+        return (byte[]) getGenericData(KeychainContract.KeyRingData.buildSecretKeyRingUri(masterKeyId),
+                KeyRingData.KEY_RING_DATA, FIELD_TYPE_BLOB);
+    }
+
     public static class NotFoundException extends Exception {
         public NotFoundException() {
         }
