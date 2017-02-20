@@ -400,7 +400,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             case R.id.menu_key_view_refresh: {
                 try {
                     updateFromKeyserver(mDataUri, mDatabaseInteractor);
-                } catch (DatabaseInteractor.NotFoundException e) {
+                } catch (PgpKeyNotFoundException e) {
                     Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
                 }
                 return true;
@@ -1119,16 +1119,14 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
 
     private void updateFromKeyserver(Uri dataUri, DatabaseInteractor databaseInteractor)
-            throws DatabaseInteractor.NotFoundException {
+            throws PgpKeyNotFoundException {
 
         mIsRefreshing = true;
         mRefreshItem.setEnabled(false);
         mRefreshItem.setActionView(mRefresh);
         mRefresh.startAnimation(mRotate);
 
-        byte[] blob = (byte[]) databaseInteractor.getGenericData(
-                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                KeychainContract.Keys.FINGERPRINT, DatabaseInteractor.FIELD_TYPE_BLOB);
+        byte[] blob = databaseInteractor.getCachedPublicKeyRing(dataUri).getFingerprint();
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
 
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null, null);

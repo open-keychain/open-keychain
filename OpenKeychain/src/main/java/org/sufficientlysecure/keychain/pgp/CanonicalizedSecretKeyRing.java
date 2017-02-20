@@ -63,15 +63,15 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
     }
 
     public CanonicalizedSecretKey getSecretKey() {
-        return new CanonicalizedSecretKey(this, mRing.getSecretKey());
+        return new CanonicalizedSecretKey(this, getRing().getSecretKey());
     }
 
     public CanonicalizedSecretKey getSecretKey(long id) {
-        return new CanonicalizedSecretKey(this, mRing.getSecretKey(id));
+        return new CanonicalizedSecretKey(this, getRing().getSecretKey(id));
     }
 
     public IterableIterator<CanonicalizedSecretKey> secretKeyIterator() {
-        final Iterator<PGPSecretKey> it = mRing.getSecretKeys();
+        final Iterator<PGPSecretKey> it = getRing().getSecretKeys();
         return new IterableIterator<>(new Iterator<CanonicalizedSecretKey>() {
             @Override
             public boolean hasNext() {

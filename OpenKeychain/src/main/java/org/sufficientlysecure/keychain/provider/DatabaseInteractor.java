@@ -69,7 +69,7 @@ public class DatabaseInteractor {
         mLog = new OperationLog();
     }
 
-    public Object getGenericData(Uri uri, String column, int type) throws NotFoundException {
+    Object getGenericData(Uri uri, String column, int type) throws NotFoundException {
         Object result = getGenericData(uri, new String[]{column}, new int[]{type}, null).get(column);
         if (result == null) {
             throw new NotFoundException();
@@ -77,17 +77,17 @@ public class DatabaseInteractor {
         return result;
     }
 
-    public Object getGenericData(Uri uri, String column, int type, String selection)
+    Object getGenericData(Uri uri, String column, int type, String selection)
             throws NotFoundException {
         return getGenericData(uri, new String[]{column}, new int[]{type}, selection).get(column);
     }
 
-    public HashMap<String, Object> getGenericData(Uri uri, String[] proj, int[] types)
+    private HashMap<String, Object> getGenericData(Uri uri, String[] proj, int[] types)
             throws NotFoundException {
         return getGenericData(uri, proj, types, null);
     }
 
-    public HashMap<String, Object> getGenericData(Uri uri, String[] proj, int[] types, String selection)
+    private HashMap<String, Object> getGenericData(Uri uri, String[] proj, int[] types, String selection)
             throws NotFoundException {
         Cursor cursor = mContentResolver.query(uri, proj, selection, null, null);
 

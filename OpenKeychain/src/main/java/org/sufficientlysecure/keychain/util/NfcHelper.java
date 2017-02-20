@@ -18,6 +18,9 @@
 
 package org.sufficientlysecure.keychain.util;
 
+
+import java.lang.ref.WeakReference;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -35,12 +38,10 @@ import android.provider.Settings;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-
-import java.lang.ref.WeakReference;
 
 /**
  * This class contains NFC functionality that can be shared across Fragments or Activities.
@@ -127,13 +128,10 @@ public class NfcHelper {
                         new AsyncTask<Void, Void, Void>() {
                             protected Void doInBackground(Void... unused) {
                                 try {
-                                    Uri blobUri =
-                                            KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                                    mNfcKeyringBytes = (byte[]) mDatabaseInteractor.getGenericData(
-                                            blobUri,
-                                            KeychainContract.KeyRingData.KEY_RING_DATA,
-                                            DatabaseInteractor.FIELD_TYPE_BLOB);
-                                } catch (DatabaseReadWriteInteractor.NotFoundException e) {
+                                    long masterKeyId = mDatabaseInteractor.getCachedPublicKeyRing(dataUri)
+                                            .extractOrGetMasterKeyId();
+                                    mNfcKeyringBytes = mDatabaseInteractor.getPublicKeyRingData(masterKeyId);
+                                } catch (NotFoundException | PgpKeyNotFoundException e) {
                                     Log.e(Constants.TAG, "key not found!", e);
                                 }
 
