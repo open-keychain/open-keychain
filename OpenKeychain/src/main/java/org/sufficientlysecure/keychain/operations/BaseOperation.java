@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -32,9 +35,7 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-public abstract class BaseOperation <T extends Parcelable> implements PassphraseCacheInterface {
+public abstract class BaseOperation<T extends Parcelable> implements PassphraseCacheInterface {
 
     final public Context mContext;
     final public Progressable mProgressable;
@@ -72,7 +73,7 @@ public abstract class BaseOperation <T extends Parcelable> implements Passphrase
     }
 
     public BaseOperation(Context context, DatabaseInteractor databaseInteractor,
-                         Progressable progressable, AtomicBoolean cancelled) {
+            Progressable progressable, AtomicBoolean cancelled) {
         mContext = context;
         mProgressable = progressable;
         mDatabaseInteractor = databaseInteractor;

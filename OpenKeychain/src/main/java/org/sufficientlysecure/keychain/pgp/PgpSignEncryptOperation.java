@@ -44,8 +44,9 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -292,7 +293,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
 
                 }
 
-            } catch (DatabaseInteractor.NotFoundException e) {
+            } catch (DatabaseReadWriteInteractor.NotFoundException e) {
                 log.add(LogType.MSG_PSE_ERROR_SIGN_KEY, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             } catch (PgpGeneralException e) {
@@ -356,7 +357,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                             log.add(LogType.MSG_PSE_ERROR_REVOKED_OR_EXPIRED, indent);
                             return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                         }
-                    } catch (DatabaseInteractor.NotFoundException e) {
+                    } catch (DatabaseReadWriteInteractor.NotFoundException e) {
                         log.add(LogType.MSG_PSE_KEY_UNKNOWN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);

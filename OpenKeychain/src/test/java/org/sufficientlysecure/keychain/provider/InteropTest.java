@@ -243,7 +243,7 @@ public class InteropTest {
         final Uri verifyUri =  verify != null ?
                 KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(verify.getMasterKeyId()) : null;
 
-        DatabaseInteractor helper = new DatabaseInteractor(RuntimeEnvironment.application) {
+        DatabaseReadWriteInteractor helper = new DatabaseReadWriteInteractor(RuntimeEnvironment.application) {
 
             @Override
             public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {

@@ -27,7 +27,7 @@ import android.view.View;
 import com.tokenautocomplete.TokenCompleteTextView;
 import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
@@ -37,7 +37,7 @@ public abstract class CustomActions {
 
     public static ViewAction tokenEncryptViewAddToken(long keyId) throws Exception {
         CanonicalizedPublicKeyRing ring =
-                new DatabaseInteractor(getTargetContext()).getCanonicalizedPublicKeyRing(keyId);
+                new DatabaseReadWriteInteractor(getTargetContext()).getCanonicalizedPublicKeyRing(keyId);
         final Object item = new KeyAdapter.KeyItem(ring);
 
         return new ViewAction() {

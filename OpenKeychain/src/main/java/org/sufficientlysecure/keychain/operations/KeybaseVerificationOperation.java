@@ -36,7 +36,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -59,7 +59,7 @@ import de.measite.minidns.record.TXT;
 
 public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificationParcel> {
 
-    public KeybaseVerificationOperation(Context context, DatabaseInteractor databaseInteractor,
+    public KeybaseVerificationOperation(Context context, DatabaseReadWriteInteractor databaseInteractor,
                                         Progressable progressable) {
         super(context, databaseInteractor, progressable);
     }

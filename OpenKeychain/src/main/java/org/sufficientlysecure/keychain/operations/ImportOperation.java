@@ -39,7 +39,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -80,18 +80,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * method here will generally import keyrings in the order given by the
  * iterator, so this should be ensured beforehand.
  */
-public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
+public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel> {
 
     private static final int MAX_THREADS = 10;
 
     public static final String CACHE_FILE_NAME = "key_import.pcl";
 
-    public ImportOperation(Context context, DatabaseInteractor databaseInteractor, Progressable
+    public ImportOperation(Context context, DatabaseReadWriteInteractor databaseInteractor, Progressable
             progressable) {
         super(context, databaseInteractor, progressable);
     }
 
-    public ImportOperation(Context context, DatabaseInteractor databaseInteractor,
+    public ImportOperation(Context context, DatabaseReadWriteInteractor databaseInteractor,
                            Progressable progressable, AtomicBoolean cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
     }
@@ -319,10 +319,10 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     ProgressScaler progressScaler = new ProgressScaler(progressable, (int) (position * progSteps),
                             (int) ((position + 1) * progSteps), 100);
                     if (key.isSecret()) {
-                        result = mDatabaseInteractor.saveSecretKeyRing(key, progressScaler,
+                        result = mDatabaseReadWriteInteractor.saveSecretKeyRing(key, progressScaler,
                                 canKeyRings, skipSave);
                     } else {
-                        result = mDatabaseInteractor.savePublicKeyRing(key, progressScaler,
+                        result = mDatabaseReadWriteInteractor.savePublicKeyRing(key, progressScaler,
                                 entry.mExpectedFingerprint, canKeyRings, skipSave);
                     }
                 }
@@ -343,7 +343,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         // synonymous to isDownloadFromKeyserver.
                         // If no byte data was supplied, import from keyserver took place
                         // this prevents file imports being noted as keyserver imports
-                        mDatabaseInteractor.renewKeyLastUpdatedTime(key.getMasterKeyId(),
+                        mDatabaseReadWriteInteractor.renewKeyLastUpdatedTime(key.getMasterKeyId(),
                                 GregorianCalendar.getInstance().getTimeInMillis(),
                                 TimeUnit.MILLISECONDS);
                     }
@@ -366,7 +366,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             setPreventCancel();
             ConsolidateResult result;
             synchronized (mDatabaseInteractor) {
-                result = mDatabaseInteractor.consolidateDatabaseStep1(progressable);
+                result = mDatabaseReadWriteInteractor.consolidateDatabaseStep1(progressable);
             }
             log.add(result, 1);
         }

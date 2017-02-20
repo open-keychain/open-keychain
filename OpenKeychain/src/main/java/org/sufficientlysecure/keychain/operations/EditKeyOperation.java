@@ -35,8 +35,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
@@ -55,9 +55,9 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
  * @see SaveKeyringParcel
  *
  */
-public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
+public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> {
 
-    public EditKeyOperation(Context context, DatabaseInteractor databaseInteractor,
+    public EditKeyOperation(Context context, DatabaseReadWriteInteractor databaseInteractor,
                             Progressable progressable, AtomicBoolean cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
     }
@@ -161,7 +161,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         }
 
         // Save the new keyring.
-        SaveKeyringResult saveResult = mDatabaseInteractor
+        SaveKeyringResult saveResult = mDatabaseReadWriteInteractor
                 .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 

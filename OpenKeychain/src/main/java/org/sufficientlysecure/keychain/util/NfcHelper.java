@@ -35,6 +35,7 @@ import android.provider.Settings;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -132,7 +133,7 @@ public class NfcHelper {
                                             blobUri,
                                             KeychainContract.KeyRingData.KEY_RING_DATA,
                                             DatabaseInteractor.FIELD_TYPE_BLOB);
-                                } catch (DatabaseInteractor.NotFoundException e) {
+                                } catch (DatabaseReadWriteInteractor.NotFoundException e) {
                                     Log.e(Constants.TAG, "key not found!", e);
                                 }
 

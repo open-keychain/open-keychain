@@ -36,6 +36,7 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProv
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.util.Log;
@@ -161,7 +162,7 @@ class PgpSignatureChecker {
                 signingKey = keyCandidate;
                 onePassSignature = sigList.get(i);
                 return;
-            } catch (DatabaseInteractor.NotFoundException e) {
+            } catch (DatabaseReadWriteInteractor.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found, trying next signature...");
             }
         }
@@ -184,7 +185,7 @@ class PgpSignatureChecker {
                 signingKey = keyCandidate;
                 signature = sigList.get(i);
                 return;
-            } catch (DatabaseInteractor.NotFoundException e) {
+            } catch (DatabaseReadWriteInteractor.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found, trying next signature...");
             }
         }

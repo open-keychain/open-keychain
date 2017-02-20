@@ -20,8 +20,8 @@ import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractorSaveTest;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
@@ -45,7 +45,7 @@ public class KeychainExternalProviderTest {
     static final long KEY_ID_PUBLIC = 0x9A282CE2AB44A382L;
 
 
-    DatabaseInteractor databaseInteractor = new DatabaseInteractor(RuntimeEnvironment.application);
+    DatabaseReadWriteInteractor databaseInteractor = new DatabaseReadWriteInteractor(RuntimeEnvironment.application);
     ContentResolver contentResolver = RuntimeEnvironment.application.getContentResolver();
     ApiPermissionHelper apiPermissionHelper;
     ApiDataAccessObject apiDao;

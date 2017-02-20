@@ -26,8 +26,8 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.Progressable;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -41,9 +41,9 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
  * a list.
  *
  */
-public class DeleteOperation extends BaseOperation<DeleteKeyringParcel> {
+public class DeleteOperation extends BaseReadWriteOperation<DeleteKeyringParcel> {
 
-    public DeleteOperation(Context context, DatabaseInteractor databaseInteractor, Progressable progressable) {
+    public DeleteOperation(Context context, DatabaseReadWriteInteractor databaseInteractor, Progressable progressable) {
         super(context, databaseInteractor, progressable);
     }
 
@@ -95,7 +95,7 @@ public class DeleteOperation extends BaseOperation<DeleteKeyringParcel> {
 
         if (isSecret && success > 0) {
             log.add(LogType.MSG_DEL_CONSOLIDATE, 1);
-            ConsolidateResult sub = mDatabaseInteractor.consolidateDatabaseStep1(mProgressable);
+            ConsolidateResult sub = mDatabaseReadWriteInteractor.consolidateDatabaseStep1(mProgressable);
             log.add(sub, 2);
         }
 

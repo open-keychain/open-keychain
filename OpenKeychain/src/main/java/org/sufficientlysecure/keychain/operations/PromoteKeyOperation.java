@@ -33,8 +33,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -47,9 +47,8 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
  * without secret key material, using a GNU_DUMMY s2k type.
  *
  */
-public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
-
-    public PromoteKeyOperation(Context context, DatabaseInteractor databaseInteractor,
+public class PromoteKeyOperation extends BaseReadWriteOperation<PromoteKeyringParcel> {
+    public PromoteKeyOperation(Context context, DatabaseReadWriteInteractor databaseInteractor,
                                Progressable progressable, AtomicBoolean cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
     }
@@ -114,7 +113,7 @@ public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
         setPreventCancel();
 
         // Save the new keyring.
-        SaveKeyringResult saveResult = mDatabaseInteractor
+        SaveKeyringResult saveResult = mDatabaseReadWriteInteractor
                 .saveSecretKeyRing(promotedRing, new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 

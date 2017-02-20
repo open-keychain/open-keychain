@@ -62,7 +62,7 @@ public class CachedPublicKeyRing extends KeyRing {
             Object data = mDatabaseInteractor.getGenericData(mUri,
                     KeychainContract.KeyRings.MASTER_KEY_ID, DatabaseInteractor.FIELD_TYPE_INTEGER);
             return (Long) data;
-        } catch (DatabaseInteractor.NotFoundException e) {
+        } catch (DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }
@@ -88,7 +88,7 @@ public class CachedPublicKeyRing extends KeyRing {
             Object data = mDatabaseInteractor.getGenericData(mUri,
                     KeychainContract.KeyRings.FINGERPRINT, DatabaseInteractor.FIELD_TYPE_BLOB);
             return (byte[]) data;
-        } catch (DatabaseInteractor.NotFoundException e) {
+        } catch (DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }
@@ -100,7 +100,7 @@ public class CachedPublicKeyRing extends KeyRing {
                     KeychainContract.KeyRings.USER_ID,
                     DatabaseInteractor.FIELD_TYPE_STRING);
             return (String) data;
-        } catch(DatabaseInteractor.NotFoundException e) {
+        } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }
@@ -115,7 +115,7 @@ public class CachedPublicKeyRing extends KeyRing {
                     KeyRings.NAME,
                     DatabaseInteractor.FIELD_TYPE_STRING);
             return (String) data;
-        } catch(DatabaseInteractor.NotFoundException e) {
+        } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }
@@ -126,7 +126,7 @@ public class CachedPublicKeyRing extends KeyRing {
                     KeyRings.EMAIL,
                     DatabaseInteractor.FIELD_TYPE_STRING);
             return (String) data;
-        } catch(DatabaseInteractor.NotFoundException e) {
+        } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }
@@ -138,7 +138,7 @@ public class CachedPublicKeyRing extends KeyRing {
                     KeyRings.COMMENT,
                     DatabaseInteractor.FIELD_TYPE_STRING);
             return (String) data;
-        } catch(DatabaseInteractor.NotFoundException e) {
+        } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }
@@ -150,7 +150,7 @@ public class CachedPublicKeyRing extends KeyRing {
                     KeychainContract.KeyRings.IS_REVOKED,
                     DatabaseInteractor.FIELD_TYPE_INTEGER);
             return (Long) data > 0;
-        } catch(DatabaseInteractor.NotFoundException e) {
+        } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }
@@ -162,7 +162,7 @@ public class CachedPublicKeyRing extends KeyRing {
                     KeychainContract.KeyRings.HAS_CERTIFY,
                     DatabaseInteractor.FIELD_TYPE_NULL);
             return !((Boolean) data);
-        } catch(DatabaseInteractor.NotFoundException e) {
+        } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }
@@ -174,7 +174,7 @@ public class CachedPublicKeyRing extends KeyRing {
                     KeyRings.HAS_ENCRYPT,
                     DatabaseInteractor.FIELD_TYPE_INTEGER);
             return (Long) data;
-        } catch(DatabaseInteractor.NotFoundException e) {
+        } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }
@@ -196,7 +196,7 @@ public class CachedPublicKeyRing extends KeyRing {
                     KeyRings.HAS_SIGN,
                     DatabaseInteractor.FIELD_TYPE_INTEGER);
             return (Long) data;
-        } catch(DatabaseInteractor.NotFoundException e) {
+        } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }
@@ -208,7 +208,7 @@ public class CachedPublicKeyRing extends KeyRing {
                     KeychainContract.KeyRings.VERIFIED,
                     DatabaseInteractor.FIELD_TYPE_INTEGER);
             return ((Long) data).intValue();
-        } catch(DatabaseInteractor.NotFoundException e) {
+        } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }
@@ -219,7 +219,7 @@ public class CachedPublicKeyRing extends KeyRing {
                     KeychainContract.KeyRings.HAS_ANY_SECRET,
                     DatabaseInteractor.FIELD_TYPE_INTEGER);
             return (Long) data > 0;
-        } catch(DatabaseInteractor.NotFoundException e) {
+        } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
     }

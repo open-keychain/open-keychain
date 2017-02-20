@@ -71,8 +71,9 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -668,7 +669,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     encryptedDataAsymmetric = encData;
                     decryptionKey = candidateDecryptionKey;
 
-                } catch (PgpKeyNotFoundException | DatabaseInteractor.NotFoundException e) {
+                } catch (PgpKeyNotFoundException | DatabaseReadWriteInteractor.NotFoundException e) {
                     // continue with the next packet in the while loop
                     log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
                     continue;

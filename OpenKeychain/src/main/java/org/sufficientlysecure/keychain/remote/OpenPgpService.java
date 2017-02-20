@@ -63,10 +63,10 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -97,7 +97,7 @@ public class OpenPgpService extends Service {
     public void onCreate() {
         super.onCreate();
         mApiPermissionHelper = new ApiPermissionHelper(this, new ApiDataAccessObject(this));
-        mDatabaseInteractor = new DatabaseInteractor(this);
+        mDatabaseInteractor = new DatabaseInteractor(getContentResolver());
         mApiDao = new ApiDataAccessObject(this);
 
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
@@ -167,7 +167,7 @@ public class OpenPgpService extends Service {
             }
 
             // execute PGP operation!
-            PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, new DatabaseInteractor(this), null);
+            PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, mDatabaseInteractor, null);
             PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {

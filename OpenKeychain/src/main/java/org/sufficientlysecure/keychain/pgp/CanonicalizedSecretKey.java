@@ -47,7 +47,7 @@ import org.bouncycastle.openpgp.operator.jcajce.SessionKeySecretKeyDecryptorBuil
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -127,7 +127,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      * passphrase in the process.
      *
      * This method can potentially take a LONG time (i.e. seconds), so it should only
-     * ever be called by {@link DatabaseInteractor} for the purpose of caching its output
+     * ever be called by {@link DatabaseReadWriteInteractor} for the purpose of caching its output
      * in the database.
      */
     public SecretKeyType getSecretKeyTypeSuperExpensive() {

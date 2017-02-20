@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.RevokeResult;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
@@ -89,7 +90,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         if (mMasterKeyIds.length == 1 && mHasSecret) {
             // if mMasterKeyIds.length == 0 we let the DeleteOperation respond
             try {
-                HashMap<String, Object> data = new DatabaseInteractor(this).getUnifiedData(
+                HashMap<String, Object> data = new DatabaseReadWriteInteractor(this).getUnifiedData(
                         mMasterKeyIds[0], new String[]{
                                 KeychainContract.KeyRings.NAME,
                                 KeychainContract.KeyRings.IS_REVOKED
@@ -112,7 +113,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 } else {
                     showRevokeDeleteDialog(name);
                 }
-            } catch (DatabaseInteractor.NotFoundException e) {
+            } catch (DatabaseReadWriteInteractor.NotFoundException e) {
                 Log.e(Constants.TAG,
                         "Secret key to delete not found at DeleteKeyDialogActivity for "
                                 + mMasterKeyIds[0], e);
@@ -269,7 +270,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 long masterKeyId = masterKeyIds[0];
 
                 try {
-                    HashMap<String, Object> data = new DatabaseInteractor(activity).getUnifiedData(
+                    HashMap<String, Object> data = new DatabaseReadWriteInteractor(activity).getUnifiedData(
                             masterKeyId, new String[]{
                                     KeychainContract.KeyRings.NAME,
                                     KeychainContract.KeyRings.HAS_ANY_SECRET
@@ -293,7 +294,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                     } else {
                         mMainMessage.setText(getString(R.string.public_key_deletetion_confirmation, name));
                     }
-                } catch (DatabaseInteractor.NotFoundException e) {
+                } catch (DatabaseReadWriteInteractor.NotFoundException e) {
                     dismiss();
                     return null;
                 }

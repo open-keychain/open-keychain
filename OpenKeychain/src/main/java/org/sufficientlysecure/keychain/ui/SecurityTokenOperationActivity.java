@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
@@ -193,12 +194,12 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
-                DatabaseInteractor databaseInteractor = new DatabaseInteractor(this);
+                DatabaseInteractor databaseInteractor = new DatabaseReadWriteInteractor(this);
                 CanonicalizedPublicKeyRing publicKeyRing;
                 try {
                     publicKeyRing = databaseInteractor.getCanonicalizedPublicKeyRing(
                             KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId()));
-                } catch (DatabaseInteractor.NotFoundException e) {
+                } catch (DatabaseReadWriteInteractor.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 }
 
@@ -232,13 +233,13 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 mSecurityTokenHelper.setPin(new Passphrase("123456"));
                 mSecurityTokenHelper.setAdminPin(new Passphrase("12345678"));
 
-                DatabaseInteractor databaseInteractor = new DatabaseInteractor(this);
+                DatabaseInteractor databaseInteractor = new DatabaseReadWriteInteractor(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
                     secretKeyRing = databaseInteractor.getCanonicalizedSecretKeyRing(
                             KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId())
                     );
-                } catch (DatabaseInteractor.NotFoundException e) {
+                } catch (DatabaseReadWriteInteractor.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 }
 

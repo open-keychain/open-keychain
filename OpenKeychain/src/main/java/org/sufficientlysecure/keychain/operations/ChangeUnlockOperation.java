@@ -29,16 +29,16 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 
-public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
+public class ChangeUnlockOperation extends BaseReadWriteOperation<ChangeUnlockParcel> {
 
-    public ChangeUnlockOperation(Context context, DatabaseInteractor databaseInteractor, Progressable progressable) {
+    public ChangeUnlockOperation(Context context, DatabaseReadWriteInteractor databaseInteractor, Progressable progressable) {
         super(context, databaseInteractor, progressable);
     }
 
@@ -71,7 +71,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
                         log.add(modifyResult, 1);
                         return new EditKeyResult(log, modifyResult);
                     }
-            } catch (DatabaseInteractor.NotFoundException e) {
+            } catch (DatabaseReadWriteInteractor.NotFoundException e) {
                 log.add(OperationResult.LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
@@ -90,7 +90,7 @@ public class ChangeUnlockOperation extends BaseOperation<ChangeUnlockParcel> {
         // It's a success, so this must be non-null now
         UncachedKeyRing ring = modifyResult.getRing();
 
-        SaveKeyringResult saveResult = mDatabaseInteractor
+        SaveKeyringResult saveResult = mDatabaseReadWriteInteractor
                 .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 70, 95, 100));
         log.add(saveResult, 1);
 

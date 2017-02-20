@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
@@ -74,7 +75,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         mListener = listener;
         mNonInteractive = nonInteractive;
 
-        mDatabaseInteractor = new DatabaseInteractor(activity);
+        mDatabaseInteractor = new DatabaseReadWriteInteractor(activity);
     }
 
     public void setData(List<ImportKeysListEntry> data) {
@@ -95,7 +96,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 }
                 keyState.mAlreadyPresent = true;
                 keyState.mVerified = keyRing.getVerified() > 0;
-            } catch (DatabaseInteractor.NotFoundException | PgpKeyNotFoundException ignored) {
+            } catch (DatabaseReadWriteInteractor.NotFoundException | PgpKeyNotFoundException ignored) {
             }
 
             mKeyStates[i] = keyState;

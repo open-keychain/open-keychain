@@ -39,8 +39,8 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -60,9 +60,9 @@ import org.sufficientlysecure.keychain.util.Passphrase;
  *
  * @see CertifyActionsParcel
  */
-public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
+public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParcel> {
 
-    public CertifyOperation(Context context, DatabaseInteractor databaseInteractor, Progressable progressable, AtomicBoolean
+    public CertifyOperation(Context context, DatabaseReadWriteInteractor databaseInteractor, Progressable progressable, AtomicBoolean
             cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
     }
@@ -223,7 +223,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                     KeyFormattingUtils.convertKeyIdToHex(certifiedKey.getMasterKeyId()));
             // store the signed key in our local cache
             mDatabaseInteractor.clearLog();
-            SaveKeyringResult result = mDatabaseInteractor.savePublicKeyRing(certifiedKey);
+            SaveKeyringResult result = mDatabaseReadWriteInteractor.savePublicKeyRing(certifiedKey);
 
             if (uploadOperation != null) {
                 UploadKeyringParcel uploadInput =

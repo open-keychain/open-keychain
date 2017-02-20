@@ -25,6 +25,7 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
@@ -50,7 +51,7 @@ public class KeyringTestingHelper {
 
     public boolean addKeyring(Collection<String> blobFiles) throws Exception {
 
-        DatabaseInteractor databaseInteractor = new DatabaseInteractor(context);
+        DatabaseReadWriteInteractor databaseInteractor = new DatabaseReadWriteInteractor(context);
 
         byte[] data = TestDataUtil.readAllFully(blobFiles);
         UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
@@ -349,7 +350,7 @@ public class KeyringTestingHelper {
         try {
             databaseInteractor.getCanonicalizedPublicKeyRing(masterKeyId);
             throw new AssertionError("Was expecting the previous call to fail!");
-        } catch (DatabaseInteractor.NotFoundException expectedException) {
+        } catch (DatabaseReadWriteInteractor.NotFoundException expectedException) {
             // good
         }
     }

@@ -45,7 +45,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainSymm
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
@@ -55,7 +55,7 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
 
-    public BenchmarkOperation(Context context, DatabaseInteractor databaseInteractor, Progressable
+    public BenchmarkOperation(Context context, DatabaseReadWriteInteractor databaseInteractor, Progressable
             progressable) {
         super(context, databaseInteractor, progressable);
     }

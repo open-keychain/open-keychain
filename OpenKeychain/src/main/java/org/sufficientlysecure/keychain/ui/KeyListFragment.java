@@ -56,6 +56,7 @@ import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
@@ -486,7 +487,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
             return;
         }
 
-        DatabaseInteractor databaseInteractor = new DatabaseInteractor(activity);
+        DatabaseInteractor databaseInteractor = new DatabaseReadWriteInteractor(activity);
         Cursor cursor = databaseInteractor.getContentResolver().query(
                 KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                         KeyRings.FINGERPRINT

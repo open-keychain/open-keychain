@@ -72,6 +72,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
@@ -185,7 +186,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDatabaseInteractor = new DatabaseInteractor(this);
+        mDatabaseInteractor = new DatabaseReadWriteInteractor(this);
         mImportOpHelper = new CryptoOperationHelper<>(1, this, this, null);
 
         setTitle(null);
@@ -400,7 +401,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             case R.id.menu_key_view_refresh: {
                 try {
                     updateFromKeyserver(mDataUri, mDatabaseInteractor);
-                } catch (DatabaseInteractor.NotFoundException e) {
+                } catch (DatabaseReadWriteInteractor.NotFoundException e) {
                     Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
                 }
                 return true;
@@ -741,7 +742,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             return;
         }
         try {
-            long keyId = new DatabaseInteractor(this)
+            long keyId = new DatabaseReadWriteInteractor(this)
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
             long[] encryptionKeyIds = new long[]{keyId};
@@ -765,7 +766,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private void startSafeSlinger(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = new DatabaseInteractor(this)
+            keyId = new DatabaseReadWriteInteractor(this)
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
@@ -1119,7 +1120,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
 
     private void updateFromKeyserver(Uri dataUri, DatabaseInteractor databaseInteractor)
-            throws DatabaseInteractor.NotFoundException {
+            throws DatabaseReadWriteInteractor.NotFoundException {
 
         mIsRefreshing = true;
         mRefreshItem.setEnabled(false);

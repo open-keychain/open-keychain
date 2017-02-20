@@ -28,6 +28,7 @@ import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
@@ -74,7 +75,7 @@ public class QrCodeViewActivity extends BaseActivity {
             }
         });
 
-        DatabaseInteractor databaseInteractor = new DatabaseInteractor(this);
+        DatabaseInteractor databaseInteractor = new DatabaseReadWriteInteractor(this);
         try {
             byte[] blob = (byte[]) databaseInteractor.getGenericData(
                     KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
@@ -102,7 +103,7 @@ public class QrCodeViewActivity extends BaseActivity {
                             mQrCode.setImageBitmap(scaled);
                         }
                     });
-        } catch (DatabaseInteractor.NotFoundException e) {
+        } catch (DatabaseReadWriteInteractor.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
             Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
             ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);

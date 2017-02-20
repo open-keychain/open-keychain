@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
 
 import java.io.PrintStream;
@@ -47,7 +47,7 @@ public class BenchmarkOperationTest {
     @Test
     public void testBenchmark() throws Exception {
         BenchmarkOperation op = new BenchmarkOperation(RuntimeEnvironment.application,
-                new DatabaseInteractor(RuntimeEnvironment.application), null);
+                new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
         op.execute(new BenchmarkInputParcel(), null);
     }

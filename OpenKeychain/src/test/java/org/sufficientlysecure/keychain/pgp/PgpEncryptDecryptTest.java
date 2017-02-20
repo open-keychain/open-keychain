@@ -40,8 +40,8 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
+import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
@@ -149,7 +149,7 @@ public class PgpEncryptDecryptTest {
 
     @Before
     public void setUp() {
-        DatabaseInteractor databaseInteractor = new DatabaseInteractor(RuntimeEnvironment.application);
+        DatabaseReadWriteInteractor databaseInteractor = new DatabaseReadWriteInteractor(RuntimeEnvironment.application);
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
@@ -172,7 +172,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -197,7 +197,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(true);
             DecryptVerifyResult result = op.execute(
@@ -227,7 +227,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(true);
             DecryptVerifyResult result = op.execute(input,
@@ -249,7 +249,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(true);
             DecryptVerifyResult result = op.execute(input,
@@ -270,7 +270,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(false);
             DecryptVerifyResult result = op.execute(input,
@@ -297,7 +297,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -353,7 +353,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -415,7 +415,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -472,7 +472,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -575,7 +575,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -626,11 +626,11 @@ public class PgpEncryptDecryptTest {
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
                     new CryptoInputParcel(new Date(), mKeyPhrase1));
 
-            DatabaseInteractor databaseInteractor = new DatabaseInteractor(RuntimeEnvironment.application);
+            DatabaseReadWriteInteractor databaseInteractor = new DatabaseReadWriteInteractor(RuntimeEnvironment.application);
             databaseInteractor.saveSecretKeyRing(modified, new ProgressScaler());
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(ciphertext);
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1));
 
@@ -648,11 +648,11 @@ public class PgpEncryptDecryptTest {
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
                     new CryptoInputParcel(new Date(), mKeyPhrase1));
 
-            DatabaseInteractor databaseInteractor = new DatabaseInteractor(RuntimeEnvironment.application);
+            DatabaseReadWriteInteractor databaseInteractor = new DatabaseReadWriteInteractor(RuntimeEnvironment.application);
             databaseInteractor.saveSecretKeyRing(modified, new ProgressScaler());
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(ciphertext);
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1));
 
@@ -675,7 +675,7 @@ public class PgpEncryptDecryptTest {
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
                     new CryptoInputParcel(new Date(), mKeyPhrase1));
 
-            DatabaseInteractor databaseInteractor = new DatabaseInteractor(RuntimeEnvironment.application);
+            DatabaseReadWriteInteractor databaseInteractor = new DatabaseReadWriteInteractor(RuntimeEnvironment.application);
             databaseInteractor.saveSecretKeyRing(modified, new ProgressScaler());
         }
 
@@ -685,7 +685,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -730,7 +730,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -824,7 +824,7 @@ public class PgpEncryptDecryptTest {
         { // decryption with passphrase cached should succeed for the other key if first is gone
 
             // delete first key from database
-            new DatabaseInteractor(RuntimeEnvironment.application).getContentResolver().delete(
+            new DatabaseReadWriteInteractor(RuntimeEnvironment.application).getContentResolver().delete(
                     KeyRingData.buildPublicKeyRingUri(mStaticRing1.getMasterKeyId()), null, null
             );
 
@@ -859,7 +859,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -907,7 +907,7 @@ public class PgpEncryptDecryptTest {
         { // decryption with passphrase cached should succeed for the other key if first is gone
 
             // delete first key from database
-            new DatabaseInteractor(RuntimeEnvironment.application).getContentResolver().delete(
+            new DatabaseReadWriteInteractor(RuntimeEnvironment.application).getContentResolver().delete(
                     KeyRingData.buildPublicKeyRingUri(mStaticRing1.getMasterKeyId()), null, null
             );
 
@@ -946,7 +946,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaindata);
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -1018,7 +1018,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    new DatabaseInteractor(RuntimeEnvironment.application), null);
+                    new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -1069,7 +1069,7 @@ public class PgpEncryptDecryptTest {
             final Passphrase passphrase, final Long checkMasterKeyId, final Long checkSubKeyId) {
 
         return new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
-                new DatabaseInteractor(RuntimeEnvironment.application), null) {
+                new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null) {
             @Override
             public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
                     throws NoSecretKeyException {

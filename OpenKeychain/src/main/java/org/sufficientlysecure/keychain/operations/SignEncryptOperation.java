@@ -18,6 +18,10 @@
 package org.sufficientlysecure.keychain.operations;
 
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -36,14 +40,10 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
