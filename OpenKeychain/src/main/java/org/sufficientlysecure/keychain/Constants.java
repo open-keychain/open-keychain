@@ -85,7 +85,7 @@ public final class Constants {
     // the maximal length of plaintext to read in encrypt/decrypt text activities
     public static final int TEXT_LENGTH_LIMIT = 1024 * 50;
 
-    public static final String SAFESLINGER_SERVER = "safeslinger-openpgp.appspot.com";
+    public static final String SAFESLINGER_SERVER = "slinger-openpgp.appspot.com";
 
     // Intents API
     public static final String ENCRYPT_TEXT = INTENT_PREFIX + "ENCRYPT_TEXT";
