@@ -28,7 +28,7 @@ public class CardCapabilities {
     private byte[] mCapabilityBytes;
 
     public CardCapabilities(byte[] historicalBytes) throws UsbTransportException {
-        if (historicalBytes[0] != 0x00) {
+        if ((historicalBytes == null) || (historicalBytes[0] != 0x00)) {
             throw new UsbTransportException("Invalid historical bytes category indicator byte");
         }
 
