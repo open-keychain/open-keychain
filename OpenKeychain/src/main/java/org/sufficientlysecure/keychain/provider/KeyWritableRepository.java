@@ -36,6 +36,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
@@ -98,15 +99,13 @@ public class KeyWritableRepository extends KeyRepository {
         return new KeyWritableRepository(context, localPublicKeyStorage);
     }
 
-    private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage) {
+    @VisibleForTesting
+    KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage) {
         this(context, localPublicKeyStorage, new OperationLog(), 0);
     }
 
-    private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log) {
-        this(context, localPublicKeyStorage, log, 0);
-    }
-
-    private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log, int indent) {
+    private KeyWritableRepository(
+            Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log, int indent) {
         super(context.getContentResolver(), localPublicKeyStorage, log, indent);
 
         mContext = context;
