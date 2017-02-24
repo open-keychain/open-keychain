@@ -75,4 +75,14 @@ class LocalPublicKeyStorage {
 
         return baos.toByteArray();
     }
+
+    void deletePublicKey(long masterKeyId) throws IOException {
+        File publicKeyFile = getPublicKeyFile(masterKeyId);
+        if (publicKeyFile.exists()) {
+            boolean deleteSuccess = publicKeyFile.delete();
+            if (!deleteSuccess) {
+                throw new IOException("File exists, but could not be deleted!");
+            }
+        }
+    }
 }

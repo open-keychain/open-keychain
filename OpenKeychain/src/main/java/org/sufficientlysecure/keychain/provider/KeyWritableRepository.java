@@ -552,7 +552,7 @@ public class KeyWritableRepository extends KeyRepository {
         lastUpdatedCursor.close();
 
         try {
-            // delete old version of this keyRing, which also deletes all keys and userIds on cascade
+            // delete old version of this keyRing (from database only!), which also deletes all keys and userIds on cascade
             int deleted = mContentResolver.delete(
                     KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
             if (deleted > 0) {
@@ -609,6 +609,17 @@ public class KeyWritableRepository extends KeyRepository {
         // insert new version of this keyRing
         Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
         return mContentResolver.insert(uri, values);
+    }
+
+    public boolean deleteKeyRing(long masterKeyId) {
+        try {
+            mLocalPublicKeyStorage.deletePublicKey(masterKeyId);
+        } catch (IOException e) {
+            android.util.Log.e(Constants.TAG, "Could not delete file!", e);
+            return false;
+        }
+        int deletedRows = mContentResolver.delete(KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
+        return deletedRows > 0;
     }
 
     private static class UserPacketItem implements Comparable<UserPacketItem> {
