@@ -97,7 +97,7 @@ public class TestHelpers {
         IteratorWithIOThrow<UncachedKeyRing> stream = UncachedKeyRing.fromStream(
                 getInstrumentation().getContext().getAssets().open(name));
 
-        DatabaseReadWriteInteractor helper = new DatabaseReadWriteInteractor(context);
+        DatabaseReadWriteInteractor helper = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(context);
         while(stream.hasNext()) {
             UncachedKeyRing ring = stream.next();
             if (ring.isSecret()) {

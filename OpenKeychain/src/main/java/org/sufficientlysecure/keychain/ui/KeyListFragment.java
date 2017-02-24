@@ -486,7 +486,8 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
             return;
         }
 
-        DatabaseInteractor databaseInteractor = new DatabaseInteractor(activity.getContentResolver());
+        DatabaseInteractor databaseInteractor =
+                DatabaseInteractor.createDatabaseInteractor(getContext());
         Cursor cursor = databaseInteractor.getContentResolver().query(
                 KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                         KeyRings.FINGERPRINT

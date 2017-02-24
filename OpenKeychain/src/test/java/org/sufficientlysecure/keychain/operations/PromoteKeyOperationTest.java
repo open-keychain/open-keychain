@@ -90,7 +90,8 @@ public class PromoteKeyOperationTest {
 
     @Before
     public void setUp() throws Exception {
-        DatabaseReadWriteInteractor databaseInteractor = new DatabaseReadWriteInteractor(RuntimeEnvironment.application);
+        DatabaseReadWriteInteractor databaseInteractor =
+                DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
@@ -104,14 +105,14 @@ public class PromoteKeyOperationTest {
     @Test
     public void testPromote() throws Exception {
         PromoteKeyOperation op = new PromoteKeyOperation(RuntimeEnvironment.application,
-                new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
+                DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
 
         PromoteKeyResult result = op.execute(new PromoteKeyringParcel(mStaticRing.getMasterKeyId(), null, null), null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 
         {
-            CachedPublicKeyRing ring = new DatabaseReadWriteInteractor(RuntimeEnvironment.application)
+            CachedPublicKeyRing ring = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
                     .getCachedPublicKeyRing(mStaticRing.getMasterKeyId());
             Assert.assertTrue("key must have a secret now", ring.hasAnySecret());
 
@@ -128,7 +129,7 @@ public class PromoteKeyOperationTest {
     @Test
     public void testPromoteDivert() throws Exception {
         PromoteKeyOperation op = new PromoteKeyOperation(RuntimeEnvironment.application,
-                new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
+                DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
 
         byte[] aid = Hex.decode("D2760001240102000000012345670000");
 
@@ -137,7 +138,7 @@ public class PromoteKeyOperationTest {
         Assert.assertTrue("promotion must succeed", result.success());
 
         {
-            CanonicalizedSecretKeyRing ring = new DatabaseReadWriteInteractor(RuntimeEnvironment.application)
+            CanonicalizedSecretKeyRing ring = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
                     .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId());
 
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
@@ -153,7 +154,7 @@ public class PromoteKeyOperationTest {
     @Test
     public void testPromoteDivertSpecific() throws Exception {
         PromoteKeyOperation op = new PromoteKeyOperation(RuntimeEnvironment.application,
-                new DatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
+                DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
 
         byte[] aid = Hex.decode("D2760001240102000000012345670000");
 
@@ -167,7 +168,7 @@ public class PromoteKeyOperationTest {
         Assert.assertTrue("promotion must succeed", result.success());
 
         {
-            CanonicalizedSecretKeyRing ring = new DatabaseReadWriteInteractor(RuntimeEnvironment.application)
+            CanonicalizedSecretKeyRing ring = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
                     .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId());
 
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {

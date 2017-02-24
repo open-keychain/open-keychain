@@ -19,6 +19,15 @@
 package org.sufficientlysecure.keychain.provider;
 
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
@@ -68,15 +77,6 @@ import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.Utf8Util;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 /**
  * This class contains high level methods for database access. Despite its
  * name, it is not only a helper but actually the main interface for all
@@ -88,18 +88,26 @@ import java.util.concurrent.TimeUnit;
  * method is called to start a new one specifically.
  */
 public class DatabaseReadWriteInteractor extends DatabaseInteractor {
+    private static final int MAX_CACHED_KEY_SIZE = 1024 * 50;
+
     private final Context mContext;
 
-    public DatabaseReadWriteInteractor(Context context) {
-        this(context, new OperationLog(), 0);
+    public static DatabaseReadWriteInteractor createDatabaseReadWriteInteractor(Context context) {
+        LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
+
+        return new DatabaseReadWriteInteractor(context, localPublicKeyStorage);
     }
 
-    public DatabaseReadWriteInteractor(Context context, OperationLog log) {
-        this(context, log, 0);
+    private DatabaseReadWriteInteractor(Context context, LocalPublicKeyStorage localPublicKeyStorage) {
+        this(context, localPublicKeyStorage, new OperationLog(), 0);
     }
 
-    public DatabaseReadWriteInteractor(Context context, OperationLog log, int indent) {
-        super(context.getContentResolver(), log, indent);
+    private DatabaseReadWriteInteractor(Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log) {
+        this(context, localPublicKeyStorage, log, 0);
+    }
+
+    private DatabaseReadWriteInteractor(Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log, int indent) {
+        super(context.getContentResolver(), localPublicKeyStorage, log, indent);
 
         mContext = context;
     }
@@ -122,7 +130,7 @@ public class DatabaseReadWriteInteractor extends DatabaseInteractor {
                 try {
                     long masterKeyId = cursor.getLong(0);
                     int verified = cursor.getInt(2);
-                    byte[] blob = getPublicKeyRingData(masterKeyId);
+                    byte[] blob = loadPublicKeyRingData(masterKeyId);
                     if (blob != null) {
                         result.put(masterKeyId, new CanonicalizedPublicKeyRing(blob, verified).getPublicKey());
                     }
@@ -191,18 +199,11 @@ public class DatabaseReadWriteInteractor extends DatabaseInteractor {
             operations = new ArrayList<>();
 
             log(LogType.MSG_IP_INSERT_KEYRING);
-            { // insert keyring
-                ContentValues values = new ContentValues();
-                values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
-                try {
-                    values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
-                } catch (IOException e) {
-                    log(LogType.MSG_IP_ENCODE_FAIL);
-                    return SaveKeyringResult.RESULT_ERROR;
-                }
-
-                Uri uri = KeyRingData.buildPublicKeyRingUri(masterKeyId);
-                operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
+            try {
+                writePublicKeyRing(keyRing, masterKeyId, operations);
+            } catch (IOException e) {
+                log(LogType.MSG_IP_ENCODE_FAIL);
+                return SaveKeyringResult.RESULT_ERROR;
             }
 
             log(LogType.MSG_IP_INSERT_SUBKEYS);
@@ -582,6 +583,35 @@ public class DatabaseReadWriteInteractor extends DatabaseInteractor {
 
     }
 
+    private void writePublicKeyRing(CanonicalizedPublicKeyRing keyRing, long masterKeyId,
+            ArrayList<ContentProviderOperation> operations) throws IOException {
+        byte[] encodedKey = keyRing.getEncoded();
+        mLocalPublicKeyStorage.writePublicKey(masterKeyId, encodedKey);
+
+        ContentValues values = new ContentValues();
+        values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
+        if (encodedKey.length < MAX_CACHED_KEY_SIZE) {
+            values.put(KeyRingData.KEY_RING_DATA, encodedKey);
+        } else {
+            values.put(KeyRingData.KEY_RING_DATA, (byte[]) null);
+        }
+
+        Uri uri = KeyRingData.buildPublicKeyRingUri(masterKeyId);
+        operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
+    }
+
+    private Uri writeSecretKeyRing(CanonicalizedSecretKeyRing keyRing, long masterKeyId) throws IOException {
+        byte[] encodedKey = keyRing.getEncoded();
+
+        ContentValues values = new ContentValues();
+        values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
+        values.put(KeyRingData.KEY_RING_DATA, encodedKey);
+
+        // insert new version of this keyRing
+        Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
+        return mContentResolver.insert(uri, values);
+    }
+
     private static class UserPacketItem implements Comparable<UserPacketItem> {
         Integer type;
         String userId;
@@ -637,12 +667,8 @@ public class DatabaseReadWriteInteractor extends DatabaseInteractor {
 
             // save secret keyring
             try {
-                ContentValues values = new ContentValues();
-                values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
-                values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
-                // insert new version of this keyRing
-                Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
-                if (mContentResolver.insert(uri, values) == null) {
+                Uri insertedUri = writeSecretKeyRing(keyRing, masterKeyId);
+                if (insertedUri == null) {
                     log(LogType.MSG_IS_DB_EXCEPTION);
                     return SaveKeyringResult.RESULT_ERROR;
                 }

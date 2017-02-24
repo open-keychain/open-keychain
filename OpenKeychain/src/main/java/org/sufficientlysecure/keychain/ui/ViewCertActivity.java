@@ -184,7 +184,8 @@ public class ViewCertActivity extends BaseActivity
                 Intent viewIntent = new Intent(ViewCertActivity.this, ViewKeyActivity.class);
 
                 try {
-                    DatabaseInteractor databaseInteractor = new DatabaseInteractor(ViewCertActivity.this.getContentResolver());
+                    DatabaseInteractor databaseInteractor =
+                            DatabaseInteractor.createDatabaseInteractor(ViewCertActivity.this);
                     long signerMasterKeyId = databaseInteractor.getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mCertifierKeyId)).getMasterKeyId();
                     viewIntent.setData(KeyRings.buildGenericKeyRingUri(signerMasterKeyId));

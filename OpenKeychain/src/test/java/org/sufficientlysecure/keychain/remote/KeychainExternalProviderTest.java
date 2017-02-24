@@ -45,7 +45,8 @@ public class KeychainExternalProviderTest {
     static final long KEY_ID_PUBLIC = 0x9A282CE2AB44A382L;
 
 
-    DatabaseReadWriteInteractor databaseInteractor = new DatabaseReadWriteInteractor(RuntimeEnvironment.application);
+    DatabaseReadWriteInteractor databaseInteractor =
+            DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
     ContentResolver contentResolver = RuntimeEnvironment.application.getContentResolver();
     ApiPermissionHelper apiPermissionHelper;
     ApiDataAccessObject apiDao;

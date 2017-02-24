@@ -185,7 +185,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDatabaseInteractor = new DatabaseInteractor(getContentResolver());
+        mDatabaseInteractor = DatabaseInteractor.createDatabaseInteractor(this);
         mImportOpHelper = new CryptoOperationHelper<>(1, this, this, null);
 
         setTitle(null);
@@ -741,7 +741,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             return;
         }
         try {
-            long keyId = new DatabaseInteractor(getContentResolver())
+            long keyId = DatabaseInteractor.createDatabaseInteractor(this)
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
             long[] encryptionKeyIds = new long[]{keyId};
@@ -765,7 +765,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private void startSafeSlinger(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = new DatabaseInteractor(getContentResolver())
+            keyId = DatabaseInteractor.createDatabaseInteractor(this)
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {

@@ -40,7 +40,8 @@ class RequestKeyPermissionPresenter {
         PackageManager packageManager = context.getPackageManager();
         ApiDataAccessObject apiDataAccessObject = new ApiDataAccessObject(context);
         ApiPermissionHelper apiPermissionHelper = new ApiPermissionHelper(context, apiDataAccessObject);
-        DatabaseInteractor databaseInteractor = new DatabaseInteractor(context.getContentResolver());
+        DatabaseInteractor databaseInteractor =
+                DatabaseInteractor.createDatabaseInteractor(context);
 
         return new RequestKeyPermissionPresenter(context, apiDataAccessObject, apiPermissionHelper, packageManager,
                 databaseInteractor);

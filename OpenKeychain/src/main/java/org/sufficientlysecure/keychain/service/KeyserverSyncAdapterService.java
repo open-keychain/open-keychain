@@ -321,7 +321,8 @@ public class KeyserverSyncAdapterService extends Service {
     private ImportKeyResult directUpdate(Context context, ArrayList<ParcelableKeyRing> keyList,
                                          CryptoInputParcel cryptoInputParcel) {
         Log.d(Constants.TAG, "Starting normal update");
-        ImportOperation importOp = new ImportOperation(context, new DatabaseReadWriteInteractor(context), null);
+        ImportOperation importOp = new ImportOperation(context,
+                DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(context), null);
         return importOp.execute(
                 new ImportKeyringParcel(keyList,
                         Preferences.getPreferences(context).getPreferredKeyserver()),
@@ -381,7 +382,7 @@ public class KeyserverSyncAdapterService extends Service {
                         new OperationResult.OperationLog());
             }
             ImportKeyResult result =
-                    new ImportOperation(context, new DatabaseReadWriteInteractor(context), null, mCancelled)
+                    new ImportOperation(context, DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(context), null, mCancelled)
                             .execute(
                                     new ImportKeyringParcel(
                                             keyWrapper,

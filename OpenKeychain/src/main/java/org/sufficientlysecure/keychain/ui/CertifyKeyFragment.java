@@ -69,7 +69,8 @@ public class CertifyKeyFragment
                     .getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
             if (certifyKeyId != Constants.key.none) {
                 try {
-                    CachedPublicKeyRing key = (new DatabaseInteractor(getActivity().getContentResolver()))
+                    CachedPublicKeyRing key = (DatabaseInteractor
+                            .createDatabaseInteractor(getContext()))
                             .getCachedPublicKeyRing(certifyKeyId);
                     if (key.canCertify()) {
                         mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);

@@ -214,7 +214,7 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     private void certify(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = new DatabaseInteractor(getActivity().getContentResolver())
+            keyId = DatabaseInteractor.createDatabaseInteractor(getContext())
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {

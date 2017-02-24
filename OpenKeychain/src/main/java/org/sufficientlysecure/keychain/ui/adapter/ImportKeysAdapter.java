@@ -75,7 +75,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         mListener = listener;
         mNonInteractive = nonInteractive;
 
-        mDatabaseInteractor = new DatabaseInteractor(activity.getContentResolver());
+        mDatabaseInteractor = DatabaseInteractor.createDatabaseInteractor(activity);
     }
 
     public void setData(List<ImportKeysListEntry> data) {

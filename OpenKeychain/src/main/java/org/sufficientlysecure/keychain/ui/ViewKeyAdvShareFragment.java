@@ -95,7 +95,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View view = inflater.inflate(R.layout.view_key_adv_share_fragment, getContainer());
 
         ContentResolver contentResolver = ViewKeyAdvShareFragment.this.getActivity().getContentResolver();
-        DatabaseInteractor databaseInteractor = new DatabaseInteractor(contentResolver);
+        DatabaseInteractor databaseInteractor = DatabaseInteractor.createDatabaseInteractor(getContext());
         mNfcHelper = new NfcHelper(getActivity(), databaseInteractor);
 
         mFingerprintView = (TextView) view.findViewById(R.id.view_key_fingerprint);
@@ -202,7 +202,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private void startSafeSlinger(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = new DatabaseInteractor(getActivity().getContentResolver())
+            keyId = DatabaseInteractor.createDatabaseInteractor(getContext())
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
@@ -218,7 +218,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         if (activity == null || mFingerprint == null) {
             return;
         }
-        DatabaseInteractor databaseInteractor = new DatabaseInteractor(activity.getContentResolver());
+        DatabaseInteractor databaseInteractor =
+                DatabaseInteractor.createDatabaseInteractor(getContext());
 
         try {
             long masterKeyId = databaseInteractor.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
@@ -459,7 +460,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private void uploadToKeyserver() {
         long keyId;
         try {
-            keyId = new DatabaseInteractor(getActivity().getContentResolver())
+            keyId = DatabaseInteractor.createDatabaseInteractor(getContext())
                     .getCachedPublicKeyRing(mDataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {

@@ -130,7 +130,7 @@ public class NfcHelper {
                                 try {
                                     long masterKeyId = mDatabaseInteractor.getCachedPublicKeyRing(dataUri)
                                             .extractOrGetMasterKeyId();
-                                    mNfcKeyringBytes = mDatabaseInteractor.getPublicKeyRingData(masterKeyId);
+                                    mNfcKeyringBytes = mDatabaseInteractor.loadPublicKeyRingData(masterKeyId);
                                 } catch (NotFoundException | PgpKeyNotFoundException e) {
                                     Log.e(Constants.TAG, "key not found!", e);
                                 }

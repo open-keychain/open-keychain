@@ -115,7 +115,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mDatabaseInteractor = new DatabaseInteractor(getActivity().getContentResolver());
+        mDatabaseInteractor = DatabaseInteractor.createDatabaseInteractor(getContext());
 
         // preselect keys given, from state or arguments
         if (savedInstanceState == null) {

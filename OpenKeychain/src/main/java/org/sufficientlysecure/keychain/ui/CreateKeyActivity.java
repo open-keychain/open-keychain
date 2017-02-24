@@ -181,7 +181,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
         if (containsKeys(mScannedFingerprints)) {
             try {
                 long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mScannedFingerprints);
-                CachedPublicKeyRing ring = new DatabaseInteractor(getContentResolver()).getCachedPublicKeyRing(masterKeyId);
+                CachedPublicKeyRing ring = DatabaseInteractor.createDatabaseInteractor(this).getCachedPublicKeyRing(masterKeyId);
                 ring.getMasterKeyId();
 
                 Intent intent = new Intent(this, ViewKeyActivity.class);

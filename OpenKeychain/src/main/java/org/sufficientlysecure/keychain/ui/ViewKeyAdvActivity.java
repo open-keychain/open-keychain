@@ -87,7 +87,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             }
         });
 
-        mDatabaseInteractor = new DatabaseInteractor(getContentResolver());
+        mDatabaseInteractor = DatabaseInteractor.createDatabaseInteractor(this);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.sliding_tab_layout);

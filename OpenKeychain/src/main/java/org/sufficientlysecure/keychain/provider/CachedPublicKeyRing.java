@@ -25,7 +25,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
@@ -240,7 +239,7 @@ public class CachedPublicKeyRing extends KeyRing {
 
     public byte[] getEncoded() throws PgpKeyNotFoundException {
         try {
-            return mDatabaseInteractor.getPublicKeyRingData(getMasterKeyId());
+            return mDatabaseInteractor.loadPublicKeyRingData(getMasterKeyId());
         } catch(DatabaseReadWriteInteractor.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }

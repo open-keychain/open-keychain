@@ -97,7 +97,7 @@ public class OpenPgpService extends Service {
     public void onCreate() {
         super.onCreate();
         mApiPermissionHelper = new ApiPermissionHelper(this, new ApiDataAccessObject(this));
-        mDatabaseInteractor = new DatabaseInteractor(getContentResolver());
+        mDatabaseInteractor = DatabaseInteractor.createDatabaseInteractor(this);
         mApiDao = new ApiDataAccessObject(this);
 
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());

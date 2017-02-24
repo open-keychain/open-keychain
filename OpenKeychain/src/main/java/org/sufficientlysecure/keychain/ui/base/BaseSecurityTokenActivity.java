@@ -105,7 +105,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mSecurityTokenFingerprints);
 
         try {
-            CachedPublicKeyRing ring = new DatabaseInteractor(getContentResolver()).getCachedPublicKeyRing(
+            CachedPublicKeyRing ring = DatabaseInteractor.createDatabaseInteractor(this).getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
             long masterKeyId = ring.getMasterKeyId();
 

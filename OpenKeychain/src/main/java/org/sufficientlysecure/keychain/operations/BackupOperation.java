@@ -270,7 +270,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
         try {
             arOutStream = new ArmoredOutputStream(outStream);
-            byte[] data = mDatabaseInteractor.getPublicKeyRingData(masterKeyId);
+            byte[] data = mDatabaseInteractor.loadPublicKeyRingData(masterKeyId);
             UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(data);
             CanonicalizedPublicKeyRing ring = (CanonicalizedPublicKeyRing) uncachedKeyRing.canonicalize(log, 2, true);
             ring.encode(arOutStream);
@@ -290,7 +290,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
         try {
             arOutStream = new ArmoredOutputStream(outStream);
-            byte[] data = mDatabaseInteractor.getSecretKeyRingData(masterKeyId);
+            byte[] data = mDatabaseInteractor.loadSecretKeyRingData(masterKeyId);
             UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(data);
             CanonicalizedSecretKeyRing ring = (CanonicalizedSecretKeyRing) uncachedKeyRing.canonicalize(log, 2, true);
             ring.encode(arOutStream);

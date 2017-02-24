@@ -29,8 +29,6 @@ import android.widget.ImageView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -76,7 +74,7 @@ public class QrCodeViewActivity extends BaseActivity {
             }
         });
 
-        DatabaseInteractor databaseInteractor = new DatabaseInteractor(getContentResolver());
+        DatabaseInteractor databaseInteractor = DatabaseInteractor.createDatabaseInteractor(this);
         try {
             byte[] blob = databaseInteractor.getCachedPublicKeyRing(dataUri).getFingerprint();
             if (blob == null) {

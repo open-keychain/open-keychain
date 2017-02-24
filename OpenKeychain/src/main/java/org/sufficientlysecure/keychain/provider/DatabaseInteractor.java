@@ -7,9 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -33,15 +36,25 @@ public class DatabaseInteractor {
     public static final int FIELD_TYPE_BLOB = 5;
 
     final ContentResolver mContentResolver;
+    final LocalPublicKeyStorage mLocalPublicKeyStorage;
     OperationLog mLog;
     int mIndent;
 
-    public DatabaseInteractor(ContentResolver contentResolver) {
-        this(contentResolver, new OperationLog(), 0);
+    public static DatabaseInteractor createDatabaseInteractor(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
+
+        return new DatabaseInteractor(contentResolver, localPublicKeyStorage);
     }
 
-    public DatabaseInteractor(ContentResolver contentResolver, OperationLog log, int indent) {
+    private DatabaseInteractor(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage) {
+        this(contentResolver, localPublicKeyStorage, new OperationLog(), 0);
+    }
+
+    DatabaseInteractor(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage,
+            OperationLog log, int indent) {
         mContentResolver = contentResolver;
+        mLocalPublicKeyStorage = localPublicKeyStorage;
         mIndent = indent;
         mLog = log;
     }
@@ -72,6 +85,10 @@ public class DatabaseInteractor {
             throw new NotFoundException();
         }
         return result;
+    }
+
+    Object getGenericDataOrNull(Uri uri, String column, int type) throws NotFoundException {
+        return getGenericData(uri, new String[]{column}, new int[]{type}, null).get(column);
     }
 
     Object getGenericData(Uri uri, String column, int type, String selection)
@@ -156,7 +173,7 @@ public class DatabaseInteractor {
                 long masterKeyId = cursor.getLong(0);
                 int verified = cursor.getInt(1);
 
-                byte[] publicKeyData = getPublicKeyRingData(masterKeyId);
+                byte[] publicKeyData = loadPublicKeyRingData(masterKeyId);
                 return new CanonicalizedPublicKeyRing(publicKeyData, verified);
             } else {
                 throw new NotFoundException("Key not found!");
@@ -184,7 +201,7 @@ public class DatabaseInteractor {
                     throw new NotFoundException("No secret key available or unknown public key!");
                 }
 
-                byte[] secretKeyData = getSecretKeyRingData(masterKeyId);
+                byte[] secretKeyData = loadSecretKeyRingData(masterKeyId);
                 return new CanonicalizedSecretKeyRing(secretKeyData, verified);
             } else {
                 throw new NotFoundException("Key not found!");
@@ -228,7 +245,7 @@ public class DatabaseInteractor {
 
     public String getPublicKeyRingAsArmoredString(long masterKeyId)
             throws NotFoundException, IOException, PgpGeneralException {
-        byte[] data = getPublicKeyRingData(masterKeyId);
+        byte[] data = loadPublicKeyRingData(masterKeyId);
         return getKeyRingAsArmoredString(data);
     }
 
@@ -236,14 +253,35 @@ public class DatabaseInteractor {
         return mContentResolver;
     }
 
-    public byte[] getPublicKeyRingData(long masterKeyId) throws NotFoundException {
-        return (byte[]) getGenericData(KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId),
+    public final byte[] loadPublicKeyRingData(long masterKeyId) throws NotFoundException {
+        byte[] data = (byte[]) getGenericDataOrNull(KeyRingData.buildPublicKeyRingUri(masterKeyId),
                 KeyRingData.KEY_RING_DATA, FIELD_TYPE_BLOB);
+
+        if (data == null) {
+            try {
+                data = mLocalPublicKeyStorage.readPublicKey(masterKeyId);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Error reading public key from storage!", e);
+                throw new NotFoundException();
+            }
+        }
+
+        if (data == null) {
+            throw new NotFoundException();
+        }
+
+        return data;
     }
 
-    public byte[] getSecretKeyRingData(long masterKeyId) throws NotFoundException {
-        return (byte[]) getGenericData(KeychainContract.KeyRingData.buildSecretKeyRingUri(masterKeyId),
+    public final byte[] loadSecretKeyRingData(long masterKeyId) throws NotFoundException {
+        byte[] data = (byte[]) getGenericDataOrNull(KeychainContract.KeyRingData.buildSecretKeyRingUri(masterKeyId),
                 KeyRingData.KEY_RING_DATA, FIELD_TYPE_BLOB);
+
+        if (data == null) {
+            throw new NotFoundException();
+        }
+
+        return data;
     }
 
     public static class NotFoundException extends Exception {

@@ -193,7 +193,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
-                DatabaseInteractor databaseInteractor = new DatabaseInteractor(getContentResolver());
+                DatabaseInteractor databaseInteractor =
+                        DatabaseInteractor.createDatabaseInteractor(this);
                 CanonicalizedPublicKeyRing publicKeyRing;
                 try {
                     publicKeyRing = databaseInteractor.getCanonicalizedPublicKeyRing(
@@ -232,7 +233,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 mSecurityTokenHelper.setPin(new Passphrase("123456"));
                 mSecurityTokenHelper.setAdminPin(new Passphrase("12345678"));
 
-                DatabaseInteractor databaseInteractor = new DatabaseInteractor(getContentResolver());
+                DatabaseInteractor databaseInteractor =
+                        DatabaseInteractor.createDatabaseInteractor(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
                     secretKeyRing = databaseInteractor.getCanonicalizedSecretKeyRing(

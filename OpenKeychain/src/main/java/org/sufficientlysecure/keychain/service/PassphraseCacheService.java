@@ -245,7 +245,7 @@ public class PassphraseCacheService extends Service {
                 + masterKeyId + ", subKeyId " + subKeyId);
 
         // get the type of key (from the database)
-        CachedPublicKeyRing keyRing = new DatabaseInteractor(getContentResolver()).getCachedPublicKeyRing(masterKeyId);
+        CachedPublicKeyRing keyRing = DatabaseInteractor.createDatabaseInteractor(this).getCachedPublicKeyRing(masterKeyId);
         SecretKeyType keyType = keyRing.getSecretKeyType(subKeyId);
 
         switch (keyType) {
