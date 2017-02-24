@@ -33,7 +33,7 @@ import android.support.v4.app.TaskStackBuilder;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -181,7 +181,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
         if (containsKeys(mScannedFingerprints)) {
             try {
                 long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mScannedFingerprints);
-                CachedPublicKeyRing ring = DatabaseInteractor.createDatabaseInteractor(this).getCachedPublicKeyRing(masterKeyId);
+                CachedPublicKeyRing ring = KeyRepository.createDatabaseInteractor(this).getCachedPublicKeyRing(masterKeyId);
                 ring.getMasterKeyId();
 
                 Intent intent = new Intent(this, ViewKeyActivity.class);

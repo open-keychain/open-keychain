@@ -29,7 +29,7 @@ import android.widget.ImageView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -74,9 +74,9 @@ public class QrCodeViewActivity extends BaseActivity {
             }
         });
 
-        DatabaseInteractor databaseInteractor = DatabaseInteractor.createDatabaseInteractor(this);
+        KeyRepository keyRepository = KeyRepository.createDatabaseInteractor(this);
         try {
-            byte[] blob = databaseInteractor.getCachedPublicKeyRing(dataUri).getFingerprint();
+            byte[] blob = keyRepository.getCachedPublicKeyRing(dataUri).getFingerprint();
             if (blob == null) {
                 Log.e(Constants.TAG, "key not found!");
                 Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();

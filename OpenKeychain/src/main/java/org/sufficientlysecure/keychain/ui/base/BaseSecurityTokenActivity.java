@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.NfcTransport;
@@ -105,7 +105,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mSecurityTokenFingerprints);
 
         try {
-            CachedPublicKeyRing ring = DatabaseInteractor.createDatabaseInteractor(this).getCachedPublicKeyRing(
+            CachedPublicKeyRing ring = KeyRepository.createDatabaseInteractor(this).getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
             long masterKeyId = ring.getMasterKeyId();
 

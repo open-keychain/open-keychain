@@ -26,7 +26,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 
 
-public class DatabaseInteractor {
+public class KeyRepository {
     // If we ever switch to api level 11, we can ditch this whole mess!
     public static final int FIELD_TYPE_NULL = 1;
     // this is called integer to stay coherent with the constants in Cursor (api level 11)
@@ -40,18 +40,18 @@ public class DatabaseInteractor {
     OperationLog mLog;
     int mIndent;
 
-    public static DatabaseInteractor createDatabaseInteractor(Context context) {
+    public static KeyRepository createDatabaseInteractor(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
 
-        return new DatabaseInteractor(contentResolver, localPublicKeyStorage);
+        return new KeyRepository(contentResolver, localPublicKeyStorage);
     }
 
-    private DatabaseInteractor(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage) {
+    private KeyRepository(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage) {
         this(contentResolver, localPublicKeyStorage, new OperationLog(), 0);
     }
 
-    DatabaseInteractor(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage,
+    KeyRepository(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage,
             OperationLog log, int indent) {
         mContentResolver = contentResolver;
         mLocalPublicKeyStorage = localPublicKeyStorage;

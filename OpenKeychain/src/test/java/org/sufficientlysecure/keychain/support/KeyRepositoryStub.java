@@ -21,11 +21,11 @@ import android.content.Context;
 import android.net.Uri;
 
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 
 
-class DatabaseInteractorStub extends DatabaseReadWriteInteractor {
-    public DatabaseInteractorStub(Context context) {
+class KeyRepositoryStub extends KeyWritableRepository {
+    public KeyRepositoryStub(Context context) {
         super(context);
     }
 

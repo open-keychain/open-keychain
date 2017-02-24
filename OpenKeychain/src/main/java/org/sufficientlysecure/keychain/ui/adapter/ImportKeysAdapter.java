@@ -46,7 +46,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
@@ -66,7 +66,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     private List<ImportKeysListEntry> mData;
     private KeyState[] mKeyStates;
 
-    private DatabaseInteractor mDatabaseInteractor;
+    private KeyRepository mKeyRepository;
 
     public ImportKeysAdapter(FragmentActivity activity, ImportKeysListener listener,
                              boolean nonInteractive) {
@@ -75,7 +75,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         mListener = listener;
         mNonInteractive = nonInteractive;
 
-        mDatabaseInteractor = DatabaseInteractor.createDatabaseInteractor(activity);
+        mKeyRepository = KeyRepository.createDatabaseInteractor(activity);
     }
 
     public void setData(List<ImportKeysListEntry> data) {
@@ -90,13 +90,13 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             try {
                 KeyRing keyRing;
                 if (entry.isSecretKey()) {
-                    keyRing = mDatabaseInteractor.getCanonicalizedSecretKeyRing(keyId);
+                    keyRing = mKeyRepository.getCanonicalizedSecretKeyRing(keyId);
                 } else {
-                    keyRing = mDatabaseInteractor.getCachedPublicKeyRing(keyId);
+                    keyRing = mKeyRepository.getCachedPublicKeyRing(keyId);
                 }
                 keyState.mAlreadyPresent = true;
                 keyState.mVerified = keyRing.getVerified() > 0;
-            } catch (DatabaseInteractor.NotFoundException | PgpKeyNotFoundException ignored) {
+            } catch (KeyRepository.NotFoundException | PgpKeyNotFoundException ignored) {
             }
 
             mKeyStates[i] = keyState;

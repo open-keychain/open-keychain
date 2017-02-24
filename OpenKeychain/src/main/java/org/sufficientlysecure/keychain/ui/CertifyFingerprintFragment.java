@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.experimental.SentenceConfirm;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -214,7 +214,7 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     private void certify(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = DatabaseInteractor.createDatabaseInteractor(getContext())
+            keyId = KeyRepository.createDatabaseInteractor(getContext())
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {

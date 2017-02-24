@@ -33,8 +33,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -48,7 +48,7 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
  *
  */
 public class PromoteKeyOperation extends BaseReadWriteOperation<PromoteKeyringParcel> {
-    public PromoteKeyOperation(Context context, DatabaseReadWriteInteractor databaseInteractor,
+    public PromoteKeyOperation(Context context, KeyWritableRepository databaseInteractor,
                                Progressable progressable, AtomicBoolean cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
     }
@@ -69,7 +69,7 @@ public class PromoteKeyOperation extends BaseReadWriteOperation<PromoteKeyringPa
                 log.add(LogType.MSG_PR_FETCHING, 1,
                         KeyFormattingUtils.convertKeyIdToHex(promoteKeyringParcel.mKeyRingId));
                 CanonicalizedPublicKeyRing pubRing =
-                        mDatabaseInteractor.getCanonicalizedPublicKeyRing(promoteKeyringParcel.mKeyRingId);
+                        mKeyRepository.getCanonicalizedPublicKeyRing(promoteKeyringParcel.mKeyRingId);
 
                 if (promoteKeyringParcel.mSubKeyIds == null) {
                     log.add(LogType.MSG_PR_ALL, 1);
@@ -113,7 +113,7 @@ public class PromoteKeyOperation extends BaseReadWriteOperation<PromoteKeyringPa
         setPreventCancel();
 
         // Save the new keyring.
-        SaveKeyringResult saveResult = mDatabaseReadWriteInteractor
+        SaveKeyringResult saveResult = mKeyWritableRepository
                 .saveSecretKeyRing(promotedRing, new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 

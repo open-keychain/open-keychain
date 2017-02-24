@@ -39,7 +39,7 @@ import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -69,7 +69,7 @@ public class CertifyKeyFragment
                     .getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
             if (certifyKeyId != Constants.key.none) {
                 try {
-                    CachedPublicKeyRing key = (DatabaseInteractor
+                    CachedPublicKeyRing key = (KeyRepository
                             .createDatabaseInteractor(getContext()))
                             .getCachedPublicKeyRing(certifyKeyId);
                     if (key.canCertify()) {

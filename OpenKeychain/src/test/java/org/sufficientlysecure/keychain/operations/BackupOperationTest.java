@@ -44,7 +44,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
@@ -135,8 +135,8 @@ public class BackupOperationTest {
 
     @Before
     public void setUp() {
-        DatabaseReadWriteInteractor databaseInteractor =
-                DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
+        KeyWritableRepository databaseInteractor =
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
@@ -151,7 +151,7 @@ public class BackupOperationTest {
     @Test
     public void testExportAllLocalStripped() throws Exception {
         BackupOperation op = new BackupOperation(RuntimeEnvironment.application,
-                DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
         // make sure there is a local cert (so the later checks that there are none are meaningful)
         assertTrue("second keyring has local certification", checkForLocal(mStaticRing2));
@@ -250,7 +250,7 @@ public class BackupOperationTest {
         when(spyApplication.getContentResolver()).thenReturn(mockResolver);
 
         BackupOperation op = new BackupOperation(spyApplication,
-                DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
         BackupKeyringParcel parcel = new BackupKeyringParcel(
                 new long[] { mStaticRing1.getMasterKeyId() }, false, false, true, fakeOutputUri);
@@ -307,7 +307,7 @@ public class BackupOperationTest {
 
         { // export encrypted
             BackupOperation op = new BackupOperation(spyApplication,
-                    DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
+                    KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             BackupKeyringParcel parcel = new BackupKeyringParcel(
                     new long[] { mStaticRing1.getMasterKeyId() }, false, true, true, fakeOutputUri);
@@ -325,7 +325,7 @@ public class BackupOperationTest {
 
         {
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
-                    DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
+                    KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(outStream.toByteArray());
             input.setAllowSymmetricDecryption(true);

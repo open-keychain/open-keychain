@@ -23,9 +23,9 @@ import android.content.Context;
 import org.bouncycastle.util.Arrays;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
@@ -51,8 +51,8 @@ public class KeyringTestingHelper {
 
     public boolean addKeyring(Collection<String> blobFiles) throws Exception {
 
-        DatabaseReadWriteInteractor databaseInteractor =
-                DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(context);
+        KeyWritableRepository databaseInteractor =
+                KeyWritableRepository.createDatabaseReadWriteInteractor(context);
 
         byte[] data = TestDataUtil.readAllFully(blobFiles);
         UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
@@ -347,11 +347,11 @@ public class KeyringTestingHelper {
         return getNth(ring.getPublicKeys(), position).getKeyId();
     }
 
-    private void retrieveKeyAndExpectNotFound(DatabaseInteractor databaseInteractor, long masterKeyId) {
+    private void retrieveKeyAndExpectNotFound(KeyRepository keyRepository, long masterKeyId) {
         try {
-            databaseInteractor.getCanonicalizedPublicKeyRing(masterKeyId);
+            keyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
             throw new AssertionError("Was expecting the previous call to fail!");
-        } catch (DatabaseReadWriteInteractor.NotFoundException expectedException) {
+        } catch (KeyWritableRepository.NotFoundException expectedException) {
             // good
         }
     }

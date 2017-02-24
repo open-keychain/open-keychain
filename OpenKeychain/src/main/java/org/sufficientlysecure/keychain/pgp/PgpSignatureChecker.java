@@ -36,9 +36,9 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProv
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.util.Log;
 
 
@@ -56,12 +56,12 @@ class PgpSignatureChecker {
     PGPOnePassSignature onePassSignature;
     PGPSignature signature;
 
-    DatabaseInteractor mDatabaseInteractor;
+    KeyRepository mKeyRepository;
 
-    PgpSignatureChecker(DatabaseInteractor databaseInteractor, String senderAddress) {
-        mDatabaseInteractor = databaseInteractor;
+    PgpSignatureChecker(KeyRepository keyRepository, String senderAddress) {
+        mKeyRepository = keyRepository;
 
-        signatureResultBuilder = new OpenPgpSignatureResultBuilder(databaseInteractor);
+        signatureResultBuilder = new OpenPgpSignatureResultBuilder(keyRepository);
         signatureResultBuilder.setSenderAddress(senderAddress);
     }
 
@@ -151,7 +151,7 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mDatabaseInteractor.getCanonicalizedPublicKeyRing(
+                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
@@ -162,7 +162,7 @@ class PgpSignatureChecker {
                 signingKey = keyCandidate;
                 onePassSignature = sigList.get(i);
                 return;
-            } catch (DatabaseReadWriteInteractor.NotFoundException e) {
+            } catch (KeyWritableRepository.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found, trying next signature...");
             }
         }
@@ -174,7 +174,7 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mDatabaseInteractor.getCanonicalizedPublicKeyRing(
+                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
@@ -185,7 +185,7 @@ class PgpSignatureChecker {
                 signingKey = keyCandidate;
                 signature = sigList.get(i);
                 return;
-            } catch (DatabaseReadWriteInteractor.NotFoundException e) {
+            } catch (KeyWritableRepository.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found, trying next signature...");
             }
         }

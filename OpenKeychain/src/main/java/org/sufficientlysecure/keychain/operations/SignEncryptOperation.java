@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
@@ -55,9 +55,9 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
  */
 public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
 
-    public SignEncryptOperation(Context context, DatabaseInteractor databaseInteractor,
+    public SignEncryptOperation(Context context, KeyRepository keyRepository,
                                 Progressable progressable, AtomicBoolean cancelled) {
-        super(context, databaseInteractor, progressable, cancelled);
+        super(context, keyRepository, progressable, cancelled);
     }
 
 
@@ -81,7 +81,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
         if (data.getSignatureMasterKeyId() != Constants.key.none
                 && data.getSignatureSubKeyId() == null) {
             try {
-                long signKeyId = mDatabaseInteractor.getCachedPublicKeyRing(
+                long signKeyId = mKeyRepository.getCachedPublicKeyRing(
                         data.getSignatureMasterKeyId()).getSecretSignId();
                 data.setSignatureSubKeyId(signKeyId);
             } catch (PgpKeyNotFoundException e) {
@@ -96,7 +96,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
                 return new SignEncryptResult(SignEncryptResult.RESULT_CANCELLED, log, results);
             }
 
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(mContext, mDatabaseInteractor,
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(mContext, mKeyRepository,
                     new ProgressScaler(mProgressable, 100 * count / total, 100 * ++count / total, 100), mCancelled);
             PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(input.getData());
             if (inputBytes != null) {

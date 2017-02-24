@@ -52,8 +52,8 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
@@ -84,14 +84,14 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
     private static final int INDEX_MASTER_KEY_ID = 0;
     private static final int INDEX_HAS_ANY_SECRET = 1;
 
-    public BackupOperation(Context context, DatabaseInteractor databaseInteractor, Progressable
+    public BackupOperation(Context context, KeyRepository keyRepository, Progressable
             progressable) {
-        super(context, databaseInteractor, progressable);
+        super(context, keyRepository, progressable);
     }
 
-    public BackupOperation(Context context, DatabaseInteractor databaseInteractor,
+    public BackupOperation(Context context, KeyRepository keyRepository,
                            Progressable progressable, AtomicBoolean cancelled) {
-        super(context, databaseInteractor, progressable, cancelled);
+        super(context, keyRepository, progressable, cancelled);
     }
 
     @NonNull
@@ -168,7 +168,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
     private PgpSignEncryptResult encryptBackupData(@NonNull BackupKeyringParcel backupInput,
             @NonNull CryptoInputParcel cryptoInput, @Nullable OutputStream outputStream, Uri plainUri, long exportedDataSize)
             throws FileNotFoundException {
-        PgpSignEncryptOperation signEncryptOperation = new PgpSignEncryptOperation(mContext, mDatabaseInteractor, mProgressable, mCancelled);
+        PgpSignEncryptOperation signEncryptOperation = new PgpSignEncryptOperation(mContext, mKeyRepository, mProgressable, mCancelled);
 
         PgpSignEncryptData data = new PgpSignEncryptData();
         data.setSymmetricPassphrase(cryptoInput.getPassphrase());
@@ -270,7 +270,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
         try {
             arOutStream = new ArmoredOutputStream(outStream);
-            byte[] data = mDatabaseInteractor.loadPublicKeyRingData(masterKeyId);
+            byte[] data = mKeyRepository.loadPublicKeyRingData(masterKeyId);
             UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(data);
             CanonicalizedPublicKeyRing ring = (CanonicalizedPublicKeyRing) uncachedKeyRing.canonicalize(log, 2, true);
             ring.encode(arOutStream);
@@ -290,7 +290,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
         try {
             arOutStream = new ArmoredOutputStream(outStream);
-            byte[] data = mDatabaseInteractor.loadSecretKeyRingData(masterKeyId);
+            byte[] data = mKeyRepository.loadSecretKeyRingData(masterKeyId);
             UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(data);
             CanonicalizedSecretKeyRing ring = (CanonicalizedSecretKeyRing) uncachedKeyRing.canonicalize(log, 2, true);
             ring.encode(arOutStream);
@@ -323,7 +323,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                     + " IN (" + placeholders + ")";
         }
 
-        return mDatabaseInteractor.getContentResolver().query(
+        return mKeyRepository.getContentResolver().query(
                 KeyRings.buildUnifiedKeyRingsUri(), PROJECTION, selection, selectionArgs,
                 Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
         );

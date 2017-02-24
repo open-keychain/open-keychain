@@ -41,10 +41,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 @RunWith(KeychainTestRunner.class)
-public class DatabaseInteractorSaveTest {
+public class KeyRepositorySaveTest {
 
-    DatabaseReadWriteInteractor mDatabaseInteractor =
-            DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
+    KeyWritableRepository mDatabaseInteractor =
+            KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -62,17 +62,17 @@ public class DatabaseInteractorSaveTest {
         SaveKeyringResult result;
 
         // insert both keys, second should fail
-        result = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(first);
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(first);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(second);
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(second);
         Assert.assertFalse("second keyring import should fail", result.success());
 
         new KeychainDatabase(RuntimeEnvironment.application).clearDatabase();
 
         // and the other way around
-        result = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(second);
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(second);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(first);
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(first);
         Assert.assertFalse("second keyring import should fail", result.success());
 
     }
@@ -91,14 +91,14 @@ public class DatabaseInteractorSaveTest {
         SaveKeyringResult result;
 
         // insert secret, this should fail because of missing self-cert
-        result = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
                 .saveSecretKeyRing(seckey, new ProgressScaler());
         Assert.assertFalse("secret keyring import before pubring import should fail", result.success());
 
         // insert pubkey, then seckey - both should succeed
-        result = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(pubkey);
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(pubkey);
         Assert.assertTrue("public keyring import should succeed", result.success());
-        result = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
                 .saveSecretKeyRing(seckey, new ProgressScaler());
         Assert.assertTrue("secret keyring import after pubring import should succeed", result.success());
 
@@ -247,7 +247,7 @@ public class DatabaseInteractorSaveTest {
     }
 
     UncachedKeyRing readRingFromResource(String name) throws Exception {
-        return UncachedKeyRing.fromStream(DatabaseInteractorSaveTest.class.getResourceAsStream(name)).next();
+        return UncachedKeyRing.fromStream(KeyRepositorySaveTest.class.getResourceAsStream(name)).next();
     }
 
 }

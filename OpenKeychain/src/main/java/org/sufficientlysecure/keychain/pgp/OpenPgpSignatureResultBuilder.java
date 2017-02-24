@@ -27,8 +27,8 @@ import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.util.Log;
 
 /**
@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class OpenPgpSignatureResultBuilder {
     // injected
-    private final DatabaseInteractor mDatabaseInteractor;
+    private final KeyRepository mKeyRepository;
 
     // OpenPgpSignatureResult
     private String mPrimaryUserId;
@@ -57,8 +57,8 @@ public class OpenPgpSignatureResultBuilder {
     private String mSenderAddress;
     private Date mSignatureTimestamp;
 
-    public OpenPgpSignatureResultBuilder(DatabaseInteractor databaseInteractor) {
-        this.mDatabaseInteractor = databaseInteractor;
+    public OpenPgpSignatureResultBuilder(KeyRepository keyRepository) {
+        this.mKeyRepository = keyRepository;
     }
 
     public void setPrimaryUserId(String userId) {
@@ -127,7 +127,7 @@ public class OpenPgpSignatureResultBuilder {
 
         try {
             ArrayList<String> allUserIds = signingRing.getUnorderedUserIds();
-            ArrayList<String> confirmedUserIds = mDatabaseInteractor.getConfirmedUserIds(signingRing.getMasterKeyId());
+            ArrayList<String> confirmedUserIds = mKeyRepository.getConfirmedUserIds(signingRing.getMasterKeyId());
             setUserIds(allUserIds, confirmedUserIds);
 
             if (mSenderAddress != null) {

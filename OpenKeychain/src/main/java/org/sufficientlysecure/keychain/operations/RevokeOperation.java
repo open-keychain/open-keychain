@@ -31,7 +31,7 @@ import org.sufficientlysecure.keychain.operations.results.RevokeResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -41,7 +41,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel> {
 
-    public RevokeOperation(Context context, DatabaseReadWriteInteractor databaseInteractor, Progressable progressable) {
+    public RevokeOperation(Context context, KeyWritableRepository databaseInteractor, Progressable progressable) {
         super(context, databaseInteractor, progressable);
     }
 
@@ -62,7 +62,7 @@ public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel>
         try {
 
             Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(masterKeyId);
-            CachedPublicKeyRing keyRing = mDatabaseInteractor.getCachedPublicKeyRing(secretUri);
+            CachedPublicKeyRing keyRing = mKeyRepository.getCachedPublicKeyRing(secretUri);
 
             // check if this is a master secret key we can work with
             switch (keyRing.getSecretKeyType(masterKeyId)) {
@@ -81,7 +81,7 @@ public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel>
             saveKeyringParcel.mRevokeSubKeys.add(masterKeyId);
 
             EditKeyResult revokeAndUploadResult = new EditKeyOperation(mContext,
-                    mDatabaseReadWriteInteractor, mProgressable, mCancelled).execute(saveKeyringParcel, cryptoInputParcel);
+                    mKeyWritableRepository, mProgressable, mCancelled).execute(saveKeyringParcel, cryptoInputParcel);
 
             if (revokeAndUploadResult.isPending()) {
                 return revokeAndUploadResult;
@@ -97,7 +97,7 @@ public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel>
                 return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);
             }
 
-        } catch (PgpKeyNotFoundException | DatabaseReadWriteInteractor.NotFoundException e) {
+        } catch (PgpKeyNotFoundException | KeyWritableRepository.NotFoundException e) {
             Log.e(Constants.TAG, "could not find key to revoke", e);
             log.add(OperationResult.LogType.MSG_REVOKE_ERROR_KEY_FAIL, 1);
             return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);

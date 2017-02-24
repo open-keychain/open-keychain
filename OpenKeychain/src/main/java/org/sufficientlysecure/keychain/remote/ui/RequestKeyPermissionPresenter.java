@@ -15,8 +15,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper.WrongPackageCertificateException;
@@ -33,27 +33,27 @@ class RequestKeyPermissionPresenter {
 
     private String packageName;
     private long masterKeyId;
-    private DatabaseInteractor databaseInteractor;
+    private KeyRepository keyRepository;
 
 
     static RequestKeyPermissionPresenter createRequestKeyPermissionPresenter(Context context) {
         PackageManager packageManager = context.getPackageManager();
         ApiDataAccessObject apiDataAccessObject = new ApiDataAccessObject(context);
         ApiPermissionHelper apiPermissionHelper = new ApiPermissionHelper(context, apiDataAccessObject);
-        DatabaseInteractor databaseInteractor =
-                DatabaseInteractor.createDatabaseInteractor(context);
+        KeyRepository keyRepository =
+                KeyRepository.createDatabaseInteractor(context);
 
         return new RequestKeyPermissionPresenter(context, apiDataAccessObject, apiPermissionHelper, packageManager,
-                databaseInteractor);
+                keyRepository);
     }
 
     private RequestKeyPermissionPresenter(Context context, ApiDataAccessObject apiDataAccessObject,
-            ApiPermissionHelper apiPermissionHelper, PackageManager packageManager, DatabaseInteractor databaseInteractor) {
+            ApiPermissionHelper apiPermissionHelper, PackageManager packageManager, KeyRepository keyRepository) {
         this.context = context;
         this.apiDataAccessObject = apiDataAccessObject;
         this.apiPermissionHelper = apiPermissionHelper;
         this.packageManager = packageManager;
-        this.databaseInteractor = databaseInteractor;
+        this.keyRepository = keyRepository;
     }
 
     void setView(RequestKeyPermissionMvpView view) {
@@ -102,7 +102,7 @@ class RequestKeyPermissionPresenter {
         CachedPublicKeyRing publicFallbackRing = null;
         for (long candidateSubKeyId : subKeyIds) {
             try {
-                CachedPublicKeyRing cachedPublicKeyRing = databaseInteractor.getCachedPublicKeyRing(
+                CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(candidateSubKeyId)
                 );
 

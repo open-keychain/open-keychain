@@ -35,8 +35,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
@@ -57,7 +57,7 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
  */
 public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> {
 
-    public EditKeyOperation(Context context, DatabaseReadWriteInteractor databaseInteractor,
+    public EditKeyOperation(Context context, KeyWritableRepository databaseInteractor,
                             Progressable progressable, AtomicBoolean cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
     }
@@ -94,7 +94,7 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
                     log.add(LogType.MSG_ED_FETCHING, 1,
                             KeyFormattingUtils.convertKeyIdToHex(saveParcel.mMasterKeyId));
                     CanonicalizedSecretKeyRing secRing =
-                            mDatabaseInteractor.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
+                            mKeyRepository.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
 
                     modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
                     if (modifyResult.isPending()) {
@@ -147,7 +147,7 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
                     new UploadKeyringParcel(saveParcel.getUploadKeyserver(), keyringBytes);
 
             UploadResult uploadResult =
-                    new UploadOperation(mContext, mDatabaseInteractor, mProgressable, mCancelled)
+                    new UploadOperation(mContext, mKeyRepository, mProgressable, mCancelled)
                             .execute(exportKeyringParcel, cryptoInput);
 
             log.add(uploadResult, 2);
@@ -161,7 +161,7 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
         }
 
         // Save the new keyring.
-        SaveKeyringResult saveResult = mDatabaseReadWriteInteractor
+        SaveKeyringResult saveResult = mKeyWritableRepository
                 .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 60, 95, 100));
         log.add(saveResult, 1);
 

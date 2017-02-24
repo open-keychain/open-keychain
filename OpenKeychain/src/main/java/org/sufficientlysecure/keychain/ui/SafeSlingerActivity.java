@@ -41,7 +41,7 @@ import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
@@ -106,7 +106,7 @@ public class SafeSlingerActivity extends BaseActivity
         // retrieve public key blob and start SafeSlinger
         Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId);
         try {
-            byte[] keyBlob = DatabaseInteractor.createDatabaseInteractor(this).getCachedPublicKeyRing(uri).getEncoded();
+            byte[] keyBlob = KeyRepository.createDatabaseInteractor(this).getCachedPublicKeyRing(uri).getEncoded();
 
             Intent slingerIntent = new Intent(this, ExchangeActivity.class);
 

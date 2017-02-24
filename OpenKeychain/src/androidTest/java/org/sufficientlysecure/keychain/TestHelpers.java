@@ -38,7 +38,7 @@ import com.nispok.snackbar.Snackbar;
 import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -97,7 +97,7 @@ public class TestHelpers {
         IteratorWithIOThrow<UncachedKeyRing> stream = UncachedKeyRing.fromStream(
                 getInstrumentation().getContext().getAssets().open(name));
 
-        DatabaseReadWriteInteractor helper = DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(context);
+        KeyWritableRepository helper = KeyWritableRepository.createDatabaseReadWriteInteractor(context);
         while(stream.hasNext()) {
             UncachedKeyRing ring = stream.next();
             if (ring.isSecret()) {

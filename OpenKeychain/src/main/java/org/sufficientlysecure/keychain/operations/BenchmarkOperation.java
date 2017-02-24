@@ -45,7 +45,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainSymm
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
@@ -55,7 +55,7 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
 
-    public BenchmarkOperation(Context context, DatabaseReadWriteInteractor databaseInteractor, Progressable
+    public BenchmarkOperation(Context context, KeyWritableRepository databaseInteractor, Progressable
             progressable) {
         super(context, databaseInteractor, progressable);
     }
@@ -81,7 +81,7 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
         int i = 0;
         do {
             SignEncryptOperation op =
-                    new SignEncryptOperation(mContext, mDatabaseInteractor,
+                    new SignEncryptOperation(mContext, mKeyRepository,
                             new ProgressScaler(mProgressable, i*(50/numRepeats), (i+1)*(50/numRepeats), 100), mCancelled);
             PgpSignEncryptData data = new PgpSignEncryptData();
             data.setSymmetricPassphrase(passphrase);
@@ -103,7 +103,7 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
         do {
             DecryptVerifyResult decryptResult;
             PgpDecryptVerifyOperation op =
-                    new PgpDecryptVerifyOperation(mContext, mDatabaseInteractor,
+                    new PgpDecryptVerifyOperation(mContext, mKeyRepository,
                             new ProgressScaler(mProgressable, 50 +i*(50/numRepeats), 50 +(i+1)*(50/numRepeats), 100));
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(encryptResult.getResultBytes());
             input.setAllowSymmetricDecryption(true);

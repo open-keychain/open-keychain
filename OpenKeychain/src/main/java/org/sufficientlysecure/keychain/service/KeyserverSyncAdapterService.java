@@ -44,7 +44,7 @@ import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
@@ -322,7 +322,7 @@ public class KeyserverSyncAdapterService extends Service {
                                          CryptoInputParcel cryptoInputParcel) {
         Log.d(Constants.TAG, "Starting normal update");
         ImportOperation importOp = new ImportOperation(context,
-                DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(context), null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(context), null);
         return importOp.execute(
                 new ImportKeyringParcel(keyList,
                         Preferences.getPreferences(context).getPreferredKeyserver()),
@@ -382,7 +382,7 @@ public class KeyserverSyncAdapterService extends Service {
                         new OperationResult.OperationLog());
             }
             ImportKeyResult result =
-                    new ImportOperation(context, DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(context), null, mCancelled)
+                    new ImportOperation(context, KeyWritableRepository.createDatabaseReadWriteInteractor(context), null, mCancelled)
                             .execute(
                                     new ImportKeyringParcel(
                                             keyWrapper,

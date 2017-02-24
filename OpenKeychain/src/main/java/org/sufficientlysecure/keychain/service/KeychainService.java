@@ -48,7 +48,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
@@ -111,8 +111,8 @@ public class KeychainService extends Service implements Progressable {
 
                 // just for brevity
                 KeychainService outerThis = KeychainService.this;
-                DatabaseReadWriteInteractor databaseInteractor =
-                        DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(outerThis);
+                KeyWritableRepository databaseInteractor =
+                        KeyWritableRepository.createDatabaseReadWriteInteractor(outerThis);
                 if (inputParcel instanceof SignEncryptParcel) {
                     op = new SignEncryptOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
                 } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {

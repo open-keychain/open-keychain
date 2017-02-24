@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -411,7 +411,7 @@ public class CreateKeyFinalFragment extends Fragment {
         CreateKeyActivity activity = (CreateKeyActivity) getActivity();
 
         final SaveKeyringParcel changeKeyringParcel;
-        CachedPublicKeyRing key = (DatabaseInteractor.createDatabaseInteractor(getContext()))
+        CachedPublicKeyRing key = (KeyRepository.createDatabaseInteractor(getContext()))
                 .getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
         try {
             changeKeyringParcel = new SaveKeyringParcel(key.getMasterKeyId(), key.getFingerprint());

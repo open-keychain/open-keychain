@@ -87,26 +87,26 @@ import org.sufficientlysecure.keychain.util.Utf8Util;
  * the lifetime of the executing ProviderHelper object unless the resetLog()
  * method is called to start a new one specifically.
  */
-public class DatabaseReadWriteInteractor extends DatabaseInteractor {
+public class KeyWritableRepository extends KeyRepository {
     private static final int MAX_CACHED_KEY_SIZE = 1024 * 50;
 
     private final Context mContext;
 
-    public static DatabaseReadWriteInteractor createDatabaseReadWriteInteractor(Context context) {
+    public static KeyWritableRepository createDatabaseReadWriteInteractor(Context context) {
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
 
-        return new DatabaseReadWriteInteractor(context, localPublicKeyStorage);
+        return new KeyWritableRepository(context, localPublicKeyStorage);
     }
 
-    private DatabaseReadWriteInteractor(Context context, LocalPublicKeyStorage localPublicKeyStorage) {
+    private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage) {
         this(context, localPublicKeyStorage, new OperationLog(), 0);
     }
 
-    private DatabaseReadWriteInteractor(Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log) {
+    private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log) {
         this(context, localPublicKeyStorage, log, 0);
     }
 
-    private DatabaseReadWriteInteractor(Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log, int indent) {
+    private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log, int indent) {
         super(context.getContentResolver(), localPublicKeyStorage, log, indent);
 
         mContext = context;
@@ -1174,7 +1174,7 @@ public class DatabaseReadWriteInteractor extends DatabaseInteractor {
     private ConsolidateResult consolidateDatabaseStep2(
             OperationLog log, int indent, Progressable progress, boolean recovery) {
 
-        synchronized (DatabaseReadWriteInteractor.class) {
+        synchronized (KeyWritableRepository.class) {
             if (mConsolidateCritical) {
                 log.add(LogType.MSG_CON_ERROR_CONCURRENT, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);

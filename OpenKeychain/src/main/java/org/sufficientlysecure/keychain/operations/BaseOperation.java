@@ -29,8 +29,8 @@ import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -41,7 +41,7 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
     final public Progressable mProgressable;
     final public AtomicBoolean mCancelled;
 
-    final public DatabaseInteractor mDatabaseInteractor;
+    final public KeyRepository mKeyRepository;
 
     /** An abstract base class for all *Operation classes. It provides a number
      * of common methods for progress, cancellation and passphrase cache handling.
@@ -65,18 +65,18 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
      * if there is no prefix it is considered Android-related.
      *
      */
-    public BaseOperation(Context context, DatabaseInteractor databaseInteractor, Progressable progressable) {
+    public BaseOperation(Context context, KeyRepository keyRepository, Progressable progressable) {
         this.mContext = context;
         this.mProgressable = progressable;
-        this.mDatabaseInteractor = databaseInteractor;
+        this.mKeyRepository = keyRepository;
         mCancelled = null;
     }
 
-    public BaseOperation(Context context, DatabaseInteractor databaseInteractor,
+    public BaseOperation(Context context, KeyRepository keyRepository,
             Progressable progressable, AtomicBoolean cancelled) {
         mContext = context;
         mProgressable = progressable;
-        mDatabaseInteractor = databaseInteractor;
+        mKeyRepository = keyRepository;
         mCancelled = cancelled;
     }
 
@@ -115,7 +115,7 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
     public Passphrase getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
         try {
             if (subKeyId != key.symmetric) {
-                long masterKeyId = mDatabaseInteractor.getMasterKeyId(subKeyId);
+                long masterKeyId = mKeyRepository.getMasterKeyId(subKeyId);
                 return getCachedPassphrase(masterKeyId, subKeyId);
             }
             return getCachedPassphrase(key.symmetric, key.symmetric);

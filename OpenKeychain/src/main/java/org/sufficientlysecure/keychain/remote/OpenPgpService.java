@@ -63,7 +63,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -88,7 +88,7 @@ public class OpenPgpService extends Service {
             Collections.unmodifiableList(Arrays.asList(3, 4, 5, 6, 7, 8, 9, 10, 11));
 
     private ApiPermissionHelper mApiPermissionHelper;
-    private DatabaseInteractor mDatabaseInteractor;
+    private KeyRepository mKeyRepository;
     private ApiDataAccessObject mApiDao;
     private OpenPgpServiceKeyIdExtractor mKeyIdExtractor;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
@@ -97,7 +97,7 @@ public class OpenPgpService extends Service {
     public void onCreate() {
         super.onCreate();
         mApiPermissionHelper = new ApiPermissionHelper(this, new ApiDataAccessObject(this));
-        mDatabaseInteractor = DatabaseInteractor.createDatabaseInteractor(this);
+        mKeyRepository = KeyRepository.createDatabaseInteractor(this);
         mApiDao = new ApiDataAccessObject(this);
 
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
@@ -135,7 +135,7 @@ public class OpenPgpService extends Service {
 
                 // get first usable subkey capable of signing
                 try {
-                    long signSubKeyId = mDatabaseInteractor.getCachedPublicKeyRing(
+                    long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(
                             pgpData.getSignatureMasterKeyId()).getSecretSignId();
                     pgpData.setSignatureSubKeyId(signSubKeyId);
                 } catch (PgpKeyNotFoundException e) {
@@ -167,7 +167,7 @@ public class OpenPgpService extends Service {
             }
 
             // execute PGP operation!
-            PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, mDatabaseInteractor, null);
+            PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, mKeyRepository, null);
             PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
@@ -254,7 +254,7 @@ public class OpenPgpService extends Service {
 
                     // get first usable subkey capable of signing
                     try {
-                        long signSubKeyId = mDatabaseInteractor.getCachedPublicKeyRing(
+                        long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(
                                 pgpData.getSignatureMasterKeyId()).getSecretSignId();
                         pgpData.setSignatureSubKeyId(signSubKeyId);
                     } catch (PgpKeyNotFoundException e) {
@@ -294,7 +294,7 @@ public class OpenPgpService extends Service {
                         new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
             }
 
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, mDatabaseInteractor, null);
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, mKeyRepository, null);
 
             // execute PGP operation!
             PgpSignEncryptResult pgpResult = op.execute(pseInput, inputParcel, inputData, outputStream);
@@ -356,7 +356,7 @@ public class OpenPgpService extends Service {
             byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
             String senderAddress = data.getStringExtra(OpenPgpApi.EXTRA_SENDER_ADDRESS);
 
-            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mDatabaseInteractor, progressable);
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mKeyRepository, progressable);
 
             long inputLength = data.getLongExtra(OpenPgpApi.EXTRA_DATA_LENGTH, InputData.UNKNOWN_FILESIZE);
             InputData inputData = new InputData(inputStream, inputLength);
@@ -526,7 +526,7 @@ public class OpenPgpService extends Service {
             try {
                 // try to find key, throws NotFoundException if not in db!
                 CanonicalizedPublicKeyRing keyRing =
-                        mDatabaseInteractor.getCanonicalizedPublicKeyRing(
+                        mKeyRepository.getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(masterKeyId));
 
                 Intent result = new Intent();
@@ -555,7 +555,7 @@ public class OpenPgpService extends Service {
                         mApiPendingIntentFactory.createShowKeyPendingIntent(data, masterKeyId));
 
                 return result;
-            } catch (DatabaseInteractor.NotFoundException e) {
+            } catch (KeyRepository.NotFoundException e) {
                 // If keys are not in db we return an additional PendingIntent
                 // to retrieve the missing key
                 Intent result = new Intent();
@@ -630,7 +630,7 @@ public class OpenPgpService extends Service {
             // the backup code is cached in CryptoInputParcelCacheService, now we can proceed
 
             BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, enableAsciiArmorOutput, null);
-            BackupOperation op = new BackupOperation(this, mDatabaseInteractor, null);
+            BackupOperation op = new BackupOperation(this, mKeyRepository, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 
             if (pgpResult.success()) {

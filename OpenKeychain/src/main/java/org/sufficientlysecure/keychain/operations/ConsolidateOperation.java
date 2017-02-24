@@ -24,13 +24,13 @@ import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
 public class ConsolidateOperation extends BaseReadWriteOperation<ConsolidateInputParcel> {
 
-    public ConsolidateOperation(Context context, DatabaseReadWriteInteractor databaseInteractor, Progressable
+    public ConsolidateOperation(Context context, KeyWritableRepository databaseInteractor, Progressable
             progressable) {
         super(context, databaseInteractor, progressable);
     }
@@ -40,9 +40,9 @@ public class ConsolidateOperation extends BaseReadWriteOperation<ConsolidateInpu
     public ConsolidateResult execute(ConsolidateInputParcel consolidateInputParcel,
                                      CryptoInputParcel cryptoInputParcel) {
         if (consolidateInputParcel.mConsolidateRecovery) {
-            return mDatabaseReadWriteInteractor.consolidateDatabaseStep2(mProgressable);
+            return mKeyWritableRepository.consolidateDatabaseStep2(mProgressable);
         } else {
-            return mDatabaseReadWriteInteractor.consolidateDatabaseStep1(mProgressable);
+            return mKeyWritableRepository.consolidateDatabaseStep1(mProgressable);
         }
     }
 }

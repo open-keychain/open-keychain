@@ -39,8 +39,8 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -62,7 +62,7 @@ import org.sufficientlysecure.keychain.util.Passphrase;
  */
 public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParcel> {
 
-    public CertifyOperation(Context context, DatabaseReadWriteInteractor databaseInteractor, Progressable progressable, AtomicBoolean
+    public CertifyOperation(Context context, KeyWritableRepository databaseInteractor, Progressable progressable, AtomicBoolean
             cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
     }
@@ -81,7 +81,7 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
 
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
 
-            CachedPublicKeyRing cachedPublicKeyRing = mDatabaseInteractor.getCachedPublicKeyRing(masterKeyId);
+            CachedPublicKeyRing cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(masterKeyId);
             Passphrase passphrase;
 
             switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
@@ -121,7 +121,7 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
 
             // Get actual secret key
             CanonicalizedSecretKeyRing secretKeyRing =
-                    mDatabaseInteractor.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId);
+                    mKeyRepository.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId);
             certificationKey = secretKeyRing.getSecretKey();
 
             log.add(LogType.MSG_CRT_UNLOCK, 1);
@@ -165,7 +165,7 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
                 }
 
                 CanonicalizedPublicKeyRing publicRing =
-                        mDatabaseInteractor.getCanonicalizedPublicKeyRing(action.mMasterKeyId);
+                        mKeyRepository.getCanonicalizedPublicKeyRing(action.mMasterKeyId);
 
                 PgpCertifyOperation op = new PgpCertifyOperation();
                 PgpCertifyResult result = op.certify(certificationKey, publicRing,
@@ -206,7 +206,7 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
         // these variables are used inside the following loop, but they need to be created only once
         UploadOperation uploadOperation = null;
         if (parcel.keyServerUri != null) {
-            uploadOperation = new UploadOperation(mContext, mDatabaseInteractor, mProgressable, mCancelled);
+            uploadOperation = new UploadOperation(mContext, mKeyRepository, mProgressable, mCancelled);
         }
 
         // Write all certified keys into the database
@@ -222,8 +222,8 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
             log.add(LogType.MSG_CRT_SAVE, 2,
                     KeyFormattingUtils.convertKeyIdToHex(certifiedKey.getMasterKeyId()));
             // store the signed key in our local cache
-            mDatabaseInteractor.clearLog();
-            SaveKeyringResult result = mDatabaseReadWriteInteractor.savePublicKeyRing(certifiedKey);
+            mKeyRepository.clearLog();
+            SaveKeyringResult result = mKeyWritableRepository.savePublicKeyRing(certifiedKey);
 
             if (uploadOperation != null) {
                 UploadKeyringParcel uploadInput =

@@ -44,8 +44,8 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -99,12 +99,12 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
         }
     }
 
-    public PgpSignEncryptOperation(Context context, DatabaseInteractor databaseInteractor, Progressable progressable, AtomicBoolean cancelled) {
-        super(context, databaseInteractor, progressable, cancelled);
+    public PgpSignEncryptOperation(Context context, KeyRepository keyRepository, Progressable progressable, AtomicBoolean cancelled) {
+        super(context, keyRepository, progressable, cancelled);
     }
 
-    public PgpSignEncryptOperation(Context context, DatabaseInteractor databaseInteractor, Progressable progressable) {
-        super(context, databaseInteractor, progressable);
+    public PgpSignEncryptOperation(Context context, KeyRepository keyRepository, Progressable progressable) {
+        super(context, keyRepository, progressable);
     }
 
     @NonNull
@@ -224,7 +224,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 long signingSubKeyId = data.getSignatureSubKeyId();
 
                 CanonicalizedSecretKeyRing signingKeyRing =
-                        mDatabaseInteractor.getCanonicalizedSecretKeyRing(signingMasterKeyId);
+                        mKeyRepository.getCanonicalizedSecretKeyRing(signingMasterKeyId);
                 signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
 
                 if (input.getAllowedKeyIds() != null) {
@@ -249,7 +249,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                     return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
 
-                switch (mDatabaseInteractor.getCachedPublicKeyRing(signingMasterKeyId).getSecretKeyType(signingSubKeyId)) {
+                switch (mKeyRepository.getCachedPublicKeyRing(signingMasterKeyId).getSecretKeyType(signingSubKeyId)) {
                     case DIVERT_TO_CARD:
                     case PASSPHRASE_EMPTY: {
                         if (!signingKey.unlock(new Passphrase())) {
@@ -293,7 +293,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
 
                 }
 
-            } catch (DatabaseReadWriteInteractor.NotFoundException e) {
+            } catch (KeyWritableRepository.NotFoundException e) {
                 log.add(LogType.MSG_PSE_ERROR_SIGN_KEY, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             } catch (PgpGeneralException e) {
@@ -338,7 +338,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 // Asymmetric encryption
                 for (long id : data.getEncryptionMasterKeyIds()) {
                     try {
-                        CanonicalizedPublicKeyRing keyRing = mDatabaseInteractor.getCanonicalizedPublicKeyRing(
+                        CanonicalizedPublicKeyRing keyRing = mKeyRepository.getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(id));
                         Set<Long> encryptSubKeyIds = keyRing.getEncryptIds();
                         for (Long subKeyId : encryptSubKeyIds) {
@@ -357,7 +357,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                             log.add(LogType.MSG_PSE_ERROR_REVOKED_OR_EXPIRED, indent);
                             return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                         }
-                    } catch (DatabaseReadWriteInteractor.NotFoundException e) {
+                    } catch (KeyWritableRepository.NotFoundException e) {
                         log.add(LogType.MSG_PSE_KEY_UNKNOWN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);

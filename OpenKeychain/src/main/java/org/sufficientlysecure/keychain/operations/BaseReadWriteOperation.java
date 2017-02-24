@@ -7,24 +7,24 @@ import android.content.Context;
 import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 
 
 abstract class BaseReadWriteOperation<T extends Parcelable> extends BaseOperation<T> {
-    final DatabaseReadWriteInteractor mDatabaseReadWriteInteractor;
+    final KeyWritableRepository mKeyWritableRepository;
 
     BaseReadWriteOperation(Context context,
-            DatabaseReadWriteInteractor databaseInteractor,
+            KeyWritableRepository databaseInteractor,
             Progressable progressable) {
         super(context, databaseInteractor, progressable);
 
-        mDatabaseReadWriteInteractor = databaseInteractor;
+        mKeyWritableRepository = databaseInteractor;
     }
 
-    BaseReadWriteOperation(Context context, DatabaseReadWriteInteractor databaseInteractor,
+    BaseReadWriteOperation(Context context, KeyWritableRepository databaseInteractor,
             Progressable progressable, AtomicBoolean cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
 
-        mDatabaseReadWriteInteractor = databaseInteractor;
+        mKeyWritableRepository = databaseInteractor;
     }
 }

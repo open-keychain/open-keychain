@@ -20,9 +20,9 @@ import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractorSaveTest;
+import org.sufficientlysecure.keychain.provider.KeyRepositorySaveTest;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -45,8 +45,8 @@ public class KeychainExternalProviderTest {
     static final long KEY_ID_PUBLIC = 0x9A282CE2AB44A382L;
 
 
-    DatabaseReadWriteInteractor databaseInteractor =
-            DatabaseReadWriteInteractor.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
+    KeyWritableRepository databaseInteractor =
+            KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
     ContentResolver contentResolver = RuntimeEnvironment.application.getContentResolver();
     ApiPermissionHelper apiPermissionHelper;
     ApiDataAccessObject apiDao;
@@ -207,6 +207,6 @@ public class KeychainExternalProviderTest {
     }
 
     UncachedKeyRing readRingFromResource(String name) throws Exception {
-        return UncachedKeyRing.fromStream(DatabaseInteractorSaveTest.class.getResourceAsStream(name)).next();
+        return UncachedKeyRing.fromStream(KeyRepositorySaveTest.class.getResourceAsStream(name)).next();
     }
 }

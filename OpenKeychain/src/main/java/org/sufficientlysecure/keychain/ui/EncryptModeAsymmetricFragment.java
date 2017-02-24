@@ -34,8 +34,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
@@ -46,7 +46,7 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
-    DatabaseInteractor mDatabaseInteractor;
+    KeyRepository mKeyRepository;
 
     private KeySpinner mSignKeySpinner;
     private EncryptKeyCompletionView mEncryptKeyView;
@@ -115,7 +115,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mDatabaseInteractor = DatabaseInteractor.createDatabaseInteractor(getContext());
+        mKeyRepository = KeyRepository.createDatabaseInteractor(getContext());
 
         // preselect keys given, from state or arguments
         if (savedInstanceState == null) {
@@ -135,7 +135,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     private void preselectKeys(Long signatureKeyId, long[] encryptionKeyIds) {
         if (signatureKeyId != null) {
             try {
-                CachedPublicKeyRing keyring = mDatabaseInteractor.getCachedPublicKeyRing(
+                CachedPublicKeyRing keyring = mKeyRepository.getCachedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingUri(signatureKeyId));
                 if (keyring.hasAnySecret()) {
                     mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
@@ -149,7 +149,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
             for (long preselectedId : encryptionKeyIds) {
                 try {
                     CanonicalizedPublicKeyRing ring =
-                            mDatabaseInteractor.getCanonicalizedPublicKeyRing(preselectedId);
+                            mKeyRepository.getCanonicalizedPublicKeyRing(preselectedId);
                     mEncryptKeyView.addObject(new KeyItem(ring));
                 } catch (NotFoundException e) {
                     Log.e(Constants.TAG, "key not found!", e);

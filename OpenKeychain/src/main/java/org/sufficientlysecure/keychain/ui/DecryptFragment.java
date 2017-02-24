@@ -49,7 +49,7 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
@@ -193,7 +193,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         try {
 
             Intent viewKeyIntent = new Intent(getActivity(), ViewKeyActivity.class);
-            long masterKeyId = DatabaseInteractor.createDatabaseInteractor(getContext()).getCachedPublicKeyRing(
+            long masterKeyId = KeyRepository.createDatabaseInteractor(getContext()).getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId)
             ).getMasterKeyId();
             viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));

@@ -39,8 +39,8 @@ import android.provider.Settings;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 /**
@@ -50,7 +50,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 public class NfcHelper {
 
     private Activity mActivity;
-    private DatabaseInteractor mDatabaseInteractor;
+    private KeyRepository mKeyRepository;
 
     /**
      * NFC: This handler receives a message from onNdefPushComplete
@@ -66,9 +66,9 @@ public class NfcHelper {
     /**
      * Initializes the NfcHelper.
      */
-    public NfcHelper(final Activity activity, final DatabaseInteractor databaseInteractor) {
+    public NfcHelper(final Activity activity, final KeyRepository keyRepository) {
         mActivity = activity;
-        mDatabaseInteractor = databaseInteractor;
+        mKeyRepository = keyRepository;
 
         mNfcHandler = new NfcHandler(mActivity);
     }
@@ -128,9 +128,9 @@ public class NfcHelper {
                         new AsyncTask<Void, Void, Void>() {
                             protected Void doInBackground(Void... unused) {
                                 try {
-                                    long masterKeyId = mDatabaseInteractor.getCachedPublicKeyRing(dataUri)
+                                    long masterKeyId = mKeyRepository.getCachedPublicKeyRing(dataUri)
                                             .extractOrGetMasterKeyId();
-                                    mNfcKeyringBytes = mDatabaseInteractor.loadPublicKeyRingData(masterKeyId);
+                                    mNfcKeyringBytes = mKeyRepository.loadPublicKeyRingData(masterKeyId);
                                 } catch (NotFoundException | PgpKeyNotFoundException e) {
                                     Log.e(Constants.TAG, "key not found!", e);
                                 }

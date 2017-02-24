@@ -26,7 +26,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.DatabaseReadWriteInteractor;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
  */
 public class DeleteOperation extends BaseReadWriteOperation<DeleteKeyringParcel> {
 
-    public DeleteOperation(Context context, DatabaseReadWriteInteractor databaseInteractor, Progressable progressable) {
+    public DeleteOperation(Context context, KeyWritableRepository databaseInteractor, Progressable progressable) {
         super(context, databaseInteractor, progressable);
     }
 
@@ -81,7 +81,7 @@ public class DeleteOperation extends BaseReadWriteOperation<DeleteKeyringParcel>
                 cancelled = true;
                 break;
             }
-            int count = mDatabaseInteractor.getContentResolver().delete(
+            int count = mKeyRepository.getContentResolver().delete(
                     KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null
             );
             if (count > 0) {
@@ -95,7 +95,7 @@ public class DeleteOperation extends BaseReadWriteOperation<DeleteKeyringParcel>
 
         if (isSecret && success > 0) {
             log.add(LogType.MSG_DEL_CONSOLIDATE, 1);
-            ConsolidateResult sub = mDatabaseReadWriteInteractor.consolidateDatabaseStep1(mProgressable);
+            ConsolidateResult sub = mKeyWritableRepository.consolidateDatabaseStep1(mProgressable);
             log.add(sub, 2);
         }
 

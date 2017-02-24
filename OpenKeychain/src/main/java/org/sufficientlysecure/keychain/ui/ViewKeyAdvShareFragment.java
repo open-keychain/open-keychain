@@ -58,7 +58,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.DatabaseInteractor;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
@@ -95,8 +95,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View view = inflater.inflate(R.layout.view_key_adv_share_fragment, getContainer());
 
         ContentResolver contentResolver = ViewKeyAdvShareFragment.this.getActivity().getContentResolver();
-        DatabaseInteractor databaseInteractor = DatabaseInteractor.createDatabaseInteractor(getContext());
-        mNfcHelper = new NfcHelper(getActivity(), databaseInteractor);
+        KeyRepository keyRepository = KeyRepository.createDatabaseInteractor(getContext());
+        mNfcHelper = new NfcHelper(getActivity(), keyRepository);
 
         mFingerprintView = (TextView) view.findViewById(R.id.view_key_fingerprint);
         mQrCode = (ImageView) view.findViewById(R.id.view_key_qr_code);
@@ -202,7 +202,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private void startSafeSlinger(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = DatabaseInteractor.createDatabaseInteractor(getContext())
+            keyId = KeyRepository.createDatabaseInteractor(getContext())
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
@@ -218,12 +218,12 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         if (activity == null || mFingerprint == null) {
             return;
         }
-        DatabaseInteractor databaseInteractor =
-                DatabaseInteractor.createDatabaseInteractor(getContext());
+        KeyRepository keyRepository =
+                KeyRepository.createDatabaseInteractor(getContext());
 
         try {
-            long masterKeyId = databaseInteractor.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
-            String content = databaseInteractor.getPublicKeyRingAsArmoredString(masterKeyId);
+            long masterKeyId = keyRepository.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
+            String content = keyRepository.getPublicKeyRingAsArmoredString(masterKeyId);
 
             if (toClipboard) {
                 ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -276,7 +276,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
-        } catch (PgpKeyNotFoundException | DatabaseInteractor.NotFoundException e) {
+        } catch (PgpKeyNotFoundException | KeyRepository.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
             Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
         }
@@ -460,7 +460,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private void uploadToKeyserver() {
         long keyId;
         try {
-            keyId = DatabaseInteractor.createDatabaseInteractor(getContext())
+            keyId = KeyRepository.createDatabaseInteractor(getContext())
                     .getCachedPublicKeyRing(mDataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
