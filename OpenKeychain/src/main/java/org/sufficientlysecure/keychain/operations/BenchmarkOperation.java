@@ -41,12 +41,11 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
-import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
@@ -56,9 +55,9 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
 
-    public BenchmarkOperation(Context context, ProviderHelper providerHelper, Progressable
+    public BenchmarkOperation(Context context, KeyWritableRepository databaseInteractor, Progressable
             progressable) {
-        super(context, providerHelper, progressable);
+        super(context, databaseInteractor, progressable);
     }
 
     @NonNull
@@ -82,7 +81,7 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
         int i = 0;
         do {
             SignEncryptOperation op =
-                    new SignEncryptOperation(mContext, mProviderHelper,
+                    new SignEncryptOperation(mContext, mKeyRepository,
                             new ProgressScaler(mProgressable, i*(50/numRepeats), (i+1)*(50/numRepeats), 100), mCancelled);
             PgpSignEncryptData data = new PgpSignEncryptData();
             data.setSymmetricPassphrase(passphrase);
@@ -104,7 +103,7 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
         do {
             DecryptVerifyResult decryptResult;
             PgpDecryptVerifyOperation op =
-                    new PgpDecryptVerifyOperation(mContext, mProviderHelper,
+                    new PgpDecryptVerifyOperation(mContext, mKeyRepository,
                             new ProgressScaler(mProgressable, 50 +i*(50/numRepeats), 50 +(i+1)*(50/numRepeats), 100));
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(encryptResult.getResultBytes());
             input.setAllowSymmetricDecryption(true);

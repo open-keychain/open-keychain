@@ -672,7 +672,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mRevokeSubKeys.add(123L);
 
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), 0);
             UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, cryptoInput, parcel).getRing();
 
             Assert.assertNull("revoking a nonexistent subkey should fail", otherModified);
@@ -870,7 +870,7 @@ public class PgpKeyOperationTest {
             parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
 
             CanonicalizedSecretKeyRing secretRing =
-                    new CanonicalizedSecretKeyRing(ringSecurityToken.getEncoded(), false, 0);
+                    new CanonicalizedSecretKeyRing(ringSecurityToken.getEncoded(), 0);
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcelSecurityToken);
             Assert.assertTrue("moveKeyToSecurityToken operation should be pending", result.isPending());
@@ -904,7 +904,7 @@ public class PgpKeyOperationTest {
             parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, true));
 
             CanonicalizedSecretKeyRing secretRing =
-                    new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
+                    new CanonicalizedSecretKeyRing(modified.getEncoded(), 0);
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcelSecurityToken);
             Assert.assertTrue("moveKeyToSecurityToken operation should be pending", result.isPending());
@@ -1193,7 +1193,7 @@ public class PgpKeyOperationTest {
 
             // we should still be able to modify it (and change its passphrase) without errors
             PgpKeyOperation op = new PgpKeyOperation(null);
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), 0);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, otherCryptoInput, parcel);
             Assert.assertTrue("key modification must succeed", result.success());
             Assert.assertFalse("log must not contain a warning",
@@ -1209,7 +1209,7 @@ public class PgpKeyOperationTest {
             modified = KeyringTestingHelper.injectPacket(modified, sKeyWithPassphrase.buf, sKeyWithPassphrase.position);
 
             PgpKeyOperation op = new PgpKeyOperation(null);
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), 0);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(otherPassphrase2), parcel);
             Assert.assertTrue("key modification must succeed", result.success());
             Assert.assertTrue("log must contain a failed passphrase change warning",
@@ -1221,7 +1221,7 @@ public class PgpKeyOperationTest {
     @Test
     public void testRestricted() throws Exception {
 
-        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), 0);
 
         parcel.mAddUserIds.add("discord");
         PgpKeyOperation op = new PgpKeyOperation(null);
@@ -1256,7 +1256,7 @@ public class PgpKeyOperationTest {
         try {
 
             Assert.assertTrue("modified keyring must be secret", ring.isSecret());
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), 0);
 
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
@@ -1329,7 +1329,7 @@ public class PgpKeyOperationTest {
                                      SaveKeyringParcel parcel, CryptoInputParcel cryptoInput, LogType expected)
             throws Exception {
 
-        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), 0);
         PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
 
         Assert.assertFalse(reason, result.success());
@@ -1343,7 +1343,7 @@ public class PgpKeyOperationTest {
                                      LogType expected)
             throws Exception {
 
-        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), 0);
         PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
 
         Assert.assertFalse(reason, result.success());

@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -56,9 +58,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -93,8 +94,9 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_adv_share_fragment, getContainer());
 
-        ProviderHelper providerHelper = new ProviderHelper(ViewKeyAdvShareFragment.this.getActivity());
-        mNfcHelper = new NfcHelper(getActivity(), providerHelper);
+        ContentResolver contentResolver = ViewKeyAdvShareFragment.this.getActivity().getContentResolver();
+        KeyRepository keyRepository = KeyRepository.createDatabaseInteractor(getContext());
+        mNfcHelper = new NfcHelper(getActivity(), keyRepository);
 
         mFingerprintView = (TextView) view.findViewById(R.id.view_key_fingerprint);
         mQrCode = (ImageView) view.findViewById(R.id.view_key_qr_code);
@@ -200,7 +202,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private void startSafeSlinger(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = new ProviderHelper(getActivity())
+            keyId = KeyRepository.createDatabaseInteractor(getContext())
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
@@ -216,11 +218,12 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         if (activity == null || mFingerprint == null) {
             return;
         }
-        ProviderHelper providerHelper = new ProviderHelper(activity);
+        KeyRepository keyRepository =
+                KeyRepository.createDatabaseInteractor(getContext());
 
         try {
-            String content = providerHelper.getKeyRingAsArmoredString(
-                    KeychainContract.KeyRingData.buildPublicKeyRingUri(mDataUri));
+            long masterKeyId = keyRepository.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
+            String content = keyRepository.getPublicKeyRingAsArmoredString(masterKeyId);
 
             if (toClipboard) {
                 ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -273,7 +276,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
-        } catch (ProviderHelper.NotFoundException e) {
+        } catch (PgpKeyNotFoundException | KeyRepository.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
             Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
         }
@@ -457,7 +460,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private void uploadToKeyserver() {
         long keyId;
         try {
-            keyId = new ProviderHelper(getActivity())
+            keyId = KeyRepository.createDatabaseInteractor(getContext())
                     .getCachedPublicKeyRing(mDataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {

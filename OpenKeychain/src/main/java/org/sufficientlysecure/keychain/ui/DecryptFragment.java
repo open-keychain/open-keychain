@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -40,24 +43,22 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
-
-import java.util.ArrayList;
 
 public abstract class DecryptFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -192,7 +193,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         try {
 
             Intent viewKeyIntent = new Intent(getActivity(), ViewKeyActivity.class);
-            long masterKeyId = new ProviderHelper(getActivity()).getCachedPublicKeyRing(
+            long masterKeyId = KeyRepository.createDatabaseInteractor(getContext()).getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId)
             ).getMasterKeyId();
             viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));

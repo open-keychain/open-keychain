@@ -1,5 +1,12 @@
 package org.sufficientlysecure.keychain.service;
 
+
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.accounts.Account;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -32,25 +39,19 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.network.NetworkReceiver;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.network.NetworkReceiver;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
-
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class KeyserverSyncAdapterService extends Service {
 
@@ -320,7 +321,8 @@ public class KeyserverSyncAdapterService extends Service {
     private ImportKeyResult directUpdate(Context context, ArrayList<ParcelableKeyRing> keyList,
                                          CryptoInputParcel cryptoInputParcel) {
         Log.d(Constants.TAG, "Starting normal update");
-        ImportOperation importOp = new ImportOperation(context, new ProviderHelper(context), null);
+        ImportOperation importOp = new ImportOperation(context,
+                KeyWritableRepository.createDatabaseReadWriteInteractor(context), null);
         return importOp.execute(
                 new ImportKeyringParcel(keyList,
                         Preferences.getPreferences(context).getPreferredKeyserver()),
@@ -380,7 +382,7 @@ public class KeyserverSyncAdapterService extends Service {
                         new OperationResult.OperationLog());
             }
             ImportKeyResult result =
-                    new ImportOperation(context, new ProviderHelper(context), null, mCancelled)
+                    new ImportOperation(context, KeyWritableRepository.createDatabaseReadWriteInteractor(context), null, mCancelled)
                             .execute(
                                     new ImportKeyringParcel(
                                             keyWrapper,

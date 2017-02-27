@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -26,21 +29,19 @@ import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-public abstract class BaseOperation <T extends Parcelable> implements PassphraseCacheInterface {
+public abstract class BaseOperation<T extends Parcelable> implements PassphraseCacheInterface {
 
     final public Context mContext;
     final public Progressable mProgressable;
     final public AtomicBoolean mCancelled;
 
-    final public ProviderHelper mProviderHelper;
+    final public KeyRepository mKeyRepository;
 
     /** An abstract base class for all *Operation classes. It provides a number
      * of common methods for progress, cancellation and passphrase cache handling.
@@ -64,18 +65,18 @@ public abstract class BaseOperation <T extends Parcelable> implements Passphrase
      * if there is no prefix it is considered Android-related.
      *
      */
-    public BaseOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
+    public BaseOperation(Context context, KeyRepository keyRepository, Progressable progressable) {
         this.mContext = context;
         this.mProgressable = progressable;
-        this.mProviderHelper = providerHelper;
+        this.mKeyRepository = keyRepository;
         mCancelled = null;
     }
 
-    public BaseOperation(Context context, ProviderHelper providerHelper,
-                         Progressable progressable, AtomicBoolean cancelled) {
+    public BaseOperation(Context context, KeyRepository keyRepository,
+            Progressable progressable, AtomicBoolean cancelled) {
         mContext = context;
         mProgressable = progressable;
-        mProviderHelper = providerHelper;
+        mKeyRepository = keyRepository;
         mCancelled = cancelled;
     }
 
@@ -114,7 +115,7 @@ public abstract class BaseOperation <T extends Parcelable> implements Passphrase
     public Passphrase getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
         try {
             if (subKeyId != key.symmetric) {
-                long masterKeyId = mProviderHelper.getMasterKeyId(subKeyId);
+                long masterKeyId = mKeyRepository.getMasterKeyId(subKeyId);
                 return getCachedPassphrase(masterKeyId, subKeyId);
             }
             return getCachedPassphrase(key.symmetric, key.symmetric);

@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.io.IOException;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -32,15 +35,13 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.experimental.SentenceConfirm;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.io.IOException;
 
 
 public class CertifyFingerprintFragment extends LoaderFragment implements
@@ -213,7 +214,7 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     private void certify(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = new ProviderHelper(getActivity())
+            keyId = KeyRepository.createDatabaseInteractor(getContext())
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {

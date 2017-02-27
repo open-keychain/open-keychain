@@ -34,8 +34,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
@@ -117,13 +117,14 @@ public class CertifyOperationTest {
 
     @Before
     public void setUp() throws Exception {
-        ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
+        KeyWritableRepository databaseInteractor =
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
-        providerHelper.savePublicKeyRing(mStaticRing2.extractPublicKeyRing(), new ProgressScaler(), null);
+        databaseInteractor.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
+        databaseInteractor.savePublicKeyRing(mStaticRing2.extractPublicKeyRing(), new ProgressScaler(), null);
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -132,7 +133,7 @@ public class CertifyOperationTest {
     @Test
     public void testSelfCertifyFlag() throws Exception {
 
-        CanonicalizedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
+        CanonicalizedPublicKeyRing ring = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
                 .getCanonicalizedPublicKeyRing(mStaticRing1.getMasterKeyId());
         Assert.assertEquals("secret key must be marked self-certified in database",
                 // TODO this should be more correctly be VERIFIED_SELF at some point!
@@ -143,10 +144,10 @@ public class CertifyOperationTest {
     @Test
     public void testCertifyId() throws Exception {
         CertifyOperation op = new CertifyOperation(RuntimeEnvironment.application,
-                new ProviderHelper(RuntimeEnvironment.application), null, null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
 
         {
-            CanonicalizedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
+            CanonicalizedPublicKeyRing ring = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
                     .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("public key must not be marked verified prior to certification",
                     Certs.UNVERIFIED, ring.getVerified());
@@ -160,7 +161,7 @@ public class CertifyOperationTest {
         Assert.assertTrue("certification must succeed", result.success());
 
         {
-            CanonicalizedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
+            CanonicalizedPublicKeyRing ring = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
                     .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("new key must be verified now",
                     Certs.VERIFIED_SECRET, ring.getVerified());
@@ -171,10 +172,10 @@ public class CertifyOperationTest {
     @Test
     public void testCertifyAttribute() throws Exception {
         CertifyOperation op = new CertifyOperation(RuntimeEnvironment.application,
-                new ProviderHelper(RuntimeEnvironment.application), null, null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
 
         {
-            CanonicalizedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
+            CanonicalizedPublicKeyRing ring = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
                     .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("public key must not be marked verified prior to certification",
                     Certs.UNVERIFIED, ring.getVerified());
@@ -188,7 +189,7 @@ public class CertifyOperationTest {
         Assert.assertTrue("certification must succeed", result.success());
 
         {
-            CanonicalizedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
+            CanonicalizedPublicKeyRing ring = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
                     .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("new key must be verified now",
                     Certs.VERIFIED_SECRET, ring.getVerified());
@@ -200,7 +201,7 @@ public class CertifyOperationTest {
     @Test
     public void testCertifySelf() throws Exception {
         CertifyOperation op = new CertifyOperation(RuntimeEnvironment.application,
-                new ProviderHelper(RuntimeEnvironment.application), null, null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
 
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
@@ -217,7 +218,7 @@ public class CertifyOperationTest {
     public void testCertifyNonexistent() throws Exception {
 
         CertifyOperation op = new CertifyOperation(RuntimeEnvironment.application,
-                new ProviderHelper(RuntimeEnvironment.application), null, null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
 
         {
             CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());

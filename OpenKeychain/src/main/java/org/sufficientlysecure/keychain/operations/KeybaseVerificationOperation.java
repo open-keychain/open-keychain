@@ -36,7 +36,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -59,9 +59,9 @@ import de.measite.minidns.record.TXT;
 
 public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificationParcel> {
 
-    public KeybaseVerificationOperation(Context context, ProviderHelper providerHelper,
+    public KeybaseVerificationOperation(Context context, KeyWritableRepository databaseInteractor,
                                         Progressable progressable) {
-        super(context, providerHelper, progressable);
+        super(context, databaseInteractor, progressable);
     }
 
     @NonNull
@@ -147,7 +147,7 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
                 }
             }
 
-            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(mContext, mProviderHelper, mProgressable);
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(mContext, mKeyRepository, mProgressable);
 
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(messageBytes)
                     .setRequiredSignerFingerprint(requiredFingerprint);

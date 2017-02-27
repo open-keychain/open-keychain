@@ -31,18 +31,15 @@ import android.content.Context;
 import android.support.annotation.StringRes;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
-import android.support.test.espresso.base.DefaultFailureHandler;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.view.View;
 
 import com.nispok.snackbar.Snackbar;
-import com.tokenautocomplete.TokenCompleteTextView;
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -100,7 +97,7 @@ public class TestHelpers {
         IteratorWithIOThrow<UncachedKeyRing> stream = UncachedKeyRing.fromStream(
                 getInstrumentation().getContext().getAssets().open(name));
 
-        ProviderHelper helper = new ProviderHelper(context);
+        KeyWritableRepository helper = KeyWritableRepository.createDatabaseReadWriteInteractor(context);
         while(stream.hasNext()) {
             UncachedKeyRing ring = stream.next();
             if (ring.isSecret()) {

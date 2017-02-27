@@ -19,8 +19,16 @@
 package org.sufficientlysecure.keychain.provider;
 
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import android.content.ContentProviderOperation;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
@@ -28,6 +36,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
@@ -53,7 +62,6 @@ import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -70,17 +78,6 @@ import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.Utf8Util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 /**
  * This class contains high level methods for database access. Despite its
  * name, it is not only a helper but actually the main interface for all
@@ -91,244 +88,67 @@ import java.util.concurrent.TimeUnit;
  * the lifetime of the executing ProviderHelper object unless the resetLog()
  * method is called to start a new one specifically.
  */
-public class ProviderHelper {
+public class KeyWritableRepository extends KeyRepository {
+    private static final int MAX_CACHED_KEY_SIZE = 1024 * 50;
+
     private final Context mContext;
-    private final ContentResolver mContentResolver;
-    private OperationLog mLog;
-    private int mIndent;
 
-    public ProviderHelper(Context context) {
-        this(context, new OperationLog(), 0);
+    public static KeyWritableRepository createDatabaseReadWriteInteractor(Context context) {
+        LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
+
+        return new KeyWritableRepository(context, localPublicKeyStorage);
     }
 
-    public ProviderHelper(Context context, OperationLog log) {
-        this(context, log, 0);
+    @VisibleForTesting
+    KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage) {
+        this(context, localPublicKeyStorage, new OperationLog(), 0);
     }
 
-    public ProviderHelper(Context context, OperationLog log, int indent) {
+    private KeyWritableRepository(
+            Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log, int indent) {
+        super(context.getContentResolver(), localPublicKeyStorage, log, indent);
+
         mContext = context;
-        mContentResolver = context.getContentResolver();
-        mLog = log;
-        mIndent = indent;
-    }
-
-    public OperationLog getLog() {
-        return mLog;
-    }
-
-    public static class NotFoundException extends Exception {
-        public NotFoundException() {
-        }
-
-        public NotFoundException(String name) {
-            super(name);
-        }
-    }
-
-    public void log(LogType type) {
-        if (mLog != null) {
-            mLog.add(type, mIndent);
-        }
-    }
-
-    public void log(LogType type, Object... parameters) {
-        if (mLog != null) {
-            mLog.add(type, mIndent, parameters);
-        }
-    }
-
-    public void clearLog() {
-        mLog = new OperationLog();
-    }
-
-    // If we ever switch to api level 11, we can ditch this whole mess!
-    public static final int FIELD_TYPE_NULL = 1;
-    // this is called integer to stay coherent with the constants in Cursor (api level 11)
-    public static final int FIELD_TYPE_INTEGER = 2;
-    public static final int FIELD_TYPE_FLOAT = 3;
-    public static final int FIELD_TYPE_STRING = 4;
-    public static final int FIELD_TYPE_BLOB = 5;
-
-    public Object getGenericData(Uri uri, String column, int type) throws NotFoundException {
-        Object result = getGenericData(uri, new String[]{column}, new int[]{type}, null).get(column);
-        if (result == null) {
-            throw new NotFoundException();
-        }
-        return result;
-    }
-
-    public Object getGenericData(Uri uri, String column, int type, String selection)
-            throws NotFoundException {
-        return getGenericData(uri, new String[]{column}, new int[]{type}, selection).get(column);
-    }
-
-    public HashMap<String, Object> getGenericData(Uri uri, String[] proj, int[] types)
-            throws NotFoundException {
-        return getGenericData(uri, proj, types, null);
-    }
-
-    public HashMap<String, Object> getGenericData(Uri uri, String[] proj, int[] types, String selection)
-            throws NotFoundException {
-        Cursor cursor = mContentResolver.query(uri, proj, selection, null, null);
-
-        try {
-            HashMap<String, Object> result = new HashMap<>(proj.length);
-            if (cursor != null && cursor.moveToFirst()) {
-                int pos = 0;
-                for (String p : proj) {
-                    switch (types[pos]) {
-                        case FIELD_TYPE_NULL:
-                            result.put(p, cursor.isNull(pos));
-                            break;
-                        case FIELD_TYPE_INTEGER:
-                            result.put(p, cursor.getLong(pos));
-                            break;
-                        case FIELD_TYPE_FLOAT:
-                            result.put(p, cursor.getFloat(pos));
-                            break;
-                        case FIELD_TYPE_STRING:
-                            result.put(p, cursor.getString(pos));
-                            break;
-                        case FIELD_TYPE_BLOB:
-                            result.put(p, cursor.getBlob(pos));
-                            break;
-                    }
-                    pos += 1;
-                }
-            } else {
-                // If no data was found, throw an appropriate exception
-                throw new NotFoundException();
-            }
-
-            return result;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-    public HashMap<String, Object> getUnifiedData(long masterKeyId, String[] proj, int[] types)
-            throws NotFoundException {
-        return getGenericData(KeyRings.buildUnifiedKeyRingUri(masterKeyId), proj, types);
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
-        Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
+        Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
                 KeyRings.MASTER_KEY_ID,
                 // we pick from cache only information that is not easily available from keyrings
-                KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED,
-                // and of course, ring data
-                KeyRings.PUBKEY_DATA
+                KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED
         }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
         try {
             LongSparseArray<CanonicalizedPublicKey> result = new LongSparseArray<>();
 
-            if (cursor != null && cursor.moveToFirst()) do {
-                long masterKeyId = cursor.getLong(0);
-                int verified = cursor.getInt(2);
-                byte[] blob = cursor.getBlob(3);
-                if (blob != null) {
-                    result.put(masterKeyId,
-                            new CanonicalizedPublicKeyRing(blob, verified).getPublicKey());
+            if (cursor == null) {
+                return result;
+            }
+
+            while (cursor.moveToNext()) {
+                try {
+                    long masterKeyId = cursor.getLong(0);
+                    int verified = cursor.getInt(2);
+                    byte[] blob = loadPublicKeyRingData(masterKeyId);
+                    if (blob != null) {
+                        result.put(masterKeyId, new CanonicalizedPublicKeyRing(blob, verified).getPublicKey());
+                    }
+                } catch (NotFoundException e) {
+                    throw new IllegalStateException("Error reading secret key data, this should not happen!", e);
                 }
-            } while (cursor.moveToNext());
+            }
 
             return result;
-
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
 
-    }
-
-    public long getMasterKeyId(long subKeyId) throws NotFoundException {
-        return (Long) getGenericData(KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId),
-                KeyRings.MASTER_KEY_ID, FIELD_TYPE_INTEGER);
-    }
-
-    public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {
-        long masterKeyId = new CachedPublicKeyRing(this, queryUri).extractOrGetMasterKeyId();
-        return getCachedPublicKeyRing(masterKeyId);
-    }
-
-    public CachedPublicKeyRing getCachedPublicKeyRing(long id) {
-        return new CachedPublicKeyRing(this, KeyRings.buildUnifiedKeyRingUri(id));
-    }
-
-    public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(long id) throws NotFoundException {
-        return (CanonicalizedPublicKeyRing) getCanonicalizedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), false);
-    }
-
-    public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri queryUri) throws NotFoundException {
-        return (CanonicalizedPublicKeyRing) getCanonicalizedKeyRing(queryUri, false);
-    }
-
-    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long id) throws NotFoundException {
-        return (CanonicalizedSecretKeyRing) getCanonicalizedKeyRing(KeyRings.buildUnifiedKeyRingUri(id), true);
-    }
-
-    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri queryUri) throws NotFoundException {
-        return (CanonicalizedSecretKeyRing) getCanonicalizedKeyRing(queryUri, true);
-    }
-
-    public ArrayList<String> getConfirmedUserIds(long masterKeyId) throws NotFoundException {
-        Cursor cursor = mContentResolver.query(UserPackets.buildUserIdsUri(masterKeyId),
-                new String[]{UserPackets.USER_ID}, UserPackets.VERIFIED + " = " + Certs.VERIFIED_SECRET, null, null
-        );
-        if (cursor == null) {
-            throw new NotFoundException("Key id for requested user ids not found");
-        }
-
-        try {
-            ArrayList<String> userIds = new ArrayList<>(cursor.getCount());
-            while (cursor.moveToNext()) {
-                String userId = cursor.getString(0);
-                userIds.add(userId);
-            }
-
-            return userIds;
-        } finally {
-            cursor.close();
-        }
-    }
-
-    private KeyRing getCanonicalizedKeyRing(Uri queryUri, boolean secret) throws NotFoundException {
-        Cursor cursor = mContentResolver.query(queryUri,
-                new String[]{
-                        // we pick from cache only information that is not easily available from keyrings
-                        KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED,
-                        // and of course, ring data
-                        secret ? KeyRings.PRIVKEY_DATA : KeyRings.PUBKEY_DATA
-                }, null, null, null
-        );
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-
-                boolean hasAnySecret = cursor.getInt(0) > 0;
-                int verified = cursor.getInt(1);
-                byte[] blob = cursor.getBlob(2);
-                if (secret & !hasAnySecret) {
-                    throw new NotFoundException("Secret key not available!");
-                }
-                return secret
-                        ? new CanonicalizedSecretKeyRing(blob, true, verified)
-                        : new CanonicalizedPublicKeyRing(blob, verified);
-            } else {
-                throw new NotFoundException("Key not found!");
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
     }
 
     // bits, in order: CESA. make SURE these are correct, we will get bad log entries otherwise!!
-    static final LogType LOG_TYPES_FLAG_MASTER[] = new LogType[]{
+    private static final LogType LOG_TYPES_FLAG_MASTER[] = new LogType[]{
             LogType.MSG_IP_MASTER_FLAGS_XXXX, LogType.MSG_IP_MASTER_FLAGS_CXXX,
             LogType.MSG_IP_MASTER_FLAGS_XEXX, LogType.MSG_IP_MASTER_FLAGS_CEXX,
             LogType.MSG_IP_MASTER_FLAGS_XXSX, LogType.MSG_IP_MASTER_FLAGS_CXSX,
@@ -340,7 +160,7 @@ public class ProviderHelper {
     };
 
     // same as above, but for subkeys
-    static final LogType LOG_TYPES_FLAG_SUBKEY[] = new LogType[]{
+    private static final LogType LOG_TYPES_FLAG_SUBKEY[] = new LogType[]{
             LogType.MSG_IP_SUBKEY_FLAGS_XXXX, LogType.MSG_IP_SUBKEY_FLAGS_CXXX,
             LogType.MSG_IP_SUBKEY_FLAGS_XEXX, LogType.MSG_IP_SUBKEY_FLAGS_CEXX,
             LogType.MSG_IP_SUBKEY_FLAGS_XXSX, LogType.MSG_IP_SUBKEY_FLAGS_CXSX,
@@ -378,18 +198,11 @@ public class ProviderHelper {
             operations = new ArrayList<>();
 
             log(LogType.MSG_IP_INSERT_KEYRING);
-            { // insert keyring
-                ContentValues values = new ContentValues();
-                values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
-                try {
-                    values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
-                } catch (IOException e) {
-                    log(LogType.MSG_IP_ENCODE_FAIL);
-                    return SaveKeyringResult.RESULT_ERROR;
-                }
-
-                Uri uri = KeyRingData.buildPublicKeyRingUri(masterKeyId);
-                operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
+            try {
+                writePublicKeyRing(keyRing, masterKeyId, operations);
+            } catch (IOException e) {
+                log(LogType.MSG_IP_ENCODE_FAIL);
+                return SaveKeyringResult.RESULT_ERROR;
             }
 
             log(LogType.MSG_IP_INSERT_SUBKEYS);
@@ -739,7 +552,7 @@ public class ProviderHelper {
         lastUpdatedCursor.close();
 
         try {
-            // delete old version of this keyRing, which also deletes all keys and userIds on cascade
+            // delete old version of this keyRing (from database only!), which also deletes all keys and userIds on cascade
             int deleted = mContentResolver.delete(
                     KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
             if (deleted > 0) {
@@ -767,6 +580,46 @@ public class ProviderHelper {
             return SaveKeyringResult.RESULT_ERROR;
         }
 
+    }
+
+    private void writePublicKeyRing(CanonicalizedPublicKeyRing keyRing, long masterKeyId,
+            ArrayList<ContentProviderOperation> operations) throws IOException {
+        byte[] encodedKey = keyRing.getEncoded();
+        mLocalPublicKeyStorage.writePublicKey(masterKeyId, encodedKey);
+
+        ContentValues values = new ContentValues();
+        values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
+        if (encodedKey.length < MAX_CACHED_KEY_SIZE) {
+            values.put(KeyRingData.KEY_RING_DATA, encodedKey);
+        } else {
+            values.put(KeyRingData.KEY_RING_DATA, (byte[]) null);
+        }
+
+        Uri uri = KeyRingData.buildPublicKeyRingUri(masterKeyId);
+        operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
+    }
+
+    private Uri writeSecretKeyRing(CanonicalizedSecretKeyRing keyRing, long masterKeyId) throws IOException {
+        byte[] encodedKey = keyRing.getEncoded();
+
+        ContentValues values = new ContentValues();
+        values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
+        values.put(KeyRingData.KEY_RING_DATA, encodedKey);
+
+        // insert new version of this keyRing
+        Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
+        return mContentResolver.insert(uri, values);
+    }
+
+    public boolean deleteKeyRing(long masterKeyId) {
+        try {
+            mLocalPublicKeyStorage.deletePublicKey(masterKeyId);
+        } catch (IOException e) {
+            android.util.Log.e(Constants.TAG, "Could not delete file!", e);
+            return false;
+        }
+        int deletedRows = mContentResolver.delete(KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
+        return deletedRows > 0;
     }
 
     private static class UserPacketItem implements Comparable<UserPacketItem> {
@@ -824,12 +677,8 @@ public class ProviderHelper {
 
             // save secret keyring
             try {
-                ContentValues values = new ContentValues();
-                values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
-                values.put(KeyRingData.KEY_RING_DATA, keyRing.getEncoded());
-                // insert new version of this keyRing
-                Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
-                if (mContentResolver.insert(uri, values) == null) {
+                Uri insertedUri = writeSecretKeyRing(keyRing, masterKeyId);
+                if (insertedUri == null) {
                     log(LogType.MSG_IS_DB_EXCEPTION);
                     return SaveKeyringResult.RESULT_ERROR;
                 }
@@ -1335,7 +1184,7 @@ public class ProviderHelper {
     private ConsolidateResult consolidateDatabaseStep2(
             OperationLog log, int indent, Progressable progress, boolean recovery) {
 
-        synchronized (ProviderHelper.class) {
+        synchronized (KeyWritableRepository.class) {
             if (mConsolidateCritical) {
                 log.add(LogType.MSG_CON_ERROR_CONCURRENT, indent);
                 return new ConsolidateResult(ConsolidateResult.RESULT_ERROR, log);
@@ -1525,25 +1374,6 @@ public class ProviderHelper {
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
 
-    private String getKeyRingAsArmoredString(byte[] data) throws IOException, PgpGeneralException {
-        UncachedKeyRing keyRing = UncachedKeyRing.decodeFromData(data);
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        keyRing.encodeArmored(bos, null);
-        String armoredKey = bos.toString("UTF-8");
-
-        Log.d(Constants.TAG, "armoredKey:" + armoredKey);
-
-        return armoredKey;
-    }
-
-    public String getKeyRingAsArmoredString(Uri uri)
-            throws NotFoundException, IOException, PgpGeneralException {
-        byte[] data = (byte[]) getGenericData(
-                uri, KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
-        return getKeyRingAsArmoredString(data);
-    }
-
     public Uri renewKeyLastUpdatedTime(long masterKeyId, long time, TimeUnit timeUnit) {
         ContentValues values = new ContentValues();
         values.put(UpdatedKeys.MASTER_KEY_ID, masterKeyId);
@@ -1552,7 +1382,4 @@ public class ProviderHelper {
         return mContentResolver.insert(UpdatedKeys.CONTENT_URI, values);
     }
 
-    public ContentResolver getContentResolver() {
-        return mContentResolver;
-    }
 }

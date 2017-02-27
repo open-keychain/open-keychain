@@ -18,48 +18,37 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+import java.util.Date;
+
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 public class CertifyKeyFragment
         extends CachingCryptoOperationFragment<CertifyActionsParcel, CertifyResult> {
@@ -80,7 +69,8 @@ public class CertifyKeyFragment
                     .getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
             if (certifyKeyId != Constants.key.none) {
                 try {
-                    CachedPublicKeyRing key = (new ProviderHelper(getActivity()))
+                    CachedPublicKeyRing key = (KeyRepository
+                            .createDatabaseInteractor(getContext()))
                             .getCachedPublicKeyRing(certifyKeyId);
                     if (key.canCertify()) {
                         mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
