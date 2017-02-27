@@ -201,9 +201,10 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                                 + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.IDENTIFIER + " LIKE queried_addresses.address"
                                 + " AND " + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.PACKAGE_NAME + " = \"" + callingPackageName + "\""
                                 + ")"
-                                + " LEFT JOIN " + Tables.CERTS + " ON ("
+                                + " JOIN " + Tables.CERTS + " ON ("
                                 + "(" + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
                                 + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = " + Tables.CERTS + "." + Certs.RANK + ")"
+                                + " OR " + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
                                 + ")"
                 );
                 // in case there are multiple verifying certificates
