@@ -1805,4 +1805,6 @@
     <string name="button_allow">Allow</string>
     <string name="button_cancel">Cancel</string>
     <string name="requested_key_label">Requested key:</string>
+    <string name="error_preselect_sign_key">Error selecting key %s for signing!</string>
+    <string name="error_preselect_encrypt_key">Error selecting key %s for encryption!</string>
 </resources>

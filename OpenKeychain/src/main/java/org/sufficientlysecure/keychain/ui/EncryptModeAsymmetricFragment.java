@@ -38,6 +38,9 @@ import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner.OnKeyChangedListener;
@@ -141,7 +144,10 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                     mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
                 }
             } catch (PgpKeyNotFoundException e) {
-                Log.e(Constants.TAG, "key not found!", e);
+                Log.e(Constants.TAG, "key not found for signing!", e);
+                Notify.create(getActivity(), getString(R.string.error_preselect_sign_key,
+                        KeyFormattingUtils.beautifyKeyId(signatureKeyId)),
+                        Style.ERROR).show();
             }
         }
 
@@ -152,7 +158,10 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                             mKeyRepository.getCanonicalizedPublicKeyRing(preselectedId);
                     mEncryptKeyView.addObject(new KeyItem(ring));
                 } catch (NotFoundException e) {
-                    Log.e(Constants.TAG, "key not found!", e);
+                    Log.e(Constants.TAG, "key not found for encryption!", e);
+                    Notify.create(getActivity(), getString(R.string.error_preselect_encrypt_key,
+                            KeyFormattingUtils.beautifyKeyId(preselectedId)),
+                            Style.ERROR).show();
                 }
             }
             // This is to work-around a rendering bug in TokenCompleteTextView
