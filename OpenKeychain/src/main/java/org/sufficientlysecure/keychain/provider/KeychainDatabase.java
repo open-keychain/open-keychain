@@ -326,22 +326,9 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 20:
                 db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
             case 21:
-                db.execSQL(
-                        "CREATE TABLE IF NOT EXISTS " + Tables.API_TRUST_IDENTITIES + " ("
-                                + ApiTrustIdentityColumns.PACKAGE_NAME + " TEXT NOT NULL, "
-                                + ApiTrustIdentityColumns.IDENTIFIER + " TEXT NOT NULL, "
-                                + ApiTrustIdentityColumns.LAST_UPDATED + " INTEGER NOT NULL, "
-                                + ApiTrustIdentityColumns.MASTER_KEY_ID + " INTEGER NOT NULL, "
-                                + "PRIMARY KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ", "
-                                    + ApiTrustIdentityColumns.IDENTIFIER + "), "
-                                + "FOREIGN KEY(" + ApiTrustIdentityColumns.MASTER_KEY_ID + ") REFERENCES "
-                                    + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE, "
-                                + "FOREIGN KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ") REFERENCES "
-                                    + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
-                                + ")"
-                );
+                db.execSQL(CREATE_API_TRUST_IDENTITIES);
+
                 if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20 || oldVersion == 21) {
-                    // no consolidate for now, often crashes!
                     return;
                 }
         }
