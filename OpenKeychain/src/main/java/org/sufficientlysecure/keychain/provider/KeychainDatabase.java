@@ -336,20 +336,18 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE updated_keys ADD COLUMN seen_on_keyservers INTEGER;");
 
             case 22:
-                db.execSQL(
-                        "CREATE TABLE IF NOT EXISTS " + Tables.API_TRUST_IDENTITIES + " ("
-                                + ApiTrustIdentityColumns.PACKAGE_NAME + " TEXT NOT NULL, "
-                                + ApiTrustIdentityColumns.IDENTIFIER + " TEXT NOT NULL, "
-                                + ApiTrustIdentityColumns.LAST_UPDATED + " INTEGER NOT NULL, "
-                                + ApiTrustIdentityColumns.MASTER_KEY_ID + " INTEGER NOT NULL, "
-                                + "PRIMARY KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ", "
-                                    + ApiTrustIdentityColumns.IDENTIFIER + "), "
-                                + "FOREIGN KEY(" + ApiTrustIdentityColumns.MASTER_KEY_ID + ") REFERENCES "
-                                    + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE, "
-                                + "FOREIGN KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ") REFERENCES "
-                                    + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
-                                + ")"
-                );
+                db.execSQL("CREATE TABLE IF NOT EXISTS " + Tables.API_TRUST_IDENTITIES + " ("
+                        + ApiTrustIdentityColumns.PACKAGE_NAME + " TEXT NOT NULL, "
+                        + ApiTrustIdentityColumns.IDENTIFIER + " TEXT NOT NULL, "
+                        + ApiTrustIdentityColumns.LAST_UPDATED + " INTEGER NOT NULL, "
+                        + ApiTrustIdentityColumns.MASTER_KEY_ID + " INTEGER NOT NULL, "
+                        + "PRIMARY KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ", "
+                            + ApiTrustIdentityColumns.IDENTIFIER + "), "
+                        + "FOREIGN KEY(" + ApiTrustIdentityColumns.MASTER_KEY_ID + ") REFERENCES "
+                            + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE, "
+                        + "FOREIGN KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ") REFERENCES "
+                            + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
+                    + ")");
 
                 if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20 || oldVersion == 21 || oldVersion == 22) {
                     // no consolidate for now, often crashes!
