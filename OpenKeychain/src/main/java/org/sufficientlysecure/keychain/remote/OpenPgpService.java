@@ -116,7 +116,7 @@ public class OpenPgpService extends Service {
 
             Intent signKeyIdIntent = getSignKeyMasterId(data);
             // NOTE: Fallback to return account settings (Old API)
-            if (signKeyIdIntent.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR)
+            if (signKeyIdIntent.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS)
                     == OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED) {
                 return signKeyIdIntent;
             }
@@ -237,8 +237,12 @@ public class OpenPgpService extends Service {
             KeyIdResult keyIdResult = mKeyIdExtractor.returnKeyIdsFromIntent(data, false,
                     mApiPermissionHelper.getCurrentCallingPackage());
 
+            boolean isDryRun = data.getBooleanExtra(OpenPgpApi.EXTRA_DRY_RUN, false);
             boolean isOpportunistic = data.getBooleanExtra(OpenPgpApi.EXTRA_OPPORTUNISTIC_ENCRYPTION, false);
             KeyIdResultStatus keyIdResultStatus = keyIdResult.getStatus();
+            if (isDryRun) {
+                return getDryRunStatusResult(keyIdResult);
+            }
 
             if (keyIdResult.hasKeySelectionPendingIntent()) {
                 if ((keyIdResultStatus == KeyIdResultStatus.MISSING || keyIdResultStatus == KeyIdResultStatus.NO_KEYS ||
@@ -295,6 +299,42 @@ public class OpenPgpService extends Service {
         } catch (Exception e) {
             Log.d(Constants.TAG, "encryptAndSignImpl", e);
             return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
+        }
+    }
+
+    @NonNull
+    private Intent getDryRunStatusResult(KeyIdResult keyIdResult) {
+        switch (keyIdResult.getStatus()) {
+            case MISSING: {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_ERROR,
+                        new OpenPgpError(OpenPgpError.OPPORTUNISTIC_MISSING_KEYS, "missing keys in opportunistic mode"));
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+                return result;
+            }
+            case NO_KEYS:
+            case NO_KEYS_ERROR: {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_ERROR,
+                        new OpenPgpError(OpenPgpError.NO_USER_IDS, "empty recipient list"));
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+                return result;
+            }
+            case DUPLICATE: {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_KEYS_CONFIRMED, false);
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                return result;
+            }
+            case OK: {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_KEYS_CONFIRMED, keyIdResult.isAllKeysConfirmed());
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                return result;
+            }
+            default: {
+                throw new IllegalStateException("unhandled case!");
+            }
         }
     }
 
