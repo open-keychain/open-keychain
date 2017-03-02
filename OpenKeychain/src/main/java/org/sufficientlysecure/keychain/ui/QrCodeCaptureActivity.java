@@ -69,7 +69,7 @@ public class QrCodeCaptureActivity extends FragmentActivity {
             importFailButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setResult(Activity.RESULT_CANCELED);
+                    setResult(Activity.RESULT_OK);
                     finish();
                 }
             });

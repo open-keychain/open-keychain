@@ -146,15 +146,17 @@ public class ImportKeysFileFragment extends Fragment {
                 break;
             }
             case REQUEST_CODE_SCAN:
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    String qrContent = data.getStringExtra(ImportKeysProxyActivity.EXTRA_SCANNED_CONTENT);
-                    if (qrContent != null) {
-                        importViaWlan(qrContent);
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
+                        String qrContent = data.getStringExtra(ImportKeysProxyActivity.EXTRA_SCANNED_CONTENT);
+                        if (qrContent != null) {
+                            importViaWlan(qrContent);
+                        }
+                    } else {
+                        Intent intent = new Intent(mActivity, PrivateKeyImportExportActivity.class);
+                        intent.putExtra(PrivateKeyImportExportActivity.EXTRA_IMPORT_KEY, true);
+                        startActivityForResult(intent, REQUEST_CODE_WLAN);
                     }
-                } else {
-                    Intent intent = new Intent(mActivity, PrivateKeyImportExportActivity.class);
-                    intent.putExtra(PrivateKeyImportExportActivity.EXTRA_IMPORT_KEY, true);
-                    startActivityForResult(intent, REQUEST_CODE_WLAN);
                 }
                 break;
             case REQUEST_CODE_WLAN:

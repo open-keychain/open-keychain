@@ -130,6 +130,12 @@ public class ImportKeysProxyActivity extends FragmentActivity
         }
 
         if (requestCode == IntentIntegratorSupportV4.REQUEST_CODE) {
+            if (data == null) {
+                setResult(resultCode);
+                finish();
+                return;
+            }
+
             IntentResult scanResult = IntentIntegratorSupportV4.parseActivityResult(requestCode,
                     resultCode, data);
 
