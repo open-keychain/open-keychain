@@ -51,6 +51,7 @@ public class ImportKeysFileFragment extends Fragment {
 
     private Activity mActivity;
     private ImportKeysListener mCallback;
+    private SecureDataSocket mSecureDataSocket;
 
     private Uri mCurrentUri;
 
@@ -145,8 +146,11 @@ public class ImportKeysFileFragment extends Fragment {
                 break;
             }
             case REQUEST_CODE_SCAN:
-                if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
-                    // TODO
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    String qrContent = data.getStringExtra(ImportKeysProxyActivity.EXTRA_SCANNED_CONTENT);
+                    if (qrContent != null) {
+                        importViaWlan(qrContent);
+                    }
                 } else {
                     Intent intent = new Intent(mActivity, PrivateKeyImportExportActivity.class);
                     intent.putExtra(PrivateKeyImportExportActivity.EXTRA_IMPORT_KEY, true);
@@ -159,6 +163,15 @@ public class ImportKeysFileFragment extends Fragment {
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mSecureDataSocket != null) {
+            mSecureDataSocket.close();
         }
     }
 
@@ -181,6 +194,31 @@ public class ImportKeysFileFragment extends Fragment {
         } else {
             mCallback.loadKeys(new BytesLoaderState(null, mCurrentUri));
         }
+    }
+
+    private void importViaWlan(final String qrData) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mSecureDataSocket = new SecureDataSocket(PrivateKeyExportFragment.PORT);
+                    mSecureDataSocket.setupClientWithCamera(qrData);
+                    byte[] keyRing = mSecureDataSocket.read();
+                    mSecureDataSocket.close();
+
+                    /*ImportKeysListEntry keyEntry = new ImportKeysListEntry(keyRing);
+                    ArrayList<ImportKeysListEntry> selectedEntries = new ArrayList<>();
+                    selectedEntries.add(keyRing);
+
+                    mCallback.importKeys(selectedEntries);*/
+
+                    mCallback.loadKeys(new BytesLoaderState(keyRing, null));
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 

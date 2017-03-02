@@ -279,8 +279,6 @@ public class FileHelper {
     }
 
     public static byte[] readBytesFromUri(Context context, Uri outputUri) throws IOException {
-        byte[] decryptedMessage;
-
         InputStream in = context.getContentResolver().openInputStream(outputUri);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buf = new byte[256];

@@ -4,13 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,12 +37,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static android.content.Context.WIFI_SERVICE;
-
 public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> {
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
-
-    private static final int PORT = 5891;
+    public static final int PORT = 5891;
 
     private ImageView mQrCode;
 
@@ -168,7 +161,13 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         public void run() {
             try {
                 mSecureDataSocket.setupServerWithClientCamera();
-                createExport();
+
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        createExport();
+                    }
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -187,11 +186,8 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         AsyncTask<Void, Void, Bitmap> loadTask =
                 new AsyncTask<Void, Void, Bitmap>() {
                     protected Bitmap doInBackground(Void... unused) {
-                        Uri uri = new Uri.Builder()
-                                .path(mConnectionDetails)
-                                .build();
                         // render with minimal size
-                        return QrCodeUtils.getQRCodeBitmap(uri, 0);
+                        return QrCodeUtils.getQRCodeBitmap(mConnectionDetails, 0);
                     }
 
                     protected void onPostExecute(Bitmap qrCode) {
@@ -280,7 +276,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
     @Override
     public void onCryptoOperationSuccess(ExportResult result) {
-
+        createExport();
     }
 
     @Override

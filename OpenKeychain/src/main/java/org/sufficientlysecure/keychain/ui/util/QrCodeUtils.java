@@ -51,7 +51,7 @@ public class QrCodeUtils {
      * Generate Bitmap with QR Code based on input.
      * @return QR Code as Bitmap
      */
-    private static Bitmap getQRCodeBitmap(final String input, final int size) {
+    public static Bitmap getQRCodeBitmap(final String input, final int size) {
 
         try {
 

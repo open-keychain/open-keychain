@@ -62,6 +62,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     public static final String ACTION_SCAN_PRIVATE_KEY_IMPORT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_PRIVATE_KEY_IMPORT";
 
     public static final String EXTRA_FINGERPRINT = "fingerprint";
+    public static final String EXTRA_SCANNED_CONTENT = "scanned_content";
 
     // for CryptoOperationHelper
     private ParcelableHkpKeyserver mKeyserver;
@@ -143,9 +144,9 @@ public class ImportKeysProxyActivity extends FragmentActivity
             if (!mImportPrivateKey) {
                 processScannedContent(scannedContent);
             } else {
-                // TODO: import private key
-
-                setResult(RESULT_OK);
+                Intent intent = new Intent();
+                intent.putExtra(EXTRA_SCANNED_CONTENT, scannedContent);
+                setResult(RESULT_OK, intent);
                 finish();
             }
 
