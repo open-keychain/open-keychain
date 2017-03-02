@@ -312,6 +312,15 @@ android {
     }
 }
 
+project(':extern:SecureDataSocket') {
+    apply plugin: 'java'
+
+    dependencies {
+        compile project(':extern:bouncycastle:core')
+        compile project(':extern:bouncycastle:prov')
+    }
+}
+
 task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugWithTestCoverageUnitTest") {
     group = "Reporting"
     description = "Generate Jacoco coverage reports"
