@@ -7,7 +7,9 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,19 +20,32 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cryptolib.SecureDataSocket;
+import com.cryptolib.UnverifiedException;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
+import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
+import org.sufficientlysecure.keychain.util.FileHelper;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static android.content.Context.WIFI_SERVICE;
 
-public class PrivateKeyExportFragment extends Fragment {
+public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> {
+    public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
+
     private static final int PORT = 5891;
 
     private ImageView mQrCode;
@@ -39,11 +54,14 @@ public class PrivateKeyExportFragment extends Fragment {
     private SecureDataSocket mSecureDataSocket;
     private String mIpAddress;
     private String mConnectionDetails;
+    private long mMasterKeyId;
+    private Uri mCachedBackupUri;
 
-    public static PrivateKeyExportFragment newInstance() {
+    public static PrivateKeyExportFragment newInstance(long masterKeyId) {
         PrivateKeyExportFragment frag = new PrivateKeyExportFragment();
 
         Bundle args = new Bundle();
+        args.putLong(ARG_MASTER_KEY_IDS, masterKeyId);
         frag.setArguments(args);
 
         return frag;
@@ -79,6 +97,9 @@ public class PrivateKeyExportFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater i, ViewGroup c, Bundle savedInstanceState) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.private_key_export_fragment, c, false);
+
+        Bundle args = getArguments();
+        mMasterKeyId = args.getLong(ARG_MASTER_KEY_IDS);
 
         final View qrLayout = view.findViewById(R.id.private_key_export_qr_layout);
         mQrCode = (ImageView) view.findViewById(R.id.private_key_export_qr_image);
@@ -147,6 +168,7 @@ public class PrivateKeyExportFragment extends Fragment {
         public void run() {
             try {
                 mSecureDataSocket.setupServerWithClientCamera();
+                createExport();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -190,6 +212,32 @@ public class PrivateKeyExportFragment extends Fragment {
         loadTask.execute();
     }
 
+    private void createExport() {
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String filename = Constants.FILE_ENCRYPTED_BACKUP_PREFIX + date
+                + Constants.FILE_EXTENSION_ENCRYPTED_BACKUP_SECRET;
+
+        if (mCachedBackupUri == null) {
+            mCachedBackupUri = TemporaryFileProvider.createFile(mActivity, filename,
+                    Constants.MIME_TYPE_ENCRYPTED_ALTERNATE);
+
+            cryptoOperation(new CryptoInputParcel());
+            return;
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    byte[] exportData = FileHelper.readBytesFromUri(mActivity, mCachedBackupUri);
+                    mSecureDataSocket.write(exportData);
+                } catch (IOException | UnverifiedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     /**
      * from: http://stackoverflow.com/a/13007325
      *
@@ -197,7 +245,7 @@ public class PrivateKeyExportFragment extends Fragment {
      * @param useIPv4  true=return ipv4, false=return ipv6
      * @return  address or empty string
      */
-    public static String getIPAddress(boolean useIPv4) {
+    private static String getIPAddress(boolean useIPv4) {
         try {
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface intf : interfaces) {
@@ -222,5 +270,27 @@ public class PrivateKeyExportFragment extends Fragment {
             }
         } catch (Exception ex) { } // for now eat exceptions
         return "";
+    }
+
+    @Nullable
+    @Override
+    public BackupKeyringParcel createOperationInput() {
+        return new BackupKeyringParcel(new long[] {mMasterKeyId}, true, false, mCachedBackupUri);
+    }
+
+    @Override
+    public void onCryptoOperationSuccess(ExportResult result) {
+
+    }
+
+    @Override
+    public void onCryptoOperationError(ExportResult result) {
+        result.createNotify(getActivity()).show();
+        mCachedBackupUri = null;
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+        mCachedBackupUri = null;
     }
 }

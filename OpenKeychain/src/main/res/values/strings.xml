@@ -30,7 +30,7 @@
     <string name="title_decrypt_to_file">"Decrypt To File"</string>
     <string name="title_import_keys">"Import Keys"</string>
     <string name="title_import_private_key">"Import Private Key"</string>
-    <string name="title_share_private_key">"Share Private Key"</string>
+    <string name="title_export_private_key">"Export Private Key"</string>
     <string name="title_export_key">"Backup Key"</string>
     <string name="title_export_keys">"Backup Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>

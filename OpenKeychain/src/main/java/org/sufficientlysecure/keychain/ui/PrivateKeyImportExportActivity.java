@@ -20,7 +20,7 @@ public class PrivateKeyImportExportActivity extends BaseActivity {
 
         boolean importKey = getIntent().getBooleanExtra(EXTRA_IMPORT_KEY, true);
 
-        setTitle(importKey ? R.string.title_import_private_key : R.string.title_share_private_key);
+        setTitle(importKey ? R.string.title_import_private_key : R.string.title_export_private_key);
 
         Fragment fragment = importKey ? PrivateKeyImportFragment.newInstance() : PrivateKeyExportFragment.newInstance();
         getSupportFragmentManager().beginTransaction()

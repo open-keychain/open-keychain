@@ -123,6 +123,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     static final int REQUEST_BACKUP = 2;
     static final int REQUEST_CERTIFY = 3;
     static final int REQUEST_DELETE = 4;
+    static final int REQUEST_WLAN = 5;
 
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
     public static final String EXTRA_LINKED_TRANSITION = "linked_transition";
@@ -321,9 +322,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         mActionWlan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ViewKeyActivity.this, PrivateKeyImportExportActivity.class);
-                intent.putExtra(PrivateKeyImportExportActivity.EXTRA_IMPORT_KEY, false);
-                startActivity(intent);
+                if (!startPassphraseActivity(REQUEST_WLAN)) {
+                    startWlanActivity();
+                }
             }
         });
 
@@ -397,7 +398,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 return true;
             }
             case R.id.menu_key_view_backup: {
-                startPassphraseActivity(REQUEST_BACKUP);
+                if (!startPassphraseActivity(REQUEST_BACKUP)) {
+                    startBackupActivity();
+                }
                 return true;
             }
             case R.id.menu_key_view_delete: {
@@ -546,7 +549,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         ActivityCompat.startActivity(this, qrCodeIntent, opts);
     }
 
-    private void startPassphraseActivity(int requestCode) {
+    private boolean startPassphraseActivity(int requestCode) {
 
         if (keyHasPassphrase()) {
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
@@ -555,9 +558,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
             startActivityForResult(intent, requestCode);
-        } else {
-            startBackupActivity();
+            return true;
         }
+        return false;
     }
 
     private boolean keyHasPassphrase() {
@@ -583,6 +586,12 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         Intent intent = new Intent(this, BackupActivity.class);
         intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[]{mMasterKeyId});
         intent.putExtra(BackupActivity.EXTRA_SECRET, true);
+        startActivity(intent);
+    }
+
+    private void startWlanActivity() {
+        Intent intent = new Intent(ViewKeyActivity.this, PrivateKeyImportExportActivity.class);
+        intent.putExtra(PrivateKeyImportExportActivity.EXTRA_IMPORT_KEY, false);
         startActivity(intent);
     }
 
@@ -654,6 +663,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
                     result.createNotify(this).show();
                 }
+                return;
+            }
+
+            case REQUEST_WLAN: {
+                startWlanActivity();
                 return;
             }
 
