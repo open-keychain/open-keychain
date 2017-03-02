@@ -592,6 +592,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private void startWlanActivity() {
         Intent intent = new Intent(ViewKeyActivity.this, PrivateKeyImportExportActivity.class);
         intent.putExtra(PrivateKeyImportExportActivity.EXTRA_IMPORT_KEY, false);
+        intent.putExtra(PrivateKeyImportExportActivity.EXTRA_MASTER_KEY_ID, mMasterKeyId);
         startActivity(intent);
     }
 

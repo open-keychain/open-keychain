@@ -9,6 +9,7 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
 public class PrivateKeyImportExportActivity extends BaseActivity {
     public static String EXTRA_IMPORT_KEY = "import_key";
+    public static String EXTRA_MASTER_KEY_ID = "master_key_id";
 
     private static final String TAG_FRAG = "frag";
 
@@ -19,10 +20,11 @@ public class PrivateKeyImportExportActivity extends BaseActivity {
         setFullScreenDialogClose(Activity.RESULT_CANCELED, true);
 
         boolean importKey = getIntent().getBooleanExtra(EXTRA_IMPORT_KEY, true);
+        long masterKeyId = getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0);
 
         setTitle(importKey ? R.string.title_import_private_key : R.string.title_export_private_key);
 
-        Fragment fragment = importKey ? PrivateKeyImportFragment.newInstance() : PrivateKeyExportFragment.newInstance();
+        Fragment fragment = importKey ? PrivateKeyImportFragment.newInstance() : PrivateKeyExportFragment.newInstance(masterKeyId);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.import_export_private_key_container, fragment, TAG_FRAG)
                 .commit();
