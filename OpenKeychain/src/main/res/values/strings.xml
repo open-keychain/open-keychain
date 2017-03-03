@@ -118,7 +118,7 @@
     <string name="cd_exchange_keys">"Exchange keys"</string>
     <string name="cd_encrypt_text">"Encrypt text"</string>
     <string name="cd_share_nfc">"Share via NFC"</string>
-    <string name="cd_share_wlan">"Share via WLAN"</string>
+    <string name="cd_export_wlan">"Export via WLAN"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>

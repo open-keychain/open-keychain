@@ -125,10 +125,10 @@
                     <ImageButton
                         android:id="@+id/view_key_action_wlan"
                         style="?android:attr/borderlessButtonStyle"
-                        android:contentDescription="@string/cd_share_nfc"
+                        android:contentDescription="@string/cd_export_wlan"
                         android:layout_width="64dp"
                         android:layout_height="64dp"
-                        android:src="@drawable/ic_nfc_white_24dp"
+                        android:src="@drawable/ic_wlanexport_white_24dp"
                         android:visibility="invisible"
                         tools:visibility="visible" />
 
