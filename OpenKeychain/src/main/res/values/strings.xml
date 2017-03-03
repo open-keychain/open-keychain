@@ -90,6 +90,7 @@
     <string name="btn_next">"Next"</string>
     <string name="btn_back">"Back"</string>
     <string name="btn_no">"No"</string>
+    <string name="btn_yes">"Yes"</string>
     <string name="btn_match">"Fingerprints match"</string>
     <string name="btn_match_phrases">"Phrases match"</string>
     <string name="btn_share_encrypted_signed">"Encrypt/sign and share text"</string>
@@ -389,7 +390,7 @@
     <string name="private_key_export_qr">"Scan this QR code with the device that should receive the private key."</string>
     <string name="private_key_export_ip">"IP address of this device:"</string>
     <string name="private_key_export_port">"Port number of this device:"</string>
-    <string name="private_key_export_sentence">"Validation sentence:"</string>
+    <string name="private_key_export_sentence">"Is the same sentence shown on the other device?"</string>
     <!--
          errors
          no punctuation, all lowercase,

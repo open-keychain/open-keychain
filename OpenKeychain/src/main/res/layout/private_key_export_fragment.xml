@@ -79,29 +79,51 @@
             android:paddingBottom="72dp"/>
 
         <TextView
+            android:id="@+id/private_key_export_sentence_headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/private_key_export_sentence"
             android:paddingBottom="24dp"
             android:textSize="@dimen/private_key_import_export_text_headline_size"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/private_key_export_sentence"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/private_key_export_ok_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/msg_vl_ok"
-        android:layout_gravity="center_horizontal"
-        android:padding="8dp"
-        android:layout_marginBottom="@dimen/private_key_import_button_margin_bottom"
-        android:visibility="gone"/>
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/private_key_export_sentence_not_matched_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_no"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:layout_marginBottom="@dimen/private_key_import_button_margin_bottom"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/private_key_export_sentence_matched_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_yes"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:layout_marginBottom="@dimen/private_key_import_button_margin_bottom"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
 
 </LinearLayout>

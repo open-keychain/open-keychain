@@ -36,12 +36,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Semaphore;
 
 public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> {
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
     public static final int PORT = 5891;
 
     private ImageView mQrCode;
+    private TextView mSentenceText;
 
     private Activity mActivity;
     private SecureDataSocket mSecureDataSocket;
@@ -49,6 +51,10 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     private String mConnectionDetails;
     private long mMasterKeyId;
     private Uri mCachedBackupUri;
+    private boolean mReconnectWithoutQrCode;
+
+    private Semaphore mLock = new Semaphore(0);
+    private boolean mSentencesMatched;
 
     public static PrivateKeyExportFragment newInstance(long masterKeyId) {
         PrivateKeyExportFragment frag = new PrivateKeyExportFragment();
@@ -101,28 +107,46 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         final View infoLayout = view.findViewById(R.id.private_key_export_info_layout);
         TextView ipText = (TextView) view.findViewById(R.id.private_key_export_ip);
         TextView portText = (TextView) view.findViewById(R.id.private_key_export_port);
-        TextView sentenceText = (TextView) view.findViewById(R.id.private_key_export_sentence);
-        final Button okButton = (Button) view.findViewById(R.id.private_key_export_ok_button);
+        final TextView sentenceHeadlineText = (TextView) view.findViewById(R.id.private_key_export_sentence_headline);
+        mSentenceText = (TextView) view.findViewById(R.id.private_key_export_sentence);
+        final Button noButton = (Button) view.findViewById(R.id.private_key_export_sentence_not_matched_button);
+        final Button yesButton = (Button) view.findViewById(R.id.private_key_export_sentence_matched_button);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mReconnectWithoutQrCode = true;
+                if (mSecureDataSocket != null) {
+                    mSecureDataSocket.close();
+                }
+
                 qrLayout.setVisibility(View.GONE);
                 button.setVisibility(View.GONE);
 
                 infoLayout.setVisibility(View.VISIBLE);
-                okButton.setVisibility(View.VISIBLE);
+                sentenceHeadlineText.setVisibility(View.VISIBLE);
+                mSentenceText.setVisibility(View.VISIBLE);
+                noButton.setVisibility(View.VISIBLE);
+                yesButton.setVisibility(View.VISIBLE);
             }
         });
 
         ipText.setText(mIpAddress);
         portText.setText(String.valueOf(PORT));
-        sentenceText.setText("This is a sentence.");
 
-        okButton.setOnClickListener(new View.OnClickListener() {
+        noButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mActivity.finish();
+                mSentencesMatched = false;
+                mLock.release();
+            }
+        });
+
+        yesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSentencesMatched = true;
+                mLock.release();
             }
         });
 
@@ -162,12 +186,43 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
             try {
                 mSecureDataSocket.setupServerWithClientCamera();
 
+                if (!mReconnectWithoutQrCode) {
+                    mActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            createExport();
+                        }
+                    });
+                    return;
+                }
+
+                final String phrase = mSecureDataSocket.setupServerNoClientCamera();
+
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        createExport();
+                        mSentenceText.setText(phrase);
                     }
                 });
+
+                boolean interrupted;
+                do {
+                    try {
+                        mLock.acquire();
+                        interrupted = false;
+                    } catch (InterruptedException e) {
+                        interrupted = true;
+                        e.printStackTrace();
+                    }
+                } while (interrupted);
+
+                mSecureDataSocket.comparedPhrases(mSentencesMatched);
+
+                if (mSentencesMatched) {
+                    createExport();
+                } else {
+                    mActivity.finish();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -227,6 +282,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
                 try {
                     byte[] exportData = FileHelper.readBytesFromUri(mActivity, mCachedBackupUri);
                     mSecureDataSocket.write(exportData);
+                    mActivity.finish();
                 } catch (IOException | UnverifiedException e) {
                     e.printStackTrace();
                 }
