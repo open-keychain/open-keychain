@@ -305,19 +305,12 @@ public class OpenPgpService extends Service {
     private Intent getDryRunStatusResult(KeyIdResult keyIdResult) {
         switch (keyIdResult.getStatus()) {
             case MISSING: {
-                Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_ERROR,
-                        new OpenPgpError(OpenPgpError.OPPORTUNISTIC_MISSING_KEYS, "missing keys in opportunistic mode"));
-                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-                return result;
+                return createErrorResultIntent(OpenPgpError.OPPORTUNISTIC_MISSING_KEYS,
+                        "missing keys in opportunistic mode");
             }
             case NO_KEYS:
             case NO_KEYS_ERROR: {
-                Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_ERROR,
-                        new OpenPgpError(OpenPgpError.NO_USER_IDS, "empty recipient list"));
-                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-                return result;
+                return createErrorResultIntent(OpenPgpError.NO_USER_IDS, "empty recipient list");
             }
             case DUPLICATE: {
                 Intent result = new Intent();
@@ -796,11 +789,7 @@ public class OpenPgpService extends Service {
             return result;
         } catch (Exception e) {
             Log.d(Constants.TAG, "exception in updateTrustIdKeyImpl", e);
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_ERROR,
-                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-            return result;
+            return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
 
