@@ -14,6 +14,13 @@
     android:focusable="false"
     tools:layout_marginTop="30dp">
 
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="4dp"
+        android:id="@+id/key_list_item_tid_icon"
+        tools:src="@drawable/apps_k9" />
+
     <LinearLayout
         android:id="@+id/key_list_item_data"
         android:layout_width="0dip"
@@ -52,19 +59,6 @@
             android:visibility="gone"
             tools:visibility="visible"
             tools:text="Created on 10/10/2010 10:00" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:id="@+id/key_list_item_tid_icon"
-        android:gravity="center_vertical">
-
-        <!--
-        <include layout="@layout/trust_id_icon" />
-        -->
 
     </LinearLayout>
 

@@ -354,7 +354,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
     public class KeyItemViewHolder extends SectionCursorAdapter.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
 
-        private final ViewGroup mTrustIdIcons;
+        private final ImageView mTrustIdIcon;
         private final TextView mMainUserId;
         private final TextView mMainUserIdRest;
         private final TextView mCreationDate;
@@ -371,7 +371,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             mSlinger = itemView.findViewById(R.id.key_list_item_slinger_view);
             mSlingerButton = (ImageButton) itemView.findViewById(R.id.key_list_item_slinger_button);
             mCreationDate = (TextView) itemView.findViewById(R.id.key_list_item_creation);
-            mTrustIdIcons = (ViewGroup) itemView.findViewById(R.id.key_list_item_tid_icon);
+            mTrustIdIcon = (ImageView) itemView.findViewById(R.id.key_list_item_tid_icon);
 
             itemView.setClickable(true);
             itemView.setLongClickable(true);
@@ -498,27 +498,18 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             { // set icons
                 List<String> packageNames = keyItem.getTrustIdPackages();
 
-                LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-                while (mTrustIdIcons.getChildCount() < packageNames.size()) {
-                    layoutInflater.inflate(R.layout.trust_id_icon, mTrustIdIcons, true);
-                }
-
-                int visibleIcons = 0;
-                for (int i = 0; i < packageNames.size(); i++) {
-                    ImageView imageView = (ImageView) mTrustIdIcons.getChildAt(i);
-                    Drawable drawable = getDrawableForPackageName(packageNames.get(i));
-                    if (drawable == null) {
-                        continue;
+                if (!keyItem.isSecret() && !packageNames.isEmpty()) {
+                    String packageName = packageNames.get(0);
+                    Drawable drawable = getDrawableForPackageName(packageName);
+                    if (drawable != null) {
+                        mTrustIdIcon.setImageDrawable(drawable);
+                        mTrustIdIcon.setVisibility(View.VISIBLE);
+                    } else {
+                        mTrustIdIcon.setVisibility(View.GONE);
                     }
-
-                    imageView.setImageDrawable(drawable);
-                    imageView.setVisibility(View.VISIBLE);
-                    visibleIcons += 1;
+                } else {
+                    mTrustIdIcon.setVisibility(View.GONE);
                 }
-                for (int i = visibleIcons; i < mTrustIdIcons.getChildCount(); i++) {
-                    mTrustIdIcons.getChildAt(i).setVisibility(View.GONE);
-                }
-
             }
         }
 
