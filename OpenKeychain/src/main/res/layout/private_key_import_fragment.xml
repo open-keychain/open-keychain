@@ -33,7 +33,8 @@
             android:id="@+id/private_key_import_port"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/private_key_import_port_hint"/>
+            android:hint="@string/private_key_import_port_hint"
+            android:inputType="numberSigned"/>
 
     </LinearLayout>
 
@@ -54,11 +55,10 @@
             android:textSize="@dimen/private_key_import_export_text_headline_size"
             android:textStyle="bold"/>
 
-        <EditText
+        <TextView
             android:id="@+id/private_key_import_sentence"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/private_key_import_sentence_hint"/>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
@@ -69,6 +69,35 @@
         android:text="@string/msg_vl_ok"
         android:layout_gravity="center_horizontal"
         android:padding="8dp"
-        android:layout_marginBottom="72dp"/>
+        android:layout_marginBottom="72dp"
+        android:enabled="false"/>
+
+    <LinearLayout
+        android:id="@+id/private_key_import_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/private_key_import_sentence_not_matched_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_no"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:layout_marginBottom="@dimen/private_key_import_button_margin_bottom"/>
+
+        <Button
+            android:id="@+id/private_key_import_sentence_matched_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_yes"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:layout_marginBottom="@dimen/private_key_import_button_margin_bottom"/>
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -160,8 +160,10 @@ public class ImportKeysFileFragment extends Fragment {
                 }
                 break;
             case REQUEST_CODE_WLAN:
-                // TODO
-
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    byte[] keyRing = data.getByteArrayExtra(PrivateKeyImportFragment.EXTRA_RECEIVED_KEYRING);
+                    mCallback.loadKeys(new BytesLoaderState(keyRing, null));
+                }
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
@@ -207,12 +209,6 @@ public class ImportKeysFileFragment extends Fragment {
                     mSecureDataSocket.setupClientWithCamera(qrData);
                     byte[] keyRing = mSecureDataSocket.read();
                     mSecureDataSocket.close();
-
-                    /*ImportKeysListEntry keyEntry = new ImportKeysListEntry(keyRing);
-                    ArrayList<ImportKeysListEntry> selectedEntries = new ArrayList<>();
-                    selectedEntries.add(keyRing);
-
-                    mCallback.importKeys(selectedEntries);*/
 
                     mCallback.loadKeys(new BytesLoaderState(keyRing, null));
 
