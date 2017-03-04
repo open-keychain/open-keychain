@@ -35,6 +35,8 @@
         android:id="@+id/trust_id_action"
         android:background="?selectableItemBackground"
         android:src="@drawable/ic_chat_black_24dp"
+        android:visibility="gone"
+        tools:visibility="visible"
         />
 
 </LinearLayout>
