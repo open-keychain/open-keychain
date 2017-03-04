@@ -44,6 +44,9 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
     private ImageView mQrCode;
     private TextView mSentenceText;
+    private TextView mSentenceHeadlineText;
+    private Button mNoButton;
+    private Button mYesButton;
 
     private Activity mActivity;
     private SecureDataSocket mSecureDataSocket;
@@ -107,10 +110,10 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         final View infoLayout = view.findViewById(R.id.private_key_export_info_layout);
         TextView ipText = (TextView) view.findViewById(R.id.private_key_export_ip);
         TextView portText = (TextView) view.findViewById(R.id.private_key_export_port);
-        final TextView sentenceHeadlineText = (TextView) view.findViewById(R.id.private_key_export_sentence_headline);
+        mSentenceHeadlineText = (TextView) view.findViewById(R.id.private_key_export_sentence_headline);
         mSentenceText = (TextView) view.findViewById(R.id.private_key_export_sentence);
-        final Button noButton = (Button) view.findViewById(R.id.private_key_export_sentence_not_matched_button);
-        final Button yesButton = (Button) view.findViewById(R.id.private_key_export_sentence_matched_button);
+        mNoButton = (Button) view.findViewById(R.id.private_key_export_sentence_not_matched_button);
+        mYesButton = (Button) view.findViewById(R.id.private_key_export_sentence_matched_button);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,17 +127,13 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
                 button.setVisibility(View.GONE);
 
                 infoLayout.setVisibility(View.VISIBLE);
-                sentenceHeadlineText.setVisibility(View.VISIBLE);
-                mSentenceText.setVisibility(View.VISIBLE);
-                noButton.setVisibility(View.VISIBLE);
-                yesButton.setVisibility(View.VISIBLE);
             }
         });
 
         ipText.setText(mIpAddress);
         portText.setText(String.valueOf(PORT));
 
-        noButton.setOnClickListener(new View.OnClickListener() {
+        mNoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mSentencesMatched = false;
@@ -142,7 +141,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
             }
         });
 
-        yesButton.setOnClickListener(new View.OnClickListener() {
+        mYesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mSentencesMatched = true;
@@ -201,6 +200,11 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        mSentenceHeadlineText.setVisibility(View.VISIBLE);
+                        mSentenceText.setVisibility(View.VISIBLE);
+                        mNoButton.setVisibility(View.VISIBLE);
+                        mYesButton.setVisibility(View.VISIBLE);
+
                         mSentenceText.setText(phrase);
                     }
                 });

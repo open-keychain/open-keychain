@@ -1812,4 +1812,5 @@
     <string name="title_activity_redirect_key">"Key import redirection"</string>
 
     <string name="private_key_import_button">"Doesn't work?"</string>
+    <string name="private_key_import_error">"Could not connect to device"</string>
 </resources>
