@@ -64,6 +64,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
     private Semaphore mLock = new Semaphore(0);
     private boolean mSentencesMatched;
+    private String mPhrase = "";
 
     public static PrivateKeyExportFragment newInstance(long masterKeyId) {
         PrivateKeyExportFragment frag = new PrivateKeyExportFragment();
@@ -196,53 +197,64 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     private Runnable mSecureConnection = new Runnable() {
         @Override
         public void run() {
+
             try {
                 mSecureDataSocket.setupServerWithClientCamera();
+            } catch (SecureDataSocketException e) {
+                e.printStackTrace();
+            }
 
-                if (!mReconnectWithoutQrCode) {
-                    mActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            createExport();
-                        }
-                    });
-                    return;
-                }
-
-                final String phrase = mSecureDataSocket.setupServerNoClientCamera();
-
+            if (!mReconnectWithoutQrCode) {
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mSentenceHeadlineText.setVisibility(View.VISIBLE);
-                        mSentenceText.setVisibility(View.VISIBLE);
-                        mNoButton.setVisibility(View.VISIBLE);
-                        mYesButton.setVisibility(View.VISIBLE);
-
-                        mSentenceText.setText(phrase);
+                        createExport();
                     }
                 });
+                return;
+            }
 
-                boolean interrupted;
-                do {
-                    try {
-                        mLock.acquire();
-                        interrupted = false;
-                    } catch (InterruptedException e) {
-                        interrupted = true;
-                        e.printStackTrace();
-                    }
-                } while (interrupted);
+            mSecureDataSocket = new SecureDataSocket(PORT + 1);
 
-                mSecureDataSocket.comparedPhrases(mSentencesMatched);
-
-                if (mSentencesMatched) {
-                    createExport();
-                } else {
-                    mActivity.finish();
-                }
+            try {
+                mPhrase = mSecureDataSocket.setupServerNoClientCamera();
             } catch (SecureDataSocketException e) {
                 e.printStackTrace();
+            }
+
+            mActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mSentenceHeadlineText.setVisibility(View.VISIBLE);
+                    mSentenceText.setVisibility(View.VISIBLE);
+                    mNoButton.setVisibility(View.VISIBLE);
+                    mYesButton.setVisibility(View.VISIBLE);
+
+                    mSentenceText.setText(mPhrase);
+                }
+            });
+
+            boolean interrupted;
+            do {
+                try {
+                    mLock.acquire();
+                    interrupted = false;
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                    e.printStackTrace();
+                }
+            } while (interrupted);
+
+            try {
+                mSecureDataSocket.comparedPhrases(mSentencesMatched);
+            } catch (SecureDataSocketException e) {
+                e.printStackTrace();
+            }
+
+            if (mSentencesMatched) {
+                createExport();
+            } else {
+                mActivity.finish();
             }
         }
     };
