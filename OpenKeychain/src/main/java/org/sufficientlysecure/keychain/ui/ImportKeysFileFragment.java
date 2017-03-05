@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cryptolib.SecureDataSocket;
+import com.cryptolib.SecureDataSocketException;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -212,7 +213,7 @@ public class ImportKeysFileFragment extends Fragment {
 
                     mCallback.loadKeys(new BytesLoaderState(keyRing, null));
 
-                } catch (IOException e) {
+                } catch (SecureDataSocketException e) {
                     e.printStackTrace();
                 }
             }

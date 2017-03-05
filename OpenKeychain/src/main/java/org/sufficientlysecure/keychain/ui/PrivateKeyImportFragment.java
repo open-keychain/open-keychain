@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.cryptolib.SecureDataSocket;
+import com.cryptolib.SecureDataSocketException;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -129,14 +130,18 @@ public class PrivateKeyImportFragment extends Fragment {
     private Runnable mReceiveKey = new Runnable() {
         @Override
         public void run() {
-            mSecureDataSocket.comparedPhrases(mPhrasesMatched);
+            try {
+                mSecureDataSocket.comparedPhrases(mPhrasesMatched);
+            } catch (SecureDataSocketException e) {
+                e.printStackTrace();
+            }
 
             if (mPhrasesMatched) {
                 byte[] keyRing = null;
 
                 try {
                     keyRing = mSecureDataSocket.read();
-                } catch (IOException e) {
+                } catch (SecureDataSocketException e) {
                     e.printStackTrace();
                 }
 
@@ -163,7 +168,7 @@ public class PrivateKeyImportFragment extends Fragment {
             String comparePhrase = null;
             try {
                 comparePhrase = mSecureDataSocket.setupClientNoCamera(connectionDetails);
-            } catch (IOException e) {
+            } catch (SecureDataSocketException e) {
                 e.printStackTrace();
             }
 
