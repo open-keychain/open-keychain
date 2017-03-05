@@ -1,12 +1,16 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +54,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
     private Activity mActivity;
     private SecureDataSocket mSecureDataSocket;
+    private InitSocketTask mInitSocketTask;
     private String mIpAddress;
     private String mConnectionDetails;
     private long mMasterKeyId;
@@ -81,6 +86,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     public void onResume() {
         super.onResume();
 
+        mInitSocketTask = new InitSocketTask();
         mInitSocketTask.execute();
     }
 
@@ -114,6 +120,13 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         mSentenceText = (TextView) view.findViewById(R.id.private_key_export_sentence);
         mNoButton = (Button) view.findViewById(R.id.private_key_export_sentence_not_matched_button);
         mYesButton = (Button) view.findViewById(R.id.private_key_export_sentence_matched_button);
+
+        mQrCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showQrCodeDialog();
+            }
+        });
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,7 +167,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         return view;
     }
 
-    private AsyncTask<Void, Void, String> mInitSocketTask = new AsyncTask<Void, Void, String>() {
+    private class InitSocketTask extends AsyncTask<Void, Void, String> {
         protected String doInBackground(Void... unused) {
             String connectionDetails = null;
 
@@ -233,6 +246,22 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         }
     };
 
+    private void showQrCodeDialog() {
+        Intent qrCodeIntent = new Intent(mActivity, QrCodeViewActivity.class);
+
+        // create the transition animation - the images in the layouts
+        // of both activities are defined with android:transitionName="qr_code"
+        Bundle opts = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ActivityOptions options = ActivityOptions
+                    .makeSceneTransitionAnimation(mActivity, mQrCode, "qr_code");
+            opts = options.toBundle();
+        }
+
+        qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_QR_CODE_CONTENT, mConnectionDetails);
+        qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_TITLE_RES_ID, R.string.title_export_private_key);
+        ActivityCompat.startActivity(mActivity, qrCodeIntent, opts);
+    }
 
     /**
      * Load QR Code asynchronously and with a fade in animation

@@ -38,6 +38,8 @@ import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class QrCodeViewActivity extends BaseActivity {
+    public static String EXTRA_QR_CODE_CONTENT = "qr_code_content";
+    public static String EXTRA_TITLE_RES_ID = "title_res_id";
 
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
@@ -57,11 +59,18 @@ public class QrCodeViewActivity extends BaseActivity {
                 }
         );
 
+        String qrCodeContent = getIntent().getStringExtra(EXTRA_QR_CODE_CONTENT);
+        int titleResId = getIntent().getIntExtra(EXTRA_TITLE_RES_ID, -1);
+
         Uri dataUri = getIntent().getData();
-        if (dataUri == null) {
+        if (dataUri == null && qrCodeContent == null) {
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
             ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
             return;
+        }
+
+        if (titleResId > 0) {
+            setTitle(titleResId);
         }
 
         mQrCode = (ImageView) findViewById(R.id.qr_code_image);
@@ -76,21 +85,27 @@ public class QrCodeViewActivity extends BaseActivity {
 
         ProviderHelper providerHelper = new ProviderHelper(this);
         try {
-            byte[] blob = (byte[]) providerHelper.getGenericData(
-                    KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                    KeychainContract.KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-            if (blob == null) {
-                Log.e(Constants.TAG, "key not found!");
-                Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
-                ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
-            }
+            final Bitmap qrCode;
 
-            Uri uri = new Uri.Builder()
-                    .scheme(Constants.FINGERPRINT_SCHEME)
-                    .opaquePart(KeyFormattingUtils.convertFingerprintToHex(blob))
-                    .build();
-            // create a minimal size qr code, we can keep this in ram no problem
-            final Bitmap qrCode = QrCodeUtils.getQRCodeBitmap(uri, 0);
+            if (dataUri != null) {
+                byte[] blob = (byte[]) providerHelper.getGenericData(
+                        KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                        KeychainContract.KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+                if (blob == null) {
+                    Log.e(Constants.TAG, "key not found!");
+                    Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
+                    ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
+                }
+
+                Uri uri = new Uri.Builder()
+                        .scheme(Constants.FINGERPRINT_SCHEME)
+                        .opaquePart(KeyFormattingUtils.convertFingerprintToHex(blob))
+                        .build();
+                // create a minimal size qr code, we can keep this in ram no problem
+                qrCode = QrCodeUtils.getQRCodeBitmap(uri, 0);
+            } else {
+                qrCode = QrCodeUtils.getQRCodeBitmap(qrCodeContent, 0);
+            }
 
             mQrCode.getViewTreeObserver().addOnGlobalLayoutListener(
                     new OnGlobalLayoutListener() {
