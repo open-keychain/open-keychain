@@ -214,8 +214,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
                 return;
             }
 
-            mSecureDataSocket = new SecureDataSocket(PORT + 1);
-
             try {
                 mPhrase = mSecureDataSocket.setupServerNoClientCamera();
             } catch (SecureDataSocketException e) {
@@ -252,7 +250,12 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
             }
 
             if (mSentencesMatched) {
-                createExport();
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        createExport();
+                    }
+                });
             } else {
                 mActivity.finish();
             }
