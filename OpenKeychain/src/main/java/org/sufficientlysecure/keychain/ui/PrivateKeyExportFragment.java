@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cryptolib.SecureDataSocket;
+import com.cryptolib.SecureDataSocketException;
 import com.cryptolib.UnverifiedException;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -174,7 +175,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
             try {
                 mSecureDataSocket = new SecureDataSocket(PORT);
                 connectionDetails = mSecureDataSocket.prepareServerWithClientCamera();
-            } catch (IOException e) {
+            } catch (SecureDataSocketException e) {
                 e.printStackTrace();
             }
 
@@ -240,7 +241,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
                 } else {
                     mActivity.finish();
                 }
-            } catch (IOException e) {
+            } catch (SecureDataSocketException e) {
                 e.printStackTrace();
             }
         }
@@ -316,7 +317,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
                     byte[] exportData = FileHelper.readBytesFromUri(mActivity, mCachedBackupUri);
                     mSecureDataSocket.write(exportData);
                     mActivity.finish();
-                } catch (IOException | UnverifiedException e) {
+                } catch (IOException | SecureDataSocketException e) {
                     e.printStackTrace();
                 }
             }
