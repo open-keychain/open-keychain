@@ -4,16 +4,19 @@
 
 ## How to import an OpenKeychain backup with gpg?
  1. Make a backup from OpenKeychain and transfer it to your computer via email
-    or a cloud provider, like Dropbox. This is safe because OpenKeychain
-    backups are encrypted with Advanced Encryption Standard (AES) using
-    securely generated Backup Codes.
+	or a cloud provider, like Dropbox. This is safe because OpenKeychain
+	backups are encrypted with Advanced Encryption Standard (AES) using
+	securely generated Backup Codes.
  2. On your PC, execute ``gpg --decrypt backup_YYYY-MM-DD.pgp | gpg --import`` (replace ``backup_YYYY-MM-DD.pgp`` with your backup file)
  3. Enter the full Backup Code with uppercase letters and dashes, e.g., "ABCD-EFGH-IJKL-MNOP-QRST-UVWX"
 
 ## What is the best way to transfer my own key to OpenKeychain?
 
-1. You can use keylivery (https://github.com/svenklaus/keylivery). It's a java program to transfer your own key from any computer to OpenKeychain. Download and execute it.
-2. Select your key in keylivery.
+This method will only work, if both devices are in the same WLAN network.
+
+1. You can use keylivery (https://github.com/svenklaus/keylivery). It's a java program to transfer your own key from any computer to OpenKeychain.
+2. Download and execute it.
+3. Select your key in keylivery.
 3. To import your key go back to the main menu, click on +, choose import. Now click on the qr code symbol at the top of the screen.
 
 ## Are my secret keys safe on my mobile device?
@@ -22,12 +25,12 @@ This is a very common question, and it's not an easy one. In the end it comes do
 The real question usually isn't, "how safe are they", but rather "are they less safe than on my laptop"? The answer depends on three factors:
 
  1. Do you trust the hardware? Obviously, there are no guarantees that the vendor of your phone hardware didn't add some kind of backdoor.
-    Then again, the same applies to your laptop's hardware, so it's about even.
+	Then again, the same applies to your laptop's hardware, so it's about even.
  2. How easily can the device be stolen? This depends a lot on how careful you are, but this too is probably about even with your laptop.
  3. Do you trust the software? The Android operating system actually offers a lot more in the way of security between applications than desktop operating systems.
-    No app without root privileges besides OpenKeychain can ever access the keys stored in OpenKeychain's database.
-    By comparison, any program you run on your computer can just upload your gnupg keyring, if those files belong to the same user.
-    As long as Android as a platform is trustworthy, your keys are safe from malware apps.
+	No app without root privileges besides OpenKeychain can ever access the keys stored in OpenKeychain's database.
+	By comparison, any program you run on your computer can just upload your gnupg keyring, if those files belong to the same user.
+	As long as Android as a platform is trustworthy, your keys are safe from malware apps.
 
 In conclusion, we believe that secret keys are not notably less safe on your mobile than they would be on your laptop.
 If your security requirements are high enough that you don't keep your keys on your laptop, you probably shouldn't put them on your mobile either.
