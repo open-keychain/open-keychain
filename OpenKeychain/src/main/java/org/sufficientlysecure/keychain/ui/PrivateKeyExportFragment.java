@@ -2,8 +2,10 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -11,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,21 +22,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cryptolib.SecureDataSocket;
-import com.cryptolib.SecureDataSocketException;
-import com.cryptolib.UnverifiedException;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
+import org.sufficientlysecure.keychain.service.PrivateKeyImportExportService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import org.sufficientlysecure.keychain.util.FileHelper;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
@@ -41,7 +39,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Semaphore;
 
 public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> {
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
@@ -54,17 +51,12 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     private Button mYesButton;
 
     private Activity mActivity;
-    private SecureDataSocket mSecureDataSocket;
-    private InitSocketTask mInitSocketTask;
     private String mIpAddress;
     private String mConnectionDetails;
     private long mMasterKeyId;
-    private Uri mCachedBackupUri;
-    private boolean mReconnectWithoutQrCode;
+    private Uri mCachedUri;
 
-    private Semaphore mLock = new Semaphore(0);
-    private boolean mSentencesMatched;
-    private String mPhrase = "";
+    private LocalBroadcastManager mBroadcaster;
 
     public static PrivateKeyExportFragment newInstance(long masterKeyId) {
         PrivateKeyExportFragment frag = new PrivateKeyExportFragment();
@@ -85,23 +77,29 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        mInitSocketTask = new InitSocketTask();
-        mInitSocketTask.execute();
+        mBroadcaster = LocalBroadcastManager.getInstance(mActivity);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_SHOW_PHRASE);
+        filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_UPDATE_CONNECTION_DETAILS);
+        filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_KEY);
+        filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_FINISHED);
+
+        LocalBroadcastManager.getInstance(mActivity).registerReceiver(mReceiver, filter);
+
+        Intent intent = new Intent(mActivity, PrivateKeyImportExportService.class);
+        intent.putExtra(PrivateKeyImportExportService.EXTRA_EXPORT_KEY, true);
+        mActivity.startService(intent);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onDestroy() {
+        super.onDestroy();
 
-        if (mInitSocketTask != null) {
-            mInitSocketTask.cancel(true);
-        }
-        if (mSecureDataSocket != null) {
-            mSecureDataSocket.close();
-        }
+        LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -133,10 +131,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mReconnectWithoutQrCode = true;
-                if (mSecureDataSocket != null) {
-                    mSecureDataSocket.close();
-                }
+                broadcastExport(PrivateKeyImportExportService.EXPORT_ACTION_MANUAL_MODE, null);
 
                 qrLayout.setVisibility(View.GONE);
                 button.setVisibility(View.GONE);
@@ -151,16 +146,14 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         mNoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSentencesMatched = false;
-                mLock.release();
+                broadcastExport(PrivateKeyImportExportService.EXPORT_ACTION_PHRASES_MATCHED, false);
             }
         });
 
         mYesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSentencesMatched = true;
-                mLock.release();
+                broadcastExport(PrivateKeyImportExportService.EXPORT_ACTION_PHRASES_MATCHED, true);
             }
         });
 
@@ -169,98 +162,22 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         return view;
     }
 
-    private class InitSocketTask extends AsyncTask<Void, Void, String> {
-        protected String doInBackground(Void... unused) {
-            String connectionDetails = null;
+    private void broadcastExport(String action, Uri extraUri) {
+        Intent intent = new Intent(action);
 
-            try {
-                mSecureDataSocket = new SecureDataSocket(PORT);
-                connectionDetails = mSecureDataSocket.prepareServerWithClientCamera();
-            } catch (SecureDataSocketException e) {
-                e.printStackTrace();
-            }
-
-            return connectionDetails;
+        if (extraUri != null) {
+            intent.putExtra(PrivateKeyImportExportService.EXPORT_EXTRA, extraUri);
         }
 
-        protected void onPostExecute(String connectionDetails) {
-            if (isCancelled()  ||isRemoving()) {
-                return;
-            }
+        mBroadcaster.sendBroadcast(intent);
+    }
 
-            mConnectionDetails = connectionDetails;
-            loadQrCode();
-            new Thread(mSecureConnection).start();
-        }
-    };
+    private void broadcastExport(String action, boolean extraBoolean) {
+        Intent intent = new Intent(action);
+        intent.putExtra(PrivateKeyImportExportService.EXPORT_EXTRA, extraBoolean);
 
-    private Runnable mSecureConnection = new Runnable() {
-        @Override
-        public void run() {
-
-            try {
-                mSecureDataSocket.setupServerWithClientCamera();
-            } catch (SecureDataSocketException e) {
-                e.printStackTrace();
-            }
-
-            if (!mReconnectWithoutQrCode) {
-                mActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        createExport();
-                    }
-                });
-                return;
-            }
-
-            try {
-                mPhrase = mSecureDataSocket.setupServerNoClientCamera();
-            } catch (SecureDataSocketException e) {
-                e.printStackTrace();
-            }
-
-            mActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mSentenceHeadlineText.setVisibility(View.VISIBLE);
-                    mSentenceText.setVisibility(View.VISIBLE);
-                    mNoButton.setVisibility(View.VISIBLE);
-                    mYesButton.setVisibility(View.VISIBLE);
-
-                    mSentenceText.setText(mPhrase);
-                }
-            });
-
-            boolean interrupted;
-            do {
-                try {
-                    mLock.acquire();
-                    interrupted = false;
-                } catch (InterruptedException e) {
-                    interrupted = true;
-                    e.printStackTrace();
-                }
-            } while (interrupted);
-
-            try {
-                mSecureDataSocket.comparedPhrases(mSentencesMatched);
-            } catch (SecureDataSocketException e) {
-                e.printStackTrace();
-            }
-
-            if (mSentencesMatched) {
-                mActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        createExport();
-                    }
-                });
-            } else {
-                mActivity.finish();
-            }
-        }
-    };
+        mBroadcaster.sendBroadcast(intent);
+    }
 
     private void showQrCodeDialog() {
         Intent qrCodeIntent = new Intent(mActivity, QrCodeViewActivity.class);
@@ -317,26 +234,15 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         String filename = Constants.FILE_ENCRYPTED_BACKUP_PREFIX + date
                 + Constants.FILE_EXTENSION_ENCRYPTED_BACKUP_SECRET;
 
-        if (mCachedBackupUri == null) {
-            mCachedBackupUri = TemporaryFileProvider.createFile(mActivity, filename,
+        if (mCachedUri == null) {
+            mCachedUri = TemporaryFileProvider.createFile(mActivity, filename,
                     Constants.MIME_TYPE_ENCRYPTED_ALTERNATE);
 
             cryptoOperation(new CryptoInputParcel());
             return;
         }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    byte[] exportData = FileHelper.readBytesFromUri(mActivity, mCachedBackupUri);
-                    mSecureDataSocket.write(exportData);
-                    mActivity.finish();
-                } catch (IOException | SecureDataSocketException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        broadcastExport(PrivateKeyImportExportService.EXPORT_ACTION_CACHED_URI, mCachedUri);
     }
 
     /**
@@ -376,7 +282,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     @Nullable
     @Override
     public BackupKeyringParcel createOperationInput() {
-        return new BackupKeyringParcel(new long[] {mMasterKeyId}, true, false, mCachedBackupUri);
+        return new BackupKeyringParcel(new long[] {mMasterKeyId}, true, false, mCachedUri);
     }
 
     @Override
@@ -387,11 +293,42 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     @Override
     public void onCryptoOperationError(ExportResult result) {
         result.createNotify(getActivity()).show();
-        mCachedBackupUri = null;
+        mCachedUri = null;
     }
 
     @Override
     public void onCryptoOperationCancelled() {
-        mCachedBackupUri = null;
+        mCachedUri = null;
     }
+
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            switch (action) {
+                case PrivateKeyImportExportService.EXPORT_ACTION_UPDATE_CONNECTION_DETAILS:
+                    mConnectionDetails = intent.getStringExtra(PrivateKeyImportExportService.EXPORT_EXTRA);
+                    loadQrCode();
+                    break;
+                case PrivateKeyImportExportService.EXPORT_ACTION_SHOW_PHRASE:
+                    String phrase = intent.getStringExtra(PrivateKeyImportExportService.EXPORT_EXTRA);
+
+                    mSentenceHeadlineText.setVisibility(View.VISIBLE);
+                    mSentenceText.setVisibility(View.VISIBLE);
+                    mNoButton.setVisibility(View.VISIBLE);
+                    mYesButton.setVisibility(View.VISIBLE);
+
+                    mSentenceText.setText(phrase);
+                    break;
+                case PrivateKeyImportExportService.EXPORT_ACTION_KEY:
+                    createExport();
+                    break;
+                case PrivateKeyImportExportService.EXPORT_ACTION_FINISHED:
+                    mActivity.finish();
+                    break;
+            }
+        }
+    };
 }
