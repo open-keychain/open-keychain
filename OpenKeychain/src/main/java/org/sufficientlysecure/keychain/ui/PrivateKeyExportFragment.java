@@ -96,8 +96,14 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onStop() {
+        super.onStop();
+
+        System.out.println("---> Export onStop");
+
+        // stop import/export service
+        Intent intent = new Intent(PrivateKeyImportExportService.ACTION_STOP);
+        mBroadcaster.sendBroadcast(intent);
 
         LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(mReceiver);
     }

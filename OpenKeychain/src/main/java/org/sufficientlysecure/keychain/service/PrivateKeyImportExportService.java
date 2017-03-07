@@ -23,6 +23,8 @@ public class PrivateKeyImportExportService extends IntentService {
     public static final String EXTRA_IMPORT_IP_ADDRESS = "import_ip_address";
     public static final String EXTRA_IMPORT_PORT = "import_port";
 
+    public static final String ACTION_STOP = "action_stop";
+
     public static final String EXPORT_ACTION_UPDATE_CONNECTION_DETAILS = "export_update_connection_details";
     public static final String EXPORT_ACTION_SHOW_PHRASE = "export_show_phrase";
     public static final String EXPORT_ACTION_KEY = "export_key";
@@ -49,6 +51,8 @@ public class PrivateKeyImportExportService extends IntentService {
     private LocalBroadcastManager mBroadcaster;
     private Uri mCachedUri;
 
+    private boolean mStopped;
+
     public PrivateKeyImportExportService() {
         super("PrivateKeyImportExportService");
     }
@@ -61,6 +65,8 @@ public class PrivateKeyImportExportService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        System.out.println("---> Service started...");
+
         boolean export = intent.getBooleanExtra(EXTRA_EXPORT_KEY, false);
         String connectionDetails = intent.getStringExtra(EXTRA_IMPORT_CONNECTION_DETAILS);
         String ipAddress = intent.getStringExtra(EXTRA_IMPORT_IP_ADDRESS);
@@ -71,6 +77,7 @@ public class PrivateKeyImportExportService extends IntentService {
         filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_PHRASES_MATCHED);
         filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_CACHED_URI);
         filter.addAction(PrivateKeyImportExportService.IMPORT_ACTION_PHRASES_MATCHED);
+        filter.addAction(PrivateKeyImportExportService.ACTION_STOP);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, filter);
 
@@ -85,6 +92,8 @@ public class PrivateKeyImportExportService extends IntentService {
         }
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
+
+        System.out.println("---> Service stopped :)");
     }
 
     private void exportKey() {
@@ -109,8 +118,11 @@ public class PrivateKeyImportExportService extends IntentService {
             exportWithoutQrCode();
         }
 
-        if (exportedViaQrCode || mPhrasesMatched) {
+        if (!mStopped && (exportedViaQrCode || mPhrasesMatched)) {
             lock();
+            if (mStopped) {
+                return;
+            }
 
             try {
                 byte[] exportData = FileHelper.readBytesFromUri(this, mCachedUri);
@@ -134,6 +146,9 @@ public class PrivateKeyImportExportService extends IntentService {
         broadcastExport(EXPORT_ACTION_SHOW_PHRASE, phrase);
 
         lock();
+        if (mStopped) {
+            return;
+        }
 
         try {
             mSecureDataSocket.comparedPhrases(mPhrasesMatched);
@@ -173,6 +188,9 @@ public class PrivateKeyImportExportService extends IntentService {
         mBroadcaster.sendBroadcast(intent);
 
         lock();
+        if (mStopped) {
+            return;
+        }
 
         try {
             mSecureDataSocket.comparedPhrases(mPhrasesMatched);
@@ -240,6 +258,11 @@ public class PrivateKeyImportExportService extends IntentService {
                     break;
                 case IMPORT_ACTION_PHRASES_MATCHED:
                     mPhrasesMatched = intent.getBooleanExtra(IMPORT_EXTRA, false);
+                    mLock.release();
+                    break;
+                case ACTION_STOP:
+                    mStopped = true;
+                    mSecureDataSocket.close();
                     mLock.release();
                     break;
             }
