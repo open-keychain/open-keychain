@@ -105,6 +105,7 @@ public class PrivateKeyImportExportService extends IntentService {
             broadcastExport(EXPORT_ACTION_KEY, null);
         } catch (SecureDataSocketException e) {
             // this exception is thrown when socket is closed (user switches from QR code to manual ip input)
+            mSecureDataSocket.close();
             exportWithoutQrCode();
         }
 
