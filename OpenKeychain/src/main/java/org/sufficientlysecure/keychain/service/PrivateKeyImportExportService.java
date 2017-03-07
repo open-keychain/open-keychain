@@ -7,10 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.Binder;
-import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.View;
 
 import com.cryptolib.SecureDataSocket;
 import com.cryptolib.SecureDataSocketException;
@@ -22,6 +19,9 @@ import java.util.concurrent.Semaphore;
 
 public class PrivateKeyImportExportService extends IntentService {
     public static final String EXTRA_EXPORT_KEY = "export_key";
+    public static final String EXTRA_IMPORT_CONNECTION_DETAILS = "import_connection_details";
+    public static final String EXTRA_IMPORT_IP_ADDRESS = "import_ip_address";
+    public static final String EXTRA_IMPORT_PORT = "import_port";
 
     public static final String EXPORT_ACTION_UPDATE_CONNECTION_DETAILS = "export_update_connection_details";
     public static final String EXPORT_ACTION_SHOW_PHRASE = "export_show_phrase";
@@ -32,6 +32,12 @@ public class PrivateKeyImportExportService extends IntentService {
     public static final String EXPORT_ACTION_MANUAL_MODE = "export_manual_mode";
     public static final String EXPORT_ACTION_PHRASES_MATCHED = "export_phrases_matched";
     public static final String EXPORT_ACTION_CACHED_URI = "export_cached_uri";
+
+    public static final String IMPORT_ACTION_KEY = "import_key";
+    public static final String IMPORT_ACTION_SHOW_PHRASE = "import_show_phrase";
+    public static final String IMPORT_EXTRA = "import_extra";
+
+    public static final String IMPORT_ACTION_PHRASES_MATCHED = "import_phrases_matched";
 
     private static final int PORT = 5891;
 
@@ -56,24 +62,32 @@ public class PrivateKeyImportExportService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         boolean export = intent.getBooleanExtra(EXTRA_EXPORT_KEY, false);
+        String connectionDetails = intent.getStringExtra(EXTRA_IMPORT_CONNECTION_DETAILS);
+        String ipAddress = intent.getStringExtra(EXTRA_IMPORT_IP_ADDRESS);
+        int port = intent.getIntExtra(EXTRA_IMPORT_PORT, 0);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_MANUAL_MODE);
         filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_PHRASES_MATCHED);
         filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_CACHED_URI);
+        filter.addAction(PrivateKeyImportExportService.IMPORT_ACTION_PHRASES_MATCHED);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, filter);
 
+        mLock = new Semaphore(0);
+
         if (export) {
             exportKey();
+        } else if (connectionDetails != null){
+            importKey(connectionDetails);
+        } else if (ipAddress != null && port > 0) {
+            importKey(ipAddress, port);
         }
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
     }
 
     private void exportKey() {
-        mLock = new Semaphore(0);
-
         try {
             mSecureDataSocket = new SecureDataSocket(PORT);
             mConnectionDetails = mSecureDataSocket.prepareServerWithClientCamera();
@@ -131,6 +145,59 @@ public class PrivateKeyImportExportService extends IntentService {
         }
     }
 
+    private void importKey(String connectionDetails) {
+        mSecureDataSocket = new SecureDataSocket(PORT);
+        try {
+            mSecureDataSocket.setupClientWithCamera(connectionDetails);
+        } catch (SecureDataSocketException e) {
+            e.printStackTrace();
+        }
+
+        importKey();
+    }
+
+    private void importKey(String ipAddress, int port) {
+        mSecureDataSocket = new SecureDataSocket(port);
+
+        String connectionDetails = ipAddress + ":" + port;
+        String comparePhrase = null;
+        try {
+            comparePhrase = mSecureDataSocket.setupClientNoCamera(connectionDetails);
+        } catch (SecureDataSocketException e) {
+            e.printStackTrace();
+        }
+
+        Intent intent = new Intent(IMPORT_ACTION_SHOW_PHRASE);
+        intent.putExtra(IMPORT_EXTRA, comparePhrase);
+        mBroadcaster.sendBroadcast(intent);
+
+        lock();
+
+        try {
+            mSecureDataSocket.comparedPhrases(mPhrasesMatched);
+        } catch (SecureDataSocketException e) {
+            e.printStackTrace();
+        }
+
+        if (mPhrasesMatched) {
+            importKey();
+        }
+    }
+
+    private void importKey() {
+        byte[] keyRing = null;
+        try {
+            keyRing = mSecureDataSocket.read();
+        } catch (SecureDataSocketException e) {
+            e.printStackTrace();
+        }
+        mSecureDataSocket.close();
+
+        Intent intent = new Intent(IMPORT_ACTION_KEY);
+        intent.putExtra(IMPORT_EXTRA, keyRing);
+        mBroadcaster.sendBroadcast(intent);
+    }
+
     private void lock() {
         boolean interrupted;
         do {
@@ -163,12 +230,16 @@ public class PrivateKeyImportExportService extends IntentService {
                     }
                     break;
                 case EXPORT_ACTION_PHRASES_MATCHED:
-                    mLock.release();
                     mPhrasesMatched = intent.getBooleanExtra(EXPORT_EXTRA, false);
+                    mLock.release();
                     break;
                 case EXPORT_ACTION_CACHED_URI:
-                    mLock.release();
                     mCachedUri = intent.getParcelableExtra(EXPORT_EXTRA);
+                    mLock.release();
+                    break;
+                case IMPORT_ACTION_PHRASES_MATCHED:
+                    mPhrasesMatched = intent.getBooleanExtra(IMPORT_EXTRA, false);
+                    mLock.release();
                     break;
             }
         }

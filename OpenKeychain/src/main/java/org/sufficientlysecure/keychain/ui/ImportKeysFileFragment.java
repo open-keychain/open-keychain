@@ -18,12 +18,15 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,15 +34,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cryptolib.SecureDataSocket;
-import com.cryptolib.SecureDataSocketException;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.service.PrivateKeyImportExportService;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
@@ -52,7 +53,6 @@ public class ImportKeysFileFragment extends Fragment {
 
     private Activity mActivity;
     private ImportKeysListener mCallback;
-    private SecureDataSocket mSecureDataSocket;
 
     private Uri mCurrentUri;
 
@@ -97,6 +97,23 @@ public class ImportKeysFileFragment extends Fragment {
         inflater.inflate(R.menu.import_keys_file_fragment, menu);
 
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(PrivateKeyImportExportService.IMPORT_ACTION_KEY);
+
+        LocalBroadcastManager.getInstance(mActivity).registerReceiver(mReceiver, filter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -151,7 +168,10 @@ public class ImportKeysFileFragment extends Fragment {
                     if (data != null) {
                         String qrContent = data.getStringExtra(ImportKeysProxyActivity.EXTRA_SCANNED_CONTENT);
                         if (qrContent != null) {
-                            importViaWlan(qrContent);
+                            Intent intent = new Intent(mActivity, PrivateKeyImportExportService.class);
+                            intent.putExtra(PrivateKeyImportExportService.EXTRA_EXPORT_KEY, false);
+                            intent.putExtra(PrivateKeyImportExportService.EXTRA_IMPORT_CONNECTION_DETAILS, qrContent);
+                            mActivity.startService(intent);
                         }
                     } else {
                         Intent intent = new Intent(mActivity, PrivateKeyImportExportActivity.class);
@@ -168,15 +188,6 @@ public class ImportKeysFileFragment extends Fragment {
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if (mSecureDataSocket != null) {
-            mSecureDataSocket.close();
         }
     }
 
@@ -201,25 +212,6 @@ public class ImportKeysFileFragment extends Fragment {
         }
     }
 
-    private void importViaWlan(final String qrData) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mSecureDataSocket = new SecureDataSocket(PrivateKeyExportFragment.PORT);
-                    mSecureDataSocket.setupClientWithCamera(qrData);
-                    byte[] keyRing = mSecureDataSocket.read();
-                    mSecureDataSocket.close();
-
-                    mCallback.loadKeys(new BytesLoaderState(keyRing, null));
-
-                } catch (SecureDataSocketException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -234,4 +226,17 @@ public class ImportKeysFileFragment extends Fragment {
         }
     }
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            switch (action) {
+                case PrivateKeyImportExportService.IMPORT_ACTION_KEY:
+                    byte[] keyRing = intent.getByteArrayExtra(PrivateKeyImportExportService.IMPORT_EXTRA);
+                    mCallback.loadKeys(new BytesLoaderState(keyRing, null));
+                    break;
+            }
+        }
+    };
 }
