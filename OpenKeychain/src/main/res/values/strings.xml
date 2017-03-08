@@ -386,7 +386,7 @@
     <string name="how_to_import">"How to import this on my desktop PC?"</string>
 
     <string name="private_key_import_ip_address">"Enter IP address and port number from your other device."</string>
-    <string name="private_key_import_sentence">"Enter the sentence that is shown on your other device."</string>
+    <string name="private_key_import_sentence">"Compare the sentence on both devices. Do they match?"</string>
     <string name="private_key_export_qr">"Scan this QR code with the device that should receive the private key."</string>
     <string name="private_key_export_ip">"IP address of this device:"</string>
     <string name="private_key_export_port">"Port number of this device:"</string>
