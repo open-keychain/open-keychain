@@ -130,6 +130,8 @@ public class PrivateKeyImportExportService extends Service {
         } catch (SecureDataSocketException | IOException e) {
             e.printStackTrace();
         }
+
+        broadcastExport(EXPORT_ACTION_FINISHED, null);
     }
 
     private void exportWithoutQrCode() {
