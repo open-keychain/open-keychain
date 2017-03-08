@@ -69,11 +69,12 @@ public class PrivateKeyImportFragment extends Fragment {
     public void onStop() {
         super.onStop();
 
-        // stop import/export service
-        Intent intent = new Intent(PrivateKeyImportExportService.ACTION_STOP);
-        mBroadcaster.sendBroadcast(intent);
-
         LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(mReceiver);
+
+        if (mActivity.isFinishing()) {
+            Intent intent = new Intent(PrivateKeyImportExportService.ACTION_STOP);
+            mBroadcaster.sendBroadcast(intent);
+        }
     }
 
     @Override
