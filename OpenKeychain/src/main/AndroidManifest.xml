@@ -830,6 +830,9 @@
         <service
             android:name=".service.KeychainService"
             android:exported="false" />
+        <service
+            android:name=".service.PrivateKeyImportExportService"
+            android:exported="false" />
 
         <!-- label is made to be "Keyserver Sync" since that is the only context in which
         the user will see it-->

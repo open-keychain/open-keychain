@@ -1,11 +1,13 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -15,13 +17,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.cryptolib.SecureDataSocket;
-import com.cryptolib.SecureDataSocketException;
-
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.PrivateKeyImportExportService;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-
-import java.io.IOException;
 
 public class PrivateKeyImportFragment extends Fragment {
     public static final String EXTRA_RECEIVED_KEYRING = "received_keyring";
@@ -36,8 +34,7 @@ public class PrivateKeyImportFragment extends Fragment {
     private View mSentenceLayout;
     private View mButtonLayout;
 
-    private SecureDataSocket mSecureDataSocket;
-    boolean mPhrasesMatched;
+    private LocalBroadcastManager mBroadcaster;
 
     public static PrivateKeyImportFragment newInstance() {
         PrivateKeyImportFragment frag = new PrivateKeyImportFragment();
@@ -56,6 +53,30 @@ public class PrivateKeyImportFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mBroadcaster = LocalBroadcastManager.getInstance(mActivity);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(PrivateKeyImportExportService.IMPORT_ACTION_SHOW_PHRASE);
+        filter.addAction(PrivateKeyImportExportService.IMPORT_ACTION_KEY);
+
+        LocalBroadcastManager.getInstance(mActivity).registerReceiver(mReceiver, filter);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // stop import/export service
+        Intent intent = new Intent(PrivateKeyImportExportService.ACTION_STOP);
+        mBroadcaster.sendBroadcast(intent);
+
+        LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(mReceiver);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater i, ViewGroup c, Bundle savedInstanceState) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.private_key_import_fragment, c, false);
 
@@ -70,7 +91,12 @@ public class PrivateKeyImportFragment extends Fragment {
         mOkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new ConnectTask().execute();
+                Intent intent = new Intent(mActivity, PrivateKeyImportExportService.class);
+                intent.putExtra(PrivateKeyImportExportService.EXTRA_EXPORT_KEY, false);
+                intent.putExtra(PrivateKeyImportExportService.EXTRA_IMPORT_IP_ADDRESS, mIpAddress);
+                intent.putExtra(PrivateKeyImportExportService.EXTRA_IMPORT_PORT, mPort);
+                mActivity.startService(intent);
+
                 mOkButton.setEnabled(false);
             }
         });
@@ -95,8 +121,12 @@ public class PrivateKeyImportFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                mPort = Integer.valueOf(charSequence.toString());
-                mOkButton.setEnabled(mPort > 0 && mIpAddress.length() > 0);
+                try {
+                    mPort = Integer.valueOf(charSequence.toString());
+                    mOkButton.setEnabled(mPort > 0 && mIpAddress.length() > 0);
+                } catch (NumberFormatException e) {
+                    mPort = 0;
+                }
             }
 
             @Override
@@ -110,16 +140,15 @@ public class PrivateKeyImportFragment extends Fragment {
         buttonSentenceNotMatched.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPhrasesMatched = false;
-                new Thread(mReceiveKey).start();
+                broadcastImport(false);
+                mActivity.finish();
             }
         });
 
         buttonSentenceMatched.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPhrasesMatched = true;
-                new Thread(mReceiveKey).start();
+                broadcastImport(true);
             }
         });
 
@@ -127,68 +156,45 @@ public class PrivateKeyImportFragment extends Fragment {
         return view;
     }
 
-    private Runnable mReceiveKey = new Runnable() {
+    private void broadcastImport(boolean phrasesMatched) {
+        Intent intent = new Intent(PrivateKeyImportExportService.IMPORT_ACTION_PHRASES_MATCHED);
+        intent.putExtra(PrivateKeyImportExportService.IMPORT_EXTRA, phrasesMatched);
+
+        mBroadcaster.sendBroadcast(intent);
+    }
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
         @Override
-        public void run() {
-            try {
-                mSecureDataSocket.comparedPhrases(mPhrasesMatched);
-            } catch (SecureDataSocketException e) {
-                e.printStackTrace();
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            switch (action) {
+                case PrivateKeyImportExportService.IMPORT_ACTION_SHOW_PHRASE:
+                    String phrase = intent.getStringExtra(PrivateKeyImportExportService.IMPORT_EXTRA);
+
+                    if (phrase == null) {
+                        Notify.create(getActivity(), R.string.private_key_import_error, Notify.Style.ERROR).show();
+                        mOkButton.setEnabled(true);
+                        return;
+                    }
+
+                    mSentenceText.setText(phrase);
+
+                    mOkButton.setVisibility(View.GONE);
+                    mIpLayout.setVisibility(View.GONE);
+                    mSentenceLayout.setVisibility(View.VISIBLE);
+                    mButtonLayout.setVisibility(View.VISIBLE);
+                    break;
+                case PrivateKeyImportExportService.IMPORT_ACTION_KEY:
+                    byte[] keyRing = intent.getByteArrayExtra(PrivateKeyImportExportService.IMPORT_EXTRA);
+
+                    Intent keyIntent = new Intent();
+                    keyIntent.putExtra(EXTRA_RECEIVED_KEYRING, keyRing);
+
+                    mActivity.setResult(Activity.RESULT_OK, keyIntent);
+                    mActivity.finish();
+                    break;
             }
-
-            if (mPhrasesMatched) {
-                byte[] keyRing = null;
-
-                try {
-                    keyRing = mSecureDataSocket.read();
-                } catch (SecureDataSocketException e) {
-                    e.printStackTrace();
-                }
-
-                mSecureDataSocket.close();
-
-                if (keyRing != null) {
-                    Intent intent = new Intent();
-                    intent.putExtra(EXTRA_RECEIVED_KEYRING, keyRing);
-
-                    mActivity.setResult(Activity.RESULT_OK, intent);
-                }
-            }
-
-            mActivity.finish();
         }
     };
-
-    private class ConnectTask extends AsyncTask<Void, Void, String> {
-        @Override
-        protected String doInBackground(Void... voids) {
-            mSecureDataSocket = new SecureDataSocket(mPort);
-
-            String connectionDetails = mIpAddress + ":" + mPort;
-            String comparePhrase = null;
-            try {
-                comparePhrase = mSecureDataSocket.setupClientNoCamera(connectionDetails);
-            } catch (SecureDataSocketException e) {
-                e.printStackTrace();
-            }
-
-            return comparePhrase;
-        }
-
-        @Override
-        protected void onPostExecute(String comparePhrase) {
-            if (comparePhrase == null) {
-                Notify.create(getActivity(), R.string.private_key_import_error, Notify.Style.ERROR).show();
-                mOkButton.setEnabled(true);
-                return;
-            }
-
-            mSentenceText.setText(comparePhrase);
-
-            mOkButton.setVisibility(View.GONE);
-            mIpLayout.setVisibility(View.GONE);
-            mSentenceLayout.setVisibility(View.VISIBLE);
-            mButtonLayout.setVisibility(View.VISIBLE);
-        }
-    }
 }
