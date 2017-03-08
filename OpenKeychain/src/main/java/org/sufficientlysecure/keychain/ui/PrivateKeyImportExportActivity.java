@@ -12,6 +12,9 @@ public class PrivateKeyImportExportActivity extends BaseActivity {
     public static String EXTRA_MASTER_KEY_ID = "master_key_id";
 
     private static final String TAG_FRAG = "frag";
+    private static final String KEY_FRAG = "key_frag";
+
+    private Fragment mFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,14 +27,27 @@ public class PrivateKeyImportExportActivity extends BaseActivity {
 
         setTitle(importKey ? R.string.title_import_private_key : R.string.title_export_private_key);
 
-        Fragment fragment = importKey ? PrivateKeyImportFragment.newInstance() : PrivateKeyExportFragment.newInstance(masterKeyId);
+        if (savedInstanceState == null) {
+            mFragment = importKey ? PrivateKeyImportFragment.newInstance() : PrivateKeyExportFragment.newInstance(masterKeyId);
+        } else {
+            mFragment = getSupportFragmentManager().getFragment(savedInstanceState, KEY_FRAG);
+        }
+
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.import_export_private_key_container, fragment, TAG_FRAG)
+                .replace(R.id.import_export_private_key_container, mFragment, TAG_FRAG)
                 .commit();
     }
 
     @Override
     protected void initLayout() {
         setContentView(R.layout.import_export_private_key_activity);
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        getSupportFragmentManager().putFragment(outState, KEY_FRAG, mFragment);
     }
 }

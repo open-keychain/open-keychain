@@ -44,17 +44,27 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
     public static final int PORT = 5891;
 
+    private static final String ARG_CONNECTION_DETAILS = "connection_details";
+    private static final String ARG_IP_ADDRESS = "ip_address";
+    private static final String ARG_MANUAL_MODE = "manual_mode";
+    private static final String ARG_PHRASE = "phrase";
+
     private ImageView mQrCode;
     private TextView mSentenceText;
     private TextView mSentenceHeadlineText;
     private Button mNoButton;
     private Button mYesButton;
+    private View mQrLayout;
+    private Button mButton;
+    private View mInfoLayout;
 
     private Activity mActivity;
     private String mIpAddress;
     private String mConnectionDetails;
     private long mMasterKeyId;
     private Uri mCachedUri;
+    private boolean mManuelMode;
+    private String mPhrase;
 
     private LocalBroadcastManager mBroadcaster;
 
@@ -90,9 +100,26 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
         LocalBroadcastManager.getInstance(mActivity).registerReceiver(mReceiver, filter);
 
-        Intent intent = new Intent(mActivity, PrivateKeyImportExportService.class);
-        intent.putExtra(PrivateKeyImportExportService.EXTRA_EXPORT_KEY, true);
-        mActivity.startService(intent);
+        if (savedInstanceState != null) {
+            mConnectionDetails = savedInstanceState.getString(ARG_CONNECTION_DETAILS);
+            mIpAddress = savedInstanceState.getString(ARG_IP_ADDRESS);
+            mManuelMode = savedInstanceState.getBoolean(ARG_MANUAL_MODE, false);
+            mPhrase = savedInstanceState.getString(ARG_PHRASE);
+        } else {
+            Intent intent = new Intent(mActivity, PrivateKeyImportExportService.class);
+            intent.putExtra(PrivateKeyImportExportService.EXTRA_EXPORT_KEY, true);
+            mActivity.startService(intent);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(ARG_CONNECTION_DETAILS, mConnectionDetails);
+        outState.putString(ARG_IP_ADDRESS, mIpAddress);
+        outState.putString(ARG_PHRASE, mPhrase);
+        outState.putBoolean(ARG_MANUAL_MODE, mManuelMode);
     }
 
     @Override
@@ -114,11 +141,11 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         Bundle args = getArguments();
         mMasterKeyId = args.getLong(ARG_MASTER_KEY_IDS);
 
-        final View qrLayout = view.findViewById(R.id.private_key_export_qr_layout);
+        mQrLayout = view.findViewById(R.id.private_key_export_qr_layout);
         mQrCode = (ImageView) view.findViewById(R.id.private_key_export_qr_image);
-        final Button button = (Button) view.findViewById(R.id.private_key_export_button);
+        mButton = (Button) view.findViewById(R.id.private_key_export_button);
 
-        final View infoLayout = view.findViewById(R.id.private_key_export_info_layout);
+        mInfoLayout = view.findViewById(R.id.private_key_export_info_layout);
         TextView ipText = (TextView) view.findViewById(R.id.private_key_export_ip);
         TextView portText = (TextView) view.findViewById(R.id.private_key_export_port);
         mSentenceHeadlineText = (TextView) view.findViewById(R.id.private_key_export_sentence_headline);
@@ -133,15 +160,13 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
             }
         });
 
-        button.setOnClickListener(new View.OnClickListener() {
+        mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 broadcastExport(PrivateKeyImportExportService.EXPORT_ACTION_MANUAL_MODE, null);
 
-                qrLayout.setVisibility(View.GONE);
-                button.setVisibility(View.GONE);
-
-                infoLayout.setVisibility(View.VISIBLE);
+                mManuelMode = true;
+                showManualMode();
             }
         });
 
@@ -162,9 +187,33 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
             }
         });
 
-        loadQrCode();
+        if (mManuelMode) {
+            showManualMode();
+
+            if (mPhrase != null) {
+                showPhrase();
+            }
+        } else {
+            loadQrCode();
+        }
 
         return view;
+    }
+
+    private void showManualMode() {
+        mQrLayout.setVisibility(View.GONE);
+        mButton.setVisibility(View.GONE);
+
+        mInfoLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void showPhrase() {
+        mSentenceHeadlineText.setVisibility(View.VISIBLE);
+        mSentenceText.setVisibility(View.VISIBLE);
+        mNoButton.setVisibility(View.VISIBLE);
+        mYesButton.setVisibility(View.VISIBLE);
+
+        mSentenceText.setText(mPhrase);
     }
 
     private void broadcastExport(String action, Uri extraUri) {
@@ -318,14 +367,8 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
                     loadQrCode();
                     break;
                 case PrivateKeyImportExportService.EXPORT_ACTION_SHOW_PHRASE:
-                    String phrase = intent.getStringExtra(PrivateKeyImportExportService.EXPORT_EXTRA);
-
-                    mSentenceHeadlineText.setVisibility(View.VISIBLE);
-                    mSentenceText.setVisibility(View.VISIBLE);
-                    mNoButton.setVisibility(View.VISIBLE);
-                    mYesButton.setVisibility(View.VISIBLE);
-
-                    mSentenceText.setText(phrase);
+                    mPhrase = intent.getStringExtra(PrivateKeyImportExportService.EXPORT_EXTRA);
+                    showPhrase();
                     break;
                 case PrivateKeyImportExportService.EXPORT_ACTION_KEY:
                     createExport();
