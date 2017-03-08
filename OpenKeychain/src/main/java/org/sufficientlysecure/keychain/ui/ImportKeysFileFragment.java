@@ -113,7 +113,9 @@ public class ImportKeysFileFragment extends Fragment {
     public void onStop() {
         super.onStop();
 
-        LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(mReceiver);
+        if (mActivity.isFinishing()) {
+            LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(mReceiver);
+        }
     }
 
     @Override
