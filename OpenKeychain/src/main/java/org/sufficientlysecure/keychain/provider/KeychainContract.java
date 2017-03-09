@@ -355,6 +355,10 @@ public class KeychainContract {
         public static Uri buildByPackageNameAndTrustId(String packageName, String trustId) {
             return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName).appendPath(trustId).build();
         }
+
+        public static Uri buildByMasterKeyId(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(Long.toString(masterKeyId)).build();
+        }
     }
 
     public static class Certs implements CertsColumns, BaseColumns {
