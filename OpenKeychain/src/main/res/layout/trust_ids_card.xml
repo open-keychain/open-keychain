@@ -12,7 +12,7 @@
             android:layout_height="wrap_content"
             android:text="Known to Apps as" />
 
-        <org.sufficientlysecure.keychain.ui.widget.FixedListView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/view_key_trust_ids"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

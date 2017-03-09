@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.ui.util.adapter;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -27,18 +26,16 @@ import android.view.ViewGroup;
 
 import com.tonicartos.superslim.LayoutManager;
 
+import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter.SimpleCursor;
 import org.sufficientlysecure.keychain.util.Log;
 
-import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.Objects;
 
 /**
  * @param <T> section type.
  * @param <VH> the view holder extending {@code BaseViewHolder<Cursor>} that is bound to the cursor data.
  * @param <SH> the view holder extending {@code BaseViewHolder<<T>>} that is bound to the section data.
  */
-public abstract class SectionCursorAdapter<C extends CursorAdapter.AbstractCursor, T, VH extends SectionCursorAdapter.ViewHolder,
+public abstract class SectionCursorAdapter<C extends SimpleCursor, T, VH extends SectionCursorAdapter.ViewHolder,
         SH extends SectionCursorAdapter.ViewHolder> extends CursorAdapter<C, RecyclerView.ViewHolder> {
 
     public static final String TAG = "SectionCursorAdapter";

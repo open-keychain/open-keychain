@@ -27,6 +27,7 @@ import android.support.v7.widget.RecyclerView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter.SimpleCursor;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.lang.reflect.Constructor;
@@ -35,7 +36,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
-public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH extends RecyclerView.ViewHolder>
+public abstract class CursorAdapter<C extends SimpleCursor, VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> {
     public static final String TAG = "CursorAdapter";
 
@@ -58,7 +59,7 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
 
     /**
      * Constructor that allows control over auto-requery.  It is recommended
-     * you not use this, but instead {@link #CursorAdapter(Context, AbstractCursor, int)}.
+     * you not use this, but instead {@link #CursorAdapter(Context, SimpleCursor, int)}.
      * When using this constructor, {@link #FLAG_REGISTER_CONTENT_OBSERVER}
      * will always be set.
      *
@@ -223,7 +224,7 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
 
     /**
      * Swap in a new Cursor, returning the old Cursor.  Unlike
-     * {@link #changeCursor(AbstractCursor)}, the returned old Cursor is <em>not</em>
+     * {@link #changeCursor(SimpleCursor)}, the returned old Cursor is <em>not</em>
      * closed.
      *
      * @param newCursor The new cursor to be used.
@@ -312,10 +313,10 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
         }
     }
 
-    public static abstract class AbstractCursor extends CursorWrapper {
+    public static class SimpleCursor extends CursorWrapper {
         public static final String[] PROJECTION = {"_id"};
 
-        public static <T extends AbstractCursor> T wrap(Cursor cursor, Class<T> type) {
+        public static <T extends SimpleCursor> T wrap(Cursor cursor, Class<T> type) {
             if (cursor != null) {
                 try {
                     Constructor<T> constructor = type.getConstructor(Cursor.class);
@@ -335,7 +336,7 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
          *
          * @param cursor The underlying cursor to wrap.
          */
-        protected AbstractCursor(Cursor cursor) {
+        public SimpleCursor(Cursor cursor) {
             super(cursor);
             mColumnIndices = new HashMap<>(cursor.getColumnCount() * 4 / 3, 0.75f);
         }
@@ -376,12 +377,12 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
         }
     }
 
-    public static class KeyCursor extends AbstractCursor {
+    public static class KeyCursor extends SimpleCursor {
         public static final String[] PROJECTION;
 
         static {
             ArrayList<String> arr = new ArrayList<>();
-            arr.addAll(Arrays.asList(AbstractCursor.PROJECTION));
+            arr.addAll(Arrays.asList(SimpleCursor.PROJECTION));
             arr.addAll(Arrays.asList(
                     KeychainContract.KeyRings.MASTER_KEY_ID,
                     KeychainContract.KeyRings.USER_ID,

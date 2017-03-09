@@ -12,4 +12,10 @@ public interface ViewKeyMvpView {
     void startActivityAndShowResultSnackbar(Intent intent);
     void showDialogFragment(DialogFragment dialogFragment, final String tag);
     void setContentShown(boolean show, boolean animate);
+
+    void addFakeBackStackItem(String tag, OnBackStackPoppedListener listener);
+
+    interface OnBackStackPoppedListener {
+        void onBackStackPopped();
+    }
 }

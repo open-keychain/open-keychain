@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.ui.adapter.CertSectionedListAdapter.CertCursor;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter;
 import org.sufficientlysecure.keychain.ui.util.adapter.SectionCursorAdapter;
@@ -39,7 +40,7 @@ import org.sufficientlysecure.keychain.ui.util.adapter.SectionCursorAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class CertSectionedListAdapter extends SectionCursorAdapter<CertSectionedListAdapter.CertCursor, String,
+public class CertSectionedListAdapter extends SectionCursorAdapter<CertCursor, String,
         CertSectionedListAdapter.CertItemViewHolder, CertSectionedListAdapter.CertSectionViewHolder> {
 
     private CertListListener mListener;
@@ -162,11 +163,11 @@ public class CertSectionedListAdapter extends SectionCursorAdapter<CertSectioned
         }
     }
 
-    public static class CertCursor extends CursorAdapter.AbstractCursor {
+    public static class CertCursor extends CursorAdapter.SimpleCursor {
         public static final String[] CERTS_PROJECTION;
         static {
             ArrayList<String> projection = new ArrayList<>();
-            projection.addAll(Arrays.asList(AbstractCursor.PROJECTION));
+            projection.addAll(Arrays.asList(SimpleCursor.PROJECTION));
             projection.addAll(Arrays.asList(
                     KeychainContract.Certs.MASTER_KEY_ID,
                     KeychainContract.Certs.VERIFIED,
