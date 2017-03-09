@@ -62,6 +62,7 @@ import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiTrustIdentity;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -602,6 +603,7 @@ public class KeyWritableRepository extends KeyRepository {
             android.util.Log.e(Constants.TAG, "Could not delete file!", e);
             return false;
         }
+        mContentResolver.delete(ApiTrustIdentity.buildByMasterKeyId(masterKeyId),null, null);
         int deletedRows = mContentResolver.delete(KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
         return deletedRows > 0;
     }
