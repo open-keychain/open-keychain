@@ -24,15 +24,18 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.view.View;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.adapter.TrustIdsAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.ViewKeyMvpView.OnBackStackPoppedListener;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener.OnItemClickListener;
 
 
 public class TrustIdsPresenter implements LoaderCallbacks<Cursor> {
     private final Context context;
     private final TrustIdsMvpView view;
+    private final ViewKeyMvpView viewKeyMvpView;
     private final int loaderId;
 
     private final TrustIdsAdapter trustIdsAdapter;
@@ -40,21 +43,23 @@ public class TrustIdsPresenter implements LoaderCallbacks<Cursor> {
     private final long masterKeyId;
     private final boolean isSecret;
 
-    public TrustIdsPresenter(Context context, TrustIdsMvpView view, int loaderId, long masterKeyId, boolean isSecret) {
+    public TrustIdsPresenter(Context context, TrustIdsMvpView view, ViewKeyMvpView viewKeyMvpView, int loaderId,
+            long masterKeyId, boolean isSecret) {
         this.context = context;
         this.view = view;
+        this.viewKeyMvpView = viewKeyMvpView;
         this.loaderId = loaderId;
 
         this.masterKeyId = masterKeyId;
         this.isSecret = isSecret;
 
-        trustIdsAdapter = new TrustIdsAdapter(context, null, 0);
+        trustIdsAdapter = new TrustIdsAdapter(context, null);
         view.setTrustIdAdapter(trustIdsAdapter);
 
-        view.setTrustIdClickListener(new TrustIdsClickListener() {
+        trustIdsAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onTrustIdItemClick(int position) {
-
+            public void onItemClick(View view, int position) {
+                onClickTrustId(position);
             }
         });
     }
@@ -71,7 +76,7 @@ public class TrustIdsPresenter implements LoaderCallbacks<Cursor> {
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         trustIdsAdapter.swapCursor(data);
-        view.showCard(trustIdsAdapter.getCount() > 0);
+        view.showCard(data.getCount() > 0);
     }
 
     @Override
@@ -79,14 +84,19 @@ public class TrustIdsPresenter implements LoaderCallbacks<Cursor> {
         trustIdsAdapter.swapCursor(null);
     }
 
+    private void onClickTrustId(int position) {
+        trustIdsAdapter.setExpandedView(position);
+
+        viewKeyMvpView.addFakeBackStackItem("expand_trust_id", new OnBackStackPoppedListener() {
+            @Override
+            public void onBackStackPopped() {
+                trustIdsAdapter.setExpandedView(null);
+            }
+        });
+    }
+
     public interface TrustIdsMvpView {
         void setTrustIdAdapter(TrustIdsAdapter trustIdsAdapter);
         void showCard(boolean show);
-
-        void setTrustIdClickListener(TrustIdsClickListener trustIdsClickListener);
-    }
-
-    public interface TrustIdsClickListener {
-        void onTrustIdItemClick(int position);
     }
 }
