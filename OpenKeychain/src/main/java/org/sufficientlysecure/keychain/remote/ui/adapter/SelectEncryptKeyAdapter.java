@@ -30,7 +30,6 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.KeyCursorAdapter;
@@ -113,34 +112,6 @@ public class SelectEncryptKeyAdapter extends KeyCursorAdapter<SelectEncryptKeyAd
         }
     }
 
-    public String[] getRawUserIds() {
-        String[] selected = new String[mSelected.size()];
-        for (int i = 0; i < selected.length; i++) {
-            int position = mSelected.get(i);
-            if (!moveCursor(position)) {
-                return selected;
-            }
-
-            selected[i] = getCursor().getRawUserId();
-        }
-
-        return selected;
-    }
-
-    public OpenPgpUtils.UserId[] getUserIds() {
-        OpenPgpUtils.UserId[] selected = new OpenPgpUtils.UserId[mSelected.size()];
-        for (int i = 0; i < selected.length; i++) {
-            int position = mSelected.get(i);
-            if (!moveCursor(position)) {
-                return selected;
-            }
-
-            selected[i] = getCursor().getUserId();
-        }
-
-        return selected;
-    }
-
     @Override
     public void onContentChanged() {
         mSelected.clear();
@@ -181,14 +152,15 @@ public class SelectEncryptKeyAdapter extends KeyCursorAdapter<SelectEncryptKeyAd
             Context context = itemView.getContext();
 
             { // set name and stuff, common to both key types
-                OpenPgpUtils.UserId userIdSplit = cursor.getUserId();
-                if (userIdSplit.name != null) {
-                    mUserIdText.setText(highlighter.highlight(userIdSplit.name));
+                String name = cursor.getName();
+                String email = cursor.getEmail();
+                if (name != null) {
+                    mUserIdText.setText(highlighter.highlight(name));
                 } else {
                     mUserIdText.setText(R.string.user_id_no_name);
                 }
-                if (userIdSplit.email != null) {
-                    mUserIdRestText.setText(highlighter.highlight(userIdSplit.email));
+                if (email != null) {
+                    mUserIdRestText.setText(highlighter.highlight(email));
                     mUserIdRestText.setVisibility(View.VISIBLE);
                 } else {
                     mUserIdRestText.setVisibility(View.GONE);

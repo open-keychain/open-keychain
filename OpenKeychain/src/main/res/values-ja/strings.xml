@@ -348,7 +348,7 @@
   <string name="error_integrity_check_failed">完全性チェックが失敗しました! データに変更があります!</string>
   <string name="error_wrong_passphrase">正しくないパスワードです</string>
   <string name="error_could_not_extract_private_key">秘密鍵を取り出すことができません</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Android NFC Beam機能を使うにはAndroid 4.1  が必要です!</string>
   <string name="error_nfc_needed">NFCを有効にしてください!</string>
   <string name="error_beam_needed">Beamを有効にしてください!</string>

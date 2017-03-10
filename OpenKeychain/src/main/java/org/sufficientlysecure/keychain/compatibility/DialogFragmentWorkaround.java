@@ -25,7 +25,7 @@ import android.os.Handler;
  * 
  * http://code.google.com/p/android/issues/detail?id=41901
  * 
- * DialogFragment disappears on pressing home and comming back. This also happens especially in
+ * DialogFragment disappears on pressing home and coming back. This also happens especially in
  * FileDialogFragment after launching a file manager and coming back.
  * 
  * Usage: <code>

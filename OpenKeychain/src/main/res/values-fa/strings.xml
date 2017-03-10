@@ -171,7 +171,7 @@
   <string name="error_no_signature_key">کلیدی برای امضاء کردن داده نشد</string>
   <string name="error_wrong_passphrase">رمزعبور اشتباه است</string>
   <string name="error_could_not_extract_private_key">نمی‌توان کلید شخصی را خارج کرد</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">امضاء نشده</string>
   <string name="decrypt_result_invalid_signature">امضاء معتبر نیست!</string>

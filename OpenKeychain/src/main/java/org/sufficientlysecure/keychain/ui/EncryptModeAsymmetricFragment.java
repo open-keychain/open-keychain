@@ -17,36 +17,39 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ViewAnimator;
 
-import com.tokenautocomplete.TokenCompleteTextView;
 import com.tokenautocomplete.TokenCompleteTextView.TokenListener;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner.OnKeyChangedListener;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
-    ProviderHelper mProviderHelper;
+    KeyRepository mKeyRepository;
 
     private KeySpinner mSignKeySpinner;
     private EncryptKeyCompletionView mEncryptKeyView;
@@ -115,7 +118,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mProviderHelper = new ProviderHelper(getActivity());
+        mKeyRepository = KeyRepository.createDatabaseInteractor(getContext());
 
         // preselect keys given, from state or arguments
         if (savedInstanceState == null) {
@@ -135,13 +138,16 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     private void preselectKeys(Long signatureKeyId, long[] encryptionKeyIds) {
         if (signatureKeyId != null) {
             try {
-                CachedPublicKeyRing keyring = mProviderHelper.getCachedPublicKeyRing(
+                CachedPublicKeyRing keyring = mKeyRepository.getCachedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingUri(signatureKeyId));
                 if (keyring.hasAnySecret()) {
                     mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
                 }
             } catch (PgpKeyNotFoundException e) {
-                Log.e(Constants.TAG, "key not found!", e);
+                Log.e(Constants.TAG, "key not found for signing!", e);
+                Notify.create(getActivity(), getString(R.string.error_preselect_sign_key,
+                        KeyFormattingUtils.beautifyKeyId(signatureKeyId)),
+                        Style.ERROR).show();
             }
         }
 
@@ -149,10 +155,13 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
             for (long preselectedId : encryptionKeyIds) {
                 try {
                     CanonicalizedPublicKeyRing ring =
-                            mProviderHelper.getCanonicalizedPublicKeyRing(preselectedId);
+                            mKeyRepository.getCanonicalizedPublicKeyRing(preselectedId);
                     mEncryptKeyView.addObject(new KeyItem(ring));
                 } catch (NotFoundException e) {
-                    Log.e(Constants.TAG, "key not found!", e);
+                    Log.e(Constants.TAG, "key not found for encryption!", e);
+                    Notify.create(getActivity(), getString(R.string.error_preselect_encrypt_key,
+                            KeyFormattingUtils.beautifyKeyId(preselectedId)),
+                            Style.ERROR).show();
                 }
             }
             // This is to work-around a rendering bug in TokenCompleteTextView

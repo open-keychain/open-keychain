@@ -18,46 +18,21 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.io.PrintStream;
-import java.security.Security;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Random;
-
-import org.junit.Assert;
-import org.junit.Before;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.bcpg.sig.KeyFlags;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
-import org.sufficientlysecure.keychain.operations.results.CertifyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
-import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
-import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
-import org.sufficientlysecure.keychain.util.TestingUtils;
+
+import java.io.PrintStream;
+import java.security.Security;
 
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class BenchmarkOperationTest {
 
     static PrintStream oldShadowStream;
@@ -72,7 +47,7 @@ public class BenchmarkOperationTest {
     @Test
     public void testBenchmark() throws Exception {
         BenchmarkOperation op = new BenchmarkOperation(RuntimeEnvironment.application,
-                new ProviderHelper(RuntimeEnvironment.application), null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
         op.execute(new BenchmarkInputParcel(), null);
     }

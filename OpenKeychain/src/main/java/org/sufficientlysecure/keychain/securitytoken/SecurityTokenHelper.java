@@ -661,7 +661,8 @@ public class SecurityTokenHelper {
 
         byte[] data;
 
-        switch (mOpenPgpCapabilities.getFormatForKeyType(KeyType.SIGN).keyFormatType()) {
+        KeyFormat signKeyFormat = mOpenPgpCapabilities.getFormatForKeyType(KeyType.SIGN);
+        switch (signKeyFormat.keyFormatType()) {
             case RSAKeyFormatType:
                 data = dsi;
                 break;
@@ -687,11 +688,12 @@ public class SecurityTokenHelper {
         byte[] signature = response.getData();
 
         // Make sure the signature we received is actually the expected number of bytes long!
-        switch (mOpenPgpCapabilities.getFormatForKeyType(KeyType.SIGN).keyFormatType()) {
+        switch (signKeyFormat.keyFormatType()) {
             case RSAKeyFormatType:
-                if (signature.length != 128 && signature.length != 256
-                        && signature.length != 384 && signature.length != 512) {
-                    throw new IOException("Bad signature length! Expected 128/256/384/512 bytes, got " + signature.length);
+                int modulusLength = ((RSAKeyFormat) signKeyFormat).getModulusLength();
+                if (signature.length != (modulusLength / 8)) {
+                    throw new IOException("Bad signature length! Expected " + (modulusLength / 8) +
+                            " bytes, got " + signature.length);
                 }
                 break;
 

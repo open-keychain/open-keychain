@@ -3,6 +3,11 @@
 OpenKeychain is an OpenPGP implementation for Android.  
 For a more detailed description and installation instructions go to https://www.openkeychain.org .
 
+<a href="https://f-droid.org/repository/browse/?fdid=org.sufficientlysecure.keychain" target="_blank">
+<img src=/graphics/get-it-on-f-droid.png alt="Get it on F-Droid" height="80"/></a>
+<a href="https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain" target="_blank">
+<img src=/graphics/get-it-on-google-play.png alt="Get it on Google Play" height="80"/></a>
+
 ### Branches
 * The development of OpenKeychain happens in the "master" branch.
 * For every release a new branch, e.g., "3.2-fixes" is created to backport fixes from "master"
@@ -22,7 +27,7 @@ Translations are managed at Transifex, please contribute there at https://www.tr
 1. Lookout for interesting issues on Github. We have tagged issues were we explicitly like to see contributions: https://github.com/open-keychain/open-keychain/labels/help-wanted
 2. Read this README, especially the notes about coding style
 3. Fork OpenKeychain and contribute code (the best part :sunglasses: )
-4. Open a pull request on Github. We will help with occuring problems and merge your changes back into the main project.
+4. Open a pull request on Github. We will help with occurring problems and merge your changes back into the main project.
 5. PROFIT
 
 ### For bigger changes
@@ -42,9 +47,9 @@ Development mailinglist at https://lists.riseup.net/www/subscribe/openkeychain
 2. Get all external submodules with ``git submodule update --init --recursive``
 3. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 4. Open the Android SDK Manager (shell command: ``android``).
-Expand the Tools directory and select "Android SDK Build-tools (Version 24.0.1)".
+Expand the Tools directory and select "Android SDK Build-tools (Version 25.0.2)".
 Expand the Extras directory and install "Android Support Library", as well as "Local Maven repository for Support Libraries"
-Select SDK Platform for API levels 21, 22, 23, and 24.
+Select SDK Platform for API levels 25.
 5. Export ANDROID_HOME pointing to your Android SDK
 6. Execute ``./gradlew assembleFdroidDebug``
 7. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-fdroid-debug.apk``

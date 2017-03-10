@@ -39,7 +39,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -80,20 +80,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * method here will generally import keyrings in the order given by the
  * iterator, so this should be ensured beforehand.
  */
-public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
+public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel> {
 
     private static final int MAX_THREADS = 10;
 
     public static final String CACHE_FILE_NAME = "key_import.pcl";
 
-    public ImportOperation(Context context, ProviderHelper providerHelper, Progressable
+    public ImportOperation(Context context, KeyWritableRepository databaseInteractor, Progressable
             progressable) {
-        super(context, providerHelper, progressable);
+        super(context, databaseInteractor, progressable);
     }
 
-    public ImportOperation(Context context, ProviderHelper providerHelper,
+    public ImportOperation(Context context, KeyWritableRepository databaseInteractor,
                            Progressable progressable, AtomicBoolean cancelled) {
-        super(context, providerHelper, progressable, cancelled);
+        super(context, databaseInteractor, progressable, cancelled);
     }
 
     // Overloaded functions for using progressable supplied in constructor during import
@@ -314,15 +314,15 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                 SaveKeyringResult result;
                 // synchronizing prevents https://github.com/open-keychain/open-keychain/issues/1221
                 // and https://github.com/open-keychain/open-keychain/issues/1480
-                synchronized (mProviderHelper) {
-                    mProviderHelper.clearLog();
+                synchronized (mKeyRepository) {
+                    mKeyRepository.clearLog();
                     ProgressScaler progressScaler = new ProgressScaler(progressable, (int) (position * progSteps),
                             (int) ((position + 1) * progSteps), 100);
                     if (key.isSecret()) {
-                        result = mProviderHelper.saveSecretKeyRing(key, progressScaler,
+                        result = mKeyWritableRepository.saveSecretKeyRing(key, progressScaler,
                                 canKeyRings, skipSave);
                     } else {
-                        result = mProviderHelper.savePublicKeyRing(key, progressScaler,
+                        result = mKeyWritableRepository.savePublicKeyRing(key, progressScaler,
                                 entry.mExpectedFingerprint, canKeyRings, skipSave);
                     }
                 }
@@ -343,7 +343,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         // synonymous to isDownloadFromKeyserver.
                         // If no byte data was supplied, import from keyserver took place
                         // this prevents file imports being noted as keyserver imports
-                        mProviderHelper.renewKeyLastUpdatedTime(key.getMasterKeyId(),
+                        mKeyWritableRepository.renewKeyLastUpdatedTime(key.getMasterKeyId(),
                                 GregorianCalendar.getInstance().getTimeInMillis(),
                                 TimeUnit.MILLISECONDS);
                     }
@@ -365,8 +365,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         if (!skipSave && (secret > 0)) {
             setPreventCancel();
             ConsolidateResult result;
-            synchronized (mProviderHelper) {
-                result = mProviderHelper.consolidateDatabaseStep1(progressable);
+            synchronized (mKeyRepository) {
+                result = mKeyWritableRepository.consolidateDatabaseStep1(progressable);
             }
             log.add(result, 1);
         }
@@ -512,7 +512,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     // Since serialKeyRingImport does not throw any exceptions, this is what
                     // would have happened if
                     // we were importing the key on this thread
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             }
         }

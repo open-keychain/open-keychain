@@ -23,8 +23,9 @@ import android.content.Context;
 import org.bouncycastle.util.Arrays;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
@@ -50,24 +51,25 @@ public class KeyringTestingHelper {
 
     public boolean addKeyring(Collection<String> blobFiles) throws Exception {
 
-        ProviderHelper providerHelper = new ProviderHelper(context);
+        KeyWritableRepository databaseInteractor =
+                KeyWritableRepository.createDatabaseReadWriteInteractor(context);
 
         byte[] data = TestDataUtil.readAllFully(blobFiles);
         UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);
         long masterKeyId = ring.getMasterKeyId();
 
         // Should throw an exception; key is not yet saved
-        retrieveKeyAndExpectNotFound(providerHelper, masterKeyId);
+        retrieveKeyAndExpectNotFound(databaseInteractor, masterKeyId);
 
-        SaveKeyringResult saveKeyringResult = providerHelper.savePublicKeyRing(ring, new ProgressScaler(), null);
+        SaveKeyringResult saveKeyringResult = databaseInteractor.savePublicKeyRing(ring, new ProgressScaler(), null);
 
         boolean saveSuccess = saveKeyringResult.success();
 
         // Now re-retrieve the saved key. Should not throw an exception.
-        providerHelper.getCanonicalizedPublicKeyRing(masterKeyId);
+        databaseInteractor.getCanonicalizedPublicKeyRing(masterKeyId);
 
         // A different ID should still fail
-        retrieveKeyAndExpectNotFound(providerHelper, masterKeyId - 1);
+        retrieveKeyAndExpectNotFound(databaseInteractor, masterKeyId - 1);
 
         return saveSuccess;
     }
@@ -345,11 +347,11 @@ public class KeyringTestingHelper {
         return getNth(ring.getPublicKeys(), position).getKeyId();
     }
 
-    private void retrieveKeyAndExpectNotFound(ProviderHelper providerHelper, long masterKeyId) {
+    private void retrieveKeyAndExpectNotFound(KeyRepository keyRepository, long masterKeyId) {
         try {
-            providerHelper.getCanonicalizedPublicKeyRing(masterKeyId);
+            keyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
             throw new AssertionError("Was expecting the previous call to fail!");
-        } catch (ProviderHelper.NotFoundException expectedException) {
+        } catch (KeyWritableRepository.NotFoundException expectedException) {
             // good
         }
     }

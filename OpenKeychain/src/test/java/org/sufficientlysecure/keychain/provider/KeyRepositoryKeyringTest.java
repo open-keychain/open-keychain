@@ -17,23 +17,20 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.ArrayList;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.*;
-import org.robolectric.annotation.Config;
-import org.sufficientlysecure.keychain.BuildConfig;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.robolectric.RuntimeEnvironment;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
-public class ProviderHelperKeyringTest {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
+@RunWith(KeychainTestRunner.class)
+public class KeyRepositoryKeyringTest {
 
     @Test
     public void testSavePublicKeyring() throws Exception {

@@ -17,13 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Date;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
@@ -31,7 +24,6 @@ import android.support.v4.widget.CursorAdapter;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -43,10 +35,16 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 public class KeyAdapter extends CursorAdapter {
 
@@ -61,24 +59,32 @@ public class KeyAdapter extends CursorAdapter {
             KeyRings.USER_ID,
             KeyRings.IS_REVOKED,
             KeyRings.IS_EXPIRED,
+            KeyRings.IS_SECURE,
             KeyRings.VERIFIED,
             KeyRings.HAS_ANY_SECRET,
             KeyRings.HAS_DUPLICATE_USER_ID,
             KeyRings.FINGERPRINT,
             KeyRings.CREATION,
-            KeyRings.HAS_ENCRYPT
+            KeyRings.HAS_ENCRYPT,
+            KeyRings.NAME,
+            KeyRings.EMAIL,
+            KeyRings.COMMENT
     };
 
     public static final int INDEX_MASTER_KEY_ID = 1;
     public static final int INDEX_USER_ID = 2;
     public static final int INDEX_IS_REVOKED = 3;
     public static final int INDEX_IS_EXPIRED = 4;
-    public static final int INDEX_VERIFIED = 5;
-    public static final int INDEX_HAS_ANY_SECRET = 6;
-    public static final int INDEX_HAS_DUPLICATE_USER_ID = 7;
-    public static final int INDEX_FINGERPRINT = 8;
-    public static final int INDEX_CREATION = 9;
-    public static final int INDEX_HAS_ENCRYPT = 10;
+    public static final int INDEX_IS_SECURE = 5;
+    public static final int INDEX_VERIFIED = 6;
+    public static final int INDEX_HAS_ANY_SECRET = 7;
+    public static final int INDEX_HAS_DUPLICATE_USER_ID = 8;
+    public static final int INDEX_FINGERPRINT = 9;
+    public static final int INDEX_CREATION = 10;
+    public static final int INDEX_HAS_ENCRYPT = 11;
+    public static final int INDEX_NAME = 12;
+    public static final int INDEX_EMAIL = 13;
+    public static final int INDEX_COMMENT = 14;
 
     public KeyAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -152,6 +158,11 @@ public class KeyAdapter extends CursorAdapter {
                     textColor = context.getResources().getColor(R.color.key_flag_gray);
                 } else if (item.mIsExpired) {
                     KeyFormattingUtils.setStatusImage(context, mStatus, null, State.EXPIRED, R.color.key_flag_gray);
+                    mStatus.setVisibility(View.VISIBLE);
+                    mSlinger.setVisibility(View.GONE);
+                    textColor = context.getResources().getColor(R.color.key_flag_gray);
+                } else if (!item.mIsSecure) {
+                    KeyFormattingUtils.setStatusImage(context, mStatus, null, State.INSECURE, R.color.key_flag_gray);
                     mStatus.setVisibility(View.VISIBLE);
                     mSlinger.setVisibility(View.GONE);
                     textColor = context.getResources().getColor(R.color.key_flag_gray);
@@ -266,16 +277,22 @@ public class KeyAdapter extends CursorAdapter {
 
         public final String mUserIdFull;
         public final OpenPgpUtils.UserId mUserId;
+        public final String mName;
+        public final String mEmail;
+        public final String mComment;
         public final long mKeyId;
         public final boolean mHasDuplicate;
         public final boolean mHasEncrypt;
         public final Date mCreation;
         public final String mFingerprint;
-        public final boolean mIsSecret, mIsRevoked, mIsExpired, mIsVerified;
+        public final boolean mIsSecret, mIsRevoked, mIsExpired, mIsSecure, mIsVerified;
 
         private KeyItem(Cursor cursor) {
             String userId = cursor.getString(INDEX_USER_ID);
             mUserId = KeyRing.splitUserId(userId);
+            mName = cursor.getString(INDEX_NAME);
+            mEmail = cursor.getString(INDEX_EMAIL);
+            mComment = cursor.getString(INDEX_COMMENT);
             mUserIdFull = userId;
             mKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
             mHasDuplicate = cursor.getLong(INDEX_HAS_DUPLICATE_USER_ID) > 0;
@@ -286,6 +303,7 @@ public class KeyAdapter extends CursorAdapter {
             mIsSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) != 0;
             mIsRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
             mIsExpired = cursor.getInt(INDEX_IS_EXPIRED) > 0;
+            mIsSecure = cursor.getInt(INDEX_IS_SECURE) > 0;
             mIsVerified = cursor.getInt(INDEX_VERIFIED) > 0;
         }
 
@@ -293,6 +311,9 @@ public class KeyAdapter extends CursorAdapter {
             CanonicalizedPublicKey key = ring.getPublicKey();
             String userId = key.getPrimaryUserIdWithFallback();
             mUserId = KeyRing.splitUserId(userId);
+            mName = mUserId.name;
+            mEmail = mUserId.email;
+            mComment = mUserId.comment;
             mUserIdFull = userId;
             mKeyId = ring.getMasterKeyId();
             mHasDuplicate = false;
@@ -302,6 +323,7 @@ public class KeyAdapter extends CursorAdapter {
                     ring.getFingerprint());
             mIsRevoked = key.isRevoked();
             mIsExpired = key.isExpired();
+            mIsSecure = key.isSecure();
 
             // these two are actually "don't know"s
             mIsSecret = false;
@@ -309,10 +331,10 @@ public class KeyAdapter extends CursorAdapter {
         }
 
         public String getReadableName() {
-            if (mUserId.name != null) {
-                return mUserId.name;
+            if (mName != null) {
+                return mName;
             } else {
-                return mUserId.email;
+                return mEmail;
             }
         }
     }

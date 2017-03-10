@@ -34,8 +34,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
@@ -157,7 +157,7 @@ public class DecryptActivity extends BaseActivity {
                 // for everything else, just work on the intent data
                 case Intent.ACTION_VIEW:
                     canDelete = true;
-                case OpenKeychainIntents.DECRYPT_DATA:
+                case Constants.DECRYPT_DATA:
                 default:
                     Uri uri = intent.getData();
                     if (uri != null) {

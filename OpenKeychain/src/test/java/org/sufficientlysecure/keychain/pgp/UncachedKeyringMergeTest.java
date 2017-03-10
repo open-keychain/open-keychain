@@ -18,15 +18,6 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 import org.bouncycastle.bcpg.BCPGInputStream;
 import org.bouncycastle.bcpg.PacketTags;
 import org.bouncycastle.bcpg.S2K;
@@ -34,11 +25,16 @@ import org.bouncycastle.bcpg.SecretKeyPacket;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.Strings;
-import org.sufficientlysecure.keychain.BuildConfig;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.shadows.ShadowLog;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
@@ -81,8 +77,7 @@ import java.util.Random;
  * packet will be copied regardless. Filtering out bad packets is done with canonicalization.
  *
  */
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class UncachedKeyringMergeTest {
 
     static UncachedKeyRing staticRingA, staticRingB;
@@ -190,7 +185,7 @@ public class UncachedKeyringMergeTest {
 
         UncachedKeyRing modifiedA, modifiedB; {
             CanonicalizedSecretKeyRing secretRing =
-                    new CanonicalizedSecretKeyRing(ringA.getEncoded(), false, 0);
+                    new CanonicalizedSecretKeyRing(ringA.getEncoded(), 0);
 
             parcel.reset();
             parcel.mAddUserIds.add("flim");
@@ -230,7 +225,7 @@ public class UncachedKeyringMergeTest {
         UncachedKeyRing modifiedA, modifiedB;
         long subKeyIdA, subKeyIdB;
         {
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ringA.getEncoded(), false, 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ringA.getEncoded(), 0);
 
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
@@ -276,7 +271,7 @@ public class UncachedKeyringMergeTest {
             parcel.reset();
             parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(ringA, 1));
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
-                    ringA.getEncoded(), false, 0);
+                    ringA.getEncoded(), 0);
             modified = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
         }
 
@@ -301,7 +296,7 @@ public class UncachedKeyringMergeTest {
                     pubRing.getEncoded(), 0);
 
             CanonicalizedSecretKey secretKey = new CanonicalizedSecretKeyRing(
-                    ringB.getEncoded(), false, 0).getSecretKey();
+                    ringB.getEncoded(), 0).getSecretKey();
             secretKey.unlock(new Passphrase());
             PgpCertifyOperation op = new PgpCertifyOperation();
             CertifyAction action = new CertifyAction(pubRing.getMasterKeyId(), publicRing.getPublicKey().getUnorderedUserIds(), null);
@@ -375,7 +370,7 @@ public class UncachedKeyringMergeTest {
             parcel.mAddUserAttribute.add(uat);
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
-                    ringA.getEncoded(), false, 0);
+                    ringA.getEncoded(), 0);
             modified = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
         }
 

@@ -25,14 +25,11 @@ import android.database.DataSetObserver;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -65,7 +62,7 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
      * When using this constructor, {@link #FLAG_REGISTER_CONTENT_OBSERVER}
      * will always be set.
      *
-     * @param c The cursor from which to get the data.
+     * @param c       The cursor from which to get the data.
      * @param context The context
      */
     public CursorAdapter(Context context, C c) {
@@ -76,9 +73,9 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
     /**
      * Recommended constructor.
      *
-     * @param c The cursor from which to get the data.
+     * @param c       The cursor from which to get the data.
      * @param context The context
-     * @param flags Flags used to determine the behavior of the adapter
+     * @param flags   Flags used to determine the behavior of the adapter
      * @see #FLAG_REGISTER_CONTENT_OBSERVER
      */
     public CursorAdapter(Context context, C c, int flags) {
@@ -109,6 +106,7 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
 
     /**
      * Returns the cursor.
+     *
      * @return the cursor.
      */
     public C getCursor() {
@@ -147,10 +145,9 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
     }
 
     /**
-     * @see android.support.v7.widget.RecyclerView.Adapter#getItemId(int)
-     *
      * @param position Adapter position to query
      * @return the id of the item
+     * @see android.support.v7.widget.RecyclerView.Adapter#getItemId(int)
      */
     @Override
     public long getItemId(int position) {
@@ -168,11 +165,12 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
     /**
      * Return the id of the item represented by the row the cursor
      * is currently moved to.
+     *
      * @param cursor The cursor moved to the correct position.
      * @return The id of the dataset
      */
     public long getIdFromCursor(C cursor) {
-        if(cursor != null) {
+        if (cursor != null) {
             return cursor.getEntryId();
         } else {
             return RecyclerView.NO_ID;
@@ -182,28 +180,28 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
     public void moveCursorOrThrow(int position)
             throws IndexOutOfBoundsException, IllegalStateException {
 
-        if(position >= getItemCount() || position < -1) {
+        if (position >= getItemCount() || position < -1) {
             throw new IndexOutOfBoundsException("Position: " + position
                     + " is invalid for this data set!");
         }
 
-        if(!mDataValid) {
+        if (!mDataValid) {
             throw new IllegalStateException("Attempt to move cursor over invalid data set!");
         }
 
-        if(!mCursor.moveToPosition(position)) {
+        if (!mCursor.moveToPosition(position)) {
             throw new IllegalStateException("Couldn't move cursor from position: "
                     + mCursor.getPosition() + " to position: " + position + "!");
         }
     }
 
     public boolean moveCursor(int position) {
-        if(position >= getItemCount() || position < -1) {
+        if (position >= getItemCount() || position < -1) {
             Log.w(TAG, "Position: %d is invalid for this data set!");
             return false;
         }
 
-        if(!mDataValid) {
+        if (!mDataValid) {
             Log.d(TAG, "Attempt to move cursor over invalid data set!");
         }
 
@@ -315,7 +313,7 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
     }
 
     public static abstract class AbstractCursor extends CursorWrapper {
-        public static final String[] PROJECTION = { "_id" };
+        public static final String[] PROJECTION = {"_id"};
 
         public static <T extends AbstractCursor> T wrap(Cursor cursor, Class<T> type) {
             if (cursor != null) {
@@ -356,10 +354,10 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
         @Override
         public final int getColumnIndexOrThrow(String colName) {
             Integer colIndex = mColumnIndices.get(colName);
-            if(colIndex == null) {
+            if (colIndex == null) {
                 colIndex = super.getColumnIndexOrThrow(colName);
                 mColumnIndices.put(colName, colIndex);
-            } else if (colIndex < 0){
+            } else if (colIndex < 0) {
                 throw new IllegalArgumentException("Could not get column index for name: \"" + colName + "\"");
             }
 
@@ -369,7 +367,7 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
         @Override
         public final int getColumnIndex(String colName) {
             Integer colIndex = mColumnIndices.get(colName);
-            if(colIndex == null) {
+            if (colIndex == null) {
                 colIndex = super.getColumnIndex(colName);
                 mColumnIndices.put(colName, colIndex);
             }
@@ -389,8 +387,12 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
                     KeychainContract.KeyRings.USER_ID,
                     KeychainContract.KeyRings.IS_REVOKED,
                     KeychainContract.KeyRings.IS_EXPIRED,
+                    KeychainContract.KeyRings.IS_SECURE,
                     KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
-                    KeychainContract.KeyRings.CREATION
+                    KeychainContract.KeyRings.CREATION,
+                    KeychainContract.KeyRings.NAME,
+                    KeychainContract.KeyRings.EMAIL,
+                    KeychainContract.KeyRings.COMMENT
             ));
 
             PROJECTION = arr.toArray(new String[arr.size()]);
@@ -418,13 +420,19 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
             return getLong(index);
         }
 
-        public String getRawUserId() {
-            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.USER_ID);
+        public String getName() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.NAME);
             return getString(index);
         }
 
-        public OpenPgpUtils.UserId getUserId() {
-            return KeyRing.splitUserId(getRawUserId());
+        public String getEmail() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.EMAIL);
+            return getString(index);
+        }
+
+        public String getComment() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.COMMENT);
+            return getString(index);
         }
 
         public boolean hasDuplicate() {
@@ -439,6 +447,11 @@ public abstract class CursorAdapter<C extends CursorAdapter.AbstractCursor, VH e
 
         public boolean isExpired() {
             int index = getColumnIndexOrThrow(KeychainContract.KeyRings.IS_EXPIRED);
+            return getInt(index) > 0;
+        }
+
+        public boolean isSecure() {
+            int index = getColumnIndexOrThrow(KeychainContract.KeyRings.IS_SECURE);
             return getInt(index) > 0;
         }
 

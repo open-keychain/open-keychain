@@ -320,7 +320,7 @@
   <string name="error_integrity_check_failed">integritetskontroll misslyckades! Data har modifierats!</string>
   <string name="error_wrong_passphrase">fel lösenord</string>
   <string name="error_could_not_extract_private_key">kunde inte extrahera privat nyckel</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Du behöver Android 4.1 för att använda Androids NFC Beam-funktion!</string>
   <string name="error_nfc_needed">NFC måste vara aktiverat!</string>
   <string name="error_beam_needed">Beam måste vara aktiverat!</string>

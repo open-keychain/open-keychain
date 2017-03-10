@@ -44,16 +44,18 @@ import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -77,23 +79,19 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
     private static final String[] PROJECTION = new String[] {
             KeyRings.MASTER_KEY_ID,
-            KeyRings.PUBKEY_DATA,
-            KeyRings.PRIVKEY_DATA,
             KeyRings.HAS_ANY_SECRET
     };
     private static final int INDEX_MASTER_KEY_ID = 0;
-    private static final int INDEX_PUBKEY_DATA = 1;
-    private static final int INDEX_SECKEY_DATA = 2;
-    private static final int INDEX_HAS_ANY_SECRET = 3;
+    private static final int INDEX_HAS_ANY_SECRET = 1;
 
-    public BackupOperation(Context context, ProviderHelper providerHelper, Progressable
+    public BackupOperation(Context context, KeyRepository keyRepository, Progressable
             progressable) {
-        super(context, providerHelper, progressable);
+        super(context, keyRepository, progressable);
     }
 
-    public BackupOperation(Context context, ProviderHelper providerHelper,
+    public BackupOperation(Context context, KeyRepository keyRepository,
                            Progressable progressable, AtomicBoolean cancelled) {
-        super(context, providerHelper, progressable, cancelled);
+        super(context, keyRepository, progressable, cancelled);
     }
 
     @NonNull
@@ -170,11 +168,11 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
     private PgpSignEncryptResult encryptBackupData(@NonNull BackupKeyringParcel backupInput,
             @NonNull CryptoInputParcel cryptoInput, @Nullable OutputStream outputStream, Uri plainUri, long exportedDataSize)
             throws FileNotFoundException {
-        PgpSignEncryptOperation signEncryptOperation = new PgpSignEncryptOperation(mContext, mProviderHelper, mProgressable, mCancelled);
+        PgpSignEncryptOperation signEncryptOperation = new PgpSignEncryptOperation(mContext, mKeyRepository, mProgressable, mCancelled);
 
         PgpSignEncryptData data = new PgpSignEncryptData();
         data.setSymmetricPassphrase(cryptoInput.getPassphrase());
-        data.setEnableAsciiArmorOutput(true);
+        data.setEnableAsciiArmorOutput(backupInput.mEnableAsciiArmorOutput);
         data.setAddBackupHeader(true);
         PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(data);
 
@@ -230,16 +228,16 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             // For each public masterKey id
             while (!cursor.isAfterLast()) {
 
-                long keyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                log.add(LogType.MSG_BACKUP_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
+                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
+                log.add(LogType.MSG_BACKUP_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(masterKeyId));
 
-                if (writePublicKeyToStream(log, outStream, cursor)) {
+                if (writePublicKeyToStream(masterKeyId, log, outStream)) {
                     okPublic += 1;
 
                     boolean hasSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) > 0;
                     if (exportSecret && hasSecret) {
-                        log.add(LogType.MSG_BACKUP_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
-                        if (writeSecretKeyToStream(log, outStream, cursor)) {
+                        log.add(LogType.MSG_BACKUP_SECRET, 2, KeyFormattingUtils.beautifyKeyId(masterKeyId));
+                        if (writeSecretKeyToStream(masterKeyId, log, outStream)) {
                             okSecret += 1;
                         }
                     }
@@ -267,17 +265,16 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
         return true;
     }
 
-    private boolean writePublicKeyToStream(OperationLog log, OutputStream outStream, Cursor cursor)
-            throws IOException {
+    private boolean writePublicKeyToStream(long masterKeyId, OperationLog log, OutputStream outStream) throws IOException {
         ArmoredOutputStream arOutStream = null;
 
         try {
             arOutStream = new ArmoredOutputStream(outStream);
-            byte[] data = cursor.getBlob(INDEX_PUBKEY_DATA);
-            CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
+            byte[] data = mKeyRepository.loadPublicKeyRingData(masterKeyId);
+            UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(data);
+            CanonicalizedPublicKeyRing ring = (CanonicalizedPublicKeyRing) uncachedKeyRing.canonicalize(log, 2, true);
             ring.encode(arOutStream);
-
-        } catch (PgpGeneralException e) {
+        } catch (PgpGeneralException | NotFoundException e) {
             log.add(LogType.MSG_UPLOAD_ERROR_IO, 2);
         } finally {
             if (arOutStream != null) {
@@ -287,17 +284,17 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
         return true;
     }
 
-    private boolean writeSecretKeyToStream(OperationLog log, OutputStream outStream, Cursor cursor)
+    private boolean writeSecretKeyToStream(long masterKeyId, OperationLog log, OutputStream outStream)
             throws IOException {
         ArmoredOutputStream arOutStream = null;
 
         try {
             arOutStream = new ArmoredOutputStream(outStream);
-            byte[] data = cursor.getBlob(INDEX_SECKEY_DATA);
-            CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
+            byte[] data = mKeyRepository.loadSecretKeyRingData(masterKeyId);
+            UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(data);
+            CanonicalizedSecretKeyRing ring = (CanonicalizedSecretKeyRing) uncachedKeyRing.canonicalize(log, 2, true);
             ring.encode(arOutStream);
-
-        } catch (PgpGeneralException e) {
+        } catch (PgpGeneralException | NotFoundException e) {
             log.add(LogType.MSG_UPLOAD_ERROR_IO, 2);
         } finally {
             if (arOutStream != null) {
@@ -326,7 +323,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                     + " IN (" + placeholders + ")";
         }
 
-        return mProviderHelper.getContentResolver().query(
+        return mKeyRepository.getContentResolver().query(
                 KeyRings.buildUnifiedKeyRingsUri(), PROJECTION, selection, selectionArgs,
                 Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
         );

@@ -82,33 +82,35 @@ public class SecurityTokenUtils {
         template.write(new byte[]{(byte) 0x91, (byte) expLengthBytes});
         writeBits(data, secretKey.getPublicExponent(), expLengthBytes);
 
-        // Prime P, length 128
-        template.write(Hex.decode("928180"));
-        writeBits(data, secretKey.getPrimeP(), 128);
+        final int modLengthBytes = format.getModulusLength() / 8;
 
-        // Prime Q, length 128
+        // Prime P, length modLengthBytes / 2
+        template.write(Hex.decode("928180"));
+        writeBits(data, secretKey.getPrimeP(), modLengthBytes / 2);
+
+        // Prime Q, length modLengthBytes / 2
         template.write(Hex.decode("938180"));
-        writeBits(data, secretKey.getPrimeQ(), 128);
+        writeBits(data, secretKey.getPrimeQ(), modLengthBytes / 2);
 
 
         if (format.getAlgorithmFormat().isIncludeCrt()) {
-            // Coefficient (1/q mod p), length 128
+            // Coefficient (1/q mod p), length modLengthBytes / 2
             template.write(Hex.decode("948180"));
-            writeBits(data, secretKey.getCrtCoefficient(), 128);
+            writeBits(data, secretKey.getCrtCoefficient(), modLengthBytes / 2);
 
-            // Prime exponent P (d mod (p - 1)), length 128
+            // Prime exponent P (d mod (p - 1)), length modLengthBytes / 2
             template.write(Hex.decode("958180"));
-            writeBits(data, secretKey.getPrimeExponentP(), 128);
+            writeBits(data, secretKey.getPrimeExponentP(), modLengthBytes / 2);
 
-            // Prime exponent Q (d mod (1 - 1)), length 128
+            // Prime exponent Q (d mod (1 - 1)), length modLengthBytes / 2
             template.write(Hex.decode("968180"));
-            writeBits(data, secretKey.getPrimeExponentQ(), 128);
+            writeBits(data, secretKey.getPrimeExponentQ(), modLengthBytes / 2);
         }
 
         if (format.getAlgorithmFormat().isIncludeModulus()) {
-            // Modulus, length 256, last item in private key template
+            // Modulus, length modLengthBytes, last item in private key template
             template.write(Hex.decode("97820100"));
-            writeBits(data, secretKey.getModulus(), 256);
+            writeBits(data, secretKey.getModulus(), modLengthBytes);
         }
 
         // Bundle up

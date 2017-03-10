@@ -20,13 +20,13 @@ package org.sufficientlysecure.keychain.remote;
 import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
@@ -52,6 +52,9 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
     private static final int EMAIL_STATUS = 101;
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 302;
+
+    public static final String TEMP_TABLE_QUERIED_ADDRESSES = "queried_addresses";
+    public static final String TEMP_TABLE_COLUMN_ADDRES = "address";
 
 
     private UriMatcher mUriMatcher;
@@ -82,8 +85,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         return matcher;
     }
 
-    private KeychainDatabase mKeychainDatabase;
-
     /** {@inheritDoc} */
     @Override
     public boolean onCreate() {
@@ -93,9 +94,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
     }
 
     public KeychainDatabase getDb() {
-        if(mKeychainDatabase == null)
-            mKeychainDatabase = new KeychainDatabase(getContext());
-        return mKeychainDatabase;
+        return new KeychainDatabase(getContext());
     }
 
     /**
@@ -133,6 +132,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
         String groupBy = null;
 
+        SQLiteDatabase db = getDb().getReadableDatabase();
+
         switch (match) {
             case EMAIL_STATUS: {
                 boolean callerIsAllowed = mApiPermissionHelper.isAllowedIgnoreErrors();
@@ -140,16 +141,25 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                     throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
                 }
 
+                db.execSQL("CREATE TEMPORARY TABLE " + TEMP_TABLE_QUERIED_ADDRESSES + " (" + TEMP_TABLE_COLUMN_ADDRES + " TEXT);");
+                ContentValues cv = new ContentValues();
+                for (String address : selectionArgs) {
+                    cv.put(TEMP_TABLE_COLUMN_ADDRES, address);
+                    db.insert(TEMP_TABLE_QUERIED_ADDRESSES, null, cv);
+                }
+
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(EmailStatus._ID, "email AS _id");
-                projectionMap.put(EmailStatus.EMAIL_ADDRESS,
-                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.EMAIL_ADDRESS);
+                projectionMap.put(EmailStatus.EMAIL_ADDRESS, // this is actually the queried address
+                        TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES + " AS " + EmailStatus.EMAIL_ADDRESS);
                 // we take the minimum (>0) here, where "1" is "verified by known secret key", "2" is "self-certified"
                 projectionMap.put(EmailStatus.EMAIL_STATUS, "CASE ( MIN (" + Certs.VERIFIED + " ) ) "
                         // remap to keep this provider contract independent from our internal representation
+                        + " WHEN NULL THEN 1"
                         + " WHEN " + Certs.VERIFIED_SELF + " THEN 1"
                         + " WHEN " + Certs.VERIFIED_SECRET + " THEN 2"
                         + " END AS " + EmailStatus.EMAIL_STATUS);
+                projectionMap.put(EmailStatus.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
                 qb.setProjectionMap(projectionMap);
 
                 if (projection == null) {
@@ -157,51 +167,33 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 }
 
                 qb.setTables(
-                        Tables.USER_PACKETS
-                                + " INNER JOIN " + Tables.CERTS + " ON ("
-                                + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = "
-                                + Tables.CERTS + "." + Certs.MASTER_KEY_ID
-                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = "
-                                + Tables.CERTS + "." + Certs.RANK
-                                // verified == 0 has no self-cert, which is basically an error case. never return that!
-                                + " AND " + Tables.CERTS + "." + Certs.VERIFIED + " > 0"
+                        TEMP_TABLE_QUERIED_ADDRESSES
+                                + " LEFT JOIN " + Tables.USER_PACKETS + " ON ("
+                                + Tables.USER_PACKETS + "." + UserPackets.USER_ID + " IS NOT NULL"
+                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " LIKE " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
+                                + ")"
+                                + " LEFT JOIN " + Tables.CERTS + " ON ("
+                                + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
+                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = " + Tables.CERTS + "." + Certs.RANK
                                 + ")"
                 );
-                qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.USER_ID + " IS NOT NULL");
                 // in case there are multiple verifying certificates
-                groupBy = Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + ", "
-                        + Tables.USER_PACKETS + "." + UserPackets.USER_ID;
+                groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES;
+                List<String> plist = Arrays.asList(projection);
+                if (plist.contains(EmailStatus.USER_ID)) {
+                    groupBy += ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID;
+                }
+
+                // verified == 0 has no self-cert, which is basically an error case. never return that!
+                // verified == null is fine, because it means there was no join partner
+                qb.appendWhere(Tables.CERTS + "." + Certs.VERIFIED + " IS NULL OR " + Tables.CERTS + "." + Certs.VERIFIED + " > 0");
 
                 if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder =  EmailStatus.EMAIL_ADDRESS + " ASC, " + EmailStatus.EMAIL_STATUS + " DESC";
+                    sortOrder = EmailStatus.EMAIL_ADDRESS;
                 }
 
                 // uri to watch is all /key_rings/
                 uri = KeyRings.CONTENT_URI;
-
-                boolean gotCondition = false;
-                String emailWhere = "";
-                // JAVA ♥
-                for (int i = 0; i < selectionArgs.length; ++i) {
-                    if (selectionArgs[i].length() == 0) {
-                        continue;
-                    }
-                    if (i != 0) {
-                        emailWhere += " OR ";
-                    }
-                    emailWhere += UserPackets.USER_ID + " LIKE ";
-                    // match '*<email>', so it has to be at the *end* of the user id
-                    emailWhere += DatabaseUtils.sqlEscapeString("%<" + selectionArgs[i] + ">");
-                    gotCondition = true;
-                }
-
-                if (gotCondition) {
-                    qb.appendWhere(" AND (" + emailWhere + ")");
-                } else {
-                    // TODO better way to do this?
-                    Log.e(Constants.TAG, "Malformed find by email query!");
-                    qb.appendWhere(" AND 0");
-                }
 
                 break;
             }
@@ -231,8 +223,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
             orderBy = sortOrder;
         }
 
-        SQLiteDatabase db = getDb().getReadableDatabase();
-
         Cursor cursor = qb.query(db, projection, selection, null, groupBy, null, orderBy);
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes
@@ -240,7 +230,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         }
 
         Log.d(Constants.TAG,
-                "Query: " + qb.buildQuery(projection, selection, null, null, orderBy, null));
+                "Query: " + qb.buildQuery(projection, selection, groupBy, null, orderBy, null));
 
         return cursor;
     }

@@ -18,14 +18,6 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
-import java.security.Security;
-import java.util.Iterator;
-
 import android.app.Application;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -38,11 +30,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -54,7 +44,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
@@ -65,6 +55,14 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
+import java.security.Security;
+import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -77,8 +75,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class BackupOperationTest {
 
     static Passphrase mPassphrase = TestingUtils.genPassphrase(true);
@@ -138,13 +135,14 @@ public class BackupOperationTest {
 
     @Before
     public void setUp() {
-        ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
+        KeyWritableRepository databaseInteractor =
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
-        providerHelper.saveSecretKeyRing(mStaticRing2, new ProgressScaler());
+        databaseInteractor.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
+        databaseInteractor.saveSecretKeyRing(mStaticRing2, new ProgressScaler());
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -153,7 +151,7 @@ public class BackupOperationTest {
     @Test
     public void testExportAllLocalStripped() throws Exception {
         BackupOperation op = new BackupOperation(RuntimeEnvironment.application,
-                new ProviderHelper(RuntimeEnvironment.application), null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
         // make sure there is a local cert (so the later checks that there are none are meaningful)
         assertTrue("second keyring has local certification", checkForLocal(mStaticRing2));
@@ -252,10 +250,10 @@ public class BackupOperationTest {
         when(spyApplication.getContentResolver()).thenReturn(mockResolver);
 
         BackupOperation op = new BackupOperation(spyApplication,
-                new ProviderHelper(RuntimeEnvironment.application), null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
         BackupKeyringParcel parcel = new BackupKeyringParcel(
-                new long[] { mStaticRing1.getMasterKeyId() }, false, false, fakeOutputUri);
+                new long[] { mStaticRing1.getMasterKeyId() }, false, false, true, fakeOutputUri);
 
         ExportResult result = op.execute(parcel, null);
 
@@ -309,10 +307,10 @@ public class BackupOperationTest {
 
         { // export encrypted
             BackupOperation op = new BackupOperation(spyApplication,
-                    new ProviderHelper(RuntimeEnvironment.application), null);
+                    KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             BackupKeyringParcel parcel = new BackupKeyringParcel(
-                    new long[] { mStaticRing1.getMasterKeyId() }, false, true, fakeOutputUri);
+                    new long[] { mStaticRing1.getMasterKeyId() }, false, true, true, fakeOutputUri);
             CryptoInputParcel inputParcel = new CryptoInputParcel(passphrase);
             ExportResult result = op.execute(parcel, inputParcel);
 
@@ -327,7 +325,7 @@ public class BackupOperationTest {
 
         {
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
-                    new ProviderHelper(RuntimeEnvironment.application), null);
+                    KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(outStream.toByteArray());
             input.setAllowSymmetricDecryption(true);

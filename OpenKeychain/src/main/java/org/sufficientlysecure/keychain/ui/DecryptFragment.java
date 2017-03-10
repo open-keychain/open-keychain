@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -40,24 +43,22 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
-
-import java.util.ArrayList;
 
 public abstract class DecryptFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -192,7 +193,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         try {
 
             Intent viewKeyIntent = new Intent(getActivity(), ViewKeyActivity.class);
-            long masterKeyId = new ProviderHelper(getActivity()).getCachedPublicKeyRing(
+            long masterKeyId = KeyRepository.createDatabaseInteractor(getContext()).getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId)
             ).getMasterKeyId();
             viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
@@ -275,6 +276,9 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
             KeychainContract.KeyRings.USER_ID,
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET,
+            KeyRings.NAME,
+            KeyRings.EMAIL,
+            KeyRings.COMMENT,
     };
 
     @SuppressWarnings("unused")
@@ -282,6 +286,9 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
     static final int INDEX_USER_ID = 2;
     static final int INDEX_VERIFIED = 3;
     static final int INDEX_HAS_ANY_SECRET = 4;
+    static final int INDEX_NAME = 5;
+    static final int INDEX_EMAIL = 6;
+    static final int INDEX_COMMENT = 7;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -309,15 +316,15 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
 
         long signatureKeyId = mSignatureResult.getKeyId();
 
-        String userId = data.getString(INDEX_USER_ID);
-        OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
-        if (userIdSplit.name != null) {
-            mSignatureName.setText(userIdSplit.name);
+        String name = data.getString(INDEX_NAME);
+        String email = data.getString(INDEX_EMAIL);
+        if (name != null) {
+            mSignatureName.setText(name);
         } else {
             mSignatureName.setText(R.string.user_id_no_name);
         }
-        if (userIdSplit.email != null) {
-            mSignatureEmail.setText(userIdSplit.email);
+        if (email != null) {
+            mSignatureEmail.setText(email);
         } else {
             mSignatureEmail.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(
                     mSignatureResult.getKeyId()));

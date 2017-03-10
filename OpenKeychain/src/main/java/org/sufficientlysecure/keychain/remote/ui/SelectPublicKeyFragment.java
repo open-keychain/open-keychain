@@ -54,7 +54,7 @@ public class SelectPublicKeyFragment extends RecyclerFragment<SelectEncryptKeyAd
         implements TextWatcher, LoaderManager.LoaderCallbacks<Cursor> {
     public static final String ARG_PRESELECTED_KEY_IDS = "preselected_key_ids";
 
-    private EditText mSearchView;
+//    private EditText mSearchView;
     private long mSelectedMasterKeyIds[];
     private String mQuery;
 
@@ -110,17 +110,18 @@ public class SelectPublicKeyFragment extends RecyclerFragment<SelectEncryptKeyAd
         LinearLayout innerListContainer = new LinearLayout(context);
         innerListContainer.setOrientation(LinearLayout.VERTICAL);
 
-        mSearchView = new EditText(context);
-        mSearchView.setId(android.R.id.input);
-        mSearchView.setHint(R.string.menu_search);
-        mSearchView.setCompoundDrawablesWithIntrinsicBounds(
-                ContextCompat.getDrawable(
-                        context,
-                        R.drawable.ic_search_grey_24dp
-                ), null, null, null);
-
-        innerListContainer.addView(mSearchView, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        // TODO: search is broken: When searching, previously selected keys are no longer selected
+//        mSearchView = new EditText(context);
+//        mSearchView.setId(android.R.id.input);
+//        mSearchView.setHint(R.string.menu_search);
+//        mSearchView.setCompoundDrawablesWithIntrinsicBounds(
+//                ContextCompat.getDrawable(
+//                        context,
+//                        R.drawable.ic_search_grey_24dp
+//                ), null, null, null);
+//
+//        innerListContainer.addView(mSearchView, new LinearLayout.LayoutParams(
+//                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         RecyclerView listView = new RecyclerView(context);
         listView.setId(INTERNAL_LIST_VIEW_ID);
@@ -155,7 +156,7 @@ public class SelectPublicKeyFragment extends RecyclerFragment<SelectEncryptKeyAd
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
-        mSearchView.addTextChangedListener(this);
+//        mSearchView.addTextChangedListener(this);
 
         setAdapter(new SelectEncryptKeyAdapter(getContext(), null));
         setLayoutManager(new LinearLayoutManager(getContext()));
@@ -173,16 +174,6 @@ public class SelectPublicKeyFragment extends RecyclerFragment<SelectEncryptKeyAd
                 getAdapter().getMasterKeyIds() : new long[0];
     }
 
-    public String[] getSelectedRawUserIds() {
-        return getAdapter() != null ?
-                getAdapter().getRawUserIds() : new String[0];
-    }
-
-    public OpenPgpUtils.UserId[] getSelectedUserIds() {
-        return getAdapter() != null ?
-                getAdapter().getUserIds() : new OpenPgpUtils.UserId[0];
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
@@ -198,6 +189,9 @@ public class SelectPublicKeyFragment extends RecyclerFragment<SelectEncryptKeyAd
                 KeyRings.VERIFIED,
                 KeyRings.HAS_DUPLICATE_USER_ID,
                 KeyRings.CREATION,
+                KeyRings.NAME,
+                KeyRings.EMAIL,
+                KeyRings.COMMENT
         };
 
         String inMasterKeyList = null;

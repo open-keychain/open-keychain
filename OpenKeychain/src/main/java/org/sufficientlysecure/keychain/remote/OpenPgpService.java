@@ -63,10 +63,10 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -88,7 +88,7 @@ public class OpenPgpService extends Service {
             Collections.unmodifiableList(Arrays.asList(3, 4, 5, 6, 7, 8, 9, 10, 11));
 
     private ApiPermissionHelper mApiPermissionHelper;
-    private ProviderHelper mProviderHelper;
+    private KeyRepository mKeyRepository;
     private ApiDataAccessObject mApiDao;
     private OpenPgpServiceKeyIdExtractor mKeyIdExtractor;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
@@ -97,7 +97,7 @@ public class OpenPgpService extends Service {
     public void onCreate() {
         super.onCreate();
         mApiPermissionHelper = new ApiPermissionHelper(this, new ApiDataAccessObject(this));
-        mProviderHelper = new ProviderHelper(this);
+        mKeyRepository = KeyRepository.createDatabaseInteractor(this);
         mApiDao = new ApiDataAccessObject(this);
 
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
@@ -108,6 +108,8 @@ public class OpenPgpService extends Service {
                             OutputStream outputStream, boolean cleartextSign) {
         try {
             boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+
+            int targetApiVersion = data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1);
 
             // sign-only
             PgpSignEncryptData pgpData = new PgpSignEncryptData();
@@ -133,7 +135,7 @@ public class OpenPgpService extends Service {
 
                 // get first usable subkey capable of signing
                 try {
-                    long signSubKeyId = mProviderHelper.getCachedPublicKeyRing(
+                    long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(
                             pgpData.getSignatureMasterKeyId()).getSecretSignId();
                     pgpData.setSignatureSubKeyId(signSubKeyId);
                 } catch (PgpKeyNotFoundException e) {
@@ -143,6 +145,7 @@ public class OpenPgpService extends Service {
 
 
             PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData);
+            pseInput.setAllowedKeyIds(getAllowedKeyIds(targetApiVersion));
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             if (!cleartextSign) {
@@ -164,7 +167,7 @@ public class OpenPgpService extends Service {
             }
 
             // execute PGP operation!
-            PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, new ProviderHelper(this), null);
+            PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, mKeyRepository, null);
             PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
@@ -204,6 +207,7 @@ public class OpenPgpService extends Service {
                                       OutputStream outputStream, boolean sign) {
         try {
             boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+            int targetApiVersion = data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1);
             String originalFilename = data.getStringExtra(OpenPgpApi.EXTRA_ORIGINAL_FILENAME);
             if (originalFilename == null) {
                 originalFilename = "";
@@ -250,7 +254,7 @@ public class OpenPgpService extends Service {
 
                     // get first usable subkey capable of signing
                     try {
-                        long signSubKeyId = mProviderHelper.getCachedPublicKeyRing(
+                        long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(
                                 pgpData.getSignatureMasterKeyId()).getSecretSignId();
                         pgpData.setSignatureSubKeyId(signSubKeyId);
                     } catch (PgpKeyNotFoundException e) {
@@ -278,6 +282,7 @@ public class OpenPgpService extends Service {
             }
 
             PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData);
+            pseInput.setAllowedKeyIds(getAllowedKeyIds(targetApiVersion));
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
@@ -289,7 +294,7 @@ public class OpenPgpService extends Service {
                         new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
             }
 
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, mProviderHelper, null);
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, mKeyRepository, null);
 
             // execute PGP operation!
             PgpSignEncryptResult pgpResult = op.execute(pseInput, inputParcel, inputData, outputStream);
@@ -330,15 +335,7 @@ public class OpenPgpService extends Service {
                 outputStream = null;
             }
 
-            String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-            HashSet<Long> allowedKeyIds = mApiDao.getAllowedKeyIdsForApp(
-                    KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
-
             int targetApiVersion = data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1);
-            if (targetApiVersion <= API_VERSION_HIGHEST_WITH_ACCOUNTS) {
-                allowedKeyIds.addAll(mApiDao.getAllKeyIdsForApp(
-                        ApiAccounts.buildBaseUri(currentPkg)));
-            }
 
             CryptoInputParcel cryptoInput = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (cryptoInput == null) {
@@ -359,7 +356,7 @@ public class OpenPgpService extends Service {
             byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
             String senderAddress = data.getStringExtra(OpenPgpApi.EXTRA_SENDER_ADDRESS);
 
-            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mProviderHelper, progressable);
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mKeyRepository, progressable);
 
             long inputLength = data.getLongExtra(OpenPgpApi.EXTRA_DATA_LENGTH, InputData.UNKNOWN_FILESIZE);
             InputData inputData = new InputData(inputStream, inputLength);
@@ -368,7 +365,7 @@ public class OpenPgpService extends Service {
             // no support for symmetric encryption
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel()
                     .setAllowSymmetricDecryption(false)
-                    .setAllowedKeyIds(allowedKeyIds)
+                    .setAllowedKeyIds(getAllowedKeyIds(targetApiVersion))
                     .setDecryptMetadataOnly(decryptMetadataOnly)
                     .setDetachedSignature(detachedSignature)
                     .setSenderAddress(senderAddress);
@@ -396,13 +393,15 @@ public class OpenPgpService extends Service {
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
             } else {
-                //
-                if (pgpResult.isKeysDisallowed()) {
+                long[] skippedDisallowedEncryptionKeys = pgpResult.getSkippedDisallowedKeys();
+                if (pgpResult.isKeysDisallowed() &&
+                        skippedDisallowedEncryptionKeys != null && skippedDisallowedEncryptionKeys.length > 0) {
                     // allow user to select allowed keys
                     Intent result = new Intent();
                     String packageName = mApiPermissionHelper.getCurrentCallingPackage();
                     result.putExtra(OpenPgpApi.RESULT_INTENT,
-                            mApiPendingIntentFactory.createSelectAllowedKeysPendingIntent(data, packageName));
+                            mApiPendingIntentFactory.createRequestKeyPermissionPendingIntent(
+                                    data, packageName, skippedDisallowedEncryptionKeys));
                     result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                     return result;
                 }
@@ -527,7 +526,7 @@ public class OpenPgpService extends Service {
             try {
                 // try to find key, throws NotFoundException if not in db!
                 CanonicalizedPublicKeyRing keyRing =
-                        mProviderHelper.getCanonicalizedPublicKeyRing(
+                        mKeyRepository.getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(masterKeyId));
 
                 Intent result = new Intent();
@@ -556,7 +555,7 @@ public class OpenPgpService extends Service {
                         mApiPendingIntentFactory.createShowKeyPendingIntent(data, masterKeyId));
 
                 return result;
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (KeyRepository.NotFoundException e) {
                 // If keys are not in db we return an additional PendingIntent
                 // to retrieve the missing key
                 Intent result = new Intent();
@@ -618,6 +617,7 @@ public class OpenPgpService extends Service {
         try {
             long[] masterKeyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
             boolean backupSecret = data.getBooleanExtra(OpenPgpApi.EXTRA_BACKUP_SECRET, false);
+            boolean enableAsciiArmorOutput = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
@@ -629,8 +629,8 @@ public class OpenPgpService extends Service {
             // after user interaction with RemoteBackupActivity,
             // the backup code is cached in CryptoInputParcelCacheService, now we can proceed
 
-            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, null);
-            BackupOperation op = new BackupOperation(this, mProviderHelper, null);
+            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, enableAsciiArmorOutput, null);
+            BackupOperation op = new BackupOperation(this, mKeyRepository, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 
             if (pgpResult.success()) {
@@ -692,6 +692,19 @@ public class OpenPgpService extends Service {
 
             return data;
         }
+    }
+
+    private HashSet<Long> getAllowedKeyIds(int targetApiVersion) {
+        String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
+        HashSet<Long> allowedKeyIds = mApiDao.getAllowedKeyIdsForApp(
+                KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
+
+        if (targetApiVersion <= API_VERSION_HIGHEST_WITH_ACCOUNTS) {
+            allowedKeyIds.addAll(mApiDao.getAllKeyIdsForApp(
+                    ApiAccounts.buildBaseUri(currentPkg)));
+        }
+
+        return allowedKeyIds;
     }
 
     /**

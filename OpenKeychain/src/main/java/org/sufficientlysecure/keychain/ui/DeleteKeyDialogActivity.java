@@ -35,16 +35,14 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.RevokeResult;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -91,22 +89,21 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         if (mMasterKeyIds.length == 1 && mHasSecret) {
             // if mMasterKeyIds.length == 0 we let the DeleteOperation respond
             try {
-                HashMap<String, Object> data = new ProviderHelper(this).getUnifiedData(
+                HashMap<String, Object> data = KeyRepository.createDatabaseInteractor(this).getUnifiedData(
                         mMasterKeyIds[0], new String[]{
-                                KeychainContract.KeyRings.USER_ID,
+                                KeychainContract.KeyRings.NAME,
                                 KeychainContract.KeyRings.IS_REVOKED
                         }, new int[]{
-                                ProviderHelper.FIELD_TYPE_STRING,
-                                ProviderHelper.FIELD_TYPE_INTEGER
+                                KeyRepository.FIELD_TYPE_STRING,
+                                KeyRepository.FIELD_TYPE_INTEGER
                         }
                 );
 
                 String name;
-                OpenPgpUtils.UserId mainUserId = KeyRing.splitUserId(
-                        (String) data.get(KeychainContract.KeyRings.USER_ID));
-                if (mainUserId.name != null) {
-                    name = mainUserId.name;
-                } else {
+
+                name = (String) data.get(KeychainContract.KeyRings.NAME);
+
+                if (name == null) {
                     name = getString(R.string.user_id_no_name);
                 }
 
@@ -115,7 +112,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 } else {
                     showRevokeDeleteDialog(name);
                 }
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (KeyRepository.NotFoundException e) {
                 Log.e(Constants.TAG,
                         "Secret key to delete not found at DeleteKeyDialogActivity for "
                                 + mMasterKeyIds[0], e);
@@ -272,20 +269,20 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 long masterKeyId = masterKeyIds[0];
 
                 try {
-                    HashMap<String, Object> data = new ProviderHelper(activity).getUnifiedData(
+                    HashMap<String, Object> data = KeyRepository.createDatabaseInteractor(getContext())
+                            .getUnifiedData(
                             masterKeyId, new String[]{
-                                    KeychainContract.KeyRings.USER_ID,
+                                    KeychainContract.KeyRings.NAME,
                                     KeychainContract.KeyRings.HAS_ANY_SECRET
                             }, new int[]{
-                                    ProviderHelper.FIELD_TYPE_STRING,
-                                    ProviderHelper.FIELD_TYPE_INTEGER
+                                    KeyRepository.FIELD_TYPE_STRING,
+                                    KeyRepository.FIELD_TYPE_INTEGER
                             }
                     );
                     String name;
-                    OpenPgpUtils.UserId mainUserId = KeyRing.splitUserId((String) data.get(KeychainContract.KeyRings.USER_ID));
-                    if (mainUserId.name != null) {
-                        name = mainUserId.name;
-                    } else {
+
+                    name = (String) data.get(KeychainContract.KeyRings.NAME);
+                    if (name == null) {
                         name = getString(R.string.user_id_no_name);
                     }
 
@@ -297,7 +294,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                     } else {
                         mMainMessage.setText(getString(R.string.public_key_deletetion_confirmation, name));
                     }
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (KeyRepository.NotFoundException e) {
                     dismiss();
                     return null;
                 }

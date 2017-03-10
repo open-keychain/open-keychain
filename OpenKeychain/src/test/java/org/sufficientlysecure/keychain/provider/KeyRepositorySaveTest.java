@@ -18,38 +18,33 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.bouncycastle.bcpg.sig.KeyFlags;
-import org.bouncycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.BuildConfig;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
-public class ProviderHelperSaveTest {
+@RunWith(KeychainTestRunner.class)
+public class KeyRepositorySaveTest {
 
-    ProviderHelper mProviderHelper = new ProviderHelper(RuntimeEnvironment.application);
+    KeyWritableRepository mDatabaseInteractor =
+            KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -67,17 +62,17 @@ public class ProviderHelperSaveTest {
         SaveKeyringResult result;
 
         // insert both keys, second should fail
-        result = new ProviderHelper(RuntimeEnvironment.application).savePublicKeyRing(first);
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(first);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = new ProviderHelper(RuntimeEnvironment.application).savePublicKeyRing(second);
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(second);
         Assert.assertFalse("second keyring import should fail", result.success());
 
         new KeychainDatabase(RuntimeEnvironment.application).clearDatabase();
 
         // and the other way around
-        result = new ProviderHelper(RuntimeEnvironment.application).savePublicKeyRing(second);
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(second);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = new ProviderHelper(RuntimeEnvironment.application).savePublicKeyRing(first);
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(first);
         Assert.assertFalse("second keyring import should fail", result.success());
 
     }
@@ -96,13 +91,15 @@ public class ProviderHelperSaveTest {
         SaveKeyringResult result;
 
         // insert secret, this should fail because of missing self-cert
-        result = new ProviderHelper(RuntimeEnvironment.application).saveSecretKeyRing(seckey, new ProgressScaler());
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
+                .saveSecretKeyRing(seckey, new ProgressScaler());
         Assert.assertFalse("secret keyring import before pubring import should fail", result.success());
 
         // insert pubkey, then seckey - both should succeed
-        result = new ProviderHelper(RuntimeEnvironment.application).savePublicKeyRing(pubkey);
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(pubkey);
         Assert.assertTrue("public keyring import should succeed", result.success());
-        result = new ProviderHelper(RuntimeEnvironment.application).saveSecretKeyRing(seckey, new ProgressScaler());
+        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
+                .saveSecretKeyRing(seckey, new ProgressScaler());
         Assert.assertTrue("secret keyring import after pubring import should succeed", result.success());
 
     }
@@ -114,10 +111,10 @@ public class ProviderHelperSaveTest {
         Assert.assertEquals("key flags should be zero",
                 0, (long) pub.canonicalize(new OperationLog(), 0).getPublicKey().getKeyUsage());
 
-        mProviderHelper.savePublicKeyRing(pub);
+        mDatabaseInteractor.savePublicKeyRing(pub);
 
-        CachedPublicKeyRing cachedRing = mProviderHelper.getCachedPublicKeyRing(keyId);
-        CanonicalizedPublicKeyRing pubRing = mProviderHelper.getCanonicalizedPublicKeyRing(keyId);
+        CachedPublicKeyRing cachedRing = mDatabaseInteractor.getCachedPublicKeyRing(keyId);
+        CanonicalizedPublicKeyRing pubRing = mDatabaseInteractor.getCanonicalizedPublicKeyRing(keyId);
 
         Assert.assertEquals("master key should be encryption key", keyId, pubRing.getEncryptId());
         Assert.assertEquals("master key should be encryption key (cached)", keyId, cachedRing.getEncryptId());
@@ -137,13 +134,13 @@ public class ProviderHelperSaveTest {
 
         SaveKeyringResult result;
 
-        result = mProviderHelper.saveSecretKeyRing(sec, new ProgressScaler());
+        result = mDatabaseInteractor.saveSecretKeyRing(sec, new ProgressScaler());
         Assert.assertTrue("import of secret keyring should succeed", result.success());
 
         // make sure both the CanonicalizedSecretKeyRing as well as the CachedPublicKeyRing correctly
         // indicate the secret key type
-        CachedPublicKeyRing cachedRing = mProviderHelper.getCachedPublicKeyRing(keyId);
-        CanonicalizedSecretKeyRing secRing = mProviderHelper.getCanonicalizedSecretKeyRing(keyId);
+        CachedPublicKeyRing cachedRing = mDatabaseInteractor.getCachedPublicKeyRing(keyId);
+        CanonicalizedSecretKeyRing secRing = mDatabaseInteractor.getCanonicalizedSecretKeyRing(keyId);
 
         Iterator<CanonicalizedSecretKey> it = secRing.secretKeyIterator().iterator();
 
@@ -201,10 +198,10 @@ public class ProviderHelperSaveTest {
 
         SaveKeyringResult result;
 
-        result = mProviderHelper.savePublicKeyRing(key, new ProgressScaler(), null);
+        result = mDatabaseInteractor.savePublicKeyRing(key, new ProgressScaler(), null);
         Assert.assertTrue("import of keyring should succeed", result.success());
 
-        CanonicalizedPublicKeyRing ring = mProviderHelper.getCanonicalizedPublicKeyRing(keyId);
+        CanonicalizedPublicKeyRing ring = mDatabaseInteractor.getCanonicalizedPublicKeyRing(keyId);
         boolean found = false;
         byte[] badUserId = Hex.decode("436c61757320467261656e6b656c203c436c6175732e4672e46e6b656c4068616c696661782e727774682d61616368656e2e64653e");
         for (byte[] rawUserId : new IterableIterator<byte[]>(
@@ -228,29 +225,29 @@ public class ProviderHelperSaveTest {
 
         SaveKeyringResult result;
 
-        result = mProviderHelper.saveSecretKeyRing(key, new ProgressScaler());
+        result = mDatabaseInteractor.saveSecretKeyRing(key, new ProgressScaler());
         Assert.assertTrue("import of keyring should succeed", result.success());
 
         long signId;
         {
-            CanonicalizedSecretKeyRing ring = mProviderHelper.getCanonicalizedSecretKeyRing(masterKeyId);
+            CanonicalizedSecretKeyRing ring = mDatabaseInteractor.getCanonicalizedSecretKeyRing(masterKeyId);
             Assert.assertTrue("master key should have sign flag", ring.getPublicKey().canSign());
             Assert.assertTrue("master key should have encrypt flag", ring.getPublicKey().canEncrypt());
 
-            signId = mProviderHelper.getCachedPublicKeyRing(masterKeyId).getSecretSignId();
+            signId = mDatabaseInteractor.getCachedPublicKeyRing(masterKeyId).getSecretSignId();
             Assert.assertNotEquals("encrypt id should not be 0", 0, signId);
             Assert.assertNotEquals("encrypt key should be different from master key", masterKeyId, signId);
         }
 
         {
-            CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
+            CachedPublicKeyRing ring = mDatabaseInteractor.getCachedPublicKeyRing(masterKeyId);
             Assert.assertEquals("signing key should be same id cached as uncached", signId, ring.getSecretSignId());
         }
 
     }
 
     UncachedKeyRing readRingFromResource(String name) throws Exception {
-        return UncachedKeyRing.fromStream(ProviderHelperSaveTest.class.getResourceAsStream(name)).next();
+        return UncachedKeyRing.fromStream(KeyRepositorySaveTest.class.getResourceAsStream(name)).next();
     }
 
 }

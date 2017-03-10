@@ -18,37 +18,36 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
-import java.security.Security;
-import java.util.ArrayList;
-
 import android.app.Application;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.net.Uri;
 
 import junit.framework.Assert;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openintents.openpgp.OpenPgpMetadata;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.InputDataOperation;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.security.Security;
+import java.util.ArrayList;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
@@ -57,9 +56,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = WorkaroundBuildConfig.class, sdk = 23, manifest = "src/main/AndroidManifest.xml")
+@RunWith(KeychainTestRunner.class)
 public class InputDataOperationTest {
 
     public static final Uri FAKE_CONTENT_INPUT_URI_1 = Uri.parse("content://fake/1");
@@ -129,7 +126,7 @@ public class InputDataOperationTest {
         when(spyApplication.getContentResolver()).thenReturn(mockResolver);
 
         InputDataOperation op = new InputDataOperation(spyApplication,
-                new ProviderHelper(RuntimeEnvironment.application), null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
         InputDataParcel input = new InputDataParcel(fakeInputUri, null);
 
@@ -309,7 +306,7 @@ public class InputDataOperationTest {
         when(spyApplication.getContentResolver()).thenReturn(mockResolver);
 
         InputDataOperation op = new InputDataOperation(spyApplication,
-                new ProviderHelper(RuntimeEnvironment.application), null);
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
         InputDataParcel input = new InputDataParcel(FAKE_CONTENT_INPUT_URI_1, null);
         return op.execute(input, new CryptoInputParcel());

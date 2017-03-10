@@ -22,6 +22,8 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.HashSet;
+
 
 public class PgpSignEncryptInputParcel implements Parcelable {
 
@@ -30,6 +32,8 @@ public class PgpSignEncryptInputParcel implements Parcelable {
     private Uri mInputUri;
     private Uri mOutputUri;
     private byte[] mInputBytes;
+
+    private HashSet<Long> mAllowedKeyIds;
 
     public PgpSignEncryptInputParcel(PgpSignEncryptData data) {
         this.data = data;
@@ -41,6 +45,8 @@ public class PgpSignEncryptInputParcel implements Parcelable {
         mInputBytes = source.createByteArray();
 
         data = source.readParcelable(getClass().getClassLoader());
+
+        mAllowedKeyIds  = (HashSet<Long>) source.readSerializable();
     }
 
     @Override
@@ -55,6 +61,8 @@ public class PgpSignEncryptInputParcel implements Parcelable {
         dest.writeByteArray(mInputBytes);
 
         data.writeToParcel(dest, 0);
+
+        dest.writeSerializable(mAllowedKeyIds);
     }
 
     public void setInputBytes(byte[] inputBytes) {
@@ -89,6 +97,14 @@ public class PgpSignEncryptInputParcel implements Parcelable {
 
     public PgpSignEncryptData getData() {
         return data;
+    }
+
+    HashSet<Long> getAllowedKeyIds() {
+        return mAllowedKeyIds;
+    }
+
+    public void setAllowedKeyIds(HashSet<Long> allowedKeyIds) {
+        mAllowedKeyIds = allowedKeyIds;
     }
 
     public static final Creator<PgpSignEncryptInputParcel> CREATOR = new Creator<PgpSignEncryptInputParcel>() {

@@ -347,7 +347,7 @@
   <string name="error_integrity_check_failed">¡ha fallado la comprobación de integridad! ¡Los datos han sido modificados!</string>
   <string name="error_wrong_passphrase">contraseña incorrecta</string>
   <string name="error_could_not_extract_private_key">no se puede extraer la clave privada</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">¡Necesita Android 4.1 para usar la característica NFC Beam de Android!</string>
   <string name="error_nfc_needed">¡NFC debe estar habilitado!</string>
   <string name="error_beam_needed">¡Beam debe estar habilitado!</string>

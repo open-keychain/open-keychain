@@ -36,8 +36,9 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProv
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.util.Log;
 
 
@@ -55,12 +56,12 @@ class PgpSignatureChecker {
     PGPOnePassSignature onePassSignature;
     PGPSignature signature;
 
-    ProviderHelper mProviderHelper;
+    KeyRepository mKeyRepository;
 
-    PgpSignatureChecker(ProviderHelper providerHelper, String senderAddress) {
-        mProviderHelper = providerHelper;
+    PgpSignatureChecker(KeyRepository keyRepository, String senderAddress) {
+        mKeyRepository = keyRepository;
 
-        signatureResultBuilder = new OpenPgpSignatureResultBuilder(providerHelper);
+        signatureResultBuilder = new OpenPgpSignatureResultBuilder(keyRepository);
         signatureResultBuilder.setSenderAddress(senderAddress);
     }
 
@@ -150,7 +151,7 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
@@ -161,7 +162,7 @@ class PgpSignatureChecker {
                 signingKey = keyCandidate;
                 onePassSignature = sigList.get(i);
                 return;
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (KeyWritableRepository.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found, trying next signature...");
             }
         }
@@ -173,7 +174,7 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
@@ -184,7 +185,7 @@ class PgpSignatureChecker {
                 signingKey = keyCandidate;
                 signature = sigList.get(i);
                 return;
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (KeyWritableRepository.NotFoundException e) {
                 Log.d(Constants.TAG, "key not found, trying next signature...");
             }
         }

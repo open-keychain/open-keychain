@@ -29,8 +29,8 @@ import java.util.List;
 
 /**
  * This parcel stores the input of one or more PgpSignEncrypt operations.
- * All operations will use the same general paramters, differing only in
- * input and output. Each input/output set depends on the paramters:
+ * All operations will use the same general parameters, differing only in
+ * input and output. Each input/output set depends on the parameters:
  * <p/>
  * - Each input uri is individually encrypted/signed
  * - If a byte array is supplied, it is treated as an input before uris are processed

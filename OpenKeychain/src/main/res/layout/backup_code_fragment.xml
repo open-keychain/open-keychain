@@ -384,7 +384,7 @@
     </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
     <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
-        android:id="@+id/status_animator"
+        android:id="@+id/button_bar_animator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

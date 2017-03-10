@@ -23,20 +23,19 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 
 import java.util.ArrayList;
 
 public class EncryptFilesActivity extends EncryptActivity {
 
     // Intents
-    public static final String ACTION_ENCRYPT_DATA = OpenKeychainIntents.ENCRYPT_DATA;
+    public static final String ACTION_ENCRYPT_DATA = Constants.ENCRYPT_DATA;
 
     // enables ASCII Armor for file encryption when uri is given
-    public static final String EXTRA_ASCII_ARMOR = OpenKeychainIntents.ENCRYPT_EXTRA_ASCII_ARMOR;
+    public static final String EXTRA_ASCII_ARMOR = Constants.ENCRYPT_EXTRA_ASCII_ARMOR;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

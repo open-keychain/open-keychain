@@ -202,7 +202,7 @@ public class EncryptFilesFragment
         }
 
         if (args.containsKey(ARG_ENCRYPT_FILENAMES)) {
-            mEncryptFilenames = args.getBoolean(ARG_ENCRYPT_FILENAMES, true);
+            mEncryptFilenames = args.getBoolean(ARG_ENCRYPT_FILENAMES, false);
         } else {
             mEncryptFilenames = prefs.getEncryptFilenames();
         }

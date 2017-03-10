@@ -121,6 +121,9 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyA
                 KeyRings.HAS_ANY_SECRET,
                 KeyRings.HAS_DUPLICATE_USER_ID,
                 KeyRings.CREATION,
+                KeyRings.NAME,
+                KeyRings.EMAIL,
+                KeyRings.COMMENT
         };
 
         String selection = KeyRings.HAS_ANY_SECRET + " != 0";

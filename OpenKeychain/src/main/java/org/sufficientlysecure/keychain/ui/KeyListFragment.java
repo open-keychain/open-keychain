@@ -59,7 +59,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
@@ -486,8 +486,9 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
             return;
         }
 
-        ProviderHelper providerHelper = new ProviderHelper(activity);
-        Cursor cursor = providerHelper.getContentResolver().query(
+        KeyRepository keyRepository =
+                KeyRepository.createDatabaseInteractor(getContext());
+        Cursor cursor = keyRepository.getContentResolver().query(
                 KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                         KeyRings.FINGERPRINT
                 }, null, null, null

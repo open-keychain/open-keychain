@@ -104,8 +104,7 @@ public class ApiPermissionHelper {
                 }
                 Log.e(Constants.TAG, "Not allowed to use service! return PendingIntent for registration!");
 
-                PendingIntent pi = piFactory.createRegisterPendingIntent(data,
-                        packageName, packageCertificate);
+                PendingIntent pi = piFactory.createRegisterPendingIntent(data, packageName, packageCertificate);
 
                 // return PendingIntent to be executed by client
                 Intent result = new Intent();
@@ -230,7 +229,7 @@ public class ApiPermissionHelper {
      *
      * @throws WrongPackageCertificateException
      */
-    private boolean isPackageAllowed(String packageName) throws WrongPackageCertificateException {
+    public boolean isPackageAllowed(String packageName) throws WrongPackageCertificateException {
         Log.d(Constants.TAG, "isPackageAllowed packageName: " + packageName);
 
         byte[] storedPackageCert = mApiDao.getApiAppCertificate(packageName);

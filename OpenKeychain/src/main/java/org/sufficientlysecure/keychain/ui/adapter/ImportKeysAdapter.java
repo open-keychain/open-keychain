@@ -17,6 +17,12 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.FragmentActivity;
@@ -40,8 +46,8 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -49,11 +55,6 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder>
         implements ImportKeysResultListener {
@@ -65,7 +66,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     private List<ImportKeysListEntry> mData;
     private KeyState[] mKeyStates;
 
-    private ProviderHelper mProviderHelper;
+    private KeyRepository mKeyRepository;
 
     public ImportKeysAdapter(FragmentActivity activity, ImportKeysListener listener,
                              boolean nonInteractive) {
@@ -74,7 +75,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         mListener = listener;
         mNonInteractive = nonInteractive;
 
-        mProviderHelper = new ProviderHelper(activity);
+        mKeyRepository = KeyRepository.createDatabaseInteractor(activity);
     }
 
     public void setData(List<ImportKeysListEntry> data) {
@@ -89,13 +90,13 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             try {
                 KeyRing keyRing;
                 if (entry.isSecretKey()) {
-                    keyRing = mProviderHelper.getCanonicalizedSecretKeyRing(keyId);
+                    keyRing = mKeyRepository.getCanonicalizedSecretKeyRing(keyId);
                 } else {
-                    keyRing = mProviderHelper.getCachedPublicKeyRing(keyId);
+                    keyRing = mKeyRepository.getCachedPublicKeyRing(keyId);
                 }
                 keyState.mAlreadyPresent = true;
                 keyState.mVerified = keyRing.getVerified() > 0;
-            } catch (ProviderHelper.NotFoundException | PgpKeyNotFoundException ignored) {
+            } catch (KeyRepository.NotFoundException | PgpKeyNotFoundException ignored) {
             }
 
             mKeyStates[i] = keyState;
@@ -252,7 +253,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             if (canKeyRings.size() == 1) {
                 CanonicalizedKeyRing keyRing = canKeyRings.get(0);
                 Log.e(Constants.TAG, "Key ID: " + keyRing.getMasterKeyId() +
-                        "| isRev: " + keyRing.isRevoked() + "| isExp: " + keyRing.isExpired());
+                        "| isRev: " + keyRing.isRevoked() + "| isExp: " + keyRing.isExpired()
+                        + "| isSec: " + keyRing.isSecure());
 
                 ImportKeysListEntry entry = mData.get(position);
                 entry.setUpdated(result.isOkUpdated());
@@ -275,6 +277,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     private void mergeEntryWithKey(ImportKeysListEntry entry, CanonicalizedKeyRing keyRing) {
         entry.setRevoked(keyRing.isRevoked());
         entry.setExpired(keyRing.isExpired());
+        entry.setSecure(keyRing.isSecure());
 
         Date expectedDate = entry.getDate();
         Date creationDate = keyRing.getCreationDate();

@@ -35,20 +35,19 @@ import android.widget.TextView;
 
 import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.adapter.*;
+import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter;
+import org.sufficientlysecure.keychain.ui.util.adapter.SectionCursorAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedListAdapter.KeyListCursor, Character,
         SectionCursorAdapter.ViewHolder, KeySectionedListAdapter.KeyHeaderViewHolder> implements SectionTitleProvider {
@@ -192,11 +191,11 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
             return '#';
         } else {
-            String userId = cursor.getRawUserId();
-            if (TextUtils.isEmpty(userId)) {
-                return '?';
+            String name = cursor.getName();
+            if (name != null) {
+                return Character.toUpperCase(name.charAt(0));
             } else {
-                return Character.toUpperCase(userId.charAt(0));
+                return '?';
             }
         }
     }
@@ -313,11 +312,11 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
                 return "My";
             } else {
-                String userId = cursor.getRawUserId();
-                if (TextUtils.isEmpty(userId)) {
-                    return null;
+                String name = cursor.getName();
+                if (name != null) {
+                    return name.substring(0, 1).toUpperCase();
                 } else {
-                    return userId.substring(0, 1).toUpperCase();
+                    return null;
                 }
             }
         } else {
@@ -380,14 +379,15 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             Context context = itemView.getContext();
 
             { // set name and stuff, common to both key types
-                OpenPgpUtils.UserId userIdSplit = keyItem.getUserId();
-                if (userIdSplit.name != null) {
-                    mMainUserId.setText(highlighter.highlight(userIdSplit.name));
+                String name = keyItem.getName();
+                String email = keyItem.getEmail();
+                if (name != null) {
+                    mMainUserId.setText(highlighter.highlight(name));
                 } else {
                     mMainUserId.setText(R.string.user_id_no_name);
                 }
-                if (userIdSplit.email != null) {
-                    mMainUserIdRest.setText(highlighter.highlight(userIdSplit.email));
+                if (email != null) {
+                    mMainUserIdRest.setText(highlighter.highlight(email));
                     mMainUserIdRest.setVisibility(View.VISIBLE);
                 } else {
                     mMainUserIdRest.setVisibility(View.GONE);
@@ -414,6 +414,18 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                             mStatus,
                             null,
                             KeyFormattingUtils.State.EXPIRED,
+                            R.color.key_flag_gray
+                    );
+
+                    mStatus.setVisibility(View.VISIBLE);
+                    mSlinger.setVisibility(View.GONE);
+                    textColor = ContextCompat.getColor(context, R.color.key_flag_gray);
+                } else if (!keyItem.isSecure()) {
+                    KeyFormattingUtils.setStatusImage(
+                            context,
+                            mStatus,
+                            null,
+                            KeyFormattingUtils.State.INSECURE,
                             R.color.key_flag_gray
                     );
 

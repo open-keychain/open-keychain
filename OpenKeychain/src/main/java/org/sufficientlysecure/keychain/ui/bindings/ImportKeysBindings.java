@@ -31,9 +31,9 @@ import java.util.Date;
 
 public class ImportKeysBindings {
 
-    @BindingAdapter({"keyUserId", "keySecret", "keyRevokedOrExpired", "query"})
+    @BindingAdapter({"keyUserId", "keySecret", "keyRevokedOrExpiredOrInsecure", "query"})
     public static void setUserId(TextView textView, CharSequence userId, boolean secret,
-                                 boolean revokedOrExpired, String query) {
+                                 boolean revokedOrExpiredOrInsecure, String query) {
 
         Context context = textView.getContext();
         Resources resources = context.getResources();
@@ -49,16 +49,16 @@ public class ImportKeysBindings {
             userId = highlighter.highlight(userId);
         }
         textView.setText(userId);
-        textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpired));
+        textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpiredOrInsecure));
 
         if (secret) {
             textView.setTextColor(Color.RED);
         }
     }
 
-    @BindingAdapter({"keyUserEmail", "keyRevokedOrExpired", "query"})
+    @BindingAdapter({"keyUserEmail", "keyRevokedOrExpiredOrInsecure", "query"})
     public static void setUserEmail(TextView textView, CharSequence userEmail,
-                                    boolean revokedOrExpired, String query) {
+                                    boolean revokedOrExpiredOrInsecure, String query) {
 
         Context context = textView.getContext();
 
@@ -68,11 +68,11 @@ public class ImportKeysBindings {
 
         Highlighter highlighter = ImportKeysBindingsUtils.getHighlighter(context, query);
         textView.setText(highlighter.highlight(userEmail));
-        textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpired));
+        textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpiredOrInsecure));
     }
 
-    @BindingAdapter({"keyCreation", "keyRevokedOrExpired"})
-    public static void setCreation(TextView textView, Date creationDate, boolean revokedOrExpired) {
+    @BindingAdapter({"keyCreation", "keyRevokedOrExpiredOrInsecure"})
+    public static void setCreation(TextView textView, Date creationDate, boolean revokedOrExpiredOrInsecure) {
         Context context = textView.getContext();
 
         String text = "";
@@ -81,7 +81,7 @@ public class ImportKeysBindings {
         }
 
         textView.setText(text);
-        textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpired));
+        textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpiredOrInsecure));
     }
 
 }

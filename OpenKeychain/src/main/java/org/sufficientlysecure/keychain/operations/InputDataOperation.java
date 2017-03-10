@@ -50,7 +50,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -71,8 +71,8 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
     private final byte[] buf = new byte[256];
 
-    public InputDataOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
-        super(context, providerHelper, progressable);
+    public InputDataOperation(Context context, KeyRepository keyRepository, Progressable progressable) {
+        super(context, keyRepository, progressable);
     }
 
     Uri mSignedDataUri;
@@ -101,7 +101,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             log.add(LogType.MSG_DATA_OPENPGP, 1);
 
             PgpDecryptVerifyOperation op =
-                    new PgpDecryptVerifyOperation(mContext, mProviderHelper, mProgressable);
+                    new PgpDecryptVerifyOperation(mContext, mKeyRepository, mProgressable);
 
             decryptInput.setInputUri(input.getInputUri());
 
@@ -269,7 +269,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 decryptInput.setDetachedSignature(detachedSig.toByteArray());
 
                 PgpDecryptVerifyOperation op =
-                        new PgpDecryptVerifyOperation(mContext, mProviderHelper, mProgressable);
+                        new PgpDecryptVerifyOperation(mContext, mKeyRepository, mProgressable);
                 DecryptVerifyResult verifyResult = op.execute(decryptInput, cryptoInput);
 
                 log.addByMerge(verifyResult, 4);

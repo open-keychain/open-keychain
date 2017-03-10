@@ -40,7 +40,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
  * and returns an OperationResult of type S as a result.
  *
  * The input (of type T) is not given directly to the cryptoOperation method,
- * but must be provided by the overriden createOperationInput method to be
+ * but must be provided by the overridden createOperationInput method to be
  * available upon request during execution of the cryptoOperation.
  *
  * After running cryptoOperation, one of the onCryptoOperation*() methods will

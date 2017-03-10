@@ -41,7 +41,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -224,7 +224,7 @@ public class PassphraseCacheService extends Service {
     /**
      * Internal implementation to get cached passphrase.
      */
-    private Passphrase getCachedPassphraseImpl(long masterKeyId, long subKeyId) throws ProviderHelper.NotFoundException {
+    private Passphrase getCachedPassphraseImpl(long masterKeyId, long subKeyId) throws KeyRepository.NotFoundException {
         // on "none" key, just do nothing
         if (masterKeyId == Constants.key.none) {
             return null;
@@ -245,16 +245,16 @@ public class PassphraseCacheService extends Service {
                 + masterKeyId + ", subKeyId " + subKeyId);
 
         // get the type of key (from the database)
-        CachedPublicKeyRing keyRing = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
+        CachedPublicKeyRing keyRing = KeyRepository.createDatabaseInteractor(this).getCachedPublicKeyRing(masterKeyId);
         SecretKeyType keyType = keyRing.getSecretKeyType(subKeyId);
 
         switch (keyType) {
             case PASSPHRASE_EMPTY:
                 return new Passphrase("");
             case UNAVAILABLE:
-                throw new ProviderHelper.NotFoundException("secret key for this subkey is not available");
+                throw new KeyRepository.NotFoundException("secret key for this subkey is not available");
             case GNU_DUMMY:
-                throw new ProviderHelper.NotFoundException("secret key for stripped subkey is not available");
+                throw new KeyRepository.NotFoundException("secret key for stripped subkey is not available");
         }
 
         // get cached passphrase
@@ -398,7 +398,7 @@ public class PassphraseCacheService extends Service {
                         bundle.putParcelable(EXTRA_PASSPHRASE, passphrase);
                         msg.setData(bundle);
                     }
-                } catch (ProviderHelper.NotFoundException e) {
+                } catch (KeyRepository.NotFoundException e) {
                     Log.e(Constants.TAG, "PassphraseCacheService: Passphrase for unknown key was requested!");
                     msg.what = MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND;
                 }

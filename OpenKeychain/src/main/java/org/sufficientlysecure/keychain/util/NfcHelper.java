@@ -18,6 +18,9 @@
 
 package org.sufficientlysecure.keychain.util;
 
+
+import java.lang.ref.WeakReference;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -35,12 +38,10 @@ import android.provider.Settings;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.Log;
-
-import java.lang.ref.WeakReference;
 
 /**
  * This class contains NFC functionality that can be shared across Fragments or Activities.
@@ -49,7 +50,7 @@ import java.lang.ref.WeakReference;
 public class NfcHelper {
 
     private Activity mActivity;
-    private ProviderHelper mProviderHelper;
+    private KeyRepository mKeyRepository;
 
     /**
      * NFC: This handler receives a message from onNdefPushComplete
@@ -65,9 +66,9 @@ public class NfcHelper {
     /**
      * Initializes the NfcHelper.
      */
-    public NfcHelper(final Activity activity, final ProviderHelper providerHelper) {
+    public NfcHelper(final Activity activity, final KeyRepository keyRepository) {
         mActivity = activity;
-        mProviderHelper = providerHelper;
+        mKeyRepository = keyRepository;
 
         mNfcHandler = new NfcHandler(mActivity);
     }
@@ -127,13 +128,10 @@ public class NfcHelper {
                         new AsyncTask<Void, Void, Void>() {
                             protected Void doInBackground(Void... unused) {
                                 try {
-                                    Uri blobUri =
-                                            KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                                    mNfcKeyringBytes = (byte[]) mProviderHelper.getGenericData(
-                                            blobUri,
-                                            KeychainContract.KeyRingData.KEY_RING_DATA,
-                                            ProviderHelper.FIELD_TYPE_BLOB);
-                                } catch (ProviderHelper.NotFoundException e) {
+                                    long masterKeyId = mKeyRepository.getCachedPublicKeyRing(dataUri)
+                                            .extractOrGetMasterKeyId();
+                                    mNfcKeyringBytes = mKeyRepository.loadPublicKeyRingData(masterKeyId);
+                                } catch (NotFoundException | PgpKeyNotFoundException e) {
                                     Log.e(Constants.TAG, "key not found!", e);
                                 }
 

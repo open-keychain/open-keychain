@@ -21,7 +21,6 @@ package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
@@ -40,15 +39,14 @@ import org.bouncycastle.openpgp.operator.jcajce.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -101,12 +99,12 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
         }
     }
 
-    public PgpSignEncryptOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
-        super(context, providerHelper, progressable, cancelled);
+    public PgpSignEncryptOperation(Context context, KeyRepository keyRepository, Progressable progressable, AtomicBoolean cancelled) {
+        super(context, keyRepository, progressable, cancelled);
     }
 
-    public PgpSignEncryptOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
-        super(context, providerHelper, progressable);
+    public PgpSignEncryptOperation(Context context, KeyRepository keyRepository, Progressable progressable) {
+        super(context, keyRepository, progressable);
     }
 
     @NonNull
@@ -226,8 +224,16 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 long signingSubKeyId = data.getSignatureSubKeyId();
 
                 CanonicalizedSecretKeyRing signingKeyRing =
-                        mProviderHelper.getCanonicalizedSecretKeyRing(signingMasterKeyId);
+                        mKeyRepository.getCanonicalizedSecretKeyRing(signingMasterKeyId);
                 signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
+
+                if (input.getAllowedKeyIds() != null) {
+                    if (!input.getAllowedKeyIds().contains(signingMasterKeyId)) {
+                        // this key is in our db, but NOT allowed!
+                        log.add(LogType.MSG_PSE_ERROR_KEY_NOT_ALLOWED, indent + 1);
+                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_KEY_DISALLOWED, log);
+                    }
+                }
 
 
                 // Make sure key is not expired or revoked
@@ -243,7 +249,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                     return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
 
-                switch (mProviderHelper.getCachedPublicKeyRing(signingMasterKeyId).getSecretKeyType(signingSubKeyId)) {
+                switch (mKeyRepository.getCachedPublicKeyRing(signingMasterKeyId).getSecretKeyType(signingSubKeyId)) {
                     case DIVERT_TO_CARD:
                     case PASSPHRASE_EMPTY: {
                         if (!signingKey.unlock(new Passphrase())) {
@@ -287,7 +293,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
 
                 }
 
-            } catch (ProviderHelper.NotFoundException e) {
+            } catch (KeyWritableRepository.NotFoundException e) {
                 log.add(LogType.MSG_PSE_ERROR_SIGN_KEY, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             } catch (PgpGeneralException e) {
@@ -332,7 +338,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 // Asymmetric encryption
                 for (long id : data.getEncryptionMasterKeyIds()) {
                     try {
-                        CanonicalizedPublicKeyRing keyRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                        CanonicalizedPublicKeyRing keyRing = mKeyRepository.getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(id));
                         Set<Long> encryptSubKeyIds = keyRing.getEncryptIds();
                         for (Long subKeyId : encryptSubKeyIds) {
@@ -351,7 +357,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                             log.add(LogType.MSG_PSE_ERROR_REVOKED_OR_EXPIRED, indent);
                             return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                         }
-                    } catch (ProviderHelper.NotFoundException e) {
+                    } catch (KeyWritableRepository.NotFoundException e) {
                         log.add(LogType.MSG_PSE_KEY_UNKNOWN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);

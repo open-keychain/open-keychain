@@ -414,7 +414,7 @@
     <string name="error_could_not_extract_private_key">"could not extract private key"</string>
     <string name="error_wrong_security_token">"this security token doesn't contain required key"</string>
 
-    <!-- errors without preceeding Error: -->
+    <!-- errors without preceding Error: -->
     <string name="error_jelly_bean_needed">"You need Android 4.1 to use Android's NFC Beam feature!"</string>
     <string name="error_nfc_needed">"NFC must be enabled!"</string>
     <string name="error_beam_needed">"Beam must be enabled!"</string>
@@ -555,7 +555,7 @@
     <string name="import_tab_direct">"File/Clipboard"</string>
     <string name="import_tab_qr_code">"QR Code/NFC"</string>
     <string name="import_found_keys">"Found %1$d keys"</string>
-    <string name="import_qr_code_wrong">"QR Code malformed! Please try again!"</string>
+    <string name="import_qr_code_wrong">"QR Code format not supported (format specification: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!"</string>
     <string name="import_qr_code_fp">"Fingerprint is malformed or too short!"</string>
     <string name="import_qr_code_too_short_fingerprint">"Fingerprint is too short!"</string>
     <string name="import_qr_code_button">"Scan QR Code"</string>
@@ -667,7 +667,8 @@
     <string name="api_settings_accounts_empty">"No accounts attached to this app."</string>
     <string name="api_create_account_text">"No key is configured for this account. Please select one of your existing keys or create a new one.\nApps can only decrypt/sign with the keys selected here!"</string>
     <string name="api_update_account_text">"The key saved for this account has been deleted. Please select a different one!\nApps can only decrypt/sign with the keys selected here!"</string>
-    <string name="api_register_text">"The displayed app wants to encrypt/decrypt messages and sign them in your name.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the 'Apps' screen."</string>
+    <string name="api_register_title">"Allow access to OpenKeychain?"</string>
+    <string name="api_register_text">"%s requests to use OpenKeychain as a crypto provider. You will still be asked for permission before the app can use any of your keys for decryption.\n\nYou can revoke access later in the 'Apps' screen."</string>
     <string name="api_register_allow">"Allow access"</string>
     <string name="api_register_disallow">"Disallow access"</string>
     <string name="api_register_error_select_key">"Please select a key!"</string>
@@ -834,6 +835,7 @@
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
+    <string name="view_key_insecure">"Insecure: Key must not be used anymore!"</string>
     <string name="view_key_expired">"Expired: The contact needs to extend the key's validity!"</string>
     <string name="view_key_expired_secret">"Expired: You can extend the keys validity by editing it!"</string>
     <string name="view_key_my_key">"My Key"</string>
@@ -1312,6 +1314,7 @@
     <string name="msg_pse_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_pse_error_sig">"Encountered OpenPGP signature exception!"</string>
     <string name="msg_pse_error_unlock">"Unknown error unlocking key!"</string>
+    <string name="msg_pse_error_key_not_allowed">"Key selected for encryption is not allowed"</string>
     <string name="msg_pse_error_revoked_or_expired">"Revoked/Expired key cannot be used for sign or encryption"</string>
     <string name="msg_pse_key_ok">"Encrypting for key: %s"</string>
     <string name="msg_pse_key_unknown">"Missing key for encryption: %s"</string>
@@ -1615,7 +1618,7 @@
     <string name="security_token_status_unbound">"Security Token matches, can be bound to key"</string>
     <string name="security_token_status_partly">"Security Token matches, partly bound to key"</string>
     <string name="security_token_create">"Hold Security Token against the back of your device."</string>
-    <string name="security_token_reset_or_import">"This Security Token already contains a key. To use it, we need additional key information. These information can be searched on a keyserver or imported from a file."</string>
+    <string name="security_token_reset_or_import">"This Security Token already contains a key. To use it, we need additional key information. This information can be searched for on a keyserver or imported from a file."</string>
     <string name="btn_reset">"Reset"</string>
     <string name="security_token_import_radio">"Search key information on keyserver"</string>
     <string name="security_token_file_radio">"Import key information from file"</string>
@@ -1811,6 +1814,17 @@
     <string name="redirect_import_key_no">"Close"</string>
     <string name="title_activity_redirect_key">"Key import redirection"</string>
 
+
     <string name="private_key_import_button">"Doesn't work?"</string>
     <string name="private_key_import_error">"Could not connect to device"</string>
+
+    <string name="request_permission_title">Allow access to your key?</string>
+    <string name="request_permission_msg">%1$s requests access to one of your keys, which allows it to decrypt messages sent to this key. You can revoke access later in OpenKeychain.</string>
+    <string name="requested_key_unavailable_warning">This key is not available. To use it, you must import it as one of your own!</string>
+    <string name="button_allow">Allow</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="requested_key_label">Requested key:</string>
+    <string name="error_preselect_sign_key">Error selecting key %s for signing!</string>
+    <string name="error_preselect_encrypt_key">Error selecting key %s for encryption!</string>
+
 </resources>

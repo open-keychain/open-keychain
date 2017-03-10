@@ -293,7 +293,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         setupEditTextFocusNext(mCodeEditText);
         setupEditTextSuccessListener(mCodeEditText);
 
-        mStatusAnimator = (ToolableViewAnimator) view.findViewById(R.id.status_animator);
+        mStatusAnimator = (ToolableViewAnimator) view.findViewById(R.id.button_bar_animator);
         mTitleAnimator = (ToolableViewAnimator) view.findViewById(R.id.title_animator);
         mCodeFieldsAnimator = (ToolableViewAnimator) view.findViewById(R.id.code_animator);
 
@@ -605,7 +605,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     @Nullable
     @Override
     public BackupKeyringParcel createOperationInput() {
-        return new BackupKeyringParcel(mMasterKeyIds, mExportSecret, true, mCachedBackupUri);
+        return new BackupKeyringParcel(mMasterKeyIds, mExportSecret, true, true, mCachedBackupUri);
     }
 
     @Override

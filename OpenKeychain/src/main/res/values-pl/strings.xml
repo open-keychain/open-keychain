@@ -223,7 +223,7 @@
   <string name="error_invalid_data">Brak treści szyfrowanej lub podpisanej OpenPGP!</string>
   <string name="error_integrity_check_failed">Sprawdzanie spójności zakończone niepowodzeniem! Dane były modyfikowane!</string>
   <string name="error_could_not_extract_private_key">nie można wyodrębnić klucza prywatnego</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Potrzebujesz Androida 4.1 aby korzystać z Android NFC Beam</string>
   <string name="error_nothing_import">Nie znaleziono kluczy!</string>
   <string name="error_contacts_key_id_missing">Pobieranie ID klucza z kontaktów nie powiodło się!</string>

@@ -40,14 +40,11 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
-
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -57,7 +54,7 @@ import org.sufficientlysecure.keychain.util.Log;
 public class ViewKeyAdvActivity extends BaseActivity implements
         LoaderCallbacks<Cursor>, OnPageChangeListener {
 
-    ProviderHelper mProviderHelper;
+    KeyRepository mKeyRepository;
 
     protected Uri mDataUri;
 
@@ -90,7 +87,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             }
         });
 
-        mProviderHelper = new ProviderHelper(this);
+        mKeyRepository = KeyRepository.createDatabaseInteractor(this);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.sliding_tab_layout);
@@ -179,6 +176,9 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET,
             KeychainContract.KeyRings.FINGERPRINT,
+            KeychainContract.KeyRings.NAME,
+            KeychainContract.KeyRings.EMAIL,
+            KeychainContract.KeyRings.COMMENT,
     };
 
     static final int INDEX_MASTER_KEY_ID = 1;
@@ -188,6 +188,9 @@ public class ViewKeyAdvActivity extends BaseActivity implements
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_ANY_SECRET = 6;
     static final int INDEX_FINGERPRINT = 7;
+    static final int INDEX_NAME = 8;
+    static final int INDEX_EMAIL = 9;
+    static final int INDEX_COMMENT = 10;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -214,9 +217,10 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             case LOADER_ID_UNIFIED: {
                 if (data.moveToFirst()) {
                     // get name, email, and comment from USER_ID
-                    OpenPgpUtils.UserId mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
-                    if (mainUserId.name != null) {
-                        setTitle(mainUserId.name);
+                    String name = data.getString(INDEX_NAME);
+
+                    if (name != null) {
+                        setTitle(name);
                     } else {
                         setTitle(R.string.user_id_no_name);
                     }

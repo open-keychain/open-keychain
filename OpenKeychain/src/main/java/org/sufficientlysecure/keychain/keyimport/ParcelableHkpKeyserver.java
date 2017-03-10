@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2016 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2011-2014 Thialfihar <thi@thialfihar.org>
+ * Copyright (C) 2016-2017 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +49,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -154,7 +154,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
     }
 
     public URI getOnionURI() throws URISyntaxException {
-        return getURI(mOnion);
+        return mOnion != null ? getURI(mOnion) : null;
     }
 
     /**
@@ -189,10 +189,12 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
     }
 
     private HttpUrl getHttpUrl(ParcelableProxy proxy) throws URISyntaxException {
-        HttpUrl base = proxy.isTorEnabled() ? HttpUrl.get(getOnionURI())
-                : HttpUrl.get(getUrlURI());
+        URI base = getUrlURI();
+        if (proxy.isTorEnabled() && getOnionURI() != null) {
+            base = getOnionURI();
+        }
 
-        return base.newBuilder()
+        return HttpUrl.get(base).newBuilder()
                 .addPathSegment("pks")
                 .build();
     }
@@ -211,13 +213,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
                     .execute();
 
             // contains body both in case of success or failure
-            String responseBody;
-            byte[] responseBytes = response.body().bytes();
-            try {
-                responseBody = new String(responseBytes, response.body().contentType().charset(UTF_8));
-            } catch (UnsupportedCharsetException e) {
-                responseBody = new String(responseBytes, UTF_8);
-            }
+            String responseBody = getResponseBodyAsUtf8(response);
 
             if (response.isSuccessful()) {
                 return responseBody;
@@ -231,10 +227,19 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
         } catch (TlsCertificatePinning.TlsCertificatePinningException e) {
             Log.e(Constants.TAG, "Exception in pinning certs", e);
             throw new Keyserver.QueryFailedException("Exception in pinning certs");
-        } catch (UnsupportedCharsetException e) {
-            Log.e(Constants.TAG, "UnsupportedCharsetException", e);
-            throw new Keyserver.QueryFailedException("Unsupported charset");
         }
+    }
+
+    private String getResponseBodyAsUtf8(Response response) throws IOException {
+        String responseBody;
+        byte[] responseBytes = response.body().bytes();
+        try {
+            responseBody = new String(responseBytes, response.body().contentType().charset(UTF_8));
+        } catch (UnsupportedCharsetException e) {
+            responseBody = new String(responseBytes, UTF_8);
+        }
+
+        return responseBody;
     }
 
     /**
@@ -257,6 +262,8 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
                     .addQueryParameter("options", "mr")
                     .addQueryParameter("search", query)
                     .build();
+
+            Log.d(Constants.TAG, "Keyserver search: " + url + " using Proxy: " + proxy.getProxy());
 
             data = query(url, proxy);
         } catch (URISyntaxException e) {
@@ -428,9 +435,11 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
                             .newCall(request)
                             .execute();
 
+            String responseBody = getResponseBodyAsUtf8(response);
+
             Log.d(Constants.TAG, "Adding key with URL: " + url
                     + ", response code: " + response.code()
-                    + ", body: " + response.body().string());
+                    + ", body: " + responseBody);
 
             if (response.code() != 200) {
                 throw new Keyserver.AddKeyException();

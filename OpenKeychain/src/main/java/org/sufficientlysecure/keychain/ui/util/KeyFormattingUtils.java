@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -51,6 +52,7 @@ import java.nio.ByteBuffer;
 import java.security.DigestException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.Locale;
 
 public class KeyFormattingUtils {
@@ -409,6 +411,16 @@ public class KeyFormattingUtils {
     }
 
     public static final int DEFAULT_COLOR = -1;
+
+    @NonNull
+    public static long[] getUnboxedLongArray(@NonNull Collection<Long> arrayList) {
+        long[] result = new long[arrayList.size()];
+        int i = 0;
+        for (Long e : arrayList) {
+            result[i++] = e;
+        }
+        return result;
+    }
 
     public enum State {
         REVOKED,
