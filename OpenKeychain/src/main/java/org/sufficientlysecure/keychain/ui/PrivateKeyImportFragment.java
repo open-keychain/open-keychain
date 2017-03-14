@@ -1,13 +1,10 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -18,10 +15,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.PrivateKeyImportExportService;
+import org.sufficientlysecure.keychain.network.KeyImportSocket;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
-public class PrivateKeyImportFragment extends Fragment {
+public class PrivateKeyImportFragment extends Fragment implements KeyImportSocket.KeyImportListener{
     public static final String EXTRA_RECEIVED_KEYRING = "received_keyring";
 
     private Activity mActivity;
@@ -34,7 +31,7 @@ public class PrivateKeyImportFragment extends Fragment {
     private View mSentenceLayout;
     private View mButtonLayout;
 
-    private LocalBroadcastManager mBroadcaster;
+    private KeyImportSocket mSocket;
 
     public static PrivateKeyImportFragment newInstance() {
         PrivateKeyImportFragment frag = new PrivateKeyImportFragment();
@@ -56,13 +53,7 @@ public class PrivateKeyImportFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBroadcaster = LocalBroadcastManager.getInstance(mActivity);
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(PrivateKeyImportExportService.IMPORT_ACTION_SHOW_PHRASE);
-        filter.addAction(PrivateKeyImportExportService.IMPORT_ACTION_KEY);
-
-        LocalBroadcastManager.getInstance(mActivity).registerReceiver(mReceiver, filter);
+        mSocket = KeyImportSocket.getInstance(this);
     }
 
     @Override
@@ -70,10 +61,7 @@ public class PrivateKeyImportFragment extends Fragment {
         super.onStop();
 
         if (mActivity.isFinishing()) {
-            LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(mReceiver);
-
-            Intent intent = new Intent(PrivateKeyImportExportService.ACTION_STOP);
-            mBroadcaster.sendBroadcast(intent);
+            mSocket.close();
         }
     }
 
@@ -92,12 +80,7 @@ public class PrivateKeyImportFragment extends Fragment {
         mOkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mActivity, PrivateKeyImportExportService.class);
-                intent.putExtra(PrivateKeyImportExportService.EXTRA_EXPORT_KEY, false);
-                intent.putExtra(PrivateKeyImportExportService.EXTRA_IMPORT_IP_ADDRESS, mIpAddress);
-                intent.putExtra(PrivateKeyImportExportService.EXTRA_IMPORT_PORT, mPort);
-                mActivity.startService(intent);
-
+                mSocket.startImport(mIpAddress, mPort);
                 mOkButton.setEnabled(false);
             }
         });
@@ -141,7 +124,7 @@ public class PrivateKeyImportFragment extends Fragment {
         buttonSentenceNotMatched.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                broadcastImport(false);
+                mSocket.importPhrasesMatched(false);
                 mActivity.finish();
             }
         });
@@ -149,7 +132,7 @@ public class PrivateKeyImportFragment extends Fragment {
         buttonSentenceMatched.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                broadcastImport(true);
+                mSocket.importPhrasesMatched(true);
             }
         });
 
@@ -157,45 +140,42 @@ public class PrivateKeyImportFragment extends Fragment {
         return view;
     }
 
-    private void broadcastImport(boolean phrasesMatched) {
-        Intent intent = new Intent(PrivateKeyImportExportService.IMPORT_ACTION_PHRASES_MATCHED);
-        intent.putExtra(PrivateKeyImportExportService.IMPORT_EXTRA, phrasesMatched);
+    @Override
+    public void showPhrase(String phrase) {
+        if (phrase == null) {
+            Notify.create(getActivity(), R.string.private_key_import_error_connection, Notify.Style.ERROR).show();
+            mOkButton.setEnabled(true);
+            return;
+        }
 
-        mBroadcaster.sendBroadcast(intent);
+        mSentenceText.setText(phrase);
+        switchMode(true);
     }
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    @Override
+    public void importKey(byte[] keyRing) {
+        if (keyRing == null) {
+            Notify.create(getActivity(), R.string.private_key_import_error_key, Notify.Style.ERROR).show();
+            switchMode(false);
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            switch (action) {
-                case PrivateKeyImportExportService.IMPORT_ACTION_SHOW_PHRASE:
-                    String phrase = intent.getStringExtra(PrivateKeyImportExportService.IMPORT_EXTRA);
+            // socket is already closed, initialize a new one
+            mSocket = KeyImportSocket.getInstance(this);
 
-                    if (phrase == null) {
-                        Notify.create(getActivity(), R.string.private_key_import_error, Notify.Style.ERROR).show();
-                        mOkButton.setEnabled(true);
-                        return;
-                    }
-
-                    mSentenceText.setText(phrase);
-
-                    mOkButton.setVisibility(View.GONE);
-                    mIpLayout.setVisibility(View.GONE);
-                    mSentenceLayout.setVisibility(View.VISIBLE);
-                    mButtonLayout.setVisibility(View.VISIBLE);
-                    break;
-                case PrivateKeyImportExportService.IMPORT_ACTION_KEY:
-                    byte[] keyRing = intent.getByteArrayExtra(PrivateKeyImportExportService.IMPORT_EXTRA);
-
-                    Intent keyIntent = new Intent();
-                    keyIntent.putExtra(EXTRA_RECEIVED_KEYRING, keyRing);
-
-                    mActivity.setResult(Activity.RESULT_OK, keyIntent);
-                    mActivity.finish();
-                    break;
-            }
+            return;
         }
-    };
+
+        Intent keyIntent = new Intent();
+        keyIntent.putExtra(EXTRA_RECEIVED_KEYRING, keyRing);
+
+        mActivity.setResult(Activity.RESULT_OK, keyIntent);
+        mActivity.finish();
+    }
+
+    private void switchMode(boolean switchToManual) {
+        mOkButton.setEnabled(true);
+        mOkButton.setVisibility(switchToManual ? View.GONE : View.VISIBLE);
+        mIpLayout.setVisibility(switchToManual ? View.GONE : View.VISIBLE);
+        mSentenceLayout.setVisibility(switchToManual ? View.VISIBLE : View.GONE);
+        mButtonLayout.setVisibility(switchToManual ? View.VISIBLE : View.GONE);
+    }
 }

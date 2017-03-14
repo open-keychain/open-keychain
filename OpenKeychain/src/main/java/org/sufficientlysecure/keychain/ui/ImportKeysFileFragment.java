@@ -18,15 +18,12 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,8 +36,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
+import org.sufficientlysecure.keychain.network.KeyImportSocket;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.service.PrivateKeyImportExportService;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
@@ -49,7 +46,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 
-public class ImportKeysFileFragment extends Fragment {
+public class ImportKeysFileFragment extends Fragment implements KeyImportSocket.KeyImportListener {
 
     private Activity mActivity;
     private ImportKeysListener mCallback;
@@ -97,25 +94,6 @@ public class ImportKeysFileFragment extends Fragment {
         inflater.inflate(R.menu.import_keys_file_fragment, menu);
 
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(PrivateKeyImportExportService.IMPORT_ACTION_KEY);
-
-        LocalBroadcastManager.getInstance(mActivity).registerReceiver(mReceiver, filter);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        if (mActivity.isFinishing()) {
-            LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(mReceiver);
-        }
     }
 
     @Override
@@ -170,10 +148,7 @@ public class ImportKeysFileFragment extends Fragment {
                     if (data != null) {
                         String qrContent = data.getStringExtra(ImportKeysProxyActivity.EXTRA_SCANNED_CONTENT);
                         if (qrContent != null) {
-                            Intent intent = new Intent(mActivity, PrivateKeyImportExportService.class);
-                            intent.putExtra(PrivateKeyImportExportService.EXTRA_EXPORT_KEY, false);
-                            intent.putExtra(PrivateKeyImportExportService.EXTRA_IMPORT_CONNECTION_DETAILS, qrContent);
-                            mActivity.startService(intent);
+                            KeyImportSocket.getInstance(this).startImport(qrContent);
                         }
                     } else {
                         Intent intent = new Intent(mActivity, PrivateKeyImportExportActivity.class);
@@ -228,17 +203,13 @@ public class ImportKeysFileFragment extends Fragment {
         }
     }
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    @Override
+    public void showPhrase(String phrase) {
+        // not used here
+    }
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            switch (action) {
-                case PrivateKeyImportExportService.IMPORT_ACTION_KEY:
-                    byte[] keyRing = intent.getByteArrayExtra(PrivateKeyImportExportService.IMPORT_EXTRA);
-                    mCallback.loadKeys(new BytesLoaderState(keyRing, null));
-                    break;
-            }
-        }
-    };
+    @Override
+    public void importKey(byte[] keyRing) {
+        mCallback.loadKeys(new BytesLoaderState(keyRing, null));
+    }
 }

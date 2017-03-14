@@ -5,7 +5,6 @@ import android.app.ActivityOptions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -13,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +22,10 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.network.KeyExportSocket;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
-import org.sufficientlysecure.keychain.service.PrivateKeyImportExportService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
@@ -40,9 +38,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> {
+public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> implements KeyExportSocket.ExportKeyListener {
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
-    public static final int PORT = 5891;
 
     private static final String ARG_CONNECTION_DETAILS = "connection_details";
     private static final String ARG_IP_ADDRESS = "ip_address";
@@ -66,7 +63,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     private boolean mManuelMode;
     private String mPhrase;
 
-    private LocalBroadcastManager mBroadcaster;
+    private KeyExportSocket mSocket;
 
     public static PrivateKeyExportFragment newInstance(long masterKeyId) {
         PrivateKeyExportFragment frag = new PrivateKeyExportFragment();
@@ -90,25 +87,13 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBroadcaster = LocalBroadcastManager.getInstance(mActivity);
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_SHOW_PHRASE);
-        filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_UPDATE_CONNECTION_DETAILS);
-        filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_KEY);
-        filter.addAction(PrivateKeyImportExportService.EXPORT_ACTION_FINISHED);
-
-        LocalBroadcastManager.getInstance(mActivity).registerReceiver(mReceiver, filter);
+        mSocket = KeyExportSocket.getInstance(this);
 
         if (savedInstanceState != null) {
             mConnectionDetails = savedInstanceState.getString(ARG_CONNECTION_DETAILS);
             mIpAddress = savedInstanceState.getString(ARG_IP_ADDRESS);
             mManuelMode = savedInstanceState.getBoolean(ARG_MANUAL_MODE, false);
             mPhrase = savedInstanceState.getString(ARG_PHRASE);
-        } else {
-            Intent intent = new Intent(mActivity, PrivateKeyImportExportService.class);
-            intent.putExtra(PrivateKeyImportExportService.EXTRA_EXPORT_KEY, true);
-            mActivity.startService(intent);
         }
     }
 
@@ -127,10 +112,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         super.onStop();
 
         if (mActivity.isFinishing()) {
-            LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(mReceiver);
-
-            Intent intent = new Intent(PrivateKeyImportExportService.ACTION_STOP);
-            mBroadcaster.sendBroadcast(intent);
+            mSocket.close();
         }
     }
 
@@ -163,7 +145,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                broadcastExport(PrivateKeyImportExportService.EXPORT_ACTION_MANUAL_MODE, null);
+                mSocket.manualMode();
 
                 mManuelMode = true;
                 showManualMode();
@@ -171,19 +153,19 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         });
 
         ipText.setText(mIpAddress);
-        portText.setText(String.valueOf(PORT));
+        portText.setText(String.valueOf(KeyExportSocket.PORT));
 
         mNoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                broadcastExport(PrivateKeyImportExportService.EXPORT_ACTION_PHRASES_MATCHED, false);
+                mSocket.exportPhrasesMatched(false);
             }
         });
 
         mYesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                broadcastExport(PrivateKeyImportExportService.EXPORT_ACTION_PHRASES_MATCHED, true);
+                mSocket.exportPhrasesMatched(true);
             }
         });
 
@@ -214,23 +196,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         mYesButton.setVisibility(View.VISIBLE);
 
         mSentenceText.setText(mPhrase);
-    }
-
-    private void broadcastExport(String action, Uri extraUri) {
-        Intent intent = new Intent(action);
-
-        if (extraUri != null) {
-            intent.putExtra(PrivateKeyImportExportService.EXPORT_EXTRA, extraUri);
-        }
-
-        mBroadcaster.sendBroadcast(intent);
-    }
-
-    private void broadcastExport(String action, boolean extraBoolean) {
-        Intent intent = new Intent(action);
-        intent.putExtra(PrivateKeyImportExportService.EXPORT_EXTRA, extraBoolean);
-
-        mBroadcaster.sendBroadcast(intent);
     }
 
     private void showQrCodeDialog() {
@@ -296,7 +261,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
             return;
         }
 
-        broadcastExport(PrivateKeyImportExportService.EXPORT_ACTION_CACHED_URI, mCachedUri);
+        mSocket.writeKey(mActivity, mCachedUri);
     }
 
     /**
@@ -336,7 +301,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     @Nullable
     @Override
     public BackupKeyringParcel createOperationInput() {
-        return new BackupKeyringParcel(new long[] {mMasterKeyId}, true, false, mCachedUri);
+        return new BackupKeyringParcel(new long[] {mMasterKeyId}, true, false, false, mCachedUri);
     }
 
     @Override
@@ -355,28 +320,25 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         mCachedUri = null;
     }
 
+    @Override
+    public void showConnectionDetails(String connectionDetails) {
+        mConnectionDetails = connectionDetails;
+        loadQrCode();
+    }
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    @Override
+    public void loadKey() {
+        createExport();
+    }
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            switch (action) {
-                case PrivateKeyImportExportService.EXPORT_ACTION_UPDATE_CONNECTION_DETAILS:
-                    mConnectionDetails = intent.getStringExtra(PrivateKeyImportExportService.EXPORT_EXTRA);
-                    loadQrCode();
-                    break;
-                case PrivateKeyImportExportService.EXPORT_ACTION_SHOW_PHRASE:
-                    mPhrase = intent.getStringExtra(PrivateKeyImportExportService.EXPORT_EXTRA);
-                    showPhrase();
-                    break;
-                case PrivateKeyImportExportService.EXPORT_ACTION_KEY:
-                    createExport();
-                    break;
-                case PrivateKeyImportExportService.EXPORT_ACTION_FINISHED:
-                    mActivity.finish();
-                    break;
-            }
-        }
-    };
+    @Override
+    public void keyExported() {
+        mActivity.finish();
+    }
+
+    @Override
+    public void showPhrase(String phrase) {
+        mPhrase = phrase;
+        showPhrase();
+    }
 }
