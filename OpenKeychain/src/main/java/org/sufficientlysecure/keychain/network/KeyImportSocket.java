@@ -39,7 +39,7 @@ public class KeyImportSocket {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mSocket = new SecureDataSocket(KeyExportSocket.PORT);
+                mSocket = new SecureDataSocket(0);
                 try {
                     mSocket.setupClientWithCamera(connectionDetails);
                 } catch (SecureDataSocketException e) {

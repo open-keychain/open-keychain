@@ -153,7 +153,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         });
 
         ipText.setText(mIpAddress);
-        portText.setText(String.valueOf(KeyExportSocket.PORT));
+        portText.setText(String.valueOf(mSocket.getPort()));
 
         mNoButton.setOnClickListener(new View.OnClickListener() {
             @Override

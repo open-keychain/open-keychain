@@ -12,10 +12,9 @@ import com.cryptolib.SecureDataSocketException;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class KeyExportSocket {
-    public static final int PORT = 5891;
-
     private static final int SHOW_CONNECTION_DETAILS = 1;
     private static final int LOAD_KEY = 2;
     private static final int KEY_EXPORTED = 3;
@@ -26,6 +25,7 @@ public class KeyExportSocket {
     private SecureDataSocket mSocket;
     private ExportKeyListener mListener;
     private Handler mHandler;
+    private int mPort;
 
     public static KeyExportSocket getInstance(ExportKeyListener listener) {
         if (mInstance == null) {
@@ -40,12 +40,15 @@ public class KeyExportSocket {
         mListener = listener;
         mHandler = new Handler(Looper.getMainLooper());
 
+        Random random = new Random();
+        mPort = 6000 + random.nextInt(3000);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 String connectionDetails = null;
                 try {
-                    mSocket = new SecureDataSocket(PORT);
+                    mSocket = new SecureDataSocket(mPort);
                     connectionDetails = mSocket.prepareServerWithClientCamera();
                 } catch (SecureDataSocketException e) {
                     e.printStackTrace();
@@ -81,6 +84,10 @@ public class KeyExportSocket {
 
     public void manualMode() {
         mSocket.close();
+    }
+
+    public int getPort() {
+        return mPort;
     }
 
     public void writeKey(final Context context, final Uri keyUri) {
