@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.network.KeyImportSocket;
+import org.sufficientlysecure.keychain.network.NetworkReceiver;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -108,9 +109,13 @@ public class ImportKeysFileFragment extends Fragment implements KeyImportSocket.
                         Uri.fromFile(Constants.Path.APP_DIR), "*/*", false, REQUEST_CODE_FILE);
                 return true;
             case R.id.menu_import_keys_file_device:
-                Intent scanQrCode = new Intent(getActivity(), ImportKeysProxyActivity.class);
-                scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_PRIVATE_KEY_IMPORT);
-                startActivityForResult(scanQrCode, REQUEST_CODE_SCAN);
+                if (NetworkReceiver.isConnectedTypeWifi(mActivity)) {
+                    Intent scanQrCode = new Intent(getActivity(), ImportKeysProxyActivity.class);
+                    scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_PRIVATE_KEY_IMPORT);
+                    startActivityForResult(scanQrCode, REQUEST_CODE_SCAN);
+                } else {
+                    Notify.create(mActivity, R.string.private_key_error_wifi, Style.ERROR).show();
+                }
                 return true;
             case R.id.menu_import_keys_file_paste:
                 CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());

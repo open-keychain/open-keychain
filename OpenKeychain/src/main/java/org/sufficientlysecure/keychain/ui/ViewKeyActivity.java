@@ -71,6 +71,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.network.NetworkReceiver;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -321,8 +322,12 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         mActionWlan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!startPassphraseActivity(REQUEST_WLAN)) {
-                    startWlanActivity();
+                if (NetworkReceiver.isConnectedTypeWifi(ViewKeyActivity.this)) {
+                    if (!startPassphraseActivity(REQUEST_WLAN)) {
+                        startWlanActivity();
+                    }
+                } else {
+                    Notify.create(ViewKeyActivity.this, R.string.private_key_error_wifi, Notify.Style.ERROR).show();
                 }
             }
         });

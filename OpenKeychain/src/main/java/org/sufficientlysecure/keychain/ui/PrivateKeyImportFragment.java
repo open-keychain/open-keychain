@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.network.KeyImportSocket;
+import org.sufficientlysecure.keychain.network.NetworkReceiver;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 public class PrivateKeyImportFragment extends Fragment implements KeyImportSocket.KeyImportListener{
@@ -80,8 +81,12 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
         mOkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSocket.startImport(mIpAddress, mPort);
-                mOkButton.setEnabled(false);
+                if (NetworkReceiver.isConnectedTypeWifi(mActivity)) {
+                    mSocket.startImport(mIpAddress, mPort);
+                    mOkButton.setEnabled(false);
+                } else {
+                    Notify.create(mActivity, R.string.private_key_error_wifi, Notify.Style.ERROR).show();
+                }
             }
         });
 

@@ -1818,6 +1818,7 @@
     <string name="private_key_import_button">"Doesn't work?"</string>
     <string name="private_key_import_error_connection">"Could not connect to device"</string>
     <string name="private_key_import_error_key">"Failure during key transmission"</string>
+    <string name="private_key_error_wifi">"Please connect to a Wi-Fi network"</string>
 
     <string name="request_permission_title">Allow access to your key?</string>
     <string name="request_permission_msg">%1$s requests access to one of your keys, which allows it to decrypt messages sent to this key. You can revoke access later in OpenKeychain.</string>

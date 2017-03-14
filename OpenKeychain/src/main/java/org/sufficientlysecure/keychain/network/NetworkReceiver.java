@@ -33,15 +33,7 @@ public class NetworkReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
-        ConnectivityManager conn = (ConnectivityManager)
-                context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = conn.getActiveNetworkInfo();
-        boolean isTypeWifi = (networkInfo != null) &&
-                (networkInfo.getType() == ConnectivityManager.TYPE_WIFI);
-        boolean isConnected = (networkInfo != null) && networkInfo.isConnected();
-
-        if (isTypeWifi && isConnected) {
+        if (isConnectedTypeWifi(context)) {
 
             // broadcaster receiver disabled
             setWifiReceiverComponent(false, context);
@@ -66,5 +58,16 @@ public class NetworkReceiver extends BroadcastReceiver {
                     PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
             Log.d(Constants.TAG, "Wifi Receiver is disabled!");
         }
+    }
+
+    public static boolean isConnectedTypeWifi(Context context) {
+        ConnectivityManager conn = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = conn.getActiveNetworkInfo();
+        boolean isTypeWifi = (networkInfo != null) &&
+                (networkInfo.getType() == ConnectivityManager.TYPE_WIFI);
+        boolean isConnected = (networkInfo != null) && networkInfo.isConnected();
+
+        return isTypeWifi && isConnected;
     }
 }
