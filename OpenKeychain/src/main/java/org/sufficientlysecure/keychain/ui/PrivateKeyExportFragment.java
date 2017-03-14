@@ -38,6 +38,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static android.app.Activity.RESULT_OK;
+
 public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> implements KeyExportSocket.ExportKeyListener {
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
 
@@ -45,6 +47,8 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     private static final String ARG_IP_ADDRESS = "ip_address";
     private static final String ARG_MANUAL_MODE = "manual_mode";
     private static final String ARG_PHRASE = "phrase";
+
+    private static final int REQUEST_CONNECTION = 23;
 
     private ImageView mQrCode;
     private TextView mSentenceText;
@@ -191,6 +195,18 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         return view;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CONNECTION) {
+            KeyExportSocket.setListener(this);
+            if (resultCode == RESULT_OK) {
+                loadKey();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     private void showManualMode() {
         mQrLayout.setVisibility(View.GONE);
         mButton.setVisibility(View.GONE);
@@ -222,7 +238,8 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
         qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_QR_CODE_CONTENT, mConnectionDetails);
         qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_TITLE_RES_ID, R.string.title_export_private_key);
-        ActivityCompat.startActivity(mActivity, qrCodeIntent, opts);
+        qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_EXPORT_PRIVATE_KEY, true);
+        startActivityForResult(qrCodeIntent, REQUEST_CONNECTION, opts);
     }
 
     /**

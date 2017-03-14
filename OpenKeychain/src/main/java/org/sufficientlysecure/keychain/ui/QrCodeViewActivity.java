@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.network.KeyExportSocket;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
@@ -37,9 +39,10 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class QrCodeViewActivity extends BaseActivity {
+public class QrCodeViewActivity extends BaseActivity implements KeyExportSocket.ExportKeyListener {
     public static String EXTRA_QR_CODE_CONTENT = "qr_code_content";
     public static String EXTRA_TITLE_RES_ID = "title_res_id";
+    public static String EXTRA_EXPORT_PRIVATE_KEY = "export_private_key";
 
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
@@ -71,6 +74,11 @@ public class QrCodeViewActivity extends BaseActivity {
 
         if (titleResId > 0) {
             setTitle(titleResId);
+        }
+
+        boolean exportPrivateKey = getIntent().getBooleanExtra(EXTRA_EXPORT_PRIVATE_KEY, false);
+        if (exportPrivateKey) {
+            KeyExportSocket.setListener(this);
         }
 
         mQrCode = (ImageView) findViewById(R.id.qr_code_image);
@@ -125,6 +133,27 @@ public class QrCodeViewActivity extends BaseActivity {
     @Override
     protected void initLayout() {
         setContentView(R.layout.qr_code_activity);
+    }
+
+    @Override
+    public void loadKey() {
+        setResult(Activity.RESULT_OK);
+        finish();
+    }
+
+    @Override
+    public void showConnectionDetails(String connectionDetails) {
+        // not used here
+    }
+
+    @Override
+    public void keyExported() {
+        // not used here
+    }
+
+    @Override
+    public void showPhrase(String phrase) {
+        // not used here
     }
 
 }

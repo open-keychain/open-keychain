@@ -36,6 +36,13 @@ public class KeyExportSocket {
         return mInstance;
     }
 
+    public static void setListener(ExportKeyListener listener) {
+        if (mInstance != null) {
+            mInstance.mListener = listener;
+        }
+    }
+
+
     private KeyExportSocket(ExportKeyListener listener) {
         mListener = listener;
         mHandler = new Handler(Looper.getMainLooper());
