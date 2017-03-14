@@ -542,6 +542,7 @@
     <!-- Help -->
     <string name="help_tab_start">"Start"</string>
     <string name="help_tab_faq">"FAQ"</string>
+    <string name="help_tab_faq_headline_transfer_key">"What is the best way to transfer my own key to OpenKeychain?"</string>
     <string name="help_tab_wot">"Key Confirmation"</string>
     <string name="help_tab_nfc_beam">"NFC Beam"</string>
     <string name="help_tab_changelog">"Changelog"</string>

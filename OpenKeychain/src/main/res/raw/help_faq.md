@@ -12,12 +12,18 @@
 
 ## What is the best way to transfer my own key to OpenKeychain?
 
-This method will only work, if both devices are in the same WLAN network.
+Keys can be transferred between two Android devices with OpenKeychain or one Android device and a computer. This method will only work, if both devices are in the same WLAN network.
 
+Transfer from Computer
 1. You can use keylivery (https://github.com/svenklaus/keylivery). It's a java program to transfer your own key from any computer to OpenKeychain.
 2. Download and execute it.
 3. Select your key in keylivery.
 3. To import your key go back to the main menu, click on +, choose import. Now click on the qr code symbol at the top of the screen.
+
+Transfer from Android device
+1. Select a key to export in the main menu.
+2. Click on the "Export via Wlan" button (Wlan icon with a lock).
+3. To import your key on this device go back to the main menu, click on +, choose import. Now click on the qr code symbol at the top of the screen.
 
 ## Are my secret keys safe on my mobile device?
 

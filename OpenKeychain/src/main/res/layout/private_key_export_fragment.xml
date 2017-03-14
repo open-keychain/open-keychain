@@ -31,14 +31,26 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/private_key_export_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/private_key_import_button"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/private_key_import_button_margin_bottom"
-        android:padding="8dp"/>
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/private_key_import_button_margin_bottom">
+
+        <Button
+            android:id="@+id/private_key_export_help_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_help"
+            android:padding="8dp" />
+
+        <Button
+            android:id="@+id/private_key_export_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/private_key_import_button"
+            android:padding="8dp" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/private_key_export_info_layout"

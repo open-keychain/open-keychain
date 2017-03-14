@@ -53,6 +53,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     private Button mYesButton;
     private View mQrLayout;
     private Button mButton;
+    private Button mHelpButton;
     private View mInfoLayout;
 
     private Activity mActivity;
@@ -126,6 +127,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         mQrLayout = view.findViewById(R.id.private_key_export_qr_layout);
         mQrCode = (ImageView) view.findViewById(R.id.private_key_export_qr_image);
         mButton = (Button) view.findViewById(R.id.private_key_export_button);
+        mHelpButton = (Button) view.findViewById(R.id.private_key_export_help_button);
 
         mInfoLayout = view.findViewById(R.id.private_key_export_info_layout);
         TextView ipText = (TextView) view.findViewById(R.id.private_key_export_ip);
@@ -149,6 +151,13 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
                 mManuelMode = true;
                 showManualMode();
+            }
+        });
+
+        mHelpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                HelpActivity.startHelpActivity(mActivity, HelpActivity.TAB_FAQ, R.string.help_tab_faq_headline_transfer_key);
             }
         });
 
@@ -185,6 +194,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     private void showManualMode() {
         mQrLayout.setVisibility(View.GONE);
         mButton.setVisibility(View.GONE);
+        mHelpButton.setVisibility(View.GONE);
 
         mInfoLayout.setVisibility(View.VISIBLE);
     }

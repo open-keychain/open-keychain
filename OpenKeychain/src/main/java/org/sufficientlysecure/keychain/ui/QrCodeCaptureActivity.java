@@ -64,6 +64,15 @@ public class QrCodeCaptureActivity extends FragmentActivity {
             int paddingBottom = (int) getResources().getDimension(R.dimen.private_key_import_text_padding_bottom);
             barcodeScannerView.getStatusView().setPadding(0, 0, 0, paddingBottom);
 
+            Button importHelpButton = (Button) findViewById(R.id.private_key_import_help_button);
+            importHelpButton.setVisibility(View.VISIBLE);
+            importHelpButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    HelpActivity.startHelpActivity(QrCodeCaptureActivity.this, HelpActivity.TAB_FAQ, R.string.help_tab_faq_headline_transfer_key);
+                }
+            });
+
             Button importFailButton = (Button) findViewById(R.id.private_key_import_button);
             importFailButton.setVisibility(View.VISIBLE);
             importFailButton.setOnClickListener(new View.OnClickListener() {

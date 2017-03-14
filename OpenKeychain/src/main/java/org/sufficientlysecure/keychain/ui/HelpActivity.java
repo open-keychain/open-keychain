@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
 public class HelpActivity extends BaseActivity {
     public static final String EXTRA_SELECTED_TAB = "selected_tab";
+    public static final String EXTRA_HEADLINE_RES = "headline_res";
 
     public static final int TAB_START = 0;
     public static final int TAB_CONFIRM = 1;
@@ -70,9 +71,13 @@ public class HelpActivity extends BaseActivity {
         viewPager.setAdapter(mTabsAdapter);
 
         int selectedTab = TAB_START;
+        int scrollToHeadline = -1;
         Intent intent = getIntent();
-        if (intent.getExtras() != null && intent.getExtras().containsKey(EXTRA_SELECTED_TAB)) {
-            selectedTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
+        if (intent.getExtras() != null) {
+            if (intent.getExtras().containsKey(EXTRA_SELECTED_TAB)) {
+                selectedTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
+            }
+            scrollToHeadline = intent.getExtras().getInt(EXTRA_HEADLINE_RES, -1);
         }
 
         Bundle startBundle = new Bundle();
@@ -87,6 +92,7 @@ public class HelpActivity extends BaseActivity {
 
         Bundle faqBundle = new Bundle();
         faqBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_RES, R.raw.help_faq);
+        faqBundle.putInt(HelpMarkdownFragment.ARG_HEADLINE_RES, scrollToHeadline);
         mTabsAdapter.addTab(HelpMarkdownFragment.class, faqBundle,
                 getString(R.string.help_tab_faq));
 
@@ -134,8 +140,13 @@ public class HelpActivity extends BaseActivity {
     }
 
     public static void startHelpActivity(Context context, int code) {
+        startHelpActivity(context, code, -1);
+    }
+
+    public static void startHelpActivity(Context context, int code, int headlineRes) {
         Intent intent = new Intent(context, HelpActivity.class);
         intent.putExtra(HelpActivity.EXTRA_SELECTED_TAB, code);
+        intent.putExtra(HelpActivity.EXTRA_HEADLINE_RES, headlineRes);
         context.startActivity(intent);
     }
 
