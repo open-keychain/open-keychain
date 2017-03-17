@@ -48,6 +48,7 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
         super.onAttach(context);
 
         mActivity = (Activity) context;
+        mActivity.setTitle(R.string.title_import_private_key);
     }
 
     @Override

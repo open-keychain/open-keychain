@@ -2,7 +2,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,7 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,7 @@ import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
+import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -40,25 +40,26 @@ import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
 
-public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> implements KeyExportSocket.ExportKeyListener {
+public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> implements KeyExportSocket.ExportKeyListener, FragmentManager.OnBackStackChangedListener {
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
 
     private static final String ARG_CONNECTION_DETAILS = "connection_details";
     private static final String ARG_IP_ADDRESS = "ip_address";
     private static final String ARG_MANUAL_MODE = "manual_mode";
     private static final String ARG_PHRASE = "phrase";
+    private static final String ARG_BACK_STACK = "back_stack";
+    private static final String ARG_CURRENT_STATE = "current_state";
 
+    private static final String BACK_STACK_INPUT = "state_display";
     private static final int REQUEST_CONNECTION = 23;
 
+    private enum ExportState {
+        STATE_UNINITIALIZED, STATE_QR, STATE_INFO, STATE_PHRASE
+    }
+
+    private ToolableViewAnimator mTitleAnimator, mContentAnimator, mButtonAnimator;
     private ImageView mQrCode;
-    private TextView mSentenceText;
-    private TextView mSentenceHeadlineText;
-    private Button mNoButton;
-    private Button mYesButton;
-    private View mQrLayout;
-    private Button mButton;
-    private Button mHelpButton;
-    private View mInfoLayout;
+    private TextView mPhraseText;
 
     private Activity mActivity;
     private String mIpAddress;
@@ -69,6 +70,8 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     private String mPhrase;
 
     private KeyExportSocket mSocket;
+    private ExportState mCurrentState = ExportState.STATE_UNINITIALIZED;
+    private Integer mBackStackLevel;
 
     public static PrivateKeyExportFragment newInstance(long masterKeyId) {
         PrivateKeyExportFragment frag = new PrivateKeyExportFragment();
@@ -86,6 +89,8 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
         mActivity = (Activity) context;
         mIpAddress = getIPAddress(true);
+
+        mActivity.setTitle(R.string.title_export_private_key);
     }
 
     @Override
@@ -110,6 +115,9 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         outState.putString(ARG_IP_ADDRESS, mIpAddress);
         outState.putString(ARG_PHRASE, mPhrase);
         outState.putBoolean(ARG_MANUAL_MODE, mManuelMode);
+
+        outState.putInt(ARG_CURRENT_STATE, mCurrentState.ordinal());
+        outState.putInt(ARG_BACK_STACK, mBackStackLevel == null ? -1 : mBackStackLevel);
     }
 
     @Override
@@ -117,7 +125,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         super.onStop();
 
         if (mActivity.isFinishing()) {
-            mSocket.close();
+            mSocket.close(false);
         }
     }
 
@@ -128,18 +136,19 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         Bundle args = getArguments();
         mMasterKeyId = args.getLong(ARG_MASTER_KEY_IDS);
 
-        mQrLayout = view.findViewById(R.id.private_key_export_qr_layout);
-        mQrCode = (ImageView) view.findViewById(R.id.private_key_export_qr_image);
-        mButton = (Button) view.findViewById(R.id.private_key_export_button);
-        mHelpButton = (Button) view.findViewById(R.id.private_key_export_help_button);
+        mTitleAnimator = (ToolableViewAnimator) view.findViewById(R.id.private_key_export_title_animator);
+        mContentAnimator = (ToolableViewAnimator) view.findViewById(R.id.private_key_export_animator);
+        mButtonAnimator = (ToolableViewAnimator) view.findViewById(R.id.private_key_export_button_bar_animator);
 
-        mInfoLayout = view.findViewById(R.id.private_key_export_info_layout);
+        mQrCode = (ImageView) view.findViewById(R.id.private_key_export_qr_image);
+        Button doesntWorkButton = (Button) view.findViewById(R.id.private_key_export_button);
+        Button helpButton = (Button) view.findViewById(R.id.private_key_export_help_button);
+
         TextView ipText = (TextView) view.findViewById(R.id.private_key_export_ip);
         TextView portText = (TextView) view.findViewById(R.id.private_key_export_port);
-        mSentenceHeadlineText = (TextView) view.findViewById(R.id.private_key_export_sentence_headline);
-        mSentenceText = (TextView) view.findViewById(R.id.private_key_export_sentence);
-        mNoButton = (Button) view.findViewById(R.id.private_key_export_sentence_not_matched_button);
-        mYesButton = (Button) view.findViewById(R.id.private_key_export_sentence_matched_button);
+        mPhraseText = (TextView) view.findViewById(R.id.private_key_export_phrase);
+        Button noButton = (Button) view.findViewById(R.id.private_key_export_sentence_not_matched_button);
+        Button yesButton = (Button) view.findViewById(R.id.private_key_export_sentence_matched_button);
 
         mQrCode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,17 +157,17 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
             }
         });
 
-        mButton.setOnClickListener(new View.OnClickListener() {
+        doesntWorkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSocket.manualMode();
+                mSocket.close(true);
 
                 mManuelMode = true;
-                showManualMode();
+                switchState(ExportState.STATE_INFO, true);
             }
         });
 
-        mHelpButton.setOnClickListener(new View.OnClickListener() {
+        helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 HelpActivity.startHelpActivity(mActivity, HelpActivity.TAB_FAQ, R.string.help_tab_faq_headline_transfer_key);
@@ -168,31 +177,44 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         ipText.setText(mIpAddress);
         portText.setText(String.valueOf(mSocket.getPort()));
 
-        mNoButton.setOnClickListener(new View.OnClickListener() {
+        noButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mSocket.exportPhrasesMatched(false);
             }
         });
 
-        mYesButton.setOnClickListener(new View.OnClickListener() {
+        yesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mSocket.exportPhrasesMatched(true);
             }
         });
 
-        if (mManuelMode) {
-            showManualMode();
-
-            if (mPhrase != null) {
-                showPhrase();
-            }
-        } else {
-            loadQrCode();
-        }
-
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (savedInstanceState != null) {
+            int savedBackStack = savedInstanceState.getInt(ARG_BACK_STACK);
+            if (savedBackStack >= 0) {
+                mBackStackLevel = savedBackStack;
+                // unchecked use, we know that this one is available in onViewCreated
+                getFragmentManager().addOnBackStackChangedListener(this);
+            }
+            ExportState savedState = ExportState.values()[savedInstanceState.getInt(ARG_CURRENT_STATE)];
+            switchState(savedState, false);
+
+            mPhraseText.setText(mPhrase);
+            if (savedState == ExportState.STATE_QR) {
+                loadQrCode(mConnectionDetails);
+            }
+        } else if (mCurrentState == ExportState.STATE_UNINITIALIZED) {
+            switchState(ExportState.STATE_QR, true);
+        }
     }
 
     @Override
@@ -207,21 +229,40 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         }
     }
 
-    private void showManualMode() {
-        mQrLayout.setVisibility(View.GONE);
-        mButton.setVisibility(View.GONE);
-        mHelpButton.setVisibility(View.GONE);
+    void switchState(ExportState state, boolean animate) {
 
-        mInfoLayout.setVisibility(View.VISIBLE);
-    }
+        switch (state) {
+            case STATE_UNINITIALIZED:
+                throw new AssertionError("can't switch to uninitialized state, this is a bug!");
 
-    private void showPhrase() {
-        mSentenceHeadlineText.setVisibility(View.VISIBLE);
-        mSentenceText.setVisibility(View.VISIBLE);
-        mNoButton.setVisibility(View.VISIBLE);
-        mYesButton.setVisibility(View.VISIBLE);
+            case STATE_QR:
+                mTitleAnimator.setDisplayedChild(0, animate);
+                mContentAnimator.setDisplayedChild(0, animate);
+                mButtonAnimator.setDisplayedChild(0, false);
+                mButtonAnimator.setVisibility(View.VISIBLE);
+                break;
 
-        mSentenceText.setText(mPhrase);
+            case STATE_INFO:
+                mTitleAnimator.setDisplayedChild(1, animate);
+                mContentAnimator.setDisplayedChild(1, animate);
+                mButtonAnimator.setVisibility(View.GONE);
+
+                pushBackStackEntry();
+
+                break;
+
+            case STATE_PHRASE:
+                mTitleAnimator.setDisplayedChild(2, animate);
+                mContentAnimator.setDisplayedChild(2, animate);
+                mButtonAnimator.setDisplayedChild(2, false);
+                mButtonAnimator.setVisibility(View.VISIBLE);
+
+                popBackStackNoAction();
+
+                break;
+        }
+
+        mCurrentState = state;
     }
 
     private void showQrCodeDialog() {
@@ -239,16 +280,16 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_QR_CODE_CONTENT, mConnectionDetails);
         qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_TITLE_RES_ID, R.string.title_export_private_key);
         qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_EXPORT_PRIVATE_KEY, true);
+        qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_WHITE_TOOLBAR, true);
         startActivityForResult(qrCodeIntent, REQUEST_CONNECTION, opts);
     }
 
     /**
      * Load QR Code asynchronously and with a fade in animation
      */
-    private void loadQrCode() {
-        if (mQrCode == null || mConnectionDetails == null) {
-            return;
-        }
+    private void loadQrCode(String connectionDetails) {
+        mConnectionDetails = connectionDetails;
+        mQrCode.setImageBitmap(null);
 
         AsyncTask<Void, Void, Bitmap> loadTask =
                 new AsyncTask<Void, Void, Bitmap>() {
@@ -349,8 +390,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
     @Override
     public void showConnectionDetails(String connectionDetails) {
-        mConnectionDetails = connectionDetails;
-        loadQrCode();
+        loadQrCode(connectionDetails);
     }
 
     @Override
@@ -366,6 +406,39 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     @Override
     public void showPhrase(String phrase) {
         mPhrase = phrase;
-        showPhrase();
+        mPhraseText.setText(phrase);
+
+        switchState(ExportState.STATE_PHRASE, true);
+    }
+
+    private void pushBackStackEntry() {
+        if (mBackStackLevel != null) {
+            return;
+        }
+        FragmentManager fragMan = getFragmentManager();
+        mBackStackLevel = fragMan.getBackStackEntryCount();
+        fragMan.beginTransaction().addToBackStack(BACK_STACK_INPUT).commit();
+        fragMan.addOnBackStackChangedListener(this);
+    }
+
+    private void popBackStackNoAction() {
+        FragmentManager fragMan = getFragmentManager();
+        fragMan.removeOnBackStackChangedListener(this);
+        fragMan.popBackStackImmediate(BACK_STACK_INPUT, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        mBackStackLevel = null;
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        FragmentManager fragMan = getFragmentManager();
+        if (mBackStackLevel != null && fragMan.getBackStackEntryCount() == mBackStackLevel) {
+            fragMan.removeOnBackStackChangedListener(this);
+            switchState(ExportState.STATE_QR, true);
+            mBackStackLevel = null;
+
+            // restart socket
+            mSocket.close(false);
+            mSocket = KeyExportSocket.getInstance(this);
+        }
     }
 }

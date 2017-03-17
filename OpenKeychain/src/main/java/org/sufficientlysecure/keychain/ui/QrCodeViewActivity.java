@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,27 +44,21 @@ public class QrCodeViewActivity extends BaseActivity implements KeyExportSocket.
     public static String EXTRA_QR_CODE_CONTENT = "qr_code_content";
     public static String EXTRA_TITLE_RES_ID = "title_res_id";
     public static String EXTRA_EXPORT_PRIVATE_KEY = "export_private_key";
+    public static String EXTRA_WHITE_TOOLBAR = "white_toolbar";
 
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
+    private boolean mWhiteToolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inflate a "Done" custom action bar
-        setFullScreenDialogClose(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // "Done"
-                        ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
-                    }
-                }
-        );
-
-        String qrCodeContent = getIntent().getStringExtra(EXTRA_QR_CODE_CONTENT);
-        int titleResId = getIntent().getIntExtra(EXTRA_TITLE_RES_ID, -1);
+        Intent intent = getIntent();
+        String qrCodeContent = intent.getStringExtra(EXTRA_QR_CODE_CONTENT);
+        int titleResId = intent.getIntExtra(EXTRA_TITLE_RES_ID, -1);
+        boolean exportPrivateKey = intent.getBooleanExtra(EXTRA_EXPORT_PRIVATE_KEY, false);
+        mWhiteToolbar = intent.getBooleanExtra(EXTRA_WHITE_TOOLBAR, false);
 
         Uri dataUri = getIntent().getData();
         if (dataUri == null && qrCodeContent == null) {
@@ -72,11 +67,12 @@ public class QrCodeViewActivity extends BaseActivity implements KeyExportSocket.
             return;
         }
 
+        initView();
+
         if (titleResId > 0) {
             setTitle(titleResId);
         }
 
-        boolean exportPrivateKey = getIntent().getBooleanExtra(EXTRA_EXPORT_PRIVATE_KEY, false);
         if (exportPrivateKey) {
             KeyExportSocket.setListener(this);
         }
@@ -130,9 +126,20 @@ public class QrCodeViewActivity extends BaseActivity implements KeyExportSocket.
         }
     }
 
-    @Override
-    protected void initLayout() {
-        setContentView(R.layout.qr_code_activity);
+    private void initView() {
+        setContentView(mWhiteToolbar ? R.layout.qr_code_white_activity : R.layout.qr_code_activity);
+        initToolbar();
+
+        // Inflate a "Done" custom action bar
+        setFullScreenDialogClose(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // "Done"
+                        ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
+                    }
+                }, !mWhiteToolbar
+        );
     }
 
     @Override

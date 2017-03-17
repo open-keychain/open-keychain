@@ -83,14 +83,13 @@ public class KeyExportSocket {
         }).start();
     }
 
-    public void close() {
+    public void close(boolean closeNetworkSocketOnly) {
         mSocket.close();
-        mListener = null;
-        mInstance = null;
-    }
 
-    public void manualMode() {
-        mSocket.close();
+        if (!closeNetworkSocketOnly) {
+            mListener = null;
+            mInstance = null;
+        }
     }
 
     public int getPort() {
