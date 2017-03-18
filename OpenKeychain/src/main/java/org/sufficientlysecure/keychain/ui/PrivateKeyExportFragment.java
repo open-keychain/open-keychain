@@ -174,14 +174,14 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         noButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSocket.exportPhrasesMatched(false);
+                mSocket.phrasesMatched(false);
             }
         });
 
         yesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSocket.exportPhrasesMatched(true);
+                mSocket.phrasesMatched(true);
             }
         });
 

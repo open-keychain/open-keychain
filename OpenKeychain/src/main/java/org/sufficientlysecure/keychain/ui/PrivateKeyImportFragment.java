@@ -3,23 +3,16 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.TypedArray;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
@@ -158,7 +151,7 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
         buttonSentenceNotMatched.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSocket.importPhrasesMatched(false);
+                mSocket.phrasesMatched(false);
                 mActivity.finish();
             }
         });
@@ -166,7 +159,7 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
         buttonSentenceMatched.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSocket.importPhrasesMatched(true);
+                mSocket.phrasesMatched(true);
             }
         });
 
@@ -230,8 +223,8 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
     }
 
     @Override
-    public void importKey(byte[] keyRing) {
-        if (keyRing == null) {
+    public void importKey(byte[] key) {
+        if (key == null) {
             Notify.create(getActivity(), R.string.private_key_import_error_key, Notify.Style.ERROR).show();
             switchState(ImportState.STATE_ENTER_INFO, false);
 
@@ -242,7 +235,7 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
         }
 
         Intent keyIntent = new Intent();
-        keyIntent.putExtra(EXTRA_RECEIVED_KEYRING, keyRing);
+        keyIntent.putExtra(EXTRA_RECEIVED_KEYRING, key);
 
         mActivity.setResult(Activity.RESULT_OK, keyIntent);
         mActivity.finish();

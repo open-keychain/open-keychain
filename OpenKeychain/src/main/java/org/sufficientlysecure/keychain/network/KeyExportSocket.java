@@ -42,7 +42,6 @@ public class KeyExportSocket {
         }
     }
 
-
     private KeyExportSocket(ExportKeyListener listener) {
         mListener = listener;
         mHandler = new Handler(Looper.getMainLooper());
@@ -112,7 +111,7 @@ public class KeyExportSocket {
         }).start();
     }
 
-    public void exportPhrasesMatched(final boolean phrasesMatched) {
+    public void phrasesMatched(final boolean phrasesMatched) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -167,16 +166,27 @@ public class KeyExportSocket {
 
     public interface ExportKeyListener {
         /**
-         * Can be null!
+         *  Show connection details as a qr code so that the other device can connect.
          *
-         * @param connectionDetails
+         *  @param connectionDetails Contains the ip address, the port and a shared secret
          */
         void showConnectionDetails(String connectionDetails);
 
+        /**
+         * Connection is established. Load the key to export and invoke {@link #writeKey(Context, Uri)}
+         * to send the key.
+         */
         void loadKey();
 
+        /**
+         * Key is transferred to the oder device.
+         */
         void keyExported();
 
+        /**
+         * Show a phrase to user who will compare this phrase with the phrase that is
+         * shown on the other device. Call {@link #phrasesMatched(boolean)} afterwards.
+         */
         void showPhrase(String phrase);
     }
 }

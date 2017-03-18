@@ -83,7 +83,7 @@ public class KeyImportSocket {
         mInstance = null;
     }
 
-    public void importPhrasesMatched(final boolean phrasesMatched) {
+    public void phrasesMatched(final boolean phrasesMatched) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -144,7 +144,17 @@ public class KeyImportSocket {
     }
 
     public interface KeyImportListener {
+        /**
+         * Show a phrase to user who will compare this phrase with the phrase that is
+         * shown on the other device. Call {@link #phrasesMatched(boolean)} afterwards.
+         */
         void showPhrase(String phrase);
-        void importKey(byte[] keyRing);
+
+        /**
+         * Key is received and can be imported.
+         *
+         * @param key Key to import from the other device
+         */
+        void importKey(byte[] key);
     }
 }

@@ -200,8 +200,6 @@ android {
         }
 
         debug {
-            // disable ProGuard for faster compile times for debug builds
-            // TODO disable minifyEnabled
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-release.pro'
 

@@ -220,7 +220,7 @@ public class ImportKeysFileFragment extends Fragment implements KeyImportSocket.
     }
 
     @Override
-    public void importKey(byte[] keyRing) {
-        mCallback.loadKeys(new BytesLoaderState(keyRing, null));
+    public void importKey(byte[] key) {
+        mCallback.loadKeys(new BytesLoaderState(key, null));
     }
 }
