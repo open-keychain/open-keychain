@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="20dp">
+    android:paddingTop="20dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
 
     <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
         android:id="@+id/private_key_export_title_animator"
@@ -40,7 +42,7 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
             android:padding="10dp"
-            android:text="@string/private_key_import_export_phrase_headline" />
+            android:text="@string/private_key_import_export_headline_phrase" />
 
     </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
@@ -49,7 +51,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
         android:layout_marginBottom="15dp"
         android:layout_marginTop="15dp"
         android:inAnimation="@anim/fade_in"
@@ -105,9 +106,9 @@
         <TextView
             style="?android:textAppearanceSmall"
             android:id="@+id/private_key_export_phrase"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal" />
+            android:layout_gravity="center" />
 
     </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
@@ -116,6 +117,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:paddingBottom="20dp"
         android:inAnimation="@anim/fade_in_delayed"
         android:outAnimation="@anim/fade_out"
         custom:initialView="2">

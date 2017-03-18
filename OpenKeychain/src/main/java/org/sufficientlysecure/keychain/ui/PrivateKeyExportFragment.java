@@ -45,7 +45,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
     private static final String ARG_CONNECTION_DETAILS = "connection_details";
     private static final String ARG_IP_ADDRESS = "ip_address";
-    private static final String ARG_MANUAL_MODE = "manual_mode";
     private static final String ARG_PHRASE = "phrase";
     private static final String ARG_BACK_STACK = "back_stack";
     private static final String ARG_CURRENT_STATE = "current_state";
@@ -66,7 +65,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     private String mConnectionDetails;
     private long mMasterKeyId;
     private Uri mCachedUri;
-    private boolean mManuelMode;
     private String mPhrase;
 
     private KeyExportSocket mSocket;
@@ -102,7 +100,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         if (savedInstanceState != null) {
             mConnectionDetails = savedInstanceState.getString(ARG_CONNECTION_DETAILS);
             mIpAddress = savedInstanceState.getString(ARG_IP_ADDRESS);
-            mManuelMode = savedInstanceState.getBoolean(ARG_MANUAL_MODE, false);
             mPhrase = savedInstanceState.getString(ARG_PHRASE);
         }
     }
@@ -114,7 +111,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         outState.putString(ARG_CONNECTION_DETAILS, mConnectionDetails);
         outState.putString(ARG_IP_ADDRESS, mIpAddress);
         outState.putString(ARG_PHRASE, mPhrase);
-        outState.putBoolean(ARG_MANUAL_MODE, mManuelMode);
 
         outState.putInt(ARG_CURRENT_STATE, mCurrentState.ordinal());
         outState.putInt(ARG_BACK_STACK, mBackStackLevel == null ? -1 : mBackStackLevel);
@@ -161,8 +157,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
             @Override
             public void onClick(View view) {
                 mSocket.close(true);
-
-                mManuelMode = true;
                 switchState(ExportState.STATE_INFO, true);
             }
         });

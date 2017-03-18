@@ -3,36 +3,51 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.network.KeyImportSocket;
 import org.sufficientlysecure.keychain.network.NetworkReceiver;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 
 public class PrivateKeyImportFragment extends Fragment implements KeyImportSocket.KeyImportListener{
     public static final String EXTRA_RECEIVED_KEYRING = "received_keyring";
+
+    private static final String ARG_PHRASE = "phrase";
+    private static final String ARG_CURRENT_STATE = "current_state";
+
+    private enum ImportState {
+        STATE_UNINITIALIZED, STATE_ENTER_INFO, STATE_CONNECTING, STATE_PHRASE
+    }
 
     private Activity mActivity;
     private int mPort;
     private String mIpAddress;
 
-    private Button mOkButton;
-    private TextView mSentenceText;
-    private View mIpLayout;
-    private View mSentenceLayout;
-    private View mButtonLayout;
+    private ToolableViewAnimator mTitleAnimator, mContentAnimator, mButtonAnimator;
+    private TextView mPhraseText;
 
     private KeyImportSocket mSocket;
+    private ImportState mCurrentState = ImportState.STATE_UNINITIALIZED;
+    private String mPhrase;
 
     public static PrivateKeyImportFragment newInstance() {
         PrivateKeyImportFragment frag = new PrivateKeyImportFragment();
@@ -56,6 +71,18 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
         super.onCreate(savedInstanceState);
 
         mSocket = KeyImportSocket.getInstance(this);
+
+        if (savedInstanceState != null) {
+            mPhrase = savedInstanceState.getString(ARG_PHRASE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(ARG_PHRASE, mPhrase);
+        outState.putInt(ARG_CURRENT_STATE, mCurrentState.ordinal());
     }
 
     @Override
@@ -71,22 +98,29 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
     public View onCreateView(LayoutInflater i, ViewGroup c, Bundle savedInstanceState) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.private_key_import_fragment, c, false);
 
-        mIpLayout = view.findViewById(R.id.private_key_import_ip_layout);
+        mTitleAnimator = (ToolableViewAnimator) view.findViewById(R.id.private_key_import_title_animator);
+        mContentAnimator = (ToolableViewAnimator) view.findViewById(R.id.private_key_import_animator);
+        mButtonAnimator = (ToolableViewAnimator) view.findViewById(R.id.private_key_import_button_bar_animator);
+
+
         EditText ipAddressEdit = (EditText) view.findViewById(R.id.private_key_import_ip_address);
         EditText portEdit = (EditText) view.findViewById(R.id.private_key_import_port);
 
-        mSentenceLayout = view.findViewById(R.id.private_key_import_sentence_layout);
-        mSentenceText = (TextView) view.findViewById(R.id.private_key_import_sentence);
+        mPhraseText = (TextView) view.findViewById(R.id.private_key_import_phrase);
+        Button okButton = (Button) view.findViewById(R.id.private_key_import_ok);
+        Button buttonSentenceNotMatched = (Button) view.findViewById(R.id.private_key_import_phrase_not_matched_button);
+        Button buttonSentenceMatched = (Button) view.findViewById(R.id.private_key_import_phrase_matched_button);
 
-        mOkButton = (Button) view.findViewById(R.id.private_key_import_ok);
-        mOkButton.setOnClickListener(new View.OnClickListener() {
+        okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (NetworkReceiver.isConnectedTypeWifi(mActivity)) {
-                    mSocket.startImport(mIpAddress, mPort);
-                    mOkButton.setEnabled(false);
-                } else {
+                if (mPort <= 0 || mIpAddress == null || mIpAddress.length() <= 0) {
+                    Notify.create(mActivity, R.string.private_key_import_error_ip_port, Notify.Style.ERROR).show();
+                } else if (!NetworkReceiver.isConnectedTypeWifi(mActivity)) {
                     Notify.create(mActivity, R.string.private_key_error_wifi, Notify.Style.ERROR).show();
+                } else {
+                    switchState(ImportState.STATE_CONNECTING, true);
+                    mSocket.startImport(mIpAddress, mPort);
                 }
             }
         });
@@ -98,7 +132,6 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 mIpAddress = charSequence.toString();
-                mOkButton.setEnabled(mPort > 0 && mIpAddress.length() > 0);
             }
 
             @Override
@@ -113,7 +146,6 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 try {
                     mPort = Integer.valueOf(charSequence.toString());
-                    mOkButton.setEnabled(mPort > 0 && mIpAddress.length() > 0);
                 } catch (NumberFormatException e) {
                     mPort = 0;
                 }
@@ -122,10 +154,6 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
             @Override
             public void afterTextChanged(Editable editable) {}
         });
-
-        mButtonLayout = view.findViewById(R.id.private_key_import_button_layout);
-        Button buttonSentenceNotMatched = (Button) view.findViewById(R.id.private_key_import_sentence_not_matched_button);
-        Button buttonSentenceMatched = (Button) view.findViewById(R.id.private_key_import_sentence_matched_button);
 
         buttonSentenceNotMatched.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,22 +175,65 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (savedInstanceState != null) {
+            ImportState savedState = ImportState.values()[savedInstanceState.getInt(ARG_CURRENT_STATE)];
+            switchState(savedState, false);
+
+            mPhraseText.setText(mPhrase);
+        } else if (mCurrentState == ImportState.STATE_UNINITIALIZED) {
+            switchState(ImportState.STATE_ENTER_INFO, true);
+        }
+    }
+
+    void switchState(ImportState state, boolean animate) {
+
+        switch (state) {
+            case STATE_UNINITIALIZED:
+                throw new AssertionError("can't switch to uninitialized state, this is a bug!");
+
+            case STATE_ENTER_INFO:
+                mTitleAnimator.setDisplayedChild(0, animate);
+                mContentAnimator.setDisplayedChild(0, animate);
+                mButtonAnimator.setDisplayedChild(0, animate);
+                break;
+
+            case STATE_CONNECTING:
+                mTitleAnimator.setDisplayedChild(1, animate);
+                mContentAnimator.setDisplayedChild(1, animate);
+                mButtonAnimator.setDisplayedChild(1, animate);
+                break;
+
+            case STATE_PHRASE:
+                mTitleAnimator.setDisplayedChild(2, animate);
+                mContentAnimator.setDisplayedChild(2, animate);
+                mButtonAnimator.setDisplayedChild(2, animate);
+                break;
+        }
+
+        mCurrentState = state;
+    }
+
+    @Override
     public void showPhrase(String phrase) {
         if (phrase == null) {
             Notify.create(getActivity(), R.string.private_key_import_error_connection, Notify.Style.ERROR).show();
-            mOkButton.setEnabled(true);
+            switchState(ImportState.STATE_ENTER_INFO, false);
             return;
         }
 
-        mSentenceText.setText(phrase);
-        switchMode(true);
+        mPhrase = phrase;
+        mPhraseText.setText(phrase);
+        switchState(ImportState.STATE_PHRASE, true);
     }
 
     @Override
     public void importKey(byte[] keyRing) {
         if (keyRing == null) {
             Notify.create(getActivity(), R.string.private_key_import_error_key, Notify.Style.ERROR).show();
-            switchMode(false);
+            switchState(ImportState.STATE_ENTER_INFO, false);
 
             // socket is already closed, initialize a new one
             mSocket = KeyImportSocket.getInstance(this);
@@ -175,13 +246,5 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
 
         mActivity.setResult(Activity.RESULT_OK, keyIntent);
         mActivity.finish();
-    }
-
-    private void switchMode(boolean switchToManual) {
-        mOkButton.setEnabled(true);
-        mOkButton.setVisibility(switchToManual ? View.GONE : View.VISIBLE);
-        mIpLayout.setVisibility(switchToManual ? View.GONE : View.VISIBLE);
-        mSentenceLayout.setVisibility(switchToManual ? View.VISIBLE : View.GONE);
-        mButtonLayout.setVisibility(switchToManual ? View.VISIBLE : View.GONE);
     }
 }

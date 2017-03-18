@@ -1,103 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:padding="16dp">
 
-    <LinearLayout
-        android:id="@+id/private_key_import_ip_layout"
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        android:id="@+id/private_key_import_title_animator"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/private_key_import_ip_address"
-            android:paddingBottom="72dp"
-            android:textSize="@dimen/private_key_import_export_text_headline_size"
-            android:textStyle="bold"/>
-
-        <EditText
-            android:id="@+id/private_key_import_ip_address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/private_key_import_ip_hint"
-            android:paddingBottom="32dp"/>
-
-        <EditText
-            android:id="@+id/private_key_import_port"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/private_key_import_port_hint"
-            android:inputType="numberSigned"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/private_key_import_sentence_layout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/private_key_import_export_phrase_headline"
-            android:paddingBottom="72dp"
-            android:textSize="@dimen/private_key_import_export_text_headline_size"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/private_key_import_sentence"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/private_key_import_ok"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/msg_vl_ok"
         android:layout_gravity="center_horizontal"
-        android:padding="8dp"
-        android:layout_marginBottom="72dp"
-        android:enabled="false"/>
+        android:paddingBottom="10dp"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        custom:initialView="0">
 
-    <LinearLayout
-        android:id="@+id/private_key_import_button_layout"
+        <TextView
+            style="?android:textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            android:text="@string/private_key_import_headline_ip_address"/>
+
+        <TextView
+            style="?android:textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            android:text="@string/private_key_import_headline_connecting"/>
+
+        <TextView
+            style="?android:textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            android:text="@string/private_key_import_export_headline_phrase"/>
+
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        android:id="@+id/private_key_import_animator"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        custom:initialView="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/private_key_import_ip_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/private_key_import_ip_hint"
+                android:paddingBottom="32dp"/>
+
+            <EditText
+                android:id="@+id/private_key_import_port"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/private_key_import_port_hint"
+                android:inputType="numberSigned"/>
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"/>
+
+        <TextView
+            style="?android:textAppearanceSmall"
+            android:id="@+id/private_key_import_phrase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        android:id="@+id/private_key_import_button_bar_animator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:visibility="gone">
+        android:layout_gravity="center_horizontal"
+        android:inAnimation="@anim/fade_in_delayed"
+        android:outAnimation="@anim/fade_out"
+        custom:initialView="2">
 
         <Button
-            android:id="@+id/private_key_import_sentence_not_matched_button"
+            android:id="@+id/private_key_import_ok"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_no"
             android:layout_gravity="center_horizontal"
-            android:padding="8dp"
-            android:layout_marginBottom="@dimen/private_key_import_button_margin_bottom"/>
+            android:layout_margin="10dp"
+            android:padding="12dp"
+            android:text="@string/msg_vl_ok"/>
 
-        <Button
-            android:id="@+id/private_key_import_sentence_matched_button"
+        <android.support.v4.widget.Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            style="?android:buttonBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_yes"
             android:layout_gravity="center_horizontal"
-            android:padding="8dp"
-            android:layout_marginBottom="@dimen/private_key_import_button_margin_bottom"/>
+            android:orientation="horizontal">
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/private_key_import_phrase_not_matched_button"
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:text="@string/btn_no" />
+
+            <Button
+                android:id="@+id/private_key_import_phrase_matched_button"
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:text="@string/btn_yes" />
+
+        </LinearLayout>
+
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
 </LinearLayout>

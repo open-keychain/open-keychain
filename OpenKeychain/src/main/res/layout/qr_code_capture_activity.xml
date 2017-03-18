@@ -11,27 +11,36 @@
         android:layout_alignParentBottom="true"/>
 
     <LinearLayout
+        style="?android:buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:gravity="center"
-        android:layout_marginBottom="@dimen/private_key_import_button_margin_bottom">
+        android:layout_marginBottom="20dp">
 
         <Button
+            style="?android:buttonBarButtonStyle"
             android:id="@+id/private_key_import_help_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
             android:text="@string/title_help"
-            android:padding="8dp"
+            android:textColor="@color/colorPrimary"
+            android:padding="12dp"
             android:visibility="gone"/>
 
         <Button
+            style="?android:buttonBarButtonStyle"
             android:id="@+id/private_key_import_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
             android:text="@string/private_key_import_button"
-            android:padding="8dp"
+            android:textColor="@color/colorPrimary"
+            android:padding="12dp"
             android:visibility="gone"/>
 
     </LinearLayout>

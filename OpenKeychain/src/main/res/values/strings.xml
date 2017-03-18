@@ -385,8 +385,9 @@
     <string name="text_copied_to_clipboard">"Text has been copied to the clipboard!"</string>
     <string name="how_to_import">"How to import this on my desktop PC?"</string>
 
-    <string name="private_key_import_ip_address">"Enter IP address and port number from your other device."</string>
-    <string name="private_key_import_export_phrase_headline">"Compare the sentence on both devices. Do they match?"</string>
+    <string name="private_key_import_headline_ip_address">"Enter IP address and port number of the other device."</string>
+    <string name="private_key_import_headline_connecting">"Connecting to other device"</string>
+    <string name="private_key_import_export_headline_phrase">"Compare the sentence on both devices. Do they match?"</string>
     <string name="private_key_export_qr">"Scan this QR code with the device that should receive the private key."</string>
     <string name="private_key_export_info">"Enter these information on the device that should receive the private key."</string>
     <string name="private_key_export_ip">"IP address of this device:"</string>
@@ -1819,6 +1820,7 @@
     <string name="private_key_import_button">"Doesn't work?"</string>
     <string name="private_key_import_error_connection">"Could not connect to device"</string>
     <string name="private_key_import_error_key">"Failure during key transmission"</string>
+    <string name="private_key_import_error_ip_port">"Please enter an ip address and a port"</string>
     <string name="private_key_error_wifi">"Please connect to a Wi-Fi network"</string>
 
     <string name="request_permission_title">Allow access to your key?</string>
