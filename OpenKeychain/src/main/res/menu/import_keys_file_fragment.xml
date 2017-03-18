@@ -9,7 +9,7 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/menu_import_keys_file_device"
+        android:id="@+id/menu_import_keys_wifi"
         android:icon="@drawable/ic_qrcode_white_24dp"
         android:title="@string/menu_device"
         app:showAsAction="always" />

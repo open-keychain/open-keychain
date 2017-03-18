@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -94,6 +95,11 @@ public class ImportKeysFileFragment extends Fragment implements KeyImportSocket.
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.import_keys_file_fragment, menu);
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            MenuItem item = menu.findItem(R.id.menu_import_keys_wifi);
+            item.setVisible(false);
+        }
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -108,7 +114,7 @@ public class ImportKeysFileFragment extends Fragment implements KeyImportSocket.
                 FileHelper.openDocument(ImportKeysFileFragment.this,
                         Uri.fromFile(Constants.Path.APP_DIR), "*/*", false, REQUEST_CODE_FILE);
                 return true;
-            case R.id.menu_import_keys_file_device:
+            case R.id.menu_import_keys_wifi:
                 if (NetworkReceiver.isConnectedTypeWifi(mActivity)) {
                     Intent scanQrCode = new Intent(getActivity(), ImportKeysProxyActivity.class);
                     scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_PRIVATE_KEY_IMPORT);

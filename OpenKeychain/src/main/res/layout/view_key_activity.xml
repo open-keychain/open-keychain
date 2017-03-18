@@ -123,7 +123,7 @@
                         tools:visibility="visible" />
 
                     <ImageButton
-                        android:id="@+id/view_key_action_wlan"
+                        android:id="@+id/view_key_action_wifi"
                         style="?android:attr/borderlessButtonStyle"
                         android:contentDescription="@string/cd_export_wlan"
                         android:layout_width="64dp"

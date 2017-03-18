@@ -12,6 +12,8 @@
 
 ## What is the best way to transfer my own key to OpenKeychain?
 
+### Android version of device is at least Kitkat
+
 Keys can be transferred between two Android devices with OpenKeychain or one Android device and a computer. This method will only work, if both devices are in the same WLAN network.
 
 Transfer from Computer
@@ -24,6 +26,24 @@ Transfer from Android device
 1. Select a key to export in the main menu.
 2. Click on the "Export via Wlan" button (Wlan icon with a lock).
 3. To import your key on this device go back to the main menu, click on +, choose import. Now click on the qr code symbol at the top of the screen.
+
+### Android version of device is lower than Kitkat
+
+Short answer:
+
+Generate a strong random password with ``gpg --armor --gen-random 1 20``, then encrypt key, use password above when asked with ``gpg --armor --export-secret-keys YOUREMAILADDRESS | gpg --armor --symmetric --output mykey.sec.asc``.
+
+Longer answer:
+
+You should make sure that your key can't be intercepted during transfer.  If you have an SD-Card reader in your phone, you can use this to easily transfer your key.  If you don't, you can transfer your key through an online service (such as E-Mail, Dropbox, …), but **make sure to encrypt it** during transfer!
+
+To transfer your key to OpenKeychain from `gpg`, the best way to do so is to encrypt it with a single-use password, which you never use anywhere else and never send online. Use `gpg` as shown above to generate a random password, then export and encrypt your key with it.
+
+Once the key is encrypted, transfer the file to your mobile using any method, decrypt the file with OpenKeychain. When asked, manually (!) input the password.
+
+**Do not use a weak password!** This method is only safe if the password you use is very strong (like 20 random, alphanumeric characters), and humans are really bad at generating random strings.  Use `gpg` as shown above, or another random password generator of your choice.
+
+**Do not use an online password generator!** This beats the purpose of using a generated password in the first place! An attacker who can get the file from your Dropbox account, can likely also see the Website you got the password from!
 
 ## Are my secret keys safe on my mobile device?
 
