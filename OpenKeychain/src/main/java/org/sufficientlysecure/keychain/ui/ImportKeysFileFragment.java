@@ -170,8 +170,8 @@ public class ImportKeysFileFragment extends Fragment implements KeyImportSocket.
                 break;
             case REQUEST_CODE_WLAN:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    byte[] keyRing = data.getByteArrayExtra(PrivateKeyImportFragment.EXTRA_RECEIVED_KEYRING);
-                    mCallback.loadKeys(new BytesLoaderState(keyRing, null));
+                    byte[] key = data.getByteArrayExtra(PrivateKeyImportFragment.EXTRA_RECEIVED_KEY);
+                    importKey(key);
                 }
                 break;
             default:
@@ -221,6 +221,10 @@ public class ImportKeysFileFragment extends Fragment implements KeyImportSocket.
 
     @Override
     public void importKey(byte[] key) {
-        mCallback.loadKeys(new BytesLoaderState(key, null));
+        if (key == null) {
+            Notify.create(mActivity, R.string.error_bad_data, Style.ERROR).show();
+        } else {
+            mCallback.loadKeys(new BytesLoaderState(key, null));
+        }
     }
 }

@@ -22,7 +22,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 
 public class PrivateKeyImportFragment extends Fragment implements KeyImportSocket.KeyImportListener{
-    public static final String EXTRA_RECEIVED_KEYRING = "received_keyring";
+    public static final String EXTRA_RECEIVED_KEY = "received_key";
 
     private static final String ARG_PHRASE = "phrase";
     private static final String ARG_CURRENT_STATE = "current_state";
@@ -235,7 +235,7 @@ public class PrivateKeyImportFragment extends Fragment implements KeyImportSocke
         }
 
         Intent keyIntent = new Intent();
-        keyIntent.putExtra(EXTRA_RECEIVED_KEYRING, key);
+        keyIntent.putExtra(EXTRA_RECEIVED_KEY, key);
 
         mActivity.setResult(Activity.RESULT_OK, keyIntent);
         mActivity.finish();
