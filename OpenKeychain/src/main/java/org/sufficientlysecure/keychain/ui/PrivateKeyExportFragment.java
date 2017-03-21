@@ -59,6 +59,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     private ToolableViewAnimator mTitleAnimator, mContentAnimator, mButtonAnimator;
     private ImageView mQrCode;
     private TextView mPhraseText;
+    private TextView mPortText;
 
     private Activity mActivity;
     private String mIpAddress;
@@ -141,7 +142,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         Button helpButton = (Button) view.findViewById(R.id.private_key_export_help_button);
 
         TextView ipText = (TextView) view.findViewById(R.id.private_key_export_ip);
-        TextView portText = (TextView) view.findViewById(R.id.private_key_export_port);
+        mPortText = (TextView) view.findViewById(R.id.private_key_export_port);
         mPhraseText = (TextView) view.findViewById(R.id.private_key_export_phrase);
         Button noButton = (Button) view.findViewById(R.id.private_key_export_sentence_not_matched_button);
         Button yesButton = (Button) view.findViewById(R.id.private_key_export_sentence_matched_button);
@@ -169,7 +170,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         });
 
         ipText.setText(mIpAddress);
-        portText.setText(String.valueOf(mSocket.getPort()));
 
         noButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -237,6 +237,8 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
                 break;
 
             case STATE_INFO:
+                mPortText.setText(String.valueOf(mSocket.getPort()));
+
                 mTitleAnimator.setDisplayedChild(1, animate);
                 mContentAnimator.setDisplayedChild(1, animate);
                 mButtonAnimator.setVisibility(View.GONE);
