@@ -180,7 +180,7 @@ public class MultiUserIdsFragment extends Fragment implements LoaderManager.Load
             // Two cases:
 
             boolean grouped = masterKeyId == lastMasterKeyId;
-            boolean subGrouped = data.isFirst() || grouped && lastName.equals(name);
+            boolean subGrouped = data.isFirst() || grouped && lastName != null && lastName.equals(name);
             // Remember for next loop
             lastName = name;
 
