@@ -8,8 +8,7 @@ import android.support.v4.app.FragmentManager;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
-public class PrivateKeyImportExportActivity extends BaseActivity {
-    public static String EXTRA_IMPORT_KEY = "import_key";
+public class PrivateKeyExportActivity extends BaseActivity {
     public static String EXTRA_MASTER_KEY_ID = "master_key_id";
 
     @Override
@@ -21,10 +20,9 @@ public class PrivateKeyImportExportActivity extends BaseActivity {
 
         if (savedInstanceState == null) {
             Intent intent = getIntent();
-            boolean importKey = intent.getBooleanExtra(EXTRA_IMPORT_KEY, true);
             long masterKeyId = intent.getLongExtra(EXTRA_MASTER_KEY_ID, 0);
 
-            Fragment frag = importKey ? PrivateKeyImportFragment.newInstance() : PrivateKeyExportFragment.newInstance(masterKeyId);
+            Fragment frag = PrivateKeyExportFragment.newInstance(masterKeyId);
 
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction()

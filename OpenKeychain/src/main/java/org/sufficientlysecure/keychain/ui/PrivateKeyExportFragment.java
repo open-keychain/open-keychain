@@ -10,14 +10,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -28,49 +26,27 @@ import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
 
-public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> implements KeyExportSocket.ExportKeyListener, FragmentManager.OnBackStackChangedListener {
+public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> implements KeyExportSocket.ExportKeyListener {
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
-
     private static final String ARG_CONNECTION_DETAILS = "connection_details";
-    private static final String ARG_IP_ADDRESS = "ip_address";
-    private static final String ARG_PHRASE = "phrase";
-    private static final String ARG_BACK_STACK = "back_stack";
-    private static final String ARG_CURRENT_STATE = "current_state";
 
-    private static final String BACK_STACK_INPUT = "state_display";
     private static final int REQUEST_CONNECTION = 23;
 
-    private enum ExportState {
-        STATE_UNINITIALIZED, STATE_QR, STATE_INFO, STATE_PHRASE
-    }
-
-    private ToolableViewAnimator mTitleAnimator, mContentAnimator, mButtonAnimator;
     private ImageView mQrCode;
-    private TextView mPhraseText;
-    private TextView mPortText;
 
     private Activity mActivity;
-    private String mIpAddress;
     private String mConnectionDetails;
     private long mMasterKeyId;
     private Uri mCachedUri;
-    private String mPhrase;
 
     private KeyExportSocket mSocket;
-    private ExportState mCurrentState = ExportState.STATE_UNINITIALIZED;
-    private Integer mBackStackLevel;
 
     public static PrivateKeyExportFragment newInstance(long masterKeyId) {
         PrivateKeyExportFragment frag = new PrivateKeyExportFragment();
@@ -87,8 +63,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         super.onAttach(context);
 
         mActivity = (Activity) context;
-        mIpAddress = getIPAddress(true);
-
         mActivity.setTitle(R.string.title_export_private_key);
     }
 
@@ -100,8 +74,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
         if (savedInstanceState != null) {
             mConnectionDetails = savedInstanceState.getString(ARG_CONNECTION_DETAILS);
-            mIpAddress = savedInstanceState.getString(ARG_IP_ADDRESS);
-            mPhrase = savedInstanceState.getString(ARG_PHRASE);
         }
     }
 
@@ -110,11 +82,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         super.onSaveInstanceState(outState);
 
         outState.putString(ARG_CONNECTION_DETAILS, mConnectionDetails);
-        outState.putString(ARG_IP_ADDRESS, mIpAddress);
-        outState.putString(ARG_PHRASE, mPhrase);
-
-        outState.putInt(ARG_CURRENT_STATE, mCurrentState.ordinal());
-        outState.putInt(ARG_BACK_STACK, mBackStackLevel == null ? -1 : mBackStackLevel);
     }
 
     @Override
@@ -133,19 +100,8 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         Bundle args = getArguments();
         mMasterKeyId = args.getLong(ARG_MASTER_KEY_IDS);
 
-        mTitleAnimator = (ToolableViewAnimator) view.findViewById(R.id.private_key_export_title_animator);
-        mContentAnimator = (ToolableViewAnimator) view.findViewById(R.id.private_key_export_animator);
-        mButtonAnimator = (ToolableViewAnimator) view.findViewById(R.id.private_key_export_button_bar_animator);
-
         mQrCode = (ImageView) view.findViewById(R.id.private_key_export_qr_image);
-        Button doesntWorkButton = (Button) view.findViewById(R.id.private_key_export_button);
         Button helpButton = (Button) view.findViewById(R.id.private_key_export_help_button);
-
-        TextView ipText = (TextView) view.findViewById(R.id.private_key_export_ip);
-        mPortText = (TextView) view.findViewById(R.id.private_key_export_port);
-        mPhraseText = (TextView) view.findViewById(R.id.private_key_export_phrase);
-        Button noButton = (Button) view.findViewById(R.id.private_key_export_sentence_not_matched_button);
-        Button yesButton = (Button) view.findViewById(R.id.private_key_export_sentence_matched_button);
 
         mQrCode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,34 +110,10 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
             }
         });
 
-        doesntWorkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSocket.close(true);
-                switchState(ExportState.STATE_INFO, true);
-            }
-        });
-
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 HelpActivity.startHelpActivity(mActivity, HelpActivity.TAB_FAQ, R.string.help_tab_faq_headline_transfer_key);
-            }
-        });
-
-        ipText.setText(mIpAddress);
-
-        noButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSocket.phrasesMatched(false);
-            }
-        });
-
-        yesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSocket.phrasesMatched(true);
             }
         });
 
@@ -193,21 +125,7 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState != null) {
-            int savedBackStack = savedInstanceState.getInt(ARG_BACK_STACK);
-            if (savedBackStack >= 0) {
-                mBackStackLevel = savedBackStack;
-                // unchecked use, we know that this one is available in onViewCreated
-                getFragmentManager().addOnBackStackChangedListener(this);
-            }
-            ExportState savedState = ExportState.values()[savedInstanceState.getInt(ARG_CURRENT_STATE)];
-            switchState(savedState, false);
-
-            mPhraseText.setText(mPhrase);
-            if (savedState == ExportState.STATE_QR) {
-                loadQrCode(mConnectionDetails);
-            }
-        } else if (mCurrentState == ExportState.STATE_UNINITIALIZED) {
-            switchState(ExportState.STATE_QR, true);
+            loadQrCode(mConnectionDetails);
         }
     }
 
@@ -221,44 +139,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-    }
-
-    void switchState(ExportState state, boolean animate) {
-
-        switch (state) {
-            case STATE_UNINITIALIZED:
-                throw new AssertionError("can't switch to uninitialized state, this is a bug!");
-
-            case STATE_QR:
-                mTitleAnimator.setDisplayedChild(0, animate);
-                mContentAnimator.setDisplayedChild(0, animate);
-                mButtonAnimator.setDisplayedChild(0, false);
-                mButtonAnimator.setVisibility(View.VISIBLE);
-                break;
-
-            case STATE_INFO:
-                mPortText.setText(String.valueOf(mSocket.getPort()));
-
-                mTitleAnimator.setDisplayedChild(1, animate);
-                mContentAnimator.setDisplayedChild(1, animate);
-                mButtonAnimator.setVisibility(View.GONE);
-
-                pushBackStackEntry();
-
-                break;
-
-            case STATE_PHRASE:
-                mTitleAnimator.setDisplayedChild(2, animate);
-                mContentAnimator.setDisplayedChild(2, animate);
-                mButtonAnimator.setDisplayedChild(2, false);
-                mButtonAnimator.setVisibility(View.VISIBLE);
-
-                popBackStackNoAction();
-
-                break;
-        }
-
-        mCurrentState = state;
     }
 
     private void showQrCodeDialog() {
@@ -328,40 +208,6 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         mSocket.writeKey(mActivity, mCachedUri);
     }
 
-    /**
-     * from: http://stackoverflow.com/a/13007325
-     *
-     * Get IP address from first non-localhost interface
-     * @param useIPv4  true=return ipv4, false=return ipv6
-     * @return  address or empty string
-     */
-    private static String getIPAddress(boolean useIPv4) {
-        try {
-            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface intf : interfaces) {
-                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
-                for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress()) {
-                        String sAddr = addr.getHostAddress();
-                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-                        boolean isIPv4 = sAddr.indexOf(':')<0;
-
-                        if (useIPv4) {
-                            if (isIPv4)
-                                return sAddr;
-                        } else {
-                            if (!isIPv4) {
-                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
-                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) { } // for now eat exceptions
-        return "";
-    }
-
     @Nullable
     @Override
     public BackupKeyringParcel createOperationInput() {
@@ -397,44 +243,5 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
     @Override
     public void keyExported() {
         mActivity.finish();
-    }
-
-    @Override
-    public void showPhrase(String phrase) {
-        mPhrase = phrase;
-        mPhraseText.setText(phrase);
-
-        switchState(ExportState.STATE_PHRASE, true);
-    }
-
-    private void pushBackStackEntry() {
-        if (mBackStackLevel != null) {
-            return;
-        }
-        FragmentManager fragMan = getFragmentManager();
-        mBackStackLevel = fragMan.getBackStackEntryCount();
-        fragMan.beginTransaction().addToBackStack(BACK_STACK_INPUT).commit();
-        fragMan.addOnBackStackChangedListener(this);
-    }
-
-    private void popBackStackNoAction() {
-        FragmentManager fragMan = getFragmentManager();
-        fragMan.removeOnBackStackChangedListener(this);
-        fragMan.popBackStackImmediate(BACK_STACK_INPUT, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        mBackStackLevel = null;
-    }
-
-    @Override
-    public void onBackStackChanged() {
-        FragmentManager fragMan = getFragmentManager();
-        if (mBackStackLevel != null && fragMan.getBackStackEntryCount() == mBackStackLevel) {
-            fragMan.removeOnBackStackChangedListener(this);
-            switchState(ExportState.STATE_QR, true);
-            mBackStackLevel = null;
-
-            // restart socket
-            mSocket.close(false);
-            mSocket = KeyExportSocket.getInstance(this);
-        }
     }
 }

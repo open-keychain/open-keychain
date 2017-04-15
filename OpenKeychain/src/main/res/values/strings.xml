@@ -385,13 +385,7 @@
     <string name="text_copied_to_clipboard">"Text has been copied to the clipboard!"</string>
     <string name="how_to_import">"How to import this on my desktop PC?"</string>
 
-    <string name="private_key_import_headline_ip_address">"Enter IP address and port number of the other device."</string>
-    <string name="private_key_import_headline_connecting">"Connecting to other device"</string>
-    <string name="private_key_import_export_headline_phrase">"Compare the sentence on both devices. Do they match?"</string>
     <string name="private_key_export_qr">"Scan this QR code with the device that should receive the private key."</string>
-    <string name="private_key_export_info">"Enter these information on the device that should receive the private key."</string>
-    <string name="private_key_export_ip">"IP address of this device:"</string>
-    <string name="private_key_export_port">"Port number of this device:"</string>
     <!--
          errors
          no punctuation, all lowercase,

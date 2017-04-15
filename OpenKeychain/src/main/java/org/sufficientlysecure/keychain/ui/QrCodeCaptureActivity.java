@@ -72,16 +72,6 @@ public class QrCodeCaptureActivity extends FragmentActivity {
                     HelpActivity.startHelpActivity(QrCodeCaptureActivity.this, HelpActivity.TAB_FAQ, R.string.help_tab_faq_headline_transfer_key);
                 }
             });
-
-            Button importFailButton = (Button) findViewById(R.id.private_key_import_button);
-            importFailButton.setVisibility(View.VISIBLE);
-            importFailButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    setResult(Activity.RESULT_OK);
-                    finish();
-                }
-            });
         }
 
         // check Android 6 permission

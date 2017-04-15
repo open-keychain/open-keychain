@@ -8,9 +8,6 @@ import com.cryptolib.SecureDataSocket;
 import com.cryptolib.SecureDataSocketException;
 
 public class KeyImportSocket {
-    private static final int SHOW_PHRASE = 1;
-    private static final int IMPORT_KEY = 2;
-
     private static KeyImportSocket mInstance;
 
     private SecureDataSocket mSocket;
@@ -50,56 +47,12 @@ public class KeyImportSocket {
         }).start();
     }
 
-    public void startImport(final String ipAddress, final int port) {
-        if (ipAddress == null || port <= 0) {
-            close();
-            return;
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mSocket = new SecureDataSocket(port);
-
-                String connectionDetails = ipAddress + ":" + port;
-                String comparePhrase = null;
-                try {
-                    comparePhrase = mSocket.setupClientNoCamera(connectionDetails);
-                } catch (SecureDataSocketException e) {
-                    e.printStackTrace();
-                }
-
-                invokeListener(SHOW_PHRASE, comparePhrase, null);
-
-            }
-        }).start();
-    }
-
     public void close() {
         if (mSocket != null) {
             mSocket.close();
         }
         mListener = null;
         mInstance = null;
-    }
-
-    public void phrasesMatched(final boolean phrasesMatched) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mSocket.comparedPhrases(phrasesMatched);
-                } catch (SecureDataSocketException e) {
-                    e.printStackTrace();
-                }
-
-                if (phrasesMatched) {
-                    importKey();
-                } else {
-                    close();
-                }
-            }
-        }).start();
     }
 
     private void importKey() {
@@ -110,17 +63,15 @@ public class KeyImportSocket {
             e.printStackTrace();
         }
 
-        invokeListener(IMPORT_KEY, null, keyRing);
+        invokeListener(keyRing);
     }
 
     /**
      * Execute method of listener on main thread.
      *
-     * @param method    Number of method to call.
-     * @param arg1      String argument for method.
-     * @param arg2      Key for method.
+     * @param key      Imported key.
      */
-    private void invokeListener(final int method, final String arg1, final byte[] arg2) {
+    private void invokeListener(final byte[] key) {
         if (mListener == null) {
             return;
         }
@@ -128,15 +79,8 @@ public class KeyImportSocket {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                switch (method) {
-                    case SHOW_PHRASE:
-                        mListener.showPhrase(arg1);
-                        break;
-                    case IMPORT_KEY:
-                        mListener.importKey(arg2);
-                        close();
-                        break;
-                }
+                mListener.importKey(key);
+                close();
             }
         };
 
@@ -144,11 +88,6 @@ public class KeyImportSocket {
     }
 
     public interface KeyImportListener {
-        /**
-         * Show a phrase to user who will compare this phrase with the phrase that is
-         * shown on the other device. Call {@link #phrasesMatched(boolean)} afterwards.
-         */
-        void showPhrase(String phrase);
 
         /**
          * Key is received and can be imported.

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -8,182 +7,34 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
-    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
-        android:id="@+id/private_key_export_title_animator"
-        android:layout_width="match_parent"
+    <TextView
+        style="?android:textAppearanceMedium"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:inAnimation="@anim/fade_in"
-        android:outAnimation="@anim/fade_out"
-        custom:initialView="0">
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:text="@string/private_key_export_qr" />
 
-        <TextView
-            style="?android:textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:text="@string/private_key_export_qr" />
-
-        <TextView
-            style="?android:textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:text="@string/private_key_export_info" />
-
-        <TextView
-            style="?android:textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:text="@string/private_key_import_export_headline_phrase" />
-
-    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
-
-    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
-        android:id="@+id/private_key_export_animator"
+    <ImageView
+        android:id="@+id/private_key_export_qr_image"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginBottom="15dp"
         android:layout_marginTop="15dp"
-        android:inAnimation="@anim/fade_in"
-        android:outAnimation="@anim/fade_out"
-        custom:initialView="1">
+        android:scaleType="centerInside"
+        android:transitionName="qr_code" />
 
-        <ImageView
-            android:id="@+id/private_key_export_qr_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerInside"
-            android:transitionName="qr_code" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <TextView
-                style="?android:textAppearanceSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="24dp"
-                android:text="@string/private_key_export_ip"
-                android:textStyle="bold" />
-
-            <TextView
-                style="?android:textAppearanceSmall"
-                android:id="@+id/private_key_export_ip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:paddingBottom="24dp" />
-
-            <TextView
-                style="?android:textAppearanceSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="24dp"
-                android:text="@string/private_key_export_port"
-                android:textStyle="bold" />
-
-            <TextView
-                style="?android:textAppearanceSmall"
-                android:id="@+id/private_key_export_port"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal" />
-
-        </LinearLayout>
-
-        <TextView
-            style="?android:textAppearanceSmall"
-            android:id="@+id/private_key_export_phrase"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-
-    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
-
-    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
-        android:id="@+id/private_key_export_button_bar_animator"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/private_key_export_help_button"
+        style="?android:buttonBarButtonStyle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:layout_gravity="center_horizontal"
         android:paddingBottom="20dp"
-        android:inAnimation="@anim/fade_in_delayed"
-        android:outAnimation="@anim/fade_out"
-        custom:initialView="2">
-
-        <LinearLayout
-            style="?android:buttonBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/private_key_export_help_button"
-                style="?android:buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:text="@string/title_help"
-                android:padding="12dp" />
-
-            <Button
-                android:id="@+id/private_key_export_button"
-                style="?android:buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:text="@string/private_key_import_button"
-                android:padding="12dp" />
-
-        </LinearLayout>
-
-        <android.support.v4.widget.Space
-            android:layout_width="wrap_content"
-            android:layout_height="0dp" />
-
-        <LinearLayout
-            style="?android:buttonBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/private_key_export_sentence_not_matched_button"
-                style="?android:buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:text="@string/btn_no"
-                android:padding="12dp" />
-
-            <Button
-                android:id="@+id/private_key_export_sentence_matched_button"
-                style="?android:buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:text="@string/btn_yes"
-                android:padding="12dp" />
-
-        </LinearLayout>
-
-    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+        android:text="@string/title_help"
+        android:padding="12dp" />
 
 </LinearLayout>

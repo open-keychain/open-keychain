@@ -57,7 +57,6 @@ public class ImportKeysFileFragment extends Fragment implements KeyImportSocket.
 
     private static final int REQUEST_CODE_FILE = 0x00007003;
     private static final int REQUEST_CODE_SCAN = 0x00007004;
-    private static final int REQUEST_CODE_WLAN = 0x00007005;
 
     /**
      * Creates new instance of this fragment
@@ -155,23 +154,11 @@ public class ImportKeysFileFragment extends Fragment implements KeyImportSocket.
                 break;
             }
             case REQUEST_CODE_SCAN:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
-                        String qrContent = data.getStringExtra(ImportKeysProxyActivity.EXTRA_SCANNED_CONTENT);
-                        if (qrContent != null) {
-                            KeyImportSocket.getInstance(this).startImport(qrContent);
-                        }
-                    } else {
-                        Intent intent = new Intent(mActivity, PrivateKeyImportExportActivity.class);
-                        intent.putExtra(PrivateKeyImportExportActivity.EXTRA_IMPORT_KEY, true);
-                        startActivityForResult(intent, REQUEST_CODE_WLAN);
-                    }
-                }
-                break;
-            case REQUEST_CODE_WLAN:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    byte[] key = data.getByteArrayExtra(PrivateKeyImportFragment.EXTRA_RECEIVED_KEY);
-                    importKey(key);
+                    String qrContent = data.getStringExtra(ImportKeysProxyActivity.EXTRA_SCANNED_CONTENT);
+                    if (qrContent != null) {
+                        KeyImportSocket.getInstance(this).startImport(qrContent);
+                    }
                 }
                 break;
             default:
@@ -212,11 +199,6 @@ public class ImportKeysFileFragment extends Fragment implements KeyImportSocket.
             mActivity.setResult(Activity.RESULT_CANCELED);
             mActivity.finish();
         }
-    }
-
-    @Override
-    public void showPhrase(String phrase) {
-        // not used here
     }
 
     @Override

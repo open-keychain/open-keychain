@@ -18,7 +18,6 @@ public class KeyExportSocket {
     private static final int SHOW_CONNECTION_DETAILS = 1;
     private static final int LOAD_KEY = 2;
     private static final int KEY_EXPORTED = 3;
-    private static final int SHOW_PHRASE = 4;
 
     private static KeyExportSocket mInstance;
 
@@ -68,15 +67,6 @@ public class KeyExportSocket {
                 } catch (SecureDataSocketException e) {
                     // this exception is thrown when socket is closed (user switches from QR code to manual ip input)
                     mSocket.close();
-
-                    String phrase = null;
-                    try {
-                        phrase = mSocket.setupServerNoClientCamera();
-                    } catch (SecureDataSocketException e1) {
-                        e1.printStackTrace();
-                    }
-
-                    invokeListener(SHOW_PHRASE, phrase);
                 }
             }
         }).start();
@@ -91,10 +81,6 @@ public class KeyExportSocket {
         }
     }
 
-    public int getPort() {
-        return mPort;
-    }
-
     public void writeKey(final Context context, final Uri keyUri) {
         new Thread(new Runnable() {
             @Override
@@ -107,25 +93,6 @@ public class KeyExportSocket {
                 }
 
                 invokeListener(KEY_EXPORTED, null);
-            }
-        }).start();
-    }
-
-    public void phrasesMatched(final boolean phrasesMatched) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mSocket.comparedPhrases(phrasesMatched);
-                } catch (SecureDataSocketException e) {
-                    e.printStackTrace();
-                }
-
-                if (phrasesMatched) {
-                    invokeListener(LOAD_KEY, null);
-                } else {
-                    invokeListener(KEY_EXPORTED, null);
-                }
             }
         }).start();
     }
@@ -154,9 +121,6 @@ public class KeyExportSocket {
                     case KEY_EXPORTED:
                         mListener.keyExported();
                         break;
-                    case SHOW_PHRASE:
-                        mListener.showPhrase(arg);
-                        break;
                 }
             }
         };
@@ -182,11 +146,5 @@ public class KeyExportSocket {
          * Key is transferred to the oder device.
          */
         void keyExported();
-
-        /**
-         * Show a phrase to user who will compare this phrase with the phrase that is
-         * shown on the other device. Call {@link #phrasesMatched(boolean)} afterwards.
-         */
-        void showPhrase(String phrase);
     }
 }

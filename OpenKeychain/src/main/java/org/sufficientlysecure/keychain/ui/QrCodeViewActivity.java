@@ -158,9 +158,4 @@ public class QrCodeViewActivity extends BaseActivity implements KeyExportSocket.
         // not used here
     }
 
-    @Override
-    public void showPhrase(String phrase) {
-        // not used here
-    }
-
 }
