@@ -2,6 +2,8 @@
 
 package org.sufficientlysecure.keychain.network.secureDataSocket;
 
+import org.sufficientlysecure.keychain.network.secureDataSocket.CryptoSocketInterface;
+import org.sufficientlysecure.keychain.network.secureDataSocket.CryptoSocketInterface.RETURN;
 import java.security.SecureRandom;
 import java.io.IOException;
 import java.io.Serializable;

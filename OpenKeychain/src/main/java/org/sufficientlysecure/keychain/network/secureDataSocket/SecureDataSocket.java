@@ -2,6 +2,10 @@
 
 package org.sufficientlysecure.keychain.network.secureDataSocket;
 
+
+import org.sufficientlysecure.keychain.network.secureDataSocket.CryptoSocketInterface.Channel;
+import org.sufficientlysecure.keychain.network.secureDataSocket.FDESocket;
+import org.sufficientlysecure.keychain.network.secureDataSocket.SecureDataSocketException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;

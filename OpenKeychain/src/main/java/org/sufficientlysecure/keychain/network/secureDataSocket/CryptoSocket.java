@@ -4,7 +4,7 @@ package org.sufficientlysecure.keychain.network.secureDataSocket;
 
 import org.bouncycastle.util.encoders.Base64;
 
-//import java.lang.IllegalArgumentException;
+import org.sufficientlysecure.keychain.network.secureDataSocket.CryptoSocketInterface.RETURN;
 import java.lang.IllegalStateException;
 import java.net.SocketTimeoutException;
 import java.io.IOException;
