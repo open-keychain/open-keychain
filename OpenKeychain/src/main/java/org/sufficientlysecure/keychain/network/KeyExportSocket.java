@@ -6,8 +6,8 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.cryptolib.SecureDataSocket;
-import com.cryptolib.SecureDataSocketException;
+import org.sufficientlysecure.keychain.network.secureDataSocket.SecureDataSocket;
+import org.sufficientlysecure.keychain.network.secureDataSocket.SecureDataSocketException;
 
 import org.sufficientlysecure.keychain.util.FileHelper;
 
@@ -54,7 +54,7 @@ public class KeyExportSocket {
                 String connectionDetails = null;
                 try {
                     mSocket = new SecureDataSocket(mPort);
-                    connectionDetails = mSocket.prepareServerWithClientCamera();
+                    connectionDetails = mSocket.prepareServer();
                 } catch (SecureDataSocketException e) {
                     e.printStackTrace();
                 }
@@ -62,7 +62,7 @@ public class KeyExportSocket {
                 invokeListener(SHOW_CONNECTION_DETAILS, connectionDetails);
 
                 try {
-                    mSocket.setupServerWithClientCamera();
+                    mSocket.setupServer();
                     invokeListener(LOAD_KEY, null);
                 } catch (SecureDataSocketException e) {
                     // this exception is thrown when socket is closed (user switches from QR code to manual ip input)

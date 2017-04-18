@@ -4,8 +4,9 @@ package org.sufficientlysecure.keychain.network;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.cryptolib.SecureDataSocket;
-import com.cryptolib.SecureDataSocketException;
+
+import org.sufficientlysecure.keychain.network.secureDataSocket.SecureDataSocket;
+import org.sufficientlysecure.keychain.network.secureDataSocket.SecureDataSocketException;
 
 public class KeyImportSocket {
     private static KeyImportSocket mInstance;
@@ -38,7 +39,7 @@ public class KeyImportSocket {
             public void run() {
                 mSocket = new SecureDataSocket(0);
                 try {
-                    mSocket.setupClientWithCamera(connectionDetails);
+                    mSocket.setupClient(connectionDetails);
                 } catch (SecureDataSocketException e) {
                     e.printStackTrace();
                 }
