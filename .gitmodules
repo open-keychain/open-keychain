@@ -22,6 +22,3 @@
 	path = extern/bouncycastle
 	url = https://github.com/open-keychain/bouncycastle.git
 	ignore = dirty
-[submodule "extern/SecureDataSocket"]
-	path = extern/SecureDataSocket
-	url = https://github.com/MrJabo/SecureDataSocket.git
