@@ -41,16 +41,11 @@ import org.bouncycastle.crypto.agreement.ECDHCBasicAgreement;
 import java.util.Arrays;
 
 public class CryptoObject {
-	private Provider provider = null;
-	private KeyPair encKeypair = null;
-	private SecretKeySpec sharedSecretSecond = null;
-	private SecretKeySpec sharedSecretFirst = null;
+	private SecretKeySpec sharedSecret = null;
 	private Cipher enc = null;
 	private Cipher dec = null;
 	private String enc_algorithm = "";
 	private String curve = "";
-	private byte[] OOB = null;
-	private boolean merged = false;
 	private boolean has_symmetric_key = false;
 	private SecureRandom random = null;
 	private int iv_size = 16;
@@ -103,12 +98,9 @@ public class CryptoObject {
 			throw new CryptoSocketException("invalid sharedSecret-size; has to have a length of 32 bytes");
 		}
 		try {
-			byte[] byteSharedSecretSecond = new byte[sharedSecret.length/2];
-			byte[] byteSharedSecretFirst = new byte[sharedSecret.length/2];
-			System.arraycopy(sharedSecret, 0, byteSharedSecretSecond, 0, byteSharedSecretSecond.length);
-			System.arraycopy(sharedSecret, byteSharedSecretSecond.length, byteSharedSecretFirst, 0, byteSharedSecretFirst.length);
-			this.sharedSecretFirst = new SecretKeySpec(byteSharedSecretFirst, "AES");
-			this.sharedSecretSecond = new SecretKeySpec(byteSharedSecretSecond, "AES");
+			byte[] byteSharedSecret = new byte[sharedSecret.length/2];
+			System.arraycopy(sharedSecret, 0, byteSharedSecret, 0, byteSharedSecret.length);
+			this.sharedSecret = new SecretKeySpec(byteSharedSecret, "AES");
 			this.has_symmetric_key = true;
 			this.enc = Cipher.getInstance("AES/GCM/NoPadding");
 			this.dec = Cipher.getInstance("AES/GCM/NoPadding");
@@ -142,7 +134,7 @@ public class CryptoObject {
 		byte[] encryptData = null;
 		this.random.nextBytes(iv);
 		try {
-			this.enc.init(Cipher.ENCRYPT_MODE, this.sharedSecretFirst, new GCMParameterSpec(this.tag_size * 8, iv));
+			this.enc.init(Cipher.ENCRYPT_MODE, this.sharedSecret, new GCMParameterSpec(this.tag_size * 8, iv));
 			encryptData = this.enc.doFinal(data);
 			output = new byte[this.iv_size + encryptData.length];
 			System.arraycopy(iv, 0, output, 0, this.iv_size);
@@ -184,7 +176,7 @@ public class CryptoObject {
 		System.arraycopy(data, this.iv_size, ciphertext, 0, ciphertext.length);
 		byte[] decryptData = null;
 		try {
-			this.dec.init(Cipher.DECRYPT_MODE, this.sharedSecretFirst, new GCMParameterSpec(this.tag_size * 8, iv));
+			this.dec.init(Cipher.DECRYPT_MODE, this.sharedSecret, new GCMParameterSpec(this.tag_size * 8, iv));
 			decryptData = this.dec.doFinal(ciphertext);
 		} catch (AEADBadTagException abt){
 			return null;

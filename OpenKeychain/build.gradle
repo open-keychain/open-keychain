@@ -58,7 +58,6 @@ dependencies {
     compile project(':extern:bouncycastle:pg')
     compile project(':extern:bouncycastle:prov')
     compile project(':extern:minidns')
-    compile project(':extern:SecureDataSocket')
     compile project(':KeybaseLib')
     compile project(':safeslinger-exchange')
 
@@ -306,15 +305,6 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
         exclude '.readme'
-    }
-}
-
-project(':extern:SecureDataSocket') {
-    apply plugin: 'java'
-
-    dependencies {
-        compile project(':extern:bouncycastle:core')
-        compile project(':extern:bouncycastle:prov')
     }
 }
 

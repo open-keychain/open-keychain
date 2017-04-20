@@ -98,40 +98,6 @@ public class SecureDataSocket {
 		}
 		return read; 
 	}
-	
-	public float readFloat() throws SecureDataSocketException {
-		float read;
-		try {	
-			read = this.socket.readFloat();
-		} catch(Exception e) {
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return read; 
-	}
-
-	public double readDouble() throws SecureDataSocketException {
-		double read;
-		try {	
-			read = this.socket.readDouble();
-		} catch(Exception e) {
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return read; 
-	}
-
-	public Serializable readObject() throws SecureDataSocketException, ClassNotFoundException {
-		Serializable read;
-		try {	
-			read = this.socket.readObject();
-		} 
-		catch(ClassNotFoundException e){
-			throw e;
-		}
-		catch(Exception e) {
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return read; 
-	}
 
 	public int write(byte[] array) throws SecureDataSocketException {
 		int ret = 0;
