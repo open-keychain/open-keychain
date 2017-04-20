@@ -1549,9 +1549,9 @@ public class PgpKeyOperation {
 
         throws IOException, PGPException, SignatureException {
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
-        // we use the tag NO_REASON since gnupg does not care about the tag while verifying
-        // signatures with a revoked key, the warning is the same
-        subHashedPacketsGen.setRevocationReason(true, RevocationReasonTags.NO_REASON, "");
+        // GnuPG adds an empty NO_REASON revocation reason packet, so we do the same
+        // see https://lists.gnupg.org/pipermail/gnupg-devel/2017-April/032779.html
+        subHashedPacketsGen.setRevocationReason(false, RevocationReasonTags.NO_REASON, "");
         subHashedPacketsGen.setSignatureCreationTime(true, creationTime);
         sGen.setHashedSubpackets(subHashedPacketsGen.generate());
         sGen.init(PGPSignature.CERTIFICATION_REVOCATION, masterPrivateKey);
