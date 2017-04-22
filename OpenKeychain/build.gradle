@@ -199,8 +199,8 @@ android {
         }
 
         debug {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-release.pro'
+            // disable ProGuard for faster compile times for debug builds
+            minifyEnabled false
 
             applicationIdSuffix ".debug"
 
