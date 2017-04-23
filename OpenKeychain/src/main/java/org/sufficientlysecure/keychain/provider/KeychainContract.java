@@ -85,15 +85,6 @@ public class KeychainContract {
         String PACKAGE_CERTIFICATE = "package_signature";
     }
 
-    interface ApiAppsAccountsColumns {
-        String ACCOUNT_NAME = "account_name";
-        String KEY_ID = "key_id"; // not a database id
-        String ENCRYPTION_ALGORITHM = "encryption_algorithm";
-        String HASH_ALORITHM = "hash_algorithm";
-        String COMPRESSION = "compression";
-        String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
-    }
-
     interface ApiAppsAllowedKeysColumns {
         String KEY_ID = "key_id"; // not a database id
         String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name

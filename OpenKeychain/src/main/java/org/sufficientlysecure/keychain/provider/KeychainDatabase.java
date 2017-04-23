@@ -31,7 +31,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAccountsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
@@ -63,7 +62,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String USER_PACKETS = "user_packets";
         String CERTS = "certs";
         String API_APPS = "api_apps";
-        String API_ACCOUNTS = "api_accounts";
         String API_ALLOWED_KEYS = "api_allowed_keys";
     }
 
@@ -162,22 +160,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + ApiAppsColumns.PACKAGE_CERTIFICATE + " BLOB"
             + ")";
 
-    private static final String CREATE_API_APPS_ACCOUNTS =
-            "CREATE TABLE IF NOT EXISTS " + Tables.API_ACCOUNTS + " ("
-                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + ApiAppsAccountsColumns.ACCOUNT_NAME + " TEXT NOT NULL, "
-                + ApiAppsAccountsColumns.KEY_ID + " INTEGER, "
-                + ApiAppsAccountsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
-                + ApiAppsAccountsColumns.HASH_ALORITHM + " INTEGER, "
-                + ApiAppsAccountsColumns.COMPRESSION + " INTEGER, "
-                + ApiAppsAccountsColumns.PACKAGE_NAME + " TEXT NOT NULL, "
-
-                + "UNIQUE(" + ApiAppsAccountsColumns.ACCOUNT_NAME + ", "
-                    + ApiAppsAccountsColumns.PACKAGE_NAME + "), "
-                + "FOREIGN KEY(" + ApiAppsAccountsColumns.PACKAGE_NAME + ") REFERENCES "
-                    + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
-            + ")";
-
     private static final String CREATE_API_APPS_ALLOWED_KEYS =
             "CREATE TABLE IF NOT EXISTS " + Tables.API_ALLOWED_KEYS + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -206,7 +188,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_CERTS);
         db.execSQL(CREATE_UPDATE_KEYS);
         db.execSQL(CREATE_API_APPS);
-        db.execSQL(CREATE_API_APPS_ACCOUNTS);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
@@ -281,7 +262,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 10:
                 // fix problems in database, see #1402 for details
                 // https://github.com/open-keychain/open-keychain/issues/1402
-                db.execSQL("DELETE FROM api_accounts WHERE key_id BETWEEN 0 AND 3");
+                // no longer needed, api_accounts is deprecated
+                // db.execSQL("DELETE FROM api_accounts WHERE key_id BETWEEN 0 AND 3");
             case 11:
                 db.execSQL(CREATE_UPDATE_KEYS);
             case 12:
@@ -316,6 +298,14 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     // no consolidate for now, often crashes!
                     return;
                 }
+            /* TODO actually drop this table. leaving it around for now!
+            case 20:
+                db.execSQL("DROP TABLE api_accounts");
+                if (oldVersion == 20) {
+                    // no need to consolidate
+                    return;
+                }
+            */
         }
 
         // TODO: don't depend on consolidate! make migrations inline!
@@ -380,7 +370,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     // DANGEROUS, use in test code ONLY!
     public void clearDatabase() {
         getWritableDatabase().execSQL("delete from " + Tables.KEY_RINGS_PUBLIC);
-        getWritableDatabase().execSQL("delete from " + Tables.API_ACCOUNTS);
         getWritableDatabase().execSQL("delete from " + Tables.API_ALLOWED_KEYS);
         getWritableDatabase().execSQL("delete from " + Tables.API_APPS);
     }
