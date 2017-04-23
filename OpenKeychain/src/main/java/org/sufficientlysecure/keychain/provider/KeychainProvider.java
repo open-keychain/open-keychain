@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
- * Copyright (C) 2014-2016 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ * Copyright (C) 2014-2017 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
@@ -70,8 +69,6 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 302;
-    private static final int API_ACCOUNTS = 303;
-    private static final int API_ACCOUNTS_BY_ACCOUNT_NAME = 304;
     private static final int API_ALLOWED_KEYS = 305;
 
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
@@ -184,19 +181,11 @@ public class KeychainProvider extends ContentProvider {
          * api_apps
          * api_apps/_ (package name)
          *
-         * api_apps/_/accounts
-         * api_apps/_/accounts/_ (account name)
-         *
          * api_apps/_/allowed_keys
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_API_APPS, API_APPS);
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*", API_APPS_BY_PACKAGE_NAME);
-
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
-                + KeychainContract.PATH_ACCOUNTS, API_ACCOUNTS);
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
-                + KeychainContract.PATH_ACCOUNTS + "/*", API_ACCOUNTS_BY_ACCOUNT_NAME);
 
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
                 + KeychainContract.PATH_ALLOWED_KEYS, API_ALLOWED_KEYS);
@@ -256,12 +245,6 @@ public class KeychainProvider extends ContentProvider {
 
             case API_APPS_BY_PACKAGE_NAME:
                 return ApiApps.CONTENT_ITEM_TYPE;
-
-            case API_ACCOUNTS:
-                return ApiAccounts.CONTENT_TYPE;
-
-            case API_ACCOUNTS_BY_ACCOUNT_NAME:
-                return ApiAccounts.CONTENT_ITEM_TYPE;
 
             case API_ALLOWED_KEYS:
                 return ApiAllowedKeys.CONTENT_TYPE;
@@ -680,26 +663,9 @@ public class KeychainProvider extends ContentProvider {
 
                 break;
             }
-            case API_ACCOUNTS: {
-                qb.setTables(Tables.API_ACCOUNTS);
-                qb.appendWhere(Tables.API_ACCOUNTS + "." + ApiAccounts.PACKAGE_NAME + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-
-                break;
-            }
-            case API_ACCOUNTS_BY_ACCOUNT_NAME: {
-                qb.setTables(Tables.API_ACCOUNTS);
-                qb.appendWhere(Tables.API_ACCOUNTS + "." + ApiAccounts.PACKAGE_NAME + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-
-                qb.appendWhere(" AND " + Tables.API_ACCOUNTS + "." + ApiAccounts.ACCOUNT_NAME + " = ");
-                qb.appendWhereEscapeString(uri.getLastPathSegment());
-
-                break;
-            }
             case API_ALLOWED_KEYS: {
                 qb.setTables(Tables.API_ALLOWED_KEYS);
-                qb.appendWhere(Tables.API_ALLOWED_KEYS + "." + ApiAccounts.PACKAGE_NAME + " = ");
+                qb.appendWhere(Tables.API_ALLOWED_KEYS + "." + ApiAllowedKeys.PACKAGE_NAME + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 break;
@@ -823,15 +789,6 @@ public class KeychainProvider extends ContentProvider {
                     db.insertOrThrow(Tables.API_APPS, null, values);
                     break;
                 }
-                case API_ACCOUNTS: {
-                    // set foreign key automatically based on given uri
-                    // e.g., api_apps/com.example.app/accounts/
-                    String packageName = uri.getPathSegments().get(1);
-                    values.put(ApiAccounts.PACKAGE_NAME, packageName);
-
-                    db.insertOrThrow(Tables.API_ACCOUNTS, null, values);
-                    break;
-                }
                 case API_ALLOWED_KEYS: {
                     // set foreign key automatically based on given uri
                     // e.g., api_apps/com.example.app/allowed_keys/
@@ -906,11 +863,6 @@ public class KeychainProvider extends ContentProvider {
                         selectionArgs);
                 break;
             }
-            case API_ACCOUNTS_BY_ACCOUNT_NAME: {
-                count = db.delete(Tables.API_ACCOUNTS, buildDefaultApiAccountsSelection(uri, additionalSelection),
-                        selectionArgs);
-                break;
-            }
             case API_ALLOWED_KEYS: {
                 count = db.delete(Tables.API_ALLOWED_KEYS, buildDefaultApiAllowedKeysSelection(uri, additionalSelection),
                         selectionArgs);
@@ -959,11 +911,6 @@ public class KeychainProvider extends ContentProvider {
                             buildDefaultApiAppsSelection(uri, selection), selectionArgs);
                     break;
                 }
-                case API_ACCOUNTS_BY_ACCOUNT_NAME: {
-                    count = db.update(Tables.API_ACCOUNTS, values,
-                            buildDefaultApiAccountsSelection(uri, selection), selectionArgs);
-                    break;
-                }
                 default: {
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
                 }
@@ -996,20 +943,6 @@ public class KeychainProvider extends ContentProvider {
         }
 
         return ApiApps.PACKAGE_NAME + "=" + packageName + andSelection;
-    }
-
-    private String buildDefaultApiAccountsSelection(Uri uri, String selection) {
-        String packageName = DatabaseUtils.sqlEscapeString(uri.getPathSegments().get(1));
-        String accountName = DatabaseUtils.sqlEscapeString(uri.getLastPathSegment());
-
-        String andSelection = "";
-        if (!TextUtils.isEmpty(selection)) {
-            andSelection = " AND (" + selection + ")";
-        }
-
-        return ApiAccounts.PACKAGE_NAME + "=" + packageName + " AND "
-                + ApiAccounts.ACCOUNT_NAME + "=" + accountName
-                + andSelection;
     }
 
     private String buildDefaultApiAllowedKeysSelection(Uri uri, String selection) {

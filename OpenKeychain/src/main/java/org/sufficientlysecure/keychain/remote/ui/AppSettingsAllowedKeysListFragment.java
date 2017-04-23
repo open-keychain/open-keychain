@@ -107,7 +107,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
 
-        Set<Long> checked = mApiDao.getAllKeyIdsForApp(mDataUri);
+        Set<Long> checked = mApiDao.getAllowedKeyIdsForApp(mDataUri);
         mAdapter = new KeySelectableAdapter(getActivity(), null, 0, checked);
         setListAdapter(mAdapter);
         getListView().setOnItemClickListener(mAdapter);

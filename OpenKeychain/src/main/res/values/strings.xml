@@ -640,21 +640,14 @@
     <string name="api_settings_select_key">"Select key"</string>
     <string name="api_settings_create_key">"Create new key"</string>
     <string name="api_settings_save">"Save"</string>
-    <string name="api_settings_save_msg">"Account has been saved"</string>
     <string name="api_settings_cancel">"Cancel"</string>
     <string name="api_settings_revoke">"Revoke access"</string>
     <string name="api_settings_start">"Start application"</string>
-    <string name="api_settings_delete_account">"Delete account"</string>
     <string name="api_settings_package_name">"Package Name"</string>
     <string name="api_settings_package_certificate">"SHA-256 of Package Certificate"</string>
-    <string name="api_settings_accounts">"Accounts (old API)"</string>
     <string name="api_settings_advanced">"Advanced"</string>
     <string name="api_settings_allowed_keys">"Allowed Keys"</string>
     <string name="api_settings_settings">"Settings"</string>
-    <string name="api_settings_key">"Account key:"</string>
-    <string name="api_settings_accounts_empty">"No accounts attached to this app."</string>
-    <string name="api_create_account_text">"No key is configured for this account. Please select one of your existing keys or create a new one.\nApps can only decrypt/sign with the keys selected here!"</string>
-    <string name="api_update_account_text">"The key saved for this account has been deleted. Please select a different one!\nApps can only decrypt/sign with the keys selected here!"</string>
     <string name="api_register_title">"Allow access to OpenKeychain?"</string>
     <string name="api_register_text">"%s requests to use OpenKeychain as a crypto provider. You will still be asked for permission before the app can use any of your keys for decryption.\n\nYou can revoke access later in the 'Apps' screen."</string>
     <string name="api_register_allow">"Allow access"</string>
@@ -1464,8 +1457,6 @@
     <string name="msg_data_mime_type">"Content-Type: %s"</string>
     <string name="msg_data_ok">"Data processing successful"</string>
     <string name="msg_data_skip_mime">"Skipping MIME parsing"</string>
-
-    <string name="msg_acc_saved">"Account saved"</string>
 
     <string name="msg_get_success">"Downloaded successfully!"</string>
     <string name="msg_get_file_not_found">"Input file not found!"</string>

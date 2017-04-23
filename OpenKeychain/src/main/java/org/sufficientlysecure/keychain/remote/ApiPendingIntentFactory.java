@@ -27,7 +27,6 @@ import android.os.Build;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.ui.RemoteBackupActivity;
-import org.sufficientlysecure.keychain.remote.ui.RemoteCreateAccountActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteImportKeysActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemotePassphraseDialogActivity;
@@ -131,15 +130,6 @@ public class ApiPendingIntentFactory {
         Intent intent = new Intent(mContext, RemoteBackupActivity.class);
         intent.putExtra(RemoteBackupActivity.EXTRA_MASTER_KEY_IDS, masterKeyIds);
         intent.putExtra(RemoteBackupActivity.EXTRA_SECRET, backupSecret);
-
-        return createInternal(data, intent);
-    }
-
-    @Deprecated
-    PendingIntent createAccountCreationPendingIntent(Intent data, String packageName, String accountName) {
-        Intent intent = new Intent(mContext, RemoteCreateAccountActivity.class);
-        intent.putExtra(RemoteCreateAccountActivity.EXTRA_PACKAGE_NAME, packageName);
-        intent.putExtra(RemoteCreateAccountActivity.EXTRA_ACC_NAME, accountName);
 
         return createInternal(data, intent);
     }
