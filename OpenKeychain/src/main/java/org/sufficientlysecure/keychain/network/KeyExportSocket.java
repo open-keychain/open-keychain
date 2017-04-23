@@ -19,7 +19,7 @@ public class KeyExportSocket {
     private static final int LOAD_KEY = 2;
     private static final int KEY_EXPORTED = 3;
 
-    private static KeyExportSocket mInstance;
+    private static KeyExportSocket instance;
 
     private SecureDataSocket mSocket;
     private ExportKeyListener mListener;
@@ -27,17 +27,17 @@ public class KeyExportSocket {
     private int mPort;
 
     public static KeyExportSocket getInstance(ExportKeyListener listener) {
-        if (mInstance == null) {
-            mInstance = new KeyExportSocket(listener);
+        if (instance == null) {
+            instance = new KeyExportSocket(listener);
         } else {
-            mInstance.mListener = listener;
+            instance.mListener = listener;
         }
-        return mInstance;
+        return instance;
     }
 
     public static void setListener(ExportKeyListener listener) {
-        if (mInstance != null) {
-            mInstance.mListener = listener;
+        if (instance != null) {
+            instance.mListener = listener;
         }
     }
 
@@ -65,7 +65,8 @@ public class KeyExportSocket {
                     mSocket.setupServer();
                     invokeListener(LOAD_KEY, null);
                 } catch (SecureDataSocketException e) {
-                    // this exception is thrown when socket is closed (user switches from QR code to manual ip input)
+                    // this exception is thrown when socket is closed (user switches from QR code
+                    // to manual ip input)
                     mSocket.close();
                 }
             }
@@ -77,7 +78,7 @@ public class KeyExportSocket {
 
         if (!closeNetworkSocketOnly) {
             mListener = null;
-            mInstance = null;
+            instance = null;
         }
     }
 
@@ -137,8 +138,8 @@ public class KeyExportSocket {
         void showConnectionDetails(String connectionDetails);
 
         /**
-         * Connection is established. Load the key to export and invoke {@link #writeKey(Context, Uri)}
-         * to send the key.
+         * Connection is established. Load the key to export and invoke
+         * {@link #writeKey(Context, Uri)} to send the key.
          */
         void loadKey();
 

@@ -42,7 +42,7 @@ public class QrCodeCaptureActivity extends FragmentActivity {
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 42;
     public static final String IMPORT_PRIVATE_KEY = "import_private_key";
 
-    private boolean importPrivateKey;
+    private boolean mImportPrivateKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +55,12 @@ public class QrCodeCaptureActivity extends FragmentActivity {
 
         if (savedInstanceState != null) {
             init(barcodeScannerView, getIntent(), savedInstanceState);
-            importPrivateKey = savedInstanceState.getBoolean(IMPORT_PRIVATE_KEY);
+            mImportPrivateKey = savedInstanceState.getBoolean(IMPORT_PRIVATE_KEY);
         } else if (getIntent() != null){
-            importPrivateKey = getIntent().getBooleanExtra(IMPORT_PRIVATE_KEY, false);
+            mImportPrivateKey = getIntent().getBooleanExtra(IMPORT_PRIVATE_KEY, false);
         }
 
-        if (importPrivateKey) {
+        if (mImportPrivateKey) {
             int paddingBottom = (int) getResources().getDimension(R.dimen.private_key_import_text_padding_bottom);
             barcodeScannerView.getStatusView().setPadding(0, 0, 0, paddingBottom);
 
@@ -69,7 +69,8 @@ public class QrCodeCaptureActivity extends FragmentActivity {
             importHelpButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    HelpActivity.startHelpActivity(QrCodeCaptureActivity.this, HelpActivity.TAB_FAQ, R.string.help_tab_faq_headline_transfer_key);
+                    HelpActivity.startHelpActivity(QrCodeCaptureActivity.this,
+                            HelpActivity.TAB_FAQ, R.string.help_tab_faq_headline_transfer_key);
                 }
             });
         }
@@ -138,7 +139,7 @@ public class QrCodeCaptureActivity extends FragmentActivity {
         if (capture != null) {
             capture.onSaveInstanceState(outState);
         }
-        outState.putBoolean(IMPORT_PRIVATE_KEY, importPrivateKey);
+        outState.putBoolean(IMPORT_PRIVATE_KEY, mImportPrivateKey);
     }
 
     @Override

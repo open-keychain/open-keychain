@@ -33,7 +33,10 @@ import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
 
-public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> implements KeyExportSocket.ExportKeyListener {
+public class PrivateKeyExportFragment
+        extends CryptoOperationFragment<BackupKeyringParcel, ExportResult>
+        implements KeyExportSocket.ExportKeyListener {
+
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
     private static final String ARG_CONNECTION_DETAILS = "connection_details";
 
@@ -95,7 +98,8 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
 
     @Override
     public View onCreateView(LayoutInflater i, ViewGroup c, Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.private_key_export_fragment, c, false);
+        View view = LayoutInflater.from(getContext())
+                .inflate(R.layout.private_key_export_fragment,c, false);
 
         Bundle args = getArguments();
         mMasterKeyId = args.getLong(ARG_MASTER_KEY_IDS);
@@ -113,7 +117,8 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HelpActivity.startHelpActivity(mActivity, HelpActivity.TAB_FAQ, R.string.help_tab_faq_headline_transfer_key);
+                HelpActivity.startHelpActivity(mActivity,
+                        HelpActivity.TAB_FAQ, R.string.help_tab_faq_headline_transfer_key);
             }
         });
 
@@ -154,7 +159,8 @@ public class PrivateKeyExportFragment extends CryptoOperationFragment<BackupKeyr
         }
 
         qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_QR_CODE_CONTENT, mConnectionDetails);
-        qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_TITLE_RES_ID, R.string.title_export_private_key);
+        qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_TITLE_RES_ID,
+                R.string.title_export_private_key);
         qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_EXPORT_PRIVATE_KEY, true);
         qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_WHITE_TOOLBAR, true);
         startActivityForResult(qrCodeIntent, REQUEST_CONNECTION, opts);

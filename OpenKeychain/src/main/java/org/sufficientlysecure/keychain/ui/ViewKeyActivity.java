@@ -327,7 +327,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         startWlanActivity();
                     }
                 } else {
-                    Notify.create(ViewKeyActivity.this, R.string.private_key_error_wifi, Notify.Style.ERROR).show();
+                    Notify.create(ViewKeyActivity.this,
+                            R.string.private_key_error_wifi, Notify.Style.ERROR).show();
                 }
             }
         });
