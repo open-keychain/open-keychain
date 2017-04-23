@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2017 Jakob Bode
+ * Copyright (C) 2017 Matthias Sekul
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 //Have a look at https://github.com/MrJabo/SecureDataSocket
 
 package org.sufficientlysecure.keychain.network.secureDataSocket;
@@ -17,189 +35,189 @@ import java.util.Collections;
 import java.util.List;
 
 public class SecureDataSocket {
-	
-	private int port;
-	private FDESocket socket;
-	private SocketAddress connectionInfo;	
 
-	public SecureDataSocket(int port){
-		this.port = port;
-	}
+    private int port;
+    private FDESocket socket;
+    private SocketAddress connectionInfo;
 
-			
-	/**
-	 * setup client with already known sharedSecret.
-	 * connectionDetails have to look like ipAddress:port:sharedSecret
-	 *
-	 * Connection established afterwards.
-	 * */
-	public void setupClient(String connectionDetails) throws SecureDataSocketException {
-		try {
-			this.socket = new FDESocket(new Channel(connectionDetails));
-			this.socket.connect();
-		} catch(Exception e) {
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-	}
+    public SecureDataSocket(int port){
+        this.port = port;
+    }
 
 
-	/**
-	 * call setupServerWithClientCamera() afterwards.
-	 *
-	 * returns the connectiondetails and the sharedSecret, that has to be transferred securely to the client by the user.
-	 * */
-	public String prepareServer() throws SecureDataSocketException {
-		try {
-			this.socket = new FDESocket(new Channel("::"));
-			return getIPAddress(true) + ":" + this.port + ":" + this.socket.createSharedSecret();
-		} catch(Exception e) {
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-	}
+    /**
+     * setup client with already known sharedSecret.
+     * connectionDetails have to look like ipAddress:port:sharedSecret
+     *
+     * Connection established afterwards.
+     * */
+    public void setupClient(String connectionDetails) throws SecureDataSocketException {
+        try {
+            this.socket = new FDESocket(new Channel(connectionDetails));
+            this.socket.connect();
+        } catch(Exception e) {
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+    }
 
 
-	/**
-	 * Method blocks until a client connected
-	 * */
-	public void setupServer() throws SecureDataSocketException {
-		try{
-			this.socket.listen(this.port);
-		} catch(Exception e) {
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-	}
-	
-	public byte[] read() throws SecureDataSocketException {
-		byte[] read;
-		try {	
-			read = this.socket.read();
-		} catch(Exception e) {
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return read; 
-	}
+    /**
+     * call setupServerWithClientCamera() afterwards.
+     *
+     * returns the connectiondetails and the sharedSecret, that has to be transferred securely to the client by the user.
+     * */
+    public String prepareServer() throws SecureDataSocketException {
+        try {
+            this.socket = new FDESocket(new Channel("::"));
+            return getIPAddress(true) + ":" + this.port + ":" + this.socket.createSharedSecret();
+        } catch(Exception e) {
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+    }
 
-	public String readString() throws SecureDataSocketException {
-		String read;
-		try {	
-			read = this.socket.readString();
-		} catch(Exception e) {
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return read; 
-	}
-	
-	public int readInt() throws SecureDataSocketException {
-		int read;
-		try {	
-			read = this.socket.readInt();
-		} catch(Exception e) {
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return read; 
-	}
 
-	public int write(byte[] array) throws SecureDataSocketException {
-		int ret = 0;
-		try {
-			ret = this.socket.write(array);
-		}
-		catch(Exception e){
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return ret;
-	}
+    /**
+     * Method blocks until a client connected
+     * */
+    public void setupServer() throws SecureDataSocketException {
+        try{
+            this.socket.listen(this.port);
+        } catch(Exception e) {
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+    }
 
-	public int write(int i) throws SecureDataSocketException {
-		int ret = 0;
-		try {
-			ret = this.socket.write(i);
-		}
-		catch(Exception e){
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return ret;
-	}
+    public byte[] read() throws SecureDataSocketException {
+        byte[] read;
+        try {
+            read = this.socket.read();
+        } catch(Exception e) {
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+        return read;
+    }
 
-	public int write(Float f) throws SecureDataSocketException {
-		int ret = 0;
-		try {
-			ret = this.socket.write(f);
-		}
-		catch(Exception e){
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return ret;
-	}
+    public String readString() throws SecureDataSocketException {
+        String read;
+        try {
+            read = this.socket.readString();
+        } catch(Exception e) {
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+        return read;
+    }
 
-	public int write(Double d) throws SecureDataSocketException {
-		int ret = 0;
-		try {
-			ret = this.socket.write(d);
-		}
-		catch(Exception e){
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return ret;
-	}
+    public int readInt() throws SecureDataSocketException {
+        int read;
+        try {
+            read = this.socket.readInt();
+        } catch(Exception e) {
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+        return read;
+    }
 
-	public int write(String s) throws SecureDataSocketException {
-		int ret = 0;
-		try {
-			ret = this.socket.write(s);
-		}
-		catch(Exception e){
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return ret;
-	}
+    public int write(byte[] array) throws SecureDataSocketException {
+        int ret = 0;
+        try {
+            ret = this.socket.write(array);
+        }
+        catch(Exception e){
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+        return ret;
+    }
 
-	public int write(Serializable s)  throws SecureDataSocketException {
-		int ret = 0;
-		try {
-			ret = this.socket.write(s);
-		}
-		catch(Exception e){
-			throw new SecureDataSocketException(e.toString(), e);
-		}
-		return ret;
-	}
+    public int write(int i) throws SecureDataSocketException {
+        int ret = 0;
+        try {
+            ret = this.socket.write(i);
+        }
+        catch(Exception e){
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+        return ret;
+    }
 
-	public void close() {
-		this.socket.close();
-	}
+    public int write(Float f) throws SecureDataSocketException {
+        int ret = 0;
+        try {
+            ret = this.socket.write(f);
+        }
+        catch(Exception e){
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+        return ret;
+    }
 
-	/**
-	 * from: http://stackoverflow.com/a/13007325
-	 *
-	 * Get IP address from first non-localhost interface
-	 * @param useIPv4  true=return ipv4, false=return ipv6
-	 * @return  address or empty string
-	 */
-	public static String getIPAddress(boolean useIPv4) {
-		try {
-			List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-			for (NetworkInterface intf : interfaces) {
-				List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
-				for (InetAddress addr : addrs) {
-					if (!addr.isLoopbackAddress()) {
-						String sAddr = addr.getHostAddress();
-						//boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-						boolean isIPv4 = sAddr.indexOf(':')<0;
+    public int write(Double d) throws SecureDataSocketException {
+        int ret = 0;
+        try {
+            ret = this.socket.write(d);
+        }
+        catch(Exception e){
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+        return ret;
+    }
 
-						if (useIPv4) {
-							if (isIPv4)
-								return sAddr;
-						} else {
-							if (!isIPv4) {
-								int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
-								return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
-							}
-						}
-					}
-				}
-			}
-		} catch (Exception ex) { } // for now eat exceptions
-		return "";
-	}
+    public int write(String s) throws SecureDataSocketException {
+        int ret = 0;
+        try {
+            ret = this.socket.write(s);
+        }
+        catch(Exception e){
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+        return ret;
+    }
+
+    public int write(Serializable s)  throws SecureDataSocketException {
+        int ret = 0;
+        try {
+            ret = this.socket.write(s);
+        }
+        catch(Exception e){
+            throw new SecureDataSocketException(e.toString(), e);
+        }
+        return ret;
+    }
+
+    public void close() {
+        this.socket.close();
+    }
+
+    /**
+     * from: http://stackoverflow.com/a/13007325
+     *
+     * Get IP address from first non-localhost interface
+     * @param useIPv4  true=return ipv4, false=return ipv6
+     * @return  address or empty string
+     */
+    public static String getIPAddress(boolean useIPv4) {
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces) {
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress();
+                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
+                        boolean isIPv4 = sAddr.indexOf(':')<0;
+
+                        if (useIPv4) {
+                            if (isIPv4)
+                                return sAddr;
+                        } else {
+                            if (!isIPv4) {
+                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
+                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) { } // for now eat exceptions
+        return "";
+    }
 }
