@@ -90,6 +90,10 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
     }
 
     public boolean canCertify() {
+        if (!isMasterKey()) {
+            return false;
+        }
+
         // if key flags subpacket is available, honor it!
         if (getKeyUsage() != 0) {
             return (getKeyUsage() & KeyFlags.CERTIFY_OTHER) != 0;
