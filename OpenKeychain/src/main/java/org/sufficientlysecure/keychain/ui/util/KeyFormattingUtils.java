@@ -35,6 +35,7 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
+import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.bouncycastle.util.encoders.Hex;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpSignatureResult;
@@ -207,6 +208,10 @@ public class KeyFormattingUtils {
             return name;
         }
         name = TeleTrusTNamedCurves.getName(oid);
+        if (name != null) {
+            return name;
+        }
+        name = CustomNamedCurves.getName(oid);
         if (name != null) {
             return name;
         }

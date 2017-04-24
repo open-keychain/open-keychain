@@ -18,10 +18,12 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
+import org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;
 import org.bouncycastle.bcpg.CompressionAlgorithmTags;
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
+import org.bouncycastle.crypto.ec.CustomNamedCurves;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -108,7 +110,11 @@ public class PgpSecurityConstants {
     private static HashSet<String> sCurveWhitelist = new HashSet<>(Arrays.asList(
             NISTNamedCurves.getOID("P-256").getId(),
             NISTNamedCurves.getOID("P-384").getId(),
-            NISTNamedCurves.getOID("P-521").getId()
+            NISTNamedCurves.getOID("P-521").getId(),
+            CustomNamedCurves.getOID("secp256k1").getId(),
+            TeleTrusTNamedCurves.getOID("brainpoolP256r1").getId(),
+            TeleTrusTNamedCurves.getOID("brainpoolP384r1").getId(),
+            TeleTrusTNamedCurves.getOID("brainpoolP512r1").getId()
     ));
 
     public static boolean isSecureKey(CanonicalizedPublicKey key) {
