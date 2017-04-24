@@ -456,7 +456,9 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             result = multiThreadedKeyImport(keyList, keyServer, proxy, skipSave);
         }
 
-        ContactSyncAdapterService.requestContactsSync();
+        if (!importInput.mSkipSave) {
+            ContactSyncAdapterService.requestContactsSync();
+        }
         return result;
     }
 
