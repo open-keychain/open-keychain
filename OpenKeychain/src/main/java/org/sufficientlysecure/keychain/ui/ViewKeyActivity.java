@@ -111,6 +111,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     public static final String EXTRA_SECURITY_TOKEN_AID = "security_token_aid";
     public static final String EXTRA_SECURITY_TOKEN_VERSION = "security_token_version";
     public static final String EXTRA_SECURITY_TOKEN_FINGERPRINTS = "security_token_fingerprints";
+    private boolean mLinkedTransition;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({REQUEST_QR_FINGERPRINT, REQUEST_BACKUP, REQUEST_CERTIFY, REQUEST_DELETE})
@@ -331,20 +332,13 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             return;
         }
 
-        boolean linkedTransition = getIntent().getBooleanExtra(EXTRA_LINKED_TRANSITION, false);
-        if (linkedTransition && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        mLinkedTransition = getIntent().getBooleanExtra(EXTRA_LINKED_TRANSITION, false);
+        if (mLinkedTransition && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             postponeEnterTransition();
         }
 
-        FragmentManager manager = getSupportFragmentManager();
-        // Create an instance of the fragment
-        final ViewKeyFragment frag = ViewKeyFragment.newInstance(mDataUri,
-                linkedTransition ? PostponeType.LINKED : PostponeType.NONE);
-        manager.beginTransaction()
-                .replace(R.id.view_key_fragment, frag)
-                .commit();
-
         if (Preferences.getPreferences(this).getExperimentalEnableKeybase()) {
+            FragmentManager manager = getSupportFragmentManager();
             final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance(mDataUri);
             manager.beginTransaction()
                     .replace(R.id.view_key_keybase_fragment, keybaseFrag)
@@ -512,7 +506,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private void certifyImmediate() {
         Intent intent = new Intent(this, CertifyKeyActivity.class);
-        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{mMasterKeyId});
+        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[] { mMasterKeyId });
 
         startActivityForResult(intent, REQUEST_CERTIFY);
     }
@@ -734,6 +728,32 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     }
 
+    public void showMainFragment() {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager manager = getSupportFragmentManager();
+
+                // unless we must refresh
+                ViewKeyFragment frag = (ViewKeyFragment) manager.findFragmentByTag("view_key_fragment");
+                // if everything is valid, just drop it
+                if (frag != null && frag.isValidForData(mIsSecret)) {
+                    return;
+                }
+
+                // if the main fragment doesn't exist, or is not of the correct type, (re)create it
+                frag = ViewKeyFragment.newInstance(mMasterKeyId, mIsSecret,
+                        mLinkedTransition ? PostponeType.LINKED : PostponeType.NONE);
+                // get rid of possible backstack, this fragment is always at the bottom
+                manager.popBackStack("security_token", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                manager.beginTransaction()
+                        .replace(R.id.view_key_fragment, frag, "view_key_fragment")
+                        // if this gets lost, it doesn't really matter since the loader will reinstate it onResume
+                        .commitAllowingStateLoss();
+            }
+        });
+    }
+
     private void encrypt(Uri dataUri, boolean text) {
         // If there is no encryption key, don't bother.
         if (!mHasEncrypt) {
@@ -900,6 +920,15 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                     mFingerprint = data.getBlob(INDEX_FINGERPRINT);
                     mFingerprintString = KeyFormattingUtils.convertFingerprintToHex(mFingerprint);
+                    mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                    mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
+                    mIsRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
+                    mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
+                    mIsSecure = data.getInt(INDEX_IS_SECURE) == 1;
+                    mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
+
+                    // queue showing of the main fragment
+                    showMainFragment();
 
                     // if it wasn't shown yet, display token fragment
                     if (mShowSecurityTokenAfterCreation && getIntent().hasExtra(EXTRA_SECURITY_TOKEN_AID)) {
@@ -911,13 +940,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         double tokenVersion = intent.getDoubleExtra(EXTRA_SECURITY_TOKEN_VERSION, 2.0);
                         showSecurityTokenFragment(tokenFingerprints, tokenUserId, tokenAid, tokenVersion);
                     }
-
-                    mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                    mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
-                    mIsRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
-                    mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
-                    mIsSecure = data.getInt(INDEX_IS_SECURE) == 1;
-                    mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
 
                     // if the refresh animation isn't playing
                     if (!mRotate.hasStarted() && !mRotateSpin.hasStarted()) {

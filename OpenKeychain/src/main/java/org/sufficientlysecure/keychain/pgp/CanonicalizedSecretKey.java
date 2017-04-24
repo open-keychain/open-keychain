@@ -121,6 +121,29 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             return this != UNAVAILABLE && this != GNU_DUMMY;
         }
 
+        /** Compares by "usability", which basically compares how independently usable
+         * two SecretKeyTypes are. The order is roughly this:
+         *
+         * empty passphrase < passphrase/others < divert < stripped
+         *
+         */
+        public int compareUsability(SecretKeyType other) {
+            // if one is usable but the other isn't, the usable one comes first
+            if (isUsable() ^ other.isUsable()) {
+                return isUsable() ? -1 : 1;
+            }
+            // if one is a divert-to-card but the other isn't, the non-divert one comes first
+            if ((this == DIVERT_TO_CARD) ^ (other == DIVERT_TO_CARD)) {
+                return this != DIVERT_TO_CARD ? -1 : 1;
+            }
+            // if one requires a passphrase but another doesn't, the one without a passphrase comes first
+            if ((this == PASSPHRASE_EMPTY) ^ (other == PASSPHRASE_EMPTY)) {
+                return this == PASSPHRASE_EMPTY ? -1 : 1;
+            }
+            // all other (current) cases are equal
+            return 0;
+        }
+
     }
 
     /** This method returns the SecretKeyType for this secret key, testing for an empty

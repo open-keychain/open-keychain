@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.bouncycastle.bcpg.ECPublicBCPGKey;
 import org.bouncycastle.bcpg.SignatureSubpacketTags;
+import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPSignature;
 import org.bouncycastle.openpgp.PGPSignatureSubpacketVector;
@@ -343,7 +344,10 @@ public class UncachedPublicKey {
                     mCacheUsage = hashed.getKeyFlags();
                 }
             }
-
+            if (!isMasterKey() && (mCacheUsage & KeyFlags.CERTIFY_OTHER) == KeyFlags.CERTIFY_OTHER) {
+                Log.d(Constants.TAG, "Non-primary key incorrectly marked as canCertify - ignoring");
+                mCacheUsage &= ~KeyFlags.CERTIFY_OTHER;
+            }
         }
         return mCacheUsage;
     }

@@ -17,6 +17,12 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
+import java.util.Arrays;
+import java.util.HashSet;
+
+import android.support.annotation.Nullable;
+
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;
 import org.bouncycastle.bcpg.CompressionAlgorithmTags;
@@ -24,9 +30,14 @@ import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.bouncycastle.crypto.ec.CustomNamedCurves;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureHashAlgorithm;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSymmetricAlgorithm;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.SymmetricAlgorithmProblem;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
 
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * NIST requirements for 2011-2030 (http://www.keylength.com/en/4/):
@@ -63,8 +74,11 @@ public class PgpSecurityConstants {
             // CAMELLIA_256: not used widely
     ));
 
-    public static boolean isSecureSymmetricAlgorithm(int id) {
-        return sSymmetricAlgorithmsWhitelist.contains(id);
+    public static SymmetricAlgorithmProblem checkSecureSymmetricAlgorithm(int id) {
+        if (!sSymmetricAlgorithmsWhitelist.contains(id)) {
+            return new InsecureSymmetricAlgorithm(id);
+        }
+        return null;
     }
 
     /**
@@ -93,8 +107,11 @@ public class PgpSecurityConstants {
             // SHA224: Not used widely, Yahoo argues against it
     ));
 
-    public static boolean isSecureHashAlgorithm(int id) {
-        return sHashAlgorithmsWhitelist.contains(id);
+    public static InsecureHashAlgorithm checkSignatureAlgorithmForSecurityProblems(int hashAlgorithm) {
+        if (!sHashAlgorithmsWhitelist.contains(hashAlgorithm)) {
+            return new InsecureHashAlgorithm(hashAlgorithm);
+        }
+        return null;
     }
 
     /**
@@ -117,26 +134,53 @@ public class PgpSecurityConstants {
             TeleTrusTNamedCurves.getOID("brainpoolP512r1").getId()
     ));
 
-    public static boolean isSecureKey(CanonicalizedPublicKey key) {
-        switch (key.getAlgorithm()) {
+    static KeySecurityProblem checkForSecurityProblems(CanonicalizedPublicKey key) {
+        // TODO: checks on master key?
+
+        long masterKeyId = key.getKeyRing().getMasterKeyId();
+        long subKeyId = key.getKeyId();
+        int algorithm = key.getAlgorithm();
+        Integer bitStrength = key.getBitStrength();
+        String curveOid = key.getCurveOid();
+
+        return getKeySecurityProblem(masterKeyId, subKeyId, algorithm, bitStrength, curveOid);
+    }
+
+    @Nullable
+    public static KeySecurityProblem getKeySecurityProblem(long masterKeyId, long subKeyId, int algorithm,
+            Integer bitStrength, String curveOid) {
+        switch (algorithm) {
             case PublicKeyAlgorithmTags.RSA_GENERAL: {
-                return (key.getBitStrength() >= 2048);
+                if (bitStrength < 2048) {
+                    return new InsecureBitStrength(masterKeyId, subKeyId, algorithm, bitStrength);
+                }
+                return null;
             }
             // RSA_ENCRYPT, RSA_SIGN: deprecated in RFC 4880, use RSA_GENERAL with key flags
             case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT: {
-                return (key.getBitStrength() >= 2048);
+                if (bitStrength < 2048) {
+                    return new InsecureBitStrength(masterKeyId, subKeyId, algorithm, bitStrength);
+                }
+                return null;
             }
             case PublicKeyAlgorithmTags.DSA: {
-                return (key.getBitStrength() >= 2048);
+                if (bitStrength < 2048) {
+                    return new InsecureBitStrength(masterKeyId, subKeyId, algorithm, bitStrength);
+                }
+                return null;
             }
             case PublicKeyAlgorithmTags.ECDH:
             case PublicKeyAlgorithmTags.ECDSA: {
-                return PgpSecurityConstants.sCurveWhitelist.contains(key.getCurveOid());
+                if (!PgpSecurityConstants.sCurveWhitelist.contains(curveOid)) {
+                    return new NotWhitelistedCurve(masterKeyId, subKeyId, curveOid, algorithm);
+                }
+                return null;
             }
             // ELGAMAL_GENERAL: deprecated in RFC 4880, use ELGAMAL_ENCRYPT
             // DIFFIE_HELLMAN: unsure
+            // TODO specialize all cases!
             default:
-                return false;
+                return new UnidentifiedKeyProblem(masterKeyId, subKeyId, algorithm);
         }
     }
 
