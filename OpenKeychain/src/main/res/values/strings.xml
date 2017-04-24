@@ -121,6 +121,7 @@
     <string name="menu_help">"Help"</string>
     <string name="menu_export_key">"Backup key"</string>
     <string name="menu_delete_key">"Delete key"</string>
+    <string name="menu_status">"View key status"</string>
     <string name="menu_manage_keys">"Manage my keys"</string>
     <string name="menu_search">"Search"</string>
     <string name="menu_open">"Open"</string>
@@ -1807,4 +1808,51 @@
     <string name="requested_key_label">Requested key:</string>
     <string name="error_preselect_sign_key">Error selecting key %s for signing!</string>
     <string name="error_preselect_encrypt_key">Error selecting key %s for encryption!</string>
+
+    <string name="title_key_status">"Key Status"</string>
+    <string name="caption_secret_status">This key is yours. You can use it to:</string>
+
+    <string name="cap_title_confirm">Confirm other keys</string>
+    <string name="cap_cert_ok">"This key can confirm other keys."</string>
+    <string name="cap_cert_divert">"This key can confirm other keys, using a Security Token."</string>
+    <string name="cap_cert_stripped">"This key is stripped, it can NOT confirm other keys."</string>
+    <string name="cap_cert_unavailable">"This key is not configured to confirm keys!"</string>
+
+    <string name="cap_title_sign">Sign messages</string>
+    <string name="cap_sign_ok">"This key can sign/send messages."</string>
+    <string name="cap_sign_divert">"This key can sign/send messages, using a Security Token."</string>
+    <string name="cap_sign_expired">"This key can't sign/send messages, because it is expired."</string>
+    <string name="cap_sign_revoked">"This key can't sign/send messages, because it is revoked."</string>
+    <string name="cap_sign_stripped">"This key can\'t sign/send messages on this device!"</string>
+    <string name="cap_sign_unavailable">"This key is not configured to sign/send messages!"</string>
+    <string name="cap_sign_insecure">"This key can sign/send messages, but not securely!"</string>
+
+    <string name="cap_title_decrypt">Decrypt messages</string>
+    <string name="cap_decrypt_ok">"This key can decrypt/receive messages."</string>
+    <string name="cap_decrypt_divert">"This key can decrypt/receive messages, using a Security Token."</string>
+    <string name="cap_decrypt_expired">"This key can decrypt/receive messages, but is expired."</string>
+    <string name="cap_decrypt_revoked">"This key can decrypt/receive messages, but is revoked."</string>
+    <string name="cap_decrypt_stripped">"This key can\'t decrypt/receive messages on this device."</string>
+    <string name="cap_decrypt_unavailable">"This key is not configured to decrypt/receive messages!"</string>
+    <string name="cap_decrypt_insecure">"This key can decrypt/receive messages, but not securely!"</string>
+
+    <string name="key_health_ok_title">"Healthy"</string>
+    <string name="key_health_ok_subtitle">"No key issues found."</string>
+    <string name="key_health_divert_title">"Healthy (Security Token)"</string>
+    <string name="key_health_divert_subtitle">"No key issues found."</string>
+    <string name="key_health_expired_title">"Expired"</string>
+    <string name="key_health_expired_subtitle">"This key should not be used anymore."</string>
+    <string name="key_health_revoked_title">"Revoked"</string>
+    <string name="key_health_revoked_subtitle">"This key can\'t be used anymore."</string>
+    <string name="key_health_insecure_title">"Insecure"</string>
+    <string name="key_health_insecure_subtitle">"This key is not secure!"</string>
+    <string name="key_health_special_title">"Special"</string>
+    <string name="key_health_special_subtitle">"Click for details"</string>
+    <string name="key_health_sign_only_title">"Healthy (Signing Key)"</string>
+    <string name="key_health_sign_only_subtitle">"Click for details"</string>
+    <string name="key_health_stripped_title">"Healthy (Stripped)"</string>
+    <string name="key_health_stripped_subtitle">"Click for details"</string>
+    <string name="key_health_partial_stripped_title">"Healthy (Partially Stripped)"</string>
+    <string name="key_health_partial_stripped_subtitle">"Click for details"</string>
+
 </resources>
