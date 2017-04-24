@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyHealthClickListener;
 import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyHealthMvpView;
@@ -173,6 +174,11 @@ public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnC
             String curveName = KeyFormattingUtils.getCurveInfo(getContext(), notWhitelistedCurve.curveOid);
             vInsecureProblem.setText(getResources().getString(R.string.key_insecure_unknown_curve_problem, curveName));
             vInsecureSolution.setText(R.string.key_insecure_unknown_curve_solution);
+        } else if (securityProblem instanceof UnidentifiedKeyProblem) {
+            vInsecureProblem.setText(R.string.key_insecure_unidentified_problem);
+            vInsecureSolution.setText(R.string.key_insecure_unknown_curve_solution);
+        } else {
+            throw new IllegalArgumentException("all subclasses of KeySecurityProblem must be handled!");
         }
 
     }
