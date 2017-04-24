@@ -143,6 +143,7 @@ class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
         final Date mCreation;
         final SecretKeyType mSecretKeyType;
         final boolean mIsRevoked, mIsExpired;
+        final Date mExpiry;
         final boolean mCanCertify, mCanSign, mCanEncrypt;
         final KeySecurityProblem mSecurityProblem;
 
@@ -155,11 +156,8 @@ class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
             mSecretKeyType = SecretKeyType.fromNum(cursor.getInt(INDEX_HAS_SECRET));
 
             mIsRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-            Date expiryDate = null;
-            if (!cursor.isNull(INDEX_EXPIRY)) {
-                expiryDate = new Date(cursor.getLong(INDEX_EXPIRY) * 1000);
-            }
-            mIsExpired = expiryDate != null && expiryDate.before(new Date());
+            mExpiry = cursor.isNull(INDEX_EXPIRY) ? null : new Date(cursor.getLong(INDEX_EXPIRY) * 1000);
+            mIsExpired = mExpiry != null && mExpiry.before(new Date());
 
             mCanCertify = cursor.getInt(INDEX_CAN_CERTIFY) > 0;
             mCanSign = cursor.getInt(INDEX_CAN_SIGN) > 0;

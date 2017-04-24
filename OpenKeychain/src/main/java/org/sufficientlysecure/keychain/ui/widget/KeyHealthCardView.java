@@ -18,12 +18,15 @@
 package org.sufficientlysecure.keychain.ui.widget;
 
 
+import java.util.Date;
+
 import android.content.Context;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
+import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +55,8 @@ public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnC
     private final View vInsecureLayout;
     private final TextView vInsecureProblem;
     private final TextView vInsecureSolution;
+    private final View vExpiryLayout;
+    private final TextView vExpiryText;
 
     private KeyHealthClickListener keyHealthClickListener;
 
@@ -74,6 +79,9 @@ public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnC
         vInsecureLayout = view.findViewById(R.id.key_insecure_layout);
         vInsecureProblem = (TextView) view.findViewById(R.id.key_insecure_problem);
         vInsecureSolution = (TextView) view.findViewById(R.id.key_insecure_solution);
+
+        vExpiryLayout = view.findViewById(R.id.key_expiry_layout);
+        vExpiryText = (TextView) view.findViewById(R.id.key_expiry_text);
     }
 
     private enum KeyHealthDisplayStatus {
@@ -147,6 +155,10 @@ public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnC
 
     @Override
     public void setPrimarySecurityProblem(KeySecurityProblem securityProblem) {
+        if (securityProblem == null) {
+            vInsecureLayout.setVisibility(View.GONE);
+            return;
+        }
         vInsecureLayout.setVisibility(View.VISIBLE);
 
         if (securityProblem instanceof InsecureBitStrength) {
@@ -163,6 +175,18 @@ public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnC
             vInsecureSolution.setText(R.string.key_insecure_unknown_curve_solution);
         }
 
+    }
+
+    @Override
+    public void setPrimaryExpiryDate(Date expiry) {
+        if (expiry == null) {
+            vExpiryLayout.setVisibility(View.GONE);
+            return;
+        }
+        vExpiryLayout.setVisibility(View.VISIBLE);
+
+        String expiryText = DateFormat.getMediumDateFormat(getContext()).format(expiry);
+        vExpiryText.setText(getResources().getString(R.string.key_expiry_text, expiryText));
     }
 
     @Override

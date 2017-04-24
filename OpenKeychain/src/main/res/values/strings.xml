@@ -1861,4 +1861,6 @@
     <string name="key_insecure_unknown_curve_problem">"This key uses the <b>%1$s</b> algorithm, which is not whitelisted."</string>
     <string name="key_insecure_unknown_curve_solution">"This key can\'t be upgraded. For secure communication, the owner must generate a new key."</string>
 
+    <string name="key_expiry_text">"This key expired on <b>%1$s</b>."</string>
+
 </resources>
