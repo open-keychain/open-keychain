@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 
 import java.util.Comparator;
+import java.util.Date;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -97,6 +98,7 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         KeyHealthStatus keyHealthStatus = determineKeyHealthStatus(subkeyStatus);
 
         boolean isInsecure = keyHealthStatus == KeyHealthStatus.INSECURE;
+        boolean isExpired = keyHealthStatus == KeyHealthStatus.EXPIRED;
         if (isInsecure) {
             boolean primaryKeySecurityProblem = subkeyStatus.keyCertify.mSecurityProblem != null;
             if (primaryKeySecurityProblem) {
@@ -108,10 +110,13 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
                 view.setShowExpander(false);
                 displayExpandedInfo(false);
             }
+        } else if (isExpired) {
+            view.setKeyStatus(keyHealthStatus);
+            view.setPrimaryExpiryDate(subkeyStatus.keyCertify.mExpiry);
+            view.setShowExpander(false);
         } else {
             view.setKeyStatus(keyHealthStatus);
-            view.setShowExpander(
-                    keyHealthStatus != KeyHealthStatus.EXPIRED && keyHealthStatus != KeyHealthStatus.REVOKED);
+            view.setShowExpander(keyHealthStatus != KeyHealthStatus.REVOKED);
         }
     }
 
@@ -253,6 +258,7 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
     interface KeyHealthMvpView {
         void setKeyStatus(KeyHealthStatus keyHealthStatus);
         void setPrimarySecurityProblem(KeySecurityProblem securityProblem);
+        void setPrimaryExpiryDate(Date expiry);
 
         void setShowExpander(boolean showExpander);
         void showExpandedState(KeyDisplayStatus certifyStatus, KeyDisplayStatus signStatus,
@@ -260,6 +266,7 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         void hideExpandedInfo();
 
         void setOnHealthClickListener(KeyHealthClickListener keyHealthClickListener);
+
     }
 
     interface KeyStatusMvpView {
