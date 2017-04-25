@@ -25,12 +25,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
+import org.sufficientlysecure.keychain.pgp.SecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.ui.RemoteBackupActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteImportKeysActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemotePassphraseDialogActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteRegisterActivity;
+import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityProblemDialogActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSelectPubKeyActivity;
 import org.sufficientlysecure.keychain.remote.ui.RequestKeyPermissionActivity;
@@ -141,6 +143,20 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
+    PendingIntent createSecurityProblemIntent(String packageName, SecurityProblem keySecurityProblem) {
+        Intent intent = new Intent(mContext, RemoteSecurityProblemDialogActivity.class);
+        intent.putExtra(RemoteSecurityProblemDialogActivity.EXTRA_PACKAGE_NAME, packageName);
+        intent.putExtra(RemoteSecurityProblemDialogActivity.EXTRA_SECURITY_PROBLEM, keySecurityProblem);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //noinspection ResourceType, looks like lint is missing FLAG_IMMUTABLE
+            return PendingIntent.getActivity(mContext, 0, intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            return PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        }
+    }
+
     private PendingIntent createInternal(Intent data, Intent intent) {
         // re-attach "data" for pass through. It will be used later to repeat pgp operation
         intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_DATA, data);
@@ -175,5 +191,4 @@ public class ApiPendingIntentFactory {
                     PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
         }
     }
-
 }

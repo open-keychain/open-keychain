@@ -60,6 +60,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
@@ -400,6 +401,7 @@ public class OpenPgpService extends Service {
                 processDecryptionResultForResultIntent(targetApiVersion, result, pgpResult.getDecryptionResult());
                 processMetadataForResultIntent(result, pgpResult.getDecryptionMetadata());
                 processSignatureResultForResultIntent(targetApiVersion, data, result, pgpResult);
+                processSecurityProblemsPendingIntent(result, pgpResult);
 
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
@@ -425,6 +427,20 @@ public class OpenPgpService extends Service {
             Log.e(Constants.TAG, "decryptAndVerifyImpl", e);
             return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
+    }
+
+    private void processSecurityProblemsPendingIntent(Intent result, DecryptVerifyResult decryptVerifyResult) {
+        List<SecurityProblem> securityProblems = decryptVerifyResult.getSecurityProblems();
+        if (securityProblems.isEmpty()) {
+            return;
+        }
+
+        // TODO what if there is multiple?
+        SecurityProblem keySecurityProblem = securityProblems.get(0);
+
+        String packageName = mApiPermissionHelper.getCurrentCallingPackage();
+        result.putExtra(OpenPgpApi.RESULT_INSECURE_DETAIL_INTENT,
+                mApiPendingIntentFactory.createSecurityProblemIntent(packageName, keySecurityProblem));
     }
 
     private void processDecryptionResultForResultIntent(int targetApiVersion, Intent result,
