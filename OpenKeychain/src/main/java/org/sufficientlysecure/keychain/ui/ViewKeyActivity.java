@@ -966,10 +966,24 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                                 }
                             };
 
+                    boolean showStatusText = mIsSecure && !mIsExpired && !mIsRevoked;
+                    if (showStatusText) {
+                        mStatusText.setVisibility(View.VISIBLE);
+
+                        if (mIsSecret) {
+                            mStatusText.setText(R.string.view_key_my_key);
+                        } else if (mIsVerified) {
+                            mStatusText.setText(R.string.view_key_verified);
+                        } else {
+                            mStatusText.setText(R.string.view_key_unverified);
+                        }
+                    } else {
+                        mStatusText.setVisibility(View.GONE);
+                    }
+
                     // Note: order is important
                     int color;
                     if (mIsRevoked) {
-                        mStatusText.setText(R.string.view_key_revoked);
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                 State.REVOKED, R.color.icons, true);
@@ -982,7 +996,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (!mIsSecure) {
-                        mStatusText.setText(R.string.view_key_insecure);
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                 State.INSECURE, R.color.icons, true);
@@ -995,11 +1008,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsExpired) {
-                        if (mIsSecret) {
-                            mStatusText.setText(R.string.view_key_expired_secret);
-                        } else {
-                            mStatusText.setText(R.string.view_key_expired);
-                        }
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                 State.EXPIRED, R.color.icons, true);
@@ -1012,7 +1020,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsSecret) {
-                        mStatusText.setText(R.string.view_key_my_key);
                         mStatusImage.setVisibility(View.GONE);
                         // noinspection deprecation, fix requires api level 23
                         color = getResources().getColor(R.color.key_flag_green);
