@@ -10,7 +10,7 @@
   <string name="title_add_subkey">添加子密钥</string>
   <string name="title_change_master_key">更改主密钥</string>
   <string name="title_edit_key">编辑密钥</string>
-  <string name="title_linked_create">创建一个关联身份</string>
+  <string name="title_linked_create">创建一个关联用户标识</string>
   <string name="title_preferences">设置</string>
   <string name="title_api_registered_apps">已注册应用</string>
   <string name="title_key_server_preference">OpenPGP 密钥服务器</string>
@@ -38,7 +38,7 @@
   <string name="title_manage_my_keys">管理我的密钥</string>
   <string name="title_alert_strip">剥离子密钥</string>
   <!--section-->
-  <string name="section_user_ids">用户名</string>
+  <string name="section_user_ids">用户标识</string>
   <string name="section_security_token">安全令牌</string>
   <string name="section_linked_system_contact">关联系统联系人</string>
   <string name="section_keybase_proofs">Keybase.io 证书</string>
@@ -200,7 +200,7 @@
   <string name="label_experimental_settings_desc_summary">这些功能目前尚未完成或者缺少用户经验性/安全性的研究结果。所以，不保证他们是安全的，请不要对我们发牢骚！</string>
   <string name="label_experimental_settings_word_confirm_title">通过短语确认密钥</string>
   <string name="label_experimental_settings_word_confirm_summary">使用短语代替 16 进制指纹，完成密钥确认</string>
-  <string name="label_experimental_settings_linked_identities_title">关联身份</string>
+  <string name="label_experimental_settings_linked_identities_title">关联用户标识</string>
   <string name="label_experimental_settings_linked_identities_summary">将密钥与 Twitter, GitHub, 网站或者 DNS 关联 (类似 Keybase.io 但是去中心化的)</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io 证书</string>
   <string name="label_experimental_settings_keybase_summary">每次展示密钥时自动从keybase.io获取证明并显示它们</string>
@@ -344,7 +344,7 @@
   <string name="error_integrity_check_failed">完整性检查失败! 数据已被篡改!</string>
   <string name="error_wrong_passphrase">密码错误</string>
   <string name="error_could_not_extract_private_key">不能提取私钥</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">只有 Android 4.1 及以上才支持 Android\'s NFC Beam 功能</string>
   <string name="error_nfc_needed">必须开启 NFC!</string>
   <string name="error_beam_needed">必须开启 Beam!</string>
@@ -617,7 +617,7 @@
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">网上没有关于此密钥可信度的证明</string>
   <string name="key_trust_start_cloud_search">开始搜索</string>
-  <string name="key_trust_results_prefix">Keybase.io提供的用来断定该密钥所有者身份的证明</string>
+  <string name="key_trust_results_prefix">Keybase.io 提供用以确定该密钥所有者的证明：</string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">能发送推文到 %s </string>
   <string name="keybase_narrative_github">在GitHub上的用户名是 %s</string>
@@ -632,6 +632,7 @@
   <string name="keybase_problem_fetching_evidence">证明有问题</string>
   <string name="keybase_key_mismatch">证明内容与该密钥指纹不匹配</string>
   <string name="keybase_dns_query_failure">取回 DNS 的 TXT 记录失败</string>
+  <string name="keybase_no_prover_found">没有找到证明检查</string>
   <string name="keybase_message_payload_mismatch">加密证明内容不匹配</string>
   <string name="keybase_message_fetching_data">正在获取证明</string>
   <string name="keybase_proof_succeeded">该证明已被检验</string>
@@ -644,6 +645,7 @@
   <string name="keybase_web_site_proof">一个文本文件</string>
   <string name="keybase_github_proof">一个gist</string>
   <string name="keybase_reddit_proof">一个JSON文件</string>
+  <string name="keybase_reddit_attribution">归到 Reddit </string>
   <string name="keybase_verify">校验</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">变更密码</string>
@@ -740,7 +742,7 @@
   <string name="msg_cancelled">操作已取消</string>
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">开始批量导入</string>
-  <string name="msg_ip_bad_type_secret">已将私钥导入为公钥，这是一个BUG，请提交报告！</string>
+  <string name="msg_ip_bad_type_secret">尝试将私钥环导入为公钥。这是一个BUG，请提交报告！</string>
   <string name="msg_ip_delete_old_fail">没有旧密钥被删除（创建一个新密钥？）</string>
   <string name="msg_ip_delete_old_ok">已从数据库中删除旧的密钥</string>
   <string name="msg_ip_encode_fail">由于编码错误，操作失败</string>
@@ -914,11 +916,17 @@
   <string name="msg_kc_uat_bad_time">正在移除带有未来时间戳的用户属性</string>
   <string name="msg_kc_uat_bad_type">正在移除未知类型 (%s) 的用户属性</string>
   <string name="msg_kc_uat_bad">正在移除用户属性的无效自签名</string>
+  <string name="msg_kc_uat_cert_dup">正在移除用户属性中过期的无效自签名</string>
+  <string name="msg_kc_uat_dup">移除重复的用户属性。密钥环中包含两份相同属性。这可能导入认证丢失！</string>
+  <string name="msg_kc_uat_foreign">移除外部用户属性，该属性认证为</string>
   <string name="msg_kc_uat_revoke_dup">正在移除重复的用户属性吊销证书</string>
   <string name="msg_kc_uat_revoke_old">正在移除过期的用户属性吊销证书</string>
+  <string name="msg_kc_uat_no_cert">没有找到有效的自认证，从密钥环中移除用户属性</string>
   <string name="msg_kc_uat_remove">移除无效的用用户标识</string>
   <string name="msg_kc_uat_warn_encoding">用户标识不是有效的 UTF-8 字符串!</string>
   <!--Keyring merging log entries-->
+  <string name="msg_mg_error_secret_dummy">找到新的公钥子密钥，但不支持私钥子密钥虚拟生成！</string>
+  <string name="msg_mg_error_heterogeneous">尝试合并具有不同指纹的密钥环！</string>
   <string name="msg_mg_error_encode">解码信号时发生错误！</string>
   <string name="msg_mg_public">正在并入公钥密钥环 %s</string>
   <string name="msg_mg_secret">正在并入私钥密钥环 %s</string>
@@ -965,12 +973,15 @@
   <string name="msg_mf_error_duplicate_keytocard_for_slot">智能卡仅支持每存储位一密钥的规格。</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">安全令牌密钥的标签不正确。</string>
   <string name="msg_mf_master">正在修改主密钥认证</string>
+  <string name="msg_mf_notation_empty">添加空的注释数据包</string>
+  <string name="msg_mf_notation_pin">添加PIN注释数据包</string>
   <string name="msg_mf_passphrase">正在更改密钥环密码</string>
   <string name="msg_mf_pin">正在变更安全令牌PIN码</string>
   <string name="msg_mf_admin_pin">正在变更安全令牌管理员PIN码</string>
   <string name="msg_mf_passphrase_key">用新密码重新加密子密钥%s</string>
   <string name="msg_mf_passphrase_empty_retry">设置新密码失败，正在尝试旧的空密钥</string>
   <string name="msg_mf_passphrase_fail">无法更改子密钥的密码！(其密码与其他密钥不一致吗？)</string>
+  <string name="msg_mf_primary_replace_old">替换先前主用户标识的认证</string>
   <string name="msg_mf_primary_new">正在为新的主用户标识表示生成新的证书</string>
   <string name="msg_mf_restricted_mode">正在切换到受限操作模式</string>
   <string name="msg_mf_subkey_change">正在修改子密钥 %s</string>
@@ -1001,6 +1012,8 @@
   <string name="msg_con_save_public">正在保存公钥密钥环</string>
   <string name="msg_con_db_clear">正在清空数据库</string>
   <string name="msg_con_success">成功整理数据库</string>
+  <string name="msg_con_critical_in">进入关键阶段</string>
+  <string name="msg_con_critical_out">离开关键阶段</string>
   <string name="msg_con_delete_public">正在删除公钥密钥环缓存</string>
   <string name="msg_con_delete_secret">正在删除私钥密钥环缓存</string>
   <string name="msg_con_error_db">打开数据库时出错！</string>
@@ -1009,6 +1022,8 @@
   <string name="msg_con_error_public">重新导入公共密钥时出错</string>
   <string name="msg_con_error_secret">重新导入私有密钥时出错</string>
   <string name="msg_con_recover">正在恢复合并</string>
+  <string name="msg_con_recursive">跳过递归合并</string>
+  <string name="msg_con_recover_unknown">从未知状态恢复合并过程</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="other">正在重新导入 %d 个公钥</item>
   </plurals>
@@ -1028,15 +1043,21 @@
   <string name="msg_ed_fetching">正在提取待修改的密钥（%s）</string>
   <string name="msg_ed_success">密钥操作成功</string>
   <!--Promote key-->
+  <string name="msg_pr">将公钥提升为私钥</string>
   <string name="msg_pr_all">升级所有的子密钥</string>
   <string name="msg_pr_error_key_not_found">未找到密钥</string>
   <string name="msg_pr_fetching">正在提取待修改的密钥（%s）</string>
   <string name="msg_pr_subkey_match">升级密钥：%s</string>
+  <string name="msg_pr_subkey_nomatch">子密钥不在安全令牌中: %s</string>
   <string name="msg_pr_success">密钥成功升级</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_dummy">主密钥已剥离时无法编辑密钥环！</string>
   <string name="msg_ek_error_not_found">未找到密钥</string>
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_askip_bad_flags">不是加密密钥，跳过...</string>
+  <string name="msg_dc_askip_unavailable">密钥不可用，跳过...</string>
+  <string name="msg_dc_askip_no_key">数据加密密钥未知，跳过…</string>
+  <string name="msg_dc_askip_not_allowed">数据使用不被允许的密钥加密，跳过...</string>
   <string name="msg_dc_asym">找到用 %s 密钥非对称加密的数据</string>
   <string name="msg_dc_charset">找到 charset 头部：\'%s\'</string>
   <string name="msg_dc_backup_version">找到 backupVersion 头部：\'%s\'</string>
@@ -1050,6 +1071,7 @@
   <string name="msg_dc_clear_signature_bad">指纹检验异常！</string>
   <string name="msg_dc_clear_signature_check">正在检验签名数据</string>
   <string name="msg_dc_clear_signature_ok">签名检验正常</string>
+  <string name="msg_dc_clear_signature">保存签名数据备用</string>
   <string name="msg_dc_clear">正在处理明文数据</string>
   <string name="msg_dc_error_bad_passphrase">无法解锁密钥，密码错误！</string>
   <string name="msg_dc_error_sym_passphrase">无法解密数据！(密码错误？)</string>
@@ -1071,12 +1093,23 @@
   <string name="msg_dc_pending_passphrase">需要密码，请求用户输入…</string>
   <string name="msg_dc_prep_streams">正在准备解密用的数据流</string>
   <string name="msg_dc">正在开始解密操作...</string>
+  <string name="msg_dc_sym_skip">不允许对称数据，跳过...</string>
   <string name="msg_dc_sym">找到对称加密的数据</string>
+  <string name="msg_dc_trail_asym">找到由密钥 %s 后切非对称加密的数据</string>
+  <string name="msg_dc_trail_sym">找到后切对称加密数据</string>
+  <string name="msg_dc_trail_unknown">找到未知类型的后切数据</string>
   <string name="msg_dc_unlocking">正在解密私钥</string>
+  <string name="msg_dc_insecure_encryption_key">使用了不安全的加密密钥！这可能由于密钥过旧，或源自一次攻击。</string>
+  <string name="msg_dc_insecure_symmetric_encryption_algo">使用了不安全的加密算法！这可能由于使用了过时的程序，或源自一次攻击。</string>
+  <string name="msg_dc_insecure_hash_algo">使用了不安全的哈希算法！这可能由于使用了过时的程序，或源自一次攻击。</string>
+  <string name="msg_dc_insecure_mdc_missing">丢失篡改检测码(MDC)数据！这可能由于使用的加密程序过时，或源自一次降级攻击。</string>
+  <string name="msg_dc_insecure_key">不安全的密钥：RSA/DSA/ElGamal 长度过短或ECC曲线/算法不安全！这可能由于使用了过时的程序，或源自一次攻击。</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">开始签名检查</string>
+  <string name="msg_vl_error_no_siglist">签名字面数据中没有签名列表！</string>
   <string name="msg_vl_error_wrong_key">消息没有用预期的密钥签名！</string>
   <string name="msg_vl_error_no_signature">缺失签名数据！</string>
+  <string name="msg_vl_error_missing_literal">签名字面数据中没有有效内容</string>
   <string name="msg_vl_clear_meta_file">文件名：%s</string>
   <string name="msg_vl_clear_meta_mime">MIME 类型：%s</string>
   <string name="msg_vl_clear_meta_time">修改日期：%s</string>
@@ -1110,14 +1143,28 @@
   <string name="msg_pse_key_unknown">没有找到加密的密钥：%s</string>
   <string name="msg_pse_key_warn">不可用于加密的密钥：%s</string>
   <string name="msg_pse_ok">签名/加密操作成功！</string>
+  <string name="msg_pse_pending_nfc">需要 NFC 令牌，请求用户输入…</string>
+  <string name="msg_pse_pending_passphrase">需要密码，请求用户输入…</string>
+  <string name="msg_pse_signing">数据签名中 (不加密)</string>
+  <string name="msg_pse_signing_cleartext">正在创建明文签名</string>
+  <string name="msg_pse_signing_detached">创建分离签名</string>
+  <string name="msg_pse_sigcrypting">加密并签名数据</string>
   <string name="msg_pse">开始签名/加密操作</string>
   <string name="msg_pse_symmetric">正在准备对称加密</string>
   <string name="msg_crt_certifying">正在生成证书</string>
+  <plurals name="msg_crt_certify_uids">
+    <item quantity="other">正在认证密钥 %2$s 的 %1$d 个用户标识。</item>
+  </plurals>
+  <plurals name="msg_crt_certify_uats">
+    <item quantity="other">正在认证密钥 %2$s 的 %1$d 个用户属性。</item>
+  </plurals>
+  <string name="msg_crt_error_self">无法发出这样的自认证！</string>
   <string name="msg_crt_error_master_not_found">未找到主密钥！</string>
   <string name="msg_crt_error_nothing">没有密钥被签名</string>
   <string name="msg_crt_error_unlock">解锁主密钥时出错！</string>
   <string name="msg_crt">正在为密钥环签名...</string>
   <string name="msg_crt_master_fetch">正在获取认证方的主密钥</string>
+  <string name="msg_crt_nfc_return">返回到 NFC 屏幕</string>
   <string name="msg_crt_save">正在保存验证后的密钥 %s</string>
   <string name="msg_crt_saving">保存密钥环中....</string>
   <string name="msg_crt_unlock">正在解锁主密钥</string>
@@ -1130,6 +1177,7 @@
   <plurals name="msg_import">
     <item quantity="other">正在导入 %d 个密钥</item>
   </plurals>
+  <string name="msg_import_fetch_error_decode">取回的密钥环解码错误！</string>
   <string name="msg_import_fetch_error">无法获取密钥！（网络问题？）</string>
   <string name="msg_import_fetch_error_keyserver">无法从密钥服务器下载密钥：%s</string>
   <string name="msg_import_fetch_error_keyserver_secret">无法从密钥服务器导入私钥！</string>
@@ -1158,6 +1206,7 @@
   <string name="msg_upload_proxy_direct">使用代理：无</string>
   <string name="msg_upload_proxy_tor">使用代理：TOR</string>
   <string name="msg_upload_proxy">使用代理：%s</string>
+  <string name="msg_upload_server">服务器: %s</string>
   <string name="msg_upload_key">密钥 ID：%s</string>
   <string name="msg_upload_error_key">处理密钥数据时出错！</string>
   <string name="msg_upload_error_not_found">未找到密钥</string>
@@ -1168,7 +1217,9 @@
   <plurals name="msg_del">
     <item quantity="other">正在删除 %d 个密钥</item>
   </plurals>
+  <string name="msg_del_key">正在删除密钥 %s</string>
   <string name="msg_del_key_fail">不能成功删除密钥 %s</string>
+  <string name="msg_del_consolidate">删除私钥后合并数据库</string>
   <plurals name="msg_del_ok">
     <item quantity="other">成功删除 %d 个密钥</item>
   </plurals>
@@ -1176,24 +1227,73 @@
     <item quantity="other">不能成功删除%d个密钥 </item>
   </plurals>
   <string name="msg_revoke_error_empty">无物可吊销！</string>
+  <string name="msg_revoke_error_not_found">找不到可以吊销的密钥！</string>
+  <string name="msg_revoke_key">正在吊销密钥 %s</string>
   <string name="msg_revoke_key_fail">不能成功吊销密钥</string>
   <string name="msg_revoke_ok">吊销密钥成功</string>
   <!--Linked Identity verification-->
   <string name="msg_lv">正在验证关联用户标识...</string>
+  <string name="msg_lv_match">正在查找令牌</string>
+  <string name="msg_lv_match_error">未在资源中找到令牌！</string>
   <string name="msg_lv_fp_ok">指纹正常.</string>
+  <string name="msg_lv_fp_error">指纹不匹配！</string>
+  <string name="msg_lv_error_twitter_auth">获取 Twitter 授权令牌时出错！</string>
+  <string name="msg_lv_error_twitter_handle">回应的 Twitter 账号用户名不匹配！</string>
+  <string name="msg_lv_error_twitter_response">从 Twitter 接口收到意外响应！</string>
+  <string name="msg_lv_error_github_handle">回应的 GitHub  账号用户名不匹配！</string>
+  <string name="msg_lv_error_github_not_found">Gist 中未包含匹配文件！</string>
+  <string name="msg_lv_fetch">正在加载 \'%s\'</string>
+  <string name="msg_lv_fetch_redir">正在重定向至 \'%s\'</string>
   <string name="msg_lv_fetch_ok">获取成功 (HTTP %s)</string>
+  <string name="msg_lv_fetch_error">服务器错误 (HTTP %s)</string>
+  <string name="msg_lv_fetch_error_url">URL 格式不正确！</string>
+  <string name="msg_lv_fetch_error_io">输入输出错误！</string>
+  <string name="msg_lv_fetch_error_format">格式错误！</string>
+  <string name="msg_lv_fetch_error_nothing">未找到资源！</string>
+  <string name="msg_bench">正在进行某些操作的性能测试...</string>
+  <string name="msg_bench_enc_time">加密时间: %ss</string>
+  <string name="msg_bench_enc_time_avg">5MB 加密平均时间: %ss</string>
+  <string name="msg_bench_dec_time">解密时间: %ss</string>
+  <string name="msg_bench_dec_time_avg">5MB 解密平均时间: %ss</string>
+  <string name="msg_bench_s2k_100ms_its">100ms S2K迭代次数: %s</string>
+  <string name="msg_bench_s2k_for_it">%1$s 次 SHA1 S2K 操作耗时: %2$sms</string>
+  <string name="msg_bench_success">性能测试完成！</string>
   <string name="msg_data">正在输入数据</string>
+  <string name="msg_data_openpgp">正在尝试处理 OpenPGP 数据</string>
+  <string name="msg_data_detached">发现分离的签名</string>
+  <string name="msg_data_detached_clear">清除早前未签名的数据！</string>
+  <string name="msg_data_detached_sig">处理分离签名</string>
+  <string name="msg_data_detached_raw">处理签名数据</string>
+  <string name="msg_data_detached_nested">跳过嵌套的签名数据！</string>
+  <string name="msg_data_detached_trailing">跳过签名部分之后的后切数据！</string>
+  <string name="msg_data_detached_unsupported">分享签名的类型不被支持！</string>
+  <string name="msg_data_error_io">读取输入数据时出错！</string>
   <string name="msg_data_mime_bad">无法作为 MIME 数据解析</string>
   <string name="msg_data_mime_filename">Filename: \'%s\'</string>
   <string name="msg_data_mime_from_extension">从扩展名猜测 MIME 类型</string>
   <string name="msg_data_mime_length">Content-Length: %s</string>
+  <string name="msg_data_mime_charset">字符集: \'%s\'</string>
+  <string name="msg_data_mime_charset_faulty">字符集 \'%s\' 解码失败！</string>
+  <string name="msg_data_mime_charset_guess">字符集似乎是 \'%s\'</string>
+  <string name="msg_data_mime_charset_unknown">字符集未知，或数据不是文本。</string>
   <string name="msg_data_mime">解析 MIME 数据结构</string>
+  <string name="msg_data_mime_ok">已完成解析</string>
   <string name="msg_data_mime_none">没有找到 MIME 结构</string>
   <string name="msg_data_mime_part">正在处理 MIME 部分</string>
+  <string name="msg_data_mime_type">Content-Type: %s</string>
   <string name="msg_data_ok">数据处理成功</string>
   <string name="msg_data_skip_mime">跳过 MIME 解析</string>
+  <string name="msg_acc_saved">帐户已保存</string>
   <string name="msg_get_success">下载成功！</string>
+  <string name="msg_get_file_not_found">没有找到输入文件！</string>
+  <string name="msg_get_no_valid_keys">文件/剪贴板里没有密钥！</string>
+  <string name="msg_get_too_many_responses">密钥搜索返回太多符合条件的结果。请优化您的关键词！</string>
+  <string name="msg_get_query_too_short">搜索条件过短。请优化您的关键词！</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">没有找到或找到过多结果。请优化您的关键词！</string>
+  <string name="msg_download_query_failed">搜索密钥时出错。</string>
   <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_verification">尝试使用 keybase 验证密钥 %s</string>
+  <string name="msg_keybase_error_no_prover">没有找到 %s 的证明检查</string>
   <string name="msg_keybase_error_fetching_evidence">获取证明出现问题</string>
   <string name="msg_keybase_error_key_mismatch">证明内容与该密钥指纹不匹配</string>
   <string name="msg_keybase_error_dns_fail">取回 DNS 的 TXT 记录失败</string>
@@ -1212,7 +1312,10 @@
   <string name="passp_cache_notif_clear">清除密码</string>
   <string name="passp_cache_notif_pwd">密码</string>
   <!--Keyserver sync-->
+  <string name="keyserver_sync_orbot_notif_title">需要 Orbot 才能从服务器同步</string>
+  <string name="keyserver_sync_orbot_notif_msg">点击启动 Orbot</string>
   <string name="keyserver_sync_orbot_notif_start">打开Orbot</string>
+  <string name="keyserver_sync_orbot_notif_ignore">直连</string>
   <!--First Time-->
   <string name="first_time_text1">用OpenKeychain重新找回您的隐私！</string>
   <string name="first_time_create_key">创建密钥</string>
@@ -1231,8 +1334,13 @@
   <string name="section_certifier_id">认证人</string>
   <string name="section_cert">认证详情</string>
   <string name="label_user_id">用户标识</string>
+  <string name="unknown_uid"><![CDATA[<unknown>]]></string>
   <string name="empty_certs">该密钥的证书不存在</string>
   <string name="certs_text">此处仅显示自认证及被您的密钥所验证的凭证。</string>
+  <string name="section_uids_to_certify">用户标识</string>
+  <string name="certify_text">您正在导入的密钥包含了“用户标识”：姓名和邮件地址。选择那些完全符合您预期的以确认这些信息。</string>
+  <string name="certify_fingerprint_text">请逐字比对这里的短语和同伴设备上显示的的指纹。</string>
+  <string name="certify_fingerprint_text_phrases">请比对这里的短语和同伴设备上显示的的短语。</string>
   <string name="label_revocation">吊销原因</string>
   <string name="label_cert_type">输入</string>
   <string name="error_key_not_found">未找到密钥</string>
@@ -1245,15 +1353,25 @@
   <string name="title_view_cert">查看认证详情</string>
   <string name="unknown_algorithm">未知</string>
   <string name="can_sign_not">无法签署</string>
+  <string name="error_no_encrypt_subkey">没有加密子密钥！</string>
   <string name="contact_show_key">显示密钥 (%s)</string>
   <string name="swipe_to_update">向下滑动从密钥服务器更新</string>
   <string name="error_no_file_selected">至少选择一个待加密的文件！</string>
+  <string name="error_multi_files">由于 Android 系统限制，不支持保存多个文件。</string>
+  <string name="error_multi_clipboard">不支持加密多个文件到剪贴板。</string>
+  <string name="error_detached_signature">不支持对二进制文件只签名而不加密，请至少选择一个加密密钥。</string>
   <string name="error_empty_text">输入待加密文本!</string>
+  <string name="error_log_share_internal">初始化日志时发生内部错误！</string>
   <string name="key_colon">密钥：</string>
   <string name="exchange_description">在开始密钥交换之前，在右侧指定参与者的数量，然后点击“开始交换”按钮。\n\n您将被要求回答两个问题以确认由正确的参与者参与交换过程，并且他们的指纹是正确的。</string>
   <string name="btn_start_exchange">开始交换</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
+  <string name="account_no_manual_account_creation">不能手动创建 OpenKeychain 账户。</string>
+  <string name="account_privacy_title">隐私</string>
+  <string name="account_privacy_text">OpenKeychain 并不与互联网同步您的联系人数据。它仅通过姓名和邮件地址的匹配关联联系人和密钥。这是线下完成的。</string>
+  <string name="sync_notification_permission_required_title">需要访问联系人的权限</string>
+  <string name="sync_notification_permission_required_text">点击以配置关联到联系人</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <string name="title_unlock_method">选择一个解锁方法</string>
@@ -1266,9 +1384,15 @@
   <string name="passphrase_saved">密码已保存</string>
   <string name="passphrase_invalid">密码无效</string>
   <string name="missing_passphrase">缺少密码</string>
+  <string name="passphrase_again">重复</string>
+  <string name="lockpattern">锁屏图案</string>
+  <string name="lockpatternNFC">NFC + 锁屏图案</string>
   <string name="unlock_method">解锁方法</string>
   <string name="set_passphrase">设置密码</string>
+  <string name="draw_lockpattern">绘制锁屏图案</string>
+  <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_wrong_tag">NFC 标签不匹配，请重试。</string>
   <string name="enable_nfc">请在设置中激活 NFC</string>
   <string name="no_nfc_support">该设备不支持 NFC</string>
   <string name="nfc_write_successful">已成功写入 NFC 标签</string>
@@ -1279,6 +1403,7 @@
   <string name="button_bind_key">绑定密钥</string>
   <string name="security_token_serial_no">序列号： %s</string>
   <string name="security_token_key_holder">密钥持有人： %s</string>
+  <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
   <string name="security_token_status_bound">安全信息匹配并且已绑定到密钥</string>
   <string name="security_token_status_unbound">安全信息匹配并且可绑定到密钥</string>
   <string name="security_token_status_partly">安全信息匹配并且已部分绑定到密钥</string>
@@ -1297,9 +1422,12 @@
   <string name="security_token_error_terminated">安全令牌处于停用状态。</string>
   <string name="security_token_error_wrong_length">输入的PIN码过短。至少6位长度。</string>
   <string name="security_token_error_conditions_not_satisfied">使用条件不满足。</string>
+  <string name="security_token_error_security_not_satisfied">安全状态不满足。</string>
   <string name="security_token_error_authentication_blocked">由于太多的尝试，PIN已被阻止。</string>
+  <string name="security_token_error_data_not_found">未找到密钥或对象。</string>
   <string name="security_token_error_unknown">未知错误</string>
   <string name="security_token_error_bad_data">安全令牌报告了无效的数据。</string>
+  <string name="security_token_error_chaining_error">安全令牌在等待最后一个命令。</string>
   <string name="security_token_error_header">安全令牌报告了无效的 %s 字节。</string>
   <string name="security_token_error_tag_lost">安全信息被过早移除了。保持安全令牌在背面直到操作完成。</string>
   <string name="security_token_error_iso_dep_not_supported">标签不支持 ISO-DEP (ISO 14443-4)</string>
@@ -1315,6 +1443,7 @@
   <string name="error_empty_log">(错误，空日志)</string>
   <string name="error_reading_text">解密时无法读取输入！</string>
   <string name="error_reading_aosp">读取数据失败，这是 Android 邮件客户端的一个错误 !（错误 #290）</string>
+  <string name="error_reading_k9">收到不完整数据，尝试在 K-9 Mail 中点击 “下载完整消息”！</string>
   <string name="filename_unknown">未知文件名(触摸打开)</string>
   <string name="filename_unknown_text">文本(触摸显示)</string>
   <string name="filename_keys">密钥备份(触摸导出)</string>
@@ -1331,27 +1460,51 @@
   <string name="file_delete_exception">无法删除原始文件！</string>
   <string name="error_clipboard_empty">剪贴板为空！</string>
   <string name="error_clipboard_copy">复制到剪贴板时出现错误！</string>
+  <string name="error_scan_fp">扫描指纹时出错！</string>
+  <string name="error_scan_match">指纹不匹配！</string>
+  <string name="error_expiry_past">过期时间为过去！</string>
   <string name="linked_create_https_1_1">通过创建一个该类型的关联用户标识，您可以将您的密钥连接到您控制的一个网站。</string>
   <string name="linked_create_https_1_2">请在您的网站上发布一个文本文档，然后再创建一个链接到它的关联用户标识。</string>
+  <string name="linked_create_https_1_3">请输入放置了用于证明的文本文件的URL。注意，您的服务器必须支持 https 并拥有有效的 TLS 证书！</string>
   <string name="linked_create_https_1_4">范例:https://example.com/pgpkey.txt</string>
+  <string name="linked_create_https_created">已创建证明文件 。下一步，您应该将其保存并上传到您声明的位置：</string>
+  <string name="linked_create_https_2_1">已为此位置创建证明文件：</string>
+  <string name="linked_create_https_2_2">下一步，您应该保存并上传此文件。</string>
+  <string name="linked_create_https_2_3">请确保该文件存在于正确位置并可访问，然后验证安装。</string>
   <string name="linked_create_https_2_4">验证成功之后，触摸完成按钮将关联用户标识加入您的密钥环，从而完成操作。</string>
   <string name="linked_create_twitter_1_1">通过创建一个该类型的关联用户标识，您可以将您的密钥连接到您控制的一个Twitter账号。</string>
   <string name="linked_create_twitter_1_2">请在您的时间线上发布一条指定推文，然后再创建一个链接到该推文的关联用户标识。</string>
+  <string name="linked_create_twitter_1_3">请输入您的 Twitter  屏幕名称以继续。</string>
+  <string name="linked_create_twitter_handle">Twitter 用户名</string>
+  <string name="linked_create_twitter_2_1">点击任意按钮发布此信息！</string>
+  <string name="linked_create_twitter_2_2">在发布之前，您可以编辑，只要不修改括号内的文本即可。</string>
+  <string name="linked_create_twitter_2_3">一旦以 &lt;b&gt;@%s&lt;/b&gt; 身份完成发布，点击验证按钮开始在您的时间线中查找这条消息。</string>
   <string name="linked_create_twitter_2_4">验证成功之后，触摸完成按钮将关联用户标识加入您的密钥环，从而完成操作。</string>
   <string name="linked_create_verify">校验</string>
+  <string name="linked_text_clipboard">文本已复制到剪贴板</string>
+  <string name="linked_verified_https">此网站与密钥的关联已被安全验证。<b>如果你相信网站是真的</b>，用您的密钥确认此次验证。</string>
+  <string name="linked_verified_github">GitHub 账号与密钥的关联已被安全验证。<b>如果你相信账号是真的</b>，用您的密钥确认此次验证。</string>
+  <string name="linked_verified_dns">此域名与密钥的关联已被安全验证。<b>如果你相信域名是真的</b>，用您的密钥确认此次验证。</string>
+  <string name="linked_verified_twitter">Twitter 账号与密钥的关联已被安全验证。<b>如果你相信账号是真的</b>，用您的密钥确认此次验证。</string>
+  <string name="linked_verified_secret_https">一切正常。</string>
+  <string name="linked_verified_secret_github">一切正常。</string>
+  <string name="linked_verified_secret_dns">一切正常。</string>
+  <string name="linked_verified_secret_twitter">一切正常。</string>
   <plurals name="linked_id_expand">
     <item quantity="other">共有 %d 个以上未知的用户标识类型</item>
   </plurals>
   <!--Other Linked Identity strings-->
   <string name="linked_select_1">\'关联用户标识\' 将您的 PGP 密钥关联到网络资源上。</string>
   <string name="linked_select_2">请选择一个类型:</string>
+  <string name="linked_id_generic_text">此文件声明拥有 OpenPGP  密钥 %2$s 的所有权。\n\n证明令牌：\n%1$s</string>
+  <string name="linked_id_github_text">此 Gist 确认了我的 OpenPGP 密钥的关联用户标识，并将其连接到该 GitHub 账号。\n\n证明令牌：\n%1$s</string>
   <string name="linked_verifying">正在校验…</string>
   <string name="linked_verify_success">已通过验证！</string>
   <string name="linked_verify_error">认证错误！</string>
   <string name="linked_verify_pending">尚未验证</string>
   <string name="linked_need_verify">资源必须被校验后才能继续操作！</string>
   <string name="menu_linked_add_identity">关联到帐户</string>
-  <string name="section_linked_identities">关联身份</string>
+  <string name="section_linked_identities">关联用户标识</string>
   <string name="btn_finish">完成</string>
   <string name="linked_title_https">网站 (HTTPS)</string>
   <string name="linked_title_dns">域名(DNS)</string>
@@ -1402,7 +1555,7 @@
   <string name="toast_wrong_mimetype">错误的数据类型，文本是预设值</string>
   <string name="toast_no_text">分享数据中没有文本！</string>
   <string name="menu_uids_save">保存</string>
-  <string name="title_edit_identities">编辑身份</string>
+  <string name="title_edit_identities">编辑用户标识</string>
   <string name="title_edit_subkeys">编辑子密钥</string>
   <string name="btn_search_for_query">查找\n\'%s\'</string>
   <string name="cache_ttl_lock_screen">直到锁屏</string>

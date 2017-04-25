@@ -1,109 +1,109 @@
-[//]: # (NOTA: coloque cada frase em sua própria linha, o Transifex coloca cada linha em seu próprio campo de tradução!)
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 ## 4.1
 
-  * Melhor detecção de emails e outros conteúdos quando aberto
+  * Better detection of emails and other content when opened
 
 
 ## 4.0
 
-  * Suporte experimental a Tokens de Segurança por USB
-  * Permissão de mudança de senha de chaves estirpadas
+  * Experimental support for Security Tokens over USB
+  * Allow password changing of stripped keys
 
 
 ## 3.9
 
-  * Detecção e tratamento de dados de texto
-  * Melhorias de desempenho
-  * UI melhorias para o manuseio do Token de Segurança
+  * Detection and handling of text data
+  * Performance improvements
+  * UI improvements for Security Token handling
 
 
 ## 3.8
 
-  * Edição de chave reestruturada
-  * Escolher individualmente lembretes quando digitar senhas
-  * Importar chave para o Facebook
+  * Redesigned key editing
+  * Choose remember time individually when entering passwords
+  * Facebook key import
 
 
 ## 3.7
 
-  * Melhoria no suporte ao Android 6 (permissões, integração na seleção de texto)
-  * API: Versão 10
+  * Improved Android 6 support (permissions, integration into text selection)
+  * API: Version 10
 
 
 ## 3.6
 
-  * Cópias de Segurança encriptadas
-  * Correções de segurança baseadas em auditoria de segurança externa
-  * Assistente de criação de chave YubiKey NEO
-  * Suporte interno básico a MIME
-  * Sincronização automática de chaves
-  * Funcionalidades experimentais: associar chaves a contas do GitHub, Twitter
-  * Funcionalidade experimental: confirmação de chaves via frases
-  * Funcionalidade experimental: tema escuro
-  * API: Versão 9
+  * Encrypted backups
+  * Security fixes based on external security audit
+  * YubiKey NEO key creation wizard
+  * Basic internal MIME support
+  * Automatic key synchronization
+  * Experimental feature: link keys to Github, Twitter accounts
+  * Experimental feature: key confirmation via phrases
+  * Experimental feature: dark theme
+  * API: Version 9
 
 
 ## 3.5
 
-  * Revogação de chave na exclusão
-  * Melhoria das checagens de criptografia insegura
-  * Correção: Não feche o OpenKeychain após o sucesso do assistente inicial
-  * API: Versão 8
+  * Key revocation on key deletion
+  * Improved checks for insecure cryptography
+  * Fix: Don't close OpenKeychain after first time wizard succeeds
+  * API: Version 8
 
 
 ## 3.4
 
-  * Download anônimo de chaves por Tor
-  * Suporte a proxy
-  * Melhor tratamento de erros do YubiKey
+  * Anonymous key download over Tor
+  * Proxy support
+  * Better YubiKey error handling
 
 
 ## 3.3
 
-  * Nova tela de decriptação
-  * Decriptação de múltiplos arquivos de uma só vez
-  * Melhor tratamento de erros do YubiKey
+  * New decryption screen
+  * Decryption of multiple files at once
+  * Better handling of YubiKey errors
 
 
 ## 3.2
 
-  * Primeira versão com suporte total ao YubiKey disponíveis pela interface do usuário: Editar chaves, vincular YubiKey a chaves, etc....
+  * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
   * Material design
-  * Integração com leitura por QR Code (Novas permissões requeridas)
-  * Melhoria no assistente de criação de chaves
-  * Corrigidos contatos desaparecidos após sincronismo
-  * Requer Android 4
-  * Tela de chaves redesenhada
-  * Simplificação de preferências criptográficas, melhor seleção de cifras seguras
-  * API: Assinaturas destacáveis, seleção livre de chave para assinatura, etc...
-  * Correção: algumas chaves válidas se mostravam como revogadas ou expiradas
-  * Não aceitar assinaturar por subchaves expiradas ou revogadas
-  * Suporte ao Keybase.io na vista avançada
-  * Método para atualizar todas as chaves de uma só vez
+  * Integration of QR Code Scanning (New permissions required)
+  * Improved key creation wizard
+  * Fix missing contacts after sync
+  * Requires Android 4
+  * Redesigned key screen
+  * Simplify crypto preferences, better selection of secure ciphers
+  * API: Detached signatures, free selection of signing key,...
+  * Fix: Some valid keys were shown revoked or expired
+  * Don't accept signatures by expired or revoked subkeys
+  * Keybase.io support in advanced view
+  * Method to update all keys at once
 
 
 ## 3.1.2
 
-  * Correção na exportação de chaves para arquivos (agora vai)
+  * Fix key export to files (now for real)
 
 
 ## 3.1.1
 
-  * Correção na exportação de chaves para arquivos (eram gravadas parcialmente)
-  * Corrigido um crash no Android 2.3
+  * Fix key export to files (they were written partially)
+  * Fix crash on Android 2.3
 
 
 ## 3.1
 
-  * Corrigido um crash no Android 5
-  * Nova tela de certificado
-  * Troca Segura diretamente da lista de chaves (biblioteca SafeSlinger)
-  * Novo fluxo de programa para QR Code
-  * Tela de decriptação redesenhada
-  * Uso de novos ícones e cores
-  * Corrigida a importação de chaves secretas do Symantec Encryption Desktop
-  * Suporte experimental a YubiKey: ID's de subchaves agora são verificadas corretamente
+  * Fix crash on Android 5
+  * New certify screen
+  * Secure Exchange directly from key list (SafeSlinger library)
+  * New QR Code program flow
+  * Redesigned decrypt screen
+  * New icon usage and colors
+  * Fix import of secret keys from Symantec Encryption Desktop
+  * Experimental YubiKey support: Subkey IDs are now checked correctly
 
 
 ## 3.0.1

@@ -278,7 +278,7 @@
   <string name="error_no_signature_key">ingen signaturnøkkel oppgitt</string>
   <string name="error_wrong_passphrase">feil passord</string>
   <string name="error_could_not_extract_private_key">kunne ikke pakke ut privat nøkkel</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Du trenger Android 4.1 for å bruke Androids NFC-strålingsfunksjon!</string>
   <string name="error_nfc_needed">NFC må være påslått!</string>
   <string name="error_beam_needed">Stråling må være påslått!</string>
@@ -329,6 +329,8 @@
     <string name="key_curve_bp_p384">"Brainpool P-384"</string>
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
+  <string name="compression_fast">rask</string>
+  <string name="compression_very_slow">veldig treg</string>
   <!--Help-->
   <string name="help_tab_start">Start</string>
   <string name="help_tab_faq">O-S-S</string>
@@ -358,6 +360,8 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_show_info">Vis avansert informasjon</string>
+  <string name="api_settings_hide_info">Skjul avansert informasjon</string>
   <string name="api_settings_no_key">Ingen nøkkel valgt</string>
   <string name="api_settings_select_key">Velg nøkkel</string>
   <string name="api_settings_create_key">Opprett ny nøkkel</string>
@@ -427,6 +431,7 @@
   <!--Key trust-->
   <!--keybase proof stuff-->
   <string name="keybase_narrative_unknown">Ukjent bevistype %s</string>
+  <string name="keybase_web_site_proof">Ei tekstfil</string>
   <string name="keybase_verify">Bekreft</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Endre passord</string>
@@ -492,6 +497,12 @@
   <string name="msg_pse_error_no_passphrase">Inget passord oppgitt!</string>
   <string name="msg_pse_error_pgp">Intern OpenPGP-feil!</string>
   <string name="msg_pse_key_unknown">Manglende nøkkel for kryptering: %s</string>
+  <string name="msg_import_keyserver">Bruker nøkkeltjener %s</string>
+  <plurals name="msg_backup">
+    <item quantity="one">Sikkerhetskopi med én nøkkel</item>
+    <item quantity="other">Sikkerhetskopi med %d nøkler</item>
+  </plurals>
+  <string name="msg_backup_all">Sikkerhetskopi med alle nøkler</string>
   <string name="msg_upload_proxy">Bruker melltomtjener: %s</string>
   <string name="msg_upload_server">Tjener: %s</string>
   <string name="msg_upload_key">Nøkkel-ID: %s</string>
@@ -564,4 +575,20 @@
   <string name="security_token_error_try_again">Prøv igjen</string>
   <string name="btn_delete_original">Slett orginalfil</string>
   <!--Other Linked Identity strings-->
+  <string name="linked_button_confirm">Bekreft</string>
+  <string name="linked_button_view">Vis</string>
+  <string name="linked_text_verifying">Bekrefter…</string>
+  <string name="linked_text_error">Feil</string>
+  <string name="linked_error_network">Nettverksfeil!</string>
+  <string name="snack_btn_overwrite">Overskriv</string>
+  <string name="backup_code_ok">Kode godtatt!</string>
+  <string name="snack_backup_saved">Sikkerhetskopi lagret</string>
+  <string name="share_log_dialog_share_button">Del</string>
+  <string name="share_log_dialog_cancel_button">Avbryt</string>
+  <string name="menu_uids_save">Lagre</string>
+  <string name="remember">Husk</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">Installer</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Avbryt</string>
+  <string name="prompt_fidesmo_app_install_button_positive">Installer</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Avbryt</string>
 </resources>

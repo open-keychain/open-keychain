@@ -13,6 +13,7 @@
   <string name="title_preferences">設定</string>
   <string name="title_api_registered_apps">應用程式</string>
   <string name="title_key_server_preference">OpenPGP金鑰伺服器</string>
+  <string name="title_cache_ttl_preference">自訂\"記住時間\"選項</string>
   <string name="title_change_passphrase">修改金鑰密碼</string>
   <string name="title_share_fingerprint_with">分享指紋…</string>
   <string name="title_share_key">分享金鑰…</string>
@@ -34,10 +35,12 @@
   <string name="title_advanced_key_info">進階</string>
   <string name="title_delete_secret_key">刪除您的金鑰 \'%s\'？</string>
   <string name="title_manage_my_keys">管理我的金鑰</string>
+  <string name="title_alert_strip">分離這個子金鑰</string>
   <!--section-->
   <string name="section_user_ids">身份</string>
   <string name="section_security_token">安全口令</string>
   <string name="section_linked_system_contact">已關聯帳戶</string>
+  <string name="section_keybase_proofs">Keybase.io 證明</string>
   <string name="section_should_you_trust">您信任這把金鑰嗎？</string>
   <string name="section_keys">子金鑰</string>
   <string name="section_cloud_search">金鑰搜尋</string>
@@ -52,6 +55,7 @@
   <string name="section_share_key">金鑰</string>
   <string name="section_key_server">金鑰伺服器</string>
   <string name="section_fingerprint">指紋</string>
+  <string name="section_phrases">密語</string>
   <string name="section_encrypt">加密</string>
   <string name="section_decrypt">解密/驗證</string>
   <string name="section_current_expiry">目前有效期限</string>
@@ -73,6 +77,8 @@
   <string name="btn_no">不</string>
   <string name="btn_match">指紋相符</string>
   <string name="btn_match_phrases">口令相符</string>
+  <string name="btn_share_encrypted_signed">加密/簽名文字後分享</string>
+  <string name="btn_copy_encrypted_signed">加密/簽名文字後複製到剪貼簿</string>
   <string name="btn_view_cert_key">檢視簽署的金鑰</string>
   <string name="btn_create_key">建立金鑰</string>
   <string name="btn_add_files">加入檔案</string>
@@ -88,7 +94,7 @@
   <string name="btn_add_keyserver">加入新伺服器</string>
   <string name="btn_save_default">設為預設值</string>
   <string name="btn_saved">已儲存</string>
-  <string name="btn_not_matching">ㄅ</string>
+  <string name="btn_not_matching">不符合</string>
   <!--Content Description-->
   <string name="cd_encrypt_files">加密檔案</string>
   <string name="cd_exchange_keys">交換金鑰</string>
@@ -108,6 +114,8 @@
   <string name="menu_export_all_keys">匯出所有金鑰</string>
   <string name="menu_update_all_keys">更新所有金鑰</string>
   <string name="menu_advanced">進階</string>
+  <string name="menu_certify_fingerprint">透過指紋確認</string>
+  <string name="menu_certify_fingerprint_phrases">透過密語確認</string>
   <string name="menu_share_log">分享紀錄</string>
   <string name="menu_change_password">修改密碼</string>
   <string name="menu_keyserver_add">新增</string>
@@ -134,6 +142,7 @@
   <string name="label_encryption_algorithm">加密演算法</string>
   <string name="label_hash_algorithm">雜湊演算法</string>
   <string name="label_symmetric">透過密碼加密</string>
+  <string name="label_passphrase_cache_ttl">自訂\"記憶時間\"選項</string>
   <string name="label_message_compression">文字壓縮</string>
   <string name="label_file_compression">檔案壓縮</string>
   <string name="label_keyservers">選擇OpenPGP金鑰伺服器</string>
@@ -168,6 +177,7 @@
   <string name="pref_keybase_summary">在keybase.io上搜尋金鑰</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">在 Facebook 上以使用者名稱搜尋金鑰</string>
+  <string name="label_sync_settings_keyserver_title">自動更新金鑰</string>
   <string name="label_sync_settings_keyserver_summary_off">金鑰不會自動更新</string>
   <string name="label_sync_settings_wifi_title">只以 Wi-Fi 同步</string>
   <!--label shown in Android settings under the OpenKeychain account-->
@@ -288,7 +298,7 @@
   <string name="error_integrity_check_failed">完整性檢查失敗！資料已被修改！</string>
   <string name="error_wrong_passphrase">密碼錯誤</string>
   <string name="error_could_not_extract_private_key">無法抽取私鑰</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">需要Android 4.1以上才能使用NFC Beam功能！</string>
   <string name="error_nfc_needed">NFC 必須開啓 !</string>
   <string name="error_beam_needed">Bean 必須開啓 !</string>
@@ -627,6 +637,7 @@
   <string name="msg_ip_error_op_exc">操作失敗，因為資料庫錯誤</string>
   <string name="msg_ip_error_remote_ex">操作失敗，因為內部錯誤</string>
   <string name="msg_ip">匯入公鑰鑰匙圈 %s</string>
+  <string name="msg_ip_fingerprint_ok">指紋檢查正確</string>
   <string name="msg_ip_insert_keys">正在解析金鑰</string>
   <string name="msg_ip_prepare">正在準備資料庫</string>
   <string name="msg_ip_master_flags_unspecified">主要標記：未指定(全用途)</string>

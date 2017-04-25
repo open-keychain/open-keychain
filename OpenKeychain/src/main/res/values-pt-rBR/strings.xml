@@ -80,8 +80,8 @@
   <string name="btn_next">Proximo</string>
   <string name="btn_back">Voltar</string>
   <string name="btn_no">Não</string>
-  <string name="btn_match">Impressões digitais não conferem</string>
-  <string name="btn_match_phrases">Senhas não conferem</string>
+  <string name="btn_match">Impressões digitais conferem</string>
+  <string name="btn_match_phrases">Senhas conferem</string>
   <string name="btn_share_encrypted_signed">Encriptar/Assinar e compartilhar texto</string>
   <string name="btn_copy_encrypted_signed">Encriptar/Assinar e copiar texto</string>
   <string name="btn_paste_encrypted_signed">Encriptar/Assinar e colar texto</string>
@@ -347,7 +347,7 @@
   <string name="error_integrity_check_failed">a verificação de integridade falhou! Os dados foram modificados!</string>
   <string name="error_wrong_passphrase">senha incorreta</string>
   <string name="error_could_not_extract_private_key">não foi possível extrair a chave privada</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Você precisa do Android 4.1 para usar a funcionalidade Android NFC Beam!</string>
   <string name="error_nfc_needed">O NFC precisa estar habilitado!</string>
   <string name="error_beam_needed">O Beam precisa estar habilitado!</string>
@@ -695,7 +695,7 @@
   <!--Create key-->
   <string name="create_key_upload">Sincronizar com a Internet</string>
   <string name="create_key_empty">Este campo é requerido</string>
-  <string name="create_key_passphrases_not_equal">As senhas não coincidem</string>
+  <string name="create_key_passphrases_not_equal">As senhas não conferem</string>
   <string name="create_key_final_text">Você inseriu a seguinte identidade:</string>
   <string name="create_key_final_robot_text">Criar a chave pode demorar um pouco, tome um cafezinho até lá...</string>
   <string name="create_key_rsa">(3 sub-chaves, RSA, 4096 bit)</string>
@@ -977,7 +977,7 @@
   <string name="msg_mf_error_divert_newsub">A criação de novas sub-chaves não é suportada para chaves primárias \'desviar-para-cartão\'!</string>
   <string name="msg_mf_error_divert_serial">O número de série de uma chave \'desviar-para-cartão\' precisa ter 16 bytes! Isto é um erro programático, por favor, envie um relatório de erro!</string>
   <string name="msg_mf_error_encode">Exceção ao codificar!</string>
-  <string name="msg_mf_error_fingerprint">A impressão digital atual da chave não coincide com o esperado!</string>
+  <string name="msg_mf_error_fingerprint">A impressão digital atual da chave não confere com o esperado!</string>
   <string name="msg_mf_error_keyid">Nenhum ID de usuário. Isto é um erro interno, por favor, envie um relatório de erro!</string>
   <string name="msg_mf_error_integrity">Erro interno, a verificação de integridade falhou!</string>
   <string name="msg_mf_error_master_none">Nenhum certificado mestre encontrado para operar! (Todos revogados?)</string>
@@ -1371,7 +1371,7 @@
   <string name="empty_certs">Nao há certificados para esta chave</string>
   <string name="certs_text">Apenas auto-certificados validados e certificados válidos criados com suas chaves são exibidos aqui.</string>
   <string name="section_uids_to_certify">Identidades para</string>
-  <string name="certify_text">As chaves que você está inportando contém \"identidades\": nomes e endereços de email. Selecione exatamente aqueles que coincidem com o que você espera para confirmação.</string>
+  <string name="certify_text">As chaves que você está importando contém \"identidades\": nomes e endereços de email. Selecione exatamente aqueles que coincidem com o que você espera para confirmação.</string>
   <string name="certify_fingerprint_text">Compare a impressão digital, caractere por caractere, com aquele exibido no dispositivo de seu parceiro.</string>
   <string name="certify_fingerprint_text_phrases">Compare estas frases com aquelas exibidas no dispositivo do seu parceiro.</string>
   <string name="label_revocation">Razão da revogação</string>
@@ -1413,7 +1413,7 @@
   <string name="passphrase">Senha</string>
   <string name="noPassphrase">Nenhuma senha</string>
   <string name="no_passphrase_set">Nenhuma senha configurada</string>
-  <string name="passphrases_match">As senhas não coincidem</string>
+  <string name="passphrases_match">As senhas coincidem</string>
   <string name="passphrase_saved">Senha salva</string>
   <string name="passphrase_invalid">Senha inválida</string>
   <string name="missing_passphrase">Falta a senha</string>

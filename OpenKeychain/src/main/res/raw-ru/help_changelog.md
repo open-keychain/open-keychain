@@ -2,13 +2,13 @@
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * Улучшено определение писем и другого контента при открытии
 
 
 ## 4.0
 
   * Эксперементальная поддержка для токена безопасности через USB
-  * Allow password changing of stripped keys
+  * Добавлена возможность изменения пароля отделённых ключей
 
 
 ## 3.9
@@ -20,7 +20,7 @@
 
 ## 3.8
 
-  * Redesigned key editing
+  * Изменение дизайна окна редактирования ключей
   * Choose remember time individually when entering passwords
   * Импорт ключа с Facebook
 
@@ -34,21 +34,21 @@
 ## 3.6
 
   * Зашифрованные резервные копии
-  * Security fixes based on external security audit
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
+  * Исправление ошибок, выявленных внешним аудитом безопасности
+  * Диалог создания ключа YubiKey NEO 
+  * Основная поддержка MIME
   * Автоматическая синхронизация ключа
   * Experimental feature: link keys to Github, Twitter accounts
   * Experimental feature: key confirmation via phrases
   * Экспериментальная функция: тёмная тема
-  * API: Version 9
+  * API: Версия 9
 
 
 ## 3.5
 
-  * Key revocation on key deletion
+  * Аннулирование ключа при его удалении
   * Улучшенная проверка небезопасной криптографии
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
+  * Исправлено: Не закрывался диалог первичной настройки
   API: Версия 8
 
 
@@ -61,20 +61,20 @@
 
 ## 3.3
 
-  * New decryption screen
-  * Decryption of multiple files at once
-  * Better handling of YubiKey errors
+  * Новое окно расшифровки
+  * Расшифровка нескольких файлов одновременно
+  * Улучшена обработка ошибок YubiKey
 
 
 ## 3.2
 
-  * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
+  * Первая версия с поддержкой YubiKey в программе: Изменение ключа, привязка ключа к брелоку,...
   * Материальный дизайн
-  * Integration of QR Code Scanning (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
+  * Интеграция сканера кодов QR (Требуются новые полномочия)
+  * Улучшение мастера создания ключей
+  * Исправлено пропадание контактов после синхронизации
   * Требуется Android 4
-  * Redesigned key screen
+  * Изменение дизайна окна ключей
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...
   * Fix: Some valid keys were shown revoked or expired
@@ -100,7 +100,7 @@
   Новое окно подтверждения
   * Secure Exchange directly from key list (SafeSlinger library)
   * New QR Code program flow
-  * Redesigned decrypt screen
+  * Изменение дизайна диалога расшифровки
   Использование новых иконок и цевтов
   * Fix import of secret keys from Symantec Encryption Desktop
   * Experimental YubiKey support: Subkey IDs are now checked correctly
@@ -119,7 +119,7 @@
   * Many fixes for key import, also fixes stripped keys
   * Honor and display key authenticate flags
   Пользовательский интерфейс для генерации пользовательских ключей
-  * Fixing user id revocation certificates
+  * Исправление сертификатов отзыва
   Новый облачный поиск (по традиционным серверам ключей и по keybase.io)
   * Support for stripping keys inside OpenKeychain
   Экспериментальная поддержка YubiKey: Поддержка генерации и расшифровка подписей
@@ -127,8 +127,8 @@
 
 ## 2.9.2
 
-  * Fix keys broken in 2.9.1
-  * Experimental YubiKey support: Decryption now working via API
+  * Исправление ключей, сломанных в 2.9.1
+  * Экспериментальная поддержка Yubikey: Расшифровка теперь работает через API
 
 
 ## 2.9.1
@@ -139,7 +139,7 @@
   * Key sharing via SafeSlinger
   * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Fix usage of stripped keys
-  * SHA256 as default for compatibility
+  SHA256 по умолчанию для совместимости
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
   * OpenPGP API now handles revoked/expired keys and returns all user ids
 
@@ -211,7 +211,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Keyserver query based on machine-readable output
   * Lock navigation drawer on tablets
   * Suggestions for emails on creation of keys
-  * Search in public key lists
+  * Поиск в списках публичных ключей
   * And much more improvements and fixes…
 
 
@@ -236,46 +236,46 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 2.2
 
   * New design with navigation drawer
-  * New public key list design
-  * New public key view
+  * Новый дизайн списка публичных ключей
+  * Новый вид просмотра публичного ключа
   * Bug fixes for importing of keys
-  * Key cross-certification (thanks to Ash Hughes)
+  * Кросс-сертификация ключей (спасибо Ash Hughes)
   * Handle UTF-8 passwords properly (thanks to Ash Hughes)
-  * First version with new languages (thanks to the contributors on Transifex)
-  * Sharing of keys via QR Codes fixed and improved
-  * Package signature verification for API
+  * Первая версия с новыми языками (спасибо переводчикам на Transifex)
+  * Передача ключей через QR коды исправлена и улучшена 
+  * Проверка подписи пакета для API
 
 
 ## 2.1.1
 
-  * API Updates, preparation for K-9 Mail integration
+  * Обновление API, подготовка к интеграции с K-9 Mail
 
 
 ## 2.1
 
-  * Lots of bug fixes
-  * New API for developers
+  * Множество исправлений ошибок
+  * Новый API для разработчиков
   * PRNG bug fix by Google
 
 
 ## 2.0
 
-  * Complete redesign
-  * Share public keys via QR codes, NFC beam
-  * Sign keys
-  * Upload keys to server
-  * Fixes import issues
+  * Переработка дизайна
+  * Передачи публичных ключей через QR коды и NFC
+  * Подпись ключей
+  * Загрузка ключей на сервер
+  * Исправление проблем импорта
   * New AIDL API
 
 
 ## 1.0.8
 
-  * Basic keyserver support
+  * Основная поддержка сервера ключей
   * App2sd
   * More choices for passphrase cache: 1, 2, 4, 8, hours
   * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Bugfixes
-  * Optimizations
+  * Исправления ошибок
+  * Оптимизации
 
 
 ## 1.0.7
@@ -287,12 +287,12 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 1.0.6
 
   * Account adding crash on Froyo fixed
-  * Secure file deletion
+  * Безопасное удаление файла
   * Option to delete key file after import
   * Stream encryption/decryption (gallery, etc.)
   * New options (language, force v3 signatures)
-  * Interface changes
-  * Bugfixes
+  * Изменения интерфейса
+  * Исправления ошибок
 
 
 ## 1.0.5
@@ -334,4 +334,4 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Словенский перевод
   Новая база данных, намного быстрее и компактнее
   * Defined Intents and content provider for other apps
-  * Bugfixes
+  * Исправления ошибок

@@ -189,18 +189,24 @@
   <string name="label_sync_settings_keyserver_summary_off">Nycklar uppdateras inte automatiskt</string>
   <string name="label_sync_settings_wifi_title">Synkronisera bara på Wifi</string>
   <string name="label_sync_settings_contacts_title">Länka nycklar till kontakter</string>
+  <string name="label_sync_settings_contacts_summary_on">Länka nycklar till kontakter baserade på namn och e-postadresser. Detta sker helt offline på enheten.</string>
+  <string name="label_sync_settings_contacts_summary_off">Nya nycklar kommer inte att kopplas till kontakter</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="keyserver_sync_settings_title">Automatiska nyckel uppdateringar</string>
   <string name="label_experimental_settings_desc_title">Varning</string>
+  <string name="label_experimental_settings_desc_summary">Dessa funktioner är ännu inte klar eller resultat användarupplevelse/säkerhetsforskning. Således, lita inte på deras säkerhet och vänligen rapporterar inte problem som du påträffar!</string>
+  <string name="label_experimental_settings_word_confirm_title">Bekräftelse med fraser</string>
+  <string name="label_experimental_settings_word_confirm_summary">Bekräfta nycklar med fraser istället för hexadecimala fingeravtryck</string>
   <string name="label_experimental_settings_linked_identities_title">Länkade identiteter</string>
+  <string name="label_experimental_settings_linked_identities_summary">Länka nycklarna till Twitter, GitHub, webbplatser eller DNS (liknande keybase.io men decentraliserade)</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io-bevis</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Aktivera Tor</string>
-  <string name="pref_proxy_tor_summary">Kräver att Orbot är installerat</string>
+  <string name="pref_proxy_tor_summary">Kräver att Orbot är installerad</string>
   <string name="pref_proxy_normal_title">Aktivera annan proxy</string>
-  <string name="pref_proxy_host_title">Proxy värd</string>
-  <string name="pref_proxy_host_err_invalid">Proxy värd kan inte vara tom</string>
-  <string name="pref_proxy_port_title">Proxy port</string>
+  <string name="pref_proxy_host_title">Proxyvärd</string>
+  <string name="pref_proxy_host_err_invalid">Proxyvärd kan inte vara tom</string>
+  <string name="pref_proxy_port_title">Proxyport</string>
   <string name="pref_proxy_type_title">Proxytyp</string>
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
@@ -214,8 +220,8 @@
   <string name="orbot_install_dialog_ignore_tor">Använd inte Tor</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Starta Orbot?</string>
-  <string name="orbot_start_btn">Starta Orbot?</string>
-  <string name="orbot_start_dialog_start">Starta Orbot?</string>
+  <string name="orbot_start_btn">Starta Orbot</string>
+  <string name="orbot_start_dialog_start">Starta Orbot</string>
   <string name="orbot_start_dialog_cancel">Avbryt</string>
   <string name="orbot_start_dialog_ignore_tor">Använd inte Tor</string>
   <plurals name="n_keys">
@@ -269,6 +275,8 @@
   <string name="pin_for">Ange PIN för \'%s\'</string>
   <string name="security_token_pin_for">Ange PIN-kod för att få tillgång till säkerhetstoken för \'%s\'</string>
   <string name="security_token_nfc_text">Håll Säkerhetstoken mot NFC markören på baksidan av enheten.</string>
+  <string name="security_token_nfc_wait">Håll säkerhetstoken mot baksidan!</string>
+  <string name="security_token_nfc_finished">Ta bort säkerhetstoken nu.</string>
   <string name="file_delete_confirmation_title">Radera orginalfiler?</string>
   <string name="file_delete_confirmation">Följande filer kommer raderas:%s</string>
   <string name="file_delete_successful">%1$d av %2$d filer har raderats.%3$s</string>
@@ -320,7 +328,7 @@
   <string name="error_integrity_check_failed">integritetskontroll misslyckades! Data har modifierats!</string>
   <string name="error_wrong_passphrase">fel lösenord</string>
   <string name="error_could_not_extract_private_key">kunde inte extrahera privat nyckel</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Du behöver Android 4.1 för att använda Androids NFC Beam-funktion!</string>
   <string name="error_nfc_needed">NFC måste vara aktiverat!</string>
   <string name="error_beam_needed">Beam måste vara aktiverat!</string>
@@ -328,6 +336,7 @@
   <string name="error_nothing_import_selected">Inga nycklar valda för import!</string>
   <string name="error_contacts_key_id_missing">Det gick inte att hämta nyckel-ID:t från kontakter!</string>
   <string name="error_generic_report_bug">Ett generiskt fel inträffade, skapa en ny buggrapport för OpenKeychain.</string>
+  <string name="error_denied_storage_permission">Kan inte läsa filer från lagring eftersom åtkomst har nekats!</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Inte signerat</string>
   <string name="decrypt_result_invalid_signature">Ogiltig signatur!</string>
@@ -439,6 +448,7 @@
   <string name="import_qr_code_button">Skanna QR-kod</string>
   <string name="import_qr_code_text">Håll din kamera över QR-koden!</string>
   <!--Import from URL-->
+  <string name="import_url_warn_no_search_parameter">Ingen sökfråga definierad. Du kan fortfarande söka manuellt på denna nyckelserver .</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Detaljer</string>
   <string name="with_warnings">, med varningar</string>
@@ -483,7 +493,12 @@
   <string name="delete_cancelled">Raderingsoperation avbruten.</string>
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">Återkallat nyckel.</string>
+  <string name="revoke_nothing">Inget att återkalla.</string>
   <!--Certify result toast-->
+  <plurals name="certify_keys_ok">
+    <item quantity="one">Framgångsrikt bekräftade key%2$s.</item>
+    <item quantity="other">Framgångsrikt bekräftade %1$d keys%2$s.</item>
+  </plurals>
   <plurals name="certify_keys_with_errors">
     <item quantity="one">Certifiering misslyckades!</item>
     <item quantity="other">Certifiering misslyckades för %d nycklar!</item>
@@ -520,6 +535,8 @@
   <string name="api_register_allow">Tillåt åtkomst</string>
   <string name="api_register_disallow">Tillåt inte åtkomst</string>
   <string name="api_register_error_select_key">Välj en nyckel!</string>
+  <string name="api_select_pub_keys_missing_text">Inga nycklar hittades för dessa e-postadresser:</string>
+  <string name="api_select_pub_keys_dublicates_text">Mer än en nyckel existerar för dessa e-postadresser:</string>
   <string name="api_select_pub_keys_text">Se över listan med mottagare!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Välj mottagare!</string>
   <string name="api_error_wrong_signature">Signaturkontroll misslyckades! Har du installerat appen från en annan källa? Om du är säker på att det här inte är en attack, återkalla den här appens registrering i OpenKeychain och registrera sen om appen igen.</string>
@@ -538,6 +555,7 @@
   </plurals>
   <string name="key_list_empty_text1">Inga nycklar hittades!</string>
   <string name="key_list_filter_show_all">Visa alla nycklar</string>
+  <string name="key_list_filter_show_certified">Visa bekräftade nycklar endast</string>
   <string name="key_list_fab_qr_code">Skanna QR-kod</string>
   <string name="key_list_fab_search">Nyckelsökning</string>
   <string name="key_list_fab_import">Importera från fil</string>
@@ -561,6 +579,7 @@
   <string name="user_id_info_certified_title">Bekräftad</string>
   <string name="user_id_info_certified_text">Denna identitet har bekräftats av dig.</string>
   <string name="user_id_info_uncertified_title">Inte bekräftad</string>
+  <string name="user_id_info_uncertified_text">Denna identitet har inte bekräftats ännu. Du kan inte vara säker på om identiteten verkligen motsvarar en viss person.</string>
   <string name="user_id_info_invalid_title">Ogiltig</string>
   <string name="user_id_info_invalid_text">Något är fel med den här identiteten!</string>
   <!--Key trust-->
@@ -802,6 +821,7 @@
   <string name="msg_mf_error_keyid">Inget nyckel-ID. Det här är ett internt fel, skicka en buggrapport!</string>
   <string name="msg_mf_error_noexist_primary">Dåligt primärt användar-ID angivet!</string>
   <string name="msg_mf_error_revoked_primary">Återkallade användar-ID:n kan inte vara primära!</string>
+  <string name="msg_mf_error_noop">Inget att göra!</string>
   <string name="msg_mf_error_pgp">Internt OpenPGP-fel!</string>
   <string name="msg_mf_passphrase_key">Återkrypterar undernyckel %s med nytt lösenord</string>
   <string name="msg_mf_primary_replace_old">Ersätter certifikat för tidigare primärt användar-ID</string>
@@ -945,11 +965,17 @@
     <item quantity="one">Misslyckades med att radera en nyckel</item>
     <item quantity="other">Misslyckades med att radera %d nycklar</item>
   </plurals>
+  <string name="msg_revoke_error_empty">Inget att återkalla!</string>
   <string name="msg_revoke_ok">Återkallat nyckel</string>
   <!--Linked Identity verification-->
+  <string name="msg_lv">Verifierar länkad identitet...</string>
+  <string name="msg_lv_match">Söker efter token</string>
   <string name="msg_bench_enc_time">Krypteringstid: %ss</string>
   <string name="msg_bench_enc_time_avg">Genomsnittlig tidsåtgång för att kryptera 5 MB: %ss</string>
   <string name="msg_acc_saved">Konto sparat</string>
+  <string name="msg_get_too_many_responses">Nyckel sökfråga gav alltför många kandidater. Vänligen förfina din förfråga!</string>
+  <string name="msg_get_query_too_short">Sökfråga för kort. Vänligen förfina din förfråga!</string>
+  <string name="msg_download_query_failed">Ett fel uppstod vid sökning efter nycklar.</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -964,7 +990,9 @@
   <string name="first_time_text1">Ta tillbaka din integritet med OpenKeychain!</string>
   <string name="first_time_create_key">Skapa min nyckel</string>
   <string name="first_time_import_key">Importera nyckel från fil</string>
+  <string name="first_time_security_token">Använd säkerhetstoken</string>
   <string name="first_time_skip">Hoppa över inställning</string>
+  <string name="first_time_blank_security_token_yes">Använd denna säkerhetstoken</string>
   <string name="backup_text">Säkerhetskopior som innehåller dina egna nycklar får aldrig delas med andra människor!</string>
   <string name="backup_all">Alla nycklar + dina egna nycklar</string>
   <string name="backup_public_keys">Alla nycklar</string>
@@ -974,13 +1002,16 @@
   <string name="section_cert">Certifikatinformation</string>
   <string name="label_user_id">Identitet</string>
   <string name="empty_certs">Inga certifikat för den här nyckeln</string>
+  <string name="certs_text">Endast validerade själv certifikat och validerade certifikat som skapats med dina nycklar visas här.</string>
   <string name="section_uids_to_certify">Identiteter för</string>
   <string name="certify_text">Nycklarna du importerar innehåller \"identiteter\": namn och e-postadresser. Välja exakt de för bekräftelse som matchar vad du förväntade dig.</string>
+  <string name="certify_fingerprint_text_phrases">Jämför dessa fraser med de som visas på din partners enhet.</string>
   <string name="label_revocation">Anledning till återkallelse</string>
   <string name="label_cert_type">Typ</string>
   <string name="error_key_not_found">Nyckel hittades inte!</string>
   <string name="error_key_processing">Fel vid bearbetning av nyckel!</string>
   <string name="key_stripped">rensad</string>
+  <string name="key_no_passphrase">inget lösenord</string>
   <string name="key_unavailable">otillgänglig</string>
   <string name="secret_cannot_multiple">Dina egna nycklar kan bara raderas var för sig!</string>
   <string name="title_view_cert">Visa certifikatinformation</string>
@@ -999,17 +1030,21 @@
   <!--Android Account-->
   <string name="account_privacy_title">Integritet</string>
   <string name="account_privacy_text">OpenKeychain synkroniserar inte dina kontakter med Internet. Den länkar bara kontakter med nycklar baserade på namn och e-postadresser. Detta sker offline på enheten.</string>
+  <string name="sync_notification_permission_required_text">Tryck för att konfigurera länkning till kontakter</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Skriv lösenord</string>
   <string name="passphrase">Lösenord</string>
   <string name="noPassphrase">Inget lösenord</string>
+  <string name="no_passphrase_set">Inget lösenord angivet</string>
   <string name="passphrase_saved">Lösenord sparat</string>
+  <string name="passphrase_invalid">Lösenord ogiltigt</string>
   <string name="passphrase_again">Igen</string>
   <string name="lockpattern">Låsmönster</string>
   <string name="lockpatternNFC">NFC + Låsmönster</string>
   <string name="unlock_method">Upplåsningmetod</string>
+  <string name="set_passphrase">Ange lösenord</string>
   <string name="draw_lockpattern">Dra låsmönster</string>
   <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
@@ -1018,45 +1053,86 @@
   <string name="no_nfc_support">Denna enhet stöder inte NFC</string>
   <string name="unlocked">Upplåst</string>
   <string name="nfc_settings">Inställningar</string>
+  <string name="snack_security_token_view">Visa</string>
+  <string name="snack_security_token_import">Importera</string>
+  <string name="security_token_create">Håll säkerhetstoken mot baksidan av din enhet.</string>
   <string name="btn_import">Importera</string>
+  <string name="btn_reset">Återställ</string>
   <string name="security_token_import_radio">Importera nyckel</string>
+  <string name="security_token_error">Fel: %s</string>
+  <string name="security_token_error_try_again">Försök igen</string>
   <string name="btn_delete_original">Radera ursprunglig fil</string>
   <string name="snack_encrypt_filenames_on">Filnamn <b>är</b> krypterad.</string>
   <string name="snack_encrypt_filenames_off">Filnamn <b>är inte</b> krypterade.</string>
+  <string name="error_empty_log">(fel, tom logg)</string>
   <string name="filename_keys">Nyckel säkerhetskopiering (rör för att importera)</string>
   <string name="intent_show">Visa krypterat/signerat innehåll</string>
   <string name="intent_share">Dela krypterat/signerat innehåll</string>
   <string name="view_internal">Visa i OpenKeychain</string>
   <string name="label_clip_title">Krypterad data</string>
+  <string name="error_saving_file">Fil vid sparande av fil!</string>
+  <string name="file_saved">Fil sparad!</string>
   <string name="error_clipboard_empty">Urklipp är tomt!</string>
+  <string name="linked_create_https_1_1">Genom att skapa en länkad identitet av denna typ, kan du länka din nyckel till en webbplats som du styr.</string>
+  <string name="linked_create_https_1_2">För att göra detta, publicerar du en textfil på denna webbplats, sedan skapa en länkad identitet som länkar till den.</string>
+  <string name="linked_create_verify">Verifiera</string>
+  <string name="linked_verified_https">Kopplingen mellan denna webbplats och nyckeln har säkert verifierats. <b>Om du anser att webbplatsen är äkta</b>, bekräfta denna verifiering med din nyckel.</string>
+  <string name="linked_verified_github">Kopplingen mellan detta GitHub konto och nyckeln har säkert verifierats. <b>Om du tror att kontot är äkta</b>, bekräfta denna verifikation med din nyckel.</string>
+  <string name="linked_verified_dns">Kopplingen mellan detta domännamn och nyckeln har säkert verifierats. <b>Om du tror att domänen är äkta</b>, bekräfta denna verifikation med din nyckel.</string>
+  <string name="linked_verified_twitter">Kopplingen mellan detta Twitter konto och nyckeln har säkert verifierats. <b>Om du tror att kontot är äkta</b>, bekräfta denna verifikation med din nyckel.</string>
   <!--Other Linked Identity strings-->
+  <string name="linked_verifying">Verifierar...</string>
+  <string name="linked_verify_success">Verifierad!</string>
   <string name="linked_verify_pending">Inte verifierad ännu</string>
+  <string name="menu_linked_add_identity">Länka till konto</string>
+  <string name="section_linked_identities">Länkade identiteter</string>
+  <string name="btn_finish">Färdig</string>
   <string name="linked_title_https">Webbsida (HTTPS)</string>
   <string name="linked_title_github">GitHub</string>
   <string name="linked_title_twitter">Twitter</string>
+  <string name="card_linked_identity">Länkad identitet</string>
   <string name="linked_button_verify">Verifiera</string>
   <string name="linked_button_confirm">Bekräfta</string>
   <string name="linked_button_view">Visa</string>
   <string name="linked_text_verifying">Verifierar...</string>
   <string name="linked_text_error">Fel</string>
   <string name="linked_text_confirming">Bekräftar…</string>
+  <string name="title_linked_id_create">Skapa länkad identitet</string>
   <string name="linked_progress_update_key">Uppdatera nyckel...</string>
+  <string name="linked_button_start">Länka till GitHub konto</string>
   <string name="linked_error_network">Nätverksfel!</string>
+  <string name="snack_btn_overwrite">Skriv över</string>
   <string name="backup_code_explanation">Säkerhetskopian kommer att säkras med en säkerhetskod. Skriv ner den innan du fortsätter!</string>
   <string name="backup_code_enter">Ange säkerhetskopieringskod:</string>
+  <string name="btn_code_wrotedown">OK, jag skrev ner det!</string>
   <string name="btn_backup_share">Dela säkerhetskopia</string>
   <string name="btn_backup_save">Spara säkerhetskopia</string>
+  <string name="snack_backup_error_saving">Fel vid sparande av säkerhetskopia!</string>
   <string name="snack_backup_saved">Säkerhetskopia sparad</string>
   <string name="snack_backup_exists">Säkerhetskopia existerar redan!</string>
+  <string name="share_log_dialog_title">Dela logg?</string>
   <string name="share_log_dialog_share_button">Dela</string>
   <string name="share_log_dialog_cancel_button">Avbryt</string>
   <string name="menu_uids_save">Spara</string>
+  <string name="title_edit_identities">Redigera identiteter</string>
+  <string name="title_edit_subkeys">Redigera undernycklar </string>
+  <string name="btn_search_for_query">Sök efter\n\'%s\'</string>
+  <string name="cache_ttl_lock_screen">till skärmen stängs</string>
+  <string name="cache_ttl_ten_minutes">för tio minuter</string>
+  <string name="cache_ttl_thirty_minutes">för trettio minuter</string>
+  <string name="cache_ttl_one_hour">för en timme</string>
+  <string name="cache_ttl_three_hours">för tre veckor</string>
+  <string name="cache_ttl_one_day">för en dag</string>
+  <string name="cache_ttl_three_days">för tre dagar</string>
   <string name="cache_ttl_forever">för alltid</string>
   <string name="remember">Kom ihåg</string>
+  <string name="security_token_error_pgp_app_not_installed">Ingen PGP-app hittades på säkerhetstoken</string>
   <string name="prompt_fidesmo_pgp_install_title">Installera PGP?</string>
+  <string name="prompt_fidesmo_pgp_install_message">Det fanns inget PGP-app tillgängligt på din Fidesmo-enhet.</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">Installera</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Avbryt</string>
   <string name="prompt_fidesmo_app_install_title">Installera Fidesmo?</string>
+  <string name="prompt_fidesmo_app_install_message">För att installera PGP behöver du Fidesmo Android-appen.</string>
   <string name="prompt_fidesmo_app_install_button_positive">Installera</string>
   <string name="prompt_fidesmo_app_install_button_negative">Avbryt</string>
   <string name="help_donation_paypal_item">OpenKeychain donation</string>

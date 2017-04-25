@@ -7,7 +7,7 @@
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
+  * Supporto sperimentale dei Token USB
   * Allow password changing of stripped keys
 
 
@@ -15,19 +15,19 @@
 
   * Detection and handling of text data
   * Miglioramento delle prestazioni
-  * UI improvements for Security Token handling
+  * Miglioramento interfaccia di gestione dei Token
 
 
 ## 3.8
 
   * Redesigned key editing
-  * Choose remember time individually when entering passwords
+  Scegli il tempo di ricordo individualmente quando inserisci una password
   * Importazione delle password di Facebook
 
 
 ## 3.7
 
-  * Improved Android 6 support (permissions, integration into text selection)
+  Migliorato il supporto ad Android 6 (permessi, integrazione nella selezione del testo)
   * API: Versione 10
 
 
@@ -36,11 +36,11 @@
   * Copie di backup crittografate
   * Security fixes based on external security audit
   * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
+  * Supporto base a MIME
+  * Sincronizzazione automatica delle chiavi
   * Experimental feature: link keys to Github, Twitter accounts
   * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
+  * Caratteristica sperimentale: Tema scuro
   * API: Versione 9
 
 
@@ -55,7 +55,7 @@
 ## 3.4
 
   * Anonymous key download over Tor
-  * Proxy support
+  * Supporto proxy
   * Better YubiKey error handling
 
 
@@ -63,18 +63,18 @@
 
   * New decryption screen
   * Decryption of multiple files at once
-  * Better handling of YubiKey errors
+  * Migliore gestione errori di YubiKey
 
 
 ## 3.2
 
   * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
   * Material design
-  * Integration of QR Code Scanning (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
+  * Integrazione della Scasione codici QR (Nuovi permessi richiesti)
+  * Migliorato wizard della creazione di chiavi
+  * Corretto contatti persi dopo sincronizzazione
   * Richiede Android 4
-  * Redesigned key screen
+  * Schermata chiavi riprogettata
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...
   * Fix: Some valid keys were shown revoked or expired
@@ -85,19 +85,19 @@
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * Corretta esportazione chiavi su file (davvero questa volta)
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
+  * Corretta esportazione chiavi su file (la scrittura era parziale)
   * Risolto un crash in Android 2.3
 
 
 ## 3.1
 
   * Corretto crash su Android 5
-  * New certify screen
+  * Nuova schermata di certificazione
   * Secure Exchange directly from key list (SafeSlinger library)
   * New QR Code program flow
   * Redesigned decrypt screen
@@ -108,8 +108,8 @@
 
 ## 3.0.1
 
-  * Better handling of large key imports
-  * Improved subkey selection
+  * Gestione migliorata dell'importazioni di chiavi di grandi dimensioni
+  * Migliorata la selezione delle sottochiavi
 
 
 ## 3.0
@@ -136,18 +136,18 @@
   * Split encrypt screen into two
   * Fix key flags handling (now supporting Mailvelope 0.7 keys)
   * Gestione delle password migliorata
-  * Key sharing via SafeSlinger
+  * Condivisione chiavi via SafeSlinger
   * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Fix usage of stripped keys
-  * SHA256 as default for compatibility
+  * SHA256 predefinito per compatibilità
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
   * OpenPGP API now handles revoked/expired keys and returns all user ids
 
 
 ## 2.9
 
-  * Fixing crashes introduced in v2.8
-  * Experimental ECC support
+   * Correzione crash introdotti nella versione 2.8
+  * Supporto sperimentale ad ECC
   * Experimental YubiKey support: Only signing with imported keys
 
 
@@ -156,13 +156,13 @@
   * So many bugs have been fixed in this release that we focus on the main new features
   * Key edit: awesome new design, key revocation
   * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
-  * New first time screen
+  * Nuova schermata di introduzione
   * New key creation screen: autocompletion of name and email based on your personal Android accounts
   * File encryption: awesome new design, support for encrypting multiple files
   * New icons to show status of key (by Brennan Novak)
   * Important bug fix: Importing of large key collections from a file is now possible
   * Notification showing cached passphrases
-  * Keys are connected to Android's contacts
+  * Le chiavi sono collegate ai contatti di Android
 
 This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
 
@@ -170,7 +170,7 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
 
   * Purple! (Dominik, Vincent)
   * New key view design (Dominik, Vincent)
-  * New flat Android buttons (Dominik, Vincent)
+  * Nuovi pulsanti piatti su Android (Dominik, Vincent)
   * Diverse correzioni alle API (Dominik)
   * Keybase.io import (Tim Bray)
 
@@ -185,7 +185,7 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
   * Key certifications (thanks to Vincent Breitmoser)
   * Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
   * New design for signature verification
-  * Custom key length (thanks to Greg Witczak)
+  * Lunghezza personalizzata chiave (grazie a Greg Witczak)
   * Fix share-functionality from other apps
 
 
@@ -194,7 +194,7 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
   * Fix decryption of symmetric OpenPGP messages/files
   * Refactored key edit screen (thanks to Ash Hughes)
   * New modern design for encrypt/decrypt screens
-  * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
+  * API OpenPGP versione 3 (account api multipli, correzioni interne, ricerca chiavi)
 
 
 ## 2.4
@@ -211,8 +211,8 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Keyserver query based on machine-readable output
   * Lock navigation drawer on tablets
   * Suggestions for emails on creation of keys
-  * Search in public key lists
-  * And much more improvements and fixes…
+  * Ricerca nelle liste di chiavi pubbliche
+  * E molti altri miglioramenti e correzioni...
 
 
 ## 2.3.1
@@ -238,11 +238,11 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * New design with navigation drawer
   * New public key list design
   * New public key view
-  * Bug fixes for importing of keys
+  * Correzione bug importazione chiavi
   * Key cross-certification (thanks to Ash Hughes)
-  * Handle UTF-8 passwords properly (thanks to Ash Hughes)
-  * First version with new languages (thanks to the contributors on Transifex)
-  * Sharing of keys via QR Codes fixed and improved
+  * Gestione corretta password UTF-8 (grazie ad Ash Hughes)
+  * Prima versione multilingua (grazie ai collaboratori su Transifex)
+  * Condivisione di chiavi attraverso Codici QR corretta e migliorata
   * Package signature verification for API
 
 
@@ -262,8 +262,8 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * Complete redesign
   * Share public keys via QR codes, NFC beam
-  * Sign keys
-  * Upload keys to server
+  * Firma chiavi
+  * Caricamento chiavi su server
   * Fixes import issues
   * New AIDL API
 
@@ -299,9 +299,9 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * Traduzione in Italiano e Tedesco
   * Much smaller package, due to reduced BC sources
-  * New preferences GUI
+  * Nuove preferenze per GUI
   * Layout adjustment for localization
-  * Signature bugfix
+  * Correzione bug firma
 
 
 ## 1.0.4
@@ -316,7 +316,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.2
 
-  * Filterable key lists
+  * Liste chiavi filtrabili
   * Smarter pre-selection of encryption keys
   * New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
   * Fixes and additional features (key preselection) for K-9 Mail, new beta build available
@@ -329,9 +329,9 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.0
 
-  * K-9 Mail integration, APG supporting beta build of K-9 Mail
-  * Support of more file managers (including ASTRO)
+  * Integrazione K-9 Mail, APG supporta build beta di K-9 Mail
+  * Supporto per altri file manager (incluso ASTRO)
   * Traduzione in Sloveno
-  * New database, much faster, less memory usage
+  * Nuovo database, più veloce, con utilizzo di memoria ridotto
   * Defined Intents and content provider for other apps
   * Correzione di bug

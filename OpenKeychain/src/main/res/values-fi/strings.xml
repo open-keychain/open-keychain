@@ -188,7 +188,7 @@
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_wrong_passphrase">väärä salasana</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_encrypted">Salattu</string>
   <string name="decrypt_result_not_encrypted">Ei salattu</string>

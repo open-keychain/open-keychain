@@ -2,24 +2,24 @@
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) on OpenPGP toteutus Androidille.
+[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 
-Lisenssi: GPLv3+
+License: GPLv3+
 
-[//]: # (Huom.: Aakkosjärjestys)
+[//]: # (NOTE: Alphabetic ordering)
 
-## Pääkehittäjät
-  * Dominik Schürmann (Ylläpitäjä)
+## Main Developers
+  * Dominik Schürmann (Maintainer)
   * Vincent Breitmoser
 
 ## Top Contributors
   * Adithya Abraham Philip
   * Ash Hughes
   * 'mar-v-in'
-  * 'Thialfihar' (APG kehittäjä)
+  * 'Thialfihar' (APG developer)
   * Tim Bray
 
-## Aijottain auttaneet
+## Occasional Contributors
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov
@@ -51,7 +51,7 @@ Lisenssi: GPLv3+
   * Sreeram Boyapati
   * 'steelman'
 
-[//]: # (Huom.: Aakkosjärjestys)
+[//]: # (NOTE: Alphabetic ordering)
 
 ## Libraries
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)

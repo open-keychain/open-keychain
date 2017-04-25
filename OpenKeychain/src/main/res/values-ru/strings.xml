@@ -354,7 +354,7 @@
   <string name="error_integrity_check_failed">Проверка целостности не удалась! Данные изменились!</string>
   <string name="error_wrong_passphrase">неправильный пароль</string>
   <string name="error_could_not_extract_private_key">не удалось извлечь личный ключ</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Для использования NFC Beam требуется Android 4.1+ !</string>
   <string name="error_nfc_needed">Необходимо включить NFC!</string>
   <string name="error_beam_needed">Необходимо включить Beam!</string>
@@ -514,6 +514,12 @@
     <item quantity="many">Успешно обновлено %1$d ключей%2$s.</item>
     <item quantity="other">Успешно обновлено %1$d ключей%2$s.</item>
   </plurals>
+  <plurals name="import_keys_with_errors">
+    <item quantity="one">Ошибка импорта ключа!</item>
+    <item quantity="few">Ошибка импорта %d ключей!</item>
+    <item quantity="many">Ошибка импорта %d ключей!</item>
+    <item quantity="other">Ошибка импорта %d ключей!</item>
+  </plurals>
   <plurals name="import_error">
     <item quantity="one">Импортирование ключа завершилось неудачно!</item>
     <item quantity="few">Импортирование %d ключей завершилось неудачно!</item>
@@ -523,6 +529,12 @@
   <string name="import_error_nothing">Нет данных для импорта.</string>
   <string name="import_error_nothing_cancelled">Импорт отменен.</string>
   <!--Delete result toast-->
+  <plurals name="delete_ok_but_fail_1">
+    <item quantity="one">Ключ успешно удален</item>
+    <item quantity="few"> Успешно удалено %1$d ключей</item>
+    <item quantity="many"> Успешно удалено %1$d ключей</item>
+    <item quantity="other">Успешно удалено %1$d ключей</item>
+  </plurals>
   <plurals name="delete_ok_but_fail_2">
     <item quantity="one">, но не удалось удалить ключ%2$s.</item>
     <item quantity="few">, но не удалось удалить %1$d ключа%2$s.</item>
@@ -716,6 +728,7 @@
   <string name="edit_key_error_add_subkey">Добавьте хотя бы один доп. ключ!</string>
   <string name="edit_key_error_bad_security_token_algo">Алгоритм не поддерживается токеном безопасности!</string>
   <string name="edit_key_error_bad_security_token_size">Размер ключа не поддерживается токеном безопасности!</string>
+  <string name="edit_key_error_bad_security_token_stripped">Нельзя перенести ключ на Брелок (отделенный или \'переносимый на карту\')!</string>
   <!--Create key-->
   <string name="create_key_upload">Синхронизация с интернетом</string>
   <string name="create_key_empty">Это обязательне поле</string>
@@ -898,6 +911,7 @@
   <string name="msg_is_subkey_empty">Секретный доп. ключ %s отмечен как доступный, с пустым паролем</string>
   <string name="msg_is_subkey_pin">Секретный доп. ключ %s отмечен как доступный, с PIN</string>
   <string name="msg_is_subkey_stripped">Секретный доп. ключ %s отмечен как отделённый</string>
+  <string name="msg_is_subkey_divert">Секретный доп.ключ %s отмечен как \'переносимый на карту\'</string>
   <string name="msg_is_success_identical">Связка ключей не содержит новых данных, нечего делать</string>
   <string name="msg_is_success">Успешно добавлена связка секретных ключей</string>
   <!--Keyring Canonicalization log entries-->
@@ -1007,6 +1021,8 @@
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Изменение связки %s</string>
   <string name="msg_mf_divert">Будет отвлекать на токен безопасности для криптографических операций</string>
+  <string name="msg_mf_error_divert_newsub">Создание новых доп.ключей не поддерживается для \'переносимых на карту\' ключей!</string>
+  <string name="msg_mf_error_divert_serial">Сериный номер \'переносимого на карту\' ключа должна быть 16 байт! Это ошибка в программе, сообщите разработчику!</string>
   <string name="msg_mf_error_encode">Ошибка кодирования!</string>
   <string name="msg_mf_error_fingerprint">Отпечаток ключа не совпадает с представленным!</string>
   <string name="msg_mf_error_keyid">Нет ID ключа. Это программная ошибка. Пожалуйста, сообщите об этом!</string>
