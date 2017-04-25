@@ -1,5 +1,9 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.3
+  * Better support for large keys
+  * Improve import of Gpg4win asc files
+
 ## 4.2
 
   * Experimental support for Elliptic Curve Encryption with Security Tokens
