@@ -1853,4 +1853,12 @@
 
     <string name="key_expiry_text">"This key expired on <b>%1$s</b>."</string>
 
+    <string name="dialog_insecure_title">Security Warning</string>
+    <string name="dialog_insecure_recommend_title">Recommended Action</string>
+    <string name="insecure_msg_bitstrength">"The key this message was sent from is using an outdated algorithm, that is no longer considered secure!\n\nThe algorithm in use is %1$s with %2$s bitstrength, which has been considered insecure since %3$s."</string>
+    <string name="insecure_recom_new_key">The key in use is insecure, and cannot be updated. To communicate securely, the sender must create a new key!</string>
+    <string name="insecure_msg_not_whitelisted_curve">"This "</string>
+    <string name="insecure_msg_unidentified_key">"The key used to "</string>
+    <string name="insecure_recom_mdc">The sender of this message should update their OpenPGP software.</string>
+    <string name="insecure_msg_mdc">This message was encrypted with an insecure encryption mechanism. The encrypted message did not include a Modification Detection Code (MDC), which is necessary to ensure message integrity.</string>
 </resources>
