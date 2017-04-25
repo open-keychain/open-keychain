@@ -1846,8 +1846,8 @@
     <string name="key_health_revoked_subtitle">"This key can\'t be used anymore."</string>
     <string name="key_health_insecure_title">"Insecure"</string>
     <string name="key_health_insecure_subtitle">"This key is not secure!"</string>
-    <string name="key_health_special_title">"Special"</string>
-    <string name="key_health_special_subtitle">"Click for details"</string>
+    <string name="key_health_broken_title">"Defective"</string>
+    <string name="key_health_broken_subtitle">"Click for details"</string>
     <string name="key_health_sign_only_title">"Healthy (Signing Key)"</string>
     <string name="key_health_sign_only_subtitle">"Click for details"</string>
     <string name="key_health_stripped_title">"Healthy (Stripped)"</string>

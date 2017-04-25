@@ -137,7 +137,7 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         if (!subkeyStatus.keysSign.isEmpty() && subkeyStatus.keysEncrypt.isEmpty()) {
             SubKeyItem keySign = subkeyStatus.keysSign.get(0);
             if (!keySign.isValid()) {
-                return KeyHealthStatus.SPECIAL;
+                return KeyHealthStatus.BROKEN;
             }
 
             if (keySign.mSecurityProblem != null) {
@@ -148,7 +148,7 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         }
 
         if (subkeyStatus.keysSign.isEmpty() || subkeyStatus.keysEncrypt.isEmpty()) {
-            return KeyHealthStatus.SPECIAL;
+            return KeyHealthStatus.BROKEN;
         }
 
         SubKeyItem keySign = subkeyStatus.keysSign.get(0);
@@ -160,7 +160,7 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         }
 
         if (!keySign.isValid() || !keyEncrypt.isValid()) {
-            return KeyHealthStatus.SPECIAL;
+            return KeyHealthStatus.BROKEN;
         }
 
         if (keyCertify.mSecretKeyType == SecretKeyType.GNU_DUMMY
@@ -252,7 +252,7 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
     }
 
     enum KeyHealthStatus {
-        OK, DIVERT, REVOKED, EXPIRED, INSECURE, SIGN_ONLY, STRIPPED, PARTIAL_STRIPPED, SPECIAL
+        OK, DIVERT, REVOKED, EXPIRED, INSECURE, SIGN_ONLY, STRIPPED, PARTIAL_STRIPPED, BROKEN
     }
 
     interface KeyHealthMvpView {

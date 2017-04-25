@@ -96,8 +96,8 @@ public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnC
                 R.drawable.status_signature_expired_cutout_24dp, R.color.android_red_light),
         INSECURE (R.string.key_health_insecure_title, R.string.key_health_insecure_subtitle,
                 R.drawable.ic_close_black_24dp, R.color.android_red_light),
-        SPECIAL (R.string.key_health_special_title, R.string.key_health_special_subtitle,
-                R.drawable.status_signature_unverified_cutout_24dp, R.color.android_orange_light),
+        BROKEN(R.string.key_health_broken_title, R.string.key_health_broken_subtitle,
+                R.drawable.broken_heart_24dp, R.color.android_red_light),
         SIGN_ONLY (R.string.key_health_sign_only_title, R.string.key_health_sign_only_subtitle,
                 R.drawable.ic_check_black_24dp, R.color.android_green_light),
         STRIPPED (R.string.key_health_stripped_title, R.string.key_health_stripped_subtitle,
@@ -139,8 +139,8 @@ public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnC
             case INSECURE:
                 setKeyStatus(KeyHealthDisplayStatus.INSECURE);
                 break;
-            case SPECIAL:
-                setKeyStatus(KeyHealthDisplayStatus.SPECIAL);
+            case BROKEN:
+                setKeyStatus(KeyHealthDisplayStatus.BROKEN);
                 break;
             case STRIPPED:
                 setKeyStatus(KeyHealthDisplayStatus.STRIPPED);
