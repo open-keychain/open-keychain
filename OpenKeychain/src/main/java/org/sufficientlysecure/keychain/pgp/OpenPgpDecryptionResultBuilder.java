@@ -17,35 +17,49 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.SymmetricAlgorithmProblem;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class OpenPgpDecryptionResultBuilder {
 
     // builder
-    private boolean mInsecure = false;
-    private boolean mEncrypted = false;
+    private boolean isEncrypted = false;
     private byte[] sessionKey;
     private byte[] decryptedSessionKey;
+    private ArrayList<SecurityProblem> securityProblems;
 
-    public void setInsecure(boolean insecure) {
-        this.mInsecure = insecure;
+    public void addSecurityProblem(SecurityProblem securityProblem) {
+        if (securityProblems == null) {
+            securityProblems = new ArrayList<>();
+        }
+        securityProblems.add(securityProblem);
+    }
+
+    public List<SecurityProblem> getKeySecurityProblems() {
+        return securityProblems != null ? Collections.unmodifiableList(securityProblems) : null;
     }
 
     public void setEncrypted(boolean encrypted) {
-        this.mEncrypted = encrypted;
+        this.isEncrypted = encrypted;
     }
 
     public OpenPgpDecryptionResult build() {
-        if (mInsecure) {
+        if (securityProblems != null && !securityProblems.isEmpty()) {
             Log.d(Constants.TAG, "RESULT_INSECURE");
             return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_INSECURE, sessionKey, decryptedSessionKey);
         }
 
-        if (mEncrypted) {
+        if (isEncrypted) {
             Log.d(Constants.TAG, "RESULT_ENCRYPTED");
-            return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_ENCRYPTED, sessionKey, decryptedSessionKey);
+            return new OpenPgpDecryptionResult(
+                    OpenPgpDecryptionResult.RESULT_ENCRYPTED, sessionKey, decryptedSessionKey);
         }
 
         Log.d(Constants.TAG, "RESULT_NOT_ENCRYPTED");
@@ -60,4 +74,5 @@ public class OpenPgpDecryptionResultBuilder {
         this.sessionKey = sessionKey;
         this.decryptedSessionKey = decryptedSessionKey;
     }
+
 }
