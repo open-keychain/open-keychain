@@ -35,7 +35,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.GCMParameterSpec;
 
 
-public class CryptoObject {
+class CryptoObject {
     private SecretKeySpec mSharedSecret = null;
     private Cipher mEnc = null;
     private Cipher mDec = null;
@@ -49,7 +49,7 @@ public class CryptoObject {
      * Create a new CryptoObject with encryption asymmetric elliptic curve25519 encryption keypair
      * Short authentication byte length is 3 byte.
      */
-    public CryptoObject() throws CryptoSocketException {
+    CryptoObject() throws CryptoSocketException {
         this(3, 16, 16);
     }
 
@@ -62,7 +62,7 @@ public class CryptoObject {
      * ivSize must be positiv, byte size of iv for encryption scheme
      * tagSize must be positiv, byte size of tag for encryption scheme
      */
-    public CryptoObject(int shortAuthenticationStringSize, int ivSize, int tagSize)
+    private CryptoObject(int shortAuthenticationStringSize, int ivSize, int tagSize)
             throws CryptoSocketException {
         if (0 >= shortAuthenticationStringSize || 0 >= ivSize || 0 >= tagSize) {
             throw new CryptoSocketException("shortAuthenticationStringSize,ivSize and tagSize " +
@@ -85,7 +85,7 @@ public class CryptoObject {
     /**
      * set a already known sharedsecret, instead of using commitment to create one
      */
-    public void setSharedSecret(byte[] sharedSecret) throws CryptoSocketException {
+    void setSharedSecret(byte[] sharedSecret) throws CryptoSocketException {
         if (sharedSecret.length != 32) {
             throw new CryptoSocketException("invalid sharedSecret-size; has to have a length of " +
                     "32 bytes");
@@ -164,6 +164,7 @@ public class CryptoObject {
                     "secret first!");
         }
 
+        //data can be null. So the check is necessary!
         if (data.length <= this.mIvSize + this.mTagSize || data == null) {
             throw new CryptoSocketException("The data are too small for a ciphertext!");
         }

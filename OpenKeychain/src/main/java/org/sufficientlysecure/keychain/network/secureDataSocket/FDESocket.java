@@ -29,11 +29,11 @@ import java.net.SocketAddress;
 
 class FDESocket {
     //cannot be larger than 32767
-    final int PAYLOAD_SIZE;
-    final int PACKET_SIZE;
+    private final int PAYLOAD_SIZE;
+    private final int PACKET_SIZE;
     private CryptoSocket mCryptoSocket;
 
-    FDESocket(CryptoSocketInterface.Channel c, int payloadSize) throws CryptoSocketException {
+    private FDESocket(CryptoSocketInterface.Channel c, int payloadSize) throws CryptoSocketException {
         this.PAYLOAD_SIZE = payloadSize;
         this.PACKET_SIZE = PAYLOAD_SIZE + 2;
         if (PAYLOAD_SIZE > 32767)

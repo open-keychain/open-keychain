@@ -36,7 +36,7 @@ import javax.crypto.IllegalBlockSizeException;
 
 import java.security.SecureRandom;
 
-public class CryptoSocket implements CryptoSocketInterface {
+class CryptoSocket implements CryptoSocketInterface {
     private Channel mChannel = null;
     private ServerSocket mServer = null;
     private Socket mSocket = null;
@@ -56,7 +56,7 @@ public class CryptoSocket implements CryptoSocketInterface {
      * If you otherwise call connect() afterwards, you will connect to the
      * given destination.
      */
-    public CryptoSocket(Channel channel) {
+    CryptoSocket(Channel channel) {
         this.mChannel = channel;
     }
 
@@ -68,48 +68,46 @@ public class CryptoSocket implements CryptoSocketInterface {
             this.mServer = new ServerSocket(port);
             this.mRunning = true;
             while (this.mRunning) {
-                while (this.mRunning) {
-                    this.mSocket = this.mServer.accept();
+                this.mSocket = this.mServer.accept();
 
-                    if (!(this.mChannel.id.equals("") || this.mChannel.id.equals(":") ||
-                            this.mChannel.id.equals("::")) &&
-                            !this.mChannel.id.equals(mSocket.getRemoteSocketAddress().toString())) {
-                        mSocket.close();
-                        continue;
-                    }
-
-                    break;
+                if (!(this.mChannel.id.equals("") || this.mChannel.id.equals(":") ||
+                        this.mChannel.id.equals("::")) &&
+                        !this.mChannel.id.equals(mSocket.getRemoteSocketAddress().toString())) {
+                    mSocket.close();
+                    continue;
                 }
 
-                // begin crypto protocol
-                this.mOut = this.mSocket.getOutputStream();
-                this.mIn = this.mSocket.getInputStream();
-                this.mConnected = true;
-                //check if the same sharedSecret was used
-                byte[] check = new byte[1];
-                new SecureRandom().nextBytes(check);
-                try {
-                    this.write(check);
-                } catch (UnverifiedException e) {
-                    throw new CryptoSocketException("impossible Error while sharedSecret check");
-                }
-                byte[] ans = new byte[1];
-                this.read(true, ans);
-                byte[] check2 = new byte[1];
-                this.read(true, check2);
-                check2[0] += 1;
-                try {
-                    this.write(check2);
-                } catch (UnverifiedException e) {
-                    throw new CryptoSocketException("impossible Error while sharedSecret check");
-                }
-                if (check[0] + 1 != ans[0]) {
-                    this.mConnected = false;
-                    throw new CryptoSocketException("not the same sharedSecret is used. " +
-                            "maybe the wrong device connected to you");
-                }
                 break;
             }
+
+            // begin crypto protocol
+            this.mOut = this.mSocket.getOutputStream();
+            this.mIn = this.mSocket.getInputStream();
+            this.mConnected = true;
+            //check if the same sharedSecret was used
+            byte[] check = new byte[1];
+            new SecureRandom().nextBytes(check);
+            try {
+                this.write(check);
+            } catch (UnverifiedException e) {
+                throw new CryptoSocketException("impossible Error while sharedSecret check");
+            }
+            byte[] ans = new byte[1];
+            this.read(true, ans);
+            byte[] check2 = new byte[1];
+            this.read(true, check2);
+            check2[0] += 1;
+            try {
+                this.write(check2);
+            } catch (UnverifiedException e) {
+                throw new CryptoSocketException("impossible Error while sharedSecret check");
+            }
+            if (check[0] + 1 != ans[0]) {
+                this.mConnected = false;
+                throw new CryptoSocketException("not the same sharedSecret is used. " +
+                        "maybe the wrong device connected to you");
+            }
+
             return this.mSocket.getRemoteSocketAddress();
         }
     }
@@ -323,7 +321,7 @@ public class CryptoSocket implements CryptoSocketInterface {
                 this.mServer.close();
             }
         } catch (IOException ioe) {
-        }
+        }// for now eat exceptions
 
         this.mSocket = null;
         this.mServer = null;

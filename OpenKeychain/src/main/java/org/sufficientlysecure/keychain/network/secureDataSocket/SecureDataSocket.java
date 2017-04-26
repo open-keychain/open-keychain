@@ -112,7 +112,7 @@ public class SecureDataSocket {
      * @param useIPv4 true=return ipv4, false=return ipv6
      * @return address or empty string
      */
-    public static String getIPAddress(boolean useIPv4) {
+    private static String getIPAddress(boolean useIPv4) {
         try {
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.
                     getNetworkInterfaces());
