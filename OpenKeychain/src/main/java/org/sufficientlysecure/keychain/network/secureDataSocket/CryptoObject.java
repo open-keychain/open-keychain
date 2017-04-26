@@ -20,6 +20,9 @@
 
 package org.sufficientlysecure.keychain.network.secureDataSocket;
 
+import android.annotation.TargetApi;
+import android.os.Build;
+
 import java.lang.IllegalStateException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -34,7 +37,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.GCMParameterSpec;
 
-
+@TargetApi(Build.VERSION_CODES.KITKAT)
 class CryptoObject {
     private SecretKeySpec mSharedSecret = null;
     private Cipher mEnc = null;
@@ -165,19 +168,19 @@ class CryptoObject {
         }
 
         //data can be null. So the check is necessary!
-        if (data.length <= this.mIvSize + this.mTagSize || data == null) {
+        if (data == null || data.length <= this.mIvSize + this.mTagSize) {
             throw new CryptoSocketException("The data are too small for a ciphertext!");
         }
 
         byte[] iv = new byte[this.mIvSize];
-        byte[] ciphertext = new byte[data.length - this.mIvSize];
+        byte[] cipherText = new byte[data.length - this.mIvSize];
         System.arraycopy(data, 0, iv, 0, this.mIvSize);
-        System.arraycopy(data, this.mIvSize, ciphertext, 0, ciphertext.length);
+        System.arraycopy(data, this.mIvSize, cipherText, 0, cipherText.length);
         byte[] decryptData;
         try {
             this.mDec.init(Cipher.DECRYPT_MODE, this.mSharedSecret,
                     new GCMParameterSpec(this.mTagSize * 8, iv));
-            decryptData = this.mDec.doFinal(ciphertext);
+            decryptData = this.mDec.doFinal(cipherText);
         } catch (AEADBadTagException abt) {
             return null;
         } catch (BadPaddingException bp) {

@@ -20,6 +20,9 @@
 
 package org.sufficientlysecure.keychain.network.secureDataSocket;
 
+import android.annotation.TargetApi;
+import android.os.Build;
+
 import org.bouncycastle.util.encoders.Base64;
 
 import java.lang.IllegalStateException;
@@ -36,6 +39,7 @@ import javax.crypto.IllegalBlockSizeException;
 
 import java.security.SecureRandom;
 
+@TargetApi(Build.VERSION_CODES.KITKAT)
 class CryptoSocket implements CryptoSocketInterface {
     private Channel mChannel = null;
     private ServerSocket mServer = null;
@@ -137,12 +141,12 @@ class CryptoSocket implements CryptoSocketInterface {
             stringParts[1] = new StringBuilder(stringParts[1]).reverse().toString();
             stringParts[2] = new StringBuilder(stringParts[2]).reverse().toString();
             this.setSharedSecret(stringParts[0]);
-            String serveraddress = stringParts[2];
+            String serverAddress = stringParts[2];
             String port = stringParts[1];
-            InetSocketAddress address = null;
+            InetSocketAddress address;
 
             try {
-                address = new InetSocketAddress(serveraddress, Integer.parseInt(port));
+                address = new InetSocketAddress(serverAddress, Integer.parseInt(port));
             } catch (Exception e) {
                 throw new CryptoSocketException("for a MANUAL channel the identifier needs to be " +
                         "ip-port-sharedsecret combination e.g. " +
