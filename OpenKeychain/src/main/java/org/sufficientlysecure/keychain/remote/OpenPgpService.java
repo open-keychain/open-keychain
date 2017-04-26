@@ -66,6 +66,7 @@ import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
+import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResultStatus;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -115,7 +116,7 @@ public class OpenPgpService extends Service {
 
             Intent signKeyIdIntent = getSignKeyMasterId(data);
             // NOTE: Fallback to return account settings (Old API)
-            if (signKeyIdIntent.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR)
+            if (signKeyIdIntent.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS)
                     == OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED) {
                 return signKeyIdIntent;
             }
@@ -188,11 +189,7 @@ public class OpenPgpService extends Service {
             }
         } catch (Exception e) {
             Log.d(Constants.TAG, "signImpl", e);
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_ERROR,
-                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-            return result;
+            return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
 
@@ -213,51 +210,53 @@ public class OpenPgpService extends Service {
                 compressionId = PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED;
             }
 
-            KeyIdResult keyIdResult = mKeyIdExtractor.returnKeyIdsFromIntent(data, false);
-            if (keyIdResult.hasResultIntent()) {
-                return keyIdResult.getResultIntent();
-            }
-            long[] keyIds = keyIdResult.getKeyIds();
-
-            // TODO this is not correct!
-            long inputLength = inputStream.available();
-            InputData inputData = new InputData(inputStream, inputLength, originalFilename);
-
             PgpSignEncryptData pgpData = new PgpSignEncryptData();
             pgpData.setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(null)
-                    .setCompressionAlgorithm(compressionId)
-                    .setSymmetricEncryptionAlgorithm(PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT)
-                    .setEncryptionMasterKeyIds(keyIds);
+                    .setCompressionAlgorithm(compressionId);
 
             if (sign) {
-
                 Intent signKeyIdIntent = getSignKeyMasterId(data);
                 // NOTE: Fallback to return account settings (Old API)
                 if (signKeyIdIntent.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR)
-                        == OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED) {
+                        != OpenPgpApi.RESULT_CODE_SUCCESS) {
                     return signKeyIdIntent;
                 }
+
                 long signKeyId = signKeyIdIntent.getLongExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, Constants.key.none);
                 if (signKeyId == Constants.key.none) {
                     throw new Exception("No signing key given");
-                } else {
-                    pgpData.setSignatureMasterKeyId(signKeyId);
+                }
+                long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(signKeyId).getSecretSignId();
 
-                    // get first usable subkey capable of signing
-                    try {
-                        long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(
-                                pgpData.getSignatureMasterKeyId()).getSecretSignId();
-                        pgpData.setSignatureSubKeyId(signSubKeyId);
-                    } catch (PgpKeyNotFoundException e) {
-                        throw new Exception("signing subkey not found!", e);
-                    }
+                pgpData.setSignatureMasterKeyId(signKeyId)
+                        .setSignatureSubKeyId(signSubKeyId)
+                        .setAdditionalEncryptId(signKeyId);
+            }
+
+            KeyIdResult keyIdResult = mKeyIdExtractor.returnKeyIdsFromIntent(data, false,
+                    mApiPermissionHelper.getCurrentCallingPackage());
+
+            boolean isDryRun = data.getBooleanExtra(OpenPgpApi.EXTRA_DRY_RUN, false);
+            boolean isOpportunistic = data.getBooleanExtra(OpenPgpApi.EXTRA_OPPORTUNISTIC_ENCRYPTION, false);
+            KeyIdResultStatus keyIdResultStatus = keyIdResult.getStatus();
+            if (isDryRun) {
+                return getDryRunStatusResult(keyIdResult);
+            }
+
+            if (keyIdResult.hasKeySelectionPendingIntent()) {
+                if ((keyIdResultStatus == KeyIdResultStatus.MISSING || keyIdResultStatus == KeyIdResultStatus.NO_KEYS ||
+                        keyIdResultStatus == KeyIdResultStatus.NO_KEYS_ERROR) && isOpportunistic) {
+                    return createErrorResultIntent(OpenPgpError.OPPORTUNISTIC_MISSING_KEYS,
+                            "missing keys in opportunistic mode");
                 }
 
-                // sign and encrypt
-                pgpData.setSignatureHashAlgorithm(PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT)
-                        .setAdditionalEncryptId(signKeyId); // add sign key for encryption
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                result.putExtra(OpenPgpApi.RESULT_INTENT, keyIdResult.getKeySelectionPendingIntent());
+                return result;
             }
+            pgpData.setEncryptionMasterKeyIds(keyIdResult.getKeyIds());
 
             PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData);
             pseInput.setAllowedKeyIds(getAllowedKeyIds());
@@ -268,13 +267,15 @@ public class OpenPgpService extends Service {
             }
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                inputParcel.mPassphrase =
-                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+                inputParcel.mPassphrase = new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
             }
 
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, mKeyRepository, null);
+            // TODO this is not correct!
+            long inputLength = inputStream.available();
+            InputData inputData = new InputData(inputStream, inputLength, originalFilename);
 
             // execute PGP operation!
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, mKeyRepository, null);
             PgpSignEncryptResult pgpResult = op.execute(pseInput, inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
@@ -297,11 +298,43 @@ public class OpenPgpService extends Service {
             }
         } catch (Exception e) {
             Log.d(Constants.TAG, "encryptAndSignImpl", e);
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_ERROR,
-                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-            return result;
+            return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
+        }
+    }
+
+    @NonNull
+    private Intent getDryRunStatusResult(KeyIdResult keyIdResult) {
+        switch (keyIdResult.getStatus()) {
+            case MISSING: {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_ERROR,
+                        new OpenPgpError(OpenPgpError.OPPORTUNISTIC_MISSING_KEYS, "missing keys in opportunistic mode"));
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+                return result;
+            }
+            case NO_KEYS:
+            case NO_KEYS_ERROR: {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_ERROR,
+                        new OpenPgpError(OpenPgpError.NO_USER_IDS, "empty recipient list"));
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+                return result;
+            }
+            case DUPLICATE: {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_KEYS_CONFIRMED, false);
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                return result;
+            }
+            case OK: {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_KEYS_CONFIRMED, keyIdResult.isAllKeysConfirmed());
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                return result;
+            }
+            default: {
+                throw new IllegalStateException("unhandled case!");
+            }
         }
     }
 
@@ -385,18 +418,12 @@ public class OpenPgpService extends Service {
                 }
 
                 String errorMsg = getString(pgpResult.getLog().getLast().mType.getMsgId());
-                Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_ERROR, new OpenPgpError(OpenPgpError.GENERIC_ERROR, errorMsg));
-                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-                return result;
+                return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, errorMsg);
             }
 
         } catch (Exception e) {
             Log.e(Constants.TAG, "decryptAndVerifyImpl", e);
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_ERROR, new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-            return result;
+            return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
 
@@ -532,20 +559,24 @@ public class OpenPgpService extends Service {
             }
         } catch (Exception e) {
             Log.d(Constants.TAG, "getKeyImpl", e);
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_ERROR,
-                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-            return result;
+            return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
+    }
+
+    @NonNull
+    private Intent createErrorResultIntent(int errorCode, String errorMsg) {
+        Intent result = new Intent();
+        result.putExtra(OpenPgpApi.RESULT_ERROR,
+                new OpenPgpError(errorCode, errorMsg));
+        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+        return result;
     }
 
     private Intent getSignKeyIdImpl(Intent data) {
         // if data already contains EXTRA_SIGN_KEY_ID, it has been executed again
         // after user interaction. Then, we just need to return the long again!
         if (data.hasExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID)) {
-            long signKeyId = data.getLongExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID,
-                    Constants.key.none);
+            long signKeyId = data.getLongExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, Constants.key.none);
 
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, signKeyId);
@@ -567,9 +598,13 @@ public class OpenPgpService extends Service {
     }
 
     private Intent getKeyIdsImpl(Intent data) {
-        KeyIdResult keyIdResult = mKeyIdExtractor.returnKeyIdsFromIntent(data, true);
-        if (keyIdResult.hasResultIntent()) {
-            return keyIdResult.getResultIntent();
+        KeyIdResult keyIdResult = mKeyIdExtractor.returnKeyIdsFromIntent(data, true,
+                mApiPermissionHelper.getCurrentCallingPackage());
+        if (keyIdResult.hasKeySelectionPendingIntent()) {
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.RESULT_INTENT, keyIdResult.getKeySelectionPendingIntent());
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+            return result;
         }
         long[] keyIds = keyIdResult.getKeyIds();
 
@@ -606,18 +641,11 @@ public class OpenPgpService extends Service {
             } else {
                 // should not happen normally...
                 String errorMsg = getString(pgpResult.getLog().getLast().mType.getMsgId());
-                Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_ERROR, new OpenPgpError(OpenPgpError.GENERIC_ERROR, errorMsg));
-                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-                return result;
+                return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, errorMsg);
             }
         } catch (Exception e) {
             Log.d(Constants.TAG, "backupImpl", e);
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_ERROR,
-                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-            return result;
+            return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
 
