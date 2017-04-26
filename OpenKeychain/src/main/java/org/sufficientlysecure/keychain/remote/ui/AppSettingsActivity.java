@@ -17,11 +17,14 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,8 +33,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
@@ -44,9 +45,6 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.dialog.AdvancedAppSettingsDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 public class AppSettingsActivity extends BaseActivity {
     private Uri mAppUri;
 
@@ -54,14 +52,6 @@ public class AppSettingsActivity extends BaseActivity {
 
     private TextView mAppNameView;
     private ImageView mAppIconView;
-    private TextView mPackageName;
-    private TextView mPackageSignature;
-
-    private FloatingActionButton mStartFab;
-
-    // deprecated API
-    private AccountsListFragment mAccountsListFragment;
-    private TextView mAccountsLabel;
 
 
     // model
@@ -71,14 +61,10 @@ public class AppSettingsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAccountsLabel = (TextView) findViewById(R.id.api_accounts_label);
         mAppNameView = (TextView) findViewById(R.id.api_app_settings_app_name);
         mAppIconView = (ImageView) findViewById(R.id.api_app_settings_app_icon);
-        mPackageName = (TextView) findViewById(R.id.api_app_settings_package_name);
-        mPackageSignature = (TextView) findViewById(R.id.api_app_settings_package_certificate);
-        mStartFab = (FloatingActionButton) findViewById(R.id.fab);
 
-        mStartFab.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startApp();
@@ -99,10 +85,10 @@ public class AppSettingsActivity extends BaseActivity {
             Log.e(Constants.TAG, "Intent data missing. Should be Uri of app!");
             finish();
             return;
-        } else {
-            Log.d(Constants.TAG, "uri: " + mAppUri);
-            loadData(savedInstanceState, mAppUri);
         }
+
+        Log.d(Constants.TAG, "uri: " + mAppUri);
+        loadData(savedInstanceState, mAppUri);
     }
 
     private void save() {
@@ -200,32 +186,17 @@ public class AppSettingsActivity extends BaseActivity {
         mAppNameView.setText(appName);
         mAppIconView.setImageDrawable(appIcon);
 
-        Uri accountsUri = appUri.buildUpon().appendPath(KeychainContract.PATH_ACCOUNTS).build();
-        Log.d(Constants.TAG, "accountsUri: " + accountsUri);
         Uri allowedKeysUri = appUri.buildUpon().appendPath(KeychainContract.PATH_ALLOWED_KEYS).build();
         Log.d(Constants.TAG, "allowedKeysUri: " + allowedKeysUri);
-        startListFragments(savedInstanceState, accountsUri, allowedKeysUri);
+        startListFragments(savedInstanceState, allowedKeysUri);
     }
 
-    private void startListFragments(Bundle savedInstanceState, Uri accountsUri, Uri allowedKeysUri) {
+    private void startListFragments(Bundle savedInstanceState, Uri allowedKeysUri) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
         if (savedInstanceState != null) {
             return;
-        }
-
-        // show accounts only if available (deprecated API)
-        Cursor cursor = getContentResolver().query(accountsUri, null, null, null, null);
-        if (cursor != null && cursor.moveToFirst()) try {
-            mAccountsLabel.setVisibility(View.VISIBLE);
-            mAccountsListFragment = AccountsListFragment.newInstance(accountsUri);
-            // Create an instance of the fragments
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.api_accounts_list_fragment, mAccountsListFragment)
-                    .commitAllowingStateLoss();
-        } finally {
-            cursor.close();
         }
 
         // Create an instance of the fragments

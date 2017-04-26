@@ -30,7 +30,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
-import android.net.Uri;
 import android.os.Binder;
 
 import org.openintents.openpgp.OpenPgpError;
@@ -38,7 +37,6 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
 
@@ -164,37 +162,6 @@ public class ApiPermissionHelper {
         Log.d(Constants.TAG, "currentPkg: " + currentPkg);
 
         return currentPkg;
-    }
-
-    /**
-     * Retrieves AccountSettings from database for the application calling this remote service
-     */
-    @Deprecated
-    protected AccountSettings getAccSettings(String accountName) {
-        String currentPkg = getCurrentCallingPackage();
-        Log.d(Constants.TAG, "getAccSettings accountName: " + accountName);
-
-        Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(currentPkg, accountName);
-
-        return mApiDao.getApiAccountSettings(uri); // can be null!
-    }
-
-    @Deprecated
-    protected Intent getCreateAccountIntent(Intent data, String accountName) {
-        String packageName = getCurrentCallingPackage();
-        Log.d(Constants.TAG, "getCreateAccountIntent accountName: " + accountName);
-
-        ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(mContext);
-
-        PendingIntent pi = piFactory.createAccountCreationPendingIntent(data,
-                packageName, accountName);
-
-        // return PendingIntent to be executed by client
-        Intent result = new Intent();
-        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-        result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
-
-        return result;
     }
 
     /**

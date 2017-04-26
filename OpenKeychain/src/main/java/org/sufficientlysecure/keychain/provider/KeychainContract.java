@@ -85,15 +85,6 @@ public class KeychainContract {
         String PACKAGE_CERTIFICATE = "package_signature";
     }
 
-    interface ApiAppsAccountsColumns {
-        String ACCOUNT_NAME = "account_name";
-        String KEY_ID = "key_id"; // not a database id
-        String ENCRYPTION_ALGORITHM = "encryption_algorithm";
-        String HASH_ALORITHM = "hash_algorithm";
-        String COMPRESSION = "compression";
-        String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
-    }
-
     interface ApiAppsAllowedKeysColumns {
         String KEY_ID = "key_id"; // not a database id
         String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
@@ -123,7 +114,6 @@ public class KeychainContract {
     public static final String PATH_CERTS = "certs";
 
     public static final String BASE_API_APPS = "api_apps";
-    public static final String PATH_ACCOUNTS = "accounts";
     public static final String PATH_ALLOWED_KEYS = "allowed_keys";
 
     public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
@@ -314,33 +304,6 @@ public class KeychainContract {
 
         public static Uri buildByPackageNameUri(String packageName) {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).build();
-        }
-    }
-
-    public static class ApiAccounts implements ApiAppsAccountsColumns, BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
-                .appendPath(BASE_API_APPS).build();
-
-        /**
-         * Use if multiple items get returned
-         */
-        public static final String CONTENT_TYPE
-                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.api_apps.accounts";
-
-        /**
-         * Use if a single item is returned
-         */
-        public static final String CONTENT_ITEM_TYPE
-                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.api_apps.accounts";
-
-        public static Uri buildBaseUri(String packageName) {
-            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ACCOUNTS)
-                    .build();
-        }
-
-        public static Uri buildByPackageAndAccountUri(String packageName, String accountName) {
-            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ACCOUNTS)
-                    .appendEncodedPath(accountName).build();
         }
     }
 
