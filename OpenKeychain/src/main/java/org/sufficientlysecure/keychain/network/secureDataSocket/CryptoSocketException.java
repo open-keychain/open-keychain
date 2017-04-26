@@ -20,9 +20,9 @@
 
 package org.sufficientlysecure.keychain.network.secureDataSocket;
 
-public class CryptoSocketException extends Exception {
+class CryptoSocketException extends Exception {
 
-    CryptoSocketException(String description){
+    CryptoSocketException(String description) {
         super(description);
     }
 }

@@ -25,35 +25,39 @@ import java.net.SocketTimeoutException;
 import java.net.SocketAddress;
 import java.io.IOException;
 
-public interface CryptoSocketInterface {
+interface CryptoSocketInterface {
 
-        /**
-         * A sharedSecret will be created and given to the user. The User has to transfer it securely (!!!) to the partnerdevice.
-         * Once a sharedSecret is known by both devices a networkconnection can be established. I.e. a sharedSecret has not to be created on both sides.
-         * Method to create the sharedSecret is called createSharedSecret().
-         * Method to set the sharedSecret in the partnerdevice is called setSharedSecret(byte[] sharedSecret).
-         * These Methods have to be called BEFORE a networkconnection has been established (via listen or connect), because the sharedSecret will be used for the Crypto.
-         * The networkconnection will be fully usable afert it has been established.
-         * */
+    /**
+     * A sharedSecret will be created and given to the user.
+     * The User has to transfer it securely (!!!) to the partnerdevice.
+     * Once a sharedSecret is known by both devices a networkconnection can be established.
+     * I.e. a sharedSecret has not to be created on both sides.
+     * Method to create the sharedSecret is called createSharedSecret().
+     * Method to set the sharedSecret in the partnerdevice is called
+     * setSharedSecret(byte[] sharedSecret).
+     * These Methods have to be called BEFORE a networkconnection has been established
+     * (via listen or connect), because the sharedSecret will be used for the Crypto.
+     * The networkconnection will be fully usable afert it has been established.
+     */
 
-    public class Channel {
+    class Channel {
         /**
          * definitions of id.
-         *
-         *  id                          | Description
+         * <p>
+         * id                          | Description
          * -----------------------------+--------------------------------------------
-         *  ipAddress:Port:sharedSecret | only the networkChannel is defined here.
-         *                              | If used as a client the sharedSecret has to
-         *                              | be set.
-         * */
+         * ipAddress:Port:sharedSecret | only the networkChannel is defined here.
+         * | If used as a client the sharedSecret has to
+         * | be set.
+         */
         public final String id;
 
-        public Channel(String id) {
+        Channel(String id) {
             this.id = id;
         }
     }
 
-    public enum RETURN {
+    enum RETURN {
         SUCCESS(0),
         READ(-1),
         WRITE(-2),
@@ -67,54 +71,42 @@ public interface CryptoSocketInterface {
             this.value = value;
         }
 
-        public int getValue(){
+        public int getValue() {
             return this.value;
         }
     }
 
     /**
-    * Await a connection from a device, which calls connect().
-    * listen is blocking, until a connection is established
-    * port - On which port server listening. 0 for random
-    */
-    SocketAddress listen(int port) throws IOException, SocketTimeoutException, CryptoSocketException; //blocking until connection is established
-
-
-    /**
-     * Same as listen(int port). Except choosing port outof Channel.id.
-     * */
-    //SocketAddress listen() throws IOException, SocketTimeoutException; //blocking until connection is established
-
+     * Await a connection from a device, which calls connect().
+     * listen is blocking, until a connection is established
+     * port - On which port server listening. 0 for random
+     */
+    SocketAddress listen(int port) throws IOException, CryptoSocketException;
 
     /**
-    * Connect to a device, which awaits a connection and called listen().
-    * Throws SocketTimeoutException when connection timedout, CryptoSocketException when the
-    * destination id is wrong or IOException if socket creation fails
-    * returns if connection is established
-    */
+     * Connect to a device, which awaits a connection and called listen().
+     * Throws SocketTimeoutException when connection timedout, CryptoSocketException when the
+     * destination id is wrong or IOException if socket creation fails
+     * returns if connection is established
+     */
     boolean connect() throws CryptoSocketException, IOException, SocketTimeoutException;
-
-    /**
-     * Sets the SharedSecret.
-     * This has to be used if the channel MANUAL is used and you will not create a sharedSecret.
-     * */
-    //void setSharedSecret(byte[] sharedSecret) throws CryptoSocketException; // <--- private now, because used in connect internaly
 
     /**
      * Creates and sets a sharedSecret.
      * It will be returned, so the user can transfer it to the communicationpartner and set it there.
      * I.e. channel MANUAL has to be used.
-     * */
+     */
     String createSharedSecret() throws CryptoSocketException, IOException;
 
     /**
-    * Sends the given bytearray to the communicatonpartner.
-    * If the partnerdevice is not verified (via OOB), an UnverifiedException will be
-    * thrown.
-    * Return negativ value on error, for error codes please look at enum RETURN.
-    * 	Returns RETURN.INVALID_CIPHERTEXT or RETURN.SUCCESS
-    */
-    int write(byte[] array) throws UnverifiedException, IllegalStateException, IOException, CryptoSocketException;
+     * Sends the given bytearray to the communicatonpartner.
+     * If the partnerdevice is not verified (via OOB), an UnverifiedException will be
+     * thrown.
+     * Return negativ value on error, for error codes please look at enum RETURN.
+     * Returns RETURN.INVALID_CIPHERTEXT or RETURN.SUCCESS
+     */
+    int write(byte[] array) throws UnverifiedException, IllegalStateException, IOException,
+            CryptoSocketException;
 
     /*
     * Reads bytes send from the communicationpartner and stores them in data.
@@ -125,15 +117,16 @@ public interface CryptoSocketInterface {
     * Negativ value on error, for error codes please look at enum RETURN.
     * 	Returns RETURN.READ, RETURN.WRONG_TAG, RETURN.NOT_AVAILABLE, RETURN.INVALID_CIPHERTEXT
     */
-    int read(boolean blocking, byte[] data) throws IllegalStateException, CryptoSocketException, IOException;
+    int read(boolean blocking, byte[] data) throws IllegalStateException, CryptoSocketException,
+            IOException;
 
     /**
-    * Returns true, if there is something to read, false, if not.
-    */
+     * Returns true, if there is something to read, false, if not.
+     */
     boolean hasNext() throws IOException;
 
     /**
-    * Close the connection.
-    */
+     * Close the connection.
+     */
     void close();
 }

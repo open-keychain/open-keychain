@@ -20,9 +20,9 @@
 
 package org.sufficientlysecure.keychain.network.secureDataSocket;
 
-public class UnverifiedException extends Exception {
+class UnverifiedException extends Exception {
 
-    public UnverifiedException(String s){
+    UnverifiedException(String s) {
         super(s);
     }
 }
