@@ -25,6 +25,8 @@ import org.sufficientlysecure.keychain.Constants;
 
 
 public class KeychainExternalContract {
+    public static final int KEY_STATUS_UNVERIFIED = 1;
+    public static final int KEY_STATUS_VERIFIED = 2;
 
     // this is in KeychainExternalContract already, but we want to be double
     // sure this isn't mixed up with the internal one!

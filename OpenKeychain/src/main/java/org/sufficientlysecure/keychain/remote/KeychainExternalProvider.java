@@ -170,10 +170,9 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 // we take the minimum (>0) here, where "1" is "verified by known secret key", "2" is "self-certified"
                 projectionMap.put(EmailStatus.USER_ID_STATUS, "CASE ( MIN (" + Certs.VERIFIED + " ) ) "
                         // remap to keep this provider contract independent from our internal representation
-                        + " WHEN NULL THEN 1"
-                        + " WHEN " + Certs.VERIFIED_SELF + " THEN 1"
-                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN 2"
-                        + " WHEN NULL THEN NULL"
+                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
+                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
+                        + " WHEN NULL THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
                         + " END AS " + EmailStatus.USER_ID_STATUS);
                 projectionMap.put(EmailStatus.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
                 projectionMap.put(EmailStatus.MASTER_KEY_ID,

@@ -11,10 +11,12 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
@@ -76,97 +78,108 @@ class OpenPgpServiceKeyIdExtractor {
         return result;
     }
 
-    private KeyIdResult returnKeyIdsFromEmails(Intent data, String[] encryptionUserIds, String callingPackageName) {
-        boolean hasUserIds = (encryptionUserIds != null && encryptionUserIds.length > 0);
+    private KeyIdResult returnKeyIdsFromEmails(Intent data, String[] encryptionAddresses, String callingPackageName) {
+        boolean hasAddresses = (encryptionAddresses != null && encryptionAddresses.length > 0);
 
-        boolean anyKeyNotVerified = false;
+        boolean allKeysConfirmed = false;
         HashSet<Long> keyIds = new HashSet<>();
         ArrayList<String> missingEmails = new ArrayList<>();
         ArrayList<String> duplicateEmails = new ArrayList<>();
-        HashMap<String,KeyRow> keyRows = new HashMap<>();
-        if (hasUserIds) {
-            Uri queryUri = EmailStatus.CONTENT_URI.buildUpon().appendPath(callingPackageName).build();
-            Cursor cursor = contentResolver.query(queryUri, PROJECTION_KEY_SEARCH, null, encryptionUserIds, null);
-            if (cursor == null) {
-                throw new IllegalStateException("Internal error, received null cursor!");
-            }
 
-            try {
-                while (cursor.moveToNext()) {
-                    String queryAddress = cursor.getString(INDEX_EMAIL_ADDRESS);
-                    Long masterKeyId = cursor.isNull(INDEX_MASTER_KEY_ID) ? null : cursor.getLong(INDEX_MASTER_KEY_ID);
-                    int verified = cursor.getInt(INDEX_EMAIL_STATUS);
+        if (hasAddresses) {
+            HashMap<String, UserIdStatus> keyRows = getStatusMapForQueriedAddresses(encryptionAddresses, callingPackageName);
 
-                    KeyRow row = new KeyRow(masterKeyId, verified == 2);
-                    if (!keyRows.containsKey(queryAddress)) {
-                        keyRows.put(queryAddress, row);
-                        continue;
-                    }
-
-                    KeyRow previousRow = keyRows.get(queryAddress);
-                    if (previousRow.masterKeyId == null) {
-                        keyRows.put(queryAddress, row);
-                    } else if (!previousRow.verified && row.verified) {
-                        keyRows.put(queryAddress, row);
-                    } else if (previousRow.verified == row.verified) {
-                        previousRow.hasDuplicate = true;
-                    }
-                }
-            } finally {
-                cursor.close();
-            }
-
-            for (Entry<String, KeyRow> entry : keyRows.entrySet()) {
+            boolean anyKeyNotVerified = false;
+            for (Entry<String, UserIdStatus> entry : keyRows.entrySet()) {
                 String queriedAddress = entry.getKey();
-                KeyRow keyRow = entry.getValue();
+                UserIdStatus userIdStatus = entry.getValue();
 
-                if (keyRow.masterKeyId == null) {
+                if (userIdStatus.masterKeyId == null) {
                     missingEmails.add(queriedAddress);
                     continue;
                 }
 
-                keyIds.add(keyRow.masterKeyId);
+                keyIds.add(userIdStatus.masterKeyId);
 
-                if (keyRow.hasDuplicate) {
+                if (userIdStatus.hasDuplicate) {
                     duplicateEmails.add(queriedAddress);
                 }
 
-                if (!keyRow.verified) {
+                if (!userIdStatus.verified) {
                     anyKeyNotVerified = true;
                 }
             }
 
-            if (keyRows.size() != encryptionUserIds.length) {
+            if (keyRows.size() != encryptionAddresses.length) {
                 Log.e(Constants.TAG, "Number of rows doesn't match number of retrieved rows! Probably a bug?");
             }
+
+            allKeysConfirmed = !anyKeyNotVerified;
         }
 
-        long[] keyIdsArray = KeyFormattingUtils.getUnboxedLongArray(keyIds);
-        PendingIntent pi = apiPendingIntentFactory.createSelectPublicKeyPendingIntent(data, keyIdsArray,
-                missingEmails, duplicateEmails, false);
-
         if (!missingEmails.isEmpty()) {
-            return createMissingKeysResult(pi);
+            return createMissingKeysResult(data, keyIds, missingEmails, duplicateEmails);
         }
 
         if (!duplicateEmails.isEmpty()) {
-            return createDuplicateKeysResult(pi);
+            return createDuplicateKeysResult(data, keyIds, missingEmails, duplicateEmails);
         }
 
         if (keyIds.isEmpty()) {
-            return createNoKeysResult(pi);
+            return createNoKeysResult(data, keyIds, missingEmails, duplicateEmails);
         }
 
-        boolean allKeysConfirmed = !anyKeyNotVerified;
         return createKeysOkResult(keyIds, allKeysConfirmed);
     }
 
-    private static class KeyRow {
+    /** This method queries the KeychainExternalProvider for all addresses given in encryptionUserIds.
+     * It returns a map with one UserIdStatus per queried address. If multiple key candidates exist,
+     * the one with the highest verification status is selected. If two candidates with the same
+     * verification status exist, the first one is returned and marked as having a duplicate.
+     */
+    @NonNull
+    private HashMap<String, UserIdStatus> getStatusMapForQueriedAddresses(String[] encryptionUserIds, String callingPackageName) {
+        HashMap<String,UserIdStatus> keyRows = new HashMap<>();
+        Uri queryUri = EmailStatus.CONTENT_URI.buildUpon().appendPath(callingPackageName).build();
+        Cursor cursor = contentResolver.query(queryUri, PROJECTION_KEY_SEARCH, null, encryptionUserIds, null);
+        if (cursor == null) {
+            throw new IllegalStateException("Internal error, received null cursor!");
+        }
+
+        try {
+            while (cursor.moveToNext()) {
+                String queryAddress = cursor.getString(INDEX_EMAIL_ADDRESS);
+                Long masterKeyId = cursor.isNull(INDEX_MASTER_KEY_ID) ? null : cursor.getLong(INDEX_MASTER_KEY_ID);
+                boolean isVerified = cursor.getInt(INDEX_EMAIL_STATUS) == KeychainExternalContract.KEY_STATUS_VERIFIED;
+                UserIdStatus userIdStatus = new UserIdStatus(masterKeyId, isVerified);
+
+                boolean seenBefore = keyRows.containsKey(queryAddress);
+                if (!seenBefore) {
+                    keyRows.put(queryAddress, userIdStatus);
+                    continue;
+                }
+
+                UserIdStatus previousUserIdStatus = keyRows.get(queryAddress);
+                if (previousUserIdStatus.masterKeyId == null) {
+                    keyRows.put(queryAddress, userIdStatus);
+                } else if (!previousUserIdStatus.verified && userIdStatus.verified) {
+                    keyRows.put(queryAddress, userIdStatus);
+                } else if (previousUserIdStatus.verified == userIdStatus.verified) {
+                    previousUserIdStatus.hasDuplicate = true;
+                }
+            }
+        } finally {
+            cursor.close();
+        }
+        return keyRows;
+    }
+
+    private static class UserIdStatus {
         private final Long masterKeyId;
         private final boolean verified;
         private boolean hasDuplicate;
 
-        KeyRow(Long masterKeyId, boolean verified) {
+        UserIdStatus(Long masterKeyId, boolean verified) {
             this.masterKeyId = masterKeyId;
             this.verified = verified;
         }
@@ -251,19 +264,34 @@ class OpenPgpServiceKeyIdExtractor {
         return new KeyIdResult(encryptKeyIds, allKeysConfirmed, KeyIdResultStatus.OK);
     }
 
-    private static KeyIdResult createNoKeysResult(PendingIntent pendingIntent) {
-        return new KeyIdResult(pendingIntent, KeyIdResultStatus.NO_KEYS);
+    private KeyIdResult createNoKeysResult(Intent data,
+            HashSet<Long> selectedKeyIds, ArrayList<String> missingEmails, ArrayList<String> duplicateEmails) {
+        long[] keyIdsArray = KeyFormattingUtils.getUnboxedLongArray(selectedKeyIds);
+        PendingIntent selectKeyPendingIntent = apiPendingIntentFactory.createSelectPublicKeyPendingIntent(
+                data, keyIdsArray, missingEmails, duplicateEmails, false);
+
+        return new KeyIdResult(selectKeyPendingIntent, KeyIdResultStatus.NO_KEYS);
     }
 
-    private static KeyIdResult createNoKeysResult() {
+    private KeyIdResult createDuplicateKeysResult(Intent data,
+            HashSet<Long> selectedKeyIds, ArrayList<String> missingEmails, ArrayList<String> duplicateEmails) {
+        long[] keyIdsArray = KeyFormattingUtils.getUnboxedLongArray(selectedKeyIds);
+        PendingIntent selectKeyPendingIntent = apiPendingIntentFactory.createSelectPublicKeyPendingIntent(
+                data, keyIdsArray, missingEmails, duplicateEmails, false);
+
+        return new KeyIdResult(selectKeyPendingIntent, KeyIdResultStatus.DUPLICATE);
+    }
+
+    private KeyIdResult createMissingKeysResult(Intent data,
+            HashSet<Long> selectedKeyIds, ArrayList<String> missingEmails, ArrayList<String> duplicateEmails) {
+        long[] keyIdsArray = KeyFormattingUtils.getUnboxedLongArray(selectedKeyIds);
+        PendingIntent selectKeyPendingIntent = apiPendingIntentFactory.createSelectPublicKeyPendingIntent(
+                data, keyIdsArray, missingEmails, duplicateEmails, false);
+
+        return new KeyIdResult(selectKeyPendingIntent, KeyIdResultStatus.MISSING);
+    }
+
+    private KeyIdResult createNoKeysResult() {
         return new KeyIdResult(null, KeyIdResultStatus.NO_KEYS_ERROR);
-    }
-
-    private static KeyIdResult createDuplicateKeysResult(PendingIntent pendingIntent) {
-        return new KeyIdResult(pendingIntent, KeyIdResultStatus.DUPLICATE);
-    }
-
-    private static KeyIdResult createMissingKeysResult(PendingIntent pendingIntent) {
-        return new KeyIdResult(pendingIntent, KeyIdResultStatus.MISSING);
     }
 }
