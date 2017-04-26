@@ -74,6 +74,7 @@ class CryptoObject {
 
         this.mIvSize = ivSize;
         this.mTagSize = tagSize;
+        this.mRandom = new SecureRandom();
     }
 
 
