@@ -149,11 +149,13 @@
   <plurals name="n_keys">
     <item quantity="one">1 klucz</item>
     <item quantity="few">%d klucze</item>
+    <item quantity="many">%d kluczy</item>
     <item quantity="other">%d kluczy</item>
   </plurals>
   <plurals name="n_keyservers">
     <item quantity="one">%d serwer kluczy</item>
     <item quantity="few">%d serwery kluczy</item>
+    <item quantity="many">%d serwerów kluczy</item>
     <item quantity="other">%d serwerów kluczy</item>
   </plurals>
   <string name="secret_key">Klucz prywatny:</string>
@@ -203,6 +205,7 @@
   <plurals name="bad_keys_encountered">
     <item quantity="one">zignorowano %d zły tajnych klucz. Prawdopodobnie wyeksportowałeś go przy użyciu opcji\n --export-secret-subkeys\nUpewnij się, że wyeksportujesz go z opcją\n --export-secret-keys</item>
     <item quantity="few">zignorowano %d złych tajnych kluczy. Prawdopodobnie wyeksportowałeś je przy użyciu opcji\n --export-secret-subkeys\nUpewnij się, że wyeksportujesz je z opcją\n --export-secret-keys</item>
+    <item quantity="many">zignorowano %d złych tajnych kluczy. Prawdopodobnie wyeksportowałeś je przy użyciu opcji\n --export-secret-subkeys\nUpewnij się, że wyeksportujesz je z opcją\n --export-secret-keys</item>
     <item quantity="other">zignorowano %d złych tajnych kluczy. Prawdopodobnie wyeksportowałeś je przy użyciu opcji\n --export-secret-subkeys\nUpewnij się, że wyeksportujesz je z opcją\n --export-secret-keys</item>
   </plurals>
   <string name="list_empty">Lista jest pusta!</string>
@@ -223,7 +226,7 @@
   <string name="error_invalid_data">Brak treści szyfrowanej lub podpisanej OpenPGP!</string>
   <string name="error_integrity_check_failed">Sprawdzanie spójności zakończone niepowodzeniem! Dane były modyfikowane!</string>
   <string name="error_could_not_extract_private_key">nie można wyodrębnić klucza prywatnego</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Potrzebujesz Androida 4.1 aby korzystać z Android NFC Beam</string>
   <string name="error_nothing_import">Nie znaleziono kluczy!</string>
   <string name="error_contacts_key_id_missing">Pobieranie ID klucza z kontaktów nie powiodło się!</string>
@@ -265,6 +268,7 @@
   <plurals name="progress_exporting_key">
     <item quantity="one">eksportowanie klucza...</item>
     <item quantity="few">eksportowanie kluczy...</item>
+    <item quantity="many">eksportowanie kluczy...</item>
     <item quantity="other">eksportowanie kluczy...</item>
   </plurals>
   <string name="progress_extracting_signature_key">wyodrębnianie klucza podpisu...</string>
@@ -328,21 +332,25 @@
   <plurals name="import_keys_added">
     <item quantity="one">Pomyślnie zaimportowano klucz%2$s.</item>
     <item quantity="few">Pomyślnie zaimportowano %1$d kluczy%2$s.</item>
+    <item quantity="many">Pomyślnie zaimportowano %1$d kluczy%2$s.</item>
     <item quantity="other">Pomyślnie zaimportowano %1$d kluczy%2$s.</item>
   </plurals>
   <plurals name="import_keys_updated">
     <item quantity="one">Pomyślnie zaktualizowano klucz%2$s.</item>
     <item quantity="few">Pomyślnie zaktualizowano %1$d kluczy%2$s.</item>
+    <item quantity="many">Pomyślnie zaktualizowano %1$d kluczy%2$s.</item>
     <item quantity="other">Pomyślnie zaktualizowano %1$d kluczy%2$s.</item>
   </plurals>
   <plurals name="import_keys_with_errors">
     <item quantity="one">Nie udało się zaimportować jednego klucza!</item>
     <item quantity="few">Nie udało się zaimportować %d kluczy!</item>
+    <item quantity="many">Nie udało się zaimportować %d kluczy!</item>
     <item quantity="other">Nie udało się zaimportować %d kluczy!</item>
   </plurals>
   <plurals name="import_error">
     <item quantity="one">Nieudany import!</item>
     <item quantity="few">Import %d kluczy nie udał się!</item>
+    <item quantity="many">Import %d kluczy nie udał się!</item>
     <item quantity="other">Import %d kluczy nie udał się!</item>
   </plurals>
   <string name="import_error_nothing">Nie ma nic do importowania.</string>
@@ -351,21 +359,25 @@
   <plurals name="delete_ok_but_fail_1">
     <item quantity="one">Pomyślnie usunięto jeden klucz</item>
     <item quantity="few">Pomyślnie usunięto %1$d kluczy</item>
+    <item quantity="many">Pomyślnie usunięto %1$d kluczy</item>
     <item quantity="other">Pomyślnie usunięto %1$d kluczy</item>
   </plurals>
   <plurals name="delete_ok_but_fail_2">
     <item quantity="one">, ale nie udało się usunąć jednego klucza%2$s.</item>
     <item quantity="few">, ale nie udało się usunąć %1$d kluczy%2$s.</item>
+    <item quantity="many">, ale nie udało się usunąć %1$d kluczy%2$s.</item>
     <item quantity="other">, ale nie udało się usunąć %1$d kluczy%2$s.</item>
   </plurals>
   <plurals name="delete_ok">
     <item quantity="one">Pomyślnie usunięto klucz%2$s.</item>
     <item quantity="few">Pomyślnie usunięto %1$d kluczy%2$s.</item>
+    <item quantity="many">Pomyślnie usunięto %1$d kluczy%2$s.</item>
     <item quantity="other">Pomyślnie usunięto %1$d kluczy%2$s.</item>
   </plurals>
   <plurals name="delete_fail">
     <item quantity="one">Błąd usuwania jednego klucza%2$s.</item>
     <item quantity="few">Błąd usuwania %1$d kluczy.</item>
+    <item quantity="many">Błąd usuwania %1$d kluczy.</item>
     <item quantity="other">Błąd usuwania %1$d kluczy.</item>
   </plurals>
   <string name="delete_nothing">Nie ma nic do usunięcia.</string>
@@ -375,11 +387,13 @@
   <plurals name="certify_keys_with_errors">
     <item quantity="one">Certyfikacja nie powiodła się!</item>
     <item quantity="few">Nie udana certyfikacja dla %d kluczy!</item>
+    <item quantity="many">Nie udana certyfikacja dla %d kluczy!</item>
     <item quantity="other">Nie udana certyfikacja dla %d kluczy!</item>
   </plurals>
   <plurals name="certify_error">
     <item quantity="one">Certyfikacja nie powiodła się!</item>
     <item quantity="few">Certyfikacja %d kluczy nie powiodła się!</item>
+    <item quantity="many">Certyfikacja %d kluczy nie powiodła się!</item>
     <item quantity="other">Certyfikacja %d kluczy nie powiodła się!</item>
   </plurals>
   <!--Intent labels-->
@@ -421,6 +435,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 klucz wybrany.</item>
     <item quantity="few">%d kluczy wybranych.</item>
+    <item quantity="many">%d kluczy wybranych.</item>
     <item quantity="other">%d kluczy wybranych.</item>
   </plurals>
   <string name="key_list_empty_text1">Nie znaleziono kluczy!</string>
@@ -547,6 +562,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <plurals name="msg_import">
     <item quantity="one">Importowanie klucza</item>
     <item quantity="few">Importowanie %d kluczy</item>
+    <item quantity="many">Importowanie %d kluczy</item>
     <item quantity="other">Importowanie %d kluczy</item>
   </plurals>
   <string name="msg_import_error">Operacja importowania nie udała się!</string>
@@ -555,6 +571,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <plurals name="msg_del">
     <item quantity="one">Usuwanie jednego klucza</item>
     <item quantity="few">Usuwanie %d kluczy</item>
+    <item quantity="many">Usuwanie %d kluczy</item>
     <item quantity="other">Usuwanie %d kluczy</item>
   </plurals>
   <string name="msg_del_key">Usuwanie klucza %s</string>
@@ -562,11 +579,13 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <plurals name="msg_del_ok">
     <item quantity="one">Pomyślnie usunięto klucz</item>
     <item quantity="few">Pomyślnie usunięto %d kluczy</item>
+    <item quantity="many">Pomyślnie usunięto %d kluczy</item>
     <item quantity="other">Pomyślnie usunięto %d kluczy</item>
   </plurals>
   <plurals name="msg_del_fail">
     <item quantity="one">Nie udało się usunąć jednego klucza</item>
     <item quantity="few">Nie udało się usunąć %d kluczy</item>
+    <item quantity="many">Nie udało się usunąć %d kluczy</item>
     <item quantity="other">Nie udało się usunąć %d kluczy</item>
   </plurals>
   <!--Linked Identity verification-->

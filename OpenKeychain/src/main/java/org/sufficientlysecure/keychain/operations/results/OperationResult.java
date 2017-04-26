@@ -805,8 +805,6 @@ public abstract class OperationResult implements Parcelable {
 
         MSG_CRT_UPLOAD_SUCCESS (LogLevel.OK, R.string.msg_crt_upload_success),
 
-        MSG_ACC_SAVED (LogLevel.INFO, R.string.api_settings_save_msg),
-
         MSG_WRONG_QR_CODE (LogLevel.ERROR, R.string.import_qr_code_wrong),
         MSG_WRONG_QR_CODE_FP(LogLevel.ERROR, R.string.import_qr_code_fp),
 

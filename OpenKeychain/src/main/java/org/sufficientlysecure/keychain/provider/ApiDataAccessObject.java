@@ -19,10 +19,6 @@
 package org.sufficientlysecure.keychain.provider;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -31,12 +27,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
 
-import org.bouncycastle.bcpg.CompressionAlgorithmTags;
-import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class ApiDataAccessObject {
@@ -102,20 +99,6 @@ public class ApiDataAccessObject {
         return values;
     }
 
-    private ContentValues contentValueForApiAccounts(AccountSettings accSettings) {
-        ContentValues values = new ContentValues();
-        values.put(KeychainContract.ApiAccounts.ACCOUNT_NAME, accSettings.getAccountName());
-        values.put(KeychainContract.ApiAccounts.KEY_ID, accSettings.getKeyId());
-
-        // DEPRECATED and thus hardcoded
-        values.put(KeychainContract.ApiAccounts.COMPRESSION, CompressionAlgorithmTags.ZLIB);
-        values.put(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM,
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
-        values.put(KeychainContract.ApiAccounts.HASH_ALORITHM,
-                PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT);
-        return values;
-    }
-
     public void insertApiApp(AppSettings appSettings) {
         mQueryInterface.insert(ApiApps.CONTENT_URI,
                 contentValueForApiApps(appSettings));
@@ -123,17 +106,6 @@ public class ApiDataAccessObject {
 
     public void deleteApiApp(String packageName) {
         mQueryInterface.delete(ApiApps.buildByPackageNameUri(packageName), null, null);
-    }
-
-    public void insertApiAccount(Uri uri, AccountSettings accSettings) {
-        mQueryInterface.insert(uri, contentValueForApiAccounts(accSettings));
-    }
-
-    public void updateApiAccount(Uri uri, AccountSettings accSettings) {
-        if (mQueryInterface.update(uri, contentValueForApiAccounts(accSettings), null,
-                null) <= 0) {
-            throw new RuntimeException();
-        }
     }
 
     /**
@@ -158,48 +130,6 @@ public class ApiDataAccessObject {
         }
 
         return settings;
-    }
-
-    public AccountSettings getApiAccountSettings(Uri accountUri) {
-        AccountSettings settings = null;
-
-        Cursor cursor = mQueryInterface.query(accountUri, null, null, null, null);
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                settings = new AccountSettings();
-
-                settings.setAccountName(cursor.getString(
-                        cursor.getColumnIndex(KeychainContract.ApiAccounts.ACCOUNT_NAME)));
-                settings.setKeyId(cursor.getLong(
-                        cursor.getColumnIndex(KeychainContract.ApiAccounts.KEY_ID)));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return settings;
-    }
-
-    public Set<Long> getAllKeyIdsForApp(Uri uri) {
-        Set<Long> keyIds = new HashSet<>();
-
-        Cursor cursor = mQueryInterface.query(uri, null, null, null, null);
-        try {
-            if (cursor != null) {
-                int keyIdColumn = cursor.getColumnIndex(KeychainContract.ApiAccounts.KEY_ID);
-                while (cursor.moveToNext()) {
-                    keyIds.add(cursor.getLong(keyIdColumn));
-                }
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return keyIds;
     }
 
     public HashSet<Long> getAllowedKeyIdsForApp(Uri uri) {

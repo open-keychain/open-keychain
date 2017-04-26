@@ -189,7 +189,7 @@
   <string name="error_invalid_data">Ne najdem nobene vsebine šifrirane ali podpisane z OpenPGP!</string>
   <string name="error_integrity_check_failed">Preverba neokrnjenosti ni bila uspešna! Podatki so bili spremenjeni!</string>
   <string name="error_could_not_extract_private_key">ne morem izvleči zasebnega ključa</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Za uporabo storitve NFC Beam potrebujete najmanj Android 4.1!</string>
   <string name="error_nfc_needed">Vključen mora biti NFC!</string>
   <string name="error_beam_needed">Vključen mora biti Beam!</string>

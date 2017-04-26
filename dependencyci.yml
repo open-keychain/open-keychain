@@ -7,3 +7,8 @@ platform:
       tests:
         deprecated: skip
         unlicensed: skip
+    'com.mikepenz:fontawesome-typeface':
+      # it's apache licensed, which isn't detected for some reason
+      # see https://github.com/mikepenz/Android-Iconics/blob/develop/LICENSE
+      tests:
+        unlicensed: skip

@@ -2,7 +2,7 @@
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * Bättre detektering av e-post och annat innehåll när den öppnas
 
 
 ## 4.0
@@ -47,7 +47,7 @@
 ## 3.5
 
   * Nyckelåterkallelse vid nyckelradering
-  * Improved checks for insecure cryptography
+  * Förbättrade kontroller för osäker kryptografi
   * Fix: Don't close OpenKeychain after first time wizard succeeds
   * API: Version 8
 
@@ -120,7 +120,7 @@
   * Honor and display key authenticate flags
   * User interface to generate custom keys
   * Fixing user id revocation certificates
-  * New cloud search (searches over traditional keyservers and keybase.io)
+  * Ny moln sökning (sökningar över traditionella nyckelservrar och keybase.io)
   * Support for stripping keys inside OpenKeychain
   * Experimental YubiKey support: Support for signature generation and decryption
 
@@ -211,7 +211,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Keyserver query based on machine-readable output
   * Lock navigation drawer on tablets
   * Suggestions for emails on creation of keys
-  * Search in public key lists
+  * Sök i offentliga nyckellistor
   * And much more improvements and fixes…
 
 

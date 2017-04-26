@@ -18,8 +18,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.io.IOException;
-import java.util.List;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -59,6 +57,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
@@ -66,14 +65,19 @@ import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment.OnIdentityLoadedListener;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
+import org.sufficientlysecure.keychain.ui.widget.KeyHealthCardView;
+import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.io.IOException;
+import java.util.List;
 
 public class ViewKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    public static final String ARG_DATA_URI = "uri";
+    public static final String ARG_MASTER_KEY_ID = "master_key_id";
+    public static final String ARG_IS_SECRET = "is_secret";
     public static final String ARG_POSTPONE_TYPE = "postpone_type";
 
     private ListView mUserIds;
@@ -84,20 +88,16 @@ public class ViewKeyFragment extends LoaderFragment implements
 
     boolean mIsSecret = false;
 
-    private static final int LOADER_ID_UNIFIED = 0;
     private static final int LOADER_ID_USER_IDS = 1;
     private static final int LOADER_ID_LINKED_IDS = 2;
     private static final int LOADER_ID_LINKED_CONTACT = 3;
-
-    private static final String LOADER_EXTRA_LINKED_CONTACT_MASTER_KEY_ID
-            = "loader_linked_contact_master_key_id";
-    private static final String LOADER_EXTRA_LINKED_CONTACT_IS_SECRET
-            = "loader_linked_contact_is_secret";
+    private static final int LOADER_ID_SUBKEY_STATUS = 4;
 
     private UserIdsAdapter mUserIdsAdapter;
     private LinkedIdsAdapter mLinkedIdsAdapter;
 
     private Uri mDataUri;
+
     private PostponeType mPostponeType;
 
     private CardView mSystemContactCard;
@@ -111,13 +111,19 @@ public class ViewKeyFragment extends LoaderFragment implements
     private byte[] mFingerprint;
     private TextView mLinkedIdsExpander;
 
+    KeyHealthCardView mKeyHealthCard;
+    KeyHealthPresenter mKeyHealthPresenter;
+
+    private long mMasterKeyId;
+
     /**
      * Creates new instance of this fragment
      */
-    public static ViewKeyFragment newInstance(Uri dataUri, PostponeType postponeType) {
+    public static ViewKeyFragment newInstance(long masterKeyId, boolean isSecret, PostponeType postponeType) {
         ViewKeyFragment frag = new ViewKeyFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_DATA_URI, dataUri);
+        args.putLong(ARG_MASTER_KEY_ID, masterKeyId);
+        args.putBoolean(ARG_IS_SECRET, isSecret);
         args.putString(ARG_POSTPONE_TYPE, postponeType.toString());
 
         frag.setArguments(args);
@@ -168,6 +174,8 @@ public class ViewKeyFragment extends LoaderFragment implements
                 showLinkedId(position);
             }
         });
+
+        mKeyHealthCard = (KeyHealthCardView) view.findViewById(R.id.subkey_status_card);
 
         return root;
     }
@@ -223,7 +231,29 @@ public class ViewKeyFragment extends LoaderFragment implements
                 });
             }
         });
+    }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mMasterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
+        mDataUri = KeyRings.buildGenericKeyRingUri(mMasterKeyId);
+        mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);
+        mPostponeType = PostponeType.valueOf(getArguments().getString(ARG_POSTPONE_TYPE));
+
+        // load user ids after we know if it's a secret key
+        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
+        mUserIds.setAdapter(mUserIdsAdapter);
+
+        // initialize loaders, which will take care of auto-refresh on change
+        getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
+        initLinkedContactLoader();
+        initCardButtonsVisibility(mIsSecret);
+
+        mKeyHealthPresenter = new KeyHealthPresenter(
+                getContext(), mKeyHealthCard, LOADER_ID_SUBKEY_STATUS, mMasterKeyId, mIsSecret);
+        mKeyHealthPresenter.startLoader(getLoaderManager());
     }
 
     private void showUserIdInfo(final int position) {
@@ -249,7 +279,9 @@ public class ViewKeyFragment extends LoaderFragment implements
      */
     private void loadLinkedSystemContact(final long contactId) {
         // contact doesn't exist, stop
-        if (contactId == -1) return;
+        if (contactId == -1) {
+            return;
+        }
 
         final Context context = mSystemContactName.getContext();
         ContactHelper contactHelper = new ContactHelper(context);
@@ -265,7 +297,7 @@ public class ViewKeyFragment extends LoaderFragment implements
             contactName = contactHelper.getContactName(contactId);
         }
 
-        if (contactName != null) {//contact name exists for given master key
+        if (contactName != null) { //contact name exists for given master key
             showLinkedSystemContact();
 
             mSystemContactName.setText(contactName);
@@ -312,21 +344,6 @@ public class ViewKeyFragment extends LoaderFragment implements
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-        mPostponeType = PostponeType.valueOf(getArguments().getString(ARG_POSTPONE_TYPE));
-        if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
-            getActivity().finish();
-            return;
-        }
-
-        loadData(dataUri);
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // if a result has been returned, display a notify
         if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
@@ -337,58 +354,16 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
     }
 
-    static final String[] UNIFIED_PROJECTION = new String[]{
-            KeychainContract.KeyRings._ID,
-            KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.KeyRings.USER_ID,
-            KeychainContract.KeyRings.IS_REVOKED,
-            KeychainContract.KeyRings.IS_EXPIRED,
-            KeychainContract.KeyRings.VERIFIED,
-            KeychainContract.KeyRings.HAS_ANY_SECRET,
-            KeychainContract.KeyRings.FINGERPRINT,
-            KeychainContract.KeyRings.HAS_ENCRYPT
-    };
-
-    static final int INDEX_MASTER_KEY_ID = 1;
-    @SuppressWarnings("unused")
-    static final int INDEX_USER_ID = 2;
-    @SuppressWarnings("unused")
-    static final int INDEX_IS_REVOKED = 3;
-    @SuppressWarnings("unused")
-    static final int INDEX_IS_EXPIRED = 4;
-    @SuppressWarnings("unused")
-    static final int INDEX_VERIFIED = 5;
-    static final int INDEX_HAS_ANY_SECRET = 6;
-    static final int INDEX_FINGERPRINT = 7;
-    @SuppressWarnings("unused")
-    static final int INDEX_HAS_ENCRYPT = 8;
-
     private static final String[] RAW_CONTACT_PROJECTION = {
             ContactsContract.RawContacts.CONTACT_ID
     };
 
     private static final int INDEX_CONTACT_ID = 0;
 
-    private void loadData(Uri dataUri) {
-        mDataUri = dataUri;
-
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri);
-
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         switch (id) {
-            case LOADER_ID_UNIFIED: {
-                setContentShown(false, false);
-                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri, UNIFIED_PROJECTION, null, null, null);
-            }
-
             case LOADER_ID_USER_IDS: {
                 return UserIdsAdapter.createLoader(getActivity(), mDataUri);
             }
@@ -401,11 +376,7 @@ public class ViewKeyFragment extends LoaderFragment implements
                 // we need a separate loader for linked contact
                 // to ensure refreshing on verification
 
-                // passed in args to explicitly specify their need
-                long masterKeyId = args.getLong(LOADER_EXTRA_LINKED_CONTACT_MASTER_KEY_ID);
-                boolean isSecret = args.getBoolean(LOADER_EXTRA_LINKED_CONTACT_IS_SECRET);
-
-                Uri baseUri = isSecret ? ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI :
+                Uri baseUri = mIsSecret ? ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI :
                         ContactsContract.RawContacts.CONTENT_URI;
 
                 return new CursorLoader(
@@ -417,10 +388,14 @@ public class ViewKeyFragment extends LoaderFragment implements
                                 ContactsContract.RawContacts.DELETED + "=?",
                         new String[]{
                                 Constants.ACCOUNT_TYPE,
-                                Long.toString(masterKeyId),
+                                Long.toString(mMasterKeyId),
                                 "0" // "0" for "not deleted"
                         },
                         null);
+            }
+
+            case LOADER_ID_SUBKEY_STATUS: {
+                throw new IllegalStateException("This callback should never end up here!");
             }
 
             default:
@@ -439,22 +414,6 @@ public class ViewKeyFragment extends LoaderFragment implements
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         switch (loader.getId()) {
-            case LOADER_ID_UNIFIED: {
-                if (data.getCount() == 1 && data.moveToFirst()) {
-
-                    mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                    mFingerprint = data.getBlob(INDEX_FINGERPRINT);
-                    long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-
-                    // init other things after we know if it's a secret key
-                    initUserIds(mIsSecret);
-                    initLinkedIds(mIsSecret);
-                    initLinkedContactLoader(masterKeyId, mIsSecret);
-                    initCardButtonsVisibility(mIsSecret);
-                }
-                break;
-            }
-
             case LOADER_ID_USER_IDS: {
                 setContentShown(true, false);
                 mUserIdsAdapter.swapCursor(data);
@@ -494,25 +453,14 @@ public class ViewKeyFragment extends LoaderFragment implements
                 }
                 break;
             }
+
+            case LOADER_ID_SUBKEY_STATUS: {
+                throw new IllegalStateException("This callback should never end up here!");
+            }
         }
     }
 
-    private void initUserIds(boolean isSecret) {
-        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !isSecret, null);
-        mUserIds.setAdapter(mUserIdsAdapter);
-        getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-    }
-
-    private void initLinkedIds(boolean isSecret) {
-        if (Preferences.getPreferences(getActivity()).getExperimentalEnableLinkedIdentities()) {
-            mLinkedIdsAdapter =
-                    new LinkedIdsAdapter(getActivity(), null, 0, isSecret, mLinkedIdsExpander);
-            mLinkedIds.setAdapter(mLinkedIdsAdapter);
-            getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
-        }
-    }
-
-    private void initLinkedContactLoader(long masterKeyId, boolean isSecret) {
+    private void initLinkedContactLoader() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_DENIED) {
             Log.w(Constants.TAG, "loading linked system contact not possible READ_CONTACTS permission denied!");
@@ -521,8 +469,6 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
 
         Bundle linkedContactData = new Bundle();
-        linkedContactData.putLong(LOADER_EXTRA_LINKED_CONTACT_MASTER_KEY_ID, masterKeyId);
-        linkedContactData.putBoolean(LOADER_EXTRA_LINKED_CONTACT_IS_SECRET, isSecret);
 
         // initialises loader for contact query so we can listen to any updates
         getLoaderManager().initLoader(LOADER_ID_LINKED_CONTACT, linkedContactData, this);
@@ -557,7 +503,14 @@ public class ViewKeyFragment extends LoaderFragment implements
                 mLinkedIdsAdapter.swapCursor(null);
                 break;
             }
+            case LOADER_ID_SUBKEY_STATUS:
+                mKeyHealthPresenter.onLoaderReset(loader);
+                break;
         }
+    }
+
+    public boolean isValidForData(boolean isSecret) {
+        return isSecret == mIsSecret;
     }
 
 }

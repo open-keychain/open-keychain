@@ -1,6 +1,6 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
-Advanced screen allows you to
+Asetusikkuna sallii sinun
 * jakaa avaimen ei-suositelluilla tavoilla
 * Muokkaa identiteetit
 * editoi aliavaimet

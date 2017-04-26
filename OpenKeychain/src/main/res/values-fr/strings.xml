@@ -22,7 +22,7 @@
   <string name="title_share_message">Partager le texte avec...</string>
   <string name="title_encrypt_to_file">Chiffrer vers un fichier</string>
   <string name="title_decrypt_to_file">Déchiffrer vers un fichier</string>
-  <string name="title_import_keys">importer des clés</string>
+  <string name="title_import_keys">Importer des clés</string>
   <string name="title_export_key">Sauvegarder la clé</string>
   <string name="title_export_keys">Sauvegarder les clés</string>
   <string name="title_key_not_found">clé introuvable</string>
@@ -38,7 +38,7 @@
   <string name="title_manage_my_keys">Gérer mes clés</string>
   <string name="title_alert_strip">Dépouiller cette sous-clé</string>
   <!--section-->
-  <string name="section_user_ids">identités</string>
+  <string name="section_user_ids">Identités</string>
   <string name="section_security_token">Jeton de sécurité</string>
   <string name="section_linked_system_contact">Contact système relié</string>
   <string name="section_keybase_proofs">Preuves keybase.io</string>
@@ -57,7 +57,7 @@
   <string name="section_experimental_features">Fonctions expérimentales</string>
   <string name="section_certify">Confirmer</string>
   <string name="section_actions">Actions</string>
-  <string name="section_share_key">clé</string>
+  <string name="section_share_key">Clé</string>
   <string name="section_key_server">Serveur de clés</string>
   <string name="section_fingerprint">Empreinte</string>
   <string name="section_phrases">Phrases</string>
@@ -166,7 +166,7 @@
   <string name="label_name">Nom</string>
   <string name="label_comment">Commentaire</string>
   <string name="label_email">Courriel</string>
-  <string name="label_send_key">Synchroniser par l\'Internet</string>
+  <string name="label_send_key">Synchroniser avec Internet</string>
   <string name="label_fingerprint">Empreinte</string>
   <string name="expiry_date_dialog_title">Définir une date d\'expiration</string>
   <string name="label_keyservers_title">Serveurs de clés </string>
@@ -240,9 +240,9 @@
   </plurals>
   <plurals name="n_keyservers">
     <item quantity="one">%d serveur de clés</item>
-    <item quantity="other">%d serveur de clés</item>
+    <item quantity="other">%d serveurs de clés</item>
   </plurals>
-  <string name="secret_key">clé secrète :</string>
+  <string name="secret_key">Clé secrète :</string>
   <!--choice-->
   <string name="choice_none">Aucune</string>
   <string name="choice_15secs">15 s</string>
@@ -347,7 +347,7 @@
   <string name="error_integrity_check_failed">la vérification de l\'intégrité a échoué ! Les données ont été modifiées !</string>
   <string name="error_wrong_passphrase">mot de passe erroné</string>
   <string name="error_could_not_extract_private_key">impossible d\'extraire la clé privée</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Il vous faut Android 4.1 pour utiliser la fonction Beam NFC d\'Android !</string>
   <string name="error_nfc_needed">La NFC doit être activée !</string>
   <string name="error_beam_needed">Beam doit être activé !</string>
@@ -633,7 +633,7 @@
   <string name="user_id_info_invalid_title">Invalide</string>
   <string name="user_id_info_invalid_text">Quelque chose ne va pas avec cette identité !</string>
   <!--Key trust-->
-  <string name="key_trust_no_cloud_evidence">Aucune preuve en provenance de l\'Internet sur la fiabilité de cette clé.</string>
+  <string name="key_trust_no_cloud_evidence">Aucune preuve en provenance d\'Internet sur la fiabilité de cette clé.</string>
   <string name="key_trust_start_cloud_search">Lancer la recherche</string>
   <string name="key_trust_results_prefix">Keybase.io offre des « preuves » affirmant que le propriétaire de cette clé : </string>
   <!--keybase proof stuff-->
@@ -693,7 +693,7 @@
   <string name="edit_key_error_bad_security_token_size">La taille de clé n\'est pas prise en charge par le jeton de sécurité !</string>
   <string name="edit_key_error_bad_security_token_stripped">Impossible de déplacer la clé vers le jeton de sécurité (soit elle a été dépouillée ou « déviée-vers-la-carte ») !</string>
   <!--Create key-->
-  <string name="create_key_upload">Synchroniser avec l\'Internet</string>
+  <string name="create_key_upload">Synchroniser avec Internet</string>
   <string name="create_key_empty">Ce champ est exigé</string>
   <string name="create_key_passphrases_not_equal">Les mots de passe ne correspondent pas</string>
   <string name="create_key_final_text">Vous avez saisie l\'identité suivante :</string>
@@ -1402,7 +1402,7 @@
   <!--Android Account-->
   <string name="account_no_manual_account_creation">Vous ne pouvez pas créer de compte OpenKeychain manuellement..</string>
   <string name="account_privacy_title">Confidentialité</string>
-  <string name="account_privacy_text">OpenKeychain ne synchronise pas vos contacts avec l\'Internet. Il ne fait que relier les contacts aux clés d\'après les noms et les adresses courriel. Il le fait hors ligne sur votre appareil.</string>
+  <string name="account_privacy_text">OpenKeychain ne synchronise pas vos contacts avec Internet. Il ne fait que relier les contacts aux clés d\'après les noms et les adresses courriel. Il le fait hors ligne sur votre appareil.</string>
   <string name="sync_notification_permission_required_title">Accès aux contacts exigé</string>
   <string name="sync_notification_permission_required_text">Toucher pour configurer la liaison aux contacts</string>
   <!--Passphrase wizard-->
@@ -1427,7 +1427,7 @@
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_wrong_tag">Mauvaise balise. Veuillez ressayer.</string>
   <string name="enable_nfc">Veuillez activer la NFC dans vos paramètres</string>
-  <string name="no_nfc_support">Cet appareil ne prends pas en charge la NFC</string>
+  <string name="no_nfc_support">Cet appareil ne prend pas en charge la NFC</string>
   <string name="nfc_write_successful">Écrit avec succès sur la balise NFC</string>
   <string name="unlocked">Déverrouillé</string>
   <string name="nfc_settings">Paramètres</string>

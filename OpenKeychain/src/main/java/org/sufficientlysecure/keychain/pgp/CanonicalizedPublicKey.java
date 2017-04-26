@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.bcpg.ECDHPublicBCPGKey;
@@ -90,6 +91,10 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
     }
 
     public boolean canCertify() {
+        if (!isMasterKey()) {
+            return false;
+        }
+
         // if key flags subpacket is available, honor it!
         if (getKeyUsage() != 0) {
             return (getKeyUsage() & KeyFlags.CERTIFY_OTHER) != 0;
@@ -137,7 +142,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
     }
 
     public boolean isSecure() {
-        return PgpSecurityConstants.isSecureKey(this);
+        return PgpSecurityConstants.checkForSecurityProblems(this) == null;
     }
 
     public long getValidSeconds() {

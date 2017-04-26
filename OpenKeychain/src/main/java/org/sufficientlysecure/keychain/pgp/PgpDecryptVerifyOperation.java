@@ -20,20 +20,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.security.SignatureException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -68,6 +54,9 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.SymmetricAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -83,6 +72,20 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.security.SignatureException;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInputParcel> {
 
@@ -211,7 +214,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         int symmetricEncryptionAlgo = 0;
 
         HashSet<Long> skippedDisallowedEncryptionKeys = new HashSet<>();
-        boolean insecureEncryptionKey = false;
+        KeySecurityProblem encryptionKeySecurityProblem = null;
 
         // convenience method to return with error
         public EncryptStreamResult with(DecryptVerifyResult result) {
@@ -317,15 +320,17 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     decryptionResultBuilder.setSessionKey(esResult.sessionKey, esResult.decryptedSessionKey);
                 }
 
-                if (esResult.insecureEncryptionKey) {
+                if (esResult.encryptionKeySecurityProblem != null) {
                     log.add(LogType.MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
-                    decryptionResultBuilder.setInsecure(true);
+                    decryptionResultBuilder.addSecurityProblem(esResult.encryptionKeySecurityProblem);
                 }
 
                 // Check for insecure encryption algorithms!
-                if (!PgpSecurityConstants.isSecureSymmetricAlgorithm(esResult.symmetricEncryptionAlgo)) {
+                SymmetricAlgorithmProblem symmetricSecurityProblem =
+                        PgpSecurityConstants.checkSecureSymmetricAlgorithm(esResult.symmetricEncryptionAlgo);
+                if (symmetricSecurityProblem != null) {
                     log.add(LogType.MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
-                    decryptionResultBuilder.setInsecure(true);
+                    decryptionResultBuilder.addSecurityProblem(symmetricSecurityProblem);
                 }
 
                 plainFact = new JcaSkipMarkerPGPObjectFactory(esResult.cleartextStream);
@@ -531,7 +536,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 // Handle missing integrity protection like failed integrity protection!
                 // The MDC packet can be stripped by an attacker!
                 log.add(LogType.MSG_DC_INSECURE_MDC_MISSING, indent);
-                decryptionResultBuilder.setInsecure(true);
+                decryptionResultBuilder.addSecurityProblem(new MissingMdc());
             }
         }
 
@@ -541,10 +546,11 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         // Return a positive result, with metadata and verification info
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
-
         result.setCachedCryptoInputParcel(cryptoInput);
         result.setSignatureResult(signatureChecker.getSignatureResult());
         result.setDecryptionResult(decryptionResultBuilder.build());
+        result.addSecurityProblems(signatureChecker.getSecurityProblems());
+        result.addSecurityProblems(decryptionResultBuilder.getKeySecurityProblems());
         result.setDecryptionMetadata(metadata);
         result.mOperationTime = opTime;
 
@@ -659,9 +665,11 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     }
 
                     // check for insecure encryption key
-                    if ( ! PgpSecurityConstants.isSecureKey(candidateDecryptionKey)) {
+                    KeySecurityProblem keySecurityProblem =
+                            PgpSecurityConstants.checkForSecurityProblems(candidateDecryptionKey);
+                    if (keySecurityProblem != null) {
                         log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
-                        result.insecureEncryptionKey = true;
+                        result.encryptionKeySecurityProblem = keySecurityProblem;
                     }
 
                     // we're good, write down the data for later

@@ -4,22 +4,37 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
+  <string name="title_encrypt_text">Зашифрувати текст</string>
+  <string name="title_encrypt_files">Зашифрувати файл</string>
   <string name="title_decrypt">Розшифрувати</string>
   <string name="title_add_subkey">Додати підключ</string>
+  <string name="title_change_master_key">Змінити основний ключ</string>
   <string name="title_edit_key">Редагувати ключ</string>
+  <string name="title_linked_create">Створити зв\'язану сутність</string>
+  <string name="title_preferences">Налаштування</string>
   <string name="title_api_registered_apps">Програми</string>
+  <string name="title_key_server_preference">Сервера ключів OpenPGP</string>
+  <string name="title_change_passphrase">Змінити пароль</string>
   <string name="title_share_fingerprint_with">Поділитися відбитком із…</string>
   <string name="title_share_key">Поділитися ключем з…</string>
   <string name="title_share_file">Поширити файл з…</string>
+  <string name="title_share_message">Поділитися текстом через...</string>
   <string name="title_encrypt_to_file">Зашифрувати до файлу</string>
   <string name="title_decrypt_to_file">Розшифрувати до файлу</string>
   <string name="title_import_keys">Імпортувати ключі</string>
+  <string name="title_export_key">Резервний ключ</string>
+  <string name="title_export_keys">Резервні ключі</string>
   <string name="title_key_not_found">Ключ не знайдено</string>
   <string name="title_send_key">Завантажити на сервер ключів</string>
+  <string name="title_backup">Резервування ключа</string>
   <string name="title_key_details">Подробиці про ключ</string>
   <string name="title_help">Довідка</string>
   <string name="title_log_display">Журнал</string>
   <string name="title_exchange_keys">Обміняти ключі</string>
+  <string name="title_advanced_key_info">Додаткове</string>
+  <string name="title_delete_secret_key">Вилучити ВАШ ключ «%s»?</string>
+  <string name="title_manage_my_keys">Управління моїми ключами</string>
+  <string name="title_alert_strip">Відділити цей підключ</string>
   <!--section-->
   <string name="section_user_ids">Сутності</string>
   <string name="section_keys">Підключі</string>
@@ -30,6 +45,9 @@
   <!--button-->
   <string name="btn_decrypt_verify_file">Розшифрувати, перевірити та зберегти файл</string>
   <string name="btn_encrypt_share_file">Зашифрувати та поширити файл</string>
+  <string name="btn_save_file">Зберегти файл</string>
+  <string name="btn_save">Зберегти</string>
+  <string name="btn_view_log">Переглянути журнал</string>
   <string name="btn_do_not_save">Скасувати</string>
   <string name="btn_delete">Вилучити</string>
   <string name="btn_no_date">Необмежено</string>
@@ -37,24 +55,40 @@
   <string name="btn_export_to_server">Завантажити на сервер ключів</string>
   <string name="btn_next">Далі</string>
   <string name="btn_back">Назад</string>
+  <string name="btn_no">Ні</string>
   <string name="btn_view_cert_key">Переглянути ключ сертифікації</string>
   <string name="btn_create_key">Створити ключ</string>
   <string name="btn_add_files">Додати файл(и)</string>
+  <string name="btn_open_with">Відкрити через...</string>
+  <string name="btn_copy_decrypted_text">Копіювати у буфер обміну</string>
+  <string name="btn_decrypt_clipboard">Отримати з буфера обміну</string>
+  <string name="btn_decrypt_files">Вибрати вхідний файл</string>
+  <string name="btn_add_keyserver">Додати</string>
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Параметри</string>
   <string name="menu_help">Довідка</string>
   <string name="menu_delete_key">Вилучити ключ</string>
   <string name="menu_search">Пошук</string>
+  <string name="menu_nfc_preferences">Налаштування NFC</string>
   <string name="menu_beam_preferences">Налаштування променя</string>
   <string name="menu_encrypt_to">Зашифрувати…</string>
   <string name="menu_select_all">Вибрати усе</string>
   <string name="menu_export_all_keys">Експортувати усі ключі</string>
+  <string name="menu_update_all_keys">Оновити всі ключі</string>
+  <string name="menu_change_password">Змінити пароль</string>
+  <string name="menu_keyserver_add">Додати</string>
   <!--label-->
+  <string name="label_message">Текст</string>
   <string name="label_file">Файл</string>
   <string name="label_files">Файл(и)</string>
   <string name="label_file_colon">Файл:</string>
+  <string name="label_no_passphrase">Без пароля</string>
+  <string name="label_passphrase">Пароль</string>
+  <string name="label_pin">PIN</string>
   <string name="label_unlock">Розблоковується…</string>
+  <string name="label_passphrase_again">Повторити пароль</string>
+  <string name="label_show_passphrase">Показати пароль</string>
   <string name="label_algorithm">Алгоритм</string>
   <string name="label_ascii_armor">Файл ASCII Armor</string>
   <string name="label_file_ascii_armor">Увімкнути ASCII Armor</string>
@@ -63,8 +97,11 @@
   <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
   <string name="label_hash_algorithm">Хеш алгоритм</string>
+  <string name="label_message_compression">Стиснення тексту</string>
   <string name="label_file_compression">Стиснення файлу</string>
   <string name="label_key_id">ІД ключа</string>
+  <string name="label_key_created">Ключ створено %s</string>
+  <string name="label_key_type">Тип</string>
   <string name="label_creation">Створення</string>
   <string name="label_expiry">Закінчення</string>
   <string name="label_usage">Використання</string>
@@ -74,15 +111,30 @@
   <string name="label_name">Назва</string>
   <string name="label_comment">Коментар</string>
   <string name="label_email">Ел. пошта</string>
+  <string name="label_send_key">Синхронізувати з інтернетом</string>
   <string name="label_fingerprint">Відбиток</string>
   <string name="expiry_date_dialog_title">Задати термін дії</string>
   <string name="label_preferred">бажаний</string>
+  <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_theme">Тема</string>
+  <string name="pref_facebook">Facebook</string>
+  <string name="pref_facebook_summary">Шукати ключі в Facebook по імені користувача</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="label_experimental_settings_desc_title">Попередження</string>
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">Не використовувати Tor</string>
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_install">Встановити</string>
+  <string name="orbot_install_dialog_cancel">Скасувати</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">Скасувати</string>
+  <string name="orbot_start_dialog_ignore_tor">Не використовувати Tor</string>
+  <string name="user_id_no_name"><![CDATA[<no name>]]></string>
+  <string name="none"><![CDATA[<none>]]></string>
   <plurals name="n_keys">
     <item quantity="one">1 ключ</item>
     <item quantity="few">%d ключі</item>
@@ -108,9 +160,17 @@
   <string name="choice_4hours">4 години</string>
   <string name="choice_8hours">8 годин</string>
   <string name="choice_forever">назавжди</string>
+  <string name="choice_select_cert">Вибрати ключ</string>
   <string name="filemanager_title_open">Відкрити…</string>
+  <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_4096">RSA 4096</string>
+  <string name="ecc_p256">ECC P-256</string>
+  <string name="ecc_p521">ECC P-521</string>
   <string name="error">Помилка</string>
   <string name="error_message">Помилка: %s</string>
+  <string name="theme_dark">Темна</string>
+  <string name="theme_light">Світла</string>
   <!--sentences-->
   <string name="no_filemanager_installed">Нема встановленого сумісного менеджера файлів.</string>
   <string name="encrypt_sign_successful">Успішно підписано та/або перевірено.</string>
@@ -147,7 +207,7 @@
   <string name="error_no_signature_key">не подано ключ підпису</string>
   <string name="error_integrity_check_failed">Невдала перевірка цілісності! Дані вже змінено!</string>
   <string name="error_could_not_extract_private_key">не можна витягти секретний ключ</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Вам потрібний Android 4.1 для використання функції Androids NFC промінь!</string>
   <string name="error_nothing_import">Ключ не знайдено!</string>
   <string name="error_generic_report_bug">Трапилася загальна помилка, будь ласка, створіть новий звіт про помилку для OpenKeychain.</string>
@@ -163,6 +223,7 @@
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Готово.</string>
   <string name="progress_cancel">Скасувати</string>
+  <string name="progress_cancelling">скасування...</string>
   <string name="progress_saving">збереження…</string>
   <string name="progress_importing">імпортується…</string>
   <string name="progress_exporting">експортується…</string>
@@ -268,6 +329,7 @@
   <!--Remote API-->
   <string name="api_settings_no_key">Не вибрано ключа</string>
   <string name="api_settings_select_key">Вибрати ключ</string>
+  <string name="api_settings_create_key">Створити новий ключ</string>
   <string name="api_settings_save">Зберегти</string>
   <string name="api_settings_cancel">Скасувати</string>
   <string name="api_settings_revoke">Відкликати доступ</string>

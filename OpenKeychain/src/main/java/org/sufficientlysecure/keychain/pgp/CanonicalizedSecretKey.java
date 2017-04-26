@@ -19,14 +19,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import java.nio.ByteBuffer;
-import java.security.PrivateKey;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.RSAPrivateCrtKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bouncycastle.bcpg.S2K;
 import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.bouncycastle.openpgp.PGPException;
@@ -51,6 +43,14 @@ import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+
+import java.nio.ByteBuffer;
+import java.security.PrivateKey;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -119,6 +119,29 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
         public boolean isUsable() {
             return this != UNAVAILABLE && this != GNU_DUMMY;
+        }
+
+        /** Compares by "usability", which basically compares how independently usable
+         * two SecretKeyTypes are. The order is roughly this:
+         *
+         * empty passphrase < passphrase/others < divert < stripped
+         *
+         */
+        public int compareUsability(SecretKeyType other) {
+            // if one is usable but the other isn't, the usable one comes first
+            if (isUsable() ^ other.isUsable()) {
+                return isUsable() ? -1 : 1;
+            }
+            // if one is a divert-to-card but the other isn't, the non-divert one comes first
+            if ((this == DIVERT_TO_CARD) ^ (other == DIVERT_TO_CARD)) {
+                return this != DIVERT_TO_CARD ? -1 : 1;
+            }
+            // if one requires a passphrase but another doesn't, the one without a passphrase comes first
+            if ((this == PASSPHRASE_EMPTY) ^ (other == PASSPHRASE_EMPTY)) {
+                return this == PASSPHRASE_EMPTY ? -1 : 1;
+            }
+            // all other (current) cases are equal
+            return 0;
         }
 
     }

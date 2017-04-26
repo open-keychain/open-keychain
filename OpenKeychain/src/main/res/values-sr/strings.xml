@@ -339,7 +339,7 @@
   <string name="error_integrity_check_failed">провера интегритета није успела! Подаци су измењени!</string>
   <string name="error_wrong_passphrase">погрешна лозинка</string>
   <string name="error_could_not_extract_private_key">не могох да извучем лични кључ</string>
-  <!--errors without preceding Error:-->
+  <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Потребан вам је Андроид 4.1 да бисте користили Андроидову могућност НФЦ Снопа!</string>
   <string name="error_nfc_needed">НФЦ мора бити укључен!</string>
   <string name="error_beam_needed">Бим мора бити укључен</string>

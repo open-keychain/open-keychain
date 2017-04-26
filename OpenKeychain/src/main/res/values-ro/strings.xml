@@ -1,0 +1,369 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
+  <!--title-->
+  <string name="title_encrypt_text">Criptează</string>
+  <string name="title_encrypt_files">Criptează</string>
+  <string name="title_decrypt">Decriptează</string>
+  <string name="title_edit_key">Editează cheia</string>
+  <string name="title_preferences">Setări</string>
+  <string name="title_api_registered_apps">Aplicații</string>
+  <string name="title_change_passphrase">Schimbă parola</string>
+  <string name="title_share_key">Partajează cheia cu...</string>
+  <string name="title_share_file">Partajează fișierul cu...</string>
+  <string name="title_share_message">Partajează textul cu...</string>
+  <string name="title_import_keys">Importă chei</string>
+  <string name="title_certify_key">Confirmă cheia</string>
+  <string name="title_key_details">Detalii cheie</string>
+  <string name="title_help">Ajutor</string>
+  <string name="title_log_display">Jurnal</string>
+  <string name="title_exchange_keys">Schimbă chei</string>
+  <string name="title_advanced_key_info">Avansat</string>
+  <string name="title_manage_my_keys">Gestionează cheile mele</string>
+  <!--section-->
+  <string name="section_user_ids">Identități</string>
+  <string name="section_cloud_search">Căutare chei</string>
+  <string name="section_passphrase_cache">Parole și PIN-uri</string>
+  <string name="section_proxy_settings">Anonimitate Rețea</string>
+  <string name="section_sync_settings">Sincronizare</string>
+  <string name="section_experimental_features">Funcționalități experimentale</string>
+  <string name="section_certify">Confirmă</string>
+  <string name="section_actions">Acțiuni</string>
+  <string name="section_share_key">Cheie</string>
+  <string name="section_fingerprint">Amprentă</string>
+  <string name="section_encrypt">Criptează</string>
+  <string name="section_decrypt">Decriptează / Verifică</string>
+  <!--button-->
+  <string name="btn_save_file">Salvează fișierul</string>
+  <string name="btn_save">Salvează</string>
+  <string name="btn_view_log">Vezi jurnalul</string>
+  <string name="btn_do_not_save">Anulare</string>
+  <string name="btn_delete">Șterge</string>
+  <string name="btn_okay">Okay</string>
+  <string name="btn_next">Înainte</string>
+  <string name="btn_back">Înapoi</string>
+  <string name="btn_no">Nu</string>
+  <string name="btn_create_key">Creează cheia</string>
+  <string name="btn_add_files">Adaugă fișier(e)</string>
+  <string name="btn_share_decrypted_text">Partajează</string>
+  <string name="btn_open_with">Deschide cu...</string>
+  <string name="btn_copy_decrypted_text">Copiază în clipboard</string>
+  <string name="btn_decrypt_clipboard">Citește din clipboard</string>
+  <string name="btn_decrypt_files">Selectează un fișier de intrare</string>
+  <string name="btn_encrypt_files">Criptează fișiere</string>
+  <string name="btn_encrypt_text">Criptează text</string>
+  <string name="btn_add_email">Adaugă o adresă de email adițională</string>
+  <string name="btn_unlock">Deblochează</string>
+  <string name="btn_add_keyserver">Adaugă</string>
+  <string name="btn_saved">Salvat!</string>
+  <!--Content Description-->
+  <string name="cd_encrypt_files">Criptează fișiere</string>
+  <string name="cd_exchange_keys">Schimbă chei</string>
+  <string name="cd_encrypt_text">Criptează text</string>
+  <!--menu-->
+  <string name="menu_preferences">Setări</string>
+  <string name="menu_help">Ajutor</string>
+  <string name="menu_delete_key">Șterge cheia</string>
+  <string name="menu_manage_keys">Gestionează cheile mele</string>
+  <string name="menu_search">Caută</string>
+  <string name="menu_nfc_preferences">Setări NFC</string>
+  <string name="menu_select_all">Selectează tot</string>
+  <string name="menu_update_all_keys">Actualizează toate cheile</string>
+  <string name="menu_advanced">Avansat</string>
+  <string name="menu_change_password">Schimbă parola</string>
+  <string name="menu_keyserver_add">Adaugă</string>
+  <!--label-->
+  <string name="label_message">Text</string>
+  <string name="label_file">Fișier</string>
+  <string name="label_files">Fișier(e)</string>
+  <string name="label_file_colon">Fișier:</string>
+  <string name="label_no_passphrase">Nici o parolă</string>
+  <string name="label_passphrase">Parolă</string>
+  <string name="label_pin">PIN</string>
+  <string name="label_passphrase_again">Repetă parola</string>
+  <string name="label_show_passphrase">Arată parola</string>
+  <string name="label_algorithm">Algoritm</string>
+  <string name="label_asymmetric_from">Semnează cu:</string>
+  <string name="label_symmetric">Criptează cu parolă</string>
+  <string name="label_key_id">ID cheie</string>
+  <string name="label_key_created">Cheie creată %s</string>
+  <string name="label_key_type">Tip</string>
+  <string name="label_key_size">Mărime cheie</string>
+  <string name="label_ecc_curve">Curbă eliptică</string>
+  <string name="label_name">Nume</string>
+  <string name="label_comment">Comentariu</string>
+  <string name="label_email">Email</string>
+  <string name="label_send_key">Sincronizează pe Internet</string>
+  <string name="label_fingerprint">Amprentă</string>
+  <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_theme">Temă</string>
+  <string name="pref_keybase">keybase.io</string>
+  <string name="pref_keybase_summary">Caută chei pe keybase.io</string>
+  <string name="pref_facebook">Facebook</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
+  <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Activează Tor</string>
+  <string name="pref_proxy_host_title">Gazdă proxy</string>
+  <string name="pref_proxy_port_title">Port proxy</string>
+  <string name="pref_proxy_type_title">Tip proxy</string>
+  <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
+  <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">Nu folosi Tor</string>
+  <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_title">Instalez Orbot pentru a utiliza Tor?</string>
+  <string name="orbot_install_dialog_install">Instalează</string>
+  <string name="orbot_install_dialog_cancel">Anulare</string>
+  <string name="orbot_install_dialog_ignore_tor">Nu folosi Tor</string>
+  <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">Anulare</string>
+  <string name="orbot_start_dialog_ignore_tor">Nu folosi Tor</string>
+  <plurals name="n_keys">
+    <item quantity="one">1 cheie</item>
+    <item quantity="few">%d chei</item>
+    <item quantity="other">%d chei</item>
+  </plurals>
+  <!--choice-->
+  <string name="choice_15secs">15 sec</string>
+  <string name="choice_1min">1 min</string>
+  <string name="choice_3mins">3 min</string>
+  <string name="choice_5mins">5 min</string>
+  <string name="choice_10mins">10 min</string>
+  <string name="choice_20mins">20 min</string>
+  <string name="choice_40mins">40 min</string>
+  <string name="choice_1hour">1 oră</string>
+  <string name="choice_2hours">2 ore</string>
+  <string name="choice_4hours">4 ore</string>
+  <string name="choice_8hours">8 ore</string>
+  <string name="filemanager_title_open">Deschide...</string>
+  <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_4096">RSA 4096</string>
+  <string name="ecc_p256">ECC P-256</string>
+  <string name="ecc_p521">ECC P-521</string>
+  <string name="usage_sign">Semnează</string>
+  <string name="usage_encrypt">Criptează</string>
+  <string name="usage_sign_and_encrypt">Semnează și Criptează</string>
+  <string name="error">Eroare</string>
+  <string name="theme_dark">Închisă</string>
+  <string name="theme_light">Deschisă</string>
+  <!--sentences-->
+  <string name="wrong_passphrase">Parolă greșită.</string>
+  <string name="passphrases_do_not_match">Parolele nu se potrivesc.</string>
+  <string name="passphrase_must_not_be_empty">Te rog introdu o parolă.</string>
+  <string name="passphrase_for_symmetric_encryption">Introdu parola</string>
+  <string name="passphrase_for">Introdu parola pentru \'%s\'</string>
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_wrong_passphrase">parolă greșită</string>
+  <!--errors without preceeding Error:-->
+  <!--results shown after decryption/verification-->
+  <string name="decrypt_result_encrypted">Criptat</string>
+  <string name="decrypt_result_action_show">Arată</string>
+  <!--Add keys-->
+  <string name="add_keys_my_key">Cheia mea:</string>
+  <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_done">Gata.</string>
+  <string name="progress_cancel">Anulare</string>
+  <string name="progress_generating_rsa">se generează o nouă cheie RSA...</string>
+  <string name="progress_generating_dsa">se generează o nouă cheie DSA...</string>
+  <string name="progress_generating_elgamal">se generează o nouă cheie ElGamal...</string>
+  <string name="progress_generating_ecdsa">se generează o nouă cheie ECDSA...</string>
+  <string name="progress_generating_ecdh">se generează o nouă cheie ECDH...</string>
+  <string name="progress_modify_passphrase">se schimbă parola...</string>
+  <string name="progress_generating_signature">se generează semnătura...</string>
+  <!--action strings-->
+  <!--key bit length selections-->
+  <string name="key_size_2048">2048</string>
+  <string name="key_size_3072">3072</string>
+  <string name="key_size_4096">4096</string>
+  <string name="key_size_8192">8192</string>
+  <!--elliptic curve names-->
+  <string name="key_curve_nist_p256">NIST P-256</string>
+  <string name="key_curve_nist_p384">NIST P-384</string>
+  <string name="key_curve_nist_p521">NIST P-521</string>
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+  <!--compression-->
+  <string name="compression_fast">rapid</string>
+  <string name="compression_very_slow">foarte încet</string>
+  <!--Help-->
+  <string name="help_tab_start">Start</string>
+  <string name="help_tab_faq">FAQ</string>
+  <string name="help_tab_about">Despre</string>
+  <string name="help_about_version">Versiune:</string>
+  <string name="help_tab_donations">Donează</string>
+  <!--Import-->
+  <string name="import_tab_cloud">Căutare chei</string>
+  <string name="import_qr_code_button">Scanează cod QR</string>
+  <!--Import from URL-->
+  <!--Generic result toast-->
+  <string name="snackbar_details">Detalii</string>
+  <!--Import result toast-->
+  <!--Delete result toast-->
+  <string name="delete_nothing">Nimic de șters.</string>
+  <!--Revoke result toast (snackbar)-->
+  <!--Certify result toast-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <string name="api_settings_create_key">Creează o cheie nouă</string>
+  <string name="api_settings_save">Salvează</string>
+  <string name="api_settings_cancel">Anulare</string>
+  <string name="api_settings_start">Pornește aplicația</string>
+  <string name="api_settings_delete_account">Șterge contul</string>
+  <string name="api_settings_advanced">Avansat</string>
+  <string name="api_settings_settings">Setări</string>
+  <!--Share-->
+  <string name="share_qr_code_dialog_title">Partajează prin cod QR</string>
+  <string name="share_nfc_dialog">Partajează prin NFC</string>
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
+  <!--Key list-->
+  <string name="key_list_fab_search">Căutare chei</string>
+  <string name="key_list_fab_import">Importă dintr-un fișier</string>
+  <!--Key view-->
+  <string name="key_view_action_edit">Editează</string>
+  <string name="key_view_action_encrypt">Criptează text</string>
+  <string name="key_view_action_encrypt_files">fișiere</string>
+  <string name="key_view_action_share_with">Partajează cu...</string>
+  <string name="key_view_tab_start">Start</string>
+  <string name="key_view_tab_share">Partajează</string>
+  <string name="key_view_tab_certs">Certificate</string>
+  <string name="key_view_tab_keybase">Keybase.io</string>
+  <string name="user_id_info_revoked_title">Revocat</string>
+  <string name="user_id_info_certified_title">Confirmat</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
+  <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">Schimbă parola</string>
+  <!--Create key-->
+  <string name="create_key_upload">Sincronizează pe Internet</string>
+  <string name="create_key_final_text">Ai introdus următoarea identitate:</string>
+  <string name="create_key_final_robot_text">Crearea cheii o să dureze ceva timp, servește o cafea între timp...</string>
+  <string name="create_key_name_text">Alege un nume asociat cu această cheie. Acesta poate fi un nume complet, ex., \'John Doe\', sau o poreclă, ex., \'Johnny\'</string>
+  <string name="create_key_email_text">Introdu adresă ta principală de email folosită pentru comunicare în siguranță.</string>
+  <string name="create_key_passphrase_text">Alege o parolă puternică. Îți va proteja cheia ta dacă dispozitivul tău este furat.</string>
+  <string name="create_key_hint_full_name">Nume complet sau poreclă</string>
+  <string name="create_key_edit">Schimbă configurația cheii</string>
+  <string name="create_key_add_email">Adaugă adresă de email</string>
+  <string name="create_key_yubi_key_pin">PIN</string>
+  <!--View key-->
+  <string name="view_key_my_key">Cheia mea</string>
+  <!--Add/Edit keyserver-->
+  <string name="add_keyserver_invalid_url">URL invalid!</string>
+  <!--Navigation Drawer-->
+  <string name="nav_keys">Chei</string>
+  <string name="nav_encrypt_decrypt">Criptare/Decriptare</string>
+  <string name="nav_apps">Aplicații</string>
+  <string name="my_keys">Cheile mele</string>
+  <string name="nav_backup">Backup/Restaurare</string>
+  <!--hints-->
+  <!--certs-->
+  <string name="cert_default">implicit</string>
+  <string name="cert_verify_ok">OK</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="msg_internal_error">Eroare internă!</string>
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <string name="msg_is_db_exception">Eroare bază de date!</string>
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
+  <!--modifySecretKeyRing-->
+  <string name="msg_mf_error_noop">Nimic de făcut!</string>
+  <!--Consolidate-->
+  <!--Edit Key (higher level than modify)-->
+  <!--Promote key-->
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_error_corrupt_data">Datele sunt corupte!</string>
+  <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">OK</string>
+  <!--Messages for SignEncrypt operation-->
+  <!--Messages for PgpSignEncrypt operation-->
+  <string name="msg_pse_error_bad_passphrase">Parolă greșită!</string>
+  <string name="msg_backup_error_db">Eroare bază de date!</string>
+  <string name="msg_upload_error_not_found">Cheia nu a fost găsită!</string>
+  <!--Linked Identity verification-->
+  <string name="msg_acc_saved">Cont salvat</string>
+  <!--Messages for Keybase Verification operation-->
+  <!--Messages for Mime parsing operation-->
+  <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">Parolă</string>
+  <!--Keyserver sync-->
+  <!--First Time-->
+  <string name="first_time_create_key">Creează cheia mea</string>
+  <string name="first_time_import_key">Importă o cheie dintr-un fișier</string>
+  <string name="first_time_security_token">Folosește un Token de Securitate</string>
+  <string name="first_time_skip">Sari peste configurare</string>
+  <string name="backup_text">Backup-urile care includ cheile proprii nu trebuiesc partajate niciodată cu alte persoane!</string>
+  <string name="backup_all">Toate cheile + cheile proprii</string>
+  <string name="backup_public_keys">Toate cheile</string>
+  <!--unsorted-->
+  <string name="label_user_id">Identitate</string>
+  <string name="label_cert_type">Tip</string>
+  <string name="key_no_passphrase">nici o parolă</string>
+  <string name="key_colon">Cheie:</string>
+  <string name="btn_start_exchange">Pornește schimbul</string>
+  <!--Android Account-->
+  <string name="account_privacy_title">Confidențialitate</string>
+  <!--Passphrase wizard-->
+  <!--TODO: rename all the things!-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">Introdu parola</string>
+  <string name="passphrase">Parolă</string>
+  <string name="noPassphrase">Nici o parolă</string>
+  <string name="no_passphrase_set">Nu este setată nici o parolă</string>
+  <string name="passphrases_match">Parolele se potrivesc</string>
+  <string name="passphrase_saved">Parolă salvată</string>
+  <string name="passphrase_invalid">Parolă invalidă</string>
+  <string name="missing_passphrase">Lipsește parola</string>
+  <string name="set_passphrase">Setează parola</string>
+  <string name="nfc_title">NFC</string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">Setări</string>
+  <string name="snack_security_token_import">Importă</string>
+  <string name="btn_import">Importă</string>
+  <string name="security_token_import_radio">Importă o cheie</string>
+  <string name="security_token_error_unknown">Eroare necunoscută</string>
+  <string name="security_token_error_try_again">Încearcă din nou</string>
+  <string name="linked_create_verify">Verifică</string>
+  <!--Other Linked Identity strings-->
+  <string name="linked_verifying">Se verifică...</string>
+  <string name="linked_verify_success">Verificat!</string>
+  <string name="linked_verify_error">Eroare la verificare!</string>
+  <string name="linked_title_github">GitHub</string>
+  <string name="linked_title_twitter">Twitter</string>
+  <string name="linked_button_verify">Verifică</string>
+  <string name="linked_button_confirm">Confirmă</string>
+  <string name="linked_text_verifying">Se verifică...</string>
+  <string name="linked_text_error">Eroare</string>
+  <string name="linked_text_confirming">Se confirmă...</string>
+  <string name="linked_progress_auth_github">Autorizează prin GitHub...</string>
+  <string name="snack_btn_overwrite">Suprascrie</string>
+  <string name="backup_code_ok">Cod acceptat!</string>
+  <string name="share_log_dialog_cancel_button">Anulare</string>
+  <string name="menu_uids_save">Salvează</string>
+  <string name="prompt_fidesmo_pgp_install_title">Instalez PGP?</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">Instalează</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Anulare</string>
+  <string name="prompt_fidesmo_app_install_button_positive">Instalează</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Anulare</string>
+  <string name="help_donation_paypal_item">Donație OpenKeychain</string>
+  <string-array name="help_donation_google_catalog_values">
+    <item>1 EURO</item>
+    <item>2 EURO</item>
+    <item>3 EURO</item>
+    <item>5 EURO</item>
+    <item>10 EURO</item>
+    <item>50 EURO</item>
+    <item>100 EURO</item>
+  </string-array>
+</resources>

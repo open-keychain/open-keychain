@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -50,7 +51,6 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
-import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -456,7 +456,9 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             result = multiThreadedKeyImport(keyList, keyServer, proxy, skipSave);
         }
 
-        ContactSyncAdapterService.requestContactsSync();
+        if (!importInput.mSkipSave) {
+            ContactSyncAdapterService.requestContactsSync();
+        }
         return result;
     }
 

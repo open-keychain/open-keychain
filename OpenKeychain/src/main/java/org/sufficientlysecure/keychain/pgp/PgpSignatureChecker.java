@@ -19,27 +19,30 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.SignatureException;
-
-import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPOnePassSignature;
 import org.bouncycastle.openpgp.PGPOnePassSignatureList;
 import org.bouncycastle.openpgp.PGPSignature;
 import org.bouncycastle.openpgp.PGPSignatureList;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureHashAlgorithm;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.SignatureException;
+import java.util.List;
 
 
 /** This class is used to track the state of a single signature verification.
@@ -134,10 +137,12 @@ class PgpSignatureChecker {
     }
 
     private void checkKeySecurity(OperationLog log, int indent) {
-        // TODO: checks on signingRing ?
-        if (!PgpSecurityConstants.isSecureKey(signingKey)) {
+        // TODO check primary key as well, not only the signing key
+        KeySecurityProblem keySecurityProblem =
+                PgpSecurityConstants.checkForSecurityProblems(signingKey);
+        if (keySecurityProblem != null) {
             log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
-            signatureResultBuilder.setInsecure(true);
+            signatureResultBuilder.addSecurityProblem(keySecurityProblem);
         }
     }
 
@@ -233,9 +238,11 @@ class PgpSignatureChecker {
         }
 
         // check for insecure hash algorithms
-        if (!PgpSecurityConstants.isSecureHashAlgorithm(signature.getHashAlgorithm())) {
+        InsecureHashAlgorithm signatureSecurityProblem =
+                PgpSecurityConstants.checkSignatureAlgorithmForSecurityProblems(signature.getHashAlgorithm());
+        if (signatureSecurityProblem != null) {
             log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
-            signatureResultBuilder.setInsecure(true);
+            signatureResultBuilder.addSecurityProblem(signatureSecurityProblem);
         }
 
         signatureResultBuilder.setSignatureTimestamp(signature.getCreationTime());
@@ -268,9 +275,11 @@ class PgpSignatureChecker {
         }
 
         // check for insecure hash algorithms
-        if (!PgpSecurityConstants.isSecureHashAlgorithm(onePassSignature.getHashAlgorithm())) {
+        InsecureHashAlgorithm signatureSecurityProblem =
+                PgpSecurityConstants.checkSignatureAlgorithmForSecurityProblems(onePassSignature.getHashAlgorithm());
+        if (signatureSecurityProblem != null) {
             log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
-            signatureResultBuilder.setInsecure(true);
+            signatureResultBuilder.addSecurityProblem(signatureSecurityProblem);
         }
 
         signatureResultBuilder.setSignatureTimestamp(messageSignature.getCreationTime());
@@ -286,6 +295,10 @@ class PgpSignatureChecker {
 
     public OpenPgpSignatureResult getSignatureResult() {
         return signatureResultBuilder.build();
+    }
+
+    public List<SecurityProblem> getSecurityProblems() {
+        return signatureResultBuilder.getSecurityProblems();
     }
 
     /**
