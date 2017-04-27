@@ -4,32 +4,36 @@ package org.sufficientlysecure.keychain.remote.ui;
 import java.io.Serializable;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 
-import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureHashAlgorithm;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSymmetricAlgorithm;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSigningAlgorithm;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureEncryptionAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.SymmetricAlgorithmProblem;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.UsageType;
-import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 
 
 class SecurityProblemPresenter {
+    private final Context context;
     private final PackageManager packageManager;
 
 
     private RemoteSecurityProblemView view;
+    private Long viewKeyMasterKeyId;
 
 
     SecurityProblemPresenter(Context context) {
+        this.context = context;
         packageManager = context.getPackageManager();
     }
 
@@ -38,13 +42,8 @@ class SecurityProblemPresenter {
     }
 
     void setupFromIntentData(String packageName, Serializable securityProblem) {
-
-        if (securityProblem instanceof KeySecurityProblem) {
-//            setupFromKeySecurityProblem((KeySecurityProblem) securityProblem);
-        } else if (securityProblem instanceof SymmetricAlgorithmProblem) {
-            setupFromNonKeySecurityProblem((SymmetricAlgorithmProblem) securityProblem);
-        } else if (securityProblem instanceof InsecureHashAlgorithm) {
-            setupFromInsecureHashAlgorithm((InsecureHashAlgorithm) securityProblem);
+        if (securityProblem instanceof DecryptVerifySecurityProblem) {
+            setupFromDecryptVerifySecurityProblem((DecryptVerifySecurityProblem) securityProblem);
         } else {
             throw new IllegalArgumentException("Unhandled security problem type!");
         }
@@ -56,53 +55,65 @@ class SecurityProblemPresenter {
         }
     }
 
-    /*
-    private void setupFromKeySecurityProblem(KeySecurityProblem keySecurityProblem) {
+    private void setupFromDecryptVerifySecurityProblem(DecryptVerifySecurityProblem securityProblem) {
+        if (securityProblem.encryptionKeySecurityProblem != null) {
+            setupFromEncryptionKeySecurityProblem(securityProblem.encryptionKeySecurityProblem);
+        } else if (securityProblem.signingKeySecurityProblem != null) {
+            setupFromSigningKeySecurityProblem(securityProblem.signingKeySecurityProblem);
+        } else if (securityProblem.symmetricSecurityProblem != null) {
+            setupFromEncryptionAlgorithmSecurityProblem(securityProblem.symmetricSecurityProblem);
+        } else if (securityProblem.signatureSecurityProblem != null) {
+            setupFromSignatureSecurityProblem(securityProblem.signatureSecurityProblem);
+        }
+    }
+
+    private void setupFromEncryptionKeySecurityProblem(KeySecurityProblem keySecurityProblem) {
+        viewKeyMasterKeyId = keySecurityProblem.masterKeyId;
+        view.showViewKeyButton();
+
         if (keySecurityProblem instanceof InsecureBitStrength) {
             InsecureBitStrength problem = (InsecureBitStrength) keySecurityProblem;
-            if (problem.usageType == UsageType.ENCRYPT) {
-                view.showLayoutEncryptInsecureBitsize(problem.algorithm, problem.bitStrength);
-            } else if (problem.usageType == UsageType.SIGN) {
-                view.showLayoutSignInsecureBitsize(problem.algorithm, problem.bitStrength);
-            } else {
-                throw new IllegalStateException("Should never happen here!");
-            }
+            view.showLayoutEncryptInsecureBitsize(problem.algorithm, problem.bitStrength);
         } else if (keySecurityProblem instanceof NotWhitelistedCurve) {
             NotWhitelistedCurve problem = (NotWhitelistedCurve) keySecurityProblem;
-            if (problem.usageType == UsageType.ENCRYPT) {
-                view.showLayoutEncryptNotWhitelistedCurve(problem.curveOid);
-            } else if (problem.usageType == UsageType.SIGN) {
-                view.showLayoutSignNotWhitelistedCurve(problem.curveOid);
-            } else {
-                throw new IllegalStateException("Should never happen here!");
-            }
+            view.showLayoutEncryptNotWhitelistedCurve(problem.curveOid);
         } else if (keySecurityProblem instanceof UnidentifiedKeyProblem) {
-            if (keySecurityProblem.usageType == UsageType.ENCRYPT) {
-                view.showLayoutEncryptUnidentifiedKeyProblem();
-            } else if (keySecurityProblem.usageType == UsageType.SIGN) {
-                view.showLayoutSignUnidentifiedKeyProblem();
-            } else {
-                throw new IllegalStateException("Should never happen here!");
-            }
+            view.showLayoutEncryptUnidentifiedKeyProblem();
         } else {
             throw new IllegalArgumentException("Unhandled key security problem type!");
         }
     }
-    */
 
-    private void setupFromNonKeySecurityProblem(SymmetricAlgorithmProblem securityProblem) {
+    private void setupFromSigningKeySecurityProblem(KeySecurityProblem keySecurityProblem) {
+        viewKeyMasterKeyId = keySecurityProblem.masterKeyId;
+        view.showViewKeyButton();
+
+        if (keySecurityProblem instanceof InsecureBitStrength) {
+            InsecureBitStrength problem = (InsecureBitStrength) keySecurityProblem;
+            view.showLayoutSignInsecureBitsize(problem.algorithm, problem.bitStrength);
+        } else if (keySecurityProblem instanceof NotWhitelistedCurve) {
+            NotWhitelistedCurve problem = (NotWhitelistedCurve) keySecurityProblem;
+            view.showLayoutSignNotWhitelistedCurve(problem.curveOid);
+        } else if (keySecurityProblem instanceof UnidentifiedKeyProblem) {
+            view.showLayoutSignUnidentifiedKeyProblem();
+        } else {
+            throw new IllegalArgumentException("Unhandled key security problem type!");
+        }
+    }
+
+    private void setupFromEncryptionAlgorithmSecurityProblem(EncryptionAlgorithmProblem securityProblem) {
         if (securityProblem instanceof MissingMdc) {
             view.showLayoutMissingMdc();
-        } else if (securityProblem instanceof InsecureSymmetricAlgorithm) {
-            InsecureSymmetricAlgorithm insecureSymmetricAlgorithm = (InsecureSymmetricAlgorithm) securityProblem;
+        } else if (securityProblem instanceof InsecureEncryptionAlgorithm) {
+            InsecureEncryptionAlgorithm insecureSymmetricAlgorithm = (InsecureEncryptionAlgorithm) securityProblem;
             view.showLayoutInsecureSymmetric(insecureSymmetricAlgorithm.symmetricAlgorithm);
         } else {
             throw new IllegalArgumentException("Unhandled symmetric algorithm problem type!");
         }
     }
 
-    private void setupFromInsecureHashAlgorithm(InsecureHashAlgorithm securityProblem) {
-        view.showLayoutInsecureHashAlgorithm(securityProblem.hashAlgorithm);
+    private void setupFromSignatureSecurityProblem(InsecureSigningAlgorithm signatureSecurityProblem) {
+        view.showLayoutInsecureHashAlgorithm(signatureSecurityProblem.hashAlgorithm);
     }
 
     private void setPackageInfo(String packageName) throws NameNotFoundException {
@@ -115,6 +126,12 @@ class SecurityProblemPresenter {
 
     void onClickGotIt() {
         view.finishAsCancelled();
+    }
+
+    void onClickViewKey() {
+        Intent viewKeyIntent = new Intent(context, ViewKeyActivity.class);
+        viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(viewKeyMasterKeyId));
+        context.startActivity(viewKeyIntent);
     }
 
     void onCancel() {
@@ -136,5 +153,7 @@ class SecurityProblemPresenter {
         void showLayoutInsecureSymmetric(int symmetricAlgorithm);
 
         void showLayoutInsecureHashAlgorithm(int hashAlgorithm);
+
+        void showViewKeyButton();
     }
 }

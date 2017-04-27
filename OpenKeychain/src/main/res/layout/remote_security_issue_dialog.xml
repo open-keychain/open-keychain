@@ -85,6 +85,15 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="View Key"
+            android:id="@+id/button_view_key"
+            android:visibility="gone"
+            tools:visibility="visible"
+            style="?buttonBarButtonStyle" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Got it"
             android:id="@+id/button_allow"
             style="?buttonBarButtonStyle" />

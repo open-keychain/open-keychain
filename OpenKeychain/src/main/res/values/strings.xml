@@ -1855,10 +1855,19 @@
 
     <string name="dialog_insecure_title">Security Warning</string>
     <string name="dialog_insecure_recommend_title">Recommended Action</string>
-    <string name="insecure_msg_bitstrength">"The key this message was sent from is using an outdated algorithm, that is no longer considered secure!\n\nThe algorithm in use is %1$s with %2$s bitstrength, which has been considered insecure since %3$s."</string>
-    <string name="insecure_recom_new_key">The key in use is insecure, and cannot be updated. To communicate securely, the sender must create a new key!</string>
-    <string name="insecure_msg_not_whitelisted_curve">"This "</string>
-    <string name="insecure_msg_unidentified_key">"The key used to "</string>
-    <string name="insecure_recom_mdc">The sender of this message should update their OpenPGP software.</string>
-    <string name="insecure_msg_mdc">This message was encrypted with an insecure encryption mechanism. The encrypted message did not include a Modification Detection Code (MDC), which is necessary to ensure message integrity.</string>
+    <string name="insecure_encrypt_bitstrength">"The key you used to receive this message is using an outdated algorithm!\n\nThe algorithm in use is %1$s with %2$s bitstrength, which has been considered insecure since %3$s."</string>
+    <string name="insecure_encrypt_bitstrength_suggestion">The key in use is insecure, and cannot be updated. To communicate securely, the sender must create a new key!</string>
+    <string name="insecure_sign_bitstrength">"The key this message was sent from is using an outdated algorithm!\n\nThe algorithm in use is %1$s with %2$s bitstrength, which has been considered insecure since %3$s."</string>
+    <string name="insecure_sign_bitstrength_suggestion">The key in use is insecure, and cannot be updated. To communicate securely, the sender must create a new key!</string>
+    <string name="insecure_encrypt_not_whitelisted_curve">"The key used to receive this message is using an algorithm that is not considered secure!\n\nThe algorithm in use is %1$s, which has not received sufficient cryptanalysis to consider secure."</string>
+    <string name="insecure_sign_not_whitelisted_curve">"The key this message was sent from is using an outdated algorithm!\n\nThe algorithm in use is %1$s, which has not received sufficient cryptanalysis to consider secure."</string>
+    <string name="insecure_encrypt_unidentified">"There is an unidentified security problem with the key used to receive (decrypyt) this message!"</string>
+    <string name="insecure_sign_unidentified">"There is an unidentified security problem with the key used to send (sign) this message!"</string>
+
+    <string name="insecure_mdc">"This message was not signed, and did also not contain a Modification Detection Code (MDC). It may have been modified by an attacker!"</string>
+    <string name="insecure_mdc_suggestion">"For secure end-to-end communication, messages should be signed by the sender."</string>
+
+    <string name="insecure_symmetric_algo">"This message was encrypted with an insecure algorithm."</string>
+    <string name="insecure_hash_algo">"This message was signed using an insecure algorithm."</string>
+
 </resources>

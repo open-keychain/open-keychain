@@ -83,6 +83,7 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
         private RemoteSecurityProblemView mvpView;
 
         private Button buttonGotIt;
+        private Button buttonViewKey;
 
         @NonNull
         @Override
@@ -97,6 +98,7 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
             alert.setView(view);
 
             buttonGotIt = (Button) view.findViewById(R.id.button_allow);
+            buttonViewKey = (Button) view.findViewById(R.id.button_view_key);
 
             setupListenersForPresenter();
             mvpView = createMvpView(view);
@@ -168,6 +170,11 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                     recommendLayout.setVisibility(View.GONE);
                 }
 
+                private void showGeneric(String explanationString) {
+                    explanationText.setText(explanationString);
+                    recommendLayout.setVisibility(View.GONE);
+                }
+
                 private void showGenericWithRecommendation(
                         @StringRes int explanationStringRes, @StringRes int recommendationStringRes) {
                     explanationText.setText(explanationStringRes);
@@ -175,59 +182,73 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                     recommendLayout.setVisibility(View.VISIBLE);
                 }
 
+                private void showGenericWithRecommendation(
+                        String explanationString, @StringRes int recommendationStringRes) {
+                    explanationText.setText(explanationString);
+                    recommendText.setText(recommendationStringRes);
+                    recommendLayout.setVisibility(View.VISIBLE);
+                }
+
                 @Override
                 public void showLayoutMissingMdc() {
-                    showGenericWithRecommendation(R.string.insecure_msg_mdc, R.string.insecure_recom_mdc);
+                    showGenericWithRecommendation(R.string.insecure_mdc, R.string.insecure_mdc_suggestion);
                 }
 
                 @Override
                 public void showLayoutInsecureSymmetric(int symmetricAlgorithm) {
-                    showGeneric(R.string.insecure_msg_unidentified_key);
+                    showGeneric(R.string.insecure_symmetric_algo);
                 }
 
                 @Override
                 public void showLayoutInsecureHashAlgorithm(int hashAlgorithm) {
-                    showGeneric(R.string.insecure_msg_unidentified_key);
+                    showGeneric(R.string.insecure_hash_algo);
                 }
 
                 @Override
                 public void showLayoutEncryptInsecureBitsize(int algorithmId, int bitStrength) {
                     String algorithmName = KeyFormattingUtils.getAlgorithmInfo(algorithmId, null, null);
-                    explanationText.setText(
-                            getString(R.string.insecure_msg_bitstrength, algorithmName,
-                                    Integer.toString(bitStrength), "2010"));
-                    recommendText.setText(R.string.insecure_recom_new_key);
-                    recommendText.setVisibility(View.VISIBLE);
+
+                    showGenericWithRecommendation(
+                            getString(R.string.insecure_encrypt_bitstrength, algorithmName,
+                                    Integer.toString(bitStrength), "2010"),
+                            R.string.insecure_sign_bitstrength_suggestion);
                 }
 
                 @Override
                 public void showLayoutSignInsecureBitsize(int algorithmId, int bitStrength) {
                     String algorithmName = KeyFormattingUtils.getAlgorithmInfo(algorithmId, null, null);
-                    explanationText.setText(
-                            getString(R.string.insecure_msg_bitstrength, algorithmName,
-                                    Integer.toString(bitStrength), "2010"));
-                    recommendText.setText(R.string.insecure_recom_new_key);
-                    recommendText.setVisibility(View.VISIBLE);
+
+                    showGenericWithRecommendation(
+                            getString(R.string.insecure_sign_bitstrength, algorithmName,
+                                    Integer.toString(bitStrength), "2010"),
+                            R.string.insecure_sign_bitstrength_suggestion);
                 }
 
                 @Override
                 public void showLayoutEncryptNotWhitelistedCurve(String curveOid) {
-                    showGeneric(R.string.insecure_msg_not_whitelisted_curve);
+                    showGeneric(getString(R.string.insecure_encrypt_not_whitelisted_curve,
+                            KeyFormattingUtils.getCurveInfo(getContext(), curveOid)));
                 }
 
                 @Override
                 public void showLayoutSignNotWhitelistedCurve(String curveOid) {
-                    showGeneric(R.string.insecure_msg_not_whitelisted_curve);
+                    showGeneric(getString(R.string.insecure_sign_not_whitelisted_curve,
+                            KeyFormattingUtils.getCurveInfo(getContext(), curveOid)));
                 }
 
                 @Override
                 public void showLayoutEncryptUnidentifiedKeyProblem() {
-                    showGeneric(R.string.insecure_msg_unidentified_key);
+                    showGeneric(R.string.insecure_encrypt_unidentified);
                 }
 
                 @Override
                 public void showLayoutSignUnidentifiedKeyProblem() {
-                    showGeneric(R.string.insecure_msg_unidentified_key);
+                    showGeneric(R.string.insecure_sign_unidentified);
+                }
+
+                @Override
+                public void showViewKeyButton() {
+                    buttonViewKey.setVisibility(View.VISIBLE);
                 }
             };
         }
@@ -237,6 +258,12 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                 @Override
                 public void onClick(View view) {
                     presenter.onClickGotIt();
+                }
+            });
+            buttonViewKey.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.onClickViewKey();
                 }
             });
         }
