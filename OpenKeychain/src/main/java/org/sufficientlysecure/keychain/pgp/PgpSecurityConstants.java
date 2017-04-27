@@ -31,11 +31,11 @@ import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureHashAlgorithm;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSymmetricAlgorithm;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSigningAlgorithm;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureEncryptionAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.SymmetricAlgorithmProblem;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
 
 
@@ -74,9 +74,9 @@ public class PgpSecurityConstants {
             // CAMELLIA_256: not used widely
     ));
 
-    public static SymmetricAlgorithmProblem checkSecureSymmetricAlgorithm(int id) {
+    public static EncryptionAlgorithmProblem checkSecureSymmetricAlgorithm(int id) {
         if (!sSymmetricAlgorithmsWhitelist.contains(id)) {
-            return new InsecureSymmetricAlgorithm(id);
+            return new InsecureEncryptionAlgorithm(id);
         }
         return null;
     }
@@ -107,9 +107,9 @@ public class PgpSecurityConstants {
             // SHA224: Not used widely, Yahoo argues against it
     ));
 
-    public static InsecureHashAlgorithm checkSignatureAlgorithmForSecurityProblems(int hashAlgorithm) {
+    static InsecureSigningAlgorithm checkSignatureAlgorithmForSecurityProblems(int hashAlgorithm) {
         if (!sHashAlgorithmsWhitelist.contains(hashAlgorithm)) {
-            return new InsecureHashAlgorithm(hashAlgorithm);
+            return new InsecureSigningAlgorithm(hashAlgorithm);
         }
         return null;
     }

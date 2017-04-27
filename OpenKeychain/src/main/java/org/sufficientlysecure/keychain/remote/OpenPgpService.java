@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
@@ -60,7 +61,6 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
@@ -430,17 +430,14 @@ public class OpenPgpService extends Service {
     }
 
     private void processSecurityProblemsPendingIntent(Intent result, DecryptVerifyResult decryptVerifyResult) {
-        List<SecurityProblem> securityProblems = decryptVerifyResult.getSecurityProblems();
-        if (securityProblems.isEmpty()) {
+        DecryptVerifySecurityProblem securityProblem = decryptVerifyResult.getSecurityProblem();
+        if (securityProblem == null) {
             return;
         }
 
-        // TODO what if there is multiple?
-        SecurityProblem keySecurityProblem = securityProblems.get(0);
-
         String packageName = mApiPermissionHelper.getCurrentCallingPackage();
         result.putExtra(OpenPgpApi.RESULT_INSECURE_DETAIL_INTENT,
-                mApiPendingIntentFactory.createSecurityProblemIntent(packageName, keySecurityProblem));
+                mApiPendingIntentFactory.createSecurityProblemIntent(packageName, securityProblem));
     }
 
     private void processDecryptionResultForResultIntent(int targetApiVersion, Intent result,

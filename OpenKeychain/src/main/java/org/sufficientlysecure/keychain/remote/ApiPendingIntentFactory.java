@@ -25,7 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import org.sufficientlysecure.keychain.pgp.SecurityProblem;
+import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.ui.RemoteBackupActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;
@@ -143,10 +143,10 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSecurityProblemIntent(String packageName, SecurityProblem keySecurityProblem) {
+    PendingIntent createSecurityProblemIntent(String packageName, DecryptVerifySecurityProblem securityProblem) {
         Intent intent = new Intent(mContext, RemoteSecurityProblemDialogActivity.class);
         intent.putExtra(RemoteSecurityProblemDialogActivity.EXTRA_PACKAGE_NAME, packageName);
-        intent.putExtra(RemoteSecurityProblemDialogActivity.EXTRA_SECURITY_PROBLEM, keySecurityProblem);
+        intent.putExtra(RemoteSecurityProblemDialogActivity.EXTRA_SECURITY_PROBLEM, securityProblem);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //noinspection ResourceType, looks like lint is missing FLAG_IMMUTABLE

@@ -18,6 +18,15 @@
 
 package org.sufficientlysecure.keychain.ui.util;
 
+
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.security.DigestException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
+import java.util.Locale;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -47,14 +56,6 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.security.DigestException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.Locale;
 
 public class KeyFormattingUtils {
 

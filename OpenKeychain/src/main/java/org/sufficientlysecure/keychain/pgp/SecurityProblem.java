@@ -34,7 +34,7 @@ public abstract class SecurityProblem implements Serializable {
         }
     }
 
-    public static abstract class SymmetricAlgorithmProblem extends SecurityProblem {
+    public static abstract class EncryptionAlgorithmProblem extends SecurityProblem {
 
     }
 
@@ -62,23 +62,23 @@ public abstract class SecurityProblem implements Serializable {
         }
     }
 
-    public static class InsecureHashAlgorithm extends SecurityProblem {
+    public static class InsecureSigningAlgorithm extends SecurityProblem {
         public final int hashAlgorithm;
 
-        InsecureHashAlgorithm(int hashAlgorithm) {
+        InsecureSigningAlgorithm(int hashAlgorithm) {
             this.hashAlgorithm = hashAlgorithm;
         }
     }
 
-    public static class InsecureSymmetricAlgorithm extends SymmetricAlgorithmProblem {
+    public static class InsecureEncryptionAlgorithm extends EncryptionAlgorithmProblem {
         public final int symmetricAlgorithm;
 
-        InsecureSymmetricAlgorithm(int symmetricAlgorithm) {
+        InsecureEncryptionAlgorithm(int symmetricAlgorithm) {
             this.symmetricAlgorithm = symmetricAlgorithm;
         }
     }
 
-    public static class MissingMdc extends SymmetricAlgorithmProblem {
+    public static class MissingMdc extends EncryptionAlgorithmProblem {
 
     }
 }

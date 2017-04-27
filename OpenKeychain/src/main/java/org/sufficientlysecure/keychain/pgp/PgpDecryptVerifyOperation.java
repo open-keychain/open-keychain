@@ -68,9 +68,11 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem.DecryptVerifySecurityProblemBuilder;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.SymmetricAlgorithmProblem;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -301,6 +303,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         JcaSkipMarkerPGPObjectFactory plainFact;
         Object dataChunk;
         EncryptStreamResult esResult = null;
+        DecryptVerifySecurityProblemBuilder securityProblemBuilder = new DecryptVerifySecurityProblemBuilder();
         { // resolve encrypted (symmetric and asymmetric) packets
             JcaSkipMarkerPGPObjectFactory pgpF = new JcaSkipMarkerPGPObjectFactory(in);
             Object obj = pgpF.nextObject();
@@ -322,15 +325,17 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                 if (esResult.encryptionKeySecurityProblem != null) {
                     log.add(LogType.MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
-                    decryptionResultBuilder.addSecurityProblem(esResult.encryptionKeySecurityProblem);
+                    securityProblemBuilder.addEncryptionKeySecurityProblem(esResult.encryptionKeySecurityProblem);
+                    decryptionResultBuilder.setInsecure(true);
                 }
 
                 // Check for insecure encryption algorithms!
-                SymmetricAlgorithmProblem symmetricSecurityProblem =
+                EncryptionAlgorithmProblem symmetricSecurityProblem =
                         PgpSecurityConstants.checkSecureSymmetricAlgorithm(esResult.symmetricEncryptionAlgo);
                 if (symmetricSecurityProblem != null) {
                     log.add(LogType.MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
-                    decryptionResultBuilder.addSecurityProblem(symmetricSecurityProblem);
+                    securityProblemBuilder.addSymmetricSecurityProblem(symmetricSecurityProblem);
+                    decryptionResultBuilder.setInsecure(true);
                 }
 
                 plainFact = new JcaSkipMarkerPGPObjectFactory(esResult.cleartextStream);
@@ -361,7 +366,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             plainFact = fact;
         }
 
-        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mKeyRepository, input.getSenderAddress());
+        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(
+                mKeyRepository, input.getSenderAddress(), securityProblemBuilder);
         if (signatureChecker.initializeOnePassSignature(dataChunk, log, indent +1)) {
             dataChunk = plainFact.nextObject();
         }
@@ -536,7 +542,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 // Handle missing integrity protection like failed integrity protection!
                 // The MDC packet can be stripped by an attacker!
                 log.add(LogType.MSG_DC_INSECURE_MDC_MISSING, indent);
-                decryptionResultBuilder.addSecurityProblem(new MissingMdc());
+                securityProblemBuilder.addSymmetricSecurityProblem(new MissingMdc());
+                decryptionResultBuilder.setInsecure(true);
             }
         }
 
@@ -549,8 +556,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         result.setCachedCryptoInputParcel(cryptoInput);
         result.setSignatureResult(signatureChecker.getSignatureResult());
         result.setDecryptionResult(decryptionResultBuilder.build());
-        result.addSecurityProblems(signatureChecker.getSecurityProblems());
-        result.addSecurityProblems(decryptionResultBuilder.getKeySecurityProblems());
+        result.setSecurityProblemResult(securityProblemBuilder.build());
         result.setDecryptionMetadata(metadata);
         result.mOperationTime = opTime;
 
@@ -888,7 +894,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         updateProgress(R.string.progress_processing_signature, 60, 100);
         JcaSkipMarkerPGPObjectFactory pgpFact = new JcaSkipMarkerPGPObjectFactory(aIn);
 
-        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mKeyRepository, input.getSenderAddress());
+        DecryptVerifySecurityProblemBuilder securityProblemBuilder = new DecryptVerifySecurityProblemBuilder();
+        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mKeyRepository, input.getSenderAddress(),
+                securityProblemBuilder);
 
         Object o = pgpFact.nextObject();
         if (!signatureChecker.initializeSignature(o, log, indent+1)) {
@@ -919,6 +927,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         result.setSignatureResult(signatureChecker.getSignatureResult());
         result.setDecryptionResult(
                 new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED));
+        result.setSecurityProblemResult(securityProblemBuilder.build());
         result.setDecryptionMetadata(metadata);
         return result;
     }
@@ -943,7 +952,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             o = pgpFact.nextObject();
         }
 
-        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mKeyRepository, input.getSenderAddress());
+        DecryptVerifySecurityProblemBuilder securityProblemBuilder = new DecryptVerifySecurityProblemBuilder();
+        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mKeyRepository, input.getSenderAddress(),
+                securityProblemBuilder);
 
         if ( ! signatureChecker.initializeSignature(o, log, indent+1)) {
             log.add(LogType.MSG_DC_ERROR_INVALID_DATA, 0);
@@ -994,6 +1005,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setSignatureResult(signatureChecker.getSignatureResult());
+        result.setSecurityProblemResult(securityProblemBuilder.build());
         result.setDecryptionResult(
                 new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED));
         return result;
