@@ -1,0 +1,15 @@
+4.2
+
+  * Experimental support for Elliptic Curve Encryption with Security Tokens
+  * Redesigned key import screen
+  * Design improvements to key lists
+  * Support for keyserver onion addresses
+
+4.1
+
+  * Better detection of emails and other content when opened
+
+4.0
+
+  * Experimental support for Security Tokens over USB
+  * Allow password changing of stripped keys

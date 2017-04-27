@@ -1,0 +1,12 @@
+## 3.2beta2
+  * Material design
+  * Integration of QR Scanner (New permissions required)
+  * Improved key creation wizard
+  * Fix missing contacts after sync
+  * Requires Android 4
+  * Redesigned key screen
+  * Simplify crypto preferences, better selection of secure ciphers
+  * API: Detached signatures, free selection of signing key,...
+  * Fix: Some valid keys were shown revoked or expired
+  * Don't accept signatures by expired or revoked subkeys
+  * Keybase.io support in advanced view

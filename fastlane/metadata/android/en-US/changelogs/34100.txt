@@ -1,0 +1,4 @@
+3.4
+  * Anonymous key download over Tor
+  * Proxy support
+  * Better YubiKey error handling

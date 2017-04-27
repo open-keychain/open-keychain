@@ -1,0 +1,9 @@
+3.2 beta1
+* Experimental support for keybase.io proofs
+
+3.1.2
+* Fix key export to files (now for real)
+
+3.1.1
+* Fix key export to files (they were written partially)
+* Fix crash on Android 2.3

@@ -1,0 +1,22 @@
+OpenKeychain helps you communicate more privately and securely. It uses encryption to ensure that your messages can be read only by the people you send them to, others can send you messages that only you can read, and these messages can be digitally signed so the people getting them are sure who sent them. OpenKeychain is based on the well established OpenPGP standard making encryption compatible across your devices and systems. For a list of compatible software for Windows, Mac OS, and other operating systems consult http://openpgp.org/software/.
+
+Modern encryption is based on digital “keys”. OpenKeychain stores and manages your keys, and those of the people you communicate with, on your Android smartphone. It also helps you find others’ keys online, and exchange keys. But its most frequent use is in using those keys to encrypt and decrypt messages.
+
+★ Integration with other Apps:
+• K-9 Mail
+• Conversations
+• and many more…
+
+★ Open Source: OpenKeychain is designed to be trustworthy. It’s Free Software with no secrets; anyone can examine and validate every bit of it (Source code available at https://github.com/open-keychain/open-keychain)
+
+★ Independent Security Audit: The auditing company Cure53 performed an intensive security audit of OpenKeychain. The security experts summarize their final result with "[...] none of the spotted issues were considered to be of a critical severity in terms of security implications. The latter is a significant and impressive result for an app of this complexity and relevance."
+
+★ Permissions: Because OpenKeychain is Free Software, anyone can validate that the permissions are indeed only required for the listed features.
+• In-app purchases: Donate to the developers
+• Identity: Pre-fill name and email addresses
+• Contacts: Connect keys to your contacts (only offline)
+• Photos/Media/Files: Import/export keys from SD card
+• Camera: Scan QR Codes to add other people's keys
+• Others: Internet permission to retrieve keys, NFC permission to use YubiKeys
+
+Starting with Android 6, permissions are requested when required in-app!

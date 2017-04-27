@@ -1,0 +1,11 @@
+3.2
+  * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
+  * Material design
+  * Integration of QR Code Scanning (New permissions required)
+  * Improved key creation wizard
+  * Fix missing contacts after sync
+  * Requires Android 4
+  * Redesigned key screen
+  * API: Detached signatures, free selection of signing key,...
+  * Keybase.io support in advanced view
+  * Method to update all keys at once

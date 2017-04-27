@@ -1,0 +1,18 @@
+4.0
+
+  * Experimental support for Security Tokens over USB
+  * Allow password changing of stripped keys
+
+3.9
+  * Detection and handling of text data
+  * Performance improvements
+  * UI improvements for Security Token handling
+  * Add option to donate (requires in-app purchase permission)
+
+3.8
+  * Redesigned key editing
+  * Choose remember time individually when entering passwords
+
+3.7
+  * Improved Android 6 support (permissions, integration into text selection)
+  * API: Version 10

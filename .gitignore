@@ -26,3 +26,15 @@ pom.xml.*
 # OS Specific
 [Tt]humbs.db
 .DS_Store
+
+# fastlane specific
+fastlane/report.xml
+# deliver temporary files
+fastlane/Preview.html
+# snapshot generated screenshots
+fastlane/screenshots
+# scan temporary files
+fastlane/test_output
+
+# omit for now:
+fastlane/Appfile

@@ -1,0 +1,13 @@
+3.1
+* Fix crash on Android 5
+* New certify screen
+* Secure Exchange directly from key list (SafeSlinger library)
+* New QR Code program flow
+* Redesigned decrypt screen
+* New icon usage and colors
+* Fix import of secret keys from Symantec Encryption Desktop
+* Subkey IDs on Yubikeys are now checked correctly
+
+3.0.1
+* Better handling of large key imports
+* Improved subkey selection

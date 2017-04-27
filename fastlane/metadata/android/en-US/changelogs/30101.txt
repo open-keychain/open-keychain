@@ -1,0 +1,14 @@
+3.0.1
+* Better handling of large key imports
+* Improved subkey selection
+
+3.0
+* Full support for Yubikey signature generation and decryption!
+* Propose installable compatible apps in apps list
+* New design for decryption screens
+* Many fixes for key import, also fixes stripped keys
+* Honor and display key authenticate flags
+* User interface to generate custom keys
+* Fixing user id revocation certificates
+* New cloud search (searches over traditional keyservers and keybase.io)
+[...]

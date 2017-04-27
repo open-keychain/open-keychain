@@ -1,0 +1,4 @@
+3.3
+  * New decryption screen
+  * Decryption of multiple files at once
+  * Better handling of YubiKey errors
