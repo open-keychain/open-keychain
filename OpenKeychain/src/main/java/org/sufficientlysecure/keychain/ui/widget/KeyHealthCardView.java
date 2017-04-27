@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.ui.widget;
 
 
+import java.util.Date;
+
 import android.content.Context;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
@@ -42,8 +44,6 @@ import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyHealthCli
 import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyHealthMvpView;
 import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyHealthStatus;
 import org.sufficientlysecure.keychain.ui.widget.KeyStatusList.KeyDisplayStatus;
-
-import java.util.Date;
 
 
 public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnClickListener {

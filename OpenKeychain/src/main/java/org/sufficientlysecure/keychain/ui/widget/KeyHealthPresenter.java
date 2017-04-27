@@ -18,6 +18,9 @@
 package org.sufficientlysecure.keychain.ui.widget;
 
 
+import java.util.Comparator;
+import java.util.Date;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -29,9 +32,6 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.ui.widget.KeyStatusList.KeyDisplayStatus;
 import org.sufficientlysecure.keychain.ui.widget.SubkeyStatusLoader.KeySubkeyStatus;
 import org.sufficientlysecure.keychain.ui.widget.SubkeyStatusLoader.SubKeyItem;
-
-import java.util.Comparator;
-import java.util.Date;
 
 
 public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {

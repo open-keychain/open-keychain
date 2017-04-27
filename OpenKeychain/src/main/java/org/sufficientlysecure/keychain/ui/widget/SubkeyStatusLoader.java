@@ -18,6 +18,12 @@
 package org.sufficientlysecure.keychain.ui.widget;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,12 +37,6 @@ import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.ui.widget.SubkeyStatusLoader.KeySubkeyStatus;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
 
 
 class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {

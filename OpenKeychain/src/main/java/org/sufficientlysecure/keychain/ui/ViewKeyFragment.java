@@ -19,6 +19,9 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.IOException;
+import java.util.List;
+
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -65,13 +68,10 @@ import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment.OnIdentityLoadedListener;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
-import org.sufficientlysecure.keychain.ui.widget.KeyHealthCardView;
 import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter;
+import org.sufficientlysecure.keychain.ui.widget.KeyHealthCardView;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.io.IOException;
-import java.util.List;
 
 public class ViewKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -236,7 +236,6 @@ public class ViewKeyFragment extends LoaderFragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         mMasterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
         mDataUri = KeyRings.buildGenericKeyRingUri(mMasterKeyId);
         mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);

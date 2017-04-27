@@ -17,9 +17,13 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.SymmetricAlgorithmProblem;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;

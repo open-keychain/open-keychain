@@ -17,6 +17,10 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.SenderStatusResult;

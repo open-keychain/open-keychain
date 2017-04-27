@@ -19,6 +19,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.util.Date;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -44,8 +46,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.Date;
 
 public class ViewCertActivity extends BaseActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {

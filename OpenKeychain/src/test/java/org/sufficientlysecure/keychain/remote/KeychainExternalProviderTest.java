@@ -79,6 +79,15 @@ public class KeychainExternalProviderTest {
     }
 
     @Test(expected = AccessControlException.class)
+    public void testPermission__withExplicitPackage() throws Exception {
+        contentResolver.query(
+                EmailStatus.CONTENT_URI.buildUpon().appendPath("fake_pkg").build(),
+                new String[] { EmailStatus.EMAIL_ADDRESS, EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID },
+                null, new String [] { }, null
+        );
+    }
+
+    @Test(expected = AccessControlException.class)
     public void testPermission__withWrongPackageCert() throws Exception {
         apiDao.deleteApiApp(PACKAGE_NAME);
         apiDao.insertApiApp(new AppSettings(PACKAGE_NAME, new byte[] { 1, 2, 4 }));
@@ -94,7 +103,7 @@ public class KeychainExternalProviderTest {
     public void testQuery__withNonExistentAddress() throws Exception {
         Cursor cursor = contentResolver.query(
                 EmailStatus.CONTENT_URI, new String[] {
-                        EmailStatus.EMAIL_ADDRESS, EmailStatus.EMAIL_STATUS, EmailStatus.USER_ID },
+                        EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID_STATUS, EmailStatus.USER_ID },
                 null, new String [] { MAIL_ADDRESS_1 }, null
         );
 
@@ -111,7 +120,7 @@ public class KeychainExternalProviderTest {
 
         Cursor cursor = contentResolver.query(
                 EmailStatus.CONTENT_URI, new String[] {
-                        EmailStatus.EMAIL_ADDRESS, EmailStatus.EMAIL_STATUS, EmailStatus.USER_ID },
+                        EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID_STATUS, EmailStatus.USER_ID },
                 null, new String [] { MAIL_ADDRESS_1 }, null
         );
 
@@ -129,7 +138,7 @@ public class KeychainExternalProviderTest {
 
         Cursor cursor = contentResolver.query(
                 EmailStatus.CONTENT_URI, new String[] {
-                        EmailStatus.EMAIL_ADDRESS, EmailStatus.EMAIL_STATUS, EmailStatus.USER_ID },
+                        EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID_STATUS, EmailStatus.USER_ID },
                 null, new String [] { MAIL_ADDRESS_1, MAIL_ADDRESS_2 }, null
         );
 
@@ -151,7 +160,7 @@ public class KeychainExternalProviderTest {
 
         Cursor cursor = contentResolver.query(
                 EmailStatus.CONTENT_URI, new String[] {
-                        EmailStatus.EMAIL_ADDRESS, EmailStatus.EMAIL_STATUS, EmailStatus.USER_ID },
+                        EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID_STATUS, EmailStatus.USER_ID },
                 null, new String [] { MAIL_ADDRESS_SEC_1 }, null
         );
 
@@ -172,7 +181,7 @@ public class KeychainExternalProviderTest {
 
         Cursor cursor = contentResolver.query(
                 EmailStatus.CONTENT_URI, new String[] {
-                        EmailStatus.EMAIL_ADDRESS, EmailStatus.EMAIL_STATUS, EmailStatus.USER_ID },
+                        EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID_STATUS, EmailStatus.USER_ID },
                 null, new String [] { MAIL_ADDRESS_1 }, null
         );
 

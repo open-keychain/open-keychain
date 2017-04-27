@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,9 +43,6 @@ import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.dialog.AdvancedAppSettingsDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class AppSettingsActivity extends BaseActivity {
     private Uri mAppUri;

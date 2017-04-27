@@ -18,6 +18,13 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.SignatureException;
+import java.util.List;
 
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPOnePassSignature;
@@ -33,6 +40,8 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureHashAlgorithm
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureHashAlgorithm;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.util.Log;
 

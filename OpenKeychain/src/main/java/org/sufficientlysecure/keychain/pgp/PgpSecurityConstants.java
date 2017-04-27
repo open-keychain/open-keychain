@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import java.util.Arrays;
+import java.util.HashSet;
 
 import android.support.annotation.Nullable;
 
@@ -35,8 +37,6 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.SymmetricAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
 
-import java.util.Arrays;
-import java.util.HashSet;
 
 
 /**
