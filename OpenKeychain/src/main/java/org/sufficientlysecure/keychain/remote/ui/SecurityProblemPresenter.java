@@ -24,12 +24,18 @@ import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 
 
 class SecurityProblemPresenter {
+    private static final int OVERRIDE_REQUIRED_COUNT = 3;
+
+
     private final Context context;
     private final PackageManager packageManager;
 
 
     private RemoteSecurityProblemView view;
     private Long viewKeyMasterKeyId;
+    private int overrideCounter;
+    private String packageName;
+    private Serializable securityProblem;
 
 
     SecurityProblemPresenter(Context context) {
@@ -42,16 +48,18 @@ class SecurityProblemPresenter {
     }
 
     void setupFromIntentData(String packageName, Serializable securityProblem) {
+        this.packageName = packageName;
+        this.securityProblem = securityProblem;
+
+        refreshSecurityProblemDisplay();
+        refreshPackageInfo();
+    }
+
+    private void refreshSecurityProblemDisplay() {
         if (securityProblem instanceof DecryptVerifySecurityProblem) {
             setupFromDecryptVerifySecurityProblem((DecryptVerifySecurityProblem) securityProblem);
         } else {
             throw new IllegalArgumentException("Unhandled security problem type!");
-        }
-
-        try {
-            setPackageInfo(packageName);
-        } catch (NameNotFoundException e) {
-            throw new IllegalStateException("Unable to find info of calling app!", e);
         }
     }
 
@@ -70,6 +78,10 @@ class SecurityProblemPresenter {
     private void setupFromEncryptionKeySecurityProblem(KeySecurityProblem keySecurityProblem) {
         viewKeyMasterKeyId = keySecurityProblem.masterKeyId;
         view.showViewKeyButton();
+
+        if (keySecurityProblem.isIdentifiable()) {
+            view.showOverrideButton();
+        }
 
         if (keySecurityProblem instanceof InsecureBitStrength) {
             InsecureBitStrength problem = (InsecureBitStrength) keySecurityProblem;
@@ -116,12 +128,28 @@ class SecurityProblemPresenter {
         view.showLayoutInsecureHashAlgorithm(signatureSecurityProblem.hashAlgorithm);
     }
 
-    private void setPackageInfo(String packageName) throws NameNotFoundException {
-        ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
+    private void refreshPackageInfo() {
+        ApplicationInfo applicationInfo;
+        try {
+            applicationInfo = packageManager.getApplicationInfo(packageName, 0);
+        } catch (NameNotFoundException e) {
+            throw new IllegalStateException("Could not retrieve package info!");
+        }
         Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
         // CharSequence appName = packageManager.getApplicationLabel(applicationInfo);
 
         view.setTitleClientIcon(appIcon);
+    }
+
+    private void incrementOverrideAndDisplayOrTrigger() {
+        int overrideCountLeft = OVERRIDE_REQUIRED_COUNT - overrideCounter;
+        if (overrideCountLeft > 0) {
+            overrideCounter++;
+            view.showOverrideMessage(overrideCountLeft);
+        } else {
+            view.showOverrideOk();
+            view.showOverrideUndoButton();
+        }
     }
 
     void onClickGotIt() {
@@ -132,6 +160,15 @@ class SecurityProblemPresenter {
         Intent viewKeyIntent = new Intent(context, ViewKeyActivity.class);
         viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(viewKeyMasterKeyId));
         context.startActivity(viewKeyIntent);
+    }
+
+    void onClickOverride() {
+        incrementOverrideAndDisplayOrTrigger();
+    }
+
+    void onClickOverrideUndo() {
+        overrideCounter = 0;
+        refreshSecurityProblemDisplay();
     }
 
     void onCancel() {
@@ -154,6 +191,11 @@ class SecurityProblemPresenter {
 
         void showLayoutInsecureHashAlgorithm(int hashAlgorithm);
 
+        void showOverrideMessage(int countdown);
+        void showOverrideOk();
+
         void showViewKeyButton();
+        void showOverrideButton();
+        void showOverrideUndoButton();
     }
 }

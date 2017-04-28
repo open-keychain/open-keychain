@@ -331,7 +331,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                 // Check for insecure encryption algorithms!
                 EncryptionAlgorithmProblem symmetricSecurityProblem =
-                        PgpSecurityConstants.checkSecureSymmetricAlgorithm(esResult.symmetricEncryptionAlgo);
+                        PgpSecurityConstants.checkSecureSymmetricAlgorithm(
+                                esResult.symmetricEncryptionAlgo, esResult.sessionKey);
                 if (symmetricSecurityProblem != null) {
                     log.add(LogType.MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
                     securityProblemBuilder.addSymmetricSecurityProblem(symmetricSecurityProblem);
@@ -542,7 +543,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 // Handle missing integrity protection like failed integrity protection!
                 // The MDC packet can be stripped by an attacker!
                 log.add(LogType.MSG_DC_INSECURE_MDC_MISSING, indent);
-                securityProblemBuilder.addSymmetricSecurityProblem(new MissingMdc());
+                securityProblemBuilder.addSymmetricSecurityProblem(new MissingMdc(esResult.sessionKey));
                 decryptionResultBuilder.setInsecure(true);
             }
         }

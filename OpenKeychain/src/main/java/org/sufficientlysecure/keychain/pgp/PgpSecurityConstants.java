@@ -74,9 +74,9 @@ public class PgpSecurityConstants {
             // CAMELLIA_256: not used widely
     ));
 
-    public static EncryptionAlgorithmProblem checkSecureSymmetricAlgorithm(int id) {
+    public static EncryptionAlgorithmProblem checkSecureSymmetricAlgorithm(int id, byte[] sessionKey) {
         if (!sSymmetricAlgorithmsWhitelist.contains(id)) {
-            return new InsecureEncryptionAlgorithm(id);
+            return new InsecureEncryptionAlgorithm(sessionKey, id);
         }
         return null;
     }

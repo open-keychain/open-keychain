@@ -54,8 +54,6 @@
             tools:ignore="UselessParent">
 
             <LinearLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -85,7 +83,31 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="View Key"
+            android:text="@string/dialog_insecure_button_override"
+            android:id="@+id/button_override"
+            android:visibility="gone"
+            tools:visibility="visible"
+            style="?buttonBarButtonStyle" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_insecure_button_undo"
+            android:id="@+id/button_override_undo"
+            android:visibility="gone"
+            style="?buttonBarButtonStyle" />
+
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_insecure_button_view_key"
             android:id="@+id/button_view_key"
             android:visibility="gone"
             tools:visibility="visible"
@@ -94,7 +116,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Got it"
+            android:text="@string/dialog_insecure_button_ok"
             android:id="@+id/button_allow"
             style="?buttonBarButtonStyle" />
 

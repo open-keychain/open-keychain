@@ -1869,5 +1869,13 @@
 
     <string name="insecure_symmetric_algo">"This message was encrypted with an insecure algorithm."</string>
     <string name="insecure_hash_algo">"This message was signed using an insecure algorithm."</string>
+    <string name="dialog_insecure_override">If you don\'t want to be warned about this security problem in the future, you can suppress this warning. To do so, press the Suppress button %d more times.</string>
+    <string name="dialog_insecure_override_title">Suppress this warning</string>
+    <string name="dialog_insecure_override_ok_title">Warning suppressed</string>
+    <string name="dialog_insecure_override_ok">The security warning (for this key/message) will not be shown again in the future.</string>
+    <string name="dialog_insecure_button_override">Suppress</string>
+    <string name="dialog_insecure_button_undo">Undo</string>
+    <string name="dialog_insecure_button_view_key">View Key</string>
+    <string name="dialog_insecure_button_ok">Got it</string>
 
 </resources>

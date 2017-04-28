@@ -18,9 +18,39 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import org.bouncycastle.util.encoders.Base64;
+
 
 public abstract class SecurityProblem implements Serializable {
+
+    String getIdentifier() {
+        if (!isIdentifiable()) {
+            return null;
+        }
+
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(out);
+            oos.writeObject(this);
+            oos.close();
+
+            byte[] digest = MessageDigest.getInstance("SHA1").digest(out.toByteArray());
+            return Base64.toBase64String(digest);
+        } catch (NoSuchAlgorithmException | IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public boolean isIdentifiable() {
+        return false;
+    }
 
     public static abstract class KeySecurityProblem extends SecurityProblem {
         public final long masterKeyId;
@@ -32,10 +62,25 @@ public abstract class SecurityProblem implements Serializable {
             this.subKeyId = subKeyId;
             this.algorithm = algorithm;
         }
+
+        @Override
+        public boolean isIdentifiable() {
+            return true;
+        }
     }
 
     public static abstract class EncryptionAlgorithmProblem extends SecurityProblem {
+        @SuppressWarnings("unused") // used for identifying this specific problem
+        private final byte[] sessionKey;
 
+        private EncryptionAlgorithmProblem(byte[] sessionKey) {
+            this.sessionKey = sessionKey;
+        }
+
+        @Override
+        public boolean isIdentifiable() {
+            return sessionKey != null;
+        }
     }
 
     public static class InsecureBitStrength extends KeySecurityProblem {
@@ -73,12 +118,16 @@ public abstract class SecurityProblem implements Serializable {
     public static class InsecureEncryptionAlgorithm extends EncryptionAlgorithmProblem {
         public final int symmetricAlgorithm;
 
-        InsecureEncryptionAlgorithm(int symmetricAlgorithm) {
+        InsecureEncryptionAlgorithm(byte[] sessionKey, int symmetricAlgorithm) {
+            super(sessionKey);
             this.symmetricAlgorithm = symmetricAlgorithm;
         }
     }
 
     public static class MissingMdc extends EncryptionAlgorithmProblem {
 
+        MissingMdc(byte[] sessionKey) {
+            super(sessionKey);
+        }
     }
 }
