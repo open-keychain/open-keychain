@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.OverriddenWarnings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
@@ -51,7 +52,7 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 20;
+    private static final int DATABASE_VERSION = 21;
     private Context mContext;
 
     public interface Tables {
@@ -63,6 +64,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String CERTS = "certs";
         String API_APPS = "api_apps";
         String API_ALLOWED_KEYS = "api_allowed_keys";
+        String OVERRIDDEN_WARNINGS = "overridden_warnings";
     }
 
     private static final String CREATE_KEYRINGS_PUBLIC =
@@ -170,6 +172,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + ApiAppsAllowedKeysColumns.PACKAGE_NAME + "), "
                 + "FOREIGN KEY(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") REFERENCES "
                 + Tables.API_APPS + "(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
+                + ")";
+
+    private static final String CREATE_OVERRIDDEN_WARNINGS =
+            "CREATE TABLE IF NOT EXISTS " + Tables.OVERRIDDEN_WARNINGS + " ("
+                    + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + OverriddenWarnings.IDENTIFIER + " TEXT NOT NULL UNIQUE "
                 + ")";
 
     public KeychainDatabase(Context context) {
@@ -306,6 +314,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     return;
                 }
             */
+            case 20:
+                db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
+                if (oldVersion == 20) {
+                    return;
+                }
         }
 
         // TODO: don't depend on consolidate! make migrations inline!
