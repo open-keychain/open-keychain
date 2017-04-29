@@ -143,10 +143,12 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSecurityProblemIntent(String packageName, DecryptVerifySecurityProblem securityProblem) {
+    PendingIntent createSecurityProblemIntent(String packageName, DecryptVerifySecurityProblem securityProblem,
+            boolean supportOverride) {
         Intent intent = new Intent(mContext, RemoteSecurityProblemDialogActivity.class);
         intent.putExtra(RemoteSecurityProblemDialogActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RemoteSecurityProblemDialogActivity.EXTRA_SECURITY_PROBLEM, securityProblem);
+        intent.putExtra(RemoteSecurityProblemDialogActivity.EXTRA_SUPPORT_OVERRIDE, supportOverride);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //noinspection ResourceType, looks like lint is missing FLAG_IMMUTABLE

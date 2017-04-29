@@ -21,6 +21,20 @@ public class DecryptVerifySecurityProblem implements Serializable {
         signatureSecurityProblem = builder.signatureSecurityProblem;
     }
 
+    public SecurityProblem getPrioritySecurityProblem() {
+        if (encryptionKeySecurityProblem != null) {
+            return encryptionKeySecurityProblem;
+        } else if (signingKeySecurityProblem != null) {
+            return signingKeySecurityProblem;
+        } else if (symmetricSecurityProblem != null) {
+            return symmetricSecurityProblem;
+        } else if (signatureSecurityProblem != null) {
+            return signatureSecurityProblem;
+        } else {
+            throw new IllegalStateException("No security problem?");
+        }
+    }
+
     static class DecryptVerifySecurityProblemBuilder {
         private KeySecurityProblem encryptionKeySecurityProblem;
         private KeySecurityProblem signingKeySecurityProblem;

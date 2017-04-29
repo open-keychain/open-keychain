@@ -40,6 +40,7 @@ class SecurityProblemPresenter {
 
     private String packageName;
     private Serializable securityProblem;
+    private boolean supportOverride;
 
 
     SecurityProblemPresenter(Context context) {
@@ -52,9 +53,10 @@ class SecurityProblemPresenter {
         this.view = view;
     }
 
-    void setupFromIntentData(String packageName, Serializable securityProblem) {
+    void setupFromIntentData(String packageName, Serializable securityProblem, boolean supportOverride) {
         this.packageName = packageName;
         this.securityProblem = securityProblem;
+        this.supportOverride = supportOverride;
 
         refreshSecurityProblemDisplay();
         refreshPackageInfo();
@@ -141,10 +143,12 @@ class SecurityProblemPresenter {
     }
 
     private void refreshOverrideStatusView() {
-        if (overriddenWarningsRepository.isWarningOverridden(securityProblemIdentifier)) {
-            view.showOverrideUndoButton();
-        } else {
-            view.showOverrideButton();
+        if (supportOverride) {
+            if (overriddenWarningsRepository.isWarningOverridden(securityProblemIdentifier)) {
+                view.showOverrideUndoButton();
+            } else {
+                view.showOverrideButton();
+            }
         }
     }
 

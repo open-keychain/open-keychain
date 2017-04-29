@@ -61,11 +61,13 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResultStatus;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
@@ -401,7 +403,7 @@ public class OpenPgpService extends Service {
                 processDecryptionResultForResultIntent(targetApiVersion, result, pgpResult.getDecryptionResult());
                 processMetadataForResultIntent(result, pgpResult.getDecryptionMetadata());
                 processSignatureResultForResultIntent(targetApiVersion, data, result, pgpResult);
-                processSecurityProblemsPendingIntent(result, pgpResult);
+                processSecurityProblemsPendingIntent(data, result, pgpResult);
 
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
@@ -429,15 +431,27 @@ public class OpenPgpService extends Service {
         }
     }
 
-    private void processSecurityProblemsPendingIntent(Intent result, DecryptVerifyResult decryptVerifyResult) {
+    private void processSecurityProblemsPendingIntent(Intent data, Intent result,
+            DecryptVerifyResult decryptVerifyResult) {
         DecryptVerifySecurityProblem securityProblem = decryptVerifyResult.getSecurityProblem();
         if (securityProblem == null) {
             return;
         }
 
+        boolean supportOverride = data.getBooleanExtra(OpenPgpApi.EXTRA_SUPPORT_OVERRIDE_CRYPTO_WARNING, false);
+        if (supportOverride) {
+            SecurityProblem prioritySecurityProblem = securityProblem.getPrioritySecurityProblem();
+            if (prioritySecurityProblem.isIdentifiable()) {
+                String identifier = prioritySecurityProblem.getIdentifier();
+                boolean isOverridden = OverriddenWarningsRepository.createOverriddenWarningsRepository(this)
+                                .isWarningOverridden(identifier);
+                result.putExtra(OpenPgpApi.RESULT_OVERRIDE_CRYPTO_WARNING, isOverridden);
+            }
+        }
+
         String packageName = mApiPermissionHelper.getCurrentCallingPackage();
         result.putExtra(OpenPgpApi.RESULT_INSECURE_DETAIL_INTENT,
-                mApiPendingIntentFactory.createSecurityProblemIntent(packageName, securityProblem));
+                mApiPendingIntentFactory.createSecurityProblemIntent(packageName, securityProblem, supportOverride));
     }
 
     private void processDecryptionResultForResultIntent(int targetApiVersion, Intent result,

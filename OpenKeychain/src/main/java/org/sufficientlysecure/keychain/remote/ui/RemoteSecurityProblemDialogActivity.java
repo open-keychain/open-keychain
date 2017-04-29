@@ -52,6 +52,7 @@ import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
     public static final String EXTRA_PACKAGE_NAME = "package_name";
     public static final String EXTRA_SECURITY_PROBLEM = "security_problem";
+    public static final String EXTRA_SUPPORT_OVERRIDE = "support_override";
 
 
     private SecurityProblemPresenter presenter;
@@ -76,8 +77,9 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
         Intent intent = getIntent();
         String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
         Serializable keySecurityProblem = intent.getSerializableExtra(EXTRA_SECURITY_PROBLEM);
+        boolean supportOverride = intent.getBooleanExtra(EXTRA_SUPPORT_OVERRIDE, false);
 
-        presenter.setupFromIntentData(packageName, keySecurityProblem);
+        presenter.setupFromIntentData(packageName, keySecurityProblem, supportOverride);
     }
 
     public static class RemoteRegisterDialogFragment extends DialogFragment {
