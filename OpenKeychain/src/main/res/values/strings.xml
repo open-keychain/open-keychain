@@ -1874,7 +1874,8 @@
     <string name="dialog_insecure_override_ok_title">Warning suppressed</string>
     <string name="dialog_insecure_override_ok">The security warning (for this key/message) will not be shown again in the future.</string>
     <string name="dialog_insecure_button_override">Suppress</string>
-    <string name="dialog_insecure_button_undo">Undo</string>
+    <string name="dialog_insecure_button_override_confirm">Suppress (%d)</string>
+    <string name="dialog_insecure_button_undo">Un-Suppress</string>
     <string name="dialog_insecure_button_view_key">View Key</string>
     <string name="dialog_insecure_button_ok">Got it</string>
 

@@ -20,6 +20,7 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 
 
@@ -29,11 +30,14 @@ class SecurityProblemPresenter {
 
     private final Context context;
     private final PackageManager packageManager;
+    private final OverriddenWarningsRepository overriddenWarningsRepository;
 
 
     private RemoteSecurityProblemView view;
     private Long viewKeyMasterKeyId;
     private int overrideCounter;
+    private String securityProblemIdentifier;
+
     private String packageName;
     private Serializable securityProblem;
 
@@ -41,6 +45,7 @@ class SecurityProblemPresenter {
     SecurityProblemPresenter(Context context) {
         this.context = context;
         packageManager = context.getPackageManager();
+        overriddenWarningsRepository = OverriddenWarningsRepository.createOverriddenWarningsRepository(context);
     }
 
     public void setView(RemoteSecurityProblemView view) {
@@ -79,10 +84,6 @@ class SecurityProblemPresenter {
         viewKeyMasterKeyId = keySecurityProblem.masterKeyId;
         view.showViewKeyButton();
 
-        if (keySecurityProblem.isIdentifiable()) {
-            view.showOverrideButton();
-        }
-
         if (keySecurityProblem instanceof InsecureBitStrength) {
             InsecureBitStrength problem = (InsecureBitStrength) keySecurityProblem;
             view.showLayoutEncryptInsecureBitsize(problem.algorithm, problem.bitStrength);
@@ -93,6 +94,11 @@ class SecurityProblemPresenter {
             view.showLayoutEncryptUnidentifiedKeyProblem();
         } else {
             throw new IllegalArgumentException("Unhandled key security problem type!");
+        }
+
+        if (keySecurityProblem.isIdentifiable()) {
+            securityProblemIdentifier = keySecurityProblem.getIdentifier();
+            refreshOverrideStatusView();
         }
     }
 
@@ -111,6 +117,11 @@ class SecurityProblemPresenter {
         } else {
             throw new IllegalArgumentException("Unhandled key security problem type!");
         }
+
+        if (keySecurityProblem.isIdentifiable()) {
+            securityProblemIdentifier = keySecurityProblem.getIdentifier();
+            refreshOverrideStatusView();
+        }
     }
 
     private void setupFromEncryptionAlgorithmSecurityProblem(EncryptionAlgorithmProblem securityProblem) {
@@ -121,6 +132,19 @@ class SecurityProblemPresenter {
             view.showLayoutInsecureSymmetric(insecureSymmetricAlgorithm.symmetricAlgorithm);
         } else {
             throw new IllegalArgumentException("Unhandled symmetric algorithm problem type!");
+        }
+
+        if (securityProblem.isIdentifiable()) {
+            securityProblemIdentifier = securityProblem.getIdentifier();
+            refreshOverrideStatusView();
+        }
+    }
+
+    private void refreshOverrideStatusView() {
+        if (overriddenWarningsRepository.isWarningOverridden(securityProblemIdentifier)) {
+            view.showOverrideUndoButton();
+        } else {
+            view.showOverrideButton();
         }
     }
 
@@ -147,9 +171,14 @@ class SecurityProblemPresenter {
             overrideCounter++;
             view.showOverrideMessage(overrideCountLeft);
         } else {
-            view.showOverrideOk();
-            view.showOverrideUndoButton();
+            overriddenWarningsRepository.putOverride(securityProblemIdentifier);
+            view.finishAsSuppressed();
         }
+    }
+
+    private void resetOverrideStatus() {
+        overrideCounter = 0;
+        overriddenWarningsRepository.deleteOverride(securityProblemIdentifier);
     }
 
     void onClickGotIt() {
@@ -167,8 +196,17 @@ class SecurityProblemPresenter {
     }
 
     void onClickOverrideUndo() {
-        overrideCounter = 0;
+        resetOverrideStatus();
         refreshSecurityProblemDisplay();
+    }
+
+    void onClickOverrideBack() {
+        resetOverrideStatus();
+        refreshSecurityProblemDisplay();
+    }
+
+    void onClickOverrideConfirm() {
+        incrementOverrideAndDisplayOrTrigger();
     }
 
     void onCancel() {
@@ -177,6 +215,7 @@ class SecurityProblemPresenter {
 
     interface RemoteSecurityProblemView {
         void finishAsCancelled();
+        void finishAsSuppressed();
         void setTitleClientIcon(Drawable drawable);
 
         void showLayoutEncryptInsecureBitsize(int algorithmId, int bitStrength);
@@ -192,7 +231,6 @@ class SecurityProblemPresenter {
         void showLayoutInsecureHashAlgorithm(int hashAlgorithm);
 
         void showOverrideMessage(int countdown);
-        void showOverrideOk();
 
         void showViewKeyButton();
         void showOverrideButton();

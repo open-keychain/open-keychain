@@ -30,7 +30,7 @@ import org.bouncycastle.util.encoders.Base64;
 
 public abstract class SecurityProblem implements Serializable {
 
-    String getIdentifier() {
+    public String getIdentifier() {
         if (!isIdentifiable()) {
             return null;
         }

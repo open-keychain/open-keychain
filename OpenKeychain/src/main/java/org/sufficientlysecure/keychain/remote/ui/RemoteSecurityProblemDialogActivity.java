@@ -84,7 +84,9 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
         public static final int SECONDARY_CHILD_NONE = 0;
         public static final int SECONDARY_CHILD_RECOMMENDATION = 1;
         public static final int SECONDARY_CHILD_OVERRIDE = 2;
-        public static final int SECONDARY_CHILD_OVERRIDE_OK = 3;
+        public static final int BUTTON_BAR_REGULAR = 0;
+        public static final int BUTTON_BAR_OVERRIDE = 1;
+
         private SecurityProblemPresenter presenter;
         private RemoteSecurityProblemView mvpView;
 
@@ -92,6 +94,8 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
         private Button buttonViewKey;
         private Button buttonOverride;
         private Button buttonOverrideUndo;
+        private Button buttonOverrideBack;
+        private Button buttonOverrideConfirm;
 
         @NonNull
         @Override
@@ -109,6 +113,8 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
             buttonViewKey = (Button) view.findViewById(R.id.button_view_key);
             buttonOverride = (Button) view.findViewById(R.id.button_override);
             buttonOverrideUndo = (Button) view.findViewById(R.id.button_override_undo);
+            buttonOverrideBack = (Button) view.findViewById(R.id.button_override_back);
+            buttonOverrideConfirm = (Button) view.findViewById(R.id.button_override_confirm);
 
             setupListenersForPresenter();
             mvpView = createMvpView(view);
@@ -152,6 +158,8 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
             final TextView overrideText = (TextView) insecureWarningLayout.findViewById(R.id.dialog_insecure_override_text);
             final ToolableViewAnimator secondaryLayoutAnimator =
                     (ToolableViewAnimator) insecureWarningLayout.findViewById(R.id.dialog_insecure_secondary_layout);
+            final ToolableViewAnimator buttonBarAnimator =
+                    (ToolableViewAnimator) view.findViewById(R.id.dialog_insecure_button_bar);
 
             return new RemoteSecurityProblemView() {
                 private boolean layoutInitialized = false;
@@ -164,6 +172,17 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                     }
 
                     activity.setResult(RESULT_CANCELED);
+                    activity.finish();
+                }
+
+                @Override
+                public void finishAsSuppressed() {
+                    FragmentActivity activity = getActivity();
+                    if (activity == null) {
+                        return;
+                    }
+
+                    activity.setResult(RESULT_OK);
                     activity.finish();
                 }
 
@@ -182,12 +201,14 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                 private void showGeneric(@StringRes int explanationStringRes) {
                     explanationText.setText(explanationStringRes);
                     secondaryLayoutAnimator.setDisplayedChild(SECONDARY_CHILD_NONE, layoutInitialized);
+                    buttonBarAnimator.setDisplayedChild(BUTTON_BAR_REGULAR, layoutInitialized);
                     layoutInitialized = true;
                 }
 
                 private void showGeneric(String explanationString) {
                     explanationText.setText(explanationString);
                     secondaryLayoutAnimator.setDisplayedChild(SECONDARY_CHILD_NONE, layoutInitialized);
+                    buttonBarAnimator.setDisplayedChild(BUTTON_BAR_REGULAR, layoutInitialized);
                     layoutInitialized = true;
                 }
 
@@ -196,6 +217,7 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                     explanationText.setText(explanationStringRes);
                     recommendText.setText(recommendationStringRes);
                     secondaryLayoutAnimator.setDisplayedChild(SECONDARY_CHILD_RECOMMENDATION, layoutInitialized);
+                    buttonBarAnimator.setDisplayedChild(BUTTON_BAR_REGULAR, layoutInitialized);
                     layoutInitialized = true;
                 }
 
@@ -204,6 +226,7 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                     explanationText.setText(explanationString);
                     recommendText.setText(recommendationStringRes);
                     secondaryLayoutAnimator.setDisplayedChild(SECONDARY_CHILD_RECOMMENDATION, layoutInitialized);
+                    buttonBarAnimator.setDisplayedChild(BUTTON_BAR_REGULAR, layoutInitialized);
                     layoutInitialized = true;
                 }
 
@@ -267,12 +290,10 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                 @Override
                 public void showOverrideMessage(int countdown) {
                     secondaryLayoutAnimator.setDisplayedChild(SECONDARY_CHILD_OVERRIDE, true);
+                    buttonBarAnimator.setDisplayedChild(BUTTON_BAR_OVERRIDE, true);
                     overrideText.setText(getString(R.string.dialog_insecure_override, countdown));
-                }
-
-                @Override
-                public void showOverrideOk() {
-                    secondaryLayoutAnimator.setDisplayedChild(SECONDARY_CHILD_OVERRIDE_OK, true);
+                    buttonOverrideConfirm.setText(
+                            getString(R.string.dialog_insecure_button_override_confirm, countdown));
                 }
 
                 @Override
@@ -317,6 +338,18 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                 @Override
                 public void onClick(View view) {
                     presenter.onClickOverrideUndo();
+                }
+            });
+            buttonOverrideBack.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.onClickOverrideBack();
+                }
+            });
+            buttonOverrideConfirm.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    presenter.onClickOverrideConfirm();
                 }
             });
         }

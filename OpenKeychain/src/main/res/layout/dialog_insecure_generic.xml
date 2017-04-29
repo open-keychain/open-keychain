@@ -30,7 +30,7 @@
         android:inAnimation="@anim/fade_in"
         android:outAnimation="@anim/fade_out"
         android:measureAllChildren="true"
-        custom:initialView="3">
+        custom:initialView="1">
 
         <android.support.v4.widget.Space
             android:layout_width="wrap_content"
@@ -84,30 +84,6 @@
                 android:gravity="center_vertical"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 tools:text="@string/dialog_insecure_override"
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:text="@string/dialog_insecure_override_ok_title"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center_vertical"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="@string/dialog_insecure_override_ok"
                 />
 
         </LinearLayout>

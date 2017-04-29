@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:layout_marginTop="24dp"
     >
@@ -71,55 +72,94 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end"
-        android:padding="8dp"
+        android:id="@+id/dialog_insecure_button_bar"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
         tools:layout_marginBottom="50dp"
-        style="?buttonBarStyle">
+        custom:initialView="0">
 
-        <Button
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/dialog_insecure_button_override"
-            android:id="@+id/button_override"
-            android:visibility="gone"
-            tools:visibility="visible"
-            style="?buttonBarButtonStyle" />
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:padding="8dp"
+            style="?buttonBarStyle">
 
-        <Button
-            android:layout_width="wrap_content"
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_insecure_button_override"
+                android:id="@+id/button_override"
+                android:visibility="gone"
+                tools:visibility="visible"
+                style="?buttonBarButtonStyle" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_insecure_button_undo"
+                android:id="@+id/button_override_undo"
+                android:visibility="gone"
+                style="?buttonBarButtonStyle" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_insecure_button_view_key"
+                android:id="@+id/button_view_key"
+                android:visibility="gone"
+                tools:visibility="visible"
+                style="?buttonBarButtonStyle" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_insecure_button_ok"
+                android:id="@+id/button_allow"
+                style="?buttonBarButtonStyle" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/dialog_insecure_button_undo"
-            android:id="@+id/button_override_undo"
-            android:visibility="gone"
-            style="?buttonBarButtonStyle" />
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:padding="8dp"
+            style="?buttonBarStyle">
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back"
+                android:id="@+id/button_override_back"
+                style="?buttonBarButtonStyle" />
 
-        <android.support.v4.widget.Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            />
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dialog_insecure_button_view_key"
-            android:id="@+id/button_view_key"
-            android:visibility="gone"
-            tools:visibility="visible"
-            style="?buttonBarButtonStyle" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_insecure_button_override_confirm"
+                android:id="@+id/button_override_confirm"
+                style="?buttonBarButtonStyle" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dialog_insecure_button_ok"
-            android:id="@+id/button_allow"
-            style="?buttonBarButtonStyle" />
+        </LinearLayout>
 
-    </LinearLayout>
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
 </LinearLayout>
