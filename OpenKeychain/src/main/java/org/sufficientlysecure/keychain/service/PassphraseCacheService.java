@@ -493,6 +493,7 @@ public class PassphraseCacheService extends Service {
             // stop whole service if no cached passphrases remaining
             Log.d(Constants.TAG, "PassphraseCacheService: No passphrases remaining in memory, stopping service!");
             stopForeground(true);
+            stopSelf();
         }
     }
 
