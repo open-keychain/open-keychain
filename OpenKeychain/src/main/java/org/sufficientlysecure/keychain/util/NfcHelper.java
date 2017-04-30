@@ -159,12 +159,13 @@ public class NfcHelper {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void invokeNfcBeam() {
+    public boolean invokeNfcBeam() {
         // Check if device supports NFC
-        if (!mActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
-            Notify.create(mActivity, R.string.no_nfc_support, Notify.LENGTH_LONG, Notify.Style.ERROR).show();
-            return;
-        }
+            if (!mActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
+                return false;
+            }
+
+
         // Check for available NFC Adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(mActivity);
         if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
@@ -176,7 +177,7 @@ public class NfcHelper {
                 }
             }, R.string.menu_nfc_preferences).show();
 
-            return;
+            return true;
         }
 
         if (!mNfcAdapter.isNdefPushEnabled()) {
@@ -188,10 +189,11 @@ public class NfcHelper {
                 }
             }, R.string.menu_beam_preferences).show();
 
-            return;
+            return true;
         }
 
         mNfcAdapter.invokeBeam(mActivity);
+        return true;
     }
 
     private static class NfcHandler extends Handler {
