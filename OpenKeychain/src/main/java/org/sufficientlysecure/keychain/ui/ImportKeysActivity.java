@@ -36,6 +36,11 @@ import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysOperationC
 import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -60,6 +65,8 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
             Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN_RESULT";
     public static final String ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_FILE_AND_RETURN";
+    public static final String ACTION_IMPORT_KEY_FROM_FILE_AND_BIND = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_FILE_AND_BIND";
 
     // Actions for internal use only:
     public static final String ACTION_IMPORT_KEY_FROM_FILE = Constants.INTENT_PREFIX
@@ -238,7 +245,8 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 break;
             }
             case ACTION_IMPORT_KEY_FROM_FILE:
-            case ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN: {
+            case ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN:
+            case ACTION_IMPORT_KEY_FROM_FILE_AND_BIND: {
                 // NOTE: this only displays the appropriate fragment, no actions are taken
                 startTopFileFragment();
                 startListFragment(null, null, null, null);
@@ -373,6 +381,31 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
             intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
             setResult(Activity.RESULT_OK, intent);
             finish();
+        } else if (ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_BIND.equals(intentAction)) {
+            Intent intent = new Intent(this, ViewKeyActivity.class);
+            intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
+
+            SecurityTokenHelper securityTokenHelper = SecurityTokenHelper.getInstance();
+
+            try {
+                final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(securityTokenHelper.getFingerprints());
+                CachedPublicKeyRing ring = KeyRepository.createDatabaseInteractor(this).getCachedPublicKeyRing(
+                        KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
+                long masterKeyId = ring.getMasterKeyId();
+
+                intent.setData(KeychainContract.KeyRings.buildGenericKeyRingUri(masterKeyId));
+                intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, securityTokenHelper.getAid());
+                intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, securityTokenHelper.getUserId());
+                intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, securityTokenHelper.getFingerprints());
+
+                finish();
+                startActivity(intent);
+            } catch (IOException | PgpKeyNotFoundException e) {
+                Log.e(Constants.TAG, "Problem accessing Security token", e);
+                Notify.create(this, "Problem accessing Security token!", Notify.Style.ERROR).show();
+                return;
+            }
+
         } else if (result.isOkNew() || result.isOkUpdated()) {
             // User has successfully imported a key, hide first time dialog
             Preferences.getPreferences(this).setFirstTime(false);
