@@ -1,0 +1,232 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    tools:paddingTop="40dp">
+
+    <!-- focusable and related properties to workaround http://stackoverflow.com/q/16182331-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Your key is stored in OpenKeychain's private storage, and other Apps can\'t access it. For extra protection, you can additionally lock your key using a password."
+            />
+
+        <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inAnimation="@anim/fade_in"
+            android:outAnimation="@anim/fade_out"
+            android:id="@+id/adv_lock_animator"
+            custom:initialView="0">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/lock_layout_status">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="?android:attr/listPreferredItemHeight"
+                    android:orientation="horizontal"
+                    android:gravity="center_horizontal"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:gravity="center"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="Current lock method:"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:id="@+id/lock_status_text"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:gravity="center"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textStyle="bold"
+                        tools:text="Password"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/lock_layout_select">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Choose a lock method:"
+                    style="@style/SectionHeader"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lock_method_choice_none"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:orientation="vertical"
+                    android:clickable="true"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:textAppearanceMedium"
+                        android:textColor="@color/md_black_1000"
+                        android:text="None"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/lock_method_current_none"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:text="Currently selected"
+                        android:visibility="gone"
+                        />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Divider"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lock_method_choice_password"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:orientation="vertical"
+                    android:clickable="true"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:textAppearanceMedium"
+                        android:textColor="@color/md_black_1000"
+                        android:text="Password"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/lock_method_current_password"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:text="Current key lock"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Divider"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/lock_layout_password">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Choose a password:"
+                    android:layout_marginBottom="8dp"
+                    style="@style/SectionHeader"
+                    />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:id="@+id/lock_password"
+                    android:inputType="textVisiblePassword"
+                    android:imeOptions="actionNext"
+                    android:ems="10"
+                    android:hint="Password"
+                    />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:id="@+id/lock_password_repeat"
+                    android:inputType="textVisiblePassword"
+                    android:imeOptions="actionNext"
+                    android:ems="10"
+                    android:hint="Repeat Password"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    style="?buttonBarStyle">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/lock_button_password_back"
+                        android:text="Back"
+                        style="?buttonBarButtonStyle"
+                        />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/lock_button_password_save"
+                        android:text="Save"
+                        style="?buttonBarButtonStyle"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+    </LinearLayout>
+
+</ScrollView>

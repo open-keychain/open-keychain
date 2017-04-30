@@ -126,7 +126,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         mViewPager.setAdapter(mTabAdapter);
 
         // keep track which of these are action mode enabled!
-        mTabsWithActionMode = new boolean[5];
+        mTabsWithActionMode = new boolean[6];
 
         mTabAdapter.addTab(ViewKeyAdvStartFragment.class,
                 null, getString(R.string.key_view_tab_start));
@@ -138,23 +138,28 @@ public class ViewKeyAdvActivity extends BaseActivity implements
                 shareBundle, getString(R.string.key_view_tab_share));
         mTabsWithActionMode[1] = false;
 
+        Bundle lockBundle = new Bundle();
+        lockBundle.putParcelable(ViewKeyAdvLockFragment.ARG_DATA_URI, dataUri);
+        mTabAdapter.addTab(ViewKeyAdvLockFragment.class, lockBundle, "Lock");
+        mTabsWithActionMode[2] = true;
+
         Bundle userIdsBundle = new Bundle();
         userIdsBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
         mTabAdapter.addTab(ViewKeyAdvUserIdsFragment.class,
                 userIdsBundle, getString(R.string.section_user_ids));
-        mTabsWithActionMode[2] = true;
+        mTabsWithActionMode[3] = true;
 
         Bundle keysBundle = new Bundle();
         keysBundle.putParcelable(ViewKeyAdvSubkeysFragment.ARG_DATA_URI, dataUri);
         mTabAdapter.addTab(ViewKeyAdvSubkeysFragment.class,
                 keysBundle, getString(R.string.key_view_tab_keys));
-        mTabsWithActionMode[3] = true;
+        mTabsWithActionMode[4] = true;
 
         Bundle certsBundle = new Bundle();
         certsBundle.putParcelable(ViewKeyAdvCertsFragment.ARG_DATA_URI, dataUri);
         mTabAdapter.addTab(ViewKeyAdvCertsFragment.class,
                 certsBundle, getString(R.string.key_view_tab_certs));
-        mTabsWithActionMode[4] = false;
+        mTabsWithActionMode[5] = false;
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
