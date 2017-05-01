@@ -1,8 +1,13 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.4
+  * New key status displays detailed information why a key is considered insecure or defective
+
+
 ## 4.3
   * Better support for large keys
   * Improve import of Gpg4win asc files
+
 
 ## 4.2
 
@@ -10,6 +15,7 @@
   * Redesigned key import screen
   * Design improvements to key lists
   * Support for keyserver onion addresses
+
 
 ## 4.1
 

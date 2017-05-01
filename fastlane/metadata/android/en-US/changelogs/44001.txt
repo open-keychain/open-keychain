@@ -1,0 +1,3 @@
+4.4
+
+  * New key status displays detailed information why a key is considered insecure or defective
