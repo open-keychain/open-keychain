@@ -219,7 +219,7 @@ public class OpenPgpService extends Service {
                 Intent signKeyIdIntent = getSignKeyMasterId(data);
                 // NOTE: Fallback to return account settings (Old API)
                 if (signKeyIdIntent.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR)
-                        != OpenPgpApi.RESULT_CODE_SUCCESS) {
+                        == OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED) {
                     return signKeyIdIntent;
                 }
 
