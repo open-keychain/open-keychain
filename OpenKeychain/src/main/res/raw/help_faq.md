@@ -99,7 +99,7 @@ It is not required cryptographically, but prevents simple stealing of your keys.
 Anyone who can physically access your device can simply delete the app data from Android OS.
 Also, asking for a password before delete would prevent you from deleting keys where you forgot your password
 
-## I have more than one subkey capable of singing. Which one is selected when signing with this OpenPGP key?
+## I have more than one subkey capable of signing. Which one is selected when signing with this OpenPGP key?
 
 OpenKeychain assumes that OpenPGP keys hold one usable signing subkey only and selects the first non-revoked non-expired non-stripped one it finds in the unordered list of subkeys.
 We consider having more than one valid signing subkey an advanced usecase. You can either strip subkeys that should not be used using OpenKeychain's edit key screen or explicitly select the right subkeys when exporting from gpg with ``gpg --export-secret-subkeys``.
