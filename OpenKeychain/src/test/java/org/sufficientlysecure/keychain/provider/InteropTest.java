@@ -144,7 +144,7 @@ public class InteropTest {
 
         PgpDecryptVerifyOperation op = makeOperation(base.toString(), pass, decrypt, verify);
         PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
-        CryptoInputParcel cip = new CryptoInputParcel(pass);
+        CryptoInputParcel cip = CryptoInputParcel.createCryptoInputParcel(pass);
         DecryptVerifyResult result = op.execute(input, cip, data, out);
         byte[] plaintext = config.getString("textcontent").getBytes("utf-8");
         String filename = config.getString("filename");

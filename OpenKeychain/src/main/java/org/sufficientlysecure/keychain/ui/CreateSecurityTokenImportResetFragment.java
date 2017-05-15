@@ -235,7 +235,7 @@ public class CreateSecurityTokenImportResetFragment
         Intent intent = new Intent(getActivity(), SecurityTokenOperationActivity.class);
         RequiredInputParcel resetP = RequiredInputParcel.createSecurityTokenReset();
         intent.putExtra(SecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, resetP);
-        intent.putExtra(SecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, new CryptoInputParcel());
+        intent.putExtra(SecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, CryptoInputParcel.createCryptoInputParcel());
         startActivityForResult(intent, REQUEST_CODE_RESET);
     }
 

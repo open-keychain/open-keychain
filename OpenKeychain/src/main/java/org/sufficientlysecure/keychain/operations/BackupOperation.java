@@ -202,7 +202,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             outStream = mContext.getContentResolver().openOutputStream(backupInput.mOutputUri);
         }
 
-        return signEncryptOperation.execute(inputParcel, new CryptoInputParcel(), inputData, outStream);
+        return signEncryptOperation.execute(inputParcel, CryptoInputParcel.createCryptoInputParcel(), inputData, outStream);
     }
 
     boolean exportKeysToStream(OperationLog log, long[] masterKeyIds, boolean exportSecret, OutputStream outStream) {

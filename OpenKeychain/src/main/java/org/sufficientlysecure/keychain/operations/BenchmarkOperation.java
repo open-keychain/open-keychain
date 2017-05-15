@@ -88,7 +88,7 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
             data.setSymmetricEncryptionAlgorithm(OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
             SignEncryptParcel input = new SignEncryptParcel(data.build());
             input.setBytes(buf);
-            encryptResult = op.execute(input, new CryptoInputParcel());
+            encryptResult = op.execute(input, CryptoInputParcel.createCryptoInputParcel());
             log.add(encryptResult, 1);
             log.add(LogType.MSG_BENCH_ENC_TIME, 2,
                     String.format("%.2f", encryptResult.getResults().get(0).mOperationTime / 1000.0));
@@ -107,7 +107,7 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
                             new ProgressScaler(mProgressable, 50 +i*(50/numRepeats), 50 +(i+1)*(50/numRepeats), 100));
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(encryptResult.getResultBytes());
             input.setAllowSymmetricDecryption(true);
-            decryptResult = op.execute(input, new CryptoInputParcel(passphrase));
+            decryptResult = op.execute(input, CryptoInputParcel.createCryptoInputParcel(passphrase));
             log.add(decryptResult, 1);
             log.add(LogType.MSG_BENCH_DEC_TIME, 2, String.format("%.2f", decryptResult.mOperationTime / 1000.0));
             totalTime += decryptResult.mOperationTime;

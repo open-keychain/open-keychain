@@ -181,18 +181,18 @@ public class EncryptTextFragment
             case R.id.encrypt_copy: {
                 hideKeyboard();
                 mShareAfterEncrypt = false;
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_share: {
                 hideKeyboard();
                 mShareAfterEncrypt = true;
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_paste: {
                 hideKeyboard();
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             default: {

@@ -139,7 +139,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
     }
 
     private void startRevocationOperation() {
-        mRevokeOpHelper.cryptoOperation(new CryptoInputParcel(new Date(), false));
+        mRevokeOpHelper.cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date(), false));
     }
 
     private void startDeletionOperation() {

@@ -499,7 +499,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
 
         mMoveToCardOpHelper = new CryptoOperationHelper<>(2, this, callback, R.string.progress_modify);
-        mMoveToCardOpHelper.cryptoOperation(new CryptoInputParcel(new Date()));
+        mMoveToCardOpHelper.cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
     }
 
     private void uploadKey(final EditKeyResult saveKeyResult) {

@@ -156,7 +156,7 @@ public class CertifyOperationTest {
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(),
                 mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
-        CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(), mKeyPhrase1));
+        CertifyResult result = op.execute(actions, CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));
 
         Assert.assertTrue("certification must succeed", result.success());
 
@@ -184,7 +184,7 @@ public class CertifyOperationTest {
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(), null,
                 mStaticRing2.getPublicKey().getUnorderedUserAttributes()));
-        CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(), mKeyPhrase1));
+        CertifyResult result = op.execute(actions, CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));
 
         Assert.assertTrue("certification must succeed", result.success());
 
@@ -207,7 +207,7 @@ public class CertifyOperationTest {
         actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
                 mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
 
-        CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(), mKeyPhrase1));
+        CertifyResult result = op.execute(actions, CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));
 
         Assert.assertFalse("certification with itself must fail!", result.success());
         Assert.assertTrue("error msg must be about self certification",
@@ -226,7 +226,7 @@ public class CertifyOperationTest {
             uids.add("nonexistent");
             actions.add(new CertifyAction(1234L, uids, null));
 
-            CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(),
+            CertifyResult result = op.execute(actions, CryptoInputParcel.createCryptoInputParcel(new Date(),
                     mKeyPhrase1));
 
             Assert.assertFalse("certification of nonexistent key must fail", result.success());
@@ -239,7 +239,7 @@ public class CertifyOperationTest {
             actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
                     mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
 
-            CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(),
+            CertifyResult result = op.execute(actions, CryptoInputParcel.createCryptoInputParcel(new Date(),
                     mKeyPhrase1));
 
             Assert.assertFalse("certification of nonexistent key must fail", result.success());

@@ -110,7 +110,7 @@ public class KeyserverSyncAdapterService extends Service {
             }
             case ACTION_UPDATE_ALL: {
                 // does not check for screen on/off
-                asyncKeyUpdate(this, new CryptoInputParcel(), startId);
+                asyncKeyUpdate(this, CryptoInputParcel.createCryptoInputParcel(), startId);
                 // we depend on handleUpdateResult to call stopSelf when it is no longer necessary
                 // for the intent to be redelivered
                 return START_REDELIVER_INTENT;
@@ -118,7 +118,7 @@ public class KeyserverSyncAdapterService extends Service {
             case ACTION_IGNORE_TOR: {
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 manager.cancel(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT);
-                asyncKeyUpdate(this, new CryptoInputParcel(ParcelableProxy.getForNoProxy()),
+                asyncKeyUpdate(this, CryptoInputParcel.createCryptoInputParcel(ParcelableProxy.getForNoProxy()),
                         startId);
                 // we depend on handleUpdateResult to call stopSelf when it is no longer necessary
                 // for the intent to be redelivered

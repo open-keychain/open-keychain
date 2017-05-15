@@ -310,7 +310,7 @@ public class BackupOperationTest {
 
             BackupKeyringParcel parcel = new BackupKeyringParcel(
                     new long[] { mStaticRing1.getMasterKeyId() }, false, true, true, fakeOutputUri);
-            CryptoInputParcel inputParcel = new CryptoInputParcel(passphrase);
+            CryptoInputParcel inputParcel = CryptoInputParcel.createCryptoInputParcel(passphrase);
             ExportResult result = op.execute(parcel, inputParcel);
 
             verify(mockResolver).openOutputStream(fakePipedUri);
@@ -330,19 +330,20 @@ public class BackupOperationTest {
             input.setAllowSymmetricDecryption(true);
 
             {
-                DecryptVerifyResult result = op.execute(input, new CryptoInputParcel());
+                DecryptVerifyResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel());
                 assertTrue("decryption must return pending without passphrase", result.isPending());
                 Assert.assertTrue("should contain pending passphrase log entry",
                         result.getLog().containsType(LogType.MSG_DC_PENDING_PASSPHRASE));
             }
             {
-                DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(new Passphrase("bad")));
+                DecryptVerifyResult result = op.execute(input,
+                        CryptoInputParcel.createCryptoInputParcel(new Passphrase("bad")));
                 assertFalse("decryption must fail with bad passphrase", result.success());
                 Assert.assertTrue("should contain bad passphrase log entry",
                         result.getLog().containsType(LogType.MSG_DC_ERROR_SYM_PASSPHRASE));
             }
 
-            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(passphrase));
+            DecryptVerifyResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel(passphrase));
             assertTrue("decryption must succeed with passphrase", result.success());
 
             assertEquals("backup filename should be backup_keyid.pub.asc",

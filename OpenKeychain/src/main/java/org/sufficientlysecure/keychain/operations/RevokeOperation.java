@@ -51,7 +51,7 @@ public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel>
                                    CryptoInputParcel cryptoInputParcel) {
 
         // we don't cache passphrases during revocation
-        cryptoInputParcel.mCachePassphrase = false;
+        cryptoInputParcel = cryptoInputParcel.withNoCachePassphrase();
 
         long masterKeyId = revokeKeyringParcel.mMasterKeyId;
 

@@ -154,12 +154,12 @@ public class OpenPgpService extends Service {
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
-                inputParcel = new CryptoInputParcel(new Date());
+                inputParcel = CryptoInputParcel.createCryptoInputParcel(new Date());
             }
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                inputParcel.mPassphrase =
-                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+                inputParcel = inputParcel.withPassphrase(
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
 
             // execute PGP operation!
@@ -265,11 +265,12 @@ public class OpenPgpService extends Service {
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
-                inputParcel = new CryptoInputParcel(new Date());
+                inputParcel = CryptoInputParcel.createCryptoInputParcel(new Date());
             }
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                inputParcel.mPassphrase = new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+                inputParcel = inputParcel.withPassphrase(
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
 
             // TODO this is not correct!
@@ -352,17 +353,18 @@ public class OpenPgpService extends Service {
 
             CryptoInputParcel cryptoInput = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (cryptoInput == null) {
-                cryptoInput = new CryptoInputParcel();
+                cryptoInput = CryptoInputParcel.createCryptoInputParcel();
             }
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                cryptoInput.mPassphrase =
-                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+                cryptoInput = cryptoInput.withPassphrase(
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
             if (data.hasExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT)) {
                 OpenPgpDecryptionResult decryptionResult = data.getParcelableExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT);
                 if (decryptionResult != null && decryptionResult.hasDecryptedSessionKey()) {
-                    cryptoInput.addCryptoData(decryptionResult.getSessionKey(), decryptionResult.getDecryptedSessionKey());
+                    cryptoInput = cryptoInput.withCryptoData(
+                            decryptionResult.getSessionKey(), decryptionResult.getDecryptedSessionKey());
                 }
             }
 

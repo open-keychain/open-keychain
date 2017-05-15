@@ -523,7 +523,8 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
         // if we don't want to execute the actual operation outside of this activity, drop out here
         if (!mExecuteBackupOperation) {
-            ((BackupActivity) getActivity()).handleBackupOperation(new CryptoInputParcel(passphrase));
+            ((BackupActivity) getActivity()).handleBackupOperation(
+                    CryptoInputParcel.createCryptoInputParcel(passphrase));
             return;
         }
 
@@ -531,7 +532,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
             mCachedBackupUri = TemporaryFileProvider.createFile(activity, filename,
                     Constants.MIME_TYPE_ENCRYPTED_ALTERNATE);
 
-            cryptoOperation(new CryptoInputParcel(passphrase));
+            cryptoOperation(CryptoInputParcel.createCryptoInputParcel(passphrase));
             return;
         }
 

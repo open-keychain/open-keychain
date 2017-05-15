@@ -345,19 +345,19 @@ public class EncryptFilesFragment
             case R.id.encrypt_save: {
                 hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.SAVE;
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_share: {
                 hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.SHARE;
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_copy: {
                 hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.COPY;
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.check_use_armor: {
@@ -733,7 +733,7 @@ public class EncryptFilesFragment
                     mOutputUris.add(data.getData());
                     // make sure this is correct at this point
                     mAfterEncryptAction = AfterEncryptAction.SAVE;
-                    cryptoOperation(new CryptoInputParcel(new Date()));
+                    cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     onCryptoOperationCancelled();
                 }

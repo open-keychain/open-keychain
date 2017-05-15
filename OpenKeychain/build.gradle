@@ -92,6 +92,7 @@ dependencies {
     provided    "com.google.auto.value:auto-value:1.4.1"
     apt         "com.google.auto.value:auto-value:1.4.1"
     apt         "com.ryanharter.auto.value:auto-value-parcel:0.2.5"
+    compile 'com.ryanharter.auto.value:auto-value-parcel-adapter:0.2.5'
 }
 
 // Output of ./gradlew -q calculateChecksums

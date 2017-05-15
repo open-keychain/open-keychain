@@ -156,7 +156,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                         if (mDataUri == null) {
                             returnKeyringParcel();
                         } else {
-                            cryptoOperation(new CryptoInputParcel(new Date()));
+                            cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                         }
                     }
                 }, new OnClickListener() {

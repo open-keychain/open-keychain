@@ -323,7 +323,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     public void cryptoOperation() {
-        cryptoOperation(new CryptoInputParcel(new Date()));
+        cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
     }
 
     public void onHandleResult(OperationResult result) {

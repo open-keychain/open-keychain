@@ -113,7 +113,7 @@ public class CertifyKeyFragment
                     Notify.create(getActivity(), getString(R.string.select_key_to_certify),
                             Notify.Style.ERROR).show();
                 } else {
-                    cryptoOperation(new CryptoInputParcel(new Date()));
+                    cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 }
             }
         });

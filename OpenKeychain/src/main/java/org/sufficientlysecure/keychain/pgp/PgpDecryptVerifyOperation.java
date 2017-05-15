@@ -69,10 +69,9 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem.DecryptVerifySecurityProblemBuilder;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -321,6 +320,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 decryptionResultBuilder.setEncrypted(true);
                 if (esResult.sessionKey != null && esResult.decryptedSessionKey != null) {
                     decryptionResultBuilder.setSessionKey(esResult.sessionKey, esResult.decryptedSessionKey);
+                    cryptoInput = cryptoInput.withCryptoData(esResult.sessionKey, esResult.decryptedSessionKey);
                 }
 
                 if (esResult.encryptionKeySecurityProblem != null) {
@@ -820,7 +820,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             result.encryptedData = encryptedDataAsymmetric;
 
             Map<ByteBuffer, byte[]> cachedSessionKeys = decryptorFactory.getCachedSessionKeys();
-            cryptoInput.addCryptoData(cachedSessionKeys);
             if (cachedSessionKeys.size() >= 1) {
                 Entry<ByteBuffer, byte[]> entry = cachedSessionKeys.entrySet().iterator().next();
                 result.sessionKey = entry.getKey().array();

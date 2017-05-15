@@ -1,5 +1,6 @@
-/**
+/*
  * Copyright (c) 2013-2014 Philipp Jakubeit, Signe Rüsch, Dominik Schürmann
+ * Copyright (c) 2017 Vincent Breitmoser
  *
  * Licensed under the Bouncy Castle License (MIT license). See LICENSE file for details.
  */
@@ -8,6 +9,8 @@ package org.bouncycastle.openpgp.operator.jcajce;
 
 
 import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.bouncycastle.jcajce.util.NamedJcaJceHelper;
@@ -19,25 +22,27 @@ import org.bouncycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
 public class CachingDataDecryptorFactory implements PublicKeyDataDecryptorFactory
 {
     private final PublicKeyDataDecryptorFactory mWrappedDecryptor;
-    private final Map<ByteBuffer, byte[]> mSessionKeyCache;
+    private final HashMap<ByteBuffer, byte[]> mSessionKeyCache;
 
     private OperatorHelper mOperatorHelper;
 
-    public CachingDataDecryptorFactory(String providerName,
-            final Map<ByteBuffer,byte[]> sessionKeyCache)
+    public CachingDataDecryptorFactory(String providerName, Map<ByteBuffer, byte[]> sessionKeyCache)
     {
-        mWrappedDecryptor = null;
-        mSessionKeyCache = sessionKeyCache;
+        this((PublicKeyDataDecryptorFactory) null, sessionKeyCache);
 
         mOperatorHelper = new OperatorHelper(new NamedJcaJceHelper(providerName));
     }
 
     public CachingDataDecryptorFactory(PublicKeyDataDecryptorFactory wrapped,
-            final Map<ByteBuffer,byte[]> sessionKeyCache)
+            Map<ByteBuffer, byte[]> sessionKeyCache)
     {
-        mWrappedDecryptor = wrapped;
-        mSessionKeyCache = sessionKeyCache;
+        mSessionKeyCache = new HashMap<>();
+        if (sessionKeyCache != null)
+        {
+            mSessionKeyCache.putAll(sessionKeyCache);
+        }
 
+        mWrappedDecryptor = wrapped;
     }
 
     public boolean hasCachedSessionData(PGPPublicKeyEncryptedData encData) throws PGPException {
@@ -46,7 +51,7 @@ public class CachingDataDecryptorFactory implements PublicKeyDataDecryptorFactor
     }
 
     public Map<ByteBuffer, byte[]> getCachedSessionKeys() {
-        return mSessionKeyCache;
+        return Collections.unmodifiableMap(mSessionKeyCache);
     }
 
     public boolean canDecrypt() {

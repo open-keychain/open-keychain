@@ -336,7 +336,7 @@ public class PgpKeyOperation {
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
 
             subProgressPush(50, 100);
-            CryptoInputParcel cryptoInput = new CryptoInputParcel(creationTime, new Passphrase(""));
+            CryptoInputParcel cryptoInput = CryptoInputParcel.createCryptoInputParcel(creationTime, new Passphrase(""));
             return internal(sKR, masterSecretKey, add.mFlags, add.mExpiry, cryptoInput, saveParcel, log, indent);
 
         } catch (PGPException e) {
