@@ -39,7 +39,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.remote.ui.SecurityProblemPresenter.RemoteSecurityProblemView;
@@ -156,8 +155,10 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
             final LinearLayout insecureWarningLayout = (LinearLayout) view.findViewById(R.id.insecure_warning_layout);
             final ImageView iconClientApp = (ImageView) view.findViewById(R.id.icon_client_app);
             final TextView explanationText = (TextView) insecureWarningLayout.findViewById(R.id.dialog_insecure_text);
-            final TextView recommendText = (TextView) insecureWarningLayout.findViewById(R.id.dialog_insecure_recommend_text);
-            final TextView overrideText = (TextView) insecureWarningLayout.findViewById(R.id.dialog_insecure_override_text);
+            final TextView recommendText =
+                    (TextView) insecureWarningLayout.findViewById(R.id.dialog_insecure_recommend_text);
+            final TextView overrideText =
+                    (TextView) insecureWarningLayout.findViewById(R.id.dialog_insecure_override_text);
             final ToolableViewAnimator secondaryLayoutAnimator =
                     (ToolableViewAnimator) insecureWarningLayout.findViewById(R.id.dialog_insecure_secondary_layout);
             final ToolableViewAnimator buttonBarAnimator =
@@ -200,13 +201,6 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                 }
                 */
 
-                private void showGeneric(@StringRes int explanationStringRes) {
-                    explanationText.setText(explanationStringRes);
-                    secondaryLayoutAnimator.setDisplayedChild(SECONDARY_CHILD_NONE, layoutInitialized);
-                    buttonBarAnimator.setDisplayedChild(BUTTON_BAR_REGULAR, layoutInitialized);
-                    layoutInitialized = true;
-                }
-
                 private void showGeneric(String explanationString) {
                     explanationText.setText(explanationString);
                     secondaryLayoutAnimator.setDisplayedChild(SECONDARY_CHILD_NONE, layoutInitialized);
@@ -239,12 +233,14 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
 
                 @Override
                 public void showLayoutInsecureSymmetric(int symmetricAlgorithm) {
-                    showGeneric(R.string.insecure_symmetric_algo);
+                    showGeneric(getString(R.string.insecure_symmetric_algo,
+                            KeyFormattingUtils.getSymmetricCipherName(symmetricAlgorithm)));
                 }
 
                 @Override
                 public void showLayoutInsecureHashAlgorithm(int hashAlgorithm) {
-                    showGeneric(R.string.insecure_hash_algo);
+                    showGeneric(getString(R.string.insecure_hash_algo,
+                            KeyFormattingUtils.getHashAlgoName(hashAlgorithm)));
                 }
 
                 @Override
@@ -252,9 +248,8 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                     String algorithmName = KeyFormattingUtils.getAlgorithmInfo(algorithmId, null, null);
 
                     showGenericWithRecommendation(
-                            getString(R.string.insecure_encrypt_bitstrength, algorithmName,
-                                    Integer.toString(bitStrength), "2010"),
-                            R.string.insecure_sign_bitstrength_suggestion);
+                            getString(R.string.insecure_encrypt_bitstrength, algorithmName),
+                            R.string.insecure_encrypt_bitstrength_suggestion);
                 }
 
                 @Override
@@ -262,31 +257,40 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                     String algorithmName = KeyFormattingUtils.getAlgorithmInfo(algorithmId, null, null);
 
                     showGenericWithRecommendation(
-                            getString(R.string.insecure_sign_bitstrength, algorithmName,
-                                    Integer.toString(bitStrength), "2010"),
+                            getString(R.string.insecure_sign_bitstrength, algorithmName),
                             R.string.insecure_sign_bitstrength_suggestion);
                 }
 
                 @Override
                 public void showLayoutEncryptNotWhitelistedCurve(String curveOid) {
-                    showGeneric(getString(R.string.insecure_encrypt_not_whitelisted_curve,
-                            KeyFormattingUtils.getCurveInfo(getContext(), curveOid)));
+                    showGenericWithRecommendation(
+                            getString(R.string.insecure_encrypt_not_whitelisted_curve, curveOid),
+                            R.string.insecure_report_suggestion
+                    );
                 }
 
                 @Override
                 public void showLayoutSignNotWhitelistedCurve(String curveOid) {
-                    showGeneric(getString(R.string.insecure_sign_not_whitelisted_curve,
-                            KeyFormattingUtils.getCurveInfo(getContext(), curveOid)));
+                    showGenericWithRecommendation(
+                            getString(R.string.insecure_sign_not_whitelisted_curve, curveOid),
+                            R.string.insecure_report_suggestion
+                    );
                 }
 
                 @Override
                 public void showLayoutEncryptUnidentifiedKeyProblem() {
-                    showGeneric(R.string.insecure_encrypt_unidentified);
+                    showGenericWithRecommendation(
+                            R.string.insecure_encrypt_unidentified,
+                            R.string.insecure_report_suggestion
+                    );
                 }
 
                 @Override
                 public void showLayoutSignUnidentifiedKeyProblem() {
-                    showGeneric(R.string.insecure_sign_unidentified);
+                    showGenericWithRecommendation(
+                            R.string.insecure_sign_unidentified,
+                            R.string.insecure_report_suggestion
+                    );
                 }
 
                 @Override
