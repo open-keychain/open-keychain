@@ -233,7 +233,7 @@ public class EncryptTextFragment
         }
 
         // fill values for this action
-        PgpSignEncryptData data = new PgpSignEncryptData();
+        PgpSignEncryptData.Builder data = PgpSignEncryptData.builder();
 
         data.setCleartextSignature(true);
 
@@ -286,7 +286,7 @@ public class EncryptTextFragment
             data.setSymmetricPassphrase(passphrase);
         }
 
-        SignEncryptParcel parcel = new SignEncryptParcel(data);
+        SignEncryptParcel parcel = new SignEncryptParcel(data.build());
         parcel.setBytes(mMessage.getBytes());
 
         return parcel;

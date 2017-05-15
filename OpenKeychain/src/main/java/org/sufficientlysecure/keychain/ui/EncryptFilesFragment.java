@@ -623,7 +623,7 @@ public class EncryptFilesFragment
         }
 
         // fill values for this action
-        PgpSignEncryptData data = new PgpSignEncryptData();
+        PgpSignEncryptData.Builder data = PgpSignEncryptData.builder();
 
         if (mUseCompression) {
             data.setCompressionAlgorithm(
@@ -675,7 +675,7 @@ public class EncryptFilesFragment
         }
 
 
-        SignEncryptParcel parcel = new SignEncryptParcel(data);
+        SignEncryptParcel parcel = new SignEncryptParcel(data.build());
         parcel.addInputUris(mFilesAdapter.getAsArrayList());
 
         return parcel;

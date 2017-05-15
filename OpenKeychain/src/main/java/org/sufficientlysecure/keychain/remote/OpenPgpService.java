@@ -109,7 +109,7 @@ public class OpenPgpService extends Service {
             boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
             // sign-only
-            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            PgpSignEncryptData.Builder pgpData = PgpSignEncryptData.builder();
             pgpData.setEnableAsciiArmorOutput(asciiArmor)
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
@@ -132,8 +132,7 @@ public class OpenPgpService extends Service {
 
                 // get first usable subkey capable of signing
                 try {
-                    long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(
-                            pgpData.getSignatureMasterKeyId()).getSecretSignId();
+                    long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(signKeyId).getSecretSignId();
                     pgpData.setSignatureSubKeyId(signSubKeyId);
                 } catch (PgpKeyNotFoundException e) {
                     throw new Exception("signing subkey not found!", e);
@@ -141,7 +140,7 @@ public class OpenPgpService extends Service {
             }
 
 
-            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData);
+            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData.build());
             pseInput.setAllowedKeyIds(getAllowedKeyIds());
 
             // Get Input- and OutputStream from ParcelFileDescriptor
@@ -213,7 +212,7 @@ public class OpenPgpService extends Service {
                 compressionId = PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED;
             }
 
-            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            PgpSignEncryptData.Builder pgpData = PgpSignEncryptData.builder();
             pgpData.setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(null)
                     .setCompressionAlgorithm(compressionId);
@@ -261,7 +260,7 @@ public class OpenPgpService extends Service {
             }
             pgpData.setEncryptionMasterKeyIds(keyIdResult.getKeyIds());
 
-            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData);
+            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData.build());
             pseInput.setAllowedKeyIds(getAllowedKeyIds());
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);

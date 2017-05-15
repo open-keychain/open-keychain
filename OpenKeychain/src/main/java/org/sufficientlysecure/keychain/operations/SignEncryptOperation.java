@@ -77,18 +77,6 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
         SecurityTokenSignOperationsBuilder pendingInputBuilder = null;
 
         PgpSignEncryptData data = input.getData();
-        // if signing subkey has not explicitly been set, get first usable subkey capable of signing
-        if (data.getSignatureMasterKeyId() != Constants.key.none
-                && data.getSignatureSubKeyId() == null) {
-            try {
-                long signKeyId = mKeyRepository.getCachedPublicKeyRing(
-                        data.getSignatureMasterKeyId()).getSecretSignId();
-                data.setSignatureSubKeyId(signKeyId);
-            } catch (PgpKeyNotFoundException e) {
-                Log.e(Constants.TAG, "Key not found", e);
-                return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log, results);
-            }
-        }
 
         do {
             if (checkCancelled()) {

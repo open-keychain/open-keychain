@@ -170,11 +170,11 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             throws FileNotFoundException {
         PgpSignEncryptOperation signEncryptOperation = new PgpSignEncryptOperation(mContext, mKeyRepository, mProgressable, mCancelled);
 
-        PgpSignEncryptData data = new PgpSignEncryptData();
+        PgpSignEncryptData.Builder data = PgpSignEncryptData.builder();
         data.setSymmetricPassphrase(cryptoInput.getPassphrase());
         data.setEnableAsciiArmorOutput(backupInput.mEnableAsciiArmorOutput);
         data.setAddBackupHeader(true);
-        PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(data);
+        PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(data.build());
 
         InputStream inStream = mContext.getContentResolver().openInputStream(plainUri);
 

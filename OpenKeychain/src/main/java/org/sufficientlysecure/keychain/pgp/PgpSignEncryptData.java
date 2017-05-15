@@ -18,226 +18,73 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
+
+import com.google.auto.value.AutoValue;
 import org.bouncycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
+@AutoValue
+public abstract class PgpSignEncryptData implements Parcelable {
+    @Nullable
+    public abstract String getCharset();
+    abstract long getAdditionalEncryptId();
+    abstract int getSignatureHashAlgorithm();
+    @Nullable
+    public abstract Long getSignatureSubKeyId();
+    public abstract long getSignatureMasterKeyId();
+    public abstract int getSymmetricEncryptionAlgorithm();
+    @Nullable
+    public abstract Passphrase getSymmetricPassphrase();
+    @Nullable
+    public abstract long[] getEncryptionMasterKeyIds();
+    public abstract int getCompressionAlgorithm();
+    @Nullable
+    public abstract String getVersionHeader();
 
-public class PgpSignEncryptData implements Parcelable {
-    private String mVersionHeader = null;
-    private boolean mEnableAsciiArmorOutput = false;
-    private int mCompressionAlgorithm = CompressionAlgorithmTags.UNCOMPRESSED;
-    private long[] mEncryptionMasterKeyIds = null;
-    private Passphrase mSymmetricPassphrase = null;
-    private int mSymmetricEncryptionAlgorithm = PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT;
-    private long mSignatureMasterKeyId = Constants.key.none;
-    private Long mSignatureSubKeyId = null;
-    private int mSignatureHashAlgorithm = PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT;
-    private long mAdditionalEncryptId = Constants.key.none;
-    private String mCharset;
-    private boolean mCleartextSignature;
-    private boolean mDetachedSignature = false;
-    private boolean mHiddenRecipients = false;
-    private boolean mAddBackupHeader = false;
+    public abstract boolean isEnableAsciiArmorOutput();
+    public abstract boolean isCleartextSignature();
+    public abstract boolean isDetachedSignature();
+    public abstract boolean isAddBackupHeader();
+    public abstract boolean isHiddenRecipients();
 
-    public PgpSignEncryptData(){
+    public static Builder builder() {
+        return new AutoValue_PgpSignEncryptData.Builder()
+                .setCompressionAlgorithm(CompressionAlgorithmTags.UNCOMPRESSED)
+                .setSymmetricEncryptionAlgorithm(PgpSecurityConstants.DEFAULT_SYMMETRIC_ALGORITHM)
+                .setSignatureMasterKeyId(Constants.key.none)
+                .setSignatureHashAlgorithm(PgpSecurityConstants.DEFAULT_HASH_ALGORITHM)
+                .setAdditionalEncryptId(Constants.key.none)
+                .setEnableAsciiArmorOutput(false)
+                .setCleartextSignature(false)
+                .setDetachedSignature(false)
+                .setAddBackupHeader(false)
+                .setHiddenRecipients(false);
     }
 
-    private PgpSignEncryptData(Parcel source) {
-        ClassLoader loader = getClass().getClassLoader();
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract PgpSignEncryptData build();
 
-        mVersionHeader = source.readString();
-        mEnableAsciiArmorOutput = source.readInt() == 1;
-        mCompressionAlgorithm = source.readInt();
-        mEncryptionMasterKeyIds = source.createLongArray();
-        mSymmetricPassphrase = source.readParcelable(loader);
-        mSymmetricEncryptionAlgorithm = source.readInt();
-        mSignatureMasterKeyId = source.readLong();
-        mSignatureSubKeyId = source.readInt() == 1 ? source.readLong() : null;
-        mSignatureHashAlgorithm = source.readInt();
-        mAdditionalEncryptId = source.readLong();
-        mCharset = source.readString();
-        mCleartextSignature = source.readInt() == 1;
-        mDetachedSignature = source.readInt() == 1;
-        mHiddenRecipients = source.readInt() == 1;
-        mAddBackupHeader = source.readInt() == 1;
+        public abstract Builder setCharset(String charset);
+        public abstract Builder setAdditionalEncryptId(long additionalEncryptId);
+        public abstract Builder setSignatureHashAlgorithm(int signatureHashAlgorithm);
+        public abstract Builder setSignatureSubKeyId(Long signatureSubKeyId);
+        public abstract Builder setSignatureMasterKeyId(long signatureMasterKeyId);
+        public abstract Builder setSymmetricEncryptionAlgorithm(int symmetricEncryptionAlgorithm);
+        public abstract Builder setSymmetricPassphrase(Passphrase symmetricPassphrase);
+        public abstract Builder setEncryptionMasterKeyIds(long[] encryptionMasterKeyIds);
+        public abstract Builder setCompressionAlgorithm(int compressionAlgorithm);
+        public abstract Builder setVersionHeader(String versionHeader);
+
+        public abstract Builder setAddBackupHeader(boolean isAddBackupHeader);
+        public abstract Builder setEnableAsciiArmorOutput(boolean enableAsciiArmorOutput);
+        public abstract Builder setCleartextSignature(boolean isCleartextSignature);
+        public abstract Builder setDetachedSignature(boolean isDetachedSignature);
+        public abstract Builder setHiddenRecipients(boolean isHiddenRecipients);
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mVersionHeader);
-        dest.writeInt(mEnableAsciiArmorOutput ? 1 : 0);
-        dest.writeInt(mCompressionAlgorithm);
-        dest.writeLongArray(mEncryptionMasterKeyIds);
-        dest.writeParcelable(mSymmetricPassphrase, 0);
-        dest.writeInt(mSymmetricEncryptionAlgorithm);
-        dest.writeLong(mSignatureMasterKeyId);
-        if (mSignatureSubKeyId != null) {
-            dest.writeInt(1);
-            dest.writeLong(mSignatureSubKeyId);
-        } else {
-            dest.writeInt(0);
-        }
-        dest.writeInt(mSignatureHashAlgorithm);
-        dest.writeLong(mAdditionalEncryptId);
-        dest.writeString(mCharset);
-        dest.writeInt(mCleartextSignature ? 1 : 0);
-        dest.writeInt(mDetachedSignature ? 1 : 0);
-        dest.writeInt(mHiddenRecipients ? 1 : 0);
-        dest.writeInt(mAddBackupHeader ? 1 : 0);
-    }
-
-    public String getCharset() {
-        return mCharset;
-    }
-
-    public void setCharset(String mCharset) {
-        this.mCharset = mCharset;
-    }
-
-    public long getAdditionalEncryptId() {
-        return mAdditionalEncryptId;
-    }
-
-    public PgpSignEncryptData setAdditionalEncryptId(long additionalEncryptId) {
-        mAdditionalEncryptId = additionalEncryptId;
-        return this;
-    }
-
-    public int getSignatureHashAlgorithm() {
-        return mSignatureHashAlgorithm;
-    }
-
-    public PgpSignEncryptData setSignatureHashAlgorithm(int signatureHashAlgorithm) {
-        mSignatureHashAlgorithm = signatureHashAlgorithm;
-        return this;
-    }
-
-    public Long getSignatureSubKeyId() {
-        return mSignatureSubKeyId;
-    }
-
-    public PgpSignEncryptData setSignatureSubKeyId(long signatureSubKeyId) {
-        mSignatureSubKeyId = signatureSubKeyId;
-        return this;
-    }
-
-    public long getSignatureMasterKeyId() {
-        return mSignatureMasterKeyId;
-    }
-
-    public PgpSignEncryptData setSignatureMasterKeyId(long signatureMasterKeyId) {
-        mSignatureMasterKeyId = signatureMasterKeyId;
-        return this;
-    }
-
-    public int getSymmetricEncryptionAlgorithm() {
-        return mSymmetricEncryptionAlgorithm;
-    }
-
-    public PgpSignEncryptData setSymmetricEncryptionAlgorithm(int symmetricEncryptionAlgorithm) {
-        mSymmetricEncryptionAlgorithm = symmetricEncryptionAlgorithm;
-        return this;
-    }
-
-    public Passphrase getSymmetricPassphrase() {
-        return mSymmetricPassphrase;
-    }
-
-    public PgpSignEncryptData setSymmetricPassphrase(Passphrase symmetricPassphrase) {
-        mSymmetricPassphrase = symmetricPassphrase;
-        return this;
-    }
-
-    public long[] getEncryptionMasterKeyIds() {
-        return mEncryptionMasterKeyIds;
-    }
-
-    public PgpSignEncryptData setEncryptionMasterKeyIds(long[] encryptionMasterKeyIds) {
-        mEncryptionMasterKeyIds = encryptionMasterKeyIds;
-        return this;
-    }
-
-    public int getCompressionAlgorithm() {
-        return mCompressionAlgorithm;
-    }
-
-    public PgpSignEncryptData setCompressionAlgorithm(int compressionAlgorithm) {
-        mCompressionAlgorithm = compressionAlgorithm;
-        return this;
-    }
-
-    public boolean isEnableAsciiArmorOutput() {
-        return mEnableAsciiArmorOutput;
-    }
-
-    public String getVersionHeader() {
-        return mVersionHeader;
-    }
-
-    public PgpSignEncryptData setVersionHeader(String versionHeader) {
-        mVersionHeader = versionHeader;
-        return this;
-    }
-
-    public PgpSignEncryptData setEnableAsciiArmorOutput(boolean enableAsciiArmorOutput) {
-        mEnableAsciiArmorOutput = enableAsciiArmorOutput;
-        return this;
-    }
-
-    public PgpSignEncryptData setCleartextSignature(boolean cleartextSignature) {
-        this.mCleartextSignature = cleartextSignature;
-        return this;
-    }
-
-    public boolean isCleartextSignature() {
-        return mCleartextSignature;
-    }
-
-    public PgpSignEncryptData setDetachedSignature(boolean detachedSignature) {
-        this.mDetachedSignature = detachedSignature;
-        return this;
-    }
-
-    public boolean isDetachedSignature() {
-        return mDetachedSignature;
-    }
-
-    public PgpSignEncryptData setHiddenRecipients(boolean hiddenRecipients) {
-        this.mHiddenRecipients = hiddenRecipients;
-        return this;
-    }
-
-    public PgpSignEncryptData setAddBackupHeader(boolean addBackupHeader) {
-        this.mAddBackupHeader = addBackupHeader;
-        return this;
-    }
-
-    public boolean isAddBackupHeader() {
-        return mAddBackupHeader;
-    }
-
-    public boolean isHiddenRecipients() {
-        return mHiddenRecipients;
-    }
-
-    public static final Creator<PgpSignEncryptData> CREATOR = new Creator<PgpSignEncryptData>() {
-        public PgpSignEncryptData createFromParcel(final Parcel source) {
-            return new PgpSignEncryptData(source);
-        }
-
-        public PgpSignEncryptData[] newArray(final int size) {
-            return new PgpSignEncryptData[size];
-        }
-    };
-
 }
 
