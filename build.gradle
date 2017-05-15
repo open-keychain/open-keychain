@@ -16,6 +16,8 @@ buildscript {
 
         // allows to check for lib updates with "./gradlew dependencyUpdates -Drevision=release"
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
+
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
 }
 
