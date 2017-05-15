@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ * Copyright (C) 2014-2017 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,23 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.security.Security;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+
 import org.apache.tools.ant.util.StringUtils;
 import org.bouncycastle.bcpg.BCPGInputStream;
 import org.bouncycastle.bcpg.Packet;
 import org.bouncycastle.bcpg.PacketTags;
+import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.bcpg.PublicKeyEncSessionPacket;
+import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
@@ -38,13 +50,13 @@ import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureEncryptionAlgorithm;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
-import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
@@ -55,28 +67,18 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.security.Security;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 
 
+@SuppressWarnings("WeakerAccess")
 @RunWith(KeychainTestRunner.class)
 public class PgpEncryptDecryptTest {
 
     static Passphrase mSymmetricPassphrase = TestingUtils.genPassphrase(true);
 
     static UncachedKeyRing mStaticRing1, mStaticRing2, mStaticRingInsecure;
-    static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
-    static Passphrase mKeyPhrase2 = TestingUtils.genPassphrase(true);
-//    static Passphrase mKeyPhraseInsecure = TestingUtils.genPassphrase(true);
+    static Passphrase mKeyPhrase1, mKeyPhrase2;
 
     static PrintStream oldShadowStream;
 
@@ -86,65 +88,64 @@ public class PgpEncryptDecryptTest {
         oldShadowStream = ShadowLog.stream;
         // ShadowLog.stream = System.out;
 
-        PgpKeyOperation op = new PgpKeyOperation(null);
+        /* generation parameters:
 
-        {
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
-            parcel.mAddUserIds.add("bloom");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase1));
+        SaveKeyringParcel parcel = new SaveKeyringParcel();
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
+        parcel.mAddUserIds.add("bloom");
+        parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase("RsKrW^raOPcnQ=ZJr-pP")));
 
-            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
-            Assert.assertTrue("initial test key creation must succeed", result.success());
-            Assert.assertNotNull("initial test key creation must succeed", result.getRing());
+        PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+        */
 
-            mStaticRing1 = result.getRing();
-        }
+        mKeyPhrase1 = new Passphrase("RsKrW^raOPcnQ=ZJr-pP");
+        mStaticRing1 = KeyringTestingHelper.readRingFromResource("/test-keys/encrypt_decrypt_key_1.sec");
 
-        {
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
-            parcel.mAddUserIds.add("belle");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase2));
+        /* generation:
+        SaveKeyringParcel parcel = new SaveKeyringParcel();
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
+        parcel.mAddUserIds.add("belle");
+        parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase("x")));
 
-            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
-            Assert.assertTrue("initial test key creation must succeed", result.success());
-            Assert.assertNotNull("initial test key creation must succeed", result.getRing());
+        PgpKeyOperation op = new PgpKeyOperation(new ProgressScaler());
+        PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+        new FileOutputStream("/tmp/key.sec").write(result.getRing().getEncoded());
+        */
 
-            mStaticRing2 = result.getRing();
-        }
+        mKeyPhrase2 = new Passphrase("x");
+        mStaticRing2 = KeyringTestingHelper.readRingFromResource("/test-keys/encrypt_decrypt_key_2.sec");
 
-//        {
-//            // insecure (1024 bit) RSA key
-//            SaveKeyringParcel parcel = new SaveKeyringParcel();
-//            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-//                    Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
-//            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-//                    Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
-//            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-//                    Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
-//            parcel.mAddUserIds.add("eve");
-//            parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhraseInsecure);
-//
-//            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
-//            Assert.assertTrue("initial test key creation must succeed", result.success());
-//            Assert.assertNotNull("initial test key creation must succeed", result.getRing());
-//
-//            mStaticRingInsecure = result.getRing();
-//        }
+        /* generation parameters (insecure key, requires removal of of security checks!):
 
+        SaveKeyringParcel parcel = new SaveKeyringParcel();
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
+        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+        parcel.mAddUserIds.add("eve");
+        parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase("")));
+
+        PgpEditKeyResult result = new PgpKeyOperation(new ProgressScaler()).createSecretKeyRing(parcel);
+        Assert.assertTrue("initial test key creation must succeed", result.success());
+        Assert.assertNotNull("initial test key creation must succeed", result.getRing());
+        new FileOutputStream("/tmp/key.sec").write(result.getRing().getEncoded());
+        */
+
+        mStaticRingInsecure = KeyringTestingHelper.readRingFromResource("/test-keys/encrypt_decrypt_key_insecure.sec");
     }
 
     @Before
@@ -157,6 +158,7 @@ public class PgpEncryptDecryptTest {
 
         databaseInteractor.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
         databaseInteractor.saveSecretKeyRing(mStaticRing2, new ProgressScaler());
+        databaseInteractor.saveSecretKeyRing(mStaticRingInsecure, new ProgressScaler());
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -420,7 +422,7 @@ public class PgpEncryptDecryptTest {
 
             InputData data = new InputData(in, in.available());
 
-            PgpSignEncryptData pgpData = new PgpSignEncryptData(); 
+            PgpSignEncryptData pgpData = new PgpSignEncryptData();
             // only sign, as cleartext
             pgpData.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
             pgpData.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
@@ -997,76 +999,73 @@ public class PgpEncryptDecryptTest {
     }
 
     @Test
-    public void testAsymmetricInsecureEncryptDecrypt() {
+    public void testAsymmetricSymmetricDesDecrypt() throws Exception {
+        InputStream in = getResourceAsStream("/test-ciphertexts/algo_des.pgp.asc");
+        String plaintext = "dies ist ein plaintext ☭";
 
-        // insecure symmetric algo
-        subtestInsecureEncryptDecrypt(mStaticRing1, mKeyPhrase1,
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.DES, true);
-        // don't use MDC
-        subtestInsecureEncryptDecrypt(mStaticRing1, mKeyPhrase1,
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_256, false);
-        // TODO: test not working!
-        // insecure key (1024 bit RSA)
-//        subtestInsecureEncryptDecrypt(mStaticRingInsecure, mKeyPhraseInsecure,
-//                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_256, true);
 
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        InputData data = new InputData(in, in.available());
+
+        PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+        DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
+
+
+        Assert.assertTrue(result.success());
+        Assert.assertArrayEquals(out.toByteArray(), plaintext.getBytes());
+        Assert.assertEquals(OpenPgpDecryptionResult.RESULT_INSECURE, result.getDecryptionResult().getResult());
+        Assert.assertEquals(OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
+
+        InsecureEncryptionAlgorithm symmetricSecurityProblem =
+                (InsecureEncryptionAlgorithm) result.getSecurityProblem().symmetricSecurityProblem;
+        Assert.assertEquals((symmetricSecurityProblem).symmetricAlgorithm, SymmetricKeyAlgorithmTags.DES);
     }
 
-    private void subtestInsecureEncryptDecrypt(UncachedKeyRing key, Passphrase passphrase,
-                                               int algorithm, boolean isIntegrityProtected) {
-        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
-        byte[] ciphertext;
+    public void testAsymmetricNoMdcDecrypt() throws Exception {
+        InputStream in = getResourceAsStream("/test-ciphertexts/no_mdc.pgp.asc");
+        String plaintext = "dies ist ein plaintext ☭";
 
-        { // encrypt data with insecure key
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                    KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        InputData data = new InputData(in, in.available());
 
-            InputData data = new InputData(in, in.available());
+        PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+        DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
 
-            PgpSignEncryptData pgpData = new PgpSignEncryptData();
-            pgpData.setEncryptionMasterKeyIds(new long[]{key.getMasterKeyId()})
-                    .setSymmetricEncryptionAlgorithm(algorithm)
-                    .setIntegrityProtected(isIntegrityProtected);
 
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData);
+        Assert.assertTrue(result.success());
+        Assert.assertArrayEquals(out.toByteArray(), plaintext.getBytes());
+        Assert.assertEquals(OpenPgpDecryptionResult.RESULT_INSECURE, result.getDecryptionResult().getResult());
+        Assert.assertEquals(OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
 
-            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
-                    data, out);
-            Assert.assertTrue("encryption must succeed", result.success());
+        Assert.assertTrue(result.getSecurityProblem().symmetricSecurityProblem instanceof MissingMdc);
+    }
 
-            ciphertext = out.toByteArray();
-        }
+    public void testAsymmetricRsa1024Decrypt() throws Exception {
+        InputStream in = getResourceAsStream("/test-ciphertexts/rsa_1024.pgp.asc");
+        String plaintext = "dies ist ein plaintext ☭";
 
-        { // decryption with provided passphrase should yield insecure status
 
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
-            InputData data = new InputData(in, in.available());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
-            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
-            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(passphrase), data, out);
+        PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+        DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
-            Assert.assertTrue("decryption with provided passphrase must succeed", result.success());
-            Assert.assertArrayEquals("decrypted ciphertext with provided passphrase should equal plaintext",
-                    out.toByteArray(), plaintext.getBytes());
-            Assert.assertEquals("decryptionResult should be RESULT_INSECURE",
-                    OpenPgpDecryptionResult.RESULT_INSECURE, result.getDecryptionResult().getResult());
-            Assert.assertEquals("signatureResult should be RESULT_NO_SIGNATURE",
-                    OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
 
-            CryptoInputParcel cryptoInput = result.getCachedCryptoInputParcel();
-            Assert.assertEquals("must have one cached session key",
-                    1, cryptoInput.getCryptoData().size());
+        Assert.assertTrue(result.success());
+        Assert.assertArrayEquals(out.toByteArray(), plaintext.getBytes());
+        Assert.assertEquals(OpenPgpDecryptionResult.RESULT_INSECURE, result.getDecryptionResult().getResult());
+        Assert.assertEquals(OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
 
-            OpenPgpMetadata metadata = result.getDecryptionMetadata();
-            Assert.assertEquals("filesize must be correct",
-                    out.toByteArray().length, metadata.getOriginalSize());
-
-        }
+        InsecureBitStrength encryptionKeySecurityProblem =
+                (InsecureBitStrength) result.getSecurityProblem().encryptionKeySecurityProblem;
+        Assert.assertEquals(mStaticRingInsecure.getMasterKeyId(), encryptionKeySecurityProblem.masterKeyId);
+        Assert.assertEquals(PublicKeyAlgorithmTags.RSA_ENCRYPT, encryptionKeySecurityProblem.algorithm);
+        Assert.assertEquals(1024, encryptionKeySecurityProblem.bitStrength);
     }
 
     private PgpDecryptVerifyOperation operationWithFakePassphraseCache(
@@ -1092,4 +1091,34 @@ public class PgpEncryptDecryptTest {
             }
         };
     }
+
+    private static InputStream getResourceAsStream(String name) {
+        return PgpEncryptDecryptTest.class.getResourceAsStream(name);
+    }
+
+    /* skeleton for generating test data
+    @Test
+    public void generateData() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayInputStream in = new ByteArrayInputStream("dies ist ein plaintext ☭".getBytes());
+
+        PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
+
+        InputData data = new InputData(in, in.available());
+
+        PgpSignEncryptData pgpData = new PgpSignEncryptData();
+        pgpData.setEncryptionMasterKeyIds(new long[]{ mStaticRingInsecure.getMasterKeyId()});
+
+        PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData);
+
+        PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
+                data, out);
+        Assert.assertTrue("encryption must succeed", result.success());
+
+        ArmoredOutputStream armoredOutputStream = new ArmoredOutputStream(new FileOutputStream("/tmp/rsa_1024.pgp.asc"));
+        armoredOutputStream.write(out.toByteArray());
+        armoredOutputStream.close();
+    }
+    */
 }

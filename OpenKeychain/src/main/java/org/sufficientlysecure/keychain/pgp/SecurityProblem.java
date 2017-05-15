@@ -125,7 +125,6 @@ public abstract class SecurityProblem implements Serializable {
     }
 
     public static class MissingMdc extends EncryptionAlgorithmProblem {
-
         MissingMdc(byte[] sessionKey) {
             super(sessionKey);
         }

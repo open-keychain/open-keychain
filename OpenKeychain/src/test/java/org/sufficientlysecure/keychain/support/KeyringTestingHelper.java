@@ -364,4 +364,7 @@ public class KeyringTestingHelper {
         return result;
     }
 
+    public static UncachedKeyRing readRingFromResource(String name) throws Exception {
+        return UncachedKeyRing.fromStream(KeyringTestingHelper.class.getResourceAsStream(name)).next();
+    }
 }

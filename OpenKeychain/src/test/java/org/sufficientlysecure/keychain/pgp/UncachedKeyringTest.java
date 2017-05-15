@@ -152,7 +152,7 @@ public class UncachedKeyringTest {
         readRingFromResource("/test-keys/broken_cert_version.asc");
     }
 
-    UncachedKeyRing readRingFromResource(String name) throws Throwable {
+    private UncachedKeyRing readRingFromResource(String name) throws Throwable {
         return UncachedKeyRing.fromStream(UncachedKeyringTest.class.getResourceAsStream(name)).next();
     }
 
