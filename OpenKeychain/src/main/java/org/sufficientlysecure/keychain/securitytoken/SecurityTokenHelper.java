@@ -698,6 +698,7 @@ public class SecurityTokenHelper {
                 break;
 
             case ECKeyFormatType:
+                // "plain" encoding, see https://github.com/open-keychain/open-keychain/issues/2108
                 if (signature.length % 2 != 0) {
                     throw new IOException("Bad signature length!");
                 }
