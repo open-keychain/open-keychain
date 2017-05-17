@@ -289,10 +289,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 15:
                 db.execSQL("CREATE INDEX uids_by_name ON user_packets (name COLLATE NOCASE)");
                 db.execSQL("CREATE INDEX uids_by_email ON user_packets (email COLLATE NOCASE)");
-                if (oldVersion == 14) {
-                    // no consolidate necessary
-                    return;
-                }
             case 16:
                 // splitUserId changed: Execute consolidate for new parsing of name, email
             case 17:
@@ -302,10 +298,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 19:
                 // emergency fix for crashing consolidate
                 db.execSQL("UPDATE keys SET is_secure = 1;");
-                if (oldVersion == 18 || oldVersion == 19) {
-                    // no consolidate for now, often crashes!
-                    return;
-                }
             /* TODO actually drop this table. leaving it around for now!
             case 20:
                 db.execSQL("DROP TABLE api_accounts");
@@ -316,7 +308,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             */
             case 20:
                 db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
-                if (oldVersion == 20) {
+                if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20) {
+                    // no consolidate for now, often crashes!
                     return;
                 }
         }
