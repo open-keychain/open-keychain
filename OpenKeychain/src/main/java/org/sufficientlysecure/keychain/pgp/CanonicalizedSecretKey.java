@@ -19,14 +19,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import java.nio.ByteBuffer;
-import java.security.PrivateKey;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.RSAPrivateCrtKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bouncycastle.bcpg.S2K;
 import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.bouncycastle.openpgp.PGPException;
@@ -51,6 +43,14 @@ import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+
+import java.nio.ByteBuffer;
+import java.security.PrivateKey;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**

@@ -18,8 +18,6 @@
 package org.sufficientlysecure.keychain.remote;
 
 
-import java.util.ArrayList;
-
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +36,8 @@ import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
+
+import java.util.ArrayList;
 
 public class ApiPendingIntentFactory {
 

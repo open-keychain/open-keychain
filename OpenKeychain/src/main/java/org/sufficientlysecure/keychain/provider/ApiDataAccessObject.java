@@ -19,10 +19,6 @@
 package org.sufficientlysecure.keychain.provider;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -34,6 +30,10 @@ import android.os.RemoteException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.remote.AppSettings;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class ApiDataAccessObject {

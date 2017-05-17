@@ -236,7 +236,6 @@ public class ViewKeyFragment extends LoaderFragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         mMasterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
         mDataUri = KeyRings.buildGenericKeyRingUri(mMasterKeyId);
         mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);

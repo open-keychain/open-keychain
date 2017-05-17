@@ -8,6 +8,20 @@
         android:id="@+id/zxing_barcode_scanner"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"/>
+
+    <Button
+        style="?android:buttonBarButtonStyle"
+        android:id="@+id/private_key_import_help_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:text="@string/title_help"
+        android:textColor="@color/colorPrimary"
+        android:padding="12dp"
+        android:visibility="gone"/>
 
 </RelativeLayout>

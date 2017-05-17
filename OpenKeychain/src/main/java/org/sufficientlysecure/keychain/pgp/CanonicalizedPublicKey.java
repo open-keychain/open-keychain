@@ -18,7 +18,6 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-
 import java.io.IOException;
 import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;

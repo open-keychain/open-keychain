@@ -18,8 +18,6 @@
 package org.sufficientlysecure.keychain.remote.ui;
 
 
-import java.util.Set;
-
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
@@ -42,6 +40,8 @@ import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.KeySelectableAdapter;
 import org.sufficientlysecure.keychain.ui.widget.FixedListView;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Set;
 
 public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String ARG_DATA_URI = "uri";

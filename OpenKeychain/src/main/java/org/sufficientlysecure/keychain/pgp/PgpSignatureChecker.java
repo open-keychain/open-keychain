@@ -18,7 +18,6 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,12 +36,22 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureHashAlgorithm;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureHashAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.SignatureException;
+import java.util.List;
 
 
 /** This class is used to track the state of a single signature verification.

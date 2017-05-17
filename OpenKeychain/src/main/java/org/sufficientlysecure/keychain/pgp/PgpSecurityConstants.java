@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -37,6 +36,7 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.SymmetricAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
+
 
 
 /**

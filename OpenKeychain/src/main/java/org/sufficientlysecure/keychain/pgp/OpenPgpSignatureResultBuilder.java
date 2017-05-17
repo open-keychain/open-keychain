@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -32,6 +31,11 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * This class can be used to build OpenPgpSignatureResult objects based on several checks.

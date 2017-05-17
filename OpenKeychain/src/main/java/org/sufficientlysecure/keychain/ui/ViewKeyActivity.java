@@ -19,11 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -71,6 +66,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.network.NetworkReceiver;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -102,6 +98,11 @@ import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+
 
 public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
@@ -122,6 +123,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     static final int REQUEST_BACKUP = 2;
     static final int REQUEST_CERTIFY = 3;
     static final int REQUEST_DELETE = 4;
+    static final int REQUEST_WLAN = 5;
 
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
     public static final String EXTRA_LINKED_TRANSITION = "linked_transition";
@@ -145,6 +147,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private ImageButton mActionEncryptFile;
     private ImageButton mActionEncryptText;
     private ImageButton mActionNfc;
+    private ImageButton mActionWifi;
     private FloatingActionButton mFab;
     private ImageView mPhoto;
     private FrameLayout mPhotoLayout;
@@ -199,6 +202,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         mActionEncryptFile = (ImageButton) findViewById(R.id.view_key_action_encrypt_files);
         mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
         mActionNfc = (ImageButton) findViewById(R.id.view_key_action_nfc);
+        mActionWifi = (ImageButton) findViewById(R.id.view_key_action_wifi);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mPhoto = (ImageView) findViewById(R.id.view_key_photo);
         mPhotoLayout = (FrameLayout) findViewById(R.id.view_key_photo_layout);
@@ -212,6 +216,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         ContentDescriptionHint.setup(mActionEncryptFile);
         ContentDescriptionHint.setup(mActionEncryptText);
         ContentDescriptionHint.setup(mActionNfc);
+        ContentDescriptionHint.setup(mActionWifi);
         ContentDescriptionHint.setup(mFab);
 
 
@@ -315,6 +320,20 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
         });
 
+        mActionWifi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (NetworkReceiver.isConnectedTypeWifi(ViewKeyActivity.this)) {
+                    if (!startPassphraseActivity(REQUEST_WLAN)) {
+                        startWlanActivity();
+                    }
+                } else {
+                    Notify.create(ViewKeyActivity.this,
+                            R.string.private_key_error_wifi, Notify.Style.ERROR).show();
+                }
+            }
+        });
+
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
         getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
@@ -378,7 +397,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 return true;
             }
             case R.id.menu_key_view_backup: {
-                startPassphraseActivity(REQUEST_BACKUP);
+                if (!startPassphraseActivity(REQUEST_BACKUP)) {
+                    startBackupActivity();
+                }
                 return true;
             }
             case R.id.menu_key_view_delete: {
@@ -527,7 +548,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         ActivityCompat.startActivity(this, qrCodeIntent, opts);
     }
 
-    private void startPassphraseActivity(int requestCode) {
+    private boolean startPassphraseActivity(int requestCode) {
 
         if (keyHasPassphrase()) {
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
@@ -536,9 +557,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
             startActivityForResult(intent, requestCode);
-        } else {
-            startBackupActivity();
+            return true;
         }
+        return false;
     }
 
     private boolean keyHasPassphrase() {
@@ -564,6 +585,12 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         Intent intent = new Intent(this, BackupActivity.class);
         intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[]{mMasterKeyId});
         intent.putExtra(BackupActivity.EXTRA_SECRET, true);
+        startActivity(intent);
+    }
+
+    private void startWlanActivity() {
+        Intent intent = new Intent(ViewKeyActivity.this, PrivateKeyExportActivity.class);
+        intent.putExtra(PrivateKeyExportActivity.EXTRA_MASTER_KEY_ID, mMasterKeyId);
         startActivity(intent);
     }
 
@@ -635,6 +662,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
                     result.createNotify(this).show();
                 }
+                return;
+            }
+
+            case REQUEST_WLAN: {
+                startWlanActivity();
                 return;
             }
 
@@ -1017,6 +1049,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
                         mActionNfc.setVisibility(View.INVISIBLE);
+                        mActionWifi.setVisibility(View.INVISIBLE);
                         hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsSecret) {
@@ -1060,6 +1093,13 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         } else {
                             mActionNfc.setVisibility(View.INVISIBLE);
                         }
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            mActionWifi.setVisibility(View.VISIBLE);
+                        } else {
+                            mActionWifi.setVisibility(View.INVISIBLE);
+                        }
+
                         showFab();
                         // noinspection deprecation (no getDrawable with theme at current minApi level 15!)
                         mFab.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
@@ -1068,6 +1108,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         mActionEncryptText.setVisibility(View.VISIBLE);
                         mQrCodeLayout.setVisibility(View.GONE);
                         mActionNfc.setVisibility(View.INVISIBLE);
+                        mActionWifi.setVisibility(View.INVISIBLE);
 
                         if (mIsVerified) {
                             mStatusText.setText(R.string.view_key_verified);

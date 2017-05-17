@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 

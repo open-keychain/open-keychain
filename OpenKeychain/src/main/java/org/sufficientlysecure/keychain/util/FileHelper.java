@@ -260,19 +260,7 @@ public class FileHelper {
     public static String readTextFromUri(Context context, Uri outputUri, String charset)
         throws IOException {
 
-        byte[] decryptedMessage;
-        {
-            InputStream in = context.getContentResolver().openInputStream(outputUri);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buf = new byte[256];
-            int read;
-            while ( (read = in.read(buf)) > 0) {
-                out.write(buf, 0, read);
-            }
-            in.close();
-            out.close();
-            decryptedMessage = out.toByteArray();
-        }
+        byte[] decryptedMessage = readBytesFromUri(context, outputUri);
 
         String plaintext;
         if (charset != null) {
@@ -288,6 +276,20 @@ public class FileHelper {
 
         return plaintext;
 
+    }
+
+    public static byte[] readBytesFromUri(Context context, Uri outputUri) throws IOException {
+        InputStream in = context.getContentResolver().openInputStream(outputUri);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buf = new byte[256];
+        int read;
+        while ((read = in.read(buf)) > 0) {
+            out.write(buf, 0, read);
+        }
+        in.close();
+        out.close();
+
+        return out.toByteArray();
     }
 
     public static void copyUriData(Context context, Uri fromUri, Uri toUri) throws IOException {

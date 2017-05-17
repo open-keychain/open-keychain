@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
+import org.sufficientlysecure.keychain.network.KeyImportSocket;
+import org.sufficientlysecure.keychain.network.NetworkReceiver;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -45,7 +48,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 
-public class ImportKeysFileFragment extends Fragment {
+public class ImportKeysFileFragment extends Fragment implements KeyImportSocket.KeyImportListener {
 
     private Activity mActivity;
     private ImportKeysListener mCallback;
@@ -53,6 +56,7 @@ public class ImportKeysFileFragment extends Fragment {
     private Uri mCurrentUri;
 
     private static final int REQUEST_CODE_FILE = 0x00007003;
+    private static final int REQUEST_CODE_SCAN = 0x00007004;
 
     /**
      * Creates new instance of this fragment
@@ -90,6 +94,11 @@ public class ImportKeysFileFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.import_keys_file_fragment, menu);
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            MenuItem item = menu.findItem(R.id.menu_import_keys_wifi);
+            item.setVisible(false);
+        }
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -103,6 +112,15 @@ public class ImportKeysFileFragment extends Fragment {
                 // or gpg types!
                 FileHelper.openDocument(ImportKeysFileFragment.this,
                         Uri.fromFile(Constants.Path.APP_DIR), "*/*", false, REQUEST_CODE_FILE);
+                return true;
+            case R.id.menu_import_keys_wifi:
+                if (NetworkReceiver.isConnectedTypeWifi(mActivity)) {
+                    Intent scanQrCode = new Intent(getActivity(), ImportKeysProxyActivity.class);
+                    scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_PRIVATE_KEY_IMPORT);
+                    startActivityForResult(scanQrCode, REQUEST_CODE_SCAN);
+                } else {
+                    Notify.create(mActivity, R.string.private_key_error_wifi, Style.ERROR).show();
+                }
                 return true;
             case R.id.menu_import_keys_file_paste:
                 CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
@@ -135,6 +153,14 @@ public class ImportKeysFileFragment extends Fragment {
                 }
                 break;
             }
+            case REQUEST_CODE_SCAN:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    String qrContent = data.getStringExtra(ImportKeysProxyActivity.EXTRA_SCANNED_CONTENT);
+                    if (qrContent != null) {
+                        KeyImportSocket.getInstance(this).startImport(qrContent);
+                    }
+                }
+                break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }
@@ -175,4 +201,12 @@ public class ImportKeysFileFragment extends Fragment {
         }
     }
 
+    @Override
+    public void importKey(byte[] key) {
+        if (key == null) {
+            Notify.create(mActivity, R.string.error_bad_data, Style.ERROR).show();
+        } else {
+            mCallback.loadKeys(new BytesLoaderState(key, null));
+        }
+    }
 }

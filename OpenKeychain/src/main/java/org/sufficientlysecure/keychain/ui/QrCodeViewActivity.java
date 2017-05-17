@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.network.KeyExportSocket;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
@@ -37,31 +40,41 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class QrCodeViewActivity extends BaseActivity {
+public class QrCodeViewActivity extends BaseActivity implements KeyExportSocket.ExportKeyListener {
+    public static String EXTRA_QR_CODE_CONTENT = "qr_code_content";
+    public static String EXTRA_TITLE_RES_ID = "title_res_id";
+    public static String EXTRA_EXPORT_PRIVATE_KEY = "export_private_key";
+    public static String EXTRA_WHITE_TOOLBAR = "white_toolbar";
 
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
+    private boolean mWhiteToolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inflate a "Done" custom action bar
-        setFullScreenDialogClose(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // "Done"
-                        ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
-                    }
-                }
-        );
+        Intent intent = getIntent();
+        String qrCodeContent = intent.getStringExtra(EXTRA_QR_CODE_CONTENT);
+        int titleResId = intent.getIntExtra(EXTRA_TITLE_RES_ID, -1);
+        boolean exportPrivateKey = intent.getBooleanExtra(EXTRA_EXPORT_PRIVATE_KEY, false);
+        mWhiteToolbar = intent.getBooleanExtra(EXTRA_WHITE_TOOLBAR, false);
 
         Uri dataUri = getIntent().getData();
-        if (dataUri == null) {
+        if (dataUri == null && qrCodeContent == null) {
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
             ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
             return;
+        }
+
+        initView();
+
+        if (titleResId > 0) {
+            setTitle(titleResId);
+        }
+
+        if (exportPrivateKey) {
+            KeyExportSocket.setListener(this);
         }
 
         mQrCode = (ImageView) findViewById(R.id.qr_code_image);
@@ -76,19 +89,25 @@ public class QrCodeViewActivity extends BaseActivity {
 
         KeyRepository keyRepository = KeyRepository.createDatabaseInteractor(this);
         try {
-            byte[] blob = keyRepository.getCachedPublicKeyRing(dataUri).getFingerprint();
-            if (blob == null) {
-                Log.e(Constants.TAG, "key not found!");
-                Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
-                ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
-            }
+            final Bitmap qrCode;
 
-            Uri uri = new Uri.Builder()
-                    .scheme(Constants.FINGERPRINT_SCHEME)
-                    .opaquePart(KeyFormattingUtils.convertFingerprintToHex(blob))
-                    .build();
-            // create a minimal size qr code, we can keep this in ram no problem
-            final Bitmap qrCode = QrCodeUtils.getQRCodeBitmap(uri, 0);
+            if (dataUri != null) {
+                byte[] blob = keyRepository.getCachedPublicKeyRing(dataUri).getFingerprint();
+                if (blob == null) {
+                    Log.e(Constants.TAG, "key not found!");
+                    Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
+                    ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
+                }
+
+                Uri uri = new Uri.Builder()
+                        .scheme(Constants.FINGERPRINT_SCHEME)
+                        .opaquePart(KeyFormattingUtils.convertFingerprintToHex(blob))
+                        .build();
+                // create a minimal size qr code, we can keep this in ram no problem
+                qrCode = QrCodeUtils.getQRCodeBitmap(uri, 0);
+            } else {
+                qrCode = QrCodeUtils.getQRCodeBitmap(qrCodeContent, 0);
+            }
 
             mQrCode.getViewTreeObserver().addOnGlobalLayoutListener(
                     new OnGlobalLayoutListener() {
@@ -107,9 +126,36 @@ public class QrCodeViewActivity extends BaseActivity {
         }
     }
 
+    private void initView() {
+        setContentView(mWhiteToolbar ? R.layout.qr_code_white_activity : R.layout.qr_code_activity);
+        initToolbar();
+
+        // Inflate a "Done" custom action bar
+        setFullScreenDialogClose(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // "Done"
+                        ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
+                    }
+                }, !mWhiteToolbar
+        );
+    }
+
     @Override
-    protected void initLayout() {
-        setContentView(R.layout.qr_code_activity);
+    public void loadKey() {
+        setResult(Activity.RESULT_OK);
+        finish();
+    }
+
+    @Override
+    public void showConnectionDetails(String connectionDetails) {
+        // not used here
+    }
+
+    @Override
+    public void keyExported() {
+        // not used here
     }
 
 }

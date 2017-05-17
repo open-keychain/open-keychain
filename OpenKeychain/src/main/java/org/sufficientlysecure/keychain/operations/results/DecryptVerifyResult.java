@@ -19,10 +19,10 @@
 package org.sufficientlysecure.keychain.operations.results;
 
 
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import android.os.Parcel;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
@@ -31,6 +31,10 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class DecryptVerifyResult extends InputPendingResult {
 
