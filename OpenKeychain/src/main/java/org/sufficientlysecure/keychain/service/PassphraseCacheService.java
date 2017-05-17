@@ -503,7 +503,8 @@ public class PassphraseCacheService extends Service {
                 .setColor(getResources().getColor(R.color.primary))
                 .setContentTitle(getResources().getQuantityString(R.plurals.passp_cache_notif_n_keys,
                         mPassphraseCache.size(), mPassphraseCache.size()))
-                .setContentText(getString(R.string.passp_cache_notif_touch_to_clear));
+                .setContentText(getString(R.string.passp_cache_notif_touch_to_clear))
+                .setPriority(NotificationCompat.PRIORITY_MIN);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
