@@ -321,7 +321,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             JcePGPDataEncryptorBuilder encryptorBuilder =
                     new JcePGPDataEncryptorBuilder(algo)
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME)
-                            .setWithIntegrityPacket(data.isIntegrityProtected());
+                            .setWithIntegrityPacket(true);
 
             cPk = new PGPEncryptedDataGenerator(encryptorBuilder);
 

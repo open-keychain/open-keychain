@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="@layout/remote_security_issue_dialog">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:text="Security Warning"
+        android:id="@+id/dialog_title"
+        />
+
+    <TextView
+        android:id="@+id/api_register_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="The key this message was sent by is using an outdated algorithm, and is no longer considered secure!"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="The algorithm in use is DSA 1024 bit, which has been considered insecure since 2010."
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:text="Recommended Action"
+        android:id="@+id/dialog_title_2"
+        />
+
+    <TextView
+        android:id="@+id/api_register_text_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="The key in use is insecure, and cannot be updated. To communicate securely, the sender must create a new key!"
+        />
+
+</merge>
+

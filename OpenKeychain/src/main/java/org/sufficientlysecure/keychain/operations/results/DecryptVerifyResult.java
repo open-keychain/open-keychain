@@ -19,16 +19,12 @@
 package org.sufficientlysecure.keychain.operations.results;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import android.os.Parcel;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem;
+import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
@@ -40,7 +36,7 @@ public class DecryptVerifyResult extends InputPendingResult {
     OpenPgpSignatureResult mSignatureResult;
     OpenPgpDecryptionResult mDecryptionResult;
     OpenPgpMetadata mDecryptionMetadata;
-    ArrayList<SecurityProblem> mSecurityProblems;
+    DecryptVerifySecurityProblem mSecurityProblem;
 
     CryptoInputParcel mCachedCryptoInputParcel;
 
@@ -73,7 +69,7 @@ public class DecryptVerifyResult extends InputPendingResult {
         mCachedCryptoInputParcel = source.readParcelable(CryptoInputParcel.class.getClassLoader());
         mSkippedDisallowedKeys = source.createLongArray();
 
-        mSecurityProblems = (ArrayList<SecurityProblem>) source.readSerializable();
+        mSecurityProblem = (DecryptVerifySecurityProblem) source.readSerializable();
     }
 
 
@@ -137,7 +133,7 @@ public class DecryptVerifyResult extends InputPendingResult {
         dest.writeParcelable(mCachedCryptoInputParcel, flags);
         dest.writeLongArray(mSkippedDisallowedKeys);
 
-        dest.writeSerializable(mSecurityProblems);
+        dest.writeSerializable(mSecurityProblem);
     }
 
     public static final Creator<DecryptVerifyResult> CREATOR = new Creator<DecryptVerifyResult>() {
@@ -150,28 +146,11 @@ public class DecryptVerifyResult extends InputPendingResult {
         }
     };
 
-    public void addSecurityProblem(SecurityProblem securityProblem) {
-        if (securityProblem == null) {
-            return;
-        }
-        if (mSecurityProblems == null) {
-            mSecurityProblems = new ArrayList<>();
-        }
-        mSecurityProblems.add(securityProblem);
+    public DecryptVerifySecurityProblem getSecurityProblem() {
+        return mSecurityProblem;
     }
 
-    public void addSecurityProblems(List<SecurityProblem> securityProblems) {
-        if (securityProblems == null) {
-            return;
-        }
-        if (mSecurityProblems == null) {
-            mSecurityProblems = new ArrayList<>();
-        }
-        mSecurityProblems.addAll(securityProblems);
-    }
-
-    public List<SecurityProblem> getSecurityProblems() {
-        return mSecurityProblems != null ?
-                Collections.unmodifiableList(mSecurityProblems) : Collections.<SecurityProblem>emptyList();
+    public void setSecurityProblemResult(DecryptVerifySecurityProblem securityProblem) {
+        mSecurityProblem = securityProblem;
     }
 }

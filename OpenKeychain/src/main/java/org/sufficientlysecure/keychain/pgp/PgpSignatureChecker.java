@@ -25,7 +25,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SignatureException;
-import java.util.List;
 
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPOnePassSignature;
@@ -37,11 +36,12 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureHashAlgorithm;
+import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem.DecryptVerifySecurityProblemBuilder;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSigningAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.util.Log;
 
 
@@ -52,20 +52,24 @@ import org.sufficientlysecure.keychain.util.Log;
 class PgpSignatureChecker {
 
     private final OpenPgpSignatureResultBuilder signatureResultBuilder;
+    private final DecryptVerifySecurityProblemBuilder securityProblemBuilder;
 
     private CanonicalizedPublicKey signingKey;
 
     private int signatureIndex;
-    PGPOnePassSignature onePassSignature;
-    PGPSignature signature;
+    private PGPOnePassSignature onePassSignature;
+    private PGPSignature signature;
 
-    KeyRepository mKeyRepository;
+    private KeyRepository mKeyRepository;
 
-    PgpSignatureChecker(KeyRepository keyRepository, String senderAddress) {
+    PgpSignatureChecker(KeyRepository keyRepository, String senderAddress,
+            DecryptVerifySecurityProblemBuilder securityProblemBuilder) {
         mKeyRepository = keyRepository;
 
         signatureResultBuilder = new OpenPgpSignatureResultBuilder(keyRepository);
         signatureResultBuilder.setSenderAddress(senderAddress);
+
+        this.securityProblemBuilder = securityProblemBuilder;
     }
 
     boolean initializeSignature(Object dataChunk, OperationLog log, int indent) throws PGPException {
@@ -142,11 +146,12 @@ class PgpSignatureChecker {
                 PgpSecurityConstants.checkForSecurityProblems(signingKey);
         if (keySecurityProblem != null) {
             log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
-            signatureResultBuilder.addSecurityProblem(keySecurityProblem);
+            securityProblemBuilder.addSigningKeyProblem(keySecurityProblem);
+            signatureResultBuilder.setInsecure(true);
         }
     }
 
-    public boolean isInitialized() {
+    boolean isInitialized() {
         return signingKey != null;
     }
 
@@ -173,7 +178,7 @@ class PgpSignatureChecker {
         }
     }
 
-    public void findAvailableSignature(PGPSignatureList sigList) {
+    private void findAvailableSignature(PGPSignatureList sigList) {
         // go through all signatures (should be just one), make sure we have
         //  the key and it matches the one we’re looking for
         for (int i = 0; i < sigList.size(); ++i) {
@@ -238,11 +243,12 @@ class PgpSignatureChecker {
         }
 
         // check for insecure hash algorithms
-        InsecureHashAlgorithm signatureSecurityProblem =
+        InsecureSigningAlgorithm signatureSecurityProblem =
                 PgpSecurityConstants.checkSignatureAlgorithmForSecurityProblems(signature.getHashAlgorithm());
         if (signatureSecurityProblem != null) {
             log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
-            signatureResultBuilder.addSecurityProblem(signatureSecurityProblem);
+            securityProblemBuilder.addSignatureSecurityProblem(signatureSecurityProblem);
+            signatureResultBuilder.setInsecure(true);
         }
 
         signatureResultBuilder.setSignatureTimestamp(signature.getCreationTime());
@@ -275,11 +281,12 @@ class PgpSignatureChecker {
         }
 
         // check for insecure hash algorithms
-        InsecureHashAlgorithm signatureSecurityProblem =
+        InsecureSigningAlgorithm signatureSecurityProblem =
                 PgpSecurityConstants.checkSignatureAlgorithmForSecurityProblems(onePassSignature.getHashAlgorithm());
         if (signatureSecurityProblem != null) {
             log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
-            signatureResultBuilder.addSecurityProblem(signatureSecurityProblem);
+            securityProblemBuilder.addSignatureSecurityProblem(signatureSecurityProblem);
+            signatureResultBuilder.setInsecure(true);
         }
 
         signatureResultBuilder.setSignatureTimestamp(messageSignature.getCreationTime());
@@ -295,10 +302,6 @@ class PgpSignatureChecker {
 
     public OpenPgpSignatureResult getSignatureResult() {
         return signatureResultBuilder.build();
-    }
-
-    public List<SecurityProblem> getSecurityProblems() {
-        return signatureResultBuilder.getSecurityProblems();
     }
 
     /**

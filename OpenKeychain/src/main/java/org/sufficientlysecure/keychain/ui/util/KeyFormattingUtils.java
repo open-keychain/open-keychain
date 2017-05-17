@@ -18,6 +18,15 @@
 
 package org.sufficientlysecure.keychain.ui.util;
 
+
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.security.DigestException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
+import java.util.Locale;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -34,8 +43,12 @@ import android.widget.ViewAnimator;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;
+import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
+import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.bouncycastle.crypto.ec.CustomNamedCurves;
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.operator.jcajce.PGPUtil;
 import org.bouncycastle.util.encoders.Hex;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpSignatureResult;
@@ -47,14 +60,6 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.security.DigestException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.Locale;
 
 public class KeyFormattingUtils {
 
@@ -223,6 +228,47 @@ public class KeyFormattingUtils {
             return context.getResources().getString(R.string.unknown);
         } else {
             return "unknown";
+        }
+    }
+
+    public static String getHashAlgoName(int hashAlgo) {
+        try {
+            return PGPUtil.getDigestName(hashAlgo);
+        } catch (PGPException e) {
+            return "#" + hashAlgo;
+        }
+    }
+
+    public static String getSymmetricCipherName(int algorithm) {
+        switch (algorithm) {
+            case SymmetricKeyAlgorithmTags.TRIPLE_DES:
+                return "Triple-DES";
+            case SymmetricKeyAlgorithmTags.IDEA:
+                return "IDEA";
+            case SymmetricKeyAlgorithmTags.CAST5:
+                return "CAST5";
+            case SymmetricKeyAlgorithmTags.BLOWFISH:
+                return "Blowfish";
+            case SymmetricKeyAlgorithmTags.SAFER:
+                return "SAFER";
+            case SymmetricKeyAlgorithmTags.DES:
+                return "DES";
+            case SymmetricKeyAlgorithmTags.AES_128:
+                return "AES-128";
+            case SymmetricKeyAlgorithmTags.AES_192:
+                return "AES-192";
+            case SymmetricKeyAlgorithmTags.AES_256:
+                return "AES-256";
+            case SymmetricKeyAlgorithmTags.CAMELLIA_128:
+                return "Camellia-128";
+            case SymmetricKeyAlgorithmTags.CAMELLIA_192:
+                return "Camellia-192";
+            case SymmetricKeyAlgorithmTags.CAMELLIA_256:
+                return "Camellia-256";
+            case SymmetricKeyAlgorithmTags.TWOFISH:
+                return "Twofish";
+            default:
+                return "#" + algorithm;
         }
     }
 

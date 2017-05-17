@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.OverriddenWarnings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
@@ -51,7 +52,7 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 20;
+    private static final int DATABASE_VERSION = 21;
     private Context mContext;
 
     public interface Tables {
@@ -63,6 +64,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String CERTS = "certs";
         String API_APPS = "api_apps";
         String API_ALLOWED_KEYS = "api_allowed_keys";
+        String OVERRIDDEN_WARNINGS = "overridden_warnings";
     }
 
     private static final String CREATE_KEYRINGS_PUBLIC =
@@ -170,6 +172,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + ApiAppsAllowedKeysColumns.PACKAGE_NAME + "), "
                 + "FOREIGN KEY(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") REFERENCES "
                 + Tables.API_APPS + "(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
+                + ")";
+
+    private static final String CREATE_OVERRIDDEN_WARNINGS =
+            "CREATE TABLE IF NOT EXISTS " + Tables.OVERRIDDEN_WARNINGS + " ("
+                    + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + OverriddenWarnings.IDENTIFIER + " TEXT NOT NULL UNIQUE "
                 + ")";
 
     public KeychainDatabase(Context context) {
@@ -281,10 +289,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 15:
                 db.execSQL("CREATE INDEX uids_by_name ON user_packets (name COLLATE NOCASE)");
                 db.execSQL("CREATE INDEX uids_by_email ON user_packets (email COLLATE NOCASE)");
-                if (oldVersion == 14) {
-                    // no consolidate necessary
-                    return;
-                }
             case 16:
                 // splitUserId changed: Execute consolidate for new parsing of name, email
             case 17:
@@ -294,10 +298,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 19:
                 // emergency fix for crashing consolidate
                 db.execSQL("UPDATE keys SET is_secure = 1;");
-                if (oldVersion == 18 || oldVersion == 19) {
-                    // no consolidate for now, often crashes!
-                    return;
-                }
             /* TODO actually drop this table. leaving it around for now!
             case 20:
                 db.execSQL("DROP TABLE api_accounts");
@@ -306,6 +306,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     return;
                 }
             */
+            case 20:
+                db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
+                if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20) {
+                    // no consolidate for now, often crashes!
+                    return;
+                }
         }
 
         // TODO: don't depend on consolidate! make migrations inline!

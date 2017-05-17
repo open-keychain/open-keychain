@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    tools:showIn="@layout/remote_security_issue_dialog">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:text="@string/dialog_insecure_title"
+        android:id="@+id/dialog_title"
+        />
+
+    <TextView
+        android:id="@+id/dialog_insecure_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        tools:text="The key this message was sent by is using an outdated algorithm, and is no longer considered secure!\n\nThe algorithm in use is DSA 1024 bit, which has been considered insecure since 2010."
+        />
+
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/dialog_insecure_secondary_layout"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        android:measureAllChildren="true"
+        custom:initialView="1">
+
+        <android.support.v4.widget.Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:text="@string/dialog_insecure_recommend_title"
+                android:id="@+id/dialog_title_2"
+                />
+
+            <TextView
+                android:id="@+id/dialog_insecure_recommend_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="The key in use is insecure, and cannot be updated. To communicate securely, the sender must create a new key!"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="@color/android_red_light"
+                android:text="@string/dialog_insecure_override_title"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:id="@+id/dialog_insecure_override_text"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="@string/dialog_insecure_override"
+                />
+
+        </LinearLayout>
+
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+
+</merge>
+

@@ -56,6 +56,7 @@ public class FoldableLinearLayout extends LinearLayout {
 
     private String mFoldedLabel;
     private String mUnFoldedLabel;
+    private boolean mInitializeFolded;
 
     public FoldableLinearLayout(Context context) {
         super(context);
@@ -84,6 +85,7 @@ public class FoldableLinearLayout extends LinearLayout {
                     R.styleable.FoldableLinearLayout, 0, 0);
             mFoldedLabel = a.getString(R.styleable.FoldableLinearLayout_foldedLabel);
             mUnFoldedLabel = a.getString(R.styleable.FoldableLinearLayout_unFoldedLabel);
+            mInitializeFolded = a.getBoolean(R.styleable.FoldableLinearLayout_initializeFolded, true);
             a.recycle();
         }
         // If any attribute isn't found then set a default one
@@ -101,6 +103,10 @@ public class FoldableLinearLayout extends LinearLayout {
         }
 
         initialiseInnerViews();
+
+        if (!mInitializeFolded) {
+            toggleFolded();
+        }
 
         super.onFinishInflate();
     }
@@ -149,40 +155,44 @@ public class FoldableLinearLayout extends LinearLayout {
         foldableControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFolded = !mFolded;
-                if (mFolded) {
-                    mFoldableIcon.setImageResource(R.drawable.ic_expand_less_black_24dp);
-                    mFoldableContainer.setVisibility(View.VISIBLE);
-                    AlphaAnimation animation = new AlphaAnimation(0f, 1f);
-                    animation.setDuration(mShortAnimationDuration);
-                    mFoldableContainer.startAnimation(animation);
-                    mFoldableTextView.setText(mUnFoldedLabel);
-
-                } else {
-                    mFoldableIcon.setImageResource(R.drawable.ic_expand_more_black_24dp);
-                    AlphaAnimation animation = new AlphaAnimation(1f, 0f);
-                    animation.setDuration(mShortAnimationDuration);
-                    animation.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            // making sure that at the end the container is completely removed from view
-                            mFoldableContainer.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-                        }
-                    });
-                    mFoldableContainer.startAnimation(animation);
-                    mFoldableTextView.setText(mFoldedLabel);
-                }
+                toggleFolded();
             }
         });
 
+    }
+
+    private void toggleFolded() {
+        mFolded = !mFolded;
+        if (mFolded) {
+            mFoldableIcon.setImageResource(R.drawable.ic_expand_less_black_24dp);
+            mFoldableContainer.setVisibility(View.VISIBLE);
+            AlphaAnimation animation = new AlphaAnimation(0f, 1f);
+            animation.setDuration(mShortAnimationDuration);
+            mFoldableContainer.startAnimation(animation);
+            mFoldableTextView.setText(mUnFoldedLabel);
+
+        } else {
+            mFoldableIcon.setImageResource(R.drawable.ic_expand_more_black_24dp);
+            AlphaAnimation animation = new AlphaAnimation(1f, 0f);
+            animation.setDuration(mShortAnimationDuration);
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    // making sure that at the end the container is completely removed from view
+                    mFoldableContainer.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            mFoldableContainer.startAnimation(animation);
+            mFoldableTextView.setText(mFoldedLabel);
+        }
     }
 
     /**

@@ -8,6 +8,7 @@
     <declare-styleable name="FoldableLinearLayout">
         <attr name="foldedLabel" format="string" />
         <attr name="unFoldedLabel" format="string" />
+        <attr name="initializeFolded" format="boolean" />
     </declare-styleable>
 
     <!-- Taken from Matt Allen Password Strength View

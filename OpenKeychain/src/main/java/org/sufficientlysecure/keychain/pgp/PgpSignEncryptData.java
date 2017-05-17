@@ -27,28 +27,26 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 
 
 public class PgpSignEncryptData implements Parcelable {
-
-    protected String mVersionHeader = null;
-    protected boolean mEnableAsciiArmorOutput = false;
-    protected int mCompressionAlgorithm = CompressionAlgorithmTags.UNCOMPRESSED;
-    protected long[] mEncryptionMasterKeyIds = null;
-    protected Passphrase mSymmetricPassphrase = null;
-    protected int mSymmetricEncryptionAlgorithm = PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT;
-    protected long mSignatureMasterKeyId = Constants.key.none;
-    protected Long mSignatureSubKeyId = null;
-    protected int mSignatureHashAlgorithm = PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT;
-    protected long mAdditionalEncryptId = Constants.key.none;
-    protected String mCharset;
-    protected boolean mCleartextSignature;
-    protected boolean mDetachedSignature = false;
-    protected boolean mHiddenRecipients = false;
-    protected boolean mIntegrityProtected = true;
-    protected boolean mAddBackupHeader = false;
+    private String mVersionHeader = null;
+    private boolean mEnableAsciiArmorOutput = false;
+    private int mCompressionAlgorithm = CompressionAlgorithmTags.UNCOMPRESSED;
+    private long[] mEncryptionMasterKeyIds = null;
+    private Passphrase mSymmetricPassphrase = null;
+    private int mSymmetricEncryptionAlgorithm = PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT;
+    private long mSignatureMasterKeyId = Constants.key.none;
+    private Long mSignatureSubKeyId = null;
+    private int mSignatureHashAlgorithm = PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT;
+    private long mAdditionalEncryptId = Constants.key.none;
+    private String mCharset;
+    private boolean mCleartextSignature;
+    private boolean mDetachedSignature = false;
+    private boolean mHiddenRecipients = false;
+    private boolean mAddBackupHeader = false;
 
     public PgpSignEncryptData(){
     }
 
-    PgpSignEncryptData(Parcel source) {
+    private PgpSignEncryptData(Parcel source) {
         ClassLoader loader = getClass().getClassLoader();
 
         mVersionHeader = source.readString();
@@ -65,7 +63,6 @@ public class PgpSignEncryptData implements Parcelable {
         mCleartextSignature = source.readInt() == 1;
         mDetachedSignature = source.readInt() == 1;
         mHiddenRecipients = source.readInt() == 1;
-        mIntegrityProtected = source.readInt() == 1;
         mAddBackupHeader = source.readInt() == 1;
     }
 
@@ -95,7 +92,6 @@ public class PgpSignEncryptData implements Parcelable {
         dest.writeInt(mCleartextSignature ? 1 : 0);
         dest.writeInt(mDetachedSignature ? 1 : 0);
         dest.writeInt(mHiddenRecipients ? 1 : 0);
-        dest.writeInt(mIntegrityProtected ? 1 : 0);
         dest.writeInt(mAddBackupHeader ? 1 : 0);
     }
 
@@ -217,18 +213,6 @@ public class PgpSignEncryptData implements Parcelable {
 
     public PgpSignEncryptData setHiddenRecipients(boolean hiddenRecipients) {
         this.mHiddenRecipients = hiddenRecipients;
-        return this;
-    }
-
-    public boolean isIntegrityProtected() {
-        return mIntegrityProtected;
-    }
-
-    /**
-     * Only use for testing! Never disable integrity protection!
-     */
-    public PgpSignEncryptData setIntegrityProtected(boolean integrityProtected) {
-        this.mIntegrityProtected = integrityProtected;
         return this;
     }
 

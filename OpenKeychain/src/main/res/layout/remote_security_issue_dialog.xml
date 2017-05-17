@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:layout_marginTop="24dp"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:elevation="4dp"
+        android:background="?attr/colorPrimary"
+        android:gravity="center_horizontal"
+        tools:targetApi="lollipop">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:src="@drawable/link_24dp"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/icon_client_app"
+            tools:src="@drawable/apps_k9"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- The parent properly determines the height of this scroll view, it is *not* useless -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="ifContentScrolls"
+            tools:ignore="UselessParent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:paddingTop="24dp"
+                android:paddingBottom="16dp"
+                android:id="@+id/insecure_warning_layout"
+                >
+
+                <include layout="@layout/dialog_insecure_generic" />
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/dialog_insecure_button_bar"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        tools:layout_marginBottom="50dp"
+        custom:initialView="0">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:padding="8dp"
+            style="?buttonBarStyle">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_insecure_button_override"
+                android:id="@+id/button_override"
+                android:visibility="gone"
+                tools:visibility="visible"
+                style="?buttonBarButtonStyle" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_insecure_button_undo"
+                android:id="@+id/button_override_undo"
+                android:visibility="gone"
+                style="?buttonBarButtonStyle" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_insecure_button_view_key"
+                android:id="@+id/button_view_key"
+                android:visibility="gone"
+                tools:visibility="visible"
+                style="?buttonBarButtonStyle" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_insecure_button_ok"
+                android:id="@+id/button_allow"
+                style="?buttonBarButtonStyle" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:padding="8dp"
+            style="?buttonBarStyle">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back"
+                android:id="@+id/button_override_back"
+                style="?buttonBarButtonStyle" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_insecure_button_override_confirm"
+                android:id="@+id/button_override_confirm"
+                style="?buttonBarButtonStyle" />
+
+        </LinearLayout>
+
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+</LinearLayout>
