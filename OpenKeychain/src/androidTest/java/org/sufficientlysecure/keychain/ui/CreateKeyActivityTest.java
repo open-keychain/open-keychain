@@ -62,6 +62,7 @@ public class CreateKeyActivityTest {
 
     //@Test
     public void testCreateMyKey() {
+        /*
 
         mActivity.getActivity();
 
@@ -198,6 +199,7 @@ public class CreateKeyActivityTest {
         // Clicks create key
         onView(withId(R.id.create_key_next_button))
                 .perform(click());
+        */
     }
 
 }

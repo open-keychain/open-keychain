@@ -222,7 +222,7 @@ public class CreateKeyEmailFragment extends Fragment {
                 CreateSecurityTokenPinFragment frag = CreateSecurityTokenPinFragment.newInstance();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
             } else {
-                CreateKeyPassphraseFragment frag = CreateKeyPassphraseFragment.newInstance();
+                CreateKeyFinalFragment frag = CreateKeyFinalFragment.newInstance();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
             }
         }
