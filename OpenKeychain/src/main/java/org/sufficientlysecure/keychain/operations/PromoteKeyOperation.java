@@ -113,8 +113,8 @@ public class PromoteKeyOperation extends BaseReadWriteOperation<PromoteKeyringPa
         setPreventCancel();
 
         // Save the new keyring.
-        SaveKeyringResult saveResult = mKeyWritableRepository
-                .saveSecretKeyRing(promotedRing, new ProgressScaler(mProgressable, 60, 95, 100));
+        updateProgress(R.string.progress_saving, 80, 100);
+        SaveKeyringResult saveResult = mKeyWritableRepository.saveSecretKeyRing(promotedRing);
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here

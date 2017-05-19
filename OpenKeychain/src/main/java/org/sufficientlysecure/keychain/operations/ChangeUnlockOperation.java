@@ -90,8 +90,8 @@ public class ChangeUnlockOperation extends BaseReadWriteOperation<ChangeUnlockPa
         // It's a success, so this must be non-null now
         UncachedKeyRing ring = modifyResult.getRing();
 
-        SaveKeyringResult saveResult = mKeyWritableRepository
-                .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 70, 95, 100));
+        updateProgress(R.string.progress_saving, 80, 100);
+        SaveKeyringResult saveResult = mKeyWritableRepository.saveSecretKeyRing(ring);
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here

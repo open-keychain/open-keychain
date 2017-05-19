@@ -146,8 +146,8 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
             UploadKeyringParcel exportKeyringParcel =
                     new UploadKeyringParcel(saveParcel.getUploadKeyserver(), keyringBytes);
 
-            UploadResult uploadResult =
-                    new UploadOperation(mContext, mKeyRepository, mProgressable, mCancelled)
+            UploadResult uploadResult = new UploadOperation(
+                    mContext, mKeyRepository, new ProgressScaler(mProgressable, 60, 80, 100), mCancelled)
                             .execute(exportKeyringParcel, cryptoInput);
 
             log.add(uploadResult, 2);
@@ -161,8 +161,8 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
         }
 
         // Save the new keyring.
-        SaveKeyringResult saveResult = mKeyWritableRepository
-                .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 60, 95, 100));
+        updateProgress(R.string.progress_saving, 90, 100);
+        SaveKeyringResult saveResult = mKeyWritableRepository.saveSecretKeyRing(ring);
         log.add(saveResult, 1);
 
         // If the save operation didn't succeed, exit here

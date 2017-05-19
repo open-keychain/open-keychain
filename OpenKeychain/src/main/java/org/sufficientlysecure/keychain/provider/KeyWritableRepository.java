@@ -75,7 +75,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.Utf8Util;
 
 /**
@@ -179,8 +178,7 @@ public class KeyWritableRepository extends KeyRepository {
      * and need to be saved externally to be preserved past the operation.
      */
     @SuppressWarnings("unchecked")
-    private int saveCanonicalizedPublicKeyRing(CanonicalizedPublicKeyRing keyRing,
-                                               Progressable progress, boolean selfCertsAreTrusted) {
+    private int saveCanonicalizedPublicKeyRing(CanonicalizedPublicKeyRing keyRing, boolean selfCertsAreTrusted) {
 
         // start with ok result
         int result = SaveKeyringResult.SAVED_PUBLIC;
@@ -206,7 +204,6 @@ public class KeyWritableRepository extends KeyRepository {
             }
 
             log(LogType.MSG_IP_INSERT_SUBKEYS);
-            progress.setProgress(LogType.MSG_IP_INSERT_SUBKEYS.getMsgId(), 40, 100);
             mIndent += 1;
             { // insert subkeys
                 Uri uri = Keys.buildKeysUri(masterKeyId);
@@ -475,7 +472,6 @@ public class KeyWritableRepository extends KeyRepository {
             }
             mIndent -= 1;
 
-            progress.setProgress(LogType.MSG_IP_UID_REORDER.getMsgId(), 65, 100);
             log(LogType.MSG_IP_UID_REORDER);
             // primary before regular before revoked (see UserIdItem.compareTo)
             // this is a stable sort, so the order of keys is otherwise preserved.
@@ -563,11 +559,9 @@ public class KeyWritableRepository extends KeyRepository {
             }
 
             log(LogType.MSG_IP_APPLY_BATCH);
-            progress.setProgress(LogType.MSG_IP_APPLY_BATCH.getMsgId(), 75, 100);
             mContentResolver.applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
 
             log(LogType.MSG_IP_SUCCESS);
-            progress.setProgress(LogType.MSG_IP_SUCCESS.getMsgId(), 90, 100);
             return result;
 
         } catch (RemoteException e) {
@@ -762,7 +756,7 @@ public class KeyWritableRepository extends KeyRepository {
      * <p>
      * If you want to merge keys in-memory only and not save in database set skipSave=true.
      */
-    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, Progressable progress,
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing,
                                                String expectedFingerprint,
                                                ArrayList<CanonicalizedKeyRing> canKeyRings,
                                                boolean skipSave) {
@@ -858,13 +852,11 @@ public class KeyWritableRepository extends KeyRepository {
                 result = SaveKeyringResult.SAVED_PUBLIC
                         | (alreadyExists ? SaveKeyringResult.UPDATED : 0);
             } else {
-                result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);
+                result = saveCanonicalizedPublicKeyRing(canPublicRing, canSecretRing != null);
             }
 
             // Save the saved keyring (if any)
             if (canSecretRing != null) {
-                progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
-
                 int secretResult;
                 if (skipSave) {
                     // skip save method, set fixed result
@@ -887,16 +879,15 @@ public class KeyWritableRepository extends KeyRepository {
         }
     }
 
-    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, Progressable progress,
-                                               String expectedFingerprint) {
-        return savePublicKeyRing(publicRing, progress, expectedFingerprint, null, false);
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, String expectedFingerprint) {
+        return savePublicKeyRing(publicRing, expectedFingerprint, null, false);
     }
 
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
-        return savePublicKeyRing(keyRing, new ProgressScaler(), null);
+        return savePublicKeyRing(keyRing, null);
     }
 
-    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing, Progressable progress,
+    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing,
                                                ArrayList<CanonicalizedKeyRing> canKeyRings,
                                                boolean skipSave) {
 
@@ -996,14 +987,12 @@ public class KeyWritableRepository extends KeyRepository {
                 // skip save method, set fixed result
                 publicResult = SaveKeyringResult.SAVED_PUBLIC;
             } else {
-                publicResult = saveCanonicalizedPublicKeyRing(canPublicRing, progress, true);
+                publicResult = saveCanonicalizedPublicKeyRing(canPublicRing, true);
             }
 
             if ((publicResult & SaveKeyringResult.RESULT_ERROR) == SaveKeyringResult.RESULT_ERROR) {
                 return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
-
-            progress.setProgress(LogType.MSG_IP_REINSERT_SECRET.getMsgId(), 90, 100);
 
             int result;
             if (skipSave) {
@@ -1023,8 +1012,8 @@ public class KeyWritableRepository extends KeyRepository {
         }
     }
 
-    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing, Progressable progress) {
-        return saveSecretKeyRing(secretRing, progress, null, false);
+    public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing) {
+        return saveSecretKeyRing(secretRing, null, false);
     }
 
     @NonNull

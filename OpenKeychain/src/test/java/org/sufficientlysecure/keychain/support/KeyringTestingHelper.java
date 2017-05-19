@@ -18,15 +18,6 @@
 
 package org.sufficientlysecure.keychain.support;
 
-import android.content.Context;
-
-import org.bouncycastle.util.Arrays;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,6 +30,15 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+
+import android.content.Context;
+
+import org.bouncycastle.util.Arrays;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 
 /** Helper methods for keyring tests. */
 public class KeyringTestingHelper {
@@ -61,7 +61,7 @@ public class KeyringTestingHelper {
         // Should throw an exception; key is not yet saved
         retrieveKeyAndExpectNotFound(databaseInteractor, masterKeyId);
 
-        SaveKeyringResult saveKeyringResult = databaseInteractor.savePublicKeyRing(ring, new ProgressScaler(), null);
+        SaveKeyringResult saveKeyringResult = databaseInteractor.savePublicKeyRing(ring, null);
 
         boolean saveSuccess = saveKeyringResult.success();
 

@@ -211,7 +211,7 @@ public class KeychainExternalProviderTest {
 
     private void insertSecretKeyringFrom(String filename) throws Exception {
         UncachedKeyRing ring = readRingFromResource(filename);
-        SaveKeyringResult saveKeyringResult = databaseInteractor.saveSecretKeyRing(ring, new ProgressScaler());
+        SaveKeyringResult saveKeyringResult = databaseInteractor.saveSecretKeyRing(ring);
         assertTrue(saveKeyringResult.success());
     }
 

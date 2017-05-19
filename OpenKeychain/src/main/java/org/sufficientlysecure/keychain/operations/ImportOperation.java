@@ -129,13 +129,13 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
      * contact-to-key sync i.e ContactSyncAdapterService.requestContactsSync()
      *
      * @param entries      keys to import
-     * @param num          number of keys to import
+     * @param numTotalKeys          number of keys to import
      * @param hkpKeyserver contains uri of keyserver to import from, if it is an import from cloud
      * @param progressable Allows multi-threaded import to supply a progressable that ignores the
      *                     progress of a single key being imported
      */
     @NonNull
-    private ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
+    private ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int numTotalKeys,
                                                 ParcelableHkpKeyserver hkpKeyserver, Progressable progressable,
                                                 @NonNull ParcelableProxy proxy, boolean skipSave) {
         if (progressable != null) {
@@ -143,7 +143,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         }
 
         OperationLog log = new OperationLog();
-        log.add(LogType.MSG_IMPORT, 0, num);
+        log.add(LogType.MSG_IMPORT, 0, numTotalKeys);
 
         // If there aren't even any keys, do nothing here.
         if (entries == null || !entries.hasNext()) {
@@ -156,8 +156,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         ArrayList<CanonicalizedKeyRing> canKeyRings = new ArrayList<>();
 
         boolean cancelled = false;
-        int position = 0;
-        double progSteps = 100.0 / num;
+        int keyImportsFinished = 0;
 
         KeybaseKeyserver keybaseServer = null;
         FacebookKeyserver facebookServer = null;
@@ -316,14 +315,10 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                 // and https://github.com/open-keychain/open-keychain/issues/1480
                 synchronized (mKeyRepository) {
                     mKeyRepository.clearLog();
-                    ProgressScaler progressScaler = new ProgressScaler(progressable, (int) (position * progSteps),
-                            (int) ((position + 1) * progSteps), 100);
                     if (key.isSecret()) {
-                        result = mKeyWritableRepository.saveSecretKeyRing(key, progressScaler,
-                                canKeyRings, skipSave);
+                        result = mKeyWritableRepository.saveSecretKeyRing(key, canKeyRings, skipSave);
                     } else {
-                        result = mKeyWritableRepository.savePublicKeyRing(key, progressScaler,
-                                entry.mExpectedFingerprint, canKeyRings, skipSave);
+                        result = mKeyWritableRepository.savePublicKeyRing(key, entry.mExpectedFingerprint, canKeyRings, skipSave);
                     }
                 }
                 if (!result.success()) {
@@ -354,8 +349,10 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                 Log.e(Constants.TAG, "Encountered bad key on import!", e);
                 ++badKeys;
             }
+
             // update progress
-            position++;
+            keyImportsFinished += 1;
+            progressable.setProgress(keyImportsFinished, numTotalKeys);
         }
 
         // Special: consolidate on secret key import (cannot be cancelled!)

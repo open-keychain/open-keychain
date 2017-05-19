@@ -92,14 +92,14 @@ public class KeyRepositorySaveTest {
 
         // insert secret, this should fail because of missing self-cert
         result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
-                .saveSecretKeyRing(seckey, new ProgressScaler());
+                .saveSecretKeyRing(seckey);
         Assert.assertFalse("secret keyring import before pubring import should fail", result.success());
 
         // insert pubkey, then seckey - both should succeed
         result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(pubkey);
         Assert.assertTrue("public keyring import should succeed", result.success());
         result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
-                .saveSecretKeyRing(seckey, new ProgressScaler());
+                .saveSecretKeyRing(seckey);
         Assert.assertTrue("secret keyring import after pubring import should succeed", result.success());
 
     }
@@ -134,7 +134,7 @@ public class KeyRepositorySaveTest {
 
         SaveKeyringResult result;
 
-        result = mDatabaseInteractor.saveSecretKeyRing(sec, new ProgressScaler());
+        result = mDatabaseInteractor.saveSecretKeyRing(sec);
         Assert.assertTrue("import of secret keyring should succeed", result.success());
 
         // make sure both the CanonicalizedSecretKeyRing as well as the CachedPublicKeyRing correctly
@@ -198,7 +198,7 @@ public class KeyRepositorySaveTest {
 
         SaveKeyringResult result;
 
-        result = mDatabaseInteractor.savePublicKeyRing(key, new ProgressScaler(), null);
+        result = mDatabaseInteractor.savePublicKeyRing(key, null);
         Assert.assertTrue("import of keyring should succeed", result.success());
 
         CanonicalizedPublicKeyRing ring = mDatabaseInteractor.getCanonicalizedPublicKeyRing(keyId);
@@ -225,7 +225,7 @@ public class KeyRepositorySaveTest {
 
         SaveKeyringResult result;
 
-        result = mDatabaseInteractor.saveSecretKeyRing(key, new ProgressScaler());
+        result = mDatabaseInteractor.saveSecretKeyRing(key);
         Assert.assertTrue("import of keyring should succeed", result.success());
 
         long signId;

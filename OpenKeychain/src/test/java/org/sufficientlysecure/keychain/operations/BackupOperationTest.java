@@ -18,6 +18,14 @@
 package org.sufficientlysecure.keychain.operations;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
+import java.security.Security;
+import java.util.Iterator;
+
 import android.app.Application;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -53,16 +61,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
-import java.security.Security;
-import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -141,8 +140,8 @@ public class BackupOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        databaseInteractor.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
-        databaseInteractor.saveSecretKeyRing(mStaticRing2, new ProgressScaler());
+        databaseInteractor.saveSecretKeyRing(mStaticRing1);
+        databaseInteractor.saveSecretKeyRing(mStaticRing2);
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;

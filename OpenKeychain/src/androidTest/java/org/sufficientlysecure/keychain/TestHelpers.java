@@ -42,7 +42,6 @@ import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
@@ -101,7 +100,7 @@ public class TestHelpers {
         while(stream.hasNext()) {
             UncachedKeyRing ring = stream.next();
             if (ring.isSecret()) {
-                helper.saveSecretKeyRing(ring, new ProgressScaler());
+                helper.saveSecretKeyRing(ring);
             } else {
                 helper.savePublicKeyRing(ring);
             }

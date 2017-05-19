@@ -17,6 +17,13 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
+import java.io.PrintStream;
+import java.security.Security;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
+
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
@@ -43,14 +50,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
-
-import java.io.PrintStream;
-import java.security.Security;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Random;
 
 @RunWith(KeychainTestRunner.class)
 public class CertifyOperationTest {
@@ -123,8 +123,8 @@ public class CertifyOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        databaseInteractor.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
-        databaseInteractor.savePublicKeyRing(mStaticRing2.extractPublicKeyRing(), new ProgressScaler(), null);
+        databaseInteractor.saveSecretKeyRing(mStaticRing1);
+        databaseInteractor.savePublicKeyRing(mStaticRing2.extractPublicKeyRing(), null);
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;

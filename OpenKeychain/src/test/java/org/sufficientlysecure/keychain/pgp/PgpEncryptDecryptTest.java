@@ -64,7 +64,6 @@ import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Passphrase;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import static org.hamcrest.core.AnyOf.anyOf;
@@ -156,9 +155,9 @@ public class PgpEncryptDecryptTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        databaseInteractor.saveSecretKeyRing(mStaticRing1, new ProgressScaler());
-        databaseInteractor.saveSecretKeyRing(mStaticRing2, new ProgressScaler());
-        databaseInteractor.saveSecretKeyRing(mStaticRingInsecure, new ProgressScaler());
+        databaseInteractor.saveSecretKeyRing(mStaticRing1);
+        databaseInteractor.saveSecretKeyRing(mStaticRing2);
+        databaseInteractor.saveSecretKeyRing(mStaticRingInsecure);
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -631,7 +630,7 @@ public class PgpEncryptDecryptTest {
 
             KeyWritableRepository databaseInteractor =
                     KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
-            databaseInteractor.saveSecretKeyRing(modified, new ProgressScaler());
+            databaseInteractor.saveSecretKeyRing(modified);
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
@@ -654,7 +653,7 @@ public class PgpEncryptDecryptTest {
 
             KeyWritableRepository databaseInteractor =
                     KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
-            databaseInteractor.saveSecretKeyRing(modified, new ProgressScaler());
+            databaseInteractor.saveSecretKeyRing(modified);
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
@@ -682,7 +681,7 @@ public class PgpEncryptDecryptTest {
 
             KeyWritableRepository databaseInteractor =
                     KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
-            databaseInteractor.saveSecretKeyRing(modified, new ProgressScaler());
+            databaseInteractor.saveSecretKeyRing(modified);
         }
 
         { // encrypt to this keyring, make sure it's not encrypted to the revoked subkey
