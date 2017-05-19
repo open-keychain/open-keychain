@@ -11,20 +11,6 @@
         <attr name="initializeFolded" format="boolean" />
     </declare-styleable>
 
-    <!-- Taken from Matt Allen Password Strength View
-        https://github.com/matt-allen/android-password-strength-indicator -->
-    <declare-styleable name="PasswordStrengthView">
-        <attr name="strength" format="enum">
-            <enum name="weak" value="0" />
-            <enum name="medium" value="1" />
-            <enum name="strong" value="2" />
-        </attr>
-        <attr name="showGuides" format="boolean" />
-        <attr name="color_fail" format="color" />
-        <attr name="color_weak" format="color" />
-        <attr name="color_strong" format="color" />
-    </declare-styleable>
-
     <declare-styleable name="PrefixedEditText">
         <attr name="prefix" format="string" />
     </declare-styleable>

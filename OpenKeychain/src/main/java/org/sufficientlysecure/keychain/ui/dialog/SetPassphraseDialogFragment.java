@@ -17,8 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
+
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,6 +27,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +42,6 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import timber.log.Timber;
 
@@ -55,7 +55,7 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
     public static final String MESSAGE_NEW_PASSPHRASE = "new_passphrase";
 
     private Messenger mMessenger;
-    private PassphraseEditText mPassphraseEditText;
+    private EditText mPassphraseEditText;
     private EditText mPassphraseAgainEditText;
     private CheckBox mNoPassphraseCheckBox;
 
