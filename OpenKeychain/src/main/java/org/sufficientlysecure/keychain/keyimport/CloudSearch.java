@@ -47,10 +47,10 @@ public class CloudSearch {
             servers.add(cloudPrefs.keyserver);
         }
         if (cloudPrefs.searchKeybase) {
-            servers.add(new KeybaseKeyserver());
+            servers.add(KeybaseKeyserver.getInstance());
         }
         if (cloudPrefs.searchFacebook) {
-            servers.add(new FacebookKeyserver());
+            servers.add(FacebookKeyserver.getInstance());
         }
 
         int numberOfServers = servers.size();

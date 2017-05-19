@@ -46,14 +46,18 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class FacebookKeyserver extends Keyserver {
-
     private static final String FB_KEY_URL_FORMAT
             = "https://www.facebook.com/%s/publickey/download";
     private static final String FB_HOST = "facebook.com";
     private static final String FB_HOST_WWW = "www." + FB_HOST;
 
-    public FacebookKeyserver() {
+
+    public static FacebookKeyserver getInstance() {
+        return new FacebookKeyserver();
     }
+
+    private FacebookKeyserver() { }
+
 
     @Override
     public List<ImportKeysListEntry> search(String fbUsername, ParcelableProxy proxy)

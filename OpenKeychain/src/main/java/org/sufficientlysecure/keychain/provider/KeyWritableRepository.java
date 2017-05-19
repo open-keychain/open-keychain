@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
@@ -517,35 +517,10 @@ public class KeyWritableRepository extends KeyRepository {
             mIndent -= 1;
         }
 
-        // before deleting key, retrieve it's last updated time
-        final int INDEX_MASTER_KEY_ID = 0;
-        final int INDEX_LAST_UPDATED = 1;
-        Cursor lastUpdatedCursor = mContentResolver.query(
-                UpdatedKeys.CONTENT_URI,
-                new String[]{
-                        UpdatedKeys.MASTER_KEY_ID,
-                        UpdatedKeys.LAST_UPDATED
-                },
-                UpdatedKeys.MASTER_KEY_ID + " = ?",
-                new String[]{"" + masterKeyId},
-                null
-        );
-        if (lastUpdatedCursor.moveToNext()) {
-            // there was an entry to re-insert
-            // this operation must happen after the new key is inserted
-            ContentValues lastUpdatedEntry = new ContentValues(2);
-            lastUpdatedEntry.put(UpdatedKeys.MASTER_KEY_ID,
-                    lastUpdatedCursor.getLong(INDEX_MASTER_KEY_ID));
-            lastUpdatedEntry.put(UpdatedKeys.LAST_UPDATED,
-                    lastUpdatedCursor.getLong(INDEX_LAST_UPDATED));
-            operations.add(
-                    ContentProviderOperation
-                            .newInsert(UpdatedKeys.CONTENT_URI)
-                            .withValues(lastUpdatedEntry)
-                            .build()
-            );
+        ContentProviderOperation lastUpdateReinsertOp = getLastUpdatedReinsertOperationByMasterKeyId(masterKeyId);
+        if (lastUpdateReinsertOp != null) {
+            operations.add(lastUpdateReinsertOp);
         }
-        lastUpdatedCursor.close();
 
         try {
             // delete old version of this keyRing (from database only!), which also deletes all keys and userIds on cascade
@@ -574,6 +549,21 @@ public class KeyWritableRepository extends KeyRepository {
             return SaveKeyringResult.RESULT_ERROR;
         }
 
+    }
+
+    private ContentProviderOperation getLastUpdatedReinsertOperationByMasterKeyId(long masterKeyId) {
+        Long lastUpdateTime = getLastUpdateTime(masterKeyId);
+        if (lastUpdateTime == null) {
+            return null;
+        }
+
+        ContentValues lastUpdatedEntry = new ContentValues(2);
+        lastUpdatedEntry.put(UpdatedKeys.MASTER_KEY_ID, masterKeyId);
+        lastUpdatedEntry.put(UpdatedKeys.LAST_UPDATED, lastUpdateTime);
+        return ContentProviderOperation
+                .newInsert(UpdatedKeys.CONTENT_URI)
+                .withValues(lastUpdatedEntry)
+                .build();
     }
 
     private void writePublicKeyRing(CanonicalizedPublicKeyRing keyRing, long masterKeyId,
@@ -1363,10 +1353,10 @@ public class KeyWritableRepository extends KeyRepository {
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
 
-    public Uri renewKeyLastUpdatedTime(long masterKeyId, long time, TimeUnit timeUnit) {
+    public Uri renewKeyLastUpdatedTime(long masterKeyId) {
         ContentValues values = new ContentValues();
         values.put(UpdatedKeys.MASTER_KEY_ID, masterKeyId);
-        values.put(UpdatedKeys.LAST_UPDATED, timeUnit.toSeconds(time));
+        values.put(UpdatedKeys.LAST_UPDATED, GregorianCalendar.getInstance().getTimeInMillis() / 1000);
 
         return mContentResolver.insert(UpdatedKeys.CONTENT_URI, values);
     }

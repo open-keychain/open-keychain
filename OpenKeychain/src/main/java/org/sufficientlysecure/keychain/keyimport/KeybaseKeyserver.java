@@ -33,8 +33,11 @@ import java.util.List;
 
 public class KeybaseKeyserver extends Keyserver {
 
-    public KeybaseKeyserver() {
+    public static KeybaseKeyserver getInstance() {
+        return new KeybaseKeyserver();
     }
+
+    private KeybaseKeyserver() { }
 
     @Override
     public ArrayList<ImportKeysListEntry> search(String query, ParcelableProxy proxy) throws QueryFailedException,

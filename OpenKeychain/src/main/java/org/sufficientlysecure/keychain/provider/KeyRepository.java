@@ -10,6 +10,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -23,6 +24,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 
 
@@ -251,6 +253,31 @@ public class KeyRepository {
 
     public ContentResolver getContentResolver() {
         return mContentResolver;
+    }
+
+    @Nullable
+    Long getLastUpdateTime(long masterKeyId) {
+        Cursor lastUpdatedCursor = mContentResolver.query(
+                UpdatedKeys.CONTENT_URI,
+                new String[] { UpdatedKeys.LAST_UPDATED },
+                UpdatedKeys.MASTER_KEY_ID + " = ?",
+                new String[] { "" + masterKeyId },
+                null
+        );
+        if (lastUpdatedCursor == null) {
+            return null;
+        }
+
+        Long lastUpdateTime;
+        try {
+            if (!lastUpdatedCursor.moveToNext()) {
+                return null;
+            }
+            lastUpdateTime = lastUpdatedCursor.getLong(0);
+        } finally {
+            lastUpdatedCursor.close();
+        }
+        return lastUpdateTime;
     }
 
     public final byte[] loadPublicKeyRingData(long masterKeyId) throws NotFoundException {

@@ -19,8 +19,21 @@
 package org.sufficientlysecure.keychain.operations;
 
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -29,6 +42,7 @@ import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -50,20 +64,6 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
-import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An operation class which implements high level import
@@ -85,9 +85,10 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     private static final int MAX_THREADS = 10;
 
     public static final String CACHE_FILE_NAME = "key_import.pcl";
+    private FacebookKeyserver facebookServer;
+    private KeybaseKeyserver keybaseServer;
 
-    public ImportOperation(Context context, KeyWritableRepository databaseInteractor, Progressable
-            progressable) {
+    public ImportOperation(Context context, KeyWritableRepository databaseInteractor, Progressable progressable) {
         super(context, databaseInteractor, progressable);
     }
 
@@ -158,10 +159,6 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         boolean cancelled = false;
         int keyImportsFinished = 0;
 
-        KeybaseKeyserver keybaseServer = null;
-        FacebookKeyserver facebookServer = null;
-        ParcelableHkpKeyserver keyServer = null;
-
         // iterate over all entries
         while (entries.hasNext()) {
             ParcelableKeyRing entry = entries.next();
@@ -179,133 +176,18 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                 // If there is already byte data, use that
                 if (entry.mBytes != null) {
                     key = UncachedKeyRing.decodeFromData(entry.mBytes);
-                }
-                // Otherwise, we need to fetch the data from a server first
-                else {
+                } else {
+                    key = fetchKeyFromInternet(hkpKeyserver, proxy, log, entry, key);
 
-                    // We fetch from keyservers first, because we tend to get more certificates
-                    // from there, so the number of certificates which are merged in later is
-                    // smaller.
-
-                    // If we have a keyServerUri and a fingerprint or at least a keyId,
-                    // download from HKP
-                    if (hkpKeyserver != null
-                            && (entry.mKeyIdHex != null || entry.mExpectedFingerprint != null)) {
-                        // Make sure we have the keyserver instance cached
-                        if (keyServer == null) {
-                            log.add(LogType.MSG_IMPORT_KEYSERVER, 1, hkpKeyserver);
-                            keyServer = hkpKeyserver;
-                        }
-
-                        try {
-                            byte[] data;
-                            // Download by fingerprint, or keyId - whichever is available
-                            if (entry.mExpectedFingerprint != null) {
-                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" +
-                                        entry.mExpectedFingerprint.substring(24));
-                                data = keyServer.get("0x" + entry.mExpectedFingerprint, proxy).getBytes();
-                            } else {
-                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
-                                data = keyServer.get(entry.mKeyIdHex, proxy).getBytes();
-                            }
-                            key = UncachedKeyRing.decodeFromData(data);
-                            if (key != null) {
-                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
-                            } else {
-                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
-                            }
-                        } catch (Keyserver.QueryFailedException e) {
-                            Log.d(Constants.TAG, "query failed", e);
-                            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
-                        }
-                    }
-
-                    // If we have a keybase name, try to fetch from there
-                    if (entry.mKeybaseName != null) {
-                        // Make sure we have this cached
-                        if (keybaseServer == null) {
-                            keybaseServer = new KeybaseKeyserver();
-                        }
-
-                        try {
-                            log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.mKeybaseName);
-                            byte[] data = keybaseServer.get(entry.mKeybaseName, proxy).getBytes();
-                            UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
-
-                            if (keybaseKey != null) {
-                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
-                            } else {
-                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
-                            }
-
-                            // If there already is a key, merge the two
-                            if (key != null && keybaseKey != null) {
-                                log.add(LogType.MSG_IMPORT_MERGE, 3);
-                                keybaseKey = key.merge(keybaseKey, log, 4);
-                                // If the merge didn't fail, use the new merged key
-                                if (keybaseKey != null) {
-                                    key = keybaseKey;
-                                } else {
-                                    log.add(LogType.MSG_IMPORT_MERGE_ERROR, 4);
-                                }
-                            } else if (keybaseKey != null) {
-                                key = keybaseKey;
-                            }
-                        } catch (Keyserver.QueryFailedException e) {
-                            // download failed, too bad. just proceed
-                            Log.e(Constants.TAG, "query failed", e);
-                            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
-                        }
-                    }
-
-                    // if the key is from Facebook, fetch from there
-                    if (entry.mFbUsername != null) {
-                        // Make sure we have this cached
-                        if (facebookServer == null) {
-                            facebookServer = new FacebookKeyserver();
-                        }
-
-                        try {
-                            log.add(LogType.MSG_IMPORT_FETCH_FACEBOOK, 2, entry.mFbUsername);
-                            byte[] data = facebookServer.get(entry.mFbUsername, proxy).getBytes();
-                            UncachedKeyRing facebookKey = UncachedKeyRing.decodeFromData(data);
-
-                            if (facebookKey != null) {
-                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
-                            } else {
-                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
-                            }
-
-                            // If there already is a key, merge the two
-                            if (key != null && facebookKey != null) {
-                                log.add(LogType.MSG_IMPORT_MERGE, 3);
-                                facebookKey = key.merge(facebookKey, log, 4);
-                                // If the merge didn't fail, use the new merged key
-                                if (facebookKey != null) {
-                                    key = facebookKey;
-                                } else {
-                                    log.add(LogType.MSG_IMPORT_MERGE_ERROR, 4);
-                                }
-                            } else if (facebookKey != null) {
-                                key = facebookKey;
-                            }
-                        } catch (Keyserver.QueryFailedException e) {
-                            // download failed, too bad. just proceed
-                            Log.e(Constants.TAG, "query failed", e);
-                            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
-                        }
+                    if (key.isSecret()) {
+                        log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER_SECRET, 2);
+                        badKeys += 1;
+                        continue;
                     }
                 }
 
                 if (key == null) {
                     log.add(LogType.MSG_IMPORT_FETCH_ERROR, 2);
-                    badKeys += 1;
-                    continue;
-                }
-
-                // never import secret keys from keyserver!
-                if (entry.mBytes == null && key.isSecret()) {
-                    log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER_SECRET, 2);
                     badKeys += 1;
                     continue;
                 }
@@ -334,13 +216,9 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                         }
                         importedMasterKeyIds.add(key.getMasterKeyId());
                     }
-                    if (!skipSave && (entry.mBytes == null)) {
-                        // synonymous to isDownloadFromKeyserver.
-                        // If no byte data was supplied, import from keyserver took place
-                        // this prevents file imports being noted as keyserver imports
-                        mKeyWritableRepository.renewKeyLastUpdatedTime(key.getMasterKeyId(),
-                                GregorianCalendar.getInstance().getTimeInMillis(),
-                                TimeUnit.MILLISECONDS);
+
+                    if (!skipSave) {
+                        mKeyWritableRepository.renewKeyLastUpdatedTime(key.getMasterKeyId());
                     }
                 }
 
@@ -422,6 +300,136 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
 
         result.setCanonicalizedKeyRings(canKeyRings);
         return result;
+    }
+
+    private UncachedKeyRing fetchKeyFromInternet(ParcelableHkpKeyserver hkpKeyserver, @NonNull ParcelableProxy proxy,
+            OperationLog log, ParcelableKeyRing entry, UncachedKeyRing key) throws PgpGeneralException, IOException {
+        boolean canFetchFromKeyservers =
+                hkpKeyserver != null && (entry.mKeyIdHex != null || entry.mExpectedFingerprint != null);
+        if (canFetchFromKeyservers) {
+            UncachedKeyRing keyserverKey = fetchKeyFromKeyserver(hkpKeyserver, proxy, log, entry);
+            if (keyserverKey != null) {
+                key = keyserverKey;
+            }
+        }
+
+        boolean hasKeybaseName = entry.mKeybaseName != null;
+        if (hasKeybaseName) {
+            UncachedKeyRing keybaseKey = fetchKeyFromKeybase(proxy, log, entry);
+            if (keybaseKey != null) {
+                key = mergeKeysOrUseEither(log, 3, key, keybaseKey);
+            }
+        }
+
+        boolean hasFacebookName = entry.mFbUsername != null;
+        if (hasFacebookName) {
+            UncachedKeyRing facebookKey = fetchKeyFromFacebook(proxy, log, entry);
+            if (facebookKey != null) {
+                key = mergeKeysOrUseEither(log, 3, key, facebookKey);
+            }
+        }
+        return key;
+    }
+
+    @Nullable
+    private UncachedKeyRing fetchKeyFromKeyserver(ParcelableHkpKeyserver hkpKeyserver, @NonNull ParcelableProxy proxy,
+            OperationLog log, ParcelableKeyRing entry) throws PgpGeneralException, IOException {
+        try {
+            byte[] data;
+            log.add(LogType.MSG_IMPORT_KEYSERVER, 1, hkpKeyserver);
+
+            // Download by fingerprint, or keyId - whichever is available
+            if (entry.mExpectedFingerprint != null) {
+                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" +
+                        entry.mExpectedFingerprint.substring(24));
+                data = hkpKeyserver.get("0x" + entry.mExpectedFingerprint, proxy).getBytes();
+            } else {
+                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
+                data = hkpKeyserver.get(entry.mKeyIdHex, proxy).getBytes();
+            }
+            UncachedKeyRing keyserverKey = UncachedKeyRing.decodeFromData(data);
+            if (keyserverKey != null) {
+                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
+            } else {
+                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
+            }
+
+            return keyserverKey;
+        } catch (Keyserver.QueryFailedException e) {
+            Log.d(Constants.TAG, "query failed", e);
+            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
+            return null;
+        }
+    }
+
+    private UncachedKeyRing fetchKeyFromKeybase(@NonNull ParcelableProxy proxy, OperationLog log, ParcelableKeyRing entry)
+            throws PgpGeneralException, IOException {
+        if (keybaseServer == null) {
+            keybaseServer = KeybaseKeyserver.getInstance();
+        }
+
+        try {
+            log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.mKeybaseName);
+            byte[] data = keybaseServer.get(entry.mKeybaseName, proxy).getBytes();
+            UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
+
+            if (keybaseKey != null) {
+                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
+            } else {
+                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
+            }
+
+            return keybaseKey;
+        } catch (Keyserver.QueryFailedException e) {
+            // download failed, too bad. just proceed
+            Log.e(Constants.TAG, "query failed", e);
+            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
+            return null;
+        }
+    }
+
+    private UncachedKeyRing fetchKeyFromFacebook(@NonNull ParcelableProxy proxy, OperationLog log, ParcelableKeyRing entry)
+            throws PgpGeneralException, IOException {
+        if (facebookServer == null) {
+            facebookServer = FacebookKeyserver.getInstance();
+        }
+
+        try {
+            log.add(LogType.MSG_IMPORT_FETCH_FACEBOOK, 2, entry.mFbUsername);
+            byte[] data = facebookServer.get(entry.mFbUsername, proxy).getBytes();
+            UncachedKeyRing facebookKey = UncachedKeyRing.decodeFromData(data);
+
+            if (facebookKey != null) {
+                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
+            } else {
+                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
+            }
+
+            return facebookKey;
+        } catch (Keyserver.QueryFailedException e) {
+            // download failed, too bad. just proceed
+            Log.e(Constants.TAG, "query failed", e);
+            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
+            return null;
+        }
+    }
+
+    @Nullable
+    private UncachedKeyRing mergeKeysOrUseEither(OperationLog log, int indent,
+            UncachedKeyRing firstKey, UncachedKeyRing otherKey) {
+        if (firstKey == null) {
+            return otherKey;
+        }
+
+        log.add(LogType.MSG_IMPORT_MERGE, indent);
+        UncachedKeyRing mergedKey = firstKey.merge(otherKey, log, indent +1);
+
+        if (mergedKey != null) {
+            return mergedKey;
+        } else {
+            log.add(LogType.MSG_IMPORT_MERGE_ERROR, indent +1);
+            return firstKey;
+        }
     }
 
     @NonNull
@@ -534,7 +542,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         private int mResultType = 0;
         private boolean mHasCancelledResult;
 
-        public ArrayList<CanonicalizedKeyRing> mCanonicalizedKeyRings;
+        ArrayList<CanonicalizedKeyRing> mCanonicalizedKeyRings;
 
         /**
          * Accumulates keyring imports and updates the progressable whenever a new key is imported.
@@ -631,7 +639,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             return result;
         }
 
-        public boolean isImportFinished() {
+        boolean isImportFinished() {
             return mTotalKeys == mImportedKeys;
         }
     }
