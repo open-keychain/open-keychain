@@ -55,6 +55,7 @@ public class KeychainContract {
     interface UpdatedKeysColumns {
         String MASTER_KEY_ID = "master_key_id"; // not a database id
         String LAST_UPDATED = "last_updated"; // time since epoch in seconds
+        String SEEN_ON_KEYSERVERS = "seen_on_keyservers";
     }
 
     interface UserPacketsColumns {

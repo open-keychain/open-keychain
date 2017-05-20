@@ -188,6 +188,11 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                         log.add(LogType.MSG_IMPORT_FETCH_ERROR_NOT_FOUND, 2);
                         missingKeys += 1;
 
+                        if (entry.mExpectedFingerprint != null) {
+                            byte[] fingerprintHex = entry.mExpectedFingerprint;
+                            mKeyWritableRepository.renewKeyLastUpdatedTime(
+                                    KeyFormattingUtils.getKeyIdFromFingerprint(entry.mExpectedFingerprint), false);
+                        }
                         continue;
                     }
 
@@ -234,7 +239,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                     }
 
                     if (!skipSave) {
-                        mKeyWritableRepository.renewKeyLastUpdatedTime(key.getMasterKeyId());
+                        mKeyWritableRepository.renewKeyLastUpdatedTime(key.getMasterKeyId(), keyWasDownloaded);
                     }
                 }
 
