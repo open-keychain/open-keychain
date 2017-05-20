@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.LoaderManager;
@@ -54,6 +55,8 @@ import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.LinkedResource;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
@@ -78,7 +81,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     private static final String ARG_DATA_URI = "data_uri";
     private static final String ARG_LID_RANK = "rank";
     private static final String ARG_IS_SECRET = "verified";
-    private static final String ARG_FINGERPRINT = "fingerprint";
+    private static final String ARG_MASTER_KEY_ID = "master_key_id";
     private static final int LOADER_ID_LINKED_ID = 1;
 
     private UriAttribute mLinkedId;
@@ -86,7 +89,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     private boolean mIsSecret;
 
     private Context mContext;
-    private byte[] mFingerprint;
+    private long mMasterKeyId;
 
     private AsyncTask mInProgress;
 
@@ -97,14 +100,14 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     private long mCertifyKeyId;
 
     public static LinkedIdViewFragment newInstance(Uri dataUri, int rank,
-            boolean isSecret, byte[] fingerprint) throws IOException {
+            boolean isSecret, long masterKeyId) throws IOException {
         LinkedIdViewFragment frag = new LinkedIdViewFragment();
 
         Bundle args = new Bundle();
         args.putParcelable(ARG_DATA_URI, dataUri);
         args.putInt(ARG_LID_RANK, rank);
         args.putBoolean(ARG_IS_SECRET, isSecret);
-        args.putByteArray(ARG_FINGERPRINT, fingerprint);
+        args.putLong(ARG_MASTER_KEY_ID, masterKeyId);
         frag.setArguments(args);
 
         return frag;
@@ -125,7 +128,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         mLidRank = args.getInt(ARG_LID_RANK);
 
         mIsSecret = args.getBoolean(ARG_IS_SECRET);
-        mFingerprint = args.getByteArray(ARG_FINGERPRINT);
+        mMasterKeyId = args.getLong(ARG_MASTER_KEY_ID);
 
         mContext = getActivity();
 
@@ -477,8 +480,18 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         mInProgress = new AsyncTask<Void,Void,LinkedVerifyResult>() {
             @Override
             protected LinkedVerifyResult doInBackground(Void... params) {
+                FragmentActivity activity = getActivity();
+
+                byte[] fingerprint;
+                try {
+                    fingerprint = KeyRepository.createDatabaseInteractor(activity).getCachedPublicKeyRing(
+                            mMasterKeyId).getFingerprint();
+                } catch (PgpKeyNotFoundException e) {
+                    throw new IllegalStateException("Key to verify linked id for must exist in db!");
+                }
+
                 long timer = System.currentTimeMillis();
-                LinkedVerifyResult result = mLinkedResource.verify(getActivity(), mFingerprint);
+                LinkedVerifyResult result = mLinkedResource.verify(activity, fingerprint);
 
                 // ux flow: this operation should take at last a second
                 timer = System.currentTimeMillis() -timer;
@@ -547,8 +560,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     @Nullable
     @Override
     public Parcelable createOperationInput() {
-        long masterKeyId = KeyFormattingUtils.convertFingerprintToKeyId(mFingerprint);
-        CertifyAction action = new CertifyAction(masterKeyId, null,
+        CertifyAction action = new CertifyAction(mMasterKeyId, null,
                 Collections.singletonList(mLinkedId.toUserAttribute()));
 
         // fill values for this action

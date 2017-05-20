@@ -110,7 +110,6 @@ public class ViewKeyFragment extends LoaderFragment implements
     private ListView mLinkedIds;
     private CardView mLinkedIdsCard;
     private TextView mLinkedIdsEmpty;
-    private byte[] mFingerprint;
     private TextView mLinkedIdsExpander;
 
     KeyHealthCardView mKeyHealthCard;
@@ -198,7 +197,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     private void showLinkedId(final int position) {
         final LinkedIdViewFragment frag;
         try {
-            frag = mLinkedIdsAdapter.getLinkedIdFragment(mDataUri, position, mFingerprint);
+            frag = mLinkedIdsAdapter.getLinkedIdFragment(mDataUri, position, mMasterKeyId);
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
             return;
@@ -516,9 +515,6 @@ public class ViewKeyFragment extends LoaderFragment implements
                 mLinkedIdsAdapter.swapCursor(null);
                 break;
             }
-            case LOADER_ID_SUBKEY_STATUS:
-                mKeyHealthPresenter.onLoaderReset(loader);
-                break;
         }
     }
 

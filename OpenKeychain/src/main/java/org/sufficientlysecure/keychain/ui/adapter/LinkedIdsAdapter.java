@@ -189,14 +189,13 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
                 UserIdsAdapter.USER_PACKETS_PROJECTION, LINKED_IDS_WHERE, null, null);
     }
 
-    public LinkedIdViewFragment getLinkedIdFragment(Uri baseUri,
-            int position, byte[] fingerprint) throws IOException {
+    public LinkedIdViewFragment getLinkedIdFragment(Uri baseUri, int position, long masterKeyId) throws IOException {
         Cursor c = getCursor();
         c.moveToPosition(position);
         int rank = c.getInt(UserIdsAdapter.INDEX_RANK);
 
         Uri dataUri = UserPackets.buildLinkedIdsUri(baseUri);
-        return LinkedIdViewFragment.newInstance(dataUri, rank, mIsSecret, fingerprint);
+        return LinkedIdViewFragment.newInstance(dataUri, rank, mIsSecret, masterKeyId);
     }
 
     public static class ViewHolder {
