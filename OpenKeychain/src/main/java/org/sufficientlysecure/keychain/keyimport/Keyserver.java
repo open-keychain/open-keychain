@@ -47,6 +47,14 @@ public abstract class Keyserver {
         }
     }
 
+    public static class QueryNotFoundException extends QueryFailedException {
+        private static final long serialVersionUID = 2693768928624654513L;
+
+        public QueryNotFoundException(String message) {
+            super(message);
+        }
+    }
+
     public static class QueryNeedsRepairException extends CloudSearchFailureException {
         private static final long serialVersionUID = 2693768928624654512L;
     }

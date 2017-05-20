@@ -18,6 +18,9 @@
 
 package org.sufficientlysecure.keychain.operations.results;
 
+
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcel;
@@ -33,11 +36,9 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Showable;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
-import java.util.ArrayList;
-
 public class ImportKeyResult extends InputPendingResult {
 
-    public final int mNewKeys, mUpdatedKeys, mBadKeys, mSecret;
+    public final int mNewKeys, mUpdatedKeys, mMissingKeys, mBadKeys, mSecret;
     public final long[] mImportedMasterKeyIds;
 
     // NOT PARCELED
@@ -74,6 +75,10 @@ public class ImportKeyResult extends InputPendingResult {
         return (mResult & RESULT_FAIL_NOTHING) == RESULT_FAIL_NOTHING;
     }
 
+    public boolean isFailMissing() {
+        return isFailNothing() && mMissingKeys > 0;
+    }
+
     public long[] getImportedMasterKeyIds() {
         return mImportedMasterKeyIds;
     }
@@ -82,21 +87,23 @@ public class ImportKeyResult extends InputPendingResult {
         super(source);
         mNewKeys = source.readInt();
         mUpdatedKeys = source.readInt();
+        mMissingKeys = source.readInt();
         mBadKeys = source.readInt();
         mSecret = source.readInt();
         mImportedMasterKeyIds = source.createLongArray();
     }
 
     public ImportKeyResult(int result, OperationLog log) {
-        this(result, log, 0, 0, 0, 0, new long[]{});
+        this(result, log, 0, 0, 0, 0, 0, new long[]{});
     }
 
     public ImportKeyResult(int result, OperationLog log,
-                           int newKeys, int updatedKeys, int badKeys, int secret,
+                           int newKeys, int updatedKeys, int missingKeys, int badKeys, int secret,
                            long[] importedMasterKeyIds) {
         super(result, log);
         mNewKeys = newKeys;
         mUpdatedKeys = updatedKeys;
+        mMissingKeys = missingKeys;
         mBadKeys = badKeys;
         mSecret = secret;
         mImportedMasterKeyIds = importedMasterKeyIds;
@@ -108,6 +115,7 @@ public class ImportKeyResult extends InputPendingResult {
         // just assign default values, we won't use them anyway
         mNewKeys = 0;
         mUpdatedKeys = 0;
+        mMissingKeys = 0;
         mBadKeys = 0;
         mSecret = 0;
         mImportedMasterKeyIds = new long[]{};
@@ -122,6 +130,7 @@ public class ImportKeyResult extends InputPendingResult {
         super.writeToParcel(dest, flags);
         dest.writeInt(mNewKeys);
         dest.writeInt(mUpdatedKeys);
+        dest.writeInt(mMissingKeys);
         dest.writeInt(mBadKeys);
         dest.writeInt(mSecret);
         dest.writeLongArray(mImportedMasterKeyIds);
@@ -190,17 +199,20 @@ public class ImportKeyResult extends InputPendingResult {
             }
 
         } else {
-            duration = 0;
-            style = Style.ERROR;
-            if (isFailNothing()) {
+            if (isFailMissing()) {
+                duration = 0;
+                style = Style.WARN;
+                str = activity.getResources().getString(R.string.import_warn_missing);
+            } else if (isFailNothing()) {
+                duration = 0;
+                style = Style.ERROR;
                 str = activity.getString((resultType & ImportKeyResult.RESULT_CANCELLED) > 0
                         ? R.string.import_error_nothing_cancelled
                         : R.string.import_error_nothing);
             } else {
-                str = activity.getResources().getQuantityString(
-                        R.plurals.import_error,
-                        mBadKeys,
-                        mBadKeys);
+                duration = 0;
+                style = Style.ERROR;
+                str = activity.getResources().getQuantityString(R.plurals.import_error, mBadKeys, mBadKeys);
             }
         }
 

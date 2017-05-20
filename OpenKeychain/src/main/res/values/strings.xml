@@ -585,6 +585,7 @@
         <item quantity="one">"Import failed!"</item>
         <item quantity="other">"Import of %d keys failed!"</item>
     </plurals>
+    <string name="import_warn_missing">"Key not found on keyservers."</string>
     <string name="import_error_nothing">"Nothing to import."</string>
     <string name="import_error_nothing_cancelled">"Import cancelled."</string>
 
@@ -1337,6 +1338,7 @@
     </plurals>
     <string name="msg_import_fetch_error_decode">"Error decoding retrieved keyring!"</string>
     <string name="msg_import_fetch_error">"Key could not be retrieved! (Network problems?)"</string>
+    <string name="msg_import_fetch_error_not_found">"Key not found!"</string>
     <string name="msg_import_fetch_error_keyserver">"Could not retrieve key from keyservers: %s"</string>
     <string name="msg_import_fetch_error_keyserver_secret">"Cannot import secret key from keyserver!"</string>
     <string name="msg_import_fetch_keybase">"Retrieving from keybase.io: %s"</string>

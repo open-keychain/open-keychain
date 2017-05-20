@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
 import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
+import org.sufficientlysecure.keychain.keyimport.Keyserver.QueryNotFoundException;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
@@ -152,7 +153,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             return new ImportKeyResult(ImportKeyResult.RESULT_FAIL_NOTHING, log);
         }
 
-        int newKeys = 0, updatedKeys = 0, badKeys = 0, secret = 0;
+        int newKeys = 0, updatedKeys = 0, missingKeys = 0, badKeys = 0, secret = 0;
         ArrayList<Long> importedMasterKeyIds = new ArrayList<>();
 
         ArrayList<CanonicalizedKeyRing> canKeyRings = new ArrayList<>();
@@ -170,6 +171,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                 break;
             }
 
+            boolean keyWasDownloaded = false;
+
             try {
 
                 UncachedKeyRing key = null;
@@ -178,12 +181,24 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                 if (entry.mBytes != null) {
                     key = UncachedKeyRing.decodeFromData(entry.mBytes);
                 } else {
-                    key = fetchKeyFromInternet(hkpKeyserver, proxy, log, entry, key);
+                    try {
+                        key = fetchKeyFromInternet(hkpKeyserver, proxy, log, entry, key);
+                    } catch (QueryNotFoundException e) {
+                        // note that this does NOT fire on network errors! those will be logged inline and return in null
+                        log.add(LogType.MSG_IMPORT_FETCH_ERROR_NOT_FOUND, 2);
+                        missingKeys += 1;
 
-                    if (key.isSecret()) {
-                        log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER_SECRET, 2);
-                        badKeys += 1;
                         continue;
+                    }
+
+                    if (key != null) {
+                        keyWasDownloaded = true;
+
+                        if (key.isSecret()) {
+                            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER_SECRET, 2);
+                            badKeys += 1;
+                            continue;
+                        }
                     }
                 }
 
@@ -266,6 +281,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
 
         // special return case: no new keys at all
         if (badKeys == 0 && newKeys == 0 && updatedKeys == 0) {
+            // if keys merely aren't on keyservers, it's just a warning
             resultType = ImportKeyResult.RESULT_FAIL_NOTHING;
         } else {
             if (newKeys > 0) {
@@ -296,19 +312,28 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             }
         }
 
-        ImportKeyResult result = new ImportKeyResult(resultType, log, newKeys, updatedKeys, badKeys, secret,
-                importedMasterKeyIdsArray);
+        ImportKeyResult result = new ImportKeyResult(
+                resultType, log, newKeys, updatedKeys, missingKeys, badKeys, secret, importedMasterKeyIdsArray);
 
         result.setCanonicalizedKeyRings(canKeyRings);
         return result;
     }
 
     private UncachedKeyRing fetchKeyFromInternet(ParcelableHkpKeyserver hkpKeyserver, @NonNull ParcelableProxy proxy,
-            OperationLog log, ParcelableKeyRing entry, UncachedKeyRing key) throws PgpGeneralException, IOException {
+            OperationLog log, ParcelableKeyRing entry, UncachedKeyRing key)
+            throws PgpGeneralException, IOException, QueryNotFoundException {
+        QueryNotFoundException queryNotFoundException = null;
+
         boolean canFetchFromKeyservers =
                 hkpKeyserver != null && (entry.mKeyIdHex != null || entry.mExpectedFingerprint != null);
         if (canFetchFromKeyservers) {
-            UncachedKeyRing keyserverKey = fetchKeyFromKeyserver(hkpKeyserver, proxy, log, entry);
+            UncachedKeyRing keyserverKey = null;
+            try {
+                keyserverKey = fetchKeyFromKeyserver(hkpKeyserver, proxy, log, entry);
+            } catch (QueryNotFoundException e) {
+                queryNotFoundException = e;
+            }
+
             if (keyserverKey != null) {
                 key = keyserverKey;
             }
@@ -329,12 +354,17 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                 key = mergeKeysOrUseEither(log, 3, key, facebookKey);
             }
         }
+
+        if (key == null && queryNotFoundException != null) {
+            throw queryNotFoundException;
+        }
+
         return key;
     }
 
     @Nullable
     private UncachedKeyRing fetchKeyFromKeyserver(ParcelableHkpKeyserver hkpKeyserver, @NonNull ParcelableProxy proxy,
-            OperationLog log, ParcelableKeyRing entry) throws PgpGeneralException, IOException {
+            OperationLog log, ParcelableKeyRing entry) throws PgpGeneralException, IOException, Keyserver.QueryNotFoundException {
         try {
             byte[] data;
             log.add(LogType.MSG_IMPORT_KEYSERVER, 1, hkpKeyserver);
@@ -357,6 +387,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             }
 
             return keyserverKey;
+        } catch (Keyserver.QueryNotFoundException e) {
+            throw e;
         } catch (Keyserver.QueryFailedException e) {
             Log.d(Constants.TAG, "query failed", e);
             log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
@@ -473,7 +505,6 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     private ImportKeyResult multiThreadedKeyImport(ArrayList<ParcelableKeyRing> keyList,
                                                    final ParcelableHkpKeyserver keyServer, final ParcelableProxy proxy,
                                                    final boolean skipSave) {
-
         Log.d(Constants.TAG, "Multi-threaded key import starting");
 
         final Iterator<ParcelableKeyRing> keyListIterator = keyList.iterator();
@@ -540,6 +571,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         private int mBadKeys = 0;
         private int mNewKeys = 0;
         private int mUpdatedKeys = 0;
+        private int mMissingKeys = 0;
         private int mSecret = 0;
         private int mResultType = 0;
         private boolean mHasCancelledResult;
@@ -586,6 +618,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             mBadKeys += result.mBadKeys;
             mNewKeys += result.mNewKeys;
             mUpdatedKeys += result.mUpdatedKeys;
+            mMissingKeys += result.mMissingKeys;
             mSecret += result.mSecret;
 
             long[] masterKeyIds = result.getImportedMasterKeyIds();
@@ -635,7 +668,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             }
 
             ImportKeyResult result = new ImportKeyResult(mResultType, mImportLog, mNewKeys,
-                    mUpdatedKeys, mBadKeys, mSecret, masterKeyIds);
+                    mUpdatedKeys, mMissingKeys, mBadKeys, mSecret, masterKeyIds);
 
             result.setCanonicalizedKeyRings(mCanonicalizedKeyRings);
             return result;

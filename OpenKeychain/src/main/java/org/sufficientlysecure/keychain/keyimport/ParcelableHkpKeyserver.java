@@ -402,6 +402,9 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
             throw new Keyserver.QueryFailedException("Unsupported keyserver URI");
         } catch (HttpError httpError) {
             Log.d(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
+            if (httpError.getCode() == 404) {
+                throw new Keyserver.QueryNotFoundException("not found");
+            }
             throw new Keyserver.QueryFailedException("not found");
         }
         if (data == null) {
