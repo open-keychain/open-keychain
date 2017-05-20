@@ -18,13 +18,10 @@
 package org.sufficientlysecure.keychain.ui.widget;
 
 
-import java.util.List;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,21 +29,14 @@ import android.provider.ContactsContract;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.ContactHelper;
+import org.sufficientlysecure.keychain.ui.widget.SystemContactInfoLoader.SystemContactInfo;
 import org.sufficientlysecure.keychain.util.Log;
 
 
-public class SystemContactPresenter implements LoaderCallbacks<Cursor> {
-    private static final String[] RAW_CONTACT_PROJECTION = {
-            ContactsContract.RawContacts.CONTACT_ID
-    };
-    private static final int INDEX_CONTACT_ID = 0;
-
-
+public class SystemContactPresenter implements LoaderCallbacks<SystemContactInfo> {
     private final Context context;
     private final SystemContactMvpView view;
     private final int loaderId;
@@ -88,63 +78,19 @@ public class SystemContactPresenter implements LoaderCallbacks<Cursor> {
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri baseUri = isSecret ? ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI :
-                ContactsContract.RawContacts.CONTENT_URI;
-
-        return new CursorLoader(context, baseUri, RAW_CONTACT_PROJECTION,
-                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " +
-                        ContactsContract.RawContacts.SOURCE_ID + "=? AND " +
-                        ContactsContract.RawContacts.DELETED + "=?",
-                new String[] {
-                        Constants.ACCOUNT_TYPE,
-                        Long.toString(masterKeyId),
-                        "0" // "0" for "not deleted"
-                },
-                null);
+    public Loader<SystemContactInfo> onCreateLoader(int id, Bundle args) {
+        return new SystemContactInfoLoader(context, context.getContentResolver(), masterKeyId, isSecret);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (!data.moveToFirst()) {
-            return;
-        }
-
-        long contactId = data.getLong(INDEX_CONTACT_ID);
-        loadLinkedSystemContact(contactId);
-    }
-
-    private void loadLinkedSystemContact(final long contactId) {
-        this.contactId = contactId;
-
-        if (contactId == -1) {
-            return;
-        }
-
-        ContactHelper contactHelper = new ContactHelper(context);
-
-        String contactName = null;
-        if (isSecret) { //all secret keys are linked to "me" profile in contacts
-            List<String> mainProfileNames = contactHelper.getMainProfileContactName();
-            if (mainProfileNames != null && mainProfileNames.size() > 0) {
-                contactName = mainProfileNames.get(0);
-            }
-        } else {
-            contactName = contactHelper.getContactName(contactId);
-        }
-
-        if (contactName != null) { //contact name exists for given master key
-            Bitmap picture;
-            if (isSecret) {
-                picture = contactHelper.loadMainProfilePhoto(false);
-            } else {
-                picture = contactHelper.loadPhotoByContactId(contactId, false);
-            }
-
-            view.showLinkedSystemContact(contactName, picture);
-        } else {
+    public void onLoadFinished(Loader<SystemContactInfo> loader, SystemContactInfo data) {
+        if (data == null) {
             view.hideLinkedSystemContact();
+            return;
         }
+
+        this.contactId = data.contactId;
+        view.showLinkedSystemContact(data.contactName, data.contactPicture);
     }
 
     @Override
