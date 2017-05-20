@@ -639,10 +639,10 @@ public class KeychainProvider extends ContentProvider {
             case UPDATED_KEYS_SPECIFIC: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 qb.setTables(Tables.UPDATED_KEYS);
-                projectionMap.put(UpdatedKeys.MASTER_KEY_ID, Tables.UPDATED_KEYS + "."
-                        + UpdatedKeys.MASTER_KEY_ID);
-                projectionMap.put(UpdatedKeys.LAST_UPDATED, Tables.UPDATED_KEYS + "."
-                        + UpdatedKeys.LAST_UPDATED);
+                projectionMap.put(UpdatedKeys.MASTER_KEY_ID, Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID);
+                projectionMap.put(UpdatedKeys.LAST_UPDATED, Tables.UPDATED_KEYS + "." + UpdatedKeys.LAST_UPDATED);
+                projectionMap.put(UpdatedKeys.SEEN_ON_KEYSERVERS,
+                        Tables.UPDATED_KEYS + "." + UpdatedKeys.SEEN_ON_KEYSERVERS);
                 qb.setProjectionMap(projectionMap);
                 if (match == UPDATED_KEYS_SPECIFIC) {
                     qb.appendWhere(UpdatedKeys.MASTER_KEY_ID + " = ");
@@ -780,9 +780,14 @@ public class KeychainProvider extends ContentProvider {
                     break;
                 }
                 case UPDATED_KEYS: {
-                    long updatedKeyId = db.replace(Tables.UPDATED_KEYS, null, values);
-                    rowUri = UpdatedKeys.CONTENT_URI.buildUpon().appendPath("" + updatedKeyId)
-                            .build();
+                    try {
+                        db.insertOrThrow(Tables.UPDATED_KEYS, null, values);
+                    } catch (SQLiteConstraintException e) {
+                        String masterKeyId = values.getAsString(UpdatedKeys.MASTER_KEY_ID);
+                        db.update(Tables.UPDATED_KEYS, values,
+                                UpdatedKeys.MASTER_KEY_ID + " = ?", new String[] { masterKeyId });
+                    }
+                    rowUri = UpdatedKeys.CONTENT_URI;
                     break;
                 }
                 case API_APPS: {

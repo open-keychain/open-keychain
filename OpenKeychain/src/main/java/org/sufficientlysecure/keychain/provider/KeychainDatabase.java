@@ -52,7 +52,7 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 21;
+    private static final int DATABASE_VERSION = 22;
     private Context mContext;
 
     public interface Tables {
@@ -308,13 +308,16 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 }
             */
             case 20:
-                db.execSQL(
-                        "CREATE TABLE IF NOT EXISTS overridden_warnings ("
-                                + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                + "identifier TEXT NOT NULL UNIQUE "
-                                + ")");
+                    db.execSQL(
+                            "CREATE TABLE IF NOT EXISTS overridden_warnings ("
+                                    + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                                    + "identifier TEXT NOT NULL UNIQUE "
+                                    + ")");
 
-                if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20) {
+            case 21:
+                db.execSQL("ALTER TABLE updated_keys ADD COLUMN seen_on_keyservers INTEGER;");
+
+                if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20 || oldVersion == 21) {
                     // no consolidate for now, often crashes!
                     return;
                 }
