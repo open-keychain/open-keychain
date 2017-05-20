@@ -747,7 +747,7 @@ public class KeyWritableRepository extends KeyRepository {
      * If you want to merge keys in-memory only and not save in database set skipSave=true.
      */
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing,
-                                               String expectedFingerprint,
+                                               byte[] expectedFingerprint,
                                                ArrayList<CanonicalizedKeyRing> canKeyRings,
                                                boolean skipSave) {
 
@@ -869,7 +869,7 @@ public class KeyWritableRepository extends KeyRepository {
         }
     }
 
-    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, String expectedFingerprint) {
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, byte[] expectedFingerprint) {
         return savePublicKeyRing(publicRing, expectedFingerprint, null, false);
     }
 

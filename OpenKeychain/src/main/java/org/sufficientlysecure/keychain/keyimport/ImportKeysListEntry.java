@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -56,7 +57,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private boolean mUpdated;
 
     private Date mDate;
-    private String mFingerprintHex;
+    private byte[] mFingerprint;
     private Integer mBitStrength;
     private String mCurveOid;
     private String mAlgorithm;
@@ -78,10 +79,10 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     }
 
     public boolean hasSameKeyAs(ImportKeysListEntry other) {
-        if (mFingerprintHex == null || other == null) {
+        if (mFingerprint == null || other == null || other.mFingerprint == null) {
             return false;
         }
-        return mFingerprintHex.equals(other.mFingerprintHex);
+        return Arrays.equals(mFingerprint, other.mFingerprint);
     }
 
     public String getKeyIdHex() {
@@ -140,16 +141,12 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mDate = date;
     }
 
-    public String getFingerprintHex() {
-        return mFingerprintHex;
-    }
-
-    public void setFingerprintHex(String fingerprintHex) {
-        mFingerprintHex = fingerprintHex;
-    }
-
     public void setFingerprint(byte[] fingerprint) {
-        mFingerprintHex = KeyFormattingUtils.convertFingerprintToHex(fingerprint);
+        mFingerprint = fingerprint;
+    }
+
+    public byte[] getFingerprint() {
+        return mFingerprint;
     }
 
     public Integer getBitStrength() {
@@ -371,7 +368,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         if (mDate != null) {
             dest.writeLong(mDate.getTime());
         }
-        dest.writeString(mFingerprintHex);
+        dest.writeByteArray(mFingerprint);
         dest.writeString(mKeyIdHex);
         dest.writeInt(mBitStrength == null ? 0 : 1);
         if (mBitStrength != null) {
@@ -397,7 +394,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mExpired = source.readByte() == 1;
             vr.mUpdated = source.readByte() == 1;
             vr.mDate = source.readInt() != 0 ? new Date(source.readLong()) : null;
-            vr.mFingerprintHex = source.readString();
+            vr.mFingerprint = source.createByteArray();
             vr.mKeyIdHex = source.readString();
             vr.mBitStrength = source.readInt() != 0 ? source.readInt() : null;
             vr.mAlgorithm = source.readString();

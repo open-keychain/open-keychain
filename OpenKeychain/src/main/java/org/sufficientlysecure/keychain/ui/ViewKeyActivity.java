@@ -1148,9 +1148,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         mRefresh.startAnimation(mRotate);
 
         byte[] blob = keyRepository.getCachedPublicKeyRing(dataUri).getFingerprint();
-        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
 
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null, null);
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(blob, null, null, null);
         ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
         entries.add(keyEntry);
         mKeyList = entries;

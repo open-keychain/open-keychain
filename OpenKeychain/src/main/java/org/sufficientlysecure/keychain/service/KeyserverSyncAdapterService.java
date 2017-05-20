@@ -462,10 +462,8 @@ public class KeyserverSyncAdapterService extends Service {
                 continue;
             }
             Log.d(Constants.TAG, "Keyserver sync: Updating {" + keyId + "}");
-            String fingerprint = KeyFormattingUtils
-                    .convertFingerprintToHex(keyCursor.getBlob(INDEX_FINGERPRINT));
-            String hexKeyId = KeyFormattingUtils
-                    .convertKeyIdToHex(keyId);
+            byte[] fingerprint = keyCursor.getBlob(INDEX_FINGERPRINT);
+            String hexKeyId = KeyFormattingUtils.convertKeyIdToHex(keyId);
             // we aren't updating from keybase as of now
             keyList.add(new ParcelableKeyRing(fingerprint, hexKeyId, null, null));
         }

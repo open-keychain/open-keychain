@@ -76,7 +76,7 @@ public class KeybaseKeyserver extends Keyserver {
         String username = match.getUsername();
         String fullName = match.getFullName();
         String fingerprint = match.getFingerprint();
-        entry.setFingerprintHex(fingerprint);
+        entry.setFingerprint(KeyFormattingUtils.convertFingerprintHexFingerprint(fingerprint));
 
         entry.setKeyIdHex("0x" + match.getKeyID());
         // so we can query for the keybase id directly, and to identify the location from which the

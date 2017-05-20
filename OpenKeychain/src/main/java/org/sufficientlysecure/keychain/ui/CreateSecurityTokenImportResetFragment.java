@@ -69,7 +69,7 @@ public class CreateSecurityTokenImportResetFragment
     private byte[] mTokenAid;
     private double mTokenVersion;
     private String mTokenUserId;
-    private String mTokenFingerprint;
+    private byte[] mTokenFingerprint;
     private TextView vSerNo;
     private TextView vUserId;
     private TextView mNextButton;
@@ -107,7 +107,7 @@ public class CreateSecurityTokenImportResetFragment
 
         byte[] fp = new byte[20];
         ByteBuffer.wrap(fp).put(mTokenFingerprints, 0, 20);
-        mTokenFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
+        mTokenFingerprint = fp;
 
     }
 
@@ -261,7 +261,7 @@ public class CreateSecurityTokenImportResetFragment
 
         byte[] fp = new byte[20];
         ByteBuffer.wrap(fp).put(mTokenFingerprints, 0, 20);
-        mTokenFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
+        mTokenFingerprint = fp;
     }
 
     @Override

@@ -58,6 +58,7 @@ import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
@@ -340,9 +341,10 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
 
             // Download by fingerprint, or keyId - whichever is available
             if (entry.mExpectedFingerprint != null) {
+                String fingerprintHex = KeyFormattingUtils.convertFingerprintToHex(entry.mExpectedFingerprint);
                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" +
-                        entry.mExpectedFingerprint.substring(24));
-                data = hkpKeyserver.get("0x" + entry.mExpectedFingerprint, proxy).getBytes();
+                        fingerprintHex.substring(24));
+                data = hkpKeyserver.get("0x" + fingerprintHex, proxy).getBytes();
             } else {
                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
                 data = hkpKeyserver.get(entry.mKeyIdHex, proxy).getBytes();

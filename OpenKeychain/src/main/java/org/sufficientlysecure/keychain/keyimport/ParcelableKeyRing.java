@@ -30,7 +30,7 @@ public class ParcelableKeyRing implements Parcelable {
     public final byte[] mBytes;
 
     // dual role!
-    public final String mExpectedFingerprint;
+    public final byte[] mExpectedFingerprint;
     public final String mKeyIdHex;
     public final String mKeybaseName;
     public final String mFbUsername;
@@ -39,13 +39,13 @@ public class ParcelableKeyRing implements Parcelable {
         this(bytes, null, null, null, null);
     }
 
-    public ParcelableKeyRing(String expectedFingerprint, String keyIdHex, String keybaseName,
-                             String fbUsername) {
+    public ParcelableKeyRing(byte[] expectedFingerprint, String keyIdHex, String keybaseName,
+            String fbUsername) {
 
         this(null, expectedFingerprint, keyIdHex, keybaseName, fbUsername);
     }
 
-    public ParcelableKeyRing(byte[] bytes, String expectedFingerprint, String keyIdHex,
+    public ParcelableKeyRing(byte[] bytes, byte[] expectedFingerprint, String keyIdHex,
                              String keybaseName, String fbUsername) {
 
         this.mBytes = bytes;
@@ -58,7 +58,7 @@ public class ParcelableKeyRing implements Parcelable {
     private ParcelableKeyRing(Parcel source) {
         mBytes = source.createByteArray();
 
-        mExpectedFingerprint = source.readString();
+        mExpectedFingerprint = source.createByteArray();
         mKeyIdHex = source.readString();
         mKeybaseName = source.readString();
         mFbUsername = source.readString();
@@ -67,7 +67,7 @@ public class ParcelableKeyRing implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByteArray(mBytes);
 
-        dest.writeString(mExpectedFingerprint);
+        dest.writeByteArray(mExpectedFingerprint);
         dest.writeString(mKeyIdHex);
         dest.writeString(mKeybaseName);
         dest.writeString(mFbUsername);

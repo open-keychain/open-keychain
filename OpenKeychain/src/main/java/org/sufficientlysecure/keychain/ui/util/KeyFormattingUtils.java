@@ -330,6 +330,13 @@ public class KeyFormattingUtils {
         return hexString;
     }
 
+    public static byte[] convertFingerprintHexFingerprint(String fingerprintHex) {
+        if (fingerprintHex.length() != 40) {
+            throw new IllegalArgumentException("fingerprint must be 40 chars long!");
+        }
+        return Hex.decode(fingerprintHex);
+    }
+
     public static long convertKeyIdHexToKeyId(String hex) {
         return new BigInteger(hex.substring(2), 16).longValue();
     }

@@ -18,18 +18,19 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.bouncycastle.openpgp.PGPKeyRing;
-import org.bouncycastle.openpgp.PGPPublicKey;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.IterableIterator;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.bouncycastle.openpgp.PGPKeyRing;
+import org.bouncycastle.openpgp.PGPPublicKey;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.util.IterableIterator;
 
 
 /**
@@ -168,14 +169,13 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
     }
 
     /// Returns true iff the keyring contains a primary key or mutually bound subkey with the expected fingerprint
-    public boolean containsBoundSubkey(String expectedFingerprint) {
+    public boolean containsBoundSubkey(byte[] expectedFingerprint) {
         for (CanonicalizedPublicKey key : publicKeyIterator()) {
             boolean isMasterOrMutuallyBound = key.isMasterKey() || key.canSign();
             if (!isMasterOrMutuallyBound) {
                 continue;
             }
-            if (KeyFormattingUtils.convertFingerprintToHex(
-                    key.getFingerprint()).equalsIgnoreCase(expectedFingerprint)) {
+            if (Arrays.equals(key.getFingerprint(), expectedFingerprint)) {
                 return true;
             }
         }

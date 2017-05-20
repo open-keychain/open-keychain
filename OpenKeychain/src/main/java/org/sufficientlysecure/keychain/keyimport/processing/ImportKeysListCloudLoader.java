@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -83,7 +84,7 @@ public class ImportKeysListCloudLoader
 
         // Now we have all the data needed to build the parcelable key ring for this key
         for (ImportKeysListEntry e : mEntryList) {
-            e.setParcelableKeyRing(new ParcelableKeyRing(e.getFingerprintHex(), e.getKeyIdHex(),
+            e.setParcelableKeyRing(new ParcelableKeyRing(e.getFingerprint(), e.getKeyIdHex(),
                     e.getKeybaseName(), e.getFbUsername()));
         }
 
@@ -146,16 +147,19 @@ public class ImportKeysListCloudLoader
             mEntryList.clear();
             // add result to data
             if (enforceFingerprint) {
-                String fingerprint = mState.mServerQuery.substring(2);
-                Log.d(Constants.TAG, "fingerprint: " + fingerprint);
+                String fingerprintHex = mState.mServerQuery.substring(2);
+                Log.d(Constants.TAG, "fingerprint: " + fingerprintHex);
                 // query must return only one result!
                 if (searchResult.size() == 1) {
+                    if (fingerprintHex.length() != 40) {
+                        throw new IllegalArgumentException("Bad format!");
+                    }
                     ImportKeysListEntry uniqueEntry = searchResult.get(0);
                     /*
                      * set fingerprint explicitly after query
                      * to enforce a check when the key is imported by KeychainService
                      */
-                    uniqueEntry.setFingerprintHex(fingerprint);
+                    uniqueEntry.setFingerprint(KeyFormattingUtils.convertFingerprintHexFingerprint(fingerprintHex));
                     mEntryList.add(uniqueEntry);
                 }
             } else {

@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
@@ -152,8 +153,8 @@ public class ImportKeysProxyActivity extends FragmentActivity
             returnResult(intent);
             return;
         }
-        final String fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
-        if (!fingerprint.matches("[a-fA-F0-9]{40}")) {
+        final String fingerprintHex = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
+        if (!fingerprintHex.matches("[a-fA-F0-9]{40}")) {
             SingletonResult result = new SingletonResult(
                     SingletonResult.RESULT_ERROR, LogType.MSG_WRONG_QR_CODE_FP);
             Intent intent = new Intent();
@@ -161,6 +162,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
             returnResult(intent);
             return;
         }
+        byte[] fingerprint = KeyFormattingUtils.convertFingerprintHexFingerprint(fingerprintHex);
 
         if (ACTION_SCAN_WITH_RESULT.equals(action)) {
             Intent result = new Intent();
@@ -168,7 +170,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
             setResult(RESULT_OK, result);
             finish();
         } else {
-            importKeys(fingerprint);
+            importKeysFromFingerprint(fingerprint);
         }
 
     }
@@ -196,7 +198,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
         startImportService(selectedEntries);
     }
 
-    public void importKeys(String fingerprint) {
+    public void importKeysFromFingerprint(byte[] fingerprint) {
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null, null);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);

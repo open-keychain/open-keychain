@@ -301,7 +301,8 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
             // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
             String fingerprintOrKeyId = matcher.group(1).toLowerCase(Locale.ENGLISH);
             if (fingerprintOrKeyId.length() == 40) {
-                entry.setFingerprintHex(fingerprintOrKeyId);
+                byte[] fingerprint = KeyFormattingUtils.convertFingerprintHexFingerprint(fingerprintOrKeyId);
+                entry.setFingerprint(fingerprint);
                 entry.setKeyIdHex("0x" + fingerprintOrKeyId.substring(fingerprintOrKeyId.length()
                         - 16, fingerprintOrKeyId.length()));
             } else if (fingerprintOrKeyId.length() == 16) {
