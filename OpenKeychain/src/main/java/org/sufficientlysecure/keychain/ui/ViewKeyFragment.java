@@ -72,6 +72,8 @@ import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter;
 import org.sufficientlysecure.keychain.ui.widget.KeyHealthCardView;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
+
 
 public class ViewKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -249,6 +251,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         // initialize loaders, which will take care of auto-refresh on change
         getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
         initLinkedContactLoader();
+        initLinkedIds(mIsSecret);
         initCardButtonsVisibility(mIsSecret);
 
         mKeyHealthPresenter = new KeyHealthPresenter(
@@ -458,6 +461,16 @@ public class ViewKeyFragment extends LoaderFragment implements
                 throw new IllegalStateException("This callback should never end up here!");
             }
         }
+    }
+
+    private void initLinkedIds(boolean isSecret) {
+        if (!Preferences.getPreferences(getActivity()).getExperimentalEnableLinkedIdentities()) {
+            return;
+        }
+
+        mLinkedIdsAdapter = new LinkedIdsAdapter(getActivity(), null, 0, isSecret, mLinkedIdsExpander);
+        mLinkedIds.setAdapter(mLinkedIdsAdapter);
+        getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
     }
 
     private void initLinkedContactLoader() {
