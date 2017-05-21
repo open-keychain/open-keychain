@@ -84,7 +84,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
@@ -111,7 +110,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     public static final String EXTRA_SECURITY_TOKEN_AID = "security_token_aid";
     public static final String EXTRA_SECURITY_TOKEN_VERSION = "security_token_version";
     public static final String EXTRA_SECURITY_TOKEN_FINGERPRINTS = "security_token_fingerprints";
-    private boolean mLinkedTransition;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({REQUEST_QR_FINGERPRINT, REQUEST_BACKUP, REQUEST_CERTIFY, REQUEST_DELETE})
@@ -330,11 +328,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         // Fragments are stored, no need to recreate those
         if (savedInstanceState != null) {
             return;
-        }
-
-        mLinkedTransition = getIntent().getBooleanExtra(EXTRA_LINKED_TRANSITION, false);
-        if (mLinkedTransition && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            postponeEnterTransition();
         }
 
         if (Preferences.getPreferences(this).getExperimentalEnableKeybase()) {
@@ -742,8 +735,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 }
 
                 // if the main fragment doesn't exist, or is not of the correct type, (re)create it
-                frag = ViewKeyFragment.newInstance(mMasterKeyId, mIsSecret,
-                        mLinkedTransition ? PostponeType.LINKED : PostponeType.NONE);
+                frag = ViewKeyFragment.newInstance(mMasterKeyId, mIsSecret);
                 // get rid of possible backstack, this fragment is always at the bottom
                 manager.popBackStack("security_token", FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 manager.beginTransaction()

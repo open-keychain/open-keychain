@@ -18,8 +18,11 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+
+import java.io.IOException;
+import java.util.WeakHashMap;
+
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -37,6 +40,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -45,45 +49,22 @@ import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 import org.sufficientlysecure.keychain.util.FilterCursorWrapper;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.io.IOException;
-import java.util.WeakHashMap;
-
 public class LinkedIdsAdapter extends UserAttributesAdapter {
     private final boolean mIsSecret;
     protected LayoutInflater mInflater;
     WeakHashMap<Integer,UriAttribute> mLinkedIdentityCache = new WeakHashMap<>();
 
-    private Cursor mUnfilteredCursor;
-
-    private TextView mExpander;
-
-    public LinkedIdsAdapter(Context context, Cursor c, int flags,
-            boolean isSecret, TextView expander) {
+    public LinkedIdsAdapter(Context context, Cursor c, int flags, boolean isSecret) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
         mIsSecret = isSecret;
-
-        if (expander != null) {
-            expander.setVisibility(View.GONE);
-            /* don't show an expander (maybe in some sort of advanced view?)
-            mExpander = expander;
-            mExpander.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showUnfiltered();
-                }
-            });
-            */
-        }
     }
 
     @Override
     public Cursor swapCursor(Cursor cursor) {
         if (cursor == null) {
-            mUnfilteredCursor = null;
             return super.swapCursor(null);
         }
-        mUnfilteredCursor = cursor;
         FilterCursorWrapper filteredCursor = new FilterCursorWrapper(cursor) {
             @Override
             public boolean isVisible(Cursor cursor) {
@@ -92,23 +73,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
             }
         };
 
-        if (mExpander != null) {
-            int hidden = filteredCursor.getHiddenCount();
-            if (hidden == 0) {
-                mExpander.setVisibility(View.GONE);
-            } else {
-                mExpander.setVisibility(View.VISIBLE);
-                mExpander.setText(mContext.getResources().getQuantityString(
-                        R.plurals.linked_id_expand, hidden));
-            }
-        }
-
         return super.swapCursor(filteredCursor);
-    }
-
-    private void showUnfiltered() {
-        mExpander.setVisibility(View.GONE);
-        super.swapCursor(mUnfilteredCursor);
     }
 
     @Override
@@ -183,18 +148,18 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
     // don't show revoked user ids, irrelevant for average users
     public static final String LINKED_IDS_WHERE = UserPackets.IS_REVOKED + " = 0";
 
-    public static CursorLoader createLoader(Activity activity, Uri dataUri) {
+    public static CursorLoader createLoader(Context context, Uri dataUri) {
         Uri baseUri = UserPackets.buildLinkedIdsUri(dataUri);
-        return new CursorLoader(activity, baseUri,
+        return new CursorLoader(context, baseUri,
                 UserIdsAdapter.USER_PACKETS_PROJECTION, LINKED_IDS_WHERE, null, null);
     }
 
-    public LinkedIdViewFragment getLinkedIdFragment(Uri baseUri, int position, long masterKeyId) throws IOException {
+    public LinkedIdViewFragment getLinkedIdFragment(int position, long masterKeyId) throws IOException {
         Cursor c = getCursor();
         c.moveToPosition(position);
         int rank = c.getInt(UserIdsAdapter.INDEX_RANK);
 
-        Uri dataUri = UserPackets.buildLinkedIdsUri(baseUri);
+        Uri dataUri = UserPackets.buildLinkedIdsUri(KeyRings.buildGenericKeyRingUri(masterKeyId));
         return LinkedIdViewFragment.newInstance(dataUri, rank, mIsSecret, masterKeyId);
     }
 

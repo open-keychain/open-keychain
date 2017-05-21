@@ -96,7 +96,6 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     private Uri mDataUri;
     private ViewHolder mViewHolder;
     private int mLidRank;
-    private OnIdentityLoadedListener mIdLoadedListener;
     private long mCertifyKeyId;
 
     public static LinkedIdViewFragment newInstance(Uri dataUri, int rank,
@@ -156,11 +155,6 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
 
                 // Nothing to load means break if we are *expected* to load
                 if (!cursor.moveToFirst()) {
-                    if (mIdLoadedListener != null) {
-                        Notify.create(getActivity(), "Error loading identity!",
-                                Notify.LENGTH_LONG, Style.ERROR).show();
-                        finishFragment();
-                    }
                     // Or just ignore, this is probably some intermediate state during certify
                     break;
                 }
@@ -172,11 +166,6 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
                     UriAttribute linkedId = LinkedAttribute.fromAttributeData(data);
 
                     loadIdentity(linkedId, certStatus);
-
-                    if (mIdLoadedListener != null) {
-                        mIdLoadedListener.onIdentityLoaded();
-                        mIdLoadedListener = null;
-                    }
 
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error parsing identity", e);
@@ -198,14 +187,6 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
                 manager.popBackStack("linked_id", FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
         });
-    }
-
-    public interface OnIdentityLoadedListener {
-        void onIdentityLoaded();
-    }
-
-    public void setOnIdentityLoadedListener(OnIdentityLoadedListener listener) {
-        mIdLoadedListener = listener;
     }
 
     private void loadIdentity(UriAttribute linkedId, int certStatus) {

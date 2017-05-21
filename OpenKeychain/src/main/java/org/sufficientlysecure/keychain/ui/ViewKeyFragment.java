@@ -19,66 +19,48 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.IOException;
-
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.CardView;
-import android.transition.Fade;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
-import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
-import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment.OnIdentityLoadedListener;
-import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.ui.widget.KeyHealthCardView;
 import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter;
+import org.sufficientlysecure.keychain.ui.widget.LinkedIdentitiesCardView;
+import org.sufficientlysecure.keychain.ui.widget.LinkedIdentitiesPresenter;
+import org.sufficientlysecure.keychain.ui.widget.LinkedIdentitiesPresenter.LinkedIdsFragMvpView;
 import org.sufficientlysecure.keychain.ui.widget.SystemContactCardView;
 import org.sufficientlysecure.keychain.ui.widget.SystemContactPresenter;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class ViewKeyFragment extends LoaderFragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class ViewKeyFragment extends LoaderFragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        LinkedIdsFragMvpView {
 
     public static final String ARG_MASTER_KEY_ID = "master_key_id";
     public static final String ARG_IS_SECRET = "is_secret";
-    public static final String ARG_POSTPONE_TYPE = "postpone_type";
 
     private ListView mUserIds;
-
-    enum PostponeType {
-        NONE, LINKED
-    }
 
     boolean mIsSecret = false;
 
@@ -88,16 +70,11 @@ public class ViewKeyFragment extends LoaderFragment implements
     private static final int LOADER_ID_SUBKEY_STATUS = 4;
 
     private UserIdsAdapter mUserIdsAdapter;
-    private LinkedIdsAdapter mLinkedIdsAdapter;
 
     private Uri mDataUri;
 
-    private PostponeType mPostponeType;
-
-    private ListView mLinkedIds;
-    private CardView mLinkedIdsCard;
-    private TextView mLinkedIdsEmpty;
-    private TextView mLinkedIdsExpander;
+    LinkedIdentitiesCardView mLinkedIdsCard;
+    LinkedIdentitiesPresenter mLinkedIdentitiesPresenter;
 
     SystemContactCardView mSystemContactCard;
     SystemContactPresenter mSystemContactPresenter;
@@ -110,12 +87,11 @@ public class ViewKeyFragment extends LoaderFragment implements
     /**
      * Creates new instance of this fragment
      */
-    public static ViewKeyFragment newInstance(long masterKeyId, boolean isSecret, PostponeType postponeType) {
+    public static ViewKeyFragment newInstance(long masterKeyId, boolean isSecret) {
         ViewKeyFragment frag = new ViewKeyFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_MASTER_KEY_ID, masterKeyId);
         args.putBoolean(ARG_IS_SECRET, isSecret);
-        args.putString(ARG_POSTPONE_TYPE, postponeType.toString());
 
         frag.setArguments(args);
 
@@ -129,11 +105,7 @@ public class ViewKeyFragment extends LoaderFragment implements
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
         Button userIdsEditButton = (Button) view.findViewById(R.id.view_key_card_user_ids_edit);
-        mLinkedIdsCard = (CardView) view.findViewById(R.id.card_linked_ids);
-        mLinkedIds = (ListView) view.findViewById(R.id.view_key_linked_ids);
-        mLinkedIdsExpander = (TextView) view.findViewById(R.id.view_key_linked_ids_expander);
-        mLinkedIdsEmpty = (TextView)  view.findViewById(R.id.view_key_linked_ids_empty);
-        Button linkedIdsAddButton = (Button) view.findViewById(R.id.view_key_card_linked_ids_add);
+        mLinkedIdsCard = (LinkedIdentitiesCardView) view.findViewById(R.id.card_linked_ids);
 
         userIdsEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,23 +114,10 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
         });
 
-        linkedIdsAddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addLinkedIdentity(mDataUri);
-            }
-        });
-
         mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 showUserIdInfo(position);
-            }
-        });
-        mLinkedIds.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showLinkedId(position);
             }
         });
 
@@ -174,53 +133,6 @@ public class ViewKeyFragment extends LoaderFragment implements
         startActivityForResult(editIntent, 0);
     }
 
-    private void addLinkedIdentity(Uri dataUri) {
-        Intent intent = new Intent(getActivity(), LinkedIdWizard.class);
-        intent.setData(dataUri);
-        startActivity(intent);
-        getActivity().finish();
-    }
-
-    private void showLinkedId(final int position) {
-        final LinkedIdViewFragment frag;
-        try {
-            frag = mLinkedIdsAdapter.getLinkedIdFragment(mDataUri, position, mMasterKeyId);
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException", e);
-            return;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Transition trans = TransitionInflater.from(getActivity())
-                    .inflateTransition(R.transition.linked_id_card_trans);
-            // setSharedElementReturnTransition(trans);
-            setExitTransition(new Fade());
-            frag.setSharedElementEnterTransition(trans);
-        }
-
-        getFragmentManager().beginTransaction()
-                .add(R.id.view_key_fragment, frag)
-                .hide(frag)
-                .commit();
-
-        frag.setOnIdentityLoadedListener(new OnIdentityLoadedListener() {
-            @Override
-            public void onIdentityLoaded() {
-                new Handler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        getFragmentManager().beginTransaction()
-                                .show(frag)
-                                .addSharedElement(mLinkedIdsCard, "card_linked_ids")
-                                .remove(ViewKeyFragment.this)
-                                .addToBackStack("linked_id")
-                                .commit();
-                    }
-                });
-            }
-        });
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -228,7 +140,6 @@ public class ViewKeyFragment extends LoaderFragment implements
         mMasterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
         mDataUri = KeyRings.buildGenericKeyRingUri(mMasterKeyId);
         mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);
-        mPostponeType = PostponeType.valueOf(getArguments().getString(ARG_POSTPONE_TYPE));
 
         // load user ids after we know if it's a secret key
         mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
@@ -236,8 +147,13 @@ public class ViewKeyFragment extends LoaderFragment implements
 
         // initialize loaders, which will take care of auto-refresh on change
         getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-        initLinkedIds(mIsSecret);
         initCardButtonsVisibility(mIsSecret);
+
+        if (Preferences.getPreferences(getActivity()).getExperimentalEnableLinkedIdentities()) {
+            mLinkedIdentitiesPresenter = new LinkedIdentitiesPresenter(
+                    getContext(), mLinkedIdsCard, this, LOADER_ID_LINKED_IDS, mMasterKeyId, mIsSecret);
+            mLinkedIdentitiesPresenter.startLoader(getLoaderManager());
+        }
 
         mSystemContactPresenter = new SystemContactPresenter(
                 getContext(), mSystemContactCard, LOADER_ID_LINKED_CONTACT, mMasterKeyId, mIsSecret);
@@ -246,6 +162,20 @@ public class ViewKeyFragment extends LoaderFragment implements
         mKeyHealthPresenter = new KeyHealthPresenter(
                 getContext(), mKeyHealthCard, LOADER_ID_SUBKEY_STATUS, mMasterKeyId, mIsSecret);
         mKeyHealthPresenter.startLoader(getLoaderManager());
+    }
+
+    @Override
+    public void switchToFragment(final Fragment frag, final String backStackName) {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                getFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .replace(R.id.view_key_fragment, frag)
+                        .addToBackStack(backStackName)
+                        .commit();
+            }
+        });
     }
 
     private void showUserIdInfo(final int position) {
@@ -283,10 +213,7 @@ public class ViewKeyFragment extends LoaderFragment implements
                 return UserIdsAdapter.createLoader(getActivity(), mDataUri);
             }
 
-            case LOADER_ID_LINKED_IDS: {
-                return LinkedIdsAdapter.createLoader(getActivity(), mDataUri);
-            }
-
+            case LOADER_ID_LINKED_IDS:
             case LOADER_ID_LINKED_CONTACT:
             case LOADER_ID_SUBKEY_STATUS: {
                 throw new IllegalStateException("This callback should never end up here!");
@@ -315,46 +242,12 @@ public class ViewKeyFragment extends LoaderFragment implements
                 break;
             }
 
-            case LOADER_ID_LINKED_IDS: {
-                mLinkedIdsAdapter.swapCursor(data);
-
-                if (mIsSecret) {
-                    mLinkedIdsCard.setVisibility(View.VISIBLE);
-                    mLinkedIdsEmpty.setVisibility(mLinkedIdsAdapter.getCount() > 0 ? View.GONE : View.VISIBLE);
-                } else {
-                    mLinkedIdsCard.setVisibility(mLinkedIdsAdapter.getCount() > 0 ? View.VISIBLE : View.GONE);
-                    mLinkedIdsEmpty.setVisibility(View.GONE);
-                }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mPostponeType == PostponeType.LINKED) {
-                    mLinkedIdsCard.getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener() {
-                        @TargetApi(VERSION_CODES.LOLLIPOP)
-                        @Override
-                        public boolean onPreDraw() {
-                            mLinkedIdsCard.getViewTreeObserver().removeOnPreDrawListener(this);
-                            getActivity().startPostponedEnterTransition();
-                            return true;
-                        }
-                    });
-                }
-                break;
-            }
-
+            case LOADER_ID_LINKED_IDS:
             case LOADER_ID_LINKED_CONTACT:
             case LOADER_ID_SUBKEY_STATUS: {
                 throw new IllegalStateException("This callback should never end up here!");
             }
         }
-    }
-
-    private void initLinkedIds(boolean isSecret) {
-        if (!Preferences.getPreferences(getActivity()).getExperimentalEnableLinkedIdentities()) {
-            return;
-        }
-
-        mLinkedIdsAdapter = new LinkedIdsAdapter(getActivity(), null, 0, isSecret, mLinkedIdsExpander);
-        mLinkedIds.setAdapter(mLinkedIdsAdapter);
-        getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
     }
 
     private void initCardButtonsVisibility(boolean isSecret) {
@@ -380,10 +273,6 @@ public class ViewKeyFragment extends LoaderFragment implements
         switch (loader.getId()) {
             case LOADER_ID_USER_IDS: {
                 mUserIdsAdapter.swapCursor(null);
-                break;
-            }
-            case LOADER_ID_LINKED_IDS: {
-                mLinkedIdsAdapter.swapCursor(null);
                 break;
             }
         }
