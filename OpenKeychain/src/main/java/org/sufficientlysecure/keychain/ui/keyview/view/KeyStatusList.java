@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.widget;
+package org.sufficientlysecure.keychain.ui.keyview.view;
 
 
 import android.content.Context;
 import android.support.annotation.ColorRes;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyStatusMvpView;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter.KeyStatusMvpView;
 
 
 public class KeyStatusList extends LinearLayout implements KeyStatusMvpView {
@@ -64,7 +65,7 @@ public class KeyStatusList extends LinearLayout implements KeyStatusMvpView {
     }
 
     // this is just a list of statuses a key can be in, which we can also display
-    enum KeyDisplayStatus {
+    public enum KeyDisplayStatus {
         OK (R.color.android_green_light, R.color.primary,
                 R.string.cap_cert_ok, R.string.cap_sign_ok, R.string.cap_decrypt_ok, false),
         DIVERT (R.color.android_green_light, R.color.primary,
@@ -113,9 +114,9 @@ public class KeyStatusList extends LinearLayout implements KeyStatusMvpView {
             return;
         }
 
-        vCertIcon.setColorFilter(getResources().getColor(keyDisplayStatus.mColor));
+        vCertIcon.setColorFilter(ContextCompat.getColor(getContext(), keyDisplayStatus.mColor));
         vCertText.setText(keyDisplayStatus.mCertifyStr);
-        vCertText.setTextColor(getResources().getColor(keyDisplayStatus.mTextColor));
+        vCertText.setTextColor(ContextCompat.getColor(getContext(), keyDisplayStatus.mTextColor));
         vCertToken.setVisibility(keyDisplayStatus.mIsDivert ? View.VISIBLE : View.GONE);
         vCertifyLayout.setVisibility(View.VISIBLE);
     }
@@ -126,9 +127,9 @@ public class KeyStatusList extends LinearLayout implements KeyStatusMvpView {
             vSignLayout.setVisibility(View.GONE);
             return;
         }
-        vSignIcon.setColorFilter(getResources().getColor(keyDisplayStatus.mColor));
+        vSignIcon.setColorFilter(ContextCompat.getColor(getContext(), keyDisplayStatus.mColor));
         vSignText.setText(keyDisplayStatus.mSignStr);
-        vSignText.setTextColor(getResources().getColor(keyDisplayStatus.mTextColor));
+        vSignText.setTextColor(ContextCompat.getColor(getContext(), keyDisplayStatus.mTextColor));
         vSignToken.setVisibility(keyDisplayStatus.mIsDivert ? View.VISIBLE : View.GONE);
         vSignLayout.setVisibility(View.VISIBLE);
     }
@@ -139,9 +140,9 @@ public class KeyStatusList extends LinearLayout implements KeyStatusMvpView {
             vDecryptLayout.setVisibility(View.GONE);
             return;
         }
-        vDecryptIcon.setColorFilter(getResources().getColor(keyDisplayStatus.mColor));
+        vDecryptIcon.setColorFilter(ContextCompat.getColor(getContext(), keyDisplayStatus.mColor));
         vDecryptText.setText(keyDisplayStatus.mDecryptStr);
-        vDecryptText.setTextColor(getResources().getColor(keyDisplayStatus.mTextColor));
+        vDecryptText.setTextColor(ContextCompat.getColor(getContext(), keyDisplayStatus.mTextColor));
         vDecryptToken.setVisibility(keyDisplayStatus.mIsDivert ? View.VISIBLE : View.GONE);
         vDecryptLayout.setVisibility(View.VISIBLE);
     }

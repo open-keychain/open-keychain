@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui;
+package org.sufficientlysecure.keychain.ui.keyview;
 
 
 import android.content.Intent;
@@ -41,16 +41,17 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.ui.EditIdentitiesActivity;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
-import org.sufficientlysecure.keychain.ui.widget.KeyHealthCardView;
-import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter;
-import org.sufficientlysecure.keychain.ui.widget.LinkedIdentitiesCardView;
-import org.sufficientlysecure.keychain.ui.widget.LinkedIdentitiesPresenter;
-import org.sufficientlysecure.keychain.ui.widget.LinkedIdentitiesPresenter.LinkedIdsFragMvpView;
-import org.sufficientlysecure.keychain.ui.widget.SystemContactCardView;
-import org.sufficientlysecure.keychain.ui.widget.SystemContactPresenter;
+import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthCardView;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter;
+import org.sufficientlysecure.keychain.ui.keyview.view.LinkedIdentitiesCardView;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.LinkedIdentitiesPresenter;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.LinkedIdentitiesPresenter.LinkedIdsFragMvpView;
+import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 

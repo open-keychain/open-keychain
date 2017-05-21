@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui;
+package org.sufficientlysecure.keychain.ui.keyview;
 
 
 import java.io.IOException;
@@ -84,6 +84,21 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.ui.BackupActivity;
+import org.sufficientlysecure.keychain.ui.CertifyFingerprintActivity;
+import org.sufficientlysecure.keychain.ui.CertifyKeyActivity;
+import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
+import org.sufficientlysecure.keychain.ui.DeleteKeyDialogActivity;
+import org.sufficientlysecure.keychain.ui.EncryptFilesActivity;
+import org.sufficientlysecure.keychain.ui.EncryptTextActivity;
+import org.sufficientlysecure.keychain.ui.ImportKeysProxyActivity;
+import org.sufficientlysecure.keychain.ui.MainActivity;
+import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
+import org.sufficientlysecure.keychain.ui.QrCodeViewActivity;
+import org.sufficientlysecure.keychain.ui.SafeSlingerActivity;
+import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity;
+import org.sufficientlysecure.keychain.ui.ViewKeyKeybaseFragment;
+import org.sufficientlysecure.keychain.ui.ViewKeySecurityTokenFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;

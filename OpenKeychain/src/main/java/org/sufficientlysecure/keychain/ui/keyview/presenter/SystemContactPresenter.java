@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.widget;
+package org.sufficientlysecure.keychain.ui.keyview.presenter;
 
 
 import android.Manifest;
@@ -32,7 +32,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.ui.widget.SystemContactInfoLoader.SystemContactInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactInfoLoader;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactInfoLoader.SystemContactInfo;
 import org.sufficientlysecure.keychain.util.Log;
 
 
@@ -102,14 +103,14 @@ public class SystemContactPresenter implements LoaderCallbacks<SystemContactInfo
         launchAndroidContactActivity(contactId, context);
     }
 
-    interface SystemContactMvpView {
+    public interface SystemContactMvpView {
         void setSystemContactClickListener(SystemContactClickListener systemContactClickListener);
 
         void showLinkedSystemContact(String contactName, Bitmap picture);
         void hideLinkedSystemContact();
     }
 
-    interface SystemContactClickListener {
+    public interface SystemContactClickListener {
         void onSystemContactClick();
     }
 

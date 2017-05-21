@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.widget;
+package org.sufficientlysecure.keychain.ui.keyview.view;
 
 
 import java.util.Date;
@@ -39,11 +39,11 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter.KeyHealthClickListener;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter.KeyHealthMvpView;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter.KeyHealthStatus;
+import org.sufficientlysecure.keychain.ui.keyview.view.KeyStatusList.KeyDisplayStatus;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyHealthClickListener;
-import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyHealthMvpView;
-import org.sufficientlysecure.keychain.ui.widget.KeyHealthPresenter.KeyHealthStatus;
-import org.sufficientlysecure.keychain.ui.widget.KeyStatusList.KeyDisplayStatus;
 
 
 public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnClickListener {

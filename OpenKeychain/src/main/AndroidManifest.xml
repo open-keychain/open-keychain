@@ -162,13 +162,13 @@
             android:name=".ui.linked.LinkedIdWizard"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_linked_create"
-            android:parentActivityName=".ui.ViewKeyActivity" />
+            android:parentActivityName=".ui.keyview.ViewKeyActivity" />
         <!-- NOTE: Dont use configChanges for QR Code view! We use a different layout for landscape -->
         <activity
             android:name=".ui.QrCodeViewActivity"
             android:label="@string/share_qr_code_dialog_title" />
         <activity
-            android:name=".ui.ViewKeyActivity"
+            android:name=".ui.keyview.ViewKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_details"
             android:parentActivityName=".ui.MainActivity">
@@ -185,10 +185,10 @@
             android:name=".ui.ViewCertActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_view_cert"
-            android:parentActivityName=".ui.ViewKeyActivity">
+            android:parentActivityName=".ui.keyview.ViewKeyActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.ViewKeyActivity" />
+                android:value=".ui.keyview.ViewKeyActivity" />
         </activity>
         <activity
             android:name=".ui.SafeSlingerActivity"
@@ -463,10 +463,10 @@
             android:name=".ui.UploadKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_send_key"
-            android:parentActivityName=".ui.ViewKeyActivity">
+            android:parentActivityName=".ui.keyview.ViewKeyActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.ViewKeyActivity" />
+                android:value=".ui.keyview.ViewKeyActivity" />
         </activity>
         <activity
             android:name=".ui.ViewKeyAdvActivity"

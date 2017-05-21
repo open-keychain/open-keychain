@@ -38,7 +38,7 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmPr
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
-import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
+import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 
 
 class SecurityProblemPresenter {

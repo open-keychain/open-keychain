@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.widget;
+package org.sufficientlysecure.keychain.ui.keyview.presenter;
 
 
 import java.util.Comparator;
@@ -29,13 +29,14 @@ import android.support.v4.content.Loader;
 
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
-import org.sufficientlysecure.keychain.ui.widget.KeyStatusList.KeyDisplayStatus;
-import org.sufficientlysecure.keychain.ui.widget.SubkeyStatusLoader.KeySubkeyStatus;
-import org.sufficientlysecure.keychain.ui.widget.SubkeyStatusLoader.SubKeyItem;
+import org.sufficientlysecure.keychain.ui.keyview.view.KeyStatusList.KeyDisplayStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusLoader;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusLoader.KeySubkeyStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusLoader.SubKeyItem;
 
 
 public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
-    static final Comparator<SubKeyItem> SUBKEY_COMPARATOR = new Comparator<SubKeyItem>() {
+    private static final Comparator<SubKeyItem> SUBKEY_COMPARATOR = new Comparator<SubKeyItem>() {
         @Override
         public int compare(SubKeyItem one, SubKeyItem two) {
             // if one is valid and the other isn't, the valid one always comes first
@@ -251,11 +252,11 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         return KeyDisplayStatus.OK;
     }
 
-    enum KeyHealthStatus {
+    public enum KeyHealthStatus {
         OK, DIVERT, REVOKED, EXPIRED, INSECURE, SIGN_ONLY, STRIPPED, PARTIAL_STRIPPED, BROKEN
     }
 
-    interface KeyHealthMvpView {
+    public interface KeyHealthMvpView {
         void setKeyStatus(KeyHealthStatus keyHealthStatus);
         void setPrimarySecurityProblem(KeySecurityProblem securityProblem);
         void setPrimaryExpiryDate(Date expiry);
@@ -269,13 +270,13 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
 
     }
 
-    interface KeyStatusMvpView {
+    public interface KeyStatusMvpView {
         void setCertifyStatus(KeyDisplayStatus unavailable);
         void setSignStatus(KeyDisplayStatus signStatus);
         void setDecryptStatus(KeyDisplayStatus encryptStatus);
     }
 
-    interface KeyHealthClickListener {
+    public interface KeyHealthClickListener {
         void onKeyHealthClick();
     }
 }

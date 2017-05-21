@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.widget;
+package org.sufficientlysecure.keychain.ui.keyview.loader;
 
 
 import java.util.List;
@@ -30,11 +30,11 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.ui.widget.SystemContactInfoLoader.SystemContactInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactInfoLoader.SystemContactInfo;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 
 
-class SystemContactInfoLoader extends AsyncTaskLoader<SystemContactInfo> {
+public class SystemContactInfoLoader extends AsyncTaskLoader<SystemContactInfo> {
     private static final String[] PROJECTION = {
             ContactsContract.RawContacts.CONTACT_ID
     };
@@ -49,7 +49,7 @@ class SystemContactInfoLoader extends AsyncTaskLoader<SystemContactInfo> {
     private SystemContactInfo cachedResult;
 
 
-    SystemContactInfoLoader(Context context, ContentResolver contentResolver, long masterKeyId, boolean isSecret) {
+    public SystemContactInfoLoader(Context context, ContentResolver contentResolver, long masterKeyId, boolean isSecret) {
         super(context);
 
         this.contentResolver = contentResolver;
@@ -135,11 +135,11 @@ class SystemContactInfoLoader extends AsyncTaskLoader<SystemContactInfo> {
         }
     }
 
-    static class SystemContactInfo {
+    public static class SystemContactInfo {
         final long masterKeyId;
-        final long contactId;
-        final String contactName;
-        final Bitmap contactPicture;
+        public final long contactId;
+        public final String contactName;
+        public final Bitmap contactPicture;
 
         SystemContactInfo(long masterKeyId, long contactId, String contactName, Bitmap contactPicture) {
             this.masterKeyId = masterKeyId;

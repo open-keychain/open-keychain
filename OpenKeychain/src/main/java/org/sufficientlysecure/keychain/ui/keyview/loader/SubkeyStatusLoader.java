@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.widget;
+package org.sufficientlysecure.keychain.ui.keyview.loader;
 
 
 import java.util.ArrayList;
@@ -36,10 +36,10 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.ui.widget.SubkeyStatusLoader.KeySubkeyStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusLoader.KeySubkeyStatus;
 
 
-class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
+public class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
     public static final String[] PROJECTION = new String[] {
             Keys.KEY_ID,
             Keys.CREATION,
@@ -73,7 +73,8 @@ class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
     private KeySubkeyStatus cachedResult;
 
 
-    SubkeyStatusLoader(Context context, ContentResolver contentResolver, long masterKeyId, Comparator<SubKeyItem> comparator) {
+    public SubkeyStatusLoader(Context context, ContentResolver contentResolver, long masterKeyId,
+            Comparator<SubKeyItem> comparator) {
         super(context);
 
         this.contentResolver = contentResolver;
@@ -141,11 +142,11 @@ class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
         }
     }
 
-    static class KeySubkeyStatus {
+    public static class KeySubkeyStatus {
         @NonNull
-        final SubKeyItem keyCertify;
-        final List<SubKeyItem> keysSign;
-        final List<SubKeyItem> keysEncrypt;
+        public final SubKeyItem keyCertify;
+        public final List<SubKeyItem> keysSign;
+        public final List<SubKeyItem> keysEncrypt;
 
         KeySubkeyStatus(@NonNull SubKeyItem keyCertify, List<SubKeyItem> keysSign, List<SubKeyItem> keysEncrypt) {
             this.keyCertify = keyCertify;
@@ -154,15 +155,15 @@ class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
         }
     }
 
-    static class SubKeyItem {
+    public static class SubKeyItem {
         final int mPosition;
         final long mKeyId;
         final Date mCreation;
-        final SecretKeyType mSecretKeyType;
-        final boolean mIsRevoked, mIsExpired;
-        final Date mExpiry;
+        public final SecretKeyType mSecretKeyType;
+        public final boolean mIsRevoked, mIsExpired;
+        public final Date mExpiry;
         final boolean mCanCertify, mCanSign, mCanEncrypt;
-        final KeySecurityProblem mSecurityProblem;
+        public final KeySecurityProblem mSecurityProblem;
 
         SubKeyItem(long masterKeyId, Cursor cursor) {
             mPosition = cursor.getPosition();
@@ -188,11 +189,11 @@ class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
                     masterKeyId, mKeyId, algorithm, bitStrength, curveOid);
         }
 
-        boolean newerThan(SubKeyItem other) {
+        public boolean newerThan(SubKeyItem other) {
             return mCreation.after(other.mCreation);
         }
 
-        boolean isValid() {
+        public boolean isValid() {
             return !mIsRevoked && !mIsExpired;
         }
     }

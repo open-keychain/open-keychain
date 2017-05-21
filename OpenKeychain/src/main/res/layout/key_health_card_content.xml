@@ -147,7 +147,7 @@
                 />
         </LinearLayout>
 
-        <org.sufficientlysecure.keychain.ui.widget.KeyStatusList
+        <org.sufficientlysecure.keychain.ui.keyview.view.KeyStatusList
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/key_health_status_list"

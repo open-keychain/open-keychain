@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.linked;
+package org.sufficientlysecure.keychain.ui.keyview;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -35,6 +35,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
@@ -65,7 +66,7 @@ import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyActio
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
-import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment.ViewHolder.VerifyState;
+import org.sufficientlysecure.keychain.ui.keyview.LinkedIdViewFragment.ViewHolder.VerifyState;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -410,10 +411,10 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         root.setTag(mViewHolder);
 
         ((ImageView) root.findViewById(R.id.status_icon_verified))
-                .setColorFilter(mContext.getResources().getColor(R.color.android_green_light),
+                .setColorFilter(ContextCompat.getColor(mContext, R.color.android_green_light),
                         PorterDuff.Mode.SRC_IN);
         ((ImageView) root.findViewById(R.id.status_icon_invalid))
-                .setColorFilter(mContext.getResources().getColor(R.color.android_red_light),
+                .setColorFilter(ContextCompat.getColor(mContext, R.color.android_red_light),
                         PorterDuff.Mode.SRC_IN);
 
         mViewHolder.vButtonVerify.setOnClickListener(new OnClickListener() {

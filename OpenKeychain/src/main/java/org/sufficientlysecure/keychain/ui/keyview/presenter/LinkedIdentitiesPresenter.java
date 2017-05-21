@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.widget;
+package org.sufficientlysecure.keychain.ui.keyview.presenter;
 
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ import android.support.v4.content.Loader;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
-import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
+import org.sufficientlysecure.keychain.ui.keyview.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -114,7 +114,7 @@ public class LinkedIdentitiesPresenter implements LoaderCallbacks<Cursor> {
         fragView.switchToFragment(frag, "linked_id");
     }
 
-    interface LinkedIdsMvpView {
+    public interface LinkedIdsMvpView {
         void setSystemContactClickListener(LinkedIdsClickListener linkedIdsClickListener);
         void setLinkedIdsAdapter(LinkedIdsAdapter linkedIdsAdapter);
 
@@ -126,7 +126,7 @@ public class LinkedIdentitiesPresenter implements LoaderCallbacks<Cursor> {
         void switchToFragment(Fragment frag, String backStackName);
     }
 
-    interface LinkedIdsClickListener {
+    public interface LinkedIdsClickListener {
         void onLinkedIdItemClick(int position);
         void onClickAddIdentity();
     }

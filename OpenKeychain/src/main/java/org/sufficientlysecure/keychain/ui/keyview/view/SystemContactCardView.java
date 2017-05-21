@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.widget;
+package org.sufficientlysecure.keychain.ui.keyview.view;
 
 
 import android.content.Context;
@@ -30,8 +30,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.widget.SystemContactPresenter.SystemContactClickListener;
-import org.sufficientlysecure.keychain.ui.widget.SystemContactPresenter.SystemContactMvpView;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter.SystemContactClickListener;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter.SystemContactMvpView;
 
 
 public class SystemContactCardView extends CardView implements SystemContactMvpView, OnClickListener {

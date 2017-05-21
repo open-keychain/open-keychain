@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.widget;
+package org.sufficientlysecure.keychain.ui.keyview.view;
 
 
 import android.content.Context;
@@ -31,8 +31,8 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
-import org.sufficientlysecure.keychain.ui.widget.LinkedIdentitiesPresenter.LinkedIdsClickListener;
-import org.sufficientlysecure.keychain.ui.widget.LinkedIdentitiesPresenter.LinkedIdsMvpView;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.LinkedIdentitiesPresenter.LinkedIdsClickListener;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.LinkedIdentitiesPresenter.LinkedIdsMvpView;
 
 
 public class LinkedIdentitiesCardView extends CardView implements LinkedIdsMvpView {
