@@ -183,9 +183,12 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         return new CryptoOperationHelper.Callback<DeleteKeyringParcel, DeleteResult>() {
             @Override
             public DeleteKeyringParcel createOperationInput() {
-                return new DeleteKeyringParcel(mMasterKeyIds, mHasSecret);
+                if (mHasSecret) {
+                    return DeleteKeyringParcel.createDeleteSingleSecretKeyParcel(mMasterKeyIds[0]);
+                } else {
+                    return DeleteKeyringParcel.createDeletePublicKeysParcel(mMasterKeyIds);
+                }
             }
-
             @Override
             public void onCryptoOperationSuccess(DeleteResult result) {
                 returnResult(result);
