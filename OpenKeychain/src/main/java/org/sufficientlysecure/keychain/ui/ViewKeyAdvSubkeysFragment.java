@@ -337,15 +337,10 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                         }
 
                         SubkeyChange change = mEditModeSaveKeyringParcel.getSubkeyChange(keyId);
-                        if (change == null) {
-                            mEditModeSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
-                            break;
-                        }
-                        // toggle
-                        change.mDummyStrip = !change.mDummyStrip;
-                        if (change.mDummyStrip && change.mMoveKeyToSecurityToken) {
-                            // User had chosen to divert key, but now wants to strip it instead.
-                            change.mMoveKeyToSecurityToken = false;
+                        if (change == null || !change.getDummyStrip()) {
+                            mEditModeSaveKeyringParcel.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(keyId));
+                        } else {
+                            mEditModeSaveKeyringParcel.removeSubkeyChange(change);
                         }
                         break;
                     }
@@ -385,19 +380,12 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                                 break;
                         }
 
-                        SubkeyChange change;
-                        change = mEditModeSaveKeyringParcel.getSubkeyChange(keyId);
-                        if (change == null) {
-                            mEditModeSaveKeyringParcel.mChangeSubKeys.add(
-                                    new SubkeyChange(keyId, false, true)
-                            );
-                            break;
-                        }
-                        // toggle
-                        change.mMoveKeyToSecurityToken = !change.mMoveKeyToSecurityToken;
-                        if (change.mMoveKeyToSecurityToken && change.mDummyStrip) {
-                            // User had chosen to strip key, but now wants to divert it.
-                            change.mDummyStrip = false;
+                        SubkeyChange change = mEditModeSaveKeyringParcel.getSubkeyChange(keyId);
+                        if (change == null || !change.getMoveKeyToSecurityToken()) {
+                            mEditModeSaveKeyringParcel.addOrReplaceSubkeyChange(
+                                    SubkeyChange.createMoveToSecurityTokenChange(keyId));
+                        } else {
+                            mEditModeSaveKeyringParcel.removeSubkeyChange(change);
                         }
                         break;
                     }
@@ -429,9 +417,10 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
             public void handleMessage(Message message) {
                 switch (message.what) {
                     case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY:
-                        mEditModeSaveKeyringParcel.getOrCreateSubkeyChange(keyId).mExpiry =
-                                (Long) message.getData().getSerializable(
-                                        EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY);
+                        Long expiry = (Long) message.getData().getSerializable(
+                                EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY);
+                        mEditModeSaveKeyringParcel.addOrReplaceSubkeyChange(
+                                SubkeyChange.createFlagsOrExpiryChange(keyId, null, expiry));
                         break;
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();

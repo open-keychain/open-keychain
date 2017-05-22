@@ -58,6 +58,7 @@ import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -95,11 +96,11 @@ public class BackupOperationTest {
 
         {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snips");
             parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(mKeyPhrase1));
@@ -113,11 +114,11 @@ public class BackupOperationTest {
 
         {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snails");
             parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase("1234")));

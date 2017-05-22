@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.util.Choice;
 
 import java.util.ArrayList;
@@ -304,7 +305,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                         expiry = selectedCal.getTime().getTime() / 1000;
                     }
 
-                    SaveKeyringParcel.SubkeyAdd newSubkey = new SaveKeyringParcel.SubkeyAdd(
+                    SaveKeyringParcel.SubkeyAdd newSubkey = SubkeyAdd.createSubkeyAdd(
                             algorithm, keySize, curve, flags, expiry
                     );
                     mAlgorithmSelectedListener.onAlgorithmSelected(newSubkey);

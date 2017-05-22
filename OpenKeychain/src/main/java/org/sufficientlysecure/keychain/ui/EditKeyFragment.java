@@ -431,15 +431,10 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                         }
 
                         SubkeyChange change = mSaveKeyringParcel.getSubkeyChange(keyId);
-                        if (change == null) {
-                            mSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
-                            break;
-                        }
-                        // toggle
-                        change.mDummyStrip = !change.mDummyStrip;
-                        if (change.mDummyStrip && change.mMoveKeyToSecurityToken) {
-                            // User had chosen to divert key, but now wants to strip it instead.
-                            change.mMoveKeyToSecurityToken = false;
+                        if (change == null || !change.getDummyStrip()) {
+                            mSaveKeyringParcel.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(keyId));
+                        } else {
+                            mSaveKeyringParcel.removeSubkeyChange(change);
                         }
                         break;
                     }
@@ -479,19 +474,13 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                                 break;
                         }
 
-                        SubkeyChange change;
-                        change = mSaveKeyringParcel.getSubkeyChange(keyId);
-                        if (change == null) {
-                            mSaveKeyringParcel.mChangeSubKeys.add(
-                                    new SubkeyChange(keyId, false, true)
-                            );
+                        SubkeyChange change = mSaveKeyringParcel.getSubkeyChange(keyId);
+                        if (change == null || !change.getMoveKeyToSecurityToken()) {
+                            mSaveKeyringParcel.addOrReplaceSubkeyChange(
+                                    SubkeyChange.createMoveToSecurityTokenChange(keyId));
                             break;
-                        }
-                        // toggle
-                        change.mMoveKeyToSecurityToken = !change.mMoveKeyToSecurityToken;
-                        if (change.mMoveKeyToSecurityToken && change.mDummyStrip) {
-                            // User had chosen to strip key, but now wants to divert it.
-                            change.mDummyStrip = false;
+                        } else {
+                            mSaveKeyringParcel.removeSubkeyChange(change);
                         }
                         break;
                     }
@@ -523,9 +512,10 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
             public void handleMessage(Message message) {
                 switch (message.what) {
                     case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY:
-                        mSaveKeyringParcel.getOrCreateSubkeyChange(keyId).mExpiry =
-                                (Long) message.getData().getSerializable(
-                                        EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY);
+                        Long expiry = (Long) message.getData().getSerializable(
+                                EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY);
+                        mSaveKeyringParcel.addOrReplaceSubkeyChange(
+                                SubkeyChange.createFlagsOrExpiryChange(keyId, null, expiry));
                         break;
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();

@@ -181,8 +181,8 @@ public class SubkeysAdapter extends CursorAdapter {
                 ? mSaveKeyringParcel.getSubkeyChange(keyId)
                 : null;
 
-        if (change != null && (change.mDummyStrip || change.mMoveKeyToSecurityToken)) {
-            if (change.mDummyStrip) {
+        if (change != null && (change.getDummyStrip() || change.getMoveKeyToSecurityToken())) {
+            if (change.getDummyStrip()) {
                 algorithmStr.append(", ");
                 final SpannableString boldStripped = new SpannableString(
                         context.getString(R.string.key_stripped)
@@ -190,7 +190,7 @@ public class SubkeysAdapter extends CursorAdapter {
                 boldStripped.setSpan(new StyleSpan(Typeface.BOLD), 0, boldStripped.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 algorithmStr.append(boldStripped);
             }
-            if (change.mMoveKeyToSecurityToken) {
+            if (change.getMoveKeyToSecurityToken()) {
                 algorithmStr.append(", ");
                 final SpannableString boldDivert = new SpannableString(
                         context.getString(R.string.key_divert)
@@ -253,10 +253,10 @@ public class SubkeysAdapter extends CursorAdapter {
 
             SaveKeyringParcel.SubkeyChange subkeyChange = mSaveKeyringParcel.getSubkeyChange(keyId);
             if (subkeyChange != null) {
-                if (subkeyChange.mExpiry == null || subkeyChange.mExpiry == 0L) {
+                if (subkeyChange.getExpiry() == null || subkeyChange.getExpiry() == 0L) {
                     expiryDate = null;
                 } else {
-                    expiryDate = new Date(subkeyChange.mExpiry * 1000);
+                    expiryDate = new Date(subkeyChange.getExpiry() * 1000);
                 }
             }
 

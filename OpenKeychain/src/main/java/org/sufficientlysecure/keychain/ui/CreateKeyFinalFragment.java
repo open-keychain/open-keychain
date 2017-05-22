@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
@@ -444,7 +445,7 @@ public class CreateKeyFinalFragment extends Fragment {
         try {
             while (cursor != null && cursor.moveToNext()) {
                 long subkeyId = cursor.getLong(0);
-                changeKeyringParcel.getOrCreateSubkeyChange(subkeyId).mMoveKeyToSecurityToken = true;
+                changeKeyringParcel.mChangeSubKeys.add(SubkeyChange.createMoveToSecurityTokenChange(subkeyId));
             }
         } finally {
             if (cursor != null) {

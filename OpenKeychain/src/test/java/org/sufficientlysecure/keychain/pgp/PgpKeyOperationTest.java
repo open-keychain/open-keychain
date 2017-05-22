@@ -89,11 +89,11 @@ public class PgpKeyOperationTest {
         ShadowLog.stream = System.out;
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
 
         parcel.mAddUserIds.add("twi");
@@ -143,7 +143,7 @@ public class PgpKeyOperationTest {
 
         {
             parcel.reset();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.RSA, new Random().nextInt(256)+255, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(passphrase));
@@ -154,7 +154,7 @@ public class PgpKeyOperationTest {
 
         {
             parcel.reset();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ELGAMAL, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(passphrase));
@@ -165,7 +165,7 @@ public class PgpKeyOperationTest {
 
         {
             parcel.reset();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddUserIds.add("lotus");
             parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(passphrase));
@@ -176,7 +176,7 @@ public class PgpKeyOperationTest {
 
         {
             parcel.reset();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(passphrase));
@@ -187,7 +187,7 @@ public class PgpKeyOperationTest {
 
         {
             parcel.reset();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(passphrase));
 
@@ -211,7 +211,7 @@ public class PgpKeyOperationTest {
     // subkey binding certificates
     public void testMasterFlags() throws Exception {
         SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, 0L));
         parcel.mAddUserIds.add("luna");
         ring = assertCreateSuccess("creating ring with master key flags must succeed", parcel);
@@ -343,7 +343,7 @@ public class PgpKeyOperationTest {
 
         long expiry = new Date().getTime() / 1000 + 159;
         int flags = KeyFlags.SIGN_DATA;
-        parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, flags, expiry));
 
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
@@ -382,7 +382,7 @@ public class PgpKeyOperationTest {
 
         { // bad keysize should fail
             parcel.reset();
-            parcel.mAddSubKeys.add(new SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.RSA, new Random().nextInt(512), null, KeyFlags.SIGN_DATA, 0L));
             assertModifyFailure("creating a subkey with keysize < 2048 should fail", ring, parcel,
                     LogType.MSG_CR_ERROR_KEYSIZE_2048);
@@ -390,7 +390,7 @@ public class PgpKeyOperationTest {
 
         { // null expiry should fail
             parcel.reset();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, null));
             assertModifyFailure("creating master key with null expiry should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_NULL_EXPIRY);
@@ -398,7 +398,7 @@ public class PgpKeyOperationTest {
 
         { // a past expiry should fail
             parcel.reset();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, new Date().getTime()/1000-10));
             assertModifyFailure("creating subkey with past expiry date should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_PAST_EXPIRY);
@@ -414,7 +414,7 @@ public class PgpKeyOperationTest {
 
         UncachedKeyRing modified = ring;
         {
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, expiry));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, null, expiry));
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             Assert.assertEquals("one extra packet in original", 1, onlyA.size());
@@ -441,7 +441,7 @@ public class PgpKeyOperationTest {
         { // change expiry
             expiry += 60*60*24;
 
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, expiry));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, null, expiry));
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             Assert.assertNotNull("modified key must have an expiry date",
@@ -455,7 +455,7 @@ public class PgpKeyOperationTest {
         {
             int flags = KeyFlags.SIGN_DATA | KeyFlags.ENCRYPT_COMMS;
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, flags, null));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, flags, null));
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             Assert.assertEquals("old packet must be signature",
@@ -478,7 +478,7 @@ public class PgpKeyOperationTest {
 
         { // expiry of 0 should be "no expiry"
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, 0L));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, null, 0L));
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             Assert.assertEquals("old packet must be signature",
@@ -496,7 +496,7 @@ public class PgpKeyOperationTest {
 
         { // a past expiry should fail
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, new Date().getTime()/1000-10));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, null, new Date().getTime()/1000-10));
 
             assertModifyFailure("setting subkey expiry to a past date should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_PAST_EXPIRY);
@@ -504,7 +504,7 @@ public class PgpKeyOperationTest {
 
         { // modifying nonexistent subkey should fail
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(123, null, null));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(123, null, null));
 
             assertModifyFailure("modifying non-existent subkey should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_SUBKEY_MISSING);
@@ -528,7 +528,7 @@ public class PgpKeyOperationTest {
 
         {
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, expiry));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, null, expiry));
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             // this implies that only the two non-revoked signatures were changed!
@@ -555,7 +555,7 @@ public class PgpKeyOperationTest {
         { // change expiry
             expiry += 60*60*24;
 
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, expiry));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, null, expiry));
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             Assert.assertNotNull("modified key must have an expiry date",
@@ -575,7 +575,7 @@ public class PgpKeyOperationTest {
         {
             int flags = KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA;
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, flags, null));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, flags, null));
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             Assert.assertEquals("modified key must have expected flags",
@@ -595,7 +595,7 @@ public class PgpKeyOperationTest {
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, 0L));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, null, 0L));
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
             // for this check, it is relevant that we DON'T use the unsafe one!
@@ -610,7 +610,7 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mRevokeUserIds.add("twi");
             parcel.mRevokeUserIds.add("pink");
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, KeyFlags.CERTIFY_OTHER, null));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, KeyFlags.CERTIFY_OTHER, null));
 
             assertModifyFailure("master key modification with all user ids revoked should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_MASTER_NONE);
@@ -618,7 +618,7 @@ public class PgpKeyOperationTest {
 
         { // any flag not including CERTIFY_OTHER should fail
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, KeyFlags.SIGN_DATA, null));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, KeyFlags.SIGN_DATA, null));
 
             assertModifyFailure("setting master key flags without certify should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_NO_CERTIFY);
@@ -626,7 +626,7 @@ public class PgpKeyOperationTest {
 
         { // a past expiry should fail
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, new Date().getTime()/1000-10));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(keyId, null, new Date().getTime()/1000-10));
 
             assertModifyFailure("setting subkey expiry to a past date should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_PAST_EXPIRY);
@@ -707,7 +707,7 @@ public class PgpKeyOperationTest {
 
             parcel.reset();
             // re-certify the revoked subkey
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true));
+            parcel.mChangeSubKeys.add(SubkeyChange.createRecertifyChange(keyId, true));
 
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
@@ -749,7 +749,7 @@ public class PgpKeyOperationTest {
     public void testSubkeyStrip() throws Exception {
 
         long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
-        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
+        parcel.mChangeSubKeys.add(SubkeyChange.createStripChange(keyId));
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("one extra packet in original", 1, onlyA.size());
@@ -775,7 +775,7 @@ public class PgpKeyOperationTest {
     public void testMasterStrip() throws Exception {
 
         long keyId = ring.getMasterKeyId();
-        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
+        parcel.mChangeSubKeys.add(SubkeyChange.createStripChange(keyId));
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("one extra packet in original", 1, onlyA.size());
@@ -804,7 +804,7 @@ public class PgpKeyOperationTest {
 
         { // we should be able to change the stripped status of subkeys without passphrase
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
+            parcel.mChangeSubKeys.add(SubkeyChange.createStripChange(keyId));
             modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB,
                     CryptoInputParcel.createCryptoInputParcel());
             Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
@@ -817,7 +817,7 @@ public class PgpKeyOperationTest {
 
         { // trying to edit a subkey with signing capability should fail
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true));
+            parcel.mChangeSubKeys.add(SubkeyChange.createRecertifyChange(keyId, true));
 
             assertModifyFailure("subkey modification for signing-enabled but stripped subkey should fail",
                     modified, parcel, LogType.MSG_MF_ERROR_SUB_STRIPPED);
@@ -830,11 +830,11 @@ public class PgpKeyOperationTest {
 
         // Special keyring for security token tests with 2048 bit RSA as a subkey
         SaveKeyringParcel parcelKey = new SaveKeyringParcel();
-        parcelKey.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcelKey.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                 Algorithm.DSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
-        parcelKey.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcelKey.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                 Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
-        parcelKey.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+        parcelKey.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                 Algorithm.RSA, 3072, null, KeyFlags.ENCRYPT_COMMS, 0L));
 
         parcelKey.mAddUserIds.add("yubikey");
@@ -857,7 +857,7 @@ public class PgpKeyOperationTest {
         { // moveKeyToSecurityToken should fail with BAD_NFC_ALGO when presented with the DSA-1024 key
             long keyId = KeyringTestingHelper.getSubkeyId(ringSecurityToken, 0);
             parcelSecurityToken.reset();
-            parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
+            parcelSecurityToken.mChangeSubKeys.add(SubkeyChange.createMoveToSecurityTokenChange(keyId));
 
             assertModifyFailure("moveKeyToSecurityToken operation should fail on invalid key algorithm", ringSecurityToken,
                     parcelSecurityToken, cryptoInput, LogType.MSG_MF_ERROR_BAD_SECURITY_TOKEN_ALGO);
@@ -868,7 +868,7 @@ public class PgpKeyOperationTest {
         { // moveKeyToSecurityToken should return a pending SECURITY_TOKEN_MOVE_KEY_TO_CARD result when presented with the RSA-2048
           // key, and then make key divert-to-card when it gets a serial in the cryptoInputParcel.
             parcelSecurityToken.reset();
-            parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
+            parcelSecurityToken.mChangeSubKeys.add(SubkeyChange.createMoveToSecurityTokenChange(keyId));
 
             CanonicalizedSecretKeyRing secretRing =
                     new CanonicalizedSecretKeyRing(ringSecurityToken.getEncoded(), 0);
@@ -902,7 +902,7 @@ public class PgpKeyOperationTest {
 
         { // editing a signing subkey requires a primary key binding sig -> pendinginput
             parcelSecurityToken.reset();
-            parcelSecurityToken.mChangeSubKeys.add(new SubkeyChange(keyId, true));
+            parcelSecurityToken.mChangeSubKeys.add(SubkeyChange.createRecertifyChange(keyId, true));
 
             CanonicalizedSecretKeyRing secretRing =
                     new CanonicalizedSecretKeyRing(modified.getEncoded(), 0);

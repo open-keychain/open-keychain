@@ -24,6 +24,8 @@ import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.math.ec.ECCurve;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
+
 
 // 4.3.3.6 Algorithm Attributes
 public class ECKeyFormat extends KeyFormat {
@@ -105,7 +107,7 @@ public class ECKeyFormat extends KeyFormat {
             throw new IllegalArgumentException("Unsupported curve " + mECCurveOID);
         }
 
-        keyring.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(algo,
+        keyring.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(algo,
                 curve.getFieldSize(), scurve, keyFlags, 0L));
     }
 }

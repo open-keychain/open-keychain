@@ -20,7 +20,9 @@ package org.sufficientlysecure.keychain.service;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
+import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -137,8 +139,8 @@ public class SaveKeyringParcel implements Parcelable {
         }
 
         for (SubkeyChange change : mChangeSubKeys) {
-            if (change.mRecertify || change.mFlags != null || change.mExpiry != null
-                    || change.mMoveKeyToSecurityToken) {
+            if (change.getRecertify() || change.getFlags() != null || change.getExpiry() != null
+                    || change.getMoveKeyToSecurityToken()) {
                 return false;
             }
         }
@@ -148,109 +150,84 @@ public class SaveKeyringParcel implements Parcelable {
 
     // performance gain for using Parcelable here would probably be negligible,
     // use Serializable instead.
-    public static class SubkeyAdd implements Serializable {
-        public Algorithm mAlgorithm;
-        public Integer mKeySize;
-        public Curve mCurve;
-        public int mFlags;
-        public Long mExpiry;
+    @AutoValue
+    public abstract static class SubkeyAdd implements Serializable {
+        public abstract Algorithm getAlgorithm();
+        @Nullable
+        public abstract Integer getKeySize();
+        @Nullable
+        public abstract Curve getCurve();
+        public abstract int getFlags();
+        @Nullable
+        public abstract Long getExpiry();
 
-        public SubkeyAdd(Algorithm algorithm, Integer keySize, Curve curve, int flags, Long expiry) {
-            mAlgorithm = algorithm;
-            mKeySize = keySize;
-            mCurve = curve;
-            mFlags = flags;
-            mExpiry = expiry;
-        }
-
-        @Override
-        public String toString() {
-            String out = "mAlgorithm: " + mAlgorithm + ", ";
-            out += "mKeySize: " + mKeySize + ", ";
-            out += "mCurve: " + mCurve + ", ";
-            out += "mFlags: " + mFlags;
-            out += "mExpiry: " + mExpiry;
-
-            return out;
+        public static SubkeyAdd createSubkeyAdd(Algorithm algorithm, Integer keySize, Curve curve, int flags,
+                Long expiry) {
+            return new AutoValue_SaveKeyringParcel_SubkeyAdd(algorithm, keySize, curve, flags, expiry);
         }
     }
 
-    public static class SubkeyChange implements Serializable {
-        public final long mKeyId;
-        public Integer mFlags;
+    @AutoValue
+    public abstract static class SubkeyChange implements Serializable {
+        public abstract long getSubKeyId();
+        @Nullable
+        public abstract Integer getFlags();
         // this is a long unix timestamp, in seconds (NOT MILLISECONDS!)
-        public Long mExpiry;
+        @Nullable
+        public abstract Long getExpiry();
         // if this flag is true, the key will be recertified even if all above
         // values are no-ops
-        public boolean mRecertify;
+        public abstract boolean getRecertify();
         // if this flag is true, the subkey should be changed to a stripped key
-        public boolean mDummyStrip;
+        public abstract boolean getDummyStrip();
         // if this flag is true, the subkey should be moved to a security token
-        public boolean mMoveKeyToSecurityToken;
+        public abstract boolean getMoveKeyToSecurityToken();
         // if this is non-null, the subkey will be changed to a divert-to-card
         // (security token) key for the given serial number
-        public byte[] mSecurityTokenSerialNo;
+        @Nullable
+        public abstract byte[] getSecurityTokenSerialNo();
 
-        public SubkeyChange(long keyId) {
-            mKeyId = keyId;
+        public static SubkeyChange createRecertifyChange(long keyId, boolean recertify) {
+            return new AutoValue_SaveKeyringParcel_SubkeyChange(keyId, null, null, recertify, false, false, null);
         }
 
-        public SubkeyChange(long keyId, boolean recertify) {
-            mKeyId = keyId;
-            mRecertify = recertify;
+        public static SubkeyChange createFlagsOrExpiryChange(long keyId, Integer flags, Long expiry) {
+            return new AutoValue_SaveKeyringParcel_SubkeyChange(keyId, flags, expiry, false, false, false, null);
         }
 
-        public SubkeyChange(long keyId, Integer flags, Long expiry) {
-            mKeyId = keyId;
-            mFlags = flags;
-            mExpiry = expiry;
+        public static SubkeyChange createStripChange(long keyId) {
+            return new AutoValue_SaveKeyringParcel_SubkeyChange(keyId, null, null, false, true, false, null);
         }
 
-        public SubkeyChange(long keyId, boolean dummyStrip, boolean moveKeyToSecurityToken) {
-            this(keyId, null, null);
-
-            // these flags are mutually exclusive!
-            if (dummyStrip && moveKeyToSecurityToken) {
-                throw new AssertionError(
-                        "cannot set strip and moveKeyToSecurityToken" +
-                                " flags at the same time - this is a bug!");
-            }
-            mDummyStrip = dummyStrip;
-            mMoveKeyToSecurityToken = moveKeyToSecurityToken;
+        public static SubkeyChange createMoveToSecurityTokenChange(long keyId) {
+            return new AutoValue_SaveKeyringParcel_SubkeyChange(keyId, null, null, false, false, true, null);
         }
 
-        @Override
-        public String toString() {
-            String out = "mKeyId: " + mKeyId + ", ";
-            out += "mFlags: " + mFlags + ", ";
-            out += "mExpiry: " + mExpiry + ", ";
-            out += "mDummyStrip: " + mDummyStrip + ", ";
-            out += "mMoveKeyToSecurityToken: " + mMoveKeyToSecurityToken + ", ";
-            out += "mSecurityTokenSerialNo: [" + (mSecurityTokenSerialNo == null ? 0 : mSecurityTokenSerialNo.length) + " bytes]";
-
-            return out;
+        public static SubkeyChange createSecurityTokenSerialNo(long keyId, byte[] securityTokenSerialNo) {
+            return new AutoValue_SaveKeyringParcel_SubkeyChange(keyId, null, null, false, false, false, securityTokenSerialNo);
         }
     }
 
     public SubkeyChange getSubkeyChange(long keyId) {
         for (SubkeyChange subkeyChange : mChangeSubKeys) {
-            if (subkeyChange.mKeyId == keyId) {
+            if (subkeyChange.getSubKeyId() == keyId) {
                 return subkeyChange;
             }
         }
         return null;
     }
 
-    public SubkeyChange getOrCreateSubkeyChange(long keyId) {
-        SubkeyChange foundSubkeyChange = getSubkeyChange(keyId);
+    public void addOrReplaceSubkeyChange(SubkeyChange change) {
+        SubkeyChange foundSubkeyChange = getSubkeyChange(change.getSubKeyId());
         if (foundSubkeyChange != null) {
-            return foundSubkeyChange;
-        } else {
-            // else, create a new one
-            SubkeyChange newSubkeyChange = new SubkeyChange(keyId);
-            mChangeSubKeys.add(newSubkeyChange);
-            return newSubkeyChange;
+            mChangeSubKeys.remove(foundSubkeyChange);
         }
+
+        mChangeSubKeys.add(change);
+    }
+
+    public void removeSubkeyChange(SubkeyChange change) {
+        mChangeSubKeys.remove(change);
     }
 
     @SuppressWarnings("unchecked") // we verify the reads against writes in writeToParcel

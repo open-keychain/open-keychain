@@ -623,7 +623,7 @@ public class PgpEncryptDecryptTest {
 
             SaveKeyringParcel parcel =
                     new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
-            parcel.mChangeSubKeys.add(new SubkeyChange(encKeyId1, true, false));
+            parcel.mChangeSubKeys.add(SubkeyChange.createStripChange(encKeyId1));
             UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
                     CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));
@@ -646,7 +646,7 @@ public class PgpEncryptDecryptTest {
 
             SaveKeyringParcel parcel =
                     new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
-            parcel.mChangeSubKeys.add(new SubkeyChange(encKeyId1, KeyFlags.CERTIFY_OTHER, null));
+            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(encKeyId1, KeyFlags.CERTIFY_OTHER, null));
             UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
                     CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));

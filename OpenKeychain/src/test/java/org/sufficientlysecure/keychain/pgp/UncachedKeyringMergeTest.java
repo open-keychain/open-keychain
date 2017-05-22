@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyActio
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
@@ -97,9 +98,9 @@ public class UncachedKeyringMergeTest {
 
         {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
 
             parcel.mAddUserIds.add("twi");
@@ -123,7 +124,7 @@ public class UncachedKeyringMergeTest {
 
         {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
 
             parcel.mAddUserIds.add("shy");
@@ -232,7 +233,7 @@ public class UncachedKeyringMergeTest {
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ringA.getEncoded(), 0);
 
             parcel.reset();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
             modifiedA = op.modifySecretKeyRing(secretRing,
                     CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();

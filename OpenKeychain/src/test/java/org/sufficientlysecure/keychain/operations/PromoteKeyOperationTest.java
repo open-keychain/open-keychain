@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -69,11 +70,11 @@ public class PromoteKeyOperationTest {
 
         {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("derp");
             parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(mKeyPhrase1));

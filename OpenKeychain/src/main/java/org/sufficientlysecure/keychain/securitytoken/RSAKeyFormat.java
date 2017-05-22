@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.securitytoken;
 
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
+
 
 // 4.3.3.6 Algorithm Attributes
 public class RSAKeyFormat extends KeyFormat {
@@ -85,7 +87,7 @@ public class RSAKeyFormat extends KeyFormat {
     }
 
     public void addToSaveKeyringParcel(SaveKeyringParcel keyring, int keyFlags) {
-        keyring.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
+        keyring.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
                 mModulusLength, null, keyFlags, 0L));
     }
 }
