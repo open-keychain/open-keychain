@@ -194,11 +194,12 @@ public class KeychainExternalProviderTest {
     }
 
     private void certifyKey(long secretMasterKeyId, long publicMasterKeyId, String userId) {
-        CertifyActionsParcel certifyActionsParcel = new CertifyActionsParcel(secretMasterKeyId);
-        certifyActionsParcel.add(new CertifyAction(publicMasterKeyId, Collections.singletonList(userId), null));
+        CertifyActionsParcel.Builder certifyActionsParcel = CertifyActionsParcel.builder(secretMasterKeyId);
+        certifyActionsParcel.addAction(
+                CertifyAction.createForUserIds(publicMasterKeyId, Collections.singletonList(userId)));
         CertifyOperation op = new CertifyOperation(
                 RuntimeEnvironment.application, databaseInteractor, new ProgressScaler(), null);
-        CertifyResult certifyResult = op.execute(certifyActionsParcel, CryptoInputParcel.createCryptoInputParcel());
+        CertifyResult certifyResult = op.execute(certifyActionsParcel.build(), CryptoInputParcel.createCryptoInputParcel());
 
         assertTrue(certifyResult.success());
     }

@@ -140,18 +140,17 @@ public class CertifyKeyFragment
         long selectedKeyId = mCertifyKeySpinner.getSelectedKeyId();
 
         // fill values for this action
-        CertifyActionsParcel actionsParcel = new CertifyActionsParcel(selectedKeyId);
-        actionsParcel.mCertifyActions.addAll(certifyActions);
+        CertifyActionsParcel.Builder actionsParcel = CertifyActionsParcel.builder(selectedKeyId);
+        actionsParcel.addActions(certifyActions);
 
         if (mUploadKeyCheckbox.isChecked()) {
-            actionsParcel.keyServerUri = Preferences.getPreferences(getActivity())
-                    .getPreferredKeyserver();
+            actionsParcel.setParcelableKeyServer(Preferences.getPreferences(getActivity()).getPreferredKeyserver());
         }
 
-        // cached for next cryptoOperation loop
-        cacheActionsParcel(actionsParcel);
-
-        return actionsParcel;
+        // cache for next cryptoOperation loop
+        CertifyActionsParcel certifyActionsParcel = actionsParcel.build();
+        cacheActionsParcel(certifyActionsParcel);
+        return certifyActionsParcel;
     }
 
     @Override

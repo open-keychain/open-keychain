@@ -18,6 +18,14 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
+import java.io.ByteArrayInputStream;
+import java.security.Security;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Random;
+
 import org.bouncycastle.bcpg.BCPGInputStream;
 import org.bouncycastle.bcpg.PacketTags;
 import org.bouncycastle.bcpg.S2K;
@@ -304,7 +312,8 @@ public class UncachedKeyringMergeTest {
                     ringB.getEncoded(), 0).getSecretKey();
             secretKey.unlock(new Passphrase());
             PgpCertifyOperation op = new PgpCertifyOperation();
-            CertifyAction action = new CertifyAction(pubRing.getMasterKeyId(), publicRing.getPublicKey().getUnorderedUserIds(), null);
+            CertifyAction action = CertifyAction.createForUserIds(
+                    pubRing.getMasterKeyId(), publicRing.getPublicKey().getUnorderedUserIds());
             // sign all user ids
             PgpCertifyResult result = op.certify(secretKey, publicRing, new OperationLog(), 0, action, null, new Date());
             Assert.assertTrue("certification must succeed", result.success());

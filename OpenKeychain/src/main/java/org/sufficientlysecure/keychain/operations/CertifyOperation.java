@@ -76,7 +76,7 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
 
         // Retrieve and unlock secret key
         CanonicalizedSecretKey certificationKey;
-        long masterKeyId = parcel.mMasterKeyId;
+        long masterKeyId = parcel.getMasterKeyId();
         try {
 
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
@@ -121,7 +121,7 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
 
             // Get actual secret key
             CanonicalizedSecretKeyRing secretKeyRing =
-                    mKeyRepository.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId);
+                    mKeyRepository.getCanonicalizedSecretKeyRing(parcel.getMasterKeyId());
             certificationKey = secretKeyRing.getSecretKey();
 
             log.add(LogType.MSG_CRT_UNLOCK, 1);
@@ -148,7 +148,7 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
                 cryptoInput.getSignatureTime(), masterKeyId, masterKeyId);
 
         // Work through all requested certifications
-        for (CertifyAction action : parcel.mCertifyActions) {
+        for (CertifyAction action : parcel.getCertifyActions()) {
 
             // Check if we were cancelled
             if (checkCancelled()) {
@@ -158,14 +158,14 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
 
             try {
 
-                if (action.mMasterKeyId == parcel.mMasterKeyId) {
+                if (action.getMasterKeyId() == parcel.getMasterKeyId()) {
                     log.add(LogType.MSG_CRT_ERROR_SELF, 2);
                     certifyError += 1;
                     continue;
                 }
 
                 CanonicalizedPublicKeyRing publicRing =
-                        mKeyRepository.getCanonicalizedPublicKeyRing(action.mMasterKeyId);
+                        mKeyRepository.getCanonicalizedPublicKeyRing(action.getMasterKeyId());
 
                 PgpCertifyOperation op = new PgpCertifyOperation();
                 PgpCertifyResult result = op.certify(certificationKey, publicRing,
@@ -205,7 +205,7 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
 
         // these variables are used inside the following loop, but they need to be created only once
         UploadOperation uploadOperation = null;
-        if (parcel.keyServerUri != null) {
+        if (parcel.getParcelableKeyServer() != null) {
             uploadOperation = new UploadOperation(mContext, mKeyRepository, mProgressable, mCancelled);
         }
 
@@ -226,8 +226,8 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
             SaveKeyringResult result = mKeyWritableRepository.savePublicKeyRing(certifiedKey);
 
             if (uploadOperation != null) {
-                UploadKeyringParcel uploadInput =
-                        new UploadKeyringParcel(parcel.keyServerUri, certifiedKey.getMasterKeyId());
+                UploadKeyringParcel uploadInput = UploadKeyringParcel.createWithKeyId(
+                        parcel.getParcelableKeyServer(), certifiedKey.getMasterKeyId());
                 UploadResult uploadResult = uploadOperation.execute(uploadInput, cryptoInput);
                 log.add(uploadResult, 2);
 

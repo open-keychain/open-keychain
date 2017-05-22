@@ -542,14 +542,14 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     @Nullable
     @Override
     public Parcelable createOperationInput() {
-        CertifyAction action = new CertifyAction(mMasterKeyId, null,
+        CertifyAction action = CertifyAction.createForUserAttributes(mMasterKeyId,
                 Collections.singletonList(mLinkedId.toUserAttribute()));
 
         // fill values for this action
-        CertifyActionsParcel parcel = new CertifyActionsParcel(mCertifyKeyId);
-        parcel.mCertifyActions.addAll(Collections.singletonList(action));
+        CertifyActionsParcel.Builder builder = CertifyActionsParcel.builder(mCertifyKeyId);
+        builder.addActions(Collections.singletonList(action));
 
-        return parcel;
+        return builder.build();
     }
 
     @Override
