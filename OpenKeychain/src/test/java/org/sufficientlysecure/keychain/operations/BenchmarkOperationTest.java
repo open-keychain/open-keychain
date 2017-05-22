@@ -49,7 +49,7 @@ public class BenchmarkOperationTest {
         BenchmarkOperation op = new BenchmarkOperation(RuntimeEnvironment.application,
                 KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
-        op.execute(new BenchmarkInputParcel(), null);
+        op.execute(BenchmarkInputParcel.newInstance(), null);
     }
 
 }

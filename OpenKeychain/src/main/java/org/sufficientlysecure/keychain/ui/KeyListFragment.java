@@ -586,7 +586,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
             @Override
             public BenchmarkInputParcel createOperationInput() {
-                return new BenchmarkInputParcel(); // we want to perform a full consolidate
+                return BenchmarkInputParcel.newInstance(); // we want to perform a full consolidate
             }
 
             @Override
