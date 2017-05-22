@@ -67,7 +67,7 @@ public class ConsolidateDialogActivity extends FragmentActivity
 
     @Override
     public ConsolidateInputParcel createOperationInput() {
-        return new ConsolidateInputParcel(mRecovery);
+        return ConsolidateInputParcel.createConsolidateInputParcel(mRecovery);
     }
 
     @Override

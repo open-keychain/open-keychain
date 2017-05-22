@@ -553,7 +553,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
             @Override
             public ConsolidateInputParcel createOperationInput() {
-                return new ConsolidateInputParcel(false); // we want to perform a full consolidate
+                return ConsolidateInputParcel.createConsolidateInputParcel(false); // we want to perform a full consolidate
             }
 
             @Override
