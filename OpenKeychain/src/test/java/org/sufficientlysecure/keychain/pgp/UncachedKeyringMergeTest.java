@@ -54,12 +54,6 @@ import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
-import java.io.ByteArrayInputStream;
-import java.security.Security;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Random;
 
 /** Tests for the UncachedKeyring.merge method.
  *
@@ -117,7 +111,7 @@ public class UncachedKeyringMergeTest {
             }
 
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));
+            parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();
@@ -134,7 +128,7 @@ public class UncachedKeyringMergeTest {
 
             parcel.mAddUserIds.add("shy");
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));
+            parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();

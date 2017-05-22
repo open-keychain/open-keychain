@@ -47,7 +47,7 @@ public class ChangeUnlockOperation extends BaseReadWriteOperation<ChangeUnlockPa
         OperationResult.OperationLog log = new OperationResult.OperationLog();
         log.add(OperationResult.LogType.MSG_ED, 0);
 
-        if (unlockParcel == null || unlockParcel.mMasterKeyId == null) {
+        if (unlockParcel == null || unlockParcel.getMasterKeyId() == null) {
             log.add(OperationResult.LogType.MSG_ED_ERROR_NO_PARCEL, 1);
             return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
@@ -60,10 +60,10 @@ public class ChangeUnlockOperation extends BaseReadWriteOperation<ChangeUnlockPa
 
             try {
                     log.add(OperationResult.LogType.MSG_ED_FETCHING, 1,
-                            KeyFormattingUtils.convertKeyIdToHex(unlockParcel.mMasterKeyId));
+                            KeyFormattingUtils.convertKeyIdToHex(unlockParcel.getMasterKeyId()));
 
                     CanonicalizedSecretKeyRing secRing =
-                            mKeyRepository.getCanonicalizedSecretKeyRing(unlockParcel.mMasterKeyId);
+                            mKeyRepository.getCanonicalizedSecretKeyRing(unlockParcel.getMasterKeyId());
                     modifyResult = keyOperations.modifyKeyRingPassphrase(secRing, cryptoInput, unlockParcel);
 
                     if (modifyResult.isPending()) {

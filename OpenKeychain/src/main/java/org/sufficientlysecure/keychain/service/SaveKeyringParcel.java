@@ -109,10 +109,6 @@ public class SaveKeyringParcel implements Parcelable {
     }
 
     public ChangeUnlockParcel getChangeUnlockParcel() {
-        if(mNewUnlock != null) {
-            mNewUnlock.mMasterKeyId = mMasterKeyId;
-            mNewUnlock.mFingerprint = mFingerprint;
-        }
         return mNewUnlock;
     }
 

@@ -341,7 +341,8 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                     Bundle data = message.getData();
 
                     // cache new returned passphrase!
-                    mSaveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(
+                    mSaveKeyringParcel.setNewUnlock(ChangeUnlockParcel.createChangeUnlockParcel(
+                            mSaveKeyringParcel.mMasterKeyId, mSaveKeyringParcel.mFingerprint,
                             (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)));
                 }
             }

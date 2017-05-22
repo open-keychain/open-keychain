@@ -307,12 +307,13 @@ public class CreateKeyFinalFragment extends Fragment {
             createKeyActivity.mSecurityTokenAuth.addToSaveKeyringParcel(saveKeyringParcel, KeyFlags.AUTHENTICATION);
 
             // use empty passphrase
-            saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase()));
+            saveKeyringParcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
         } else {
             Constants.addDefaultSubkeys(saveKeyringParcel);
 
             if (createKeyActivity.mPassphrase != null) {
-                saveKeyringParcel.setNewUnlock(new ChangeUnlockParcel(createKeyActivity.mPassphrase));
+                saveKeyringParcel.setNewUnlock(
+                        ChangeUnlockParcel.createUnLockParcelForNewKey(createKeyActivity.mPassphrase));
             } else {
                 saveKeyringParcel.setNewUnlock(null);
             }

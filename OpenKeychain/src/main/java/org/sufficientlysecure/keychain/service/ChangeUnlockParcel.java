@@ -19,70 +19,28 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
+
+import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-public class ChangeUnlockParcel implements Parcelable {
+@AutoValue
+public abstract class ChangeUnlockParcel implements Parcelable {
+    @Nullable
+    public abstract Long getMasterKeyId();
+    @Nullable
+    public abstract byte[] getFingerprint();
+    public abstract Passphrase getNewPassphrase();
 
-    // the master key id of keyring.
-    public Long mMasterKeyId;
-    // the key fingerprint, for safety.
-    public byte[] mFingerprint;
-    // The new passphrase to use
-    public final Passphrase mNewPassphrase;
 
-    public ChangeUnlockParcel(Passphrase newPassphrase) {
-        mNewPassphrase = newPassphrase;
+    public static ChangeUnlockParcel createChangeUnlockParcel(Long masterKeyId, byte[] fingerprint,
+            Passphrase newPassphrase) {
+        return new AutoValue_ChangeUnlockParcel(masterKeyId, fingerprint, newPassphrase);
     }
 
-    public ChangeUnlockParcel(Long masterKeyId, byte[] fingerprint, Passphrase newPassphrase) {
-        if (newPassphrase == null) {
-            throw new AssertionError("newPassphrase must be non-null. THIS IS A BUG!");
-        }
-
-        mMasterKeyId = masterKeyId;
-        mFingerprint = fingerprint;
-        mNewPassphrase = newPassphrase;
+    public static ChangeUnlockParcel createUnLockParcelForNewKey(Passphrase newPassphrase) {
+        return new AutoValue_ChangeUnlockParcel(null, null, newPassphrase);
     }
-
-    public ChangeUnlockParcel(Parcel source) {
-        mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
-        mFingerprint = source.createByteArray();
-        mNewPassphrase = source.readParcelable(Passphrase.class.getClassLoader());
-    }
-
-    @Override
-    public void writeToParcel(Parcel destination, int flags) {
-        destination.writeInt(mMasterKeyId == null ? 0 : 1);
-        if (mMasterKeyId != null) {
-            destination.writeLong(mMasterKeyId);
-        }
-        destination.writeByteArray(mFingerprint);
-        destination.writeParcelable(mNewPassphrase, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<ChangeUnlockParcel> CREATOR = new Creator<ChangeUnlockParcel>() {
-        public ChangeUnlockParcel createFromParcel(final Parcel source) {
-            return new ChangeUnlockParcel(source);
-        }
-
-        public ChangeUnlockParcel[] newArray(final int size) {
-            return new ChangeUnlockParcel[size];
-        }
-    };
-
-    public String toString() {
-        String out = "mMasterKeyId: " + mMasterKeyId + "\n";
-        out += "passphrase (" + mNewPassphrase + ")";
-
-        return out;
-    }
-
 }

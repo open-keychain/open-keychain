@@ -474,9 +474,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     Bundle data = message.getData();
 
                     // use new passphrase!
-                    mChangeUnlockParcel = new ChangeUnlockParcel(
-                            mMasterKeyId,
-                            mFingerprint,
+                    mChangeUnlockParcel = ChangeUnlockParcel.createChangeUnlockParcel(
+                            mMasterKeyId, mFingerprint,
                             (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
                     );
 

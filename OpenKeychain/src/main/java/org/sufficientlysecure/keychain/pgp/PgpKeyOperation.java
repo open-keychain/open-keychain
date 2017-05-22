@@ -1064,7 +1064,7 @@ public class PgpKeyOperation {
                 indent += 1;
 
                 sKR = applyNewPassphrase(sKR, masterPublicKey, cryptoInput.getPassphrase(),
-                        saveParcel.getChangeUnlockParcel().mNewPassphrase, log, indent);
+                        saveParcel.getChangeUnlockParcel().getNewPassphrase(), log, indent);
                 if (sKR == null) {
                     // The error has been logged above, just return a bad state
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
@@ -1204,7 +1204,8 @@ public class PgpKeyOperation {
         OperationLog log = new OperationLog();
         int indent = 0;
 
-        if (changeUnlockParcel.mMasterKeyId == null || changeUnlockParcel.mMasterKeyId != wsKR.getMasterKeyId()) {
+        Long masterKeyId = changeUnlockParcel.getMasterKeyId();
+        if (masterKeyId == null || masterKeyId != wsKR.getMasterKeyId()) {
             log.add(LogType.MSG_MF_ERROR_KEYID, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
@@ -1219,7 +1220,7 @@ public class PgpKeyOperation {
         PGPSecretKey masterSecretKey = sKR.getSecretKey();
         PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
         // Make sure the fingerprint matches
-        if (changeUnlockParcel.mFingerprint == null || !Arrays.equals(changeUnlockParcel.mFingerprint,
+        if (changeUnlockParcel.getFingerprint()== null || !Arrays.equals(changeUnlockParcel.getFingerprint(),
                 masterSecretKey.getPublicKey().getFingerprint())) {
             log.add(LogType.MSG_MF_ERROR_FINGERPRINT, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
@@ -1245,7 +1246,7 @@ public class PgpKeyOperation {
 
             try {
                 sKR = applyNewPassphrase(sKR, masterPublicKey, cryptoInput.getPassphrase(),
-                        changeUnlockParcel.mNewPassphrase, log, indent);
+                        changeUnlockParcel.getNewPassphrase(), log, indent);
                 if (sKR == null) {
                     // The error has been logged above, just return a bad state
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
