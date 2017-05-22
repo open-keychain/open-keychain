@@ -25,7 +25,7 @@ import android.widget.EditText;
 
 import org.bouncycastle.bcpg.S2K;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.ComparableS2K;
+import org.sufficientlysecure.keychain.pgp.ParcelableS2K;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ import java.util.Map.Entry;
  */
 public class Passphrase implements Parcelable {
     private char[] mPassphrase;
-    private HashMap<ComparableS2K, byte[]> mCachedSessionKeys;
+    private HashMap<ParcelableS2K, byte[]> mCachedSessionKeys;
 
     /**
      * According to http://stackoverflow.com/a/15844273 EditText is not using String internally
@@ -104,7 +104,7 @@ public class Passphrase implements Parcelable {
         if (mCachedSessionKeys == null) {
             return null;
         }
-        return mCachedSessionKeys.get(new ComparableS2K(keyEncryptionAlgorithm, s2k));
+        return mCachedSessionKeys.get(ParcelableS2K.fromS2K(keyEncryptionAlgorithm, s2k));
     }
 
     /** Adds a session key for a set of s2k parameters to this Passphrase object's
@@ -116,7 +116,7 @@ public class Passphrase implements Parcelable {
         if (mCachedSessionKeys == null) {
             mCachedSessionKeys = new HashMap<>();
         }
-        mCachedSessionKeys.put(new ComparableS2K(keyEncryptionAlgorithm, s2k), sessionKey);
+        mCachedSessionKeys.put(ParcelableS2K.fromS2K(keyEncryptionAlgorithm, s2k), sessionKey);
     }
 
     /**
@@ -184,7 +184,7 @@ public class Passphrase implements Parcelable {
         }
         mCachedSessionKeys = new HashMap<>(size);
         for (int i = 0; i < size; i++) {
-            ComparableS2K cachedS2K = source.readParcelable(getClass().getClassLoader());
+            ParcelableS2K cachedS2K = source.readParcelable(getClass().getClassLoader());
             byte[] cachedSessionKey = source.createByteArray();
             mCachedSessionKeys.put(cachedS2K, cachedSessionKey);
         }
@@ -197,7 +197,7 @@ public class Passphrase implements Parcelable {
             return;
         }
         dest.writeInt(mCachedSessionKeys.size());
-        for (Entry<ComparableS2K,byte[]> entry : mCachedSessionKeys.entrySet()) {
+        for (Entry<ParcelableS2K,byte[]> entry : mCachedSessionKeys.entrySet()) {
             dest.writeParcelable(entry.getKey(), 0);
             dest.writeByteArray(entry.getValue());
         }
