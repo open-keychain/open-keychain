@@ -19,48 +19,23 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import android.os.Parcel;
+
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
-public class PromoteKeyringParcel implements Parcelable {
+import com.google.auto.value.AutoValue;
 
-    public long mKeyRingId;
-    public byte[] mCardAid;
-    public long[] mSubKeyIds;
 
-    public PromoteKeyringParcel(long keyRingId, byte[] cardAid, long[] subKeyIds) {
-        mKeyRingId = keyRingId;
-        mCardAid = cardAid;
-        mSubKeyIds = subKeyIds;
+@AutoValue
+public abstract class PromoteKeyringParcel implements Parcelable {
+    public abstract long getMasterKeyId();
+    @Nullable
+    public abstract byte[] getCardAid();
+    @Nullable
+    public abstract long[] getSubKeyIds();
+
+    public static PromoteKeyringParcel createPromoteKeyringParcel(long keyRingId, byte[] cardAid,
+            @Nullable long[] subKeyIds) {
+        return new AutoValue_PromoteKeyringParcel(keyRingId, cardAid, subKeyIds);
     }
-
-    protected PromoteKeyringParcel(Parcel in) {
-        mKeyRingId = in.readLong();
-        mCardAid = in.createByteArray();
-        mSubKeyIds = in.createLongArray();
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(mKeyRingId);
-        dest.writeByteArray(mCardAid);
-        dest.writeLongArray(mSubKeyIds);
-    }
-
-    public static final Parcelable.Creator<PromoteKeyringParcel> CREATOR = new Parcelable.Creator<PromoteKeyringParcel>() {
-        @Override
-        public PromoteKeyringParcel createFromParcel(Parcel in) {
-            return new PromoteKeyringParcel(in);
-        }
-
-        @Override
-        public PromoteKeyringParcel[] newArray(int size) {
-            return new PromoteKeyringParcel[size];
-        }
-    };
 }

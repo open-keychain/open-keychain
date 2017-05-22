@@ -106,7 +106,8 @@ public class PromoteKeyOperationTest {
         PromoteKeyOperation op = new PromoteKeyOperation(RuntimeEnvironment.application,
                 KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
 
-        PromoteKeyResult result = op.execute(new PromoteKeyringParcel(mStaticRing.getMasterKeyId(), null, null), null);
+        PromoteKeyResult result = op.execute(
+                PromoteKeyringParcel.createPromoteKeyringParcel(mStaticRing.getMasterKeyId(), null, null), null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 
@@ -132,7 +133,8 @@ public class PromoteKeyOperationTest {
 
         byte[] aid = Hex.decode("D2760001240102000000012345670000");
 
-        PromoteKeyResult result = op.execute(new PromoteKeyringParcel(mStaticRing.getMasterKeyId(), aid, null), null);
+        PromoteKeyResult result = op.execute(
+                PromoteKeyringParcel.createPromoteKeyringParcel(mStaticRing.getMasterKeyId(), aid, null), null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 
@@ -160,9 +162,10 @@ public class PromoteKeyOperationTest {
         // only promote the first, rest stays dummy
         long keyId = KeyringTestingHelper.getSubkeyId(mStaticRing, 1);
 
-        PromoteKeyResult result = op.execute(new PromoteKeyringParcel(mStaticRing.getMasterKeyId(), aid, new long[] {
-            keyId
-        }), null);
+        PromoteKeyResult result = op.execute(
+                PromoteKeyringParcel.createPromoteKeyringParcel(mStaticRing.getMasterKeyId(), aid, new long[] {
+                    keyId
+                }), null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 

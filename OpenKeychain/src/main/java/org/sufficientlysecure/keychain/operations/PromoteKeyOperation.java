@@ -38,7 +38,6 @@ import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 /** An operation which promotes a public key ring to a secret one.
  *
@@ -67,17 +66,18 @@ public class PromoteKeyOperation extends BaseReadWriteOperation<PromoteKeyringPa
             try {
 
                 log.add(LogType.MSG_PR_FETCHING, 1,
-                        KeyFormattingUtils.convertKeyIdToHex(promoteKeyringParcel.mKeyRingId));
+                        KeyFormattingUtils.convertKeyIdToHex(promoteKeyringParcel.getMasterKeyId()));
                 CanonicalizedPublicKeyRing pubRing =
-                        mKeyRepository.getCanonicalizedPublicKeyRing(promoteKeyringParcel.mKeyRingId);
+                        mKeyRepository.getCanonicalizedPublicKeyRing(promoteKeyringParcel.getMasterKeyId());
 
-                if (promoteKeyringParcel.mSubKeyIds == null) {
+                long[] subKeyIds = promoteKeyringParcel.getSubKeyIds();
+                if (subKeyIds == null) {
                     log.add(LogType.MSG_PR_ALL, 1);
                 } else {
                     // sort for binary search
                     for (CanonicalizedPublicKey key : pubRing.publicKeyIterator()) {
                         long subKeyId = key.getKeyId();
-                        if (naiveIndexOf(promoteKeyringParcel.mSubKeyIds, subKeyId) != null) {
+                        if (naiveIndexOf(subKeyIds, subKeyId) != null) {
                             log.add(LogType.MSG_PR_SUBKEY_MATCH, 1,
                                     KeyFormattingUtils.convertKeyIdToHex(subKeyId));
                         } else {
@@ -88,8 +88,7 @@ public class PromoteKeyOperation extends BaseReadWriteOperation<PromoteKeyringPa
                 }
 
                 // create divert-to-card secret key from public key
-                promotedRing = pubRing.createDivertSecretRing(promoteKeyringParcel.mCardAid,
-                        promoteKeyringParcel.mSubKeyIds);
+                promotedRing = pubRing.createDivertSecretRing(promoteKeyringParcel.getCardAid(), subKeyIds);
 
             } catch (NotFoundException e) {
                 log.add(LogType.MSG_PR_ERROR_KEY_NOT_FOUND, 2);
