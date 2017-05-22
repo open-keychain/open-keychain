@@ -20,62 +20,28 @@
 package org.sufficientlysecure.keychain.service;
 
 
-import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 
+@AutoValue
+public abstract class UploadKeyringParcel implements Parcelable {
+    public abstract ParcelableHkpKeyserver getKeyserver();
+    @Nullable
+    public abstract Long getMasterKeyId();
+    @Nullable
+    public abstract byte[] getUncachedKeyringBytes();
 
-public class UploadKeyringParcel implements Parcelable {
-    public ParcelableHkpKeyserver mKeyserver;
 
-    public final Long mMasterKeyId;
-    public final byte[] mUncachedKeyringBytes;
-
-    public UploadKeyringParcel(ParcelableHkpKeyserver keyserver, long masterKeyId) {
-        mKeyserver = keyserver;
-        mMasterKeyId = masterKeyId;
-        mUncachedKeyringBytes = null;
+    public static UploadKeyringParcel createWithKeyId(ParcelableHkpKeyserver keyserver, long masterKeyId) {
+        return new AutoValue_UploadKeyringParcel(keyserver, masterKeyId, null);
     }
 
-    public UploadKeyringParcel(ParcelableHkpKeyserver keyserver, byte[] uncachedKeyringBytes) {
-        mKeyserver = keyserver;
-        mMasterKeyId = null;
-        mUncachedKeyringBytes = uncachedKeyringBytes;
+    public static UploadKeyringParcel createWithKeyringBytes(ParcelableHkpKeyserver keyserver,
+            @NonNull byte[] uncachedKeyringBytes) {
+        return new AutoValue_UploadKeyringParcel(keyserver, null, uncachedKeyringBytes);
     }
-
-    protected UploadKeyringParcel(Parcel in) {
-        mKeyserver = in.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
-        mMasterKeyId = in.readInt() != 0 ? in.readLong() : null;
-        mUncachedKeyringBytes = in.createByteArray();
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mKeyserver, flags);
-        if (mMasterKeyId != null) {
-            dest.writeInt(1);
-            dest.writeLong(mMasterKeyId);
-        } else {
-            dest.writeInt(0);
-        }
-        dest.writeByteArray(mUncachedKeyringBytes);
-    }
-
-    public static final Creator<UploadKeyringParcel> CREATOR = new Creator<UploadKeyringParcel>() {
-        @Override
-        public UploadKeyringParcel createFromParcel(Parcel in) {
-            return new UploadKeyringParcel(in);
-        }
-
-        @Override
-        public UploadKeyringParcel[] newArray(int size) {
-            return new UploadKeyringParcel[size];
-        }
-    };
 }

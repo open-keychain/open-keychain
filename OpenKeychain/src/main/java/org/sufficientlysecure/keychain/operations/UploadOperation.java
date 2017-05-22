@@ -96,7 +96,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
         ParcelableHkpKeyserver hkpKeyserver;
         {
-            hkpKeyserver = uploadInput.mKeyserver;
+            hkpKeyserver = uploadInput.getKeyserver();
             log.add(LogType.MSG_UPLOAD_SERVER, 1, hkpKeyserver.toString());
         }
 
@@ -110,22 +110,15 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
     @Nullable
     private CanonicalizedPublicKeyRing getPublicKeyringFromInput(OperationLog log, UploadKeyringParcel uploadInput) {
-
-        boolean hasMasterKeyId = uploadInput.mMasterKeyId != null;
-        boolean hasKeyringBytes = uploadInput.mUncachedKeyringBytes != null;
-        if (hasMasterKeyId == hasKeyringBytes) {
-            throw new IllegalArgumentException("either keyid xor bytes must be non-null for this method call!");
-        }
-
         try {
-
-            if (hasMasterKeyId) {
-                log.add(LogType.MSG_UPLOAD_KEY, 0, KeyFormattingUtils.convertKeyIdToHex(uploadInput.mMasterKeyId));
-                return mKeyRepository.getCanonicalizedPublicKeyRing(uploadInput.mMasterKeyId);
+            Long masterKeyId = uploadInput.getMasterKeyId();
+            if (masterKeyId != null) {
+                log.add(LogType.MSG_UPLOAD_KEY, 0, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
+                return mKeyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
             }
 
             CanonicalizedKeyRing canonicalizedRing =
-                    UncachedKeyRing.decodeFromData(uploadInput.mUncachedKeyringBytes)
+                    UncachedKeyRing.decodeFromData(uploadInput.getUncachedKeyringBytes())
                             .canonicalize(new OperationLog(), 0, true);
             if (!CanonicalizedPublicKeyRing.class.isInstance(canonicalizedRing)) {
                 throw new IllegalArgumentException("keyring bytes must contain public key ring!");

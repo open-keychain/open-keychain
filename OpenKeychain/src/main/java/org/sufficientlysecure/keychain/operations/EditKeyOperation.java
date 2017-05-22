@@ -144,7 +144,7 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
             }
 
             UploadKeyringParcel exportKeyringParcel =
-                    new UploadKeyringParcel(saveParcel.getUploadKeyserver(), keyringBytes);
+                    UploadKeyringParcel.createWithKeyringBytes(saveParcel.getUploadKeyserver(), keyringBytes);
 
             UploadResult uploadResult = new UploadOperation(
                     mContext, mKeyRepository, new ProgressScaler(mProgressable, 60, 80, 100), mCancelled)
