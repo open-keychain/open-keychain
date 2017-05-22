@@ -519,7 +519,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
             @Override
             public ImportKeyringParcel createOperationInput() {
-                return new ImportKeyringParcel(mKeyList, mKeyserver);
+                return ImportKeyringParcel.createImportKeyringParcel(mKeyList, mKeyserver);
             }
 
             @Override

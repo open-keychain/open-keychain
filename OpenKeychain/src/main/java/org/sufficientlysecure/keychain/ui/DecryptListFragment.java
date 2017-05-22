@@ -779,7 +779,7 @@ public class DecryptListFragment
 
             @Override
             public ImportKeyringParcel createOperationInput() {
-                return new ImportKeyringParcel(keyList, keyserver);
+                return ImportKeyringParcel.createImportKeyringParcel(keyList, keyserver);
             }
 
             @Override

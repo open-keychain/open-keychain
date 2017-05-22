@@ -18,69 +18,31 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 
 import java.util.ArrayList;
 
-public class ImportKeyringParcel implements Parcelable {
-    // If null, keys are expected to be read from a cache file in ImportExportOperations
-    public ArrayList<ParcelableKeyRing> mKeyList;
-    public ParcelableHkpKeyserver mKeyserver; // must be set if keys are to be imported from a keyserver
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
-    // If false, don't save the key, only return it as part of result
-    public boolean mSkipSave = false;
+import com.google.auto.value.AutoValue;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 
-    public ImportKeyringParcel(ArrayList<ParcelableKeyRing> keyList, ParcelableHkpKeyserver keyserver) {
-        mKeyList = keyList;
-        mKeyserver = keyserver;
+@AutoValue
+public abstract class ImportKeyringParcel implements Parcelable {
+    @Nullable // If null, keys are expected to be read from a cache file in ImportExportOperations
+    public abstract ArrayList<ParcelableKeyRing> getKeyList();
+    @Nullable // must be set if keys are to be imported from a keyserver
+    public abstract ParcelableHkpKeyserver getKeyserver();
+    public abstract boolean isSkipSave();
+
+    public static ImportKeyringParcel createImportKeyringParcel(ArrayList<ParcelableKeyRing> keyList,
+            ParcelableHkpKeyserver keyserver) {
+        return new AutoValue_ImportKeyringParcel(keyList, keyserver, false);
     }
 
-    public ImportKeyringParcel(ArrayList<ParcelableKeyRing> keyList, ParcelableHkpKeyserver keyserver, boolean skipSave) {
-        this(keyList, keyserver);
-        mSkipSave = skipSave;
+    public static ImportKeyringParcel createWithSkipSave(ArrayList<ParcelableKeyRing> keyList,
+            ParcelableHkpKeyserver keyserver) {
+        return new AutoValue_ImportKeyringParcel(keyList, keyserver, true);
     }
-
-    protected ImportKeyringParcel(Parcel in) {
-        if (in.readByte() == 0x01) {
-            mKeyList = new ArrayList<>();
-            in.readList(mKeyList, ParcelableKeyRing.class.getClassLoader());
-        } else {
-            mKeyList = null;
-        }
-        mKeyserver = in.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
-        mSkipSave = in.readInt() != 0;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (mKeyList == null) {
-            dest.writeByte((byte) (0x00));
-        } else {
-            dest.writeByte((byte) (0x01));
-            dest.writeList(mKeyList);
-        }
-        dest.writeParcelable(mKeyserver, flags);
-        dest.writeInt(mSkipSave ? 1 : 0);
-    }
-
-    public static final Parcelable.Creator<ImportKeyringParcel> CREATOR = new Parcelable.Creator<ImportKeyringParcel>() {
-        @Override
-        public ImportKeyringParcel createFromParcel(Parcel in) {
-            return new ImportKeyringParcel(in);
-        }
-
-        @Override
-        public ImportKeyringParcel[] newArray(int size) {
-            return new ImportKeyringParcel[size];
-        }
-    };
 }

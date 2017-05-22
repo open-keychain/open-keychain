@@ -469,9 +469,9 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     @NonNull
     @Override
     public ImportKeyResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
-        ArrayList<ParcelableKeyRing> keyList = importInput.mKeyList;
-        ParcelableHkpKeyserver keyServer = importInput.mKeyserver;
-        boolean skipSave = importInput.mSkipSave;
+        ArrayList<ParcelableKeyRing> keyList = importInput.getKeyList();
+        ParcelableHkpKeyserver keyServer = importInput.getKeyserver();
+        boolean skipSave = importInput.isSkipSave();
 
         ImportKeyResult result;
         if (keyList == null) {// import from file, do serially
@@ -495,7 +495,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             result = multiThreadedKeyImport(keyList, keyServer, proxy, skipSave);
         }
 
-        if (!importInput.mSkipSave) {
+        if (!skipSave) {
             ContactSyncAdapterService.requestContactsSync();
         }
         return result;

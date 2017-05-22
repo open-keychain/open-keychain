@@ -159,7 +159,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
 
             @Override
             public ImportKeyringParcel createOperationInput() {
-                return new ImportKeyringParcel(keyList, keyserver);
+                return ImportKeyringParcel.createImportKeyringParcel(keyList, keyserver);
             }
 
             @Override

@@ -237,7 +237,11 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             keyserver = entry.getKeyserver();
         }
 
-        return new ImportKeyringParcel(keysList, keyserver, skipSave);
+        if (skipSave) {
+            return ImportKeyringParcel.createWithSkipSave(keysList, keyserver);
+        } else {
+            return ImportKeyringParcel.createImportKeyringParcel(keysList, keyserver);
+        }
     }
 
     @Override

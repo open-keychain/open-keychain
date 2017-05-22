@@ -185,7 +185,7 @@ public class SafeSlingerActivity extends BaseActivity
 
     @Override
     public ImportKeyringParcel createOperationInput() {
-        return new ImportKeyringParcel(mKeyList, mKeyserver);
+        return ImportKeyringParcel.createImportKeyringParcel(mKeyList, mKeyserver);
     }
 
     @Override

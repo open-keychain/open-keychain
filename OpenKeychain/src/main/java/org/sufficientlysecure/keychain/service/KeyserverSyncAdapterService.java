@@ -324,7 +324,7 @@ public class KeyserverSyncAdapterService extends Service {
         ImportOperation importOp = new ImportOperation(context,
                 KeyWritableRepository.createDatabaseReadWriteInteractor(context), null);
         return importOp.execute(
-                new ImportKeyringParcel(keyList,
+                ImportKeyringParcel.createImportKeyringParcel(keyList,
                         Preferences.getPreferences(context).getPreferredKeyserver()),
                 cryptoInputParcel
         );
@@ -384,7 +384,7 @@ public class KeyserverSyncAdapterService extends Service {
             ImportKeyResult result =
                     new ImportOperation(context, KeyWritableRepository.createDatabaseReadWriteInteractor(context), null, mCancelled)
                             .execute(
-                                    new ImportKeyringParcel(
+                                    ImportKeyringParcel.createImportKeyringParcel(
                                             keyWrapper,
                                             Preferences.getPreferences(context)
                                                     .getPreferredKeyserver()
