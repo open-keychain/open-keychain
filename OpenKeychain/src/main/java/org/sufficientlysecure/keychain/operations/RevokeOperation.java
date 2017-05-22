@@ -53,7 +53,7 @@ public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel>
         // we don't cache passphrases during revocation
         cryptoInputParcel = cryptoInputParcel.withNoCachePassphrase();
 
-        long masterKeyId = revokeKeyringParcel.mMasterKeyId;
+        long masterKeyId = revokeKeyringParcel.getMasterKeyId();
 
         OperationResult.OperationLog log = new OperationResult.OperationLog();
         log.add(OperationResult.LogType.MSG_REVOKE, 0,
@@ -75,8 +75,8 @@ public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel>
                     new SaveKeyringParcel(masterKeyId, keyRing.getFingerprint());
 
             // all revoke operations are made atomic as of now
-            saveKeyringParcel.setUpdateOptions(revokeKeyringParcel.mUpload, true,
-                    revokeKeyringParcel.mKeyserver);
+            saveKeyringParcel.setUpdateOptions(revokeKeyringParcel.isShouldUpload(), true,
+                    revokeKeyringParcel.getKeyserver());
 
             saveKeyringParcel.mRevokeSubKeys.add(masterKeyId);
 

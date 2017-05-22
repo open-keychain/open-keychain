@@ -19,50 +19,22 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
+
+import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 
-public class RevokeKeyringParcel implements Parcelable {
+@AutoValue
+public abstract class RevokeKeyringParcel implements Parcelable {
+    public abstract long getMasterKeyId();
+    public abstract boolean isShouldUpload();
+    @Nullable
+    public abstract ParcelableHkpKeyserver getKeyserver();
 
-    final public long mMasterKeyId;
-    final public boolean mUpload;
-    final public ParcelableHkpKeyserver mKeyserver;
-
-    public RevokeKeyringParcel(long masterKeyId, boolean upload, ParcelableHkpKeyserver keyserver) {
-        mMasterKeyId = masterKeyId;
-        mUpload = upload;
-        mKeyserver = keyserver;
+    public static RevokeKeyringParcel createRevokeKeyringParcel(long masterKeyId, boolean upload,
+            ParcelableHkpKeyserver keyserver) {
+        return new AutoValue_RevokeKeyringParcel(masterKeyId, upload, keyserver);
     }
-
-    protected RevokeKeyringParcel(Parcel in) {
-        mMasterKeyId = in.readLong();
-        mUpload = in.readByte() != 0x00;
-        mKeyserver = in.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(mMasterKeyId);
-        dest.writeByte((byte) (mUpload ? 0x01 : 0x00));
-        dest.writeParcelable(mKeyserver, flags);
-    }
-
-    public static final Parcelable.Creator<RevokeKeyringParcel> CREATOR = new Parcelable.Creator<RevokeKeyringParcel>() {
-        @Override
-        public RevokeKeyringParcel createFromParcel(Parcel in) {
-            return new RevokeKeyringParcel(in);
-        }
-
-        @Override
-        public RevokeKeyringParcel[] newArray(int size) {
-            return new RevokeKeyringParcel[size];
-        }
-    };
 }

@@ -151,7 +151,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         return new CryptoOperationHelper.Callback<RevokeKeyringParcel, RevokeResult>() {
             @Override
             public RevokeKeyringParcel createOperationInput() {
-                return new RevokeKeyringParcel(mMasterKeyIds[0], true,
+                return RevokeKeyringParcel.createRevokeKeyringParcel(mMasterKeyIds[0], true,
                         (ParcelableHkpKeyserver) getIntent().getParcelableExtra(EXTRA_KEYSERVER));
             }
 
