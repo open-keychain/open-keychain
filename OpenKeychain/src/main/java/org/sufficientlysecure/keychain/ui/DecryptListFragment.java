@@ -639,7 +639,7 @@ public class DecryptListFragment
 
         PgpDecryptVerifyInputParcel decryptInput = new PgpDecryptVerifyInputParcel()
                 .setAllowSymmetricDecryption(true);
-        return new InputDataParcel(mCurrentInputUri, decryptInput);
+        return InputDataParcel.createInputDataParcel(mCurrentInputUri, decryptInput);
 
     }
 

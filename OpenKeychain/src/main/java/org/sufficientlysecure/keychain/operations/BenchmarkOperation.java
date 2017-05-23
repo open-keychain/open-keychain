@@ -86,8 +86,7 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
             PgpSignEncryptData.Builder data = PgpSignEncryptData.builder();
             data.setSymmetricPassphrase(passphrase);
             data.setSymmetricEncryptionAlgorithm(OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
-            SignEncryptParcel input = new SignEncryptParcel(data.build());
-            input.setBytes(buf);
+            SignEncryptParcel input = SignEncryptParcel.createSignEncryptParcel(data.build(), buf);
             encryptResult = op.execute(input, CryptoInputParcel.createCryptoInputParcel());
             log.add(encryptResult, 1);
             log.add(LogType.MSG_BENCH_ENC_TIME, 2,

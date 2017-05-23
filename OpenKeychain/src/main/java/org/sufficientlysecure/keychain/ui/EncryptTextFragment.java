@@ -17,6 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -48,10 +53,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 public class EncryptTextFragment
         extends CachingCryptoOperationFragment<SignEncryptParcel, SignEncryptResult> {
@@ -286,10 +287,7 @@ public class EncryptTextFragment
             data.setSymmetricPassphrase(passphrase);
         }
 
-        SignEncryptParcel parcel = new SignEncryptParcel(data.build());
-        parcel.setBytes(mMessage.getBytes());
-
-        return parcel;
+        return SignEncryptParcel.createSignEncryptParcel(data.build(), mMessage.getBytes());
     }
 
     private void copyToClipboard(SignEncryptResult result) {

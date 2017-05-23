@@ -577,12 +577,10 @@ public class EncryptFilesFragment
     }
 
     public SignEncryptParcel createOperationInput() {
-
         SignEncryptParcel actionsParcel = getCachedActionsParcel();
 
         // we have three cases here: nothing cached, cached except output, fully cached
         if (actionsParcel == null) {
-
             // clear output uris for now, they will be created by prepareOutputStreams later
             mOutputUris = null;
 
@@ -593,7 +591,6 @@ public class EncryptFilesFragment
             }
 
             cacheActionsParcel(actionsParcel);
-
         }
 
         // if it's incomplete, prepare output streams
@@ -606,9 +603,10 @@ public class EncryptFilesFragment
                 }
             }
 
-            actionsParcel.addOutputUris(mOutputUris);
+            actionsParcel = SignEncryptParcel.builder(actionsParcel)
+                    .addOutputUris(mOutputUris)
+                    .build();
             cacheActionsParcel(actionsParcel);
-
         }
 
         return actionsParcel;
@@ -675,10 +673,9 @@ public class EncryptFilesFragment
         }
 
 
-        SignEncryptParcel parcel = new SignEncryptParcel(data.build());
-        parcel.addInputUris(mFilesAdapter.getAsArrayList());
-
-        return parcel;
+        SignEncryptParcel.Builder builder = SignEncryptParcel.builder(data.build());
+        builder.addInputUris(mFilesAdapter.getAsArrayList());
+        return builder.build();
     }
 
     private Intent createSendIntent() {

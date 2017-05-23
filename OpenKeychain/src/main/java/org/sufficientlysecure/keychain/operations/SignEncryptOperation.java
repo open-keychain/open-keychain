@@ -26,7 +26,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
@@ -36,13 +35,11 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 
@@ -76,8 +73,6 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
 
         SecurityTokenSignOperationsBuilder pendingInputBuilder = null;
 
-        PgpSignEncryptData data = input.getData();
-
         do {
             if (checkCancelled()) {
                 log.add(LogType.MSG_OPERATION_CANCELLED, 0);
@@ -86,7 +81,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(mContext, mKeyRepository,
                     new ProgressScaler(mProgressable, 100 * count / total, 100 * ++count / total, 100), mCancelled);
-            PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(input.getData());
+            PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(input.getSignEncryptData());
             if (inputBytes != null) {
                 inputParcel.setInputBytes(inputBytes);
             } else {
@@ -106,7 +101,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
                 }
                 if (pendingInputBuilder == null) {
                     pendingInputBuilder = new SecurityTokenSignOperationsBuilder(requiredInput.mSignatureTime,
-                            data.getSignatureMasterKeyId(), data.getSignatureSubKeyId());
+                            requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
                 }
                 pendingInputBuilder.addAll(requiredInput);
             } else if (!result.success()) {
