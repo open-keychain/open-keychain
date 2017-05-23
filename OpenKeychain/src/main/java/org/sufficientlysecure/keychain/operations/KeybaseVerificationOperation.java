@@ -33,14 +33,17 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 
@@ -149,13 +152,19 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(mContext, mKeyRepository, mProgressable);
 
-            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(messageBytes)
-                    .setRequiredSignerFingerprint(requiredFingerprint);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(messageBytes);
 
             DecryptVerifyResult decryptVerifyResult = op.execute(input, new CryptoInputParcel());
 
             if (!decryptVerifyResult.success()) {
                 log.add(decryptVerifyResult, 1);
+                return new KeybaseVerificationResult(OperationResult.RESULT_ERROR, log);
+            }
+
+            long verifyingKeyId = decryptVerifyResult.getSignatureResult().getKeyId();
+            byte[] verifyingFingerprint = mKeyRepository.getCachedPublicKeyRing(verifyingKeyId).getFingerprint();
+            if (!requiredFingerprint.equals(KeyFormattingUtils.convertFingerprintToHex(verifyingFingerprint))) {
+                log.add(LogType.MSG_KEYBASE_ERROR_FINGERPRINT_MISMATCH, 1);
                 return new KeybaseVerificationResult(OperationResult.RESULT_ERROR, log);
             }
 
