@@ -12,3 +12,6 @@ platform:
       # see https://github.com/mikepenz/Android-Iconics/blob/develop/LICENSE
       tests:
         unlicensed: skip
+    'com.ryanharter.auto.value:auto-value-parcel-adapter':
+      tests:
+        unlicensed: skip
