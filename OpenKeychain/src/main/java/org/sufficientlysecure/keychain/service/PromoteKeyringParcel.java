@@ -30,8 +30,10 @@ import com.google.auto.value.AutoValue;
 public abstract class PromoteKeyringParcel implements Parcelable {
     public abstract long getMasterKeyId();
     @Nullable
+    @SuppressWarnings("mutable")
     public abstract byte[] getCardAid();
     @Nullable
+    @SuppressWarnings("mutable")
     public abstract long[] getSubKeyIds();
 
     public static PromoteKeyringParcel createPromoteKeyringParcel(long keyRingId, byte[] cardAid,

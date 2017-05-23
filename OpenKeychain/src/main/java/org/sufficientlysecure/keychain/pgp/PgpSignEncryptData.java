@@ -40,6 +40,7 @@ public abstract class PgpSignEncryptData implements Parcelable {
     @Nullable
     public abstract Passphrase getSymmetricPassphrase();
     @Nullable
+    @SuppressWarnings("mutable")
     public abstract long[] getEncryptionMasterKeyIds();
     public abstract int getCompressionAlgorithm();
     @Nullable

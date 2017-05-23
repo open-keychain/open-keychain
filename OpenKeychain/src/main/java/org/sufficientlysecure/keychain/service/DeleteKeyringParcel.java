@@ -27,6 +27,7 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class DeleteKeyringParcel implements Parcelable {
+    @SuppressWarnings("mutable")
     public abstract long[] getMasterKeyIds();
     public abstract boolean isDeleteSecret();
 

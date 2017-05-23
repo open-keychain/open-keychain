@@ -33,6 +33,7 @@ public abstract class UploadKeyringParcel implements Parcelable {
     @Nullable
     public abstract Long getMasterKeyId();
     @Nullable
+    @SuppressWarnings("mutable")
     public abstract byte[] getUncachedKeyringBytes();
 
 

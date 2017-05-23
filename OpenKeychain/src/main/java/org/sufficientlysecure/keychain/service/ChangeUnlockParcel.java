@@ -31,6 +31,7 @@ public abstract class ChangeUnlockParcel implements Parcelable {
     @Nullable
     public abstract Long getMasterKeyId();
     @Nullable
+    @SuppressWarnings("mutable")
     public abstract byte[] getFingerprint();
     public abstract Passphrase getNewPassphrase();
 

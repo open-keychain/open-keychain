@@ -44,6 +44,7 @@ public abstract class ParcelableS2K implements Parcelable {
     abstract int getS2kType();
     abstract int getS2kHashAlgo();
     abstract long getS2kItCount();
+    @SuppressWarnings("mutable")
     abstract byte[] getS2kIV();
 
     @Memoized

@@ -55,6 +55,7 @@ public abstract class SaveKeyringParcel implements Parcelable {
     public abstract Long getMasterKeyId();
     // the key fingerprint, for safety. MUST be null for a new key.
     @Nullable
+    @SuppressWarnings("mutable")
     public abstract byte[] getFingerprint();
 
     public abstract List<String> getAddUserIds();
@@ -263,6 +264,7 @@ public abstract class SaveKeyringParcel implements Parcelable {
         // if this is non-null, the subkey will be changed to a divert-to-card
         // (security token) key for the given serial number
         @Nullable
+        @SuppressWarnings("mutable")
         public abstract byte[] getSecurityTokenSerialNo();
 
         public static SubkeyChange createRecertifyChange(long keyId, boolean recertify) {
