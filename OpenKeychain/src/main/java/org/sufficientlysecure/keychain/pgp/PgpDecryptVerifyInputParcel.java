@@ -19,152 +19,69 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import android.net.Uri;
-import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
-public class PgpDecryptVerifyInputParcel implements Parcelable {
+import com.google.auto.value.AutoValue;
 
-    private Uri mInputUri;
-    private Uri mOutputUri;
-    private byte[] mInputBytes;
 
-    private boolean mAllowSymmetricDecryption;
-    private HashSet<Long> mAllowedKeyIds;
-    private boolean mDecryptMetadataOnly;
-    private byte[] mDetachedSignature;
-    private String mRequiredSignerFingerprint;
-    private String mSenderAddress;
+@AutoValue
+public abstract class PgpDecryptVerifyInputParcel implements Parcelable {
+    @Nullable
+    @SuppressWarnings("mutable")
+    abstract byte[] getInputBytes();
 
-    public PgpDecryptVerifyInputParcel() {
+    @Nullable
+    abstract Uri getInputUri();
+    @Nullable
+    abstract Uri getOutputUri();
+
+    abstract boolean isAllowSymmetricDecryption();
+    abstract boolean isDecryptMetadataOnly();
+
+    @Nullable
+    abstract List<Long> getAllowedKeyIds();
+    @Nullable
+    @SuppressWarnings("mutable")
+    abstract byte[] getDetachedSignature();
+    @Nullable
+    abstract String getSenderAddress();
+
+    public abstract Builder toBuilder();
+
+    public static Builder builder() {
+        return new AutoValue_PgpDecryptVerifyInputParcel.Builder()
+                .setAllowSymmetricDecryption(false)
+                .setDecryptMetadataOnly(false);
     }
 
-    public PgpDecryptVerifyInputParcel(Uri inputUri, Uri outputUri) {
-        mInputUri = inputUri;
-        mOutputUri = outputUri;
-    }
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder setInputBytes(byte[] inputBytes);
+        public abstract Builder setInputUri(Uri inputUri);
+        public abstract Builder setOutputUri(Uri outputUri);
 
-    public PgpDecryptVerifyInputParcel(byte[] inputBytes) {
-        mInputBytes = inputBytes;
-    }
+        public abstract Builder setAllowSymmetricDecryption(boolean allowSymmetricDecryption);
+        public abstract Builder setDecryptMetadataOnly(boolean decryptMetadataOnly);
+        public abstract Builder setDetachedSignature(byte[] detachedSignature);
+        public abstract Builder setSenderAddress(String senderAddress);
 
-    PgpDecryptVerifyInputParcel(Parcel source) {
-        // we do all of those here, so the PgpSignEncryptInput class doesn't have to be parcelable
-        mInputUri = source.readParcelable(getClass().getClassLoader());
-        mOutputUri = source.readParcelable(getClass().getClassLoader());
-        mInputBytes = source.createByteArray();
+        public abstract Builder setAllowedKeyIds(List<Long> allowedKeyIds);
+        abstract List<Long> getAllowedKeyIds();
 
-        mAllowSymmetricDecryption = source.readInt() != 0;
-        mAllowedKeyIds  = (HashSet<Long>) source.readSerializable();
-        mDecryptMetadataOnly = source.readInt() != 0;
-        mDetachedSignature = source.createByteArray();
-        mRequiredSignerFingerprint = source.readString();
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mInputUri, 0);
-        dest.writeParcelable(mOutputUri, 0);
-        dest.writeByteArray(mInputBytes);
-
-        dest.writeInt(mAllowSymmetricDecryption ? 1 : 0);
-        dest.writeSerializable(mAllowedKeyIds);
-        dest.writeInt(mDecryptMetadataOnly ? 1 : 0);
-        dest.writeByteArray(mDetachedSignature);
-        dest.writeString(mRequiredSignerFingerprint);
-    }
-
-    byte[] getInputBytes() {
-        return mInputBytes;
-    }
-
-    public PgpDecryptVerifyInputParcel setInputUri(Uri uri) {
-        mInputUri = uri;
-        return this;
-    }
-
-    Uri getInputUri() {
-        return mInputUri;
-    }
-
-    public PgpDecryptVerifyInputParcel setOutputUri(Uri uri) {
-        mOutputUri = uri;
-        return this;
-    }
-
-    Uri getOutputUri() {
-        return mOutputUri;
-    }
-
-    boolean isAllowSymmetricDecryption() {
-        return mAllowSymmetricDecryption;
-    }
-
-    public PgpDecryptVerifyInputParcel setAllowSymmetricDecryption(boolean allowSymmetricDecryption) {
-        mAllowSymmetricDecryption = allowSymmetricDecryption;
-        return this;
-    }
-
-    HashSet<Long> getAllowedKeyIds() {
-        return mAllowedKeyIds;
-    }
-
-    public PgpDecryptVerifyInputParcel setAllowedKeyIds(HashSet<Long> allowedKeyIds) {
-        mAllowedKeyIds = allowedKeyIds;
-        return this;
-    }
-
-    boolean isDecryptMetadataOnly() {
-        return mDecryptMetadataOnly;
-    }
-
-    public PgpDecryptVerifyInputParcel setDecryptMetadataOnly(boolean decryptMetadataOnly) {
-        mDecryptMetadataOnly = decryptMetadataOnly;
-        return this;
-    }
-
-    byte[] getDetachedSignature() {
-        return mDetachedSignature;
-    }
-
-    public PgpDecryptVerifyInputParcel setDetachedSignature(byte[] detachedSignature) {
-        mDetachedSignature = detachedSignature;
-        return this;
-    }
-
-    public PgpDecryptVerifyInputParcel setSenderAddress(String senderAddress) {
-        mSenderAddress = senderAddress;
-        return this;
-    }
-
-    public String getSenderAddress() {
-        return mSenderAddress;
-    }
-
-    String getRequiredSignerFingerprint() {
-        return mRequiredSignerFingerprint;
-    }
-
-    public PgpDecryptVerifyInputParcel setRequiredSignerFingerprint(String requiredSignerFingerprint) {
-        mRequiredSignerFingerprint = requiredSignerFingerprint;
-        return this;
-    }
-
-    public static final Creator<PgpDecryptVerifyInputParcel> CREATOR = new Creator<PgpDecryptVerifyInputParcel>() {
-        public PgpDecryptVerifyInputParcel createFromParcel(final Parcel source) {
-            return new PgpDecryptVerifyInputParcel(source);
+        abstract PgpDecryptVerifyInputParcel autoBuild();
+        public PgpDecryptVerifyInputParcel build() {
+            List<Long> allowedKeyIds = getAllowedKeyIds();
+            if (allowedKeyIds != null) {
+                setAllowedKeyIds(Collections.unmodifiableList(allowedKeyIds));
+            }
+            return autoBuild();
         }
-
-        public PgpDecryptVerifyInputParcel[] newArray(final int size) {
-            return new PgpDecryptVerifyInputParcel[size];
-        }
-    };
+    }
 }
-

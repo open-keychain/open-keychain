@@ -22,6 +22,7 @@ package org.sufficientlysecure.keychain.remote;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -367,12 +368,13 @@ public class OpenPgpService extends Service {
 
             // allow only private keys associated with accounts of this app
             // no support for symmetric encryption
-            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel()
+            PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder()
                     .setAllowSymmetricDecryption(false)
-                    .setAllowedKeyIds(getAllowedKeyIds())
+                    .setAllowedKeyIds(new ArrayList<>(getAllowedKeyIds()))
                     .setDecryptMetadataOnly(decryptMetadataOnly)
                     .setDetachedSignature(detachedSignature)
-                    .setSenderAddress(senderAddress);
+                    .setSenderAddress(senderAddress)
+                    .build();
 
             DecryptVerifyResult pgpResult = op.execute(input, cryptoInput, inputData, outputStream);
 

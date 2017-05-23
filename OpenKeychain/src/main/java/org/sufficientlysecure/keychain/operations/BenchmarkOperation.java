@@ -103,9 +103,10 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
             PgpDecryptVerifyOperation op =
                     new PgpDecryptVerifyOperation(mContext, mKeyRepository,
                             new ProgressScaler(mProgressable, 50 +i*(50/numRepeats), 50 +(i+1)*(50/numRepeats), 100));
-            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(encryptResult.getResultBytes());
-            input.setAllowSymmetricDecryption(true);
-            decryptResult = op.execute(input, CryptoInputParcel.createCryptoInputParcel(passphrase));
+            PgpDecryptVerifyInputParcel.Builder builder = PgpDecryptVerifyInputParcel.builder()
+                    .setInputBytes(encryptResult.getResultBytes())
+                    .setAllowSymmetricDecryption(true);
+            decryptResult = op.execute(builder.build(), CryptoInputParcel.createCryptoInputParcel(passphrase));
             log.add(decryptResult, 1);
             log.add(LogType.MSG_BENCH_DEC_TIME, 2, String.format("%.2f", decryptResult.mOperationTime / 1000.0));
             totalTime += decryptResult.mOperationTime;

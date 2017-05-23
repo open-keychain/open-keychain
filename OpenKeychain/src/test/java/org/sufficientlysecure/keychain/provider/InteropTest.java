@@ -143,7 +143,7 @@ public class InteropTest {
         Passphrase pass = new Passphrase(config.getString("passphrase"));
 
         PgpDecryptVerifyOperation op = makeOperation(base.toString(), pass, decrypt, verify);
-        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+        PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder().build();
         CryptoInputParcel cip = CryptoInputParcel.createCryptoInputParcel(pass);
         DecryptVerifyResult result = op.execute(input, cip, data, out);
         byte[] plaintext = config.getString("textcontent").getBytes("utf-8");

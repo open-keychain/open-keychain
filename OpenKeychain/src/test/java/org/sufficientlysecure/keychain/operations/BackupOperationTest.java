@@ -327,8 +327,10 @@ public class BackupOperationTest {
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
-            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(outStream.toByteArray());
-            input.setAllowSymmetricDecryption(true);
+            PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder()
+                    .setAllowSymmetricDecryption(true)
+                    .setInputBytes(outStream.toByteArray())
+                    .build();
 
             {
                 DecryptVerifyResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel());

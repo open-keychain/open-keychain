@@ -637,9 +637,9 @@ public class DecryptListFragment
             return null;
         }
 
-        PgpDecryptVerifyInputParcel decryptInput = new PgpDecryptVerifyInputParcel()
+        PgpDecryptVerifyInputParcel.Builder decryptInput = PgpDecryptVerifyInputParcel.builder()
                 .setAllowSymmetricDecryption(true);
-        return InputDataParcel.createInputDataParcel(mCurrentInputUri, decryptInput);
+        return InputDataParcel.createInputDataParcel(mCurrentInputUri, decryptInput.build());
 
     }
 
