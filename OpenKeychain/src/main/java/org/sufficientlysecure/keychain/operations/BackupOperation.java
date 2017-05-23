@@ -170,18 +170,19 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             throws FileNotFoundException {
         PgpSignEncryptOperation signEncryptOperation = new PgpSignEncryptOperation(mContext, mKeyRepository, mProgressable, mCancelled);
 
-        PgpSignEncryptData.Builder data = PgpSignEncryptData.builder();
-        data.setSymmetricPassphrase(cryptoInput.getPassphrase());
-        data.setEnableAsciiArmorOutput(backupInput.getEnableAsciiArmorOutput());
-        data.setAddBackupHeader(true);
-        PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(data.build());
+        PgpSignEncryptData.Builder builder = PgpSignEncryptData.builder();
+        builder.setSymmetricPassphrase(cryptoInput.getPassphrase());
+        builder.setEnableAsciiArmorOutput(backupInput.getEnableAsciiArmorOutput());
+        builder.setAddBackupHeader(true);
+        PgpSignEncryptData pgpSignEncryptData = builder.build();
 
         InputStream inStream = mContext.getContentResolver().openInputStream(plainUri);
 
         String filename;
         long[] masterKeyIds = backupInput.getMasterKeyIds();
         if (masterKeyIds != null && masterKeyIds.length == 1) {
-            filename = Constants.FILE_BACKUP_PREFIX + KeyFormattingUtils.convertKeyIdToHex(masterKeyIds[0]);
+            filename = Constants.FILE_BACKUP_PREFIX + KeyFormattingUtils.convertKeyIdToHex(
+                    masterKeyIds[0]);
         } else {
             filename = Constants.FILE_BACKUP_PREFIX + new SimpleDateFormat("yyyy-MM-dd", Locale
                     .getDefault()).format(new Date());
@@ -203,7 +204,8 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             outStream = mContext.getContentResolver().openOutputStream(backupInput.getOutputUri());
         }
 
-        return signEncryptOperation.execute(inputParcel, CryptoInputParcel.createCryptoInputParcel(), inputData, outStream);
+        return signEncryptOperation.execute(
+                pgpSignEncryptData, CryptoInputParcel.createCryptoInputParcel(), inputData, outStream);
     }
 
     boolean exportKeysToStream(OperationLog log, long[] masterKeyIds, boolean exportSecret, OutputStream outStream) {

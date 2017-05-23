@@ -19,6 +19,11 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
@@ -42,6 +47,8 @@ public abstract class PgpSignEncryptData implements Parcelable {
     @Nullable
     @SuppressWarnings("mutable")
     public abstract long[] getEncryptionMasterKeyIds();
+    @Nullable
+    public abstract List<Long> getAllowedSigningKeyIds();
     public abstract int getCompressionAlgorithm();
     @Nullable
     public abstract String getVersionHeader();
@@ -86,6 +93,12 @@ public abstract class PgpSignEncryptData implements Parcelable {
         public abstract Builder setCleartextSignature(boolean isCleartextSignature);
         public abstract Builder setDetachedSignature(boolean isDetachedSignature);
         public abstract Builder setHiddenRecipients(boolean isHiddenRecipients);
+
+        abstract Builder setAllowedSigningKeyIds(List<Long> allowedSigningKeyIds);
+        public Builder setAllowedSigningKeyIds(Collection<Long> allowedSigningKeyIds) {
+            setAllowedSigningKeyIds(Collections.unmodifiableList(new ArrayList<>(allowedSigningKeyIds)));
+            return this;
+        }
     }
 }
 

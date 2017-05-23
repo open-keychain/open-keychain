@@ -183,9 +183,8 @@ public class PgpEncryptDecryptTest {
             pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
 
-            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel(pgpData.build());
-            PgpSignEncryptResult result = op.execute(b, CryptoInputParcel.createCryptoInputParcel(new Date()),
-                    data, out);
+            PgpSignEncryptResult result = op.execute(pgpData.build(),
+                    CryptoInputParcel.createCryptoInputParcel(new Date()), data, out);
 
             Assert.assertTrue("encryption must succeed", result.success());
 
@@ -310,9 +309,8 @@ public class PgpEncryptDecryptTest {
             pgpData.setCleartextSignature(false);
             pgpData.setDetachedSignature(false);
 
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData.build());
-
-            PgpSignEncryptResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel(mKeyPhrase1), data, out);
+            PgpSignEncryptResult result = op.execute(pgpData.build(),
+                    CryptoInputParcel.createCryptoInputParcel(mKeyPhrase1), data, out);
             Assert.assertTrue("signing must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -367,9 +365,8 @@ public class PgpEncryptDecryptTest {
             pgpData.setEnableAsciiArmorOutput(true);
             pgpData.setDetachedSignature(false);
 
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData.build());
-
-            PgpSignEncryptResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel(mKeyPhrase1), data, out);
+            PgpSignEncryptResult result = op.execute(pgpData.build(),
+                    CryptoInputParcel.createCryptoInputParcel(mKeyPhrase1), data, out);
             Assert.assertTrue("signing must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -427,9 +424,8 @@ public class PgpEncryptDecryptTest {
             pgpData.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
             pgpData.setDetachedSignature(true);
 
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData.build());
-
-            PgpSignEncryptResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel(mKeyPhrase1), data, out);
+            PgpSignEncryptResult result = op.execute(pgpData.build(),
+                    CryptoInputParcel.createCryptoInputParcel(mKeyPhrase1), data, out);
             Assert.assertTrue("signing must succeed", result.success());
 
             detachedSignature = result.getDetachedSignature();
@@ -483,9 +479,8 @@ public class PgpEncryptDecryptTest {
             pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
 
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData.build());
-
-            PgpSignEncryptResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel(new Date()),
+            PgpSignEncryptResult result = op.execute(pgpData.build(),
+                    CryptoInputParcel.createCryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
@@ -586,9 +581,8 @@ public class PgpEncryptDecryptTest {
             pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
 
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData.build());
-
-            PgpSignEncryptResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel(new Date()),
+            PgpSignEncryptResult result = op.execute(pgpData.build(),
+                    CryptoInputParcel.createCryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
@@ -700,9 +694,8 @@ public class PgpEncryptDecryptTest {
             pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
 
-            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData.build());
-
-            PgpSignEncryptResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel(new Date()),
+            PgpSignEncryptResult result = op.execute(pgpData.build(),
+                    CryptoInputParcel.createCryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
@@ -748,9 +741,8 @@ public class PgpEncryptDecryptTest {
             pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
 
-            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel(pgpData.build());
-
-            PgpSignEncryptResult result = op.execute(b, CryptoInputParcel.createCryptoInputParcel(new Date()),
+            PgpSignEncryptResult result = op.execute(pgpData.build(),
+                    CryptoInputParcel.createCryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
@@ -879,9 +871,7 @@ public class PgpEncryptDecryptTest {
             pgpData.setSymmetricEncryptionAlgorithm(
                     PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
 
-            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel(pgpData.build());
-
-            PgpSignEncryptResult result = op.execute(b,
+            PgpSignEncryptResult result = op.execute(pgpData.build(),
                     CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1), data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
@@ -964,10 +954,8 @@ public class PgpEncryptDecryptTest {
             pgpData.setEnableAsciiArmorOutput(true);
             pgpData.setCharset("iso-2022-jp");
 
-            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel(pgpData.build());
-
-            PgpSignEncryptResult result = op.execute(b, CryptoInputParcel.createCryptoInputParcel(new Date()),
-                    data, out);
+            PgpSignEncryptResult result = op.execute(pgpData.build(),
+                    CryptoInputParcel.createCryptoInputParcel(new Date()), data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();

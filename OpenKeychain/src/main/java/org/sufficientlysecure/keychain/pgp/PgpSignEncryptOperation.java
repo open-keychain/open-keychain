@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.SignatureException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -148,7 +149,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             }
         }
 
-        PgpSignEncryptResult result = executeInternal(input, cryptoInput, inputData, outStream);
+        PgpSignEncryptResult result = executeInternal(input.getData(), cryptoInput, inputData, outStream);
         if (outStream instanceof ByteArrayOutputStream) {
             byte[] outputData = ((ByteArrayOutputStream) outStream).toByteArray();
             result.setOutputBytes(outputData);
@@ -158,24 +159,22 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
     }
 
     @NonNull
-    public PgpSignEncryptResult execute(PgpSignEncryptInputParcel input, CryptoInputParcel cryptoInput,
-                                        InputData inputData, OutputStream outputStream) {
-        return executeInternal(input, cryptoInput, inputData, outputStream);
+    public PgpSignEncryptResult execute(PgpSignEncryptData data, CryptoInputParcel cryptoInput,
+            InputData inputData, OutputStream outputStream) {
+        return executeInternal(data, cryptoInput, inputData, outputStream);
     }
 
     /**
      * Signs and/or encrypts data based on parameters of class
      */
-    private PgpSignEncryptResult executeInternal(PgpSignEncryptInputParcel input, CryptoInputParcel cryptoInput,
-                                                 InputData inputData, OutputStream outputStream) {
-
+    private PgpSignEncryptResult executeInternal(PgpSignEncryptData data, CryptoInputParcel cryptoInput,
+            InputData inputData, OutputStream outputStream) {
         int indent = 0;
         OperationLog log = new OperationLog();
 
         log.add(LogType.MSG_PSE, indent);
         indent += 1;
 
-        PgpSignEncryptData data = input.getData();
         boolean enableSignature = data.getSignatureMasterKeyId() != Constants.key.none;
         boolean enableEncryption = ((data.getEncryptionMasterKeyIds() != null && data.getEncryptionMasterKeyIds().length > 0)
                 || data.getSymmetricPassphrase() != null);
@@ -221,14 +220,12 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                         mKeyRepository.getCanonicalizedSecretKeyRing(signingMasterKeyId);
                 signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
 
-                if (input.getAllowedKeyIds() != null) {
-                    if (!input.getAllowedKeyIds().contains(signingMasterKeyId)) {
-                        // this key is in our db, but NOT allowed!
-                        log.add(LogType.MSG_PSE_ERROR_KEY_NOT_ALLOWED, indent + 1);
-                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_KEY_DISALLOWED, log);
-                    }
+                Collection<Long> allowedSigningKeyIds = data.getAllowedSigningKeyIds();
+                if (allowedSigningKeyIds != null && !allowedSigningKeyIds.contains(signingMasterKeyId)) {
+                    // this key is in our db, but NOT allowed!
+                    log.add(LogType.MSG_PSE_ERROR_KEY_NOT_ALLOWED, indent + 1);
+                    return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_KEY_DISALLOWED, log);
                 }
-
 
                 // Make sure key is not expired or revoked
                 if (signingKeyRing.isExpired() || signingKeyRing.isRevoked()
@@ -572,8 +569,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             }
 
             opTime = System.currentTimeMillis() - startTime;
-            Log.d(Constants.TAG, "sign/encrypt time taken: " + String.format("%.2f",
-                    opTime / 1000.0) + "s");
+            Log.d(Constants.TAG, "sign/encrypt time taken: " + String.format("%.2f", opTime / 1000.0) + "s");
 
             // closing outputs
             // NOTE: closing needs to be done in the correct order!

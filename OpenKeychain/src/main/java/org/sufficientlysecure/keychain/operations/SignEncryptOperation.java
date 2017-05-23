@@ -81,13 +81,14 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(mContext, mKeyRepository,
                     new ProgressScaler(mProgressable, 100 * count / total, 100 * ++count / total, 100), mCancelled);
-            PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(input.getSignEncryptData());
+            PgpSignEncryptInputParcel inputParcel;
             if (inputBytes != null) {
-                inputParcel.setInputBytes(inputBytes);
+                inputParcel = PgpSignEncryptInputParcel.createForBytes(
+                        input.getSignEncryptData(), outputUris.pollFirst(), inputBytes);
             } else {
-                inputParcel.setInputUri(inputUris.removeFirst());
+                inputParcel = PgpSignEncryptInputParcel.createForInputUri(
+                        input.getSignEncryptData(), outputUris.pollFirst(), inputUris.removeFirst());
             }
-            inputParcel.setOutputUri(outputUris.pollFirst());
 
             PgpSignEncryptResult result = op.execute(inputParcel, cryptoInput);
             results.add(result);

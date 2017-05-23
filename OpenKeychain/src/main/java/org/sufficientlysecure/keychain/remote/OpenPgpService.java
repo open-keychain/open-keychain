@@ -58,7 +58,6 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
-import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
@@ -138,10 +137,7 @@ public class OpenPgpService extends Service {
                     throw new Exception("signing subkey not found!", e);
                 }
             }
-
-
-            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData.build());
-            pseInput.setAllowedKeyIds(getAllowedKeyIds());
+            pgpData.setAllowedSigningKeyIds(getAllowedKeyIds());
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             if (!cleartextSign) {
@@ -164,7 +160,7 @@ public class OpenPgpService extends Service {
 
             // execute PGP operation!
             PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, mKeyRepository, null);
-            PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputParcel, inputData, outputStream);
+            PgpSignEncryptResult pgpResult = pse.execute(pgpData.build(), inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
@@ -259,9 +255,7 @@ public class OpenPgpService extends Service {
                 return result;
             }
             pgpData.setEncryptionMasterKeyIds(keyIdResult.getKeyIds());
-
-            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData.build());
-            pseInput.setAllowedKeyIds(getAllowedKeyIds());
+            pgpData.setAllowedSigningKeyIds(getAllowedKeyIds());
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
@@ -279,7 +273,7 @@ public class OpenPgpService extends Service {
 
             // execute PGP operation!
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, mKeyRepository, null);
-            PgpSignEncryptResult pgpResult = op.execute(pseInput, inputParcel, inputData, outputStream);
+            PgpSignEncryptResult pgpResult = op.execute(pgpData.build(), inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
