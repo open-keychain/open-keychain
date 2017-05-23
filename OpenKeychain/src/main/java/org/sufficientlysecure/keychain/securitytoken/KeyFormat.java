@@ -94,6 +94,6 @@ public abstract class KeyFormat {
         throw new IllegalArgumentException("Unsupported Algorithm id " + t);
     }
 
-    public abstract void addToSaveKeyringParcel(SaveKeyringParcel keyring, int keyFlags);
+    public abstract void addToSaveKeyringParcel(SaveKeyringParcel.Builder builder, int keyFlags);
 
 }

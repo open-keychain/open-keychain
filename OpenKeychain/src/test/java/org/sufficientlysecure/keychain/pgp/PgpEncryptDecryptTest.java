@@ -621,10 +621,10 @@ public class PgpEncryptDecryptTest {
 
         { // strip first encrypted subkey, decryption should skip it
 
-            SaveKeyringParcel parcel =
-                    new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
-            parcel.mChangeSubKeys.add(SubkeyChange.createStripChange(encKeyId1));
-            UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildChangeKeyringParcel(
+                    mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
+            builder.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(encKeyId1));
+            UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(builder.build(), mStaticRing1,
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
                     CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));
 
@@ -644,10 +644,10 @@ public class PgpEncryptDecryptTest {
 
         { // change flags of second encrypted subkey, decryption should skip it
 
-            SaveKeyringParcel parcel =
-                    new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
-            parcel.mChangeSubKeys.add(SubkeyChange.createFlagsOrExpiryChange(encKeyId1, KeyFlags.CERTIFY_OTHER, null));
-            UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildChangeKeyringParcel(
+                    mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
+            builder.addOrReplaceSubkeyChange(SubkeyChange.createFlagsOrExpiryChange(encKeyId1, KeyFlags.CERTIFY_OTHER, null));
+            UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(builder.build(), mStaticRing1,
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
                     CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));
 
@@ -673,9 +673,10 @@ public class PgpEncryptDecryptTest {
         String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
 
         { // revoke first encryption subkey of keyring in database
-            SaveKeyringParcel parcel = new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
-            parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(mStaticRing1, 2));
-            UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildChangeKeyringParcel(
+                    mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
+            builder.addRevokeSubkey(KeyringTestingHelper.getSubkeyId(mStaticRing1, 2));
+            UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(builder.build(), mStaticRing1,
                     new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
                     CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));
 

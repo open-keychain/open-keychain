@@ -82,7 +82,7 @@ public class EditIdentitiesFragment extends Fragment
 
     private Uri mDataUri;
 
-    private SaveKeyringParcel mSaveKeyringParcel;
+    private SaveKeyringParcel.Builder mSkpBuilder;
 
     private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mEditOpHelper;
     private CryptoOperationHelper<UploadKeyringParcel, UploadResult> mUploadOpHelper;
@@ -180,7 +180,7 @@ public class EditIdentitiesFragment extends Fragment
                     return;
             }
 
-            mSaveKeyringParcel = new SaveKeyringParcel(masterKeyId, keyRing.getFingerprint());
+            mSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(masterKeyId, keyRing.getFingerprint());
             mPrimaryUserId = keyRing.getPrimaryUserIdWithFallback();
 
         } catch (PgpKeyNotFoundException | NotFoundException e) {
@@ -193,11 +193,11 @@ public class EditIdentitiesFragment extends Fragment
         getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, EditIdentitiesFragment.this);
 
         mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
-        mUserIdsAdapter.setEditMode(mSaveKeyringParcel);
+        mUserIdsAdapter.setEditMode(mSkpBuilder);
         mUserIdsList.setAdapter(mUserIdsAdapter);
 
         // TODO: SaveParcel from savedInstance?!
-        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds, false);
+        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSkpBuilder.getMutableAddUserIds(), false);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
     }
 
@@ -266,23 +266,23 @@ public class EditIdentitiesFragment extends Fragment
                 switch (message.what) {
                     case EditUserIdDialogFragment.MESSAGE_CHANGE_PRIMARY_USER_ID:
                         // toggle
-                        if (mSaveKeyringParcel.mChangePrimaryUserId != null
-                                && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
-                            mSaveKeyringParcel.mChangePrimaryUserId = null;
+                        if (mSkpBuilder.getChangePrimaryUserId() != null
+                                && mSkpBuilder.getChangePrimaryUserId().equals(userId)) {
+                            mSkpBuilder.setChangePrimaryUserId(null);
                         } else {
-                            mSaveKeyringParcel.mChangePrimaryUserId = userId;
+                            mSkpBuilder.setChangePrimaryUserId(userId);
                         }
                         break;
                     case EditUserIdDialogFragment.MESSAGE_REVOKE:
                         // toggle
-                        if (mSaveKeyringParcel.mRevokeUserIds.contains(userId)) {
-                            mSaveKeyringParcel.mRevokeUserIds.remove(userId);
+                        if (mSkpBuilder.getMutableRevokeUserIds().contains(userId)) {
+                            mSkpBuilder.removeRevokeUserId(userId);
                         } else {
-                            mSaveKeyringParcel.mRevokeUserIds.add(userId);
+                            mSkpBuilder.addRevokeUserId(userId);
                             // not possible to revoke and change to primary user id
-                            if (mSaveKeyringParcel.mChangePrimaryUserId != null
-                                    && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
-                                mSaveKeyringParcel.mChangePrimaryUserId = null;
+                            if (mSkpBuilder.getChangePrimaryUserId() != null
+                                    && mSkpBuilder.getChangePrimaryUserId().equals(userId)) {
+                                mSkpBuilder.setChangePrimaryUserId(null);
                             }
                         }
                         break;
@@ -339,7 +339,7 @@ public class EditIdentitiesFragment extends Fragment
                 = new CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult>() {
             @Override
             public SaveKeyringParcel createOperationInput() {
-                return mSaveKeyringParcel;
+                return mSkpBuilder.build();
             }
 
             @Override

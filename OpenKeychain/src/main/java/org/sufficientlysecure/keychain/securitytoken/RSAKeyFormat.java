@@ -86,8 +86,8 @@ public class RSAKeyFormat extends KeyFormat {
         }
     }
 
-    public void addToSaveKeyringParcel(SaveKeyringParcel keyring, int keyFlags) {
-        keyring.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
+    public void addToSaveKeyringParcel(SaveKeyringParcel.Builder builder, int keyFlags) {
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
                 mModulusLength, null, keyFlags, 0L));
     }
 }

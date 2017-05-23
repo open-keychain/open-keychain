@@ -18,17 +18,19 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import android.os.Parcel;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
-import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  * This class is a a transferable representation for a collection of changes
@@ -45,107 +47,183 @@ import java.util.ArrayList;
  * error in any included operation (for example revocation of a non-existent
  * subkey) will cause the operation as a whole to fail.
  */
-public class SaveKeyringParcel implements Parcelable {
+@AutoValue
+public abstract class SaveKeyringParcel implements Parcelable {
 
     // the master key id to be edited. if this is null, a new one will be created
-    public Long mMasterKeyId;
+    @Nullable
+    public abstract Long getMasterKeyId();
     // the key fingerprint, for safety. MUST be null for a new key.
-    public byte[] mFingerprint;
+    @Nullable
+    public abstract byte[] getFingerprint();
 
-    public ArrayList<String> mAddUserIds;
-    public ArrayList<WrappedUserAttribute> mAddUserAttribute;
-    public ArrayList<SubkeyAdd> mAddSubKeys;
+    public abstract List<String> getAddUserIds();
+    public abstract List<WrappedUserAttribute> getAddUserAttribute();
+    public abstract List<SubkeyAdd> getAddSubKeys();
 
-    public ArrayList<SubkeyChange> mChangeSubKeys;
-    public String mChangePrimaryUserId;
+    public abstract List<SubkeyChange> getChangeSubKeys();
+    @Nullable
+    public abstract String getChangePrimaryUserId();
 
-    public ArrayList<String> mRevokeUserIds;
-    public ArrayList<Long> mRevokeSubKeys;
+    public abstract List<String> getRevokeUserIds();
+    public abstract List<Long> getRevokeSubKeys();
 
     // if these are non-null, PINs will be changed on the token
-    public Passphrase mSecurityTokenPin;
-    public Passphrase mSecurityTokenAdminPin;
+    @Nullable
+    public abstract Passphrase getSecurityTokenPin();
+    @Nullable
+    public abstract Passphrase getSecurityTokenAdminPin();
 
-    // private because they have to be set together with setUpdateOptions
-    private boolean mUpload;
-    private boolean mUploadAtomic;
-    private ParcelableHkpKeyserver mKeyserver;
+    public abstract boolean isShouldUpload();
+    public abstract boolean isShouldUploadAtomic();
+    @Nullable
+    public abstract ParcelableHkpKeyserver getUploadKeyserver();
 
-    // private because we have to set other details like key id
-    private ChangeUnlockParcel mNewUnlock;
+    @Nullable
+    public abstract ChangeUnlockParcel getNewUnlock();
 
-    public SaveKeyringParcel() {
-        reset();
+    public static Builder buildNewKeyringParcel() {
+        return new AutoValue_SaveKeyringParcel.Builder()
+                .setShouldUpload(false)
+                .setShouldUploadAtomic(false);
     }
 
-    public SaveKeyringParcel(long masterKeyId, byte[] fingerprint) {
-        this();
-        mMasterKeyId = masterKeyId;
-        mFingerprint = fingerprint;
+    public static Builder buildChangeKeyringParcel(long masterKeyId, byte[] fingerprint) {
+        return buildNewKeyringParcel()
+                .setMasterKeyId(masterKeyId)
+                .setFingerprint(fingerprint);
     }
 
-    public void reset() {
-        mNewUnlock = null;
-        mAddUserIds = new ArrayList<>();
-        mAddUserAttribute = new ArrayList<>();
-        mAddSubKeys = new ArrayList<>();
-        mChangePrimaryUserId = null;
-        mChangeSubKeys = new ArrayList<>();
-        mRevokeUserIds = new ArrayList<>();
-        mRevokeSubKeys = new ArrayList<>();
-        mSecurityTokenPin = null;
-        mSecurityTokenAdminPin = null;
-        mUpload = false;
-        mUploadAtomic = false;
-        mKeyserver = null;
+    abstract Builder toBuilder();
+
+    public static Builder buildUpon(SaveKeyringParcel saveKeyringParcel) {
+        SaveKeyringParcel.Builder builder = saveKeyringParcel.toBuilder();
+        builder.addUserIds.addAll(saveKeyringParcel.getAddUserIds());
+        builder.revokeUserIds.addAll(saveKeyringParcel.getRevokeUserIds());
+        builder.addUserAttribute.addAll(saveKeyringParcel.getAddUserAttribute());
+        builder.addSubKeys.addAll(saveKeyringParcel.getAddSubKeys());
+        builder.changeSubKeys.addAll(saveKeyringParcel.getChangeSubKeys());
+        builder.revokeSubKeys.addAll(saveKeyringParcel.getRevokeSubKeys());
+        return builder;
     }
 
-    public void setUpdateOptions(boolean upload, boolean uploadAtomic, ParcelableHkpKeyserver keyserver) {
-        mUpload = upload;
-        mUploadAtomic = uploadAtomic;
-        mKeyserver = keyserver;
-    }
+    @AutoValue.Builder
+    public static abstract class Builder {
+        private ArrayList<String> addUserIds = new ArrayList<>();
+        private ArrayList<String> revokeUserIds = new ArrayList<>();
+        private ArrayList<WrappedUserAttribute> addUserAttribute = new ArrayList<>();
+        private ArrayList<SubkeyAdd> addSubKeys = new ArrayList<>();
+        private ArrayList<SubkeyChange> changeSubKeys = new ArrayList<>();
+        private ArrayList<Long> revokeSubKeys = new ArrayList<>();
 
-    public void setNewUnlock(ChangeUnlockParcel parcel) {
-        mNewUnlock = parcel;
-    }
 
-    public ChangeUnlockParcel getChangeUnlockParcel() {
-        return mNewUnlock;
-    }
+        public abstract Builder setChangePrimaryUserId(String changePrimaryUserId);
+        public abstract Builder setSecurityTokenPin(Passphrase securityTokenPin);
+        public abstract Builder setSecurityTokenAdminPin(Passphrase securityTokenAdminPin);
+        public abstract Builder setNewUnlock(ChangeUnlockParcel newUnlock);
 
-    public boolean isUpload() {
-        return mUpload;
-    }
+        public abstract Long getMasterKeyId();
+        public abstract byte[] getFingerprint();
+        public abstract String getChangePrimaryUserId();
 
-    public boolean isUploadAtomic() {
-        return mUploadAtomic;
-    }
 
-    public ParcelableHkpKeyserver getUploadKeyserver() {
-        return mKeyserver;
-    }
-
-    public boolean isEmpty() {
-        return isRestrictedOnly() && mChangeSubKeys.isEmpty();
-    }
-
-    /** Returns true iff this parcel does not contain any operations which require a passphrase. */
-    public boolean isRestrictedOnly() {
-        if (mNewUnlock != null || !mAddUserIds.isEmpty() || !mAddUserAttribute.isEmpty()
-                || !mAddSubKeys.isEmpty() || mChangePrimaryUserId != null || !mRevokeUserIds.isEmpty()
-                || !mRevokeSubKeys.isEmpty()) {
-            return false;
+        public ArrayList<SubkeyAdd> getMutableAddSubKeys() {
+            return addSubKeys;
+        }
+        public ArrayList<String> getMutableAddUserIds() {
+            return addUserIds;
+        }
+        public ArrayList<Long> getMutableRevokeSubKeys() {
+            return revokeSubKeys;
+        }
+        public ArrayList<String> getMutableRevokeUserIds() {
+            return revokeUserIds;
         }
 
-        for (SubkeyChange change : mChangeSubKeys) {
-            if (change.getRecertify() || change.getFlags() != null || change.getExpiry() != null
-                    || change.getMoveKeyToSecurityToken()) {
-                return false;
+        abstract Builder setMasterKeyId(Long masterKeyId);
+        abstract Builder setFingerprint(byte[] fingerprint);
+        abstract Builder setAddUserIds(List<String> addUserIds);
+        abstract Builder setAddUserAttribute(List<WrappedUserAttribute> addUserAttribute);
+        abstract Builder setAddSubKeys(List<SubkeyAdd> addSubKeys);
+        abstract Builder setChangeSubKeys(List<SubkeyChange> changeSubKeys);
+        abstract Builder setRevokeUserIds(List<String> revokeUserIds);
+        abstract Builder setRevokeSubKeys(List<Long> revokeSubKeys);
+        abstract Builder setShouldUpload(boolean upload);
+        abstract Builder setShouldUploadAtomic(boolean uploadAtomic);
+        abstract Builder setUploadKeyserver(ParcelableHkpKeyserver keyserver);
+
+        public void setUpdateOptions(boolean upload, boolean uploadAtomic, ParcelableHkpKeyserver keyserver) {
+            setShouldUpload(upload);
+            setShouldUploadAtomic(uploadAtomic);
+            setUploadKeyserver(keyserver);
+        }
+
+        public void addSubkeyAdd(SubkeyAdd subkeyAdd) {
+            addSubKeys.add(subkeyAdd);
+        }
+
+        public void addUserId(String userId) {
+            addUserIds.add(userId);
+        }
+
+        public void addRevokeSubkey(long masterKeyId) {
+            revokeSubKeys.add(masterKeyId);
+        }
+
+        public void removeRevokeSubkey(long keyId) {
+            revokeSubKeys.remove(keyId);
+        }
+
+        public void addRevokeUserId(String userId) {
+            revokeUserIds.add(userId);
+        }
+
+        public void removeRevokeUserId(String userId) {
+            revokeUserIds.remove(userId);
+        }
+
+        public void addOrReplaceSubkeyChange(SubkeyChange newChange) {
+            SubkeyChange foundSubkeyChange = getSubkeyChange(newChange.getSubKeyId());
+
+            if (foundSubkeyChange != null) {
+                changeSubKeys.remove(foundSubkeyChange);
             }
+            changeSubKeys.add(newChange);
         }
 
-        return true;
+        public void removeSubkeyChange(SubkeyChange change) {
+            changeSubKeys.remove(change);
+        }
+
+        public SubkeyChange getSubkeyChange(long keyId) {
+            if (changeSubKeys == null) {
+                return null;
+            }
+
+            for (SubkeyChange subkeyChange : changeSubKeys) {
+                if (subkeyChange.getSubKeyId() == keyId) {
+                    return subkeyChange;
+                }
+            }
+            return null;
+        }
+
+        public void addUserAttribute(WrappedUserAttribute ua) {
+            addUserAttribute.add(ua);
+        }
+
+        abstract SaveKeyringParcel autoBuild();
+
+        public SaveKeyringParcel build() {
+            setAddUserAttribute(Collections.unmodifiableList(addUserAttribute));
+            setRevokeSubKeys(Collections.unmodifiableList(revokeSubKeys));
+            setRevokeUserIds(Collections.unmodifiableList(revokeUserIds));
+            setAddSubKeys(Collections.unmodifiableList(addSubKeys));
+            setAddUserIds(Collections.unmodifiableList(addUserIds));
+            setChangeSubKeys(Collections.unmodifiableList(changeSubKeys));
+
+            return autoBuild();
+        }
     }
 
     // performance gain for using Parcelable here would probably be negligible,
@@ -208,114 +286,6 @@ public class SaveKeyringParcel implements Parcelable {
         }
     }
 
-    public SubkeyChange getSubkeyChange(long keyId) {
-        for (SubkeyChange subkeyChange : mChangeSubKeys) {
-            if (subkeyChange.getSubKeyId() == keyId) {
-                return subkeyChange;
-            }
-        }
-        return null;
-    }
-
-    public void addOrReplaceSubkeyChange(SubkeyChange change) {
-        SubkeyChange foundSubkeyChange = getSubkeyChange(change.getSubKeyId());
-        if (foundSubkeyChange != null) {
-            mChangeSubKeys.remove(foundSubkeyChange);
-        }
-
-        mChangeSubKeys.add(change);
-    }
-
-    public void removeSubkeyChange(SubkeyChange change) {
-        mChangeSubKeys.remove(change);
-    }
-
-    @SuppressWarnings("unchecked") // we verify the reads against writes in writeToParcel
-    public SaveKeyringParcel(Parcel source) {
-        mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
-        mFingerprint = source.createByteArray();
-
-        mNewUnlock = source.readParcelable(getClass().getClassLoader());
-
-        mAddUserIds = source.createStringArrayList();
-        mAddUserAttribute = (ArrayList<WrappedUserAttribute>) source.readSerializable();
-        mAddSubKeys = (ArrayList<SubkeyAdd>) source.readSerializable();
-
-        mChangeSubKeys = (ArrayList<SubkeyChange>) source.readSerializable();
-        mChangePrimaryUserId = source.readString();
-
-        mRevokeUserIds = source.createStringArrayList();
-        mRevokeSubKeys = (ArrayList<Long>) source.readSerializable();
-
-        mSecurityTokenPin = source.readParcelable(Passphrase.class.getClassLoader());
-        mSecurityTokenAdminPin = source.readParcelable(Passphrase.class.getClassLoader());
-
-        mUpload = source.readByte() != 0;
-        mUploadAtomic = source.readByte() != 0;
-        mKeyserver = source.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
-    }
-
-    @Override
-    public void writeToParcel(Parcel destination, int flags) {
-        destination.writeInt(mMasterKeyId == null ? 0 : 1);
-        if (mMasterKeyId != null) {
-            destination.writeLong(mMasterKeyId);
-        }
-        destination.writeByteArray(mFingerprint);
-
-        // yes, null values are ok for parcelables
-        destination.writeParcelable(mNewUnlock, flags);
-
-        destination.writeStringList(mAddUserIds);
-        destination.writeSerializable(mAddUserAttribute);
-        destination.writeSerializable(mAddSubKeys);
-
-        destination.writeSerializable(mChangeSubKeys);
-        destination.writeString(mChangePrimaryUserId);
-
-        destination.writeStringList(mRevokeUserIds);
-        destination.writeSerializable(mRevokeSubKeys);
-
-        destination.writeParcelable(mSecurityTokenPin, flags);
-        destination.writeParcelable(mSecurityTokenAdminPin, flags);
-
-        destination.writeByte((byte) (mUpload ? 1 : 0));
-        destination.writeByte((byte) (mUploadAtomic ? 1 : 0));
-        destination.writeParcelable(mKeyserver, flags);
-    }
-
-    public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {
-        public SaveKeyringParcel createFromParcel(final Parcel source) {
-            return new SaveKeyringParcel(source);
-        }
-
-        public SaveKeyringParcel[] newArray(final int size) {
-            return new SaveKeyringParcel[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public String toString() {
-        String out = "mMasterKeyId: " + mMasterKeyId + "\n";
-        out += "mNewUnlock: " + mNewUnlock + "\n";
-        out += "mAddUserIds: " + mAddUserIds + "\n";
-        out += "mAddUserAttribute: " + mAddUserAttribute + "\n";
-        out += "mAddSubKeys: " + mAddSubKeys + "\n";
-        out += "mChangeSubKeys: " + mChangeSubKeys + "\n";
-        out += "mChangePrimaryUserId: " + mChangePrimaryUserId + "\n";
-        out += "mRevokeUserIds: " + mRevokeUserIds + "\n";
-        out += "mRevokeSubKeys: " + mRevokeSubKeys + "\n";
-        out += "mSecurityTokenPin: " + mSecurityTokenPin + "\n";
-        out += "mSecurityTokenAdminPin: " + mSecurityTokenAdminPin;
-
-        return out;
-    }
-
     // All supported algorithms
     public enum Algorithm {
         RSA, DSA, ELGAMAL, ECDSA, ECDH
@@ -330,7 +300,4 @@ public class SaveKeyringParcel implements Parcelable {
         // (adding support would be trivial though -> JcaPGPKeyConverter.java:190)
         // BRAINPOOL_P256, BRAINPOOL_P384, BRAINPOOL_P512
     }
-
-
-
 }

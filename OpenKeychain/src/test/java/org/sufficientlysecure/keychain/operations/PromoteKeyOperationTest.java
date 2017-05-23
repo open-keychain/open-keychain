@@ -69,17 +69,17 @@ public class PromoteKeyOperationTest {
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         {
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
-            parcel.mAddUserIds.add("derp");
-            parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(mKeyPhrase1));
+            builder.addUserId("derp");
+            builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(mKeyPhrase1));
 
-            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
             Assert.assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 

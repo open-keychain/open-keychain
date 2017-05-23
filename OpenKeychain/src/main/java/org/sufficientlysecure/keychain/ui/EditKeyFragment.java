@@ -100,7 +100,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
 
     private Uri mDataUri;
 
-    private SaveKeyringParcel mSaveKeyringParcel;
+    private SaveKeyringParcel.Builder mSkpBuilder;
 
     private String mPrimaryUserId;
 
@@ -184,13 +184,13 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
     }
 
     private void loadSaveKeyringParcel(SaveKeyringParcel saveKeyringParcel) {
-        mSaveKeyringParcel = saveKeyringParcel;
-        mPrimaryUserId = saveKeyringParcel.mChangePrimaryUserId;
+        mSkpBuilder = SaveKeyringParcel.buildUpon(saveKeyringParcel);
+        mPrimaryUserId = saveKeyringParcel.getChangePrimaryUserId();
 
-        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds, true);
+        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSkpBuilder.getMutableAddUserIds(), true);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
 
-        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys, true);
+        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSkpBuilder.getMutableAddSubKeys(), true);
         mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
     }
 
@@ -213,7 +213,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                     return;
             }
 
-            mSaveKeyringParcel = new SaveKeyringParcel(masterKeyId, keyRing.getFingerprint());
+            mSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(masterKeyId, keyRing.getFingerprint());
             mPrimaryUserId = keyRing.getPrimaryUserIdWithFallback();
 
         } catch (PgpKeyNotFoundException | NotFoundException e) {
@@ -227,18 +227,18 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
         getLoaderManager().initLoader(LOADER_ID_SUBKEYS, null, EditKeyFragment.this);
 
         mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
-        mUserIdsAdapter.setEditMode(mSaveKeyringParcel);
+        mUserIdsAdapter.setEditMode(mSkpBuilder);
         mUserIdsList.setAdapter(mUserIdsAdapter);
 
         // TODO: SaveParcel from savedInstance?!
-        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSaveKeyringParcel.mAddUserIds, false);
+        mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSkpBuilder.getMutableAddUserIds(), false);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
 
         mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
-        mSubkeysAdapter.setEditMode(mSaveKeyringParcel);
+        mSubkeysAdapter.setEditMode(mSkpBuilder);
         mSubkeysList.setAdapter(mSubkeysAdapter);
 
-        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSaveKeyringParcel.mAddSubKeys, false);
+        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSkpBuilder.getMutableAddSubKeys(), false);
         mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
     }
 
@@ -341,8 +341,8 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                     Bundle data = message.getData();
 
                     // cache new returned passphrase!
-                    mSaveKeyringParcel.setNewUnlock(ChangeUnlockParcel.createChangeUnlockParcel(
-                            mSaveKeyringParcel.mMasterKeyId, mSaveKeyringParcel.mFingerprint,
+                    mSkpBuilder.setNewUnlock(ChangeUnlockParcel.createChangeUnlockParcel(
+                            mSkpBuilder.getMasterKeyId(), mSkpBuilder.getFingerprint(),
                             (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)));
                 }
             }
@@ -368,23 +368,23 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                 switch (message.what) {
                     case EditUserIdDialogFragment.MESSAGE_CHANGE_PRIMARY_USER_ID:
                         // toggle
-                        if (mSaveKeyringParcel.mChangePrimaryUserId != null
-                                && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
-                            mSaveKeyringParcel.mChangePrimaryUserId = null;
+                        String changePrimaryUserId = mSkpBuilder.getChangePrimaryUserId();
+                        if (changePrimaryUserId != null && changePrimaryUserId.equals(userId)) {
+                            mSkpBuilder.setChangePrimaryUserId(null);
                         } else {
-                            mSaveKeyringParcel.mChangePrimaryUserId = userId;
+                            mSkpBuilder.setChangePrimaryUserId(userId);
                         }
                         break;
                     case EditUserIdDialogFragment.MESSAGE_REVOKE:
                         // toggle
-                        if (mSaveKeyringParcel.mRevokeUserIds.contains(userId)) {
-                            mSaveKeyringParcel.mRevokeUserIds.remove(userId);
+                        if (mSkpBuilder.getMutableRevokeUserIds().contains(userId)) {
+                            mSkpBuilder.removeRevokeUserId(userId);
                         } else {
-                            mSaveKeyringParcel.mRevokeUserIds.add(userId);
+                            mSkpBuilder.addRevokeUserId(userId);
                             // not possible to revoke and change to primary user id
-                            if (mSaveKeyringParcel.mChangePrimaryUserId != null
-                                    && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
-                                mSaveKeyringParcel.mChangePrimaryUserId = null;
+                            if (mSkpBuilder.getChangePrimaryUserId() != null
+                                    && mSkpBuilder.getChangePrimaryUserId().equals(userId)) {
+                                mSkpBuilder.setChangePrimaryUserId(null);
                             }
                         }
                         break;
@@ -417,10 +417,10 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_REVOKE:
                         // toggle
-                        if (mSaveKeyringParcel.mRevokeSubKeys.contains(keyId)) {
-                            mSaveKeyringParcel.mRevokeSubKeys.remove(keyId);
+                        if (mSkpBuilder.getMutableRevokeSubKeys().contains(keyId)) {
+                            mSkpBuilder.removeRevokeSubkey(keyId);
                         } else {
-                            mSaveKeyringParcel.mRevokeSubKeys.add(keyId);
+                            mSkpBuilder.addRevokeSubkey(keyId);
                         }
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_STRIP: {
@@ -430,11 +430,11 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                             break;
                         }
 
-                        SubkeyChange change = mSaveKeyringParcel.getSubkeyChange(keyId);
+                        SubkeyChange change = mSkpBuilder.getSubkeyChange(keyId);
                         if (change == null || !change.getDummyStrip()) {
-                            mSaveKeyringParcel.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(keyId));
+                            mSkpBuilder.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(keyId));
                         } else {
-                            mSaveKeyringParcel.removeSubkeyChange(change);
+                            mSkpBuilder.removeSubkeyChange(change);
                         }
                         break;
                     }
@@ -474,13 +474,13 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                                 break;
                         }
 
-                        SubkeyChange change = mSaveKeyringParcel.getSubkeyChange(keyId);
+                        SubkeyChange change = mSkpBuilder.getSubkeyChange(keyId);
                         if (change == null || !change.getMoveKeyToSecurityToken()) {
-                            mSaveKeyringParcel.addOrReplaceSubkeyChange(
+                            mSkpBuilder.addOrReplaceSubkeyChange(
                                     SubkeyChange.createMoveToSecurityTokenChange(keyId));
                             break;
                         } else {
-                            mSaveKeyringParcel.removeSubkeyChange(change);
+                            mSkpBuilder.removeSubkeyChange(change);
                         }
                         break;
                     }
@@ -514,7 +514,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                     case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY:
                         Long expiry = (Long) message.getData().getSerializable(
                                 EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY);
-                        mSaveKeyringParcel.addOrReplaceSubkeyChange(
+                        mSkpBuilder.addOrReplaceSubkeyChange(
                                 SubkeyChange.createFlagsOrExpiryChange(keyId, null, expiry));
                         break;
                 }
@@ -576,20 +576,20 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
     }
 
     protected void returnKeyringParcel() {
-        if (mSaveKeyringParcel.mAddUserIds.size() == 0) {
+        if (mSkpBuilder.getMutableAddUserIds().size() == 0) {
             Notify.create(getActivity(), R.string.edit_key_error_add_identity, Notify.Style.ERROR).show();
             return;
         }
-        if (mSaveKeyringParcel.mAddSubKeys.size() == 0) {
+        if (mSkpBuilder.getMutableAddSubKeys().size() == 0) {
             Notify.create(getActivity(), R.string.edit_key_error_add_subkey, Notify.Style.ERROR).show();
             return;
         }
 
-        // use first user id as primary
-        mSaveKeyringParcel.mChangePrimaryUserId = mSaveKeyringParcel.mAddUserIds.get(0);
+        String firstUserId = mSkpBuilder.getMutableAddUserIds().get(0);
+        mSkpBuilder.setChangePrimaryUserId(firstUserId);
 
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL, mSaveKeyringParcel);
+        returnIntent.putExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL, mSkpBuilder.build());
         getActivity().setResult(Activity.RESULT_OK, returnIntent);
         getActivity().finish();
     }
@@ -610,7 +610,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
 
     @Override
     public SaveKeyringParcel createOperationInput() {
-        return mSaveKeyringParcel;
+        return mSkpBuilder.build();
     }
 
     @Override

@@ -179,12 +179,12 @@ public final class Constants {
     /**
      * Default key configuration: 3072 bit RSA (certify, sign, encrypt)
      */
-    public static void addDefaultSubkeys(SaveKeyringParcel saveKeyringParcel) {
-        saveKeyringParcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
+    public static void addDefaultSubkeys(SaveKeyringParcel.Builder builder) {
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
                 3072, null, KeyFlags.CERTIFY_OTHER, 0L));
-        saveKeyringParcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
                 3072, null, KeyFlags.SIGN_DATA, 0L));
-        saveKeyringParcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(SaveKeyringParcel.Algorithm.RSA,
                 3072, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
     }
 

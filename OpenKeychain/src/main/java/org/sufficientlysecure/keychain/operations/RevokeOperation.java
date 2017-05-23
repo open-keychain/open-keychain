@@ -71,17 +71,18 @@ public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel>
                     return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);
             }
 
-            SaveKeyringParcel saveKeyringParcel =
-                    new SaveKeyringParcel(masterKeyId, keyRing.getFingerprint());
+            SaveKeyringParcel.Builder saveKeyringParcel =
+                    SaveKeyringParcel.buildChangeKeyringParcel(masterKeyId, keyRing.getFingerprint());
 
             // all revoke operations are made atomic as of now
             saveKeyringParcel.setUpdateOptions(revokeKeyringParcel.isShouldUpload(), true,
                     revokeKeyringParcel.getKeyserver());
 
-            saveKeyringParcel.mRevokeSubKeys.add(masterKeyId);
+            saveKeyringParcel.addRevokeSubkey(masterKeyId);
 
             EditKeyResult revokeAndUploadResult = new EditKeyOperation(mContext,
-                    mKeyWritableRepository, mProgressable, mCancelled).execute(saveKeyringParcel, cryptoInputParcel);
+                    mKeyWritableRepository, mProgressable, mCancelled).execute(
+                            saveKeyringParcel.build(), cryptoInputParcel);
 
             if (revokeAndUploadResult.isPending()) {
                 return revokeAndUploadResult;

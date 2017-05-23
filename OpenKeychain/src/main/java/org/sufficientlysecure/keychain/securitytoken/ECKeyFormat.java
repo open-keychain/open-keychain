@@ -86,7 +86,7 @@ public class ECKeyFormat extends KeyFormat {
         }
     }
 
-    public void addToSaveKeyringParcel(SaveKeyringParcel keyring, int keyFlags) {
+    public void addToSaveKeyringParcel(SaveKeyringParcel.Builder builder, int keyFlags) {
         final X9ECParameters params = NISTNamedCurves.getByOID(mECCurveOID);
         final ECCurve curve = params.getCurve();
 
@@ -107,7 +107,6 @@ public class ECKeyFormat extends KeyFormat {
             throw new IllegalArgumentException("Unsupported curve " + mECCurveOID);
         }
 
-        keyring.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(algo,
-                curve.getFieldSize(), scurve, keyFlags, 0L));
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(algo, curve.getFieldSize(), scurve, keyFlags, 0L));
     }
 }

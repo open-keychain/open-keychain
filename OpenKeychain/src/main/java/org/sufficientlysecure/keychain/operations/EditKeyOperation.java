@@ -88,13 +88,13 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
                     new PgpKeyOperation(new ProgressScaler(mProgressable, 10, 60, 100), mCancelled);
 
             // If a key id is specified, fetch and edit
-            if (saveParcel.mMasterKeyId != null) {
+            if (saveParcel.getMasterKeyId() != null) {
                 try {
 
                     log.add(LogType.MSG_ED_FETCHING, 1,
-                            KeyFormattingUtils.convertKeyIdToHex(saveParcel.mMasterKeyId));
+                            KeyFormattingUtils.convertKeyIdToHex(saveParcel.getMasterKeyId()));
                     CanonicalizedSecretKeyRing secRing =
-                            mKeyRepository.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
+                            mKeyRepository.getCanonicalizedSecretKeyRing(saveParcel.getMasterKeyId());
 
                     modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
                     if (modifyResult.isPending()) {
@@ -133,7 +133,7 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
         // It's a success, so this must be non-null now
         UncachedKeyRing ring = modifyResult.getRing();
 
-        if (saveParcel.isUpload()) {
+        if (saveParcel.isShouldUpload()) {
             byte[] keyringBytes;
             try {
                 UncachedKeyRing publicKeyRing = ring.extractPublicKeyRing();
@@ -154,7 +154,7 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
 
             if (uploadResult.isPending()) {
                 return new EditKeyResult(log, uploadResult);
-            } else if (!uploadResult.success() && saveParcel.isUploadAtomic()) {
+            } else if (!uploadResult.success() && saveParcel.isShouldUploadAtomic()) {
                 // if atomic, update fail implies edit operation should also fail and not save
                 return new EditKeyResult(log, RequiredInputParcel.createRetryUploadOperation(), cryptoInput);
             }

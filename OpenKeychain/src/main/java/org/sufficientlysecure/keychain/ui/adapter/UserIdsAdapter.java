@@ -32,9 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -43,20 +41,18 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
 public class UserIdsAdapter extends UserAttributesAdapter {
     protected LayoutInflater mInflater;
-    private SaveKeyringParcel mSaveKeyringParcel;
+    private SaveKeyringParcel.Builder mSkpBuilder;
     private boolean mShowStatusImages;
 
-    public UserIdsAdapter(Context context, Cursor c, int flags,
-                          boolean showStatusImages, SaveKeyringParcel saveKeyringParcel) {
+    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showStatusImages) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
 
-        mSaveKeyringParcel = saveKeyringParcel;
         mShowStatusImages = showStatusImages;
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags) {
-        this(context, c, flags, true, null);
+        this(context, c, flags, true);
     }
 
     @Override
@@ -96,11 +92,11 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
 
         // for edit key
-        if (mSaveKeyringParcel != null) {
-            boolean changeAnyPrimaryUserId = (mSaveKeyringParcel.mChangePrimaryUserId != null);
-            boolean changeThisPrimaryUserId = (mSaveKeyringParcel.mChangePrimaryUserId != null
-                    && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId));
-            boolean revokeThisUserId = (mSaveKeyringParcel.mRevokeUserIds.contains(userId));
+        if (mSkpBuilder != null) {
+            String changePrimaryUserId = mSkpBuilder.getChangePrimaryUserId();
+            boolean changeAnyPrimaryUserId = (changePrimaryUserId != null);
+            boolean changeThisPrimaryUserId = (changeAnyPrimaryUserId && changePrimaryUserId.equals(userId));
+            boolean revokeThisUserId = (mSkpBuilder.getMutableRevokeUserIds().contains(userId));
 
             // only if primary user id will be changed
             // (this is not triggered if the user id is currently the primary one)
@@ -161,8 +157,8 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         String userId = mCursor.getString(INDEX_USER_ID);
 
         boolean isRevokedPending = false;
-        if (mSaveKeyringParcel != null) {
-            if (mSaveKeyringParcel.mRevokeUserIds.contains(userId)) {
+        if (mSkpBuilder != null) {
+            if (mSkpBuilder.getMutableRevokeUserIds().contains(userId)) {
                 isRevokedPending = true;
             }
 
@@ -181,8 +177,8 @@ public class UserIdsAdapter extends UserAttributesAdapter {
      *
      * @param saveKeyringParcel The parcel to get info from, or null to leave edit mode.
      */
-    public void setEditMode(@Nullable SaveKeyringParcel saveKeyringParcel) {
-        mSaveKeyringParcel = saveKeyringParcel;
+    public void setEditMode(@Nullable SaveKeyringParcel.Builder saveKeyringParcel) {
+        mSkpBuilder = saveKeyringParcel;
     }
 
     @Override

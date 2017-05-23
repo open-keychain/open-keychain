@@ -143,7 +143,7 @@ public class ViewKeyFragment extends LoaderFragment implements LoaderManager.Loa
         mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);
 
         // load user ids after we know if it's a secret key
-        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
+        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret);
         mUserIds.setAdapter(mUserIdsAdapter);
 
         // initialize loaders, which will take care of auto-refresh on change

@@ -96,27 +96,27 @@ public class UncachedKeyringCanonicalizeTest {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
         ShadowLog.stream = System.out;
 
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+        SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
 
-        parcel.mAddUserIds.add("twi");
-        parcel.mAddUserIds.add("pink");
+        builder.addUserId("twi");
+        builder.addUserId("pink");
         {
             WrappedUserAttribute uat = WrappedUserAttribute.fromSubpacket(100,
                     "sunshine, sunshine, ladybugs awake~".getBytes());
-            parcel.mAddUserAttribute.add(uat);
+            builder.addUserAttribute(uat);
         }
 
         // passphrase is tested in PgpKeyOperationTest, just use empty here
-        parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
+        builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
         PgpKeyOperation op = new PgpKeyOperation(null);
 
-        PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+        PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
         Assert.assertTrue("initial test key creation must succeed", result.success());
         staticRing = result.getRing();
         Assert.assertNotNull("initial test key creation must succeed", staticRing);
@@ -352,14 +352,14 @@ public class UncachedKeyringCanonicalizeTest {
 
     @Test public void testForeignSignature() throws Exception {
 
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+        SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-        parcel.mAddUserIds.add("trix");
+        builder.addUserId("trix");
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         OperationResult.OperationLog log = new OperationResult.OperationLog();
-        UncachedKeyRing foreign = op.createSecretKeyRing(parcel).getRing();
+        UncachedKeyRing foreign = op.createSecretKeyRing(builder.build()).getRing();
 
         Assert.assertNotNull("initial test key creation must succeed", foreign);
         PGPSecretKey foreignSecretKey =

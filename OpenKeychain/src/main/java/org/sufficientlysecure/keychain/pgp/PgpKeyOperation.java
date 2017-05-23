@@ -29,10 +29,10 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.security.spec.ECGenParameterSpec;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -80,6 +80,7 @@ import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Builder;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
@@ -287,23 +288,23 @@ public class PgpKeyOperation {
             progress(R.string.progress_building_key, 0);
             indent += 1;
 
-            if (saveParcel.mAddSubKeys.isEmpty()) {
+            if (saveParcel.getAddSubKeys().isEmpty()) {
                 log.add(LogType.MSG_CR_ERROR_NO_MASTER, indent);
                 return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
             }
 
-            if (saveParcel.mAddUserIds.isEmpty()) {
+            if (saveParcel.getAddUserIds().isEmpty()) {
                 log.add(LogType.MSG_CR_ERROR_NO_USER_ID, indent);
                 return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
             }
 
-            SubkeyAdd add = saveParcel.mAddSubKeys.remove(0);
-            if ((add.getFlags() & KeyFlags.CERTIFY_OTHER) != KeyFlags.CERTIFY_OTHER) {
+            SubkeyAdd certificationKey = saveParcel.getAddSubKeys().get(0);
+            if ((certificationKey.getFlags() & KeyFlags.CERTIFY_OTHER) != KeyFlags.CERTIFY_OTHER) {
                 log.add(LogType.MSG_CR_ERROR_NO_CERTIFY, indent);
                 return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
             }
 
-            if (add.getExpiry() == null) {
+            if (certificationKey.getExpiry() == null) {
                 log.add(LogType.MSG_CR_ERROR_NULL_EXPIRY, indent);
                 return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
             }
@@ -311,7 +312,7 @@ public class PgpKeyOperation {
             Date creationTime = new Date();
 
             subProgressPush(10, 30);
-            PGPKeyPair keyPair = createKey(add, creationTime, log, indent);
+            PGPKeyPair keyPair = createKey(certificationKey, creationTime, log, indent);
             subProgressPop();
 
             // return null if this failed (an error will already have been logged by createKey)
@@ -337,9 +338,14 @@ public class PgpKeyOperation {
             PGPSecretKeyRing sKR = new PGPSecretKeyRing(
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
 
+            // Remove certification key from remaining SaveKeyringParcel
+            Builder builder = SaveKeyringParcel.buildUpon(saveParcel);
+            builder.getMutableAddSubKeys().remove(certificationKey);
+            saveParcel = builder.build();
+
             subProgressPush(50, 100);
             CryptoInputParcel cryptoInput = CryptoInputParcel.createCryptoInputParcel(creationTime, new Passphrase(""));
-            return internal(sKR, masterSecretKey, add.getFlags(), add.getExpiry(), cryptoInput, saveParcel, log, indent);
+            return internal(sKR, masterSecretKey, certificationKey.getFlags(), certificationKey.getExpiry(), cryptoInput, saveParcel, log, indent);
 
         } catch (PGPException e) {
             log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
@@ -394,7 +400,7 @@ public class PgpKeyOperation {
         progress(R.string.progress_building_key, 0);
 
         // Make sure this is called with a proper SaveKeyringParcel
-        if (saveParcel.mMasterKeyId == null || saveParcel.mMasterKeyId != wsKR.getMasterKeyId()) {
+        if (saveParcel.getMasterKeyId() == null || saveParcel.getMasterKeyId() != wsKR.getMasterKeyId()) {
             log.add(LogType.MSG_MF_ERROR_KEYID, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
@@ -404,75 +410,29 @@ public class PgpKeyOperation {
         PGPSecretKey masterSecretKey = sKR.getSecretKey();
 
         // Make sure the fingerprint matches
-        if (saveParcel.mFingerprint == null || !Arrays.equals(saveParcel.mFingerprint,
+        if (saveParcel.getFingerprint() == null || !Arrays.equals(saveParcel.getFingerprint(),
                                     masterSecretKey.getPublicKey().getFingerprint())) {
             log.add(LogType.MSG_MF_ERROR_FINGERPRINT, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
-        if (saveParcel.isEmpty()) {
+        if (isParcelEmpty(saveParcel)) {
             log.add(LogType.MSG_MF_ERROR_NOOP, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
-        // Ensure we don't have multiple keys for the same slot.
-        boolean hasSign = false;
-        boolean hasEncrypt = false;
-        boolean hasAuth = false;
-        for (SaveKeyringParcel.SubkeyChange change : new ArrayList<>(saveParcel.mChangeSubKeys)) {
-            if (change.getMoveKeyToSecurityToken()) {
-                // If this is a moveKeyToSecurityToken operation, see if it was completed: look for a hash
-                // matching the given subkey ID in cryptoData.
-                byte[] subKeyId = new byte[8];
-                ByteBuffer buf = ByteBuffer.wrap(subKeyId);
-                buf.putLong(change.getSubKeyId()).rewind();
+        saveParcel = parseSecurityTokenSerialNumberIntoSubkeyChanges(cryptoInput, saveParcel);
 
-                byte[] serialNumber = cryptoInput.getCryptoData().get(buf);
-                if (serialNumber != null) {
-                    saveParcel.addOrReplaceSubkeyChange(
-                            SubkeyChange.createSecurityTokenSerialNo(change.getSubKeyId(), serialNumber));
-                }
-            }
-
-            if (change.getMoveKeyToSecurityToken()) {
-                // Pending moveKeyToSecurityToken operation. Need to make sure that we don't have multiple
-                // subkeys pending for the same slot.
-                CanonicalizedSecretKey wsK = wsKR.getSecretKey(change.getSubKeyId());
-
-                if ((wsK.canSign() || wsK.canCertify())) {
-                    if (hasSign) {
-                        log.add(LogType.MSG_MF_ERROR_DUPLICATE_KEYTOCARD_FOR_SLOT, indent + 1);
-                        return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-                    } else {
-                        hasSign = true;
-                    }
-                } else if ((wsK.canEncrypt())) {
-                    if (hasEncrypt) {
-                        log.add(LogType.MSG_MF_ERROR_DUPLICATE_KEYTOCARD_FOR_SLOT, indent + 1);
-                        return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-                    } else {
-                        hasEncrypt = true;
-                    }
-                } else if ((wsK.canAuthenticate())) {
-                    if (hasAuth) {
-                        log.add(LogType.MSG_MF_ERROR_DUPLICATE_KEYTOCARD_FOR_SLOT, indent + 1);
-                        return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-                    } else {
-                        hasAuth = true;
-                    }
-                } else {
-                    log.add(LogType.MSG_MF_ERROR_INVALID_FLAGS_FOR_KEYTOCARD, indent + 1);
-                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-                }
-            }
+        if (!checkCapabilitiesAreUnique(wsKR, saveParcel, log, indent)) {
+            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
-        if (isDummy(masterSecretKey) && ! saveParcel.isRestrictedOnly()) {
+        if (isDummy(masterSecretKey) && ! isParcelRestrictedOnly(saveParcel)) {
             log.add(LogType.MSG_EK_ERROR_DUMMY, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
-        if (isDummy(masterSecretKey) || saveParcel.isRestrictedOnly()) {
+        if (isDummy(masterSecretKey) || isParcelRestrictedOnly(saveParcel)) {
             log.add(LogType.MSG_MF_RESTRICTED_MODE, indent);
             return internalRestricted(sKR, saveParcel, log, indent + 1);
         }
@@ -494,6 +454,70 @@ public class PgpKeyOperation {
 
         return internal(sKR, masterSecretKey, masterKeyFlags, masterKeyExpiry, cryptoInput, saveParcel, log, indent);
 
+    }
+
+    private SaveKeyringParcel parseSecurityTokenSerialNumberIntoSubkeyChanges(CryptoInputParcel cryptoInput,
+            SaveKeyringParcel saveParcel) {
+        SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildUpon(saveParcel);
+        for (SubkeyChange change : saveParcel.getChangeSubKeys()) {
+            if (change.getMoveKeyToSecurityToken()) {
+                // If this is a moveKeyToSecurityToken operation, see if it was completed: look for a hash
+                // matching the given subkey ID in cryptoData.
+                byte[] subKeyId = new byte[8];
+                ByteBuffer buf = ByteBuffer.wrap(subKeyId);
+                buf.putLong(change.getSubKeyId()).rewind();
+
+                byte[] serialNumber = cryptoInput.getCryptoData().get(buf);
+                if (serialNumber != null) {
+                    builder.addOrReplaceSubkeyChange(
+                            SubkeyChange.createSecurityTokenSerialNo(change.getSubKeyId(), serialNumber));
+                }
+            }
+        }
+        saveParcel = builder.build();
+        return saveParcel;
+    }
+
+    private boolean checkCapabilitiesAreUnique(CanonicalizedSecretKeyRing wsKR, SaveKeyringParcel saveParcel,
+            OperationLog log, int indent) {
+        boolean hasSign = false;
+        boolean hasEncrypt = false;
+        boolean hasAuth = false;
+
+        for (SubkeyChange change : saveParcel.getChangeSubKeys()) {
+            if (change.getMoveKeyToSecurityToken()) {
+                // Pending moveKeyToSecurityToken operation. Need to make sure that we don't have multiple
+                // subkeys pending for the same slot.
+                CanonicalizedSecretKey wsK = wsKR.getSecretKey(change.getSubKeyId());
+
+                if ((wsK.canSign() || wsK.canCertify())) {
+                    if (hasSign) {
+                        log.add(LogType.MSG_MF_ERROR_DUPLICATE_KEYTOCARD_FOR_SLOT, indent + 1);
+                        return false;
+                    } else {
+                        hasSign = true;
+                    }
+                } else if ((wsK.canEncrypt())) {
+                    if (hasEncrypt) {
+                        log.add(LogType.MSG_MF_ERROR_DUPLICATE_KEYTOCARD_FOR_SLOT, indent + 1);
+                        return false;
+                    } else {
+                        hasEncrypt = true;
+                    }
+                } else if ((wsK.canAuthenticate())) {
+                    if (hasAuth) {
+                        log.add(LogType.MSG_MF_ERROR_DUPLICATE_KEYTOCARD_FOR_SLOT, indent + 1);
+                        return false;
+                    } else {
+                        hasAuth = true;
+                    }
+                } else {
+                    log.add(LogType.MSG_MF_ERROR_INVALID_FLAGS_FOR_KEYTOCARD, indent + 1);
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private PgpEditKeyResult internal(PGPSecretKeyRing sKR, PGPSecretKey masterSecretKey,
@@ -549,10 +573,11 @@ public class PgpKeyOperation {
 
                 // 2a. Add certificates for new user ids
                 subProgressPush(15, 23);
-                for (int i = 0; i < saveParcel.mAddUserIds.size(); i++) {
+                String changePrimaryUserId = saveParcel.getChangePrimaryUserId();
+                for (int i = 0; i < saveParcel.getAddUserIds().size(); i++) {
 
-                    progress(R.string.progress_modify_adduid, (i - 1) * (100 / saveParcel.mAddUserIds.size()));
-                    String userId = saveParcel.mAddUserIds.get(i);
+                    progress(R.string.progress_modify_adduid, (i - 1) * (100 / saveParcel.getAddUserIds().size()));
+                    String userId = saveParcel.getAddUserIds().get(i);
                     log.add(LogType.MSG_MF_UID_ADD, indent, userId);
 
                     if ("".equals(userId)) {
@@ -583,8 +608,8 @@ public class PgpKeyOperation {
                     }
 
                     // if it's supposed to be primary, we can do that here as well
-                    boolean isPrimary = saveParcel.mChangePrimaryUserId != null
-                            && userId.equals(saveParcel.mChangePrimaryUserId);
+                    boolean isPrimary = changePrimaryUserId != null
+                            && userId.equals(changePrimaryUserId);
                     // generate and add new certificate
                     try {
                         PGPSignature cert = generateUserIdSignature(
@@ -601,10 +626,10 @@ public class PgpKeyOperation {
 
                 // 2b. Add certificates for new user ids
                 subProgressPush(23, 32);
-                for (int i = 0; i < saveParcel.mAddUserAttribute.size(); i++) {
-
-                    progress(R.string.progress_modify_adduat, (i - 1) * (100 / saveParcel.mAddUserAttribute.size()));
-                    WrappedUserAttribute attribute = saveParcel.mAddUserAttribute.get(i);
+                List<WrappedUserAttribute> addUserAttributes = saveParcel.getAddUserAttribute();
+                for (int i = 0; i < addUserAttributes.size(); i++) {
+                    progress(R.string.progress_modify_adduat, (i - 1) * (100 / addUserAttributes.size()));
+                    WrappedUserAttribute attribute = addUserAttributes.get(i);
 
                     switch (attribute.getType()) {
                         // the 'none' type must not succeed
@@ -637,10 +662,10 @@ public class PgpKeyOperation {
 
                 // 2c. Add revocations for revoked user ids
                 subProgressPush(32, 40);
-                for (int i = 0; i < saveParcel.mRevokeUserIds.size(); i++) {
-
-                    progress(R.string.progress_modify_revokeuid, (i - 1) * (100 / saveParcel.mRevokeUserIds.size()));
-                    String userId = saveParcel.mRevokeUserIds.get(i);
+                List<String> revokeUserIds = saveParcel.getRevokeUserIds();
+                for (int i = 0, j = revokeUserIds.size(); i < j; i++) {
+                    progress(R.string.progress_modify_revokeuid, (i - 1) * (100 / revokeUserIds.size()));
+                    String userId = revokeUserIds.get(i);
                     log.add(LogType.MSG_MF_UID_REVOKE, indent, userId);
 
                     // Make sure the user id exists (yes these are 10 LoC in Java!)
@@ -672,12 +697,12 @@ public class PgpKeyOperation {
                 subProgressPop();
 
                 // 3. If primary user id changed, generate new certificates for both old and new
-                if (saveParcel.mChangePrimaryUserId != null) {
+                if (changePrimaryUserId != null) {
                     progress(R.string.progress_modify_primaryuid, 40);
 
                     // keep track if we actually changed one
                     boolean ok = false;
-                    log.add(LogType.MSG_MF_UID_PRIMARY, indent, saveParcel.mChangePrimaryUserId);
+                    log.add(LogType.MSG_MF_UID_PRIMARY, indent, changePrimaryUserId);
                     indent += 1;
 
                     // we work on the modifiedPublicKey here, to respect new or newly revoked uids
@@ -718,7 +743,7 @@ public class PgpKeyOperation {
                         // we definitely should not update certifications of revoked keys, so just leave it.
                         if (isRevoked) {
                             // revoked user ids cannot be primary!
-                            if (userId.equals(saveParcel.mChangePrimaryUserId)) {
+                            if (userId.equals(changePrimaryUserId)) {
                                 log.add(LogType.MSG_MF_ERROR_REVOKED_PRIMARY, indent);
                                 return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                             }
@@ -729,7 +754,7 @@ public class PgpKeyOperation {
                         if (currentCert.getHashedSubPackets() != null
                                 && currentCert.getHashedSubPackets().isPrimaryUserID()) {
                             // if it's the one we want, just leave it as is
-                            if (userId.equals(saveParcel.mChangePrimaryUserId)) {
+                            if (userId.equals(changePrimaryUserId)) {
                                 ok = true;
                                 continue;
                             }
@@ -755,7 +780,7 @@ public class PgpKeyOperation {
                         // if we are here, this is not currently a primary user id
 
                         // if it should be
-                        if (userId.equals(saveParcel.mChangePrimaryUserId)) {
+                        if (userId.equals(changePrimaryUserId)) {
                             // add shiny new primary user id certificate
                             log.add(LogType.MSG_MF_PRIMARY_NEW, indent);
                             modifiedPublicKey = PGPPublicKey.removeCertification(
@@ -803,10 +828,11 @@ public class PgpKeyOperation {
 
             // 4a. For each subkey change, generate new subkey binding certificate
             subProgressPush(50, 60);
-            for (int i = 0; i < saveParcel.mChangeSubKeys.size(); i++) {
+            List<SubkeyChange> changeSubKeys = saveParcel.getChangeSubKeys();
+            for (int i = 0, j = changeSubKeys.size(); i < j; i++) {
 
-                progress(R.string.progress_modify_subkeychange, (i-1) * (100 / saveParcel.mChangeSubKeys.size()));
-                SaveKeyringParcel.SubkeyChange change = saveParcel.mChangeSubKeys.get(i);
+                progress(R.string.progress_modify_subkeychange, (i-1) * (100 / changeSubKeys.size()));
+                SaveKeyringParcel.SubkeyChange change = changeSubKeys.get(i);
                 log.add(LogType.MSG_MF_SUBKEY_CHANGE,
                         indent, KeyFormattingUtils.convertKeyIdToHex(change.getSubKeyId()));
 
@@ -944,10 +970,10 @@ public class PgpKeyOperation {
 
             // 4b. For each subkey revocation, generate new subkey revocation certificate
             subProgressPush(60, 65);
-            for (int i = 0; i < saveParcel.mRevokeSubKeys.size(); i++) {
-
-                progress(R.string.progress_modify_subkeyrevoke, (i-1) * (100 / saveParcel.mRevokeSubKeys.size()));
-                long revocation = saveParcel.mRevokeSubKeys.get(i);
+            List<Long> revokeSubKeys = saveParcel.getRevokeSubKeys();
+            for (int i = 0, j = revokeSubKeys.size(); i < j; i++) {
+                progress(R.string.progress_modify_subkeyrevoke, (i-1) * (100 / revokeSubKeys.size()));
+                long revocation = revokeSubKeys.get(i);
                 log.add(LogType.MSG_MF_SUBKEY_REVOKE,
                         indent, KeyFormattingUtils.convertKeyIdToHex(revocation));
 
@@ -976,16 +1002,16 @@ public class PgpKeyOperation {
 
             // 5. Generate and add new subkeys
             subProgressPush(70, 90);
-            for (int i = 0; i < saveParcel.mAddSubKeys.size(); i++) {
-
+            List<SubkeyAdd> addSubKeys = saveParcel.getAddSubKeys();
+            for (int i = 0, j = addSubKeys.size(); i < j; i++) {
                 // Check if we were cancelled - again. This operation is expensive so we do it each loop.
                 if (checkCancelled()) {
                     log.add(LogType.MSG_OPERATION_CANCELLED, indent);
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_CANCELLED, log, null);
                 }
 
-                progress(R.string.progress_modify_subkeyadd, (i-1) * (100 / saveParcel.mAddSubKeys.size()));
-                SaveKeyringParcel.SubkeyAdd add = saveParcel.mAddSubKeys.get(i);
+                progress(R.string.progress_modify_subkeyadd, (i-1) * (100 / addSubKeys.size()));
+                SaveKeyringParcel.SubkeyAdd add = addSubKeys.get(i);
                 log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
                         KeyFormattingUtils.getAlgorithmInfo(add.getAlgorithm(), add.getKeySize(), add.getCurve()) );
 
@@ -1006,8 +1032,8 @@ public class PgpKeyOperation {
 
                 // generate a new secret key (privkey only for now)
                 subProgressPush(
-                    (i-1) * (100 / saveParcel.mAddSubKeys.size()),
-                    i * (100 / saveParcel.mAddSubKeys.size())
+                    (i-1) * (100 / addSubKeys.size()),
+                    i * (100 / addSubKeys.size())
                 );
                 PGPKeyPair keyPair = createKey(add, cryptoInput.getSignatureTime(), log, indent);
                 subProgressPop();
@@ -1060,13 +1086,13 @@ public class PgpKeyOperation {
             }
 
             // 6. If requested, change passphrase
-            if (saveParcel.getChangeUnlockParcel() != null) {
+            if (saveParcel.getNewUnlock() != null) {
                 progress(R.string.progress_modify_passphrase, 90);
                 log.add(LogType.MSG_MF_PASSPHRASE, indent);
                 indent += 1;
 
                 sKR = applyNewPassphrase(sKR, masterPublicKey, cryptoInput.getPassphrase(),
-                        saveParcel.getChangeUnlockParcel().getNewPassphrase(), log, indent);
+                        saveParcel.getNewUnlock().getNewPassphrase(), log, indent);
                 if (sKR == null) {
                     // The error has been logged above, just return a bad state
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
@@ -1076,21 +1102,21 @@ public class PgpKeyOperation {
             }
 
             // 7. if requested, change PIN and/or Admin PIN on security token
-            if (saveParcel.mSecurityTokenPin != null) {
+            if (saveParcel.getSecurityTokenPin() != null) {
                 progress(R.string.progress_modify_pin, 90);
                 log.add(LogType.MSG_MF_PIN, indent);
                 indent += 1;
 
-                nfcKeyToCardOps.setPin(saveParcel.mSecurityTokenPin);
+                nfcKeyToCardOps.setPin(saveParcel.getSecurityTokenPin());
 
                 indent -= 1;
             }
-            if (saveParcel.mSecurityTokenAdminPin != null) {
+            if (saveParcel.getSecurityTokenAdminPin() != null) {
                 progress(R.string.progress_modify_admin_pin, 90);
                 log.add(LogType.MSG_MF_ADMIN_PIN, indent);
                 indent += 1;
 
-                nfcKeyToCardOps.setAdminPin(saveParcel.mSecurityTokenAdminPin);
+                nfcKeyToCardOps.setAdminPin(saveParcel.getSecurityTokenAdminPin());
 
                 indent -= 1;
             }
@@ -1141,7 +1167,7 @@ public class PgpKeyOperation {
         progress(R.string.progress_modify, 0);
 
         // Make sure the saveParcel includes only operations available without passphrase!
-        if (!saveParcel.isRestrictedOnly()) {
+        if (!isParcelRestrictedOnly(saveParcel)) {
             log.add(LogType.MSG_MF_ERROR_RESTRICTED, indent);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
@@ -1155,10 +1181,10 @@ public class PgpKeyOperation {
         // The only operation we can do here:
         // 4a. Strip secret keys, or change their protection mode (stripped/divert-to-card)
         subProgressPush(50, 60);
-        for (int i = 0; i < saveParcel.mChangeSubKeys.size(); i++) {
-
-            progress(R.string.progress_modify_subkeychange, (i - 1) * (100 / saveParcel.mChangeSubKeys.size()));
-            SaveKeyringParcel.SubkeyChange change = saveParcel.mChangeSubKeys.get(i);
+        List<SubkeyChange> changeSubKeys = saveParcel.getChangeSubKeys();
+        for (int i = 0, j = changeSubKeys.size(); i < j; i++) {
+            progress(R.string.progress_modify_subkeychange, (i - 1) * (100 / changeSubKeys.size()));
+            SaveKeyringParcel.SubkeyChange change = changeSubKeys.get(i);
             log.add(LogType.MSG_MF_SUBKEY_CHANGE,
                     indent, KeyFormattingUtils.convertKeyIdToHex(change.getSubKeyId()));
 
@@ -1700,4 +1726,31 @@ public class PgpKeyOperation {
 
         return true;
     }
+
+    /** Returns true iff this parcel does not contain any operations which require a passphrase. */
+    private static boolean isParcelRestrictedOnly(SaveKeyringParcel saveKeyringParcel) {
+        if (saveKeyringParcel.getNewUnlock() != null
+                || !saveKeyringParcel.getAddUserIds().isEmpty()
+                || !saveKeyringParcel.getAddUserAttribute().isEmpty()
+                || !saveKeyringParcel.getAddSubKeys().isEmpty()
+                || saveKeyringParcel.getChangePrimaryUserId() != null
+                || !saveKeyringParcel.getRevokeUserIds().isEmpty()
+                || !saveKeyringParcel.getRevokeSubKeys().isEmpty()) {
+            return false;
+        }
+
+        for (SubkeyChange change : saveKeyringParcel.getChangeSubKeys()) {
+            if (change.getRecertify() || change.getFlags() != null || change.getExpiry() != null
+                    || change.getMoveKeyToSecurityToken()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean isParcelEmpty(SaveKeyringParcel saveKeyringParcel) {
+        return isParcelRestrictedOnly(saveKeyringParcel) && saveKeyringParcel.getChangeSubKeys().isEmpty();
+    }
+
 }

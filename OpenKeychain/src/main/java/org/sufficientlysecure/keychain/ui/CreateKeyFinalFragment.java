@@ -295,7 +295,7 @@ public class CreateKeyFinalFragment extends Fragment {
     }
 
     private static SaveKeyringParcel createDefaultSaveKeyringParcel(CreateKeyActivity createKeyActivity) {
-        SaveKeyringParcel saveKeyringParcel = new SaveKeyringParcel();
+        SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
 
         if (createKeyActivity.mCreateSecurityToken) {
             if (createKeyActivity.mSecurityTokenSign == null) {
@@ -303,38 +303,40 @@ public class CreateKeyFinalFragment extends Fragment {
                 createKeyActivity.mSecurityTokenDec = Constants.SECURITY_TOKEN_V2_DEC;
                 createKeyActivity.mSecurityTokenAuth = Constants.SECURITY_TOKEN_V2_AUTH;
             }
-            createKeyActivity.mSecurityTokenSign.addToSaveKeyringParcel(saveKeyringParcel, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER);
-            createKeyActivity.mSecurityTokenDec.addToSaveKeyringParcel(saveKeyringParcel, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE);
-            createKeyActivity.mSecurityTokenAuth.addToSaveKeyringParcel(saveKeyringParcel, KeyFlags.AUTHENTICATION);
+            createKeyActivity.mSecurityTokenSign.addToSaveKeyringParcel(
+                    builder, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER);
+            createKeyActivity.mSecurityTokenDec.addToSaveKeyringParcel(
+                    builder, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE);
+            createKeyActivity.mSecurityTokenAuth.addToSaveKeyringParcel(builder, KeyFlags.AUTHENTICATION);
 
             // use empty passphrase
-            saveKeyringParcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
+            builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
         } else {
-            Constants.addDefaultSubkeys(saveKeyringParcel);
+            Constants.addDefaultSubkeys(builder);
 
             if (createKeyActivity.mPassphrase != null) {
-                saveKeyringParcel.setNewUnlock(
+                builder.setNewUnlock(
                         ChangeUnlockParcel.createUnLockParcelForNewKey(createKeyActivity.mPassphrase));
             } else {
-                saveKeyringParcel.setNewUnlock(null);
+                builder.setNewUnlock(null);
             }
         }
         String userId = KeyRing.createUserId(
                 new OpenPgpUtils.UserId(createKeyActivity.mName, createKeyActivity.mEmail, null)
         );
-        saveKeyringParcel.mAddUserIds.add(userId);
-        saveKeyringParcel.mChangePrimaryUserId = userId;
+        builder.addUserId(userId);
+        builder.setChangePrimaryUserId(userId);
         if (createKeyActivity.mAdditionalEmails != null
                 && createKeyActivity.mAdditionalEmails.size() > 0) {
             for (String email : createKeyActivity.mAdditionalEmails) {
                 String thisUserId = KeyRing.createUserId(
                         new OpenPgpUtils.UserId(createKeyActivity.mName, email, null)
                 );
-                saveKeyringParcel.mAddUserIds.add(thisUserId);
+                builder.addUserId(thisUserId);
             }
         }
 
-        return saveKeyringParcel;
+        return builder.build();
     }
 
     private void checkEmailValidity() {
@@ -427,11 +429,11 @@ public class CreateKeyFinalFragment extends Fragment {
     private void moveToCard(final EditKeyResult saveKeyResult) {
         CreateKeyActivity activity = (CreateKeyActivity) getActivity();
 
-        final SaveKeyringParcel changeKeyringParcel;
+        SaveKeyringParcel.Builder builder;
         CachedPublicKeyRing key = (KeyRepository.createDatabaseInteractor(getContext()))
                 .getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
         try {
-            changeKeyringParcel = new SaveKeyringParcel(key.getMasterKeyId(), key.getFingerprint());
+            builder = SaveKeyringParcel.buildChangeKeyringParcel(key.getMasterKeyId(), key.getFingerprint());
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "Key that should be moved to Security Token not found in database!");
             return;
@@ -439,13 +441,13 @@ public class CreateKeyFinalFragment extends Fragment {
 
         // define subkeys that should be moved to the card
         Cursor cursor = activity.getContentResolver().query(
-                KeychainContract.Keys.buildKeysUri(changeKeyringParcel.mMasterKeyId),
+                KeychainContract.Keys.buildKeysUri(builder.getMasterKeyId()),
                 new String[]{KeychainContract.Keys.KEY_ID,}, null, null, null
         );
         try {
             while (cursor != null && cursor.moveToNext()) {
                 long subkeyId = cursor.getLong(0);
-                changeKeyringParcel.mChangeSubKeys.add(SubkeyChange.createMoveToSecurityTokenChange(subkeyId));
+                builder.addOrReplaceSubkeyChange(SubkeyChange.createMoveToSecurityTokenChange(subkeyId));
             }
         } finally {
             if (cursor != null) {
@@ -454,15 +456,17 @@ public class CreateKeyFinalFragment extends Fragment {
         }
 
         // define new PIN and Admin PIN for the card
-        changeKeyringParcel.mSecurityTokenPin = activity.mSecurityTokenPin;
-        changeKeyringParcel.mSecurityTokenAdminPin = activity.mSecurityTokenAdminPin;
+        builder.setSecurityTokenPin(activity.mSecurityTokenPin);
+        builder.setSecurityTokenAdminPin(activity.mSecurityTokenAdminPin);
+
+        final SaveKeyringParcel saveKeyringParcel = builder.build();
 
         CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult> callback
                 = new CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult>() {
 
             @Override
             public SaveKeyringParcel createOperationInput() {
-                return changeKeyringParcel;
+                return saveKeyringParcel;
             }
 
             @Override

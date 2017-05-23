@@ -54,16 +54,16 @@ public class UncachedKeyringTest {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
         ShadowLog.stream = System.out;
 
-        SaveKeyringParcel parcel = new SaveKeyringParcel();
-        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+        SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-        parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                 Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
 
-        parcel.mAddUserIds.add("twi");
-        parcel.mAddUserIds.add("pink");
+        builder.addUserId("twi");
+        builder.addUserId("pink");
         {
             Random r = new Random();
             int type = r.nextInt(110)+1;
@@ -71,13 +71,13 @@ public class UncachedKeyringTest {
             new Random().nextBytes(data);
 
             WrappedUserAttribute uat = WrappedUserAttribute.fromSubpacket(type, data);
-            parcel.mAddUserAttribute.add(uat);
+            builder.addUserAttribute(uat);
         }
         // passphrase is tested in PgpKeyOperationTest, just use empty here
-        parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
+        builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
         PgpKeyOperation op = new PgpKeyOperation(null);
 
-        PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+        PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
         staticRing = result.getRing();
         staticPubRing = staticRing.extractPublicKeyRing();
 

@@ -89,7 +89,7 @@ public class UncachedKeyringMergeTest {
     ArrayList<RawPacket> onlyB = new ArrayList<>();
     OperationResult.OperationLog log = new OperationResult.OperationLog();
     PgpKeyOperation op;
-    SaveKeyringParcel parcel;
+    SaveKeyringParcel.Builder builder;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -97,43 +97,42 @@ public class UncachedKeyringMergeTest {
         ShadowLog.stream = System.out;
 
         {
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
 
-            parcel.mAddUserIds.add("twi");
-            parcel.mAddUserIds.add("pink");
+            builder.addUserId("twi");
+            builder.addUserId("pink");
             {
                 WrappedUserAttribute uat = WrappedUserAttribute.fromSubpacket(100,
                         "sunshine, sunshine, ladybugs awake~".getBytes());
-                parcel.mAddUserAttribute.add(uat);
+                builder.addUserAttribute(uat);
             }
 
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
+            builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();
 
-            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
             staticRingA = result.getRing();
             staticRingA = staticRingA.canonicalize(new OperationLog(), 0).getUncachedKeyRing();
         }
 
         {
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
 
-            parcel.mAddUserIds.add("shy");
+            builder.addUserId("shy");
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
+            builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
             PgpKeyOperation op = new PgpKeyOperation(null);
 
-            OperationResult.OperationLog log = new OperationResult.OperationLog();
-            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
             staticRingB = result.getRing();
             staticRingB = staticRingB.canonicalize(new OperationLog(), 0).getUncachedKeyRing();
         }
@@ -155,10 +154,11 @@ public class UncachedKeyringMergeTest {
         // setting up some parameters just to reduce code duplication
         op = new PgpKeyOperation(new ProgressScaler(null, 0, 100, 100));
 
-        // set this up, gonna need it more than once
-        parcel = new SaveKeyringParcel();
-        parcel.mMasterKeyId = ringA.getMasterKeyId();
-        parcel.mFingerprint = ringA.getFingerprint();
+        resetBuilder();
+    }
+
+    private void resetBuilder() {
+        builder = SaveKeyringParcel.buildChangeKeyringParcel(ringA.getMasterKeyId(), ringA.getFingerprint());
     }
 
     public void testSelfNoOp() throws Exception {
@@ -190,15 +190,15 @@ public class UncachedKeyringMergeTest {
             CanonicalizedSecretKeyRing secretRing =
                     new CanonicalizedSecretKeyRing(ringA.getEncoded(), 0);
 
-            parcel.reset();
-            parcel.mAddUserIds.add("flim");
+            resetBuilder();
+            builder.addUserId("flim");
             modifiedA = op.modifySecretKeyRing(secretRing,
-                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
+                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), builder.build()).getRing();
 
-            parcel.reset();
-            parcel.mAddUserIds.add("flam");
+            resetBuilder();
+            builder.addUserId("flam");
             modifiedB = op.modifySecretKeyRing(secretRing,
-                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
+                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), builder.build()).getRing();
         }
 
         { // merge A into base
@@ -232,13 +232,13 @@ public class UncachedKeyringMergeTest {
         {
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ringA.getEncoded(), 0);
 
-            parcel.reset();
-            parcel.mAddSubKeys.add(SubkeyAdd.createSubkeyAdd(
+            resetBuilder();
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
             modifiedA = op.modifySecretKeyRing(secretRing,
-                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
+                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), builder.build()).getRing();
             modifiedB = op.modifySecretKeyRing(secretRing,
-                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
+                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), builder.build()).getRing();
 
             subKeyIdA = KeyringTestingHelper.getSubkeyId(modifiedA, 2);
             subKeyIdB = KeyringTestingHelper.getSubkeyId(modifiedB, 2);
@@ -275,12 +275,12 @@ public class UncachedKeyringMergeTest {
     public void testAddedKeySignature() throws Exception {
 
         final UncachedKeyRing modified; {
-            parcel.reset();
-            parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(ringA, 1));
+            resetBuilder();
+            builder.addRevokeSubkey(KeyringTestingHelper.getSubkeyId(ringA, 1));
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
                     ringA.getEncoded(), 0);
             modified = op.modifySecretKeyRing(secretRing,
-                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
+                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), builder.build()).getRing();
         }
 
         {
@@ -368,7 +368,7 @@ public class UncachedKeyringMergeTest {
     public void testAddedUserAttributeSignature() throws Exception {
 
         final UncachedKeyRing modified; {
-            parcel.reset();
+            resetBuilder();
 
             Random r = new Random();
             int type = r.nextInt(110)+1;
@@ -376,12 +376,12 @@ public class UncachedKeyringMergeTest {
             new Random().nextBytes(data);
 
             WrappedUserAttribute uat = WrappedUserAttribute.fromSubpacket(type, data);
-            parcel.mAddUserAttribute.add(uat);
+            builder.addUserAttribute(uat);
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
                     ringA.getEncoded(), 0);
             modified = op.modifySecretKeyRing(secretRing,
-                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), parcel).getRing();
+                    CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()), builder.build()).getRing();
         }
 
         {

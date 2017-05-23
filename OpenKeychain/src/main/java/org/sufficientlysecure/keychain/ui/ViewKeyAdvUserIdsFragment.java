@@ -79,7 +79,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
     private long mMasterKeyId;
     private byte[] mFingerprint;
     private boolean mHasSecret;
-    private SaveKeyringParcel mEditModeSaveKeyringParcel;
+    private SaveKeyringParcel.Builder mSkpBuilder;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
@@ -122,7 +122,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
     }
 
     private void showOrEditUserIdInfo(final int position) {
-        if (mEditModeSaveKeyringParcel != null) {
+        if (mSkpBuilder != null) {
             editUserId(position);
         } else {
             showUserIdInfo(position);
@@ -140,23 +140,23 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                 switch (message.what) {
                     case EditUserIdDialogFragment.MESSAGE_CHANGE_PRIMARY_USER_ID:
                         // toggle
-                        if (mEditModeSaveKeyringParcel.mChangePrimaryUserId != null
-                                && mEditModeSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
-                            mEditModeSaveKeyringParcel.mChangePrimaryUserId = null;
+                        if (mSkpBuilder.getChangePrimaryUserId() != null
+                                && mSkpBuilder.getChangePrimaryUserId().equals(userId)) {
+                            mSkpBuilder.setChangePrimaryUserId(null);
                         } else {
-                            mEditModeSaveKeyringParcel.mChangePrimaryUserId = userId;
+                            mSkpBuilder.setChangePrimaryUserId(userId);
                         }
                         break;
                     case EditUserIdDialogFragment.MESSAGE_REVOKE:
                         // toggle
-                        if (mEditModeSaveKeyringParcel.mRevokeUserIds.contains(userId)) {
-                            mEditModeSaveKeyringParcel.mRevokeUserIds.remove(userId);
+                        if (mSkpBuilder.getMutableRevokeUserIds().contains(userId)) {
+                            mSkpBuilder.removeRevokeUserId(userId);
                         } else {
-                            mEditModeSaveKeyringParcel.mRevokeUserIds.add(userId);
+                            mSkpBuilder.addRevokeUserId(userId);
                             // not possible to revoke and change to primary user id
-                            if (mEditModeSaveKeyringParcel.mChangePrimaryUserId != null
-                                    && mEditModeSaveKeyringParcel.mChangePrimaryUserId.equals(userId)) {
-                                mEditModeSaveKeyringParcel.mChangePrimaryUserId = null;
+                            if (mSkpBuilder.getChangePrimaryUserId() != null
+                                    && mSkpBuilder.getChangePrimaryUserId().equals(userId)) {
+                                mSkpBuilder.setChangePrimaryUserId(null);
                             }
                         }
                         break;
@@ -342,15 +342,15 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
-                mEditModeSaveKeyringParcel = new SaveKeyringParcel(mMasterKeyId, mFingerprint);
+                mSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(mMasterKeyId, mFingerprint);
 
                 mUserIdsAddedAdapter =
-                        new UserIdsAddedAdapter(getActivity(), mEditModeSaveKeyringParcel.mAddUserIds, false);
+                        new UserIdsAddedAdapter(getActivity(), mSkpBuilder.getMutableAddUserIds(), false);
                 mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
                 mUserIdsAddedLayout.setVisibility(View.VISIBLE);
                 mUserIdAddFabLayout.setDisplayedChild(1);
 
-                mUserIdsAdapter.setEditMode(mEditModeSaveKeyringParcel);
+                mUserIdsAdapter.setEditMode(mSkpBuilder);
                 getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
 
                 mode.setTitle(R.string.title_edit_identities);
@@ -372,7 +372,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                mEditModeSaveKeyringParcel = null;
+                mSkpBuilder = null;
                 mUserIdsAdapter.setEditMode(null);
                 mUserIdsAddedLayout.setVisibility(View.GONE);
                 mUserIdAddFabLayout.setDisplayedChild(0);
@@ -387,7 +387,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
             @Override
             public SaveKeyringParcel createOperationInput() {
-                return mEditModeSaveKeyringParcel;
+                return mSkpBuilder.build();
             }
 
             @Override

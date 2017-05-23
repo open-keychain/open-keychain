@@ -210,15 +210,11 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
     @Nullable
     @Override
     public Parcelable createOperationInput() {
-        SaveKeyringParcel skp =
-                new SaveKeyringParcel(mLinkedIdWizard.mMasterKeyId, mLinkedIdWizard.mFingerprint);
-
-        WrappedUserAttribute ua =
-                LinkedAttribute.fromResource(mVerifiedResource).toUserAttribute();
-
-        skp.mAddUserAttribute.add(ua);
-
-        return skp;
+        SaveKeyringParcel.Builder builder=
+                SaveKeyringParcel.buildChangeKeyringParcel(mLinkedIdWizard.mMasterKeyId, mLinkedIdWizard.mFingerprint);
+        WrappedUserAttribute ua = LinkedAttribute.fromResource(mVerifiedResource).toUserAttribute();
+        builder.addUserAttribute(ua);
+        return builder.build();
     }
 
     @Override
