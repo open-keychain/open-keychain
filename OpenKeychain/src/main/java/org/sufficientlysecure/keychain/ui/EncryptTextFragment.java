@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -238,18 +238,10 @@ public class EncryptTextFragment
 
         data.setCleartextSignature(true);
 
-        if (mUseCompression) {
-            data.setCompressionAlgorithm(
-                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT);
-        } else {
-            data.setCompressionAlgorithm(
-                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
+        if (!mUseCompression) {
+            data.setCompressionAlgorithm(OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
         }
         data.setHiddenRecipients(mHiddenRecipients);
-        data.setSymmetricEncryptionAlgorithm(
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
-        data.setSignatureHashAlgorithm(
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
 
         // Always use armor for messages
         data.setEnableAsciiArmorOutput(true);

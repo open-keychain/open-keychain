@@ -623,19 +623,11 @@ public class EncryptFilesFragment
         // fill values for this action
         PgpSignEncryptData.Builder data = PgpSignEncryptData.builder();
 
-        if (mUseCompression) {
-            data.setCompressionAlgorithm(
-                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT);
-        } else {
-            data.setCompressionAlgorithm(
-                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
+        if (!mUseCompression) {
+            data.setCompressionAlgorithm(PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
         }
         data.setHiddenRecipients(mHiddenRecipients);
         data.setEnableAsciiArmorOutput(mAfterEncryptAction == AfterEncryptAction.COPY || mUseArmor);
-        data.setSymmetricEncryptionAlgorithm(
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
-        data.setSignatureHashAlgorithm(
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
 
         EncryptActivity encryptActivity = (EncryptActivity) getActivity();
         EncryptModeFragment modeFragment = encryptActivity.getModeFragment();

@@ -28,8 +28,10 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
-import org.bouncycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainHashAlgorithmTags;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 @AutoValue
@@ -37,11 +39,9 @@ public abstract class PgpSignEncryptData implements Parcelable {
     @Nullable
     public abstract String getCharset();
     abstract long getAdditionalEncryptId();
-    abstract int getSignatureHashAlgorithm();
     @Nullable
     public abstract Long getSignatureSubKeyId();
     public abstract long getSignatureMasterKeyId();
-    public abstract int getSymmetricEncryptionAlgorithm();
     @Nullable
     public abstract Passphrase getSymmetricPassphrase();
     @Nullable
@@ -49,9 +49,12 @@ public abstract class PgpSignEncryptData implements Parcelable {
     public abstract long[] getEncryptionMasterKeyIds();
     @Nullable
     public abstract List<Long> getAllowedSigningKeyIds();
-    public abstract int getCompressionAlgorithm();
     @Nullable
     public abstract String getVersionHeader();
+
+    public abstract int getCompressionAlgorithm();
+    public abstract int getSignatureHashAlgorithm();
+    public abstract int getSymmetricEncryptionAlgorithm();
 
     public abstract boolean isEnableAsciiArmorOutput();
     public abstract boolean isCleartextSignature();
@@ -61,16 +64,16 @@ public abstract class PgpSignEncryptData implements Parcelable {
 
     public static Builder builder() {
         return new AutoValue_PgpSignEncryptData.Builder()
-                .setCompressionAlgorithm(CompressionAlgorithmTags.UNCOMPRESSED)
-                .setSymmetricEncryptionAlgorithm(PgpSecurityConstants.DEFAULT_SYMMETRIC_ALGORITHM)
                 .setSignatureMasterKeyId(Constants.key.none)
-                .setSignatureHashAlgorithm(PgpSecurityConstants.DEFAULT_HASH_ALGORITHM)
                 .setAdditionalEncryptId(Constants.key.none)
                 .setEnableAsciiArmorOutput(false)
                 .setCleartextSignature(false)
                 .setDetachedSignature(false)
                 .setAddBackupHeader(false)
-                .setHiddenRecipients(false);
+                .setHiddenRecipients(false)
+                .setCompressionAlgorithm(OpenKeychainCompressionAlgorithmTags.USE_DEFAULT)
+                .setSignatureHashAlgorithm(OpenKeychainHashAlgorithmTags.USE_DEFAULT)
+                .setSymmetricEncryptionAlgorithm(OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
     }
 
     @AutoValue.Builder
@@ -79,14 +82,15 @@ public abstract class PgpSignEncryptData implements Parcelable {
 
         public abstract Builder setCharset(String charset);
         public abstract Builder setAdditionalEncryptId(long additionalEncryptId);
-        public abstract Builder setSignatureHashAlgorithm(int signatureHashAlgorithm);
         public abstract Builder setSignatureSubKeyId(Long signatureSubKeyId);
         public abstract Builder setSignatureMasterKeyId(long signatureMasterKeyId);
-        public abstract Builder setSymmetricEncryptionAlgorithm(int symmetricEncryptionAlgorithm);
         public abstract Builder setSymmetricPassphrase(Passphrase symmetricPassphrase);
         public abstract Builder setEncryptionMasterKeyIds(long[] encryptionMasterKeyIds);
-        public abstract Builder setCompressionAlgorithm(int compressionAlgorithm);
         public abstract Builder setVersionHeader(String versionHeader);
+
+        public abstract Builder setCompressionAlgorithm(int compressionAlgorithm);
+        public abstract Builder setSignatureHashAlgorithm(int signatureHashAlgorithm);
+        public abstract Builder setSymmetricEncryptionAlgorithm(int symmetricEncryptionAlgorithm);
 
         public abstract Builder setAddBackupHeader(boolean isAddBackupHeader);
         public abstract Builder setEnableAsciiArmorOutput(boolean enableAsciiArmorOutput);

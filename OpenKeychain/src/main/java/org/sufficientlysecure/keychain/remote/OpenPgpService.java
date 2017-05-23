@@ -56,7 +56,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
-import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -112,8 +112,7 @@ public class OpenPgpService extends Service {
             pgpData.setEnableAsciiArmorOutput(asciiArmor)
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
-                    .setVersionHeader(null)
-                    .setSignatureHashAlgorithm(PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT);
+                    .setVersionHeader(null);
 
 
             Intent signKeyIdIntent = getSignKeyMasterId(data);
@@ -200,18 +199,14 @@ public class OpenPgpService extends Service {
                 originalFilename = "";
             }
 
-            boolean enableCompression = data.getBooleanExtra(OpenPgpApi.EXTRA_ENABLE_COMPRESSION, true);
-            int compressionId;
-            if (enableCompression) {
-                compressionId = PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT;
-            } else {
-                compressionId = PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED;
-            }
+            PgpSignEncryptData.Builder pgpData = PgpSignEncryptData.builder()
+                    .setEnableAsciiArmorOutput(asciiArmor)
+                    .setVersionHeader(null);
 
-            PgpSignEncryptData.Builder pgpData = PgpSignEncryptData.builder();
-            pgpData.setEnableAsciiArmorOutput(asciiArmor)
-                    .setVersionHeader(null)
-                    .setCompressionAlgorithm(compressionId);
+            boolean enableCompression = data.getBooleanExtra(OpenPgpApi.EXTRA_ENABLE_COMPRESSION, true);
+            if (!enableCompression) {
+                pgpData.setCompressionAlgorithm(OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
+            }
 
             if (sign) {
                 Intent signKeyIdIntent = getSignKeyMasterId(data);

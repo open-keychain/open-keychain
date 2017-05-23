@@ -61,6 +61,9 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainHashAlgorithmTags;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
@@ -178,13 +181,13 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
         boolean enableSignature = data.getSignatureMasterKeyId() != Constants.key.none;
         boolean enableEncryption = ((data.getEncryptionMasterKeyIds() != null && data.getEncryptionMasterKeyIds().length > 0)
                 || data.getSymmetricPassphrase() != null);
-        boolean enableCompression = (data.getCompressionAlgorithm() != CompressionAlgorithmTags.UNCOMPRESSED);
 
-        Log.d(Constants.TAG, "enableSignature:" + enableSignature
-                + "\nenableEncryption:" + enableEncryption
-                + "\nenableCompression:" + enableCompression
-                + "\nenableAsciiArmorOutput:" + data.isEnableAsciiArmorOutput()
-                + "\nisHiddenRecipients:" + data.isHiddenRecipients());
+        int compressionAlgorithm = data.getCompressionAlgorithm();
+        if (compressionAlgorithm == OpenKeychainCompressionAlgorithmTags.USE_DEFAULT) {
+            compressionAlgorithm = PgpSecurityConstants.DEFAULT_COMPRESSION_ALGORITHM;
+        }
+
+        Log.d(Constants.TAG, data.toString());
 
         ArmoredOutputStream armorOut = null;
         OutputStream out;
@@ -299,12 +302,12 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
         if (enableEncryption) {
 
             // Use requested encryption algo
-            int algo = data.getSymmetricEncryptionAlgorithm();
-            if (algo == PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT) {
-                algo = PgpSecurityConstants.DEFAULT_SYMMETRIC_ALGORITHM;
+            int symmetricEncryptionAlgorithm = data.getSymmetricEncryptionAlgorithm();
+            if (symmetricEncryptionAlgorithm == OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT) {
+                symmetricEncryptionAlgorithm = PgpSecurityConstants.DEFAULT_SYMMETRIC_ALGORITHM;
             }
             JcePGPDataEncryptorBuilder encryptorBuilder =
-                    new JcePGPDataEncryptorBuilder(algo)
+                    new JcePGPDataEncryptorBuilder(symmetricEncryptionAlgorithm)
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME)
                             .setWithIntegrityPacket(true);
 
@@ -338,6 +341,11 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             }
         }
 
+        int signatureHashAlgorithm = data.getSignatureHashAlgorithm();
+        if (signatureHashAlgorithm == OpenKeychainHashAlgorithmTags.USE_DEFAULT) {
+            signatureHashAlgorithm = PgpSecurityConstants.DEFAULT_HASH_ALGORITHM;
+        }
+
         /* Initialize signature generator object for later usage */
         PGPSignatureGenerator signatureGenerator = null;
         if (enableSignature) {
@@ -346,7 +354,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             try {
                 boolean cleartext = data.isCleartextSignature() && data.isEnableAsciiArmorOutput() && !enableEncryption;
                 signatureGenerator = signingKey.getDataSignatureGenerator(
-                        data.getSignatureHashAlgorithm(), cleartext,
+                        signatureHashAlgorithm, cleartext,
                         cryptoInput.getCryptoData(), cryptoInput.getSignatureTime());
             } catch (PgpGeneralException e) {
                 log.add(LogType.MSG_PSE_ERROR_NFC, indent);
@@ -381,15 +389,10 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
 
                 encryptionOut = cPk.open(out, new byte[1 << 16]);
 
-                if (enableCompression) {
+                if (compressionAlgorithm != CompressionAlgorithmTags.UNCOMPRESSED) {
                     log.add(LogType.MSG_PSE_COMPRESSING, indent);
 
-                    // Use preferred compression algo
-                    int algo = data.getCompressionAlgorithm();
-                    if (algo == PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT) {
-                        algo = PgpSecurityConstants.DEFAULT_COMPRESSION_ALGORITHM;
-                    }
-                    compressGen = new PGPCompressedDataGenerator(algo);
+                    compressGen = new PGPCompressedDataGenerator(compressionAlgorithm);
                     bcpgOut = new BCPGOutputStream(compressGen.open(encryptionOut));
                 } else {
                     bcpgOut = new BCPGOutputStream(encryptionOut);
@@ -438,7 +441,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 log.add(LogType.MSG_PSE_SIGNING_CLEARTEXT, indent);
 
                 // write -----BEGIN PGP SIGNED MESSAGE-----
-                armorOut.beginClearText(data.getSignatureHashAlgorithm());
+                armorOut.beginClearText(signatureHashAlgorithm);
 
                 InputStream in = new BufferedInputStream(inputData.getInputStream());
                 final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -511,14 +514,10 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
 
                 InputStream in = new BufferedInputStream(inputData.getInputStream());
 
-                if (enableCompression) {
-                    // Use preferred compression algo
-                    int algo = data.getCompressionAlgorithm();
-                    if (algo == PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT) {
-                        algo = PgpSecurityConstants.DEFAULT_COMPRESSION_ALGORITHM;
-                    }
+                if (compressionAlgorithm != CompressionAlgorithmTags.UNCOMPRESSED) {
+                    log.add(LogType.MSG_PSE_COMPRESSING, indent);
 
-                    compressGen = new PGPCompressedDataGenerator(algo);
+                    compressGen = new PGPCompressedDataGenerator(compressionAlgorithm);
                     bcpgOut = new BCPGOutputStream(compressGen.open(out));
                 } else {
                     bcpgOut = new BCPGOutputStream(out);
@@ -573,11 +572,11 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
 
             // closing outputs
             // NOTE: closing needs to be done in the correct order!
-            if (encryptionOut != null) {
-                if (compressGen != null) {
-                    compressGen.close();
-                }
+            if (compressGen != null) {
+                compressGen.close();
+            }
 
+            if (encryptionOut != null) {
                 encryptionOut.close();
             }
             // Note: Closing ArmoredOutputStream does not close the underlying stream
@@ -624,7 +623,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             }
             result.setDetachedSignature(detachedByteOut.toByteArray());
             try {
-                String digestName = PGPUtil.getDigestName(data.getSignatureHashAlgorithm());
+                String digestName = PGPUtil.getDigestName(signatureHashAlgorithm);
                 // construct micalg parameter according to https://tools.ietf.org/html/rfc3156#section-5
                 result.setMicAlgDigestName("pgp-" + digestName.toLowerCase());
             } catch (PGPException e) {

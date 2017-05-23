@@ -361,10 +361,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             log.add(LogType.MSG_DC_CLEAR_DECOMPRESS, indent + 1);
 
             PGPCompressedData compressedData = (PGPCompressedData) dataChunk;
-
-            JcaSkipMarkerPGPObjectFactory fact = new JcaSkipMarkerPGPObjectFactory(compressedData.getDataStream());
-            dataChunk = fact.nextObject();
-            plainFact = fact;
+            plainFact = new JcaSkipMarkerPGPObjectFactory(compressedData.getDataStream());
+            dataChunk = plainFact.nextObject();
         }
 
         PgpSignatureChecker signatureChecker = new PgpSignatureChecker(
@@ -378,10 +376,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             dataChunk = plainFact.nextObject();
         }
 
-        OpenPgpMetadata metadata;
-
-        if ( ! (dataChunk instanceof PGPLiteralData)) {
-
+        if (!(dataChunk instanceof PGPLiteralData)) {
             log.add(LogType.MSG_DC_ERROR_INVALID_DATA, indent);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
 
@@ -421,6 +416,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         }
         log.add(LogType.MSG_DC_CLEAR_META_TIME, indent + 1,
                 new Date(literalData.getModificationTime().getTime()).toString());
+
+        OpenPgpMetadata metadata;
 
         // return here if we want to decrypt the metadata only
         if (input.isDecryptMetadataOnly()) {
