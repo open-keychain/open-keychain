@@ -65,6 +65,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainComp
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainHashAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -217,11 +218,19 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
 
             try {
                 long signingMasterKeyId = data.getSignatureMasterKeyId();
-                long signingSubKeyId = data.getSignatureSubKeyId();
+                Long signingSubKeyId = data.getSignatureSubKeyId();
+                if (signingSubKeyId == null) {
+                    try {
+                        signingSubKeyId = mKeyRepository.getCachedPublicKeyRing(signingMasterKeyId).getSecretSignId();
+                    } catch (PgpKeyNotFoundException e) {
+                        log.add(LogType.MSG_PSE_ERROR_KEY_SIGN, indent);
+                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                    }
+                }
 
                 CanonicalizedSecretKeyRing signingKeyRing =
                         mKeyRepository.getCanonicalizedSecretKeyRing(signingMasterKeyId);
-                signingKey = signingKeyRing.getSecretKey(data.getSignatureSubKeyId());
+                signingKey = signingKeyRing.getSecretKey(signingSubKeyId);
 
                 Collection<Long> allowedSigningKeyIds = data.getAllowedSigningKeyIds();
                 if (allowedSigningKeyIds != null && !allowedSigningKeyIds.contains(signingMasterKeyId)) {
