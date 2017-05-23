@@ -606,7 +606,8 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     @Nullable
     @Override
     public BackupKeyringParcel createOperationInput() {
-        return new BackupKeyringParcel(mMasterKeyIds, mExportSecret, true, true, mCachedBackupUri);
+        return BackupKeyringParcel
+                .createBackupKeyringParcel(mMasterKeyIds, mExportSecret, true, true, mCachedBackupUri);
     }
 
     @Override

@@ -252,7 +252,7 @@ public class BackupOperationTest {
         BackupOperation op = new BackupOperation(spyApplication,
                 KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
-        BackupKeyringParcel parcel = new BackupKeyringParcel(
+        BackupKeyringParcel parcel = BackupKeyringParcel.createBackupKeyringParcel(
                 new long[] { mStaticRing1.getMasterKeyId() }, false, false, true, fakeOutputUri);
 
         ExportResult result = op.execute(parcel, null);
@@ -309,7 +309,7 @@ public class BackupOperationTest {
             BackupOperation op = new BackupOperation(spyApplication,
                     KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
-            BackupKeyringParcel parcel = new BackupKeyringParcel(
+            BackupKeyringParcel parcel = BackupKeyringParcel.createBackupKeyringParcel(
                     new long[] { mStaticRing1.getMasterKeyId() }, false, true, true, fakeOutputUri);
             CryptoInputParcel inputParcel = CryptoInputParcel.createCryptoInputParcel(passphrase);
             ExportResult result = op.execute(parcel, inputParcel);
