@@ -21,6 +21,7 @@ import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import android.content.ContentProvider;
@@ -159,73 +160,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                     throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
                 }
 
-                db.execSQL("CREATE TEMPORARY TABLE " + TEMP_TABLE_QUERIED_ADDRESSES + " (" + TEMP_TABLE_COLUMN_ADDRES + " TEXT);");
-                ContentValues cv = new ContentValues();
-                for (String address : selectionArgs) {
-                    cv.put(TEMP_TABLE_COLUMN_ADDRES, address);
-                    db.insert(TEMP_TABLE_QUERIED_ADDRESSES, null, cv);
-                }
-
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(EmailStatus._ID, "email AS _id");
-                projectionMap.put(EmailStatus.EMAIL_ADDRESS, // this is actually the queried address
-                        TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES + " AS " + EmailStatus.EMAIL_ADDRESS);
-                projectionMap.put(EmailStatus.USER_ID,
-                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
-                // we take the minimum (>0) here, where "1" is "verified by known secret key", "2" is "self-certified"
-                projectionMap.put(EmailStatus.USER_ID_STATUS, "CASE ( MIN (" + Certs.VERIFIED + " ) ) "
-                        // remap to keep this provider contract independent from our internal representation
-                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
-                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
-                        + " WHEN NULL THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
-                        + " END AS " + EmailStatus.USER_ID_STATUS);
-                projectionMap.put(EmailStatus.MASTER_KEY_ID,
-                        Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + EmailStatus.MASTER_KEY_ID);
-                projectionMap.put(EmailStatus.USER_ID,
-                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
-                projectionMap.put(EmailStatus.TRUST_ID_LAST_UPDATE, Tables.API_TRUST_IDENTITIES + "." +
-                        ApiTrustIdentity.LAST_UPDATED + " AS " + EmailStatus.TRUST_ID_LAST_UPDATE);
-                qb.setProjectionMap(projectionMap);
-
-                if (projection == null) {
-                    throw new IllegalArgumentException("Please provide a projection!");
-                }
-
-                qb.setTables(
-                        TEMP_TABLE_QUERIED_ADDRESSES
-                                + " LEFT JOIN " + Tables.USER_PACKETS + " ON ("
-                                + Tables.USER_PACKETS + "." + UserPackets.USER_ID + " IS NOT NULL"
-                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " LIKE " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
-                                + ")"
-                                + " LEFT JOIN " + Tables.API_TRUST_IDENTITIES + " ON ("
-                                + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.IDENTIFIER + " LIKE queried_addresses.address"
-                                + " AND " + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.PACKAGE_NAME + " = \"" + callingPackageName + "\""
-                                + ")"
-                                + " JOIN " + Tables.CERTS + " ON ("
-                                + "(" + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
-                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = " + Tables.CERTS + "." + Certs.RANK + ")"
-                                + " OR " + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
-                                + ")"
-                );
-                // in case there are multiple verifying certificates
-                groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
-                        + ", " + Tables.CERTS + "." + UserPackets.MASTER_KEY_ID;
-                List<String> plist = Arrays.asList(projection);
-                if (plist.contains(EmailStatus.USER_ID)) {
-                    groupBy += ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID;
-                }
-
-                // verified == 0 has no self-cert, which is basically an error case. never return that!
-                // verified == null is fine, because it means there was no join partner
-                qb.appendWhere(Tables.CERTS + "." + Certs.VERIFIED + " IS NULL OR " + Tables.CERTS + "." + Certs.VERIFIED + " > 0");
-
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = EmailStatus.EMAIL_ADDRESS;
-                }
-
-                // uri to watch is all /key_rings/
-                uri = KeyRings.CONTENT_URI;
-                break;
+                return runEmailStatusQuery(db, projection, selectionArgs, sortOrder, callingPackageName);
             }
 
             case TRUST_IDENTITY: {
@@ -290,6 +225,97 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
         Log.d(Constants.TAG,
                 "Query: " + qb.buildQuery(projection, selection, groupBy, null, orderBy, null));
+
+        return cursor;
+    }
+
+    private Cursor runEmailStatusQuery(SQLiteDatabase db, String[] projection, String[] selectionArgs, String sortOrder,
+            String callingPackageName) {
+        if (projection == null) {
+            throw new IllegalArgumentException("Please provide a projection!");
+        }
+
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        db.execSQL("CREATE TEMPORARY TABLE " + TEMP_TABLE_QUERIED_ADDRESSES + " (" + TEMP_TABLE_COLUMN_ADDRES + " TEXT);");
+        ContentValues cv = new ContentValues();
+        for (String address : selectionArgs) {
+            cv.put(TEMP_TABLE_COLUMN_ADDRES, address);
+            db.insert(TEMP_TABLE_QUERIED_ADDRESSES, null, cv);
+        }
+
+        // in case there are multiple verifying certificates
+        String groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
+                + ", " + Tables.CERTS + "." + UserPackets.MASTER_KEY_ID;
+        List<String> plist = Arrays.asList(projection);
+        if (plist.contains(EmailStatus.USER_ID)) {
+            groupBy += ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID;
+        }
+
+        if (TextUtils.isEmpty(sortOrder)) {
+            sortOrder = EmailStatus.EMAIL_ADDRESS;
+        }
+
+        HashSet<String> columnsPresentInTable = new HashSet<>(Arrays.asList(projection));
+
+        HashMap<String, String> projectionMap = new HashMap<>();
+        projectionMap.put(EmailStatus._ID, "email AS _id");
+        projectionMap.put(EmailStatus.EMAIL_ADDRESS, // this is actually the queried address
+                TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES + " AS " + EmailStatus.EMAIL_ADDRESS);
+        projectionMap.put(EmailStatus.USER_ID,
+                Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
+        // we take the minimum (>0) here, where "1" is "verified by known secret key", "2" is "self-certified"
+        projectionMap.put(EmailStatus.USER_ID_STATUS, "CASE ( MIN(" + Tables.CERTS + "." + Certs.VERIFIED + ") ) "
+                // remap to keep this provider contract independent from our internal representation
+                + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
+                + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
+                + " WHEN NULL THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
+                + " END AS " + EmailStatus.USER_ID_STATUS);
+        projectionMap.put(EmailStatus.MASTER_KEY_ID,
+                Tables.CERTS + "." + UserPackets.MASTER_KEY_ID + " AS " + EmailStatus.MASTER_KEY_ID);
+        projectionMap.put(EmailStatus.USER_ID,
+                Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
+        projectionMap.put(EmailStatus.TRUST_ID_LAST_UPDATE, Tables.API_TRUST_IDENTITIES + "." +
+                ApiTrustIdentity.LAST_UPDATED + " AS " + EmailStatus.TRUST_ID_LAST_UPDATE);
+
+        projectionMap.put("source", "'user_id' AS source");
+        qb.setProjectionMap(projectionMap);
+        qb.setTables(
+                TEMP_TABLE_QUERIED_ADDRESSES
+                        + " LEFT JOIN " + Tables.USER_PACKETS + " ON ("
+                        + Tables.USER_PACKETS + "." + UserPackets.USER_ID + " IS NOT NULL"
+                        + " AND " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " LIKE " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
+                        + ")"
+                        + " LEFT JOIN " + Tables.CERTS + " ON ("
+                        + "(" + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
+                        + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = " + Tables.CERTS + "." + Certs.RANK + ")"
+                        + ")"
+        );
+        String subQueryUserIds = qb.buildUnionSubQuery(
+                "source", projection, columnsPresentInTable, 0, "user_id", null, groupBy, null);
+        Log.d(Constants.TAG, subQueryUserIds);
+
+        projectionMap.put("source", "'trust_id' AS source");
+        qb.setProjectionMap(projectionMap);
+        qb.setTables(
+                TEMP_TABLE_QUERIED_ADDRESSES
+                        + " JOIN " + Tables.API_TRUST_IDENTITIES + " ON ("
+                        + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.IDENTIFIER + " LIKE queried_addresses.address"
+                        + " AND " + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.PACKAGE_NAME + " = \"" + callingPackageName + "\""
+                        + ")"
+                        + " LEFT JOIN " + Tables.CERTS + " ON ("
+                        + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
+                        + ")"
+        );
+        String subQueryTrustIds = qb.buildUnionSubQuery(
+                "source", projection, columnsPresentInTable, 0, "trust_id", null, groupBy, null);
+
+        String unionQuery = qb.buildUnionQuery(new String[] { subQueryUserIds, subQueryTrustIds }, sortOrder, null);
+        Cursor cursor = db.rawQuery(unionQuery, null);
+        if (cursor != null) {
+            // watch all /key_rings/
+            cursor.setNotificationUri(getContext().getContentResolver(), KeyRings.CONTENT_URI);
+        }
 
         return cursor;
     }

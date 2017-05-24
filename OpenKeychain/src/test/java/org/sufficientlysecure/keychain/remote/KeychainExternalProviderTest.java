@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.res.builder.RobolectricPackageManager;
+import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
@@ -54,6 +55,8 @@ public class KeychainExternalProviderTest {
 
     @Before
     public void setUp() throws Exception {
+        ShadowLog.stream = System.out;
+
         RobolectricPackageManager rpm = (RobolectricPackageManager) RuntimeEnvironment.getPackageManager();
         rpm.setPackagesForUid(0, PACKAGE_NAME);
         PackageInfo packageInfo = new PackageInfo();
