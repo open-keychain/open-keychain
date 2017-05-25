@@ -49,7 +49,7 @@ dependencies {
     compile 'com.mikepenz:community-material-typeface:1.5.54.2@aar'
 
     // Nordpol
-    compile 'com.fidesmo:nordpol-android:0.1.20'
+    compile 'com.fidesmo:nordpol-android:0.1.22'
 
     // libs as submodules
     compile project(':libkeychain')
@@ -124,7 +124,7 @@ dependencyVerification {
             'com.mikepenz:google-material-typeface:f27c629ba5d2a90ecfbd7f221ff98cd363e1ee6be06b099b82bae490766e14a5',
             'com.mikepenz:fontawesome-typeface:ee47b7fe97b90412f01f2fcdd78f65a4edb0ab00006f5ef59ed00516baca9309',
             'com.mikepenz:community-material-typeface:d6035d261c5eba880cd7fe5dcb8cc00b09bfe6d41063b881b759e9897dc7b7c9',
-            'com.fidesmo:nordpol-android:cf034bf765ec9b048e7192d3aa741bea1674994185d5ae130bee92c8e234eefa',
+            'com.fidesmo:nordpol-android:9a992eca347ff7af6e99ff48078954b44b26f26fdc5463139e340234757a24f7',
 //            'OpenKeychain:openpgp-api-lib:13d209e63ffee17d99a40b51841cd9186f3d00a0e5239d41610ea09f2432bf96',
 //            'OpenKeychain:openkeychain-api-lib:231e0a6e7952db759f0ff011c7af7ce4129c2666a3bffbaf733652591fee9cc3',
 //            'OpenKeychain.extern.bouncycastle:core:857cc49a1b8dda5c7cf2e98ce8fcd2526dac2b5e8176efe15c60b368f1a8bb73',
@@ -145,7 +145,7 @@ dependencyVerification {
             'com.android.support:animated-vector-drawable:70443a2857f9968c4e2c27c107657ce2291d774f8a50f03444e12ab637451175',
             'com.android.support:transition:9fd1e6d27cb70b3c5cd19f842b48bbb05cb4e5c93a22372769c342523393e8ea',
             'com.squareup.okio:okio:8c5436cadfab36bbd97db5f5c43b7bfdb5bf2f5f894ec8709b1929f14bdd010c',
-            'com.fidesmo:nordpol-core:439e71a11b3b24da68fb502ef6499b5fa0477e9b1fb4ec2ed97029f9fa81f3a2',
+            'com.fidesmo:nordpol-core:296e71b12884a9cd28cf00ab908973bbf776a90be1f23ac897380d91604e614d',
     ]
 }
 
