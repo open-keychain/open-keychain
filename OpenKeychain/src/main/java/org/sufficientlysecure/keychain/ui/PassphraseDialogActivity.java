@@ -99,7 +99,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         CryptoInputParcel cryptoInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
         if (cryptoInputParcel == null) {
-            cryptoInputParcel = new CryptoInputParcel();
+            cryptoInputParcel = CryptoInputParcel.createCryptoInputParcel();
             getIntent().putExtra(EXTRA_CRYPTO_INPUT, cryptoInputParcel);
         }
 
@@ -117,7 +117,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             if (pubRing.getSecretKeyType(requiredInput.getSubKeyId()) == SecretKeyType.PASSPHRASE_EMPTY) {
                 // also return passphrase back to activity
                 Intent returnIntent = new Intent();
-                cryptoInputParcel.mPassphrase = new Passphrase("");
+                cryptoInputParcel = cryptoInputParcel.withPassphrase(new Passphrase(""));
                 returnIntent.putExtra(RESULT_CRYPTO_INPUT, cryptoInputParcel);
                 setResult(RESULT_OK, returnIntent);
                 finish();
@@ -539,7 +539,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             CryptoInputParcel inputParcel = getArguments().getParcelable(EXTRA_CRYPTO_INPUT);
             // noinspection ConstantConditions, we handle the non-null case in PassphraseDialogActivity.onCreate()
-            inputParcel.mPassphrase = passphrase;
+            inputParcel = inputParcel.withPassphrase(passphrase);
 
             ((PassphraseDialogActivity) getActivity()).handleResult(inputParcel);
 

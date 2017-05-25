@@ -103,10 +103,12 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             PgpDecryptVerifyOperation op =
                     new PgpDecryptVerifyOperation(mContext, mKeyRepository, mProgressable);
 
-            decryptInput.setInputUri(input.getInputUri());
-
             currentInputUri = TemporaryFileProvider.createFile(mContext);
-            decryptInput.setOutputUri(currentInputUri);
+
+            decryptInput = decryptInput.toBuilder()
+                    .setInputUri(input.getInputUri())
+                    .setOutputUri(currentInputUri)
+                    .build();
 
             decryptResult = op.execute(decryptInput, cryptoInput);
             if (decryptResult.isPending()) {
@@ -264,9 +266,10 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 }
                 detachedSig.close();
 
-                PgpDecryptVerifyInputParcel decryptInput = new PgpDecryptVerifyInputParcel();
-                decryptInput.setInputUri(uncheckedSignedDataUri);
-                decryptInput.setDetachedSignature(detachedSig.toByteArray());
+                PgpDecryptVerifyInputParcel decryptInput = PgpDecryptVerifyInputParcel.builder()
+                    .setInputUri(uncheckedSignedDataUri)
+                    .setDetachedSignature(detachedSig.toByteArray())
+                    .build();
 
                 PgpDecryptVerifyOperation op =
                         new PgpDecryptVerifyOperation(mContext, mKeyRepository, mProgressable);

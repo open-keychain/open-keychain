@@ -19,13 +19,16 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import android.net.Uri;
-import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import com.google.auto.value.AutoValue;
+
 
 /**
  * This parcel stores the input of one or more PgpSignEncrypt operations.
@@ -39,83 +42,65 @@ import java.util.List;
  * - Once the output uris are empty, there must be exactly one input (uri xor bytes)
  * left, which will be returned in a byte array as part of the result parcel.
  */
-public class SignEncryptParcel implements Parcelable {
+@AutoValue
+public abstract class SignEncryptParcel implements Parcelable {
+    public abstract PgpSignEncryptData getSignEncryptData();
+    public abstract List<Uri> getInputUris();
+    public abstract List<Uri> getOutputUris();
+    @SuppressWarnings("mutable")
+    @Nullable
+    public abstract byte[] getBytes();
 
-    private PgpSignEncryptData data;
-
-    public ArrayList<Uri> mInputUris = new ArrayList<>();
-    public ArrayList<Uri> mOutputUris = new ArrayList<>();
-    public byte[] mBytes;
-
-    public SignEncryptParcel(PgpSignEncryptData data) {
-        this.data = data;
-    }
-
-    public SignEncryptParcel(Parcel src) {
-        mInputUris = src.createTypedArrayList(Uri.CREATOR);
-        mOutputUris = src.createTypedArrayList(Uri.CREATOR);
-        mBytes = src.createByteArray();
-
-        data = src.readParcelable(getClass().getClassLoader());
-    }
 
     public boolean isIncomplete() {
-        return mInputUris.size() > mOutputUris.size();
+        List<Uri> inputUris = getInputUris();
+        List<Uri> outputUris = getOutputUris();
+        if (inputUris == null || outputUris == null) {
+            throw new IllegalStateException("Invalid operation for bytes-backed SignEncryptParcel!");
+        }
+        return inputUris.size() > outputUris.size();
     }
 
-    public byte[] getBytes() {
-        return mBytes;
+
+    public static SignEncryptParcel createSignEncryptParcel(PgpSignEncryptData signEncryptData, byte[] bytes) {
+        // noinspection unchecked, it's ok for the empty list
+        return new AutoValue_SignEncryptParcel(signEncryptData, Collections.EMPTY_LIST, Collections.EMPTY_LIST, bytes);
     }
 
-    public void setBytes(byte[] bytes) {
-        mBytes = bytes;
+    public static Builder builder(SignEncryptParcel signEncryptParcel) {
+        return new Builder(signEncryptParcel.getSignEncryptData())
+                .addInputUris(signEncryptParcel.getInputUris())
+                .addOutputUris(signEncryptParcel.getOutputUris());
     }
 
-    public List<Uri> getInputUris() {
-        return Collections.unmodifiableList(mInputUris);
+    public static Builder builder(PgpSignEncryptData signEncryptData) {
+        return new Builder(signEncryptData);
     }
 
-    public void addInputUris(Collection<Uri> inputUris) {
-        mInputUris.addAll(inputUris);
-    }
 
-    public List<Uri> getOutputUris() {
-        return Collections.unmodifiableList(mOutputUris);
-    }
+    public static class Builder {
+        private final PgpSignEncryptData signEncryptData;
+        private ArrayList<Uri> inputUris = new ArrayList<>();
+        private ArrayList<Uri> outputUris = new ArrayList<>();
 
-    public void addOutputUris(ArrayList<Uri> outputUris) {
-        mOutputUris.addAll(outputUris);
-    }
-
-    public void setData(PgpSignEncryptData data) {
-        this.data = data;
-    }
-
-    public PgpSignEncryptData getData() {
-        return data;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(mInputUris);
-        dest.writeTypedList(mOutputUris);
-        dest.writeByteArray(mBytes);
-
-        dest.writeParcelable(data, 0);
-    }
-
-    public static final Creator<SignEncryptParcel> CREATOR = new Creator<SignEncryptParcel>() {
-        public SignEncryptParcel createFromParcel(final Parcel source) {
-            return new SignEncryptParcel(source);
+        private Builder(PgpSignEncryptData signEncryptData) {
+            this.signEncryptData = signEncryptData;
         }
 
-        public SignEncryptParcel[] newArray(final int size) {
-            return new SignEncryptParcel[size];
+        public SignEncryptParcel build() {
+            return new AutoValue_SignEncryptParcel(signEncryptData,
+                    Collections.unmodifiableList(inputUris),
+                    Collections.unmodifiableList(outputUris),
+                    null);
         }
-    };
 
+        public Builder addOutputUris(Collection<Uri> outputUris) {
+            this.outputUris.addAll(outputUris);
+            return this;
+        }
+        public Builder addInputUris(Collection<Uri> inputUris) {
+            this.inputUris.addAll(inputUris);
+            return this;
+        }
+    }
 }

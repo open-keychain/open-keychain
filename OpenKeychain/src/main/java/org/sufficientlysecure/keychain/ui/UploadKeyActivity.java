@@ -144,7 +144,7 @@ public class UploadKeyActivity extends BaseActivity
     public UploadKeyringParcel createOperationInput() {
         long[] masterKeyIds = getIntent().getLongArrayExtra(MultiUserIdsFragment.EXTRA_KEY_IDS);
 
-        return new UploadKeyringParcel(mKeyserver, masterKeyIds[0]);
+        return UploadKeyringParcel.createWithKeyId(mKeyserver, masterKeyIds[0]);
     }
 
     @Override

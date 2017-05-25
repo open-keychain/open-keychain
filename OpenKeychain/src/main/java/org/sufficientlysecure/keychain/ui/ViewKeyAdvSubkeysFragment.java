@@ -82,7 +82,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
     private long mMasterKeyId;
     private byte[] mFingerprint;
     private boolean mHasSecret;
-    private SaveKeyringParcel mEditModeSaveKeyringParcel;
+    private SaveKeyringParcel.Builder mEditModeSkpBuilder;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
@@ -250,15 +250,15 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
-                mEditModeSaveKeyringParcel = new SaveKeyringParcel(mMasterKeyId, mFingerprint);
+                mEditModeSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(mMasterKeyId, mFingerprint);
 
-                mSubkeysAddedAdapter =
-                        new SubkeysAddedAdapter(getActivity(), mEditModeSaveKeyringParcel.mAddSubKeys, false);
+                mSubkeysAddedAdapter = new SubkeysAddedAdapter(
+                        getActivity(), mEditModeSkpBuilder.getMutableAddSubKeys(), false);
                 mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
                 mSubkeysAddedLayout.setVisibility(View.VISIBLE);
                 mSubkeyAddFabLayout.setDisplayedChild(1);
 
-                mSubkeysAdapter.setEditMode(mEditModeSaveKeyringParcel);
+                mSubkeysAdapter.setEditMode(mEditModeSkpBuilder);
                 getLoaderManager().restartLoader(LOADER_ID_SUBKEYS, null, ViewKeyAdvSubkeysFragment.this);
 
                 mode.setTitle(R.string.title_edit_subkeys);
@@ -280,7 +280,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                mEditModeSaveKeyringParcel = null;
+                mEditModeSkpBuilder = null;
                 mSubkeysAdapter.setEditMode(null);
                 mSubkeysAddedLayout.setVisibility(View.GONE);
                 mSubkeyAddFabLayout.setDisplayedChild(0);
@@ -323,10 +323,10 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_REVOKE:
                         // toggle
-                        if (mEditModeSaveKeyringParcel.mRevokeSubKeys.contains(keyId)) {
-                            mEditModeSaveKeyringParcel.mRevokeSubKeys.remove(keyId);
+                        if (mEditModeSkpBuilder.getMutableRevokeSubKeys().contains(keyId)) {
+                            mEditModeSkpBuilder.removeRevokeSubkey(keyId);
                         } else {
-                            mEditModeSaveKeyringParcel.mRevokeSubKeys.add(keyId);
+                            mEditModeSkpBuilder.addRevokeSubkey(keyId);
                         }
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_STRIP: {
@@ -336,16 +336,11 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                             break;
                         }
 
-                        SubkeyChange change = mEditModeSaveKeyringParcel.getSubkeyChange(keyId);
-                        if (change == null) {
-                            mEditModeSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
-                            break;
-                        }
-                        // toggle
-                        change.mDummyStrip = !change.mDummyStrip;
-                        if (change.mDummyStrip && change.mMoveKeyToSecurityToken) {
-                            // User had chosen to divert key, but now wants to strip it instead.
-                            change.mMoveKeyToSecurityToken = false;
+                        SubkeyChange change = mEditModeSkpBuilder.getSubkeyChange(keyId);
+                        if (change == null || !change.getDummyStrip()) {
+                            mEditModeSkpBuilder.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(keyId));
+                        } else {
+                            mEditModeSkpBuilder.removeSubkeyChange(change);
                         }
                         break;
                     }
@@ -385,19 +380,12 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                                 break;
                         }
 
-                        SubkeyChange change;
-                        change = mEditModeSaveKeyringParcel.getSubkeyChange(keyId);
-                        if (change == null) {
-                            mEditModeSaveKeyringParcel.mChangeSubKeys.add(
-                                    new SubkeyChange(keyId, false, true)
-                            );
-                            break;
-                        }
-                        // toggle
-                        change.mMoveKeyToSecurityToken = !change.mMoveKeyToSecurityToken;
-                        if (change.mMoveKeyToSecurityToken && change.mDummyStrip) {
-                            // User had chosen to strip key, but now wants to divert it.
-                            change.mDummyStrip = false;
+                        SubkeyChange change = mEditModeSkpBuilder.getSubkeyChange(keyId);
+                        if (change == null || !change.getMoveKeyToSecurityToken()) {
+                            mEditModeSkpBuilder.addOrReplaceSubkeyChange(
+                                    SubkeyChange.createMoveToSecurityTokenChange(keyId));
+                        } else {
+                            mEditModeSkpBuilder.removeSubkeyChange(change);
                         }
                         break;
                     }
@@ -429,9 +417,10 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
             public void handleMessage(Message message) {
                 switch (message.what) {
                     case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY:
-                        mEditModeSaveKeyringParcel.getOrCreateSubkeyChange(keyId).mExpiry =
-                                (Long) message.getData().getSerializable(
-                                        EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY);
+                        Long expiry = (Long) message.getData().getSerializable(
+                                EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY);
+                        mEditModeSkpBuilder.addOrReplaceSubkeyChange(
+                                SubkeyChange.createFlagsOrExpiryChange(keyId, null, expiry));
                         break;
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
@@ -458,7 +447,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
             @Override
             public SaveKeyringParcel createOperationInput() {
-                return mEditModeSaveKeyringParcel;
+                return mEditModeSkpBuilder.build();
             }
 
             @Override

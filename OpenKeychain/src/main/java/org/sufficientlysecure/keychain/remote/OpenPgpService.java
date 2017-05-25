@@ -22,6 +22,7 @@ package org.sufficientlysecure.keychain.remote;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -56,9 +57,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
-import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
-import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
@@ -109,12 +109,11 @@ public class OpenPgpService extends Service {
             boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
             // sign-only
-            PgpSignEncryptData pgpData = new PgpSignEncryptData();
+            PgpSignEncryptData.Builder pgpData = PgpSignEncryptData.builder();
             pgpData.setEnableAsciiArmorOutput(asciiArmor)
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
-                    .setVersionHeader(null)
-                    .setSignatureHashAlgorithm(PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT);
+                    .setVersionHeader(null);
 
 
             Intent signKeyIdIntent = getSignKeyMasterId(data);
@@ -132,17 +131,13 @@ public class OpenPgpService extends Service {
 
                 // get first usable subkey capable of signing
                 try {
-                    long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(
-                            pgpData.getSignatureMasterKeyId()).getSecretSignId();
+                    long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(signKeyId).getSecretSignId();
                     pgpData.setSignatureSubKeyId(signSubKeyId);
                 } catch (PgpKeyNotFoundException e) {
                     throw new Exception("signing subkey not found!", e);
                 }
             }
-
-
-            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData);
-            pseInput.setAllowedKeyIds(getAllowedKeyIds());
+            pgpData.setAllowedSigningKeyIds(getAllowedKeyIds());
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             if (!cleartextSign) {
@@ -155,17 +150,17 @@ public class OpenPgpService extends Service {
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
-                inputParcel = new CryptoInputParcel(new Date());
+                inputParcel = CryptoInputParcel.createCryptoInputParcel(new Date());
             }
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                inputParcel.mPassphrase =
-                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+                inputParcel = inputParcel.withPassphrase(
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
 
             // execute PGP operation!
             PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, mKeyRepository, null);
-            PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputParcel, inputData, outputStream);
+            PgpSignEncryptResult pgpResult = pse.execute(pgpData.build(), inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
@@ -205,18 +200,14 @@ public class OpenPgpService extends Service {
                 originalFilename = "";
             }
 
-            boolean enableCompression = data.getBooleanExtra(OpenPgpApi.EXTRA_ENABLE_COMPRESSION, true);
-            int compressionId;
-            if (enableCompression) {
-                compressionId = PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT;
-            } else {
-                compressionId = PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED;
-            }
+            PgpSignEncryptData.Builder pgpData = PgpSignEncryptData.builder()
+                    .setEnableAsciiArmorOutput(asciiArmor)
+                    .setVersionHeader(null);
 
-            PgpSignEncryptData pgpData = new PgpSignEncryptData();
-            pgpData.setEnableAsciiArmorOutput(asciiArmor)
-                    .setVersionHeader(null)
-                    .setCompressionAlgorithm(compressionId);
+            boolean enableCompression = data.getBooleanExtra(OpenPgpApi.EXTRA_ENABLE_COMPRESSION, true);
+            if (!enableCompression) {
+                pgpData.setCompressionAlgorithm(OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
+            }
 
             if (sign) {
                 Intent signKeyIdIntent = getSignKeyMasterId(data);
@@ -260,17 +251,16 @@ public class OpenPgpService extends Service {
                 return result;
             }
             pgpData.setEncryptionMasterKeyIds(keyIdResult.getKeyIds());
-
-            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel(pgpData);
-            pseInput.setAllowedKeyIds(getAllowedKeyIds());
+            pgpData.setAllowedSigningKeyIds(getAllowedKeyIds());
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
-                inputParcel = new CryptoInputParcel(new Date());
+                inputParcel = CryptoInputParcel.createCryptoInputParcel(new Date());
             }
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                inputParcel.mPassphrase = new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+                inputParcel = inputParcel.withPassphrase(
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
 
             // TODO this is not correct!
@@ -279,7 +269,7 @@ public class OpenPgpService extends Service {
 
             // execute PGP operation!
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, mKeyRepository, null);
-            PgpSignEncryptResult pgpResult = op.execute(pseInput, inputParcel, inputData, outputStream);
+            PgpSignEncryptResult pgpResult = op.execute(pgpData.build(), inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
@@ -353,17 +343,18 @@ public class OpenPgpService extends Service {
 
             CryptoInputParcel cryptoInput = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (cryptoInput == null) {
-                cryptoInput = new CryptoInputParcel();
+                cryptoInput = CryptoInputParcel.createCryptoInputParcel();
             }
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                cryptoInput.mPassphrase =
-                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+                cryptoInput = cryptoInput.withPassphrase(
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
             if (data.hasExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT)) {
                 OpenPgpDecryptionResult decryptionResult = data.getParcelableExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT);
                 if (decryptionResult != null && decryptionResult.hasDecryptedSessionKey()) {
-                    cryptoInput.addCryptoData(decryptionResult.getSessionKey(), decryptionResult.getDecryptedSessionKey());
+                    cryptoInput = cryptoInput.withCryptoData(
+                            decryptionResult.getSessionKey(), decryptionResult.getDecryptedSessionKey());
                 }
             }
 
@@ -377,12 +368,13 @@ public class OpenPgpService extends Service {
 
             // allow only private keys associated with accounts of this app
             // no support for symmetric encryption
-            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel()
+            PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder()
                     .setAllowSymmetricDecryption(false)
-                    .setAllowedKeyIds(getAllowedKeyIds())
+                    .setAllowedKeyIds(new ArrayList<>(getAllowedKeyIds()))
                     .setDecryptMetadataOnly(decryptMetadataOnly)
                     .setDetachedSignature(detachedSignature)
-                    .setSenderAddress(senderAddress);
+                    .setSenderAddress(senderAddress)
+                    .build();
 
             DecryptVerifyResult pgpResult = op.execute(input, cryptoInput, inputData, outputStream);
 
@@ -657,7 +649,8 @@ public class OpenPgpService extends Service {
             // after user interaction with RemoteBackupActivity,
             // the backup code is cached in CryptoInputParcelCacheService, now we can proceed
 
-            BackupKeyringParcel input = new BackupKeyringParcel(masterKeyIds, backupSecret, true, enableAsciiArmorOutput, null);
+            BackupKeyringParcel input = BackupKeyringParcel
+                    .createBackupKeyringParcel(masterKeyIds, backupSecret, true, enableAsciiArmorOutput, null);
             BackupOperation op = new BackupOperation(this, mKeyRepository, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 

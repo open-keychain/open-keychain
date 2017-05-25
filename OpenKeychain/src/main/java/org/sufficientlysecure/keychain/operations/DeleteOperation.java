@@ -52,8 +52,8 @@ public class DeleteOperation extends BaseReadWriteOperation<DeleteKeyringParcel>
     public OperationResult execute(DeleteKeyringParcel deleteKeyringParcel,
                                 CryptoInputParcel cryptoInputParcel) {
 
-        long[] masterKeyIds = deleteKeyringParcel.mMasterKeyIds;
-        boolean isSecret = deleteKeyringParcel.mIsSecret;
+        long[] masterKeyIds = deleteKeyringParcel.getMasterKeyIds();
+        boolean isSecret = deleteKeyringParcel.isDeleteSecret();
 
         return onlyDeleteKey(masterKeyIds, isSecret);
     }

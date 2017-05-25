@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'witness'
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
+apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
     // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
@@ -87,6 +88,11 @@ dependencies {
         exclude module: 'recyclerview-v7'
     }
 
+    compile 'org.glassfish:javax.annotation:10.0-b28'
+    provided    "com.google.auto.value:auto-value:1.4.1"
+    apt         "com.google.auto.value:auto-value:1.4.1"
+    apt         "com.ryanharter.auto.value:auto-value-parcel:0.2.5"
+    compile 'com.ryanharter.auto.value:auto-value-parcel-adapter:0.2.5'
 }
 
 // Output of ./gradlew -q calculateChecksums

@@ -17,6 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
@@ -42,13 +47,9 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
 public class SubkeysAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
-    private SaveKeyringParcel mSaveKeyringParcel;
+    private SaveKeyringParcel.Builder mSkpBuilder;
 
     private boolean mHasAnySecret;
     private ColorStateList mDefaultTextColor;
@@ -177,12 +178,9 @@ public class SubkeysAdapter extends CursorAdapter {
                 cursor.getString(INDEX_KEY_CURVE_OID)
         ));
 
-        SubkeyChange change = mSaveKeyringParcel != null
-                ? mSaveKeyringParcel.getSubkeyChange(keyId)
-                : null;
-
-        if (change != null && (change.mDummyStrip || change.mMoveKeyToSecurityToken)) {
-            if (change.mDummyStrip) {
+        SubkeyChange change = mSkpBuilder != null ? mSkpBuilder.getSubkeyChange(keyId) : null;
+        if (change != null && (change.getDummyStrip() || change.getMoveKeyToSecurityToken())) {
+            if (change.getDummyStrip()) {
                 algorithmStr.append(", ");
                 final SpannableString boldStripped = new SpannableString(
                         context.getString(R.string.key_stripped)
@@ -190,7 +188,7 @@ public class SubkeysAdapter extends CursorAdapter {
                 boldStripped.setSpan(new StyleSpan(Typeface.BOLD), 0, boldStripped.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 algorithmStr.append(boldStripped);
             }
-            if (change.mMoveKeyToSecurityToken) {
+            if (change.getMoveKeyToSecurityToken()) {
                 algorithmStr.append(", ");
                 final SpannableString boldDivert = new SpannableString(
                         context.getString(R.string.key_divert)
@@ -242,8 +240,8 @@ public class SubkeysAdapter extends CursorAdapter {
         }
 
         // for edit key
-        if (mSaveKeyringParcel != null) {
-            boolean revokeThisSubkey = (mSaveKeyringParcel.mRevokeSubKeys.contains(keyId));
+        if (mSkpBuilder != null) {
+            boolean revokeThisSubkey = (mSkpBuilder.getMutableRevokeSubKeys().contains(keyId));
 
             if (revokeThisSubkey) {
                 if (!isRevoked) {
@@ -251,12 +249,12 @@ public class SubkeysAdapter extends CursorAdapter {
                 }
             }
 
-            SaveKeyringParcel.SubkeyChange subkeyChange = mSaveKeyringParcel.getSubkeyChange(keyId);
+            SaveKeyringParcel.SubkeyChange subkeyChange = mSkpBuilder.getSubkeyChange(keyId);
             if (subkeyChange != null) {
-                if (subkeyChange.mExpiry == null || subkeyChange.mExpiry == 0L) {
+                if (subkeyChange.getExpiry() == null || subkeyChange.getExpiry() == 0L) {
                     expiryDate = null;
                 } else {
-                    expiryDate = new Date(subkeyChange.mExpiry * 1000);
+                    expiryDate = new Date(subkeyChange.getExpiry() * 1000);
                 }
             }
 
@@ -345,7 +343,7 @@ public class SubkeysAdapter extends CursorAdapter {
     // Disable selection of items, http://stackoverflow.com/a/4075045
     @Override
     public boolean areAllItemsEnabled() {
-        if (mSaveKeyringParcel == null) {
+        if (mSkpBuilder == null) {
             return false;
         } else {
             return super.areAllItemsEnabled();
@@ -355,7 +353,7 @@ public class SubkeysAdapter extends CursorAdapter {
     // Disable selection of items, http://stackoverflow.com/a/4075045
     @Override
     public boolean isEnabled(int position) {
-        if (mSaveKeyringParcel == null) {
+        if (mSkpBuilder == null) {
             return false;
         } else {
             return super.isEnabled(position);
@@ -370,10 +368,10 @@ public class SubkeysAdapter extends CursorAdapter {
      *
      * @see SaveKeyringParcel
      *
-     * @param saveKeyringParcel The parcel to get info from, or null to leave edit mode.
+     * @param builder The parcel to get info from, or null to leave edit mode.
      */
-    public void setEditMode(@Nullable SaveKeyringParcel saveKeyringParcel) {
-        mSaveKeyringParcel = saveKeyringParcel;
+    public void setEditMode(@Nullable SaveKeyringParcel.Builder builder) {
+        mSkpBuilder = builder;
     }
 
 }

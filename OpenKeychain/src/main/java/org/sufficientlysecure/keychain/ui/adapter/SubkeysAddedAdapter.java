@@ -100,9 +100,9 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
 
         String algorithmStr = KeyFormattingUtils.getAlgorithmInfo(
                 mActivity,
-                holder.mModel.mAlgorithm,
-                holder.mModel.mKeySize,
-                holder.mModel.mCurve
+                holder.mModel.getAlgorithm(),
+                holder.mModel.getKeySize(),
+                holder.mModel.getCurve()
         );
 
         boolean isMasterKey = mNewKeyring && position == 0;
@@ -148,8 +148,8 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         holder.vKeyId.setText(R.string.edit_key_new_subkey);
         holder.vKeyDetails.setText(algorithmStr);
 
-        if (holder.mModel.mExpiry != 0L) {
-            Date expiryDate = new Date(holder.mModel.mExpiry * 1000);
+        if (holder.mModel.getExpiry() != 0L) {
+            Date expiryDate = new Date(holder.mModel.getExpiry() * 1000);
             Calendar expiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             expiryCal.setTime(expiryDate);
             // convert from UTC to time zone of device
@@ -162,7 +162,7 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
                     + getContext().getString(R.string.none));
         }
 
-        int flags = holder.mModel.mFlags;
+        int flags = holder.mModel.getFlags();
         if ((flags & KeyFlags.CERTIFY_OTHER) > 0) {
             holder.vCertifyIcon.setVisibility(View.VISIBLE);
         } else {

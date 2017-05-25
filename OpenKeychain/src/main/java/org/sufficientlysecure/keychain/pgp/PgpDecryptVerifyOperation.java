@@ -69,10 +69,9 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem.DecryptVerifySecurityProblemBuilder;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -321,6 +320,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 decryptionResultBuilder.setEncrypted(true);
                 if (esResult.sessionKey != null && esResult.decryptedSessionKey != null) {
                     decryptionResultBuilder.setSessionKey(esResult.sessionKey, esResult.decryptedSessionKey);
+                    cryptoInput = cryptoInput.withCryptoData(esResult.sessionKey, esResult.decryptedSessionKey);
                 }
 
                 if (esResult.encryptionKeySecurityProblem != null) {
@@ -361,10 +361,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             log.add(LogType.MSG_DC_CLEAR_DECOMPRESS, indent + 1);
 
             PGPCompressedData compressedData = (PGPCompressedData) dataChunk;
-
-            JcaSkipMarkerPGPObjectFactory fact = new JcaSkipMarkerPGPObjectFactory(compressedData.getDataStream());
-            dataChunk = fact.nextObject();
-            plainFact = fact;
+            plainFact = new JcaSkipMarkerPGPObjectFactory(compressedData.getDataStream());
+            dataChunk = plainFact.nextObject();
         }
 
         PgpSignatureChecker signatureChecker = new PgpSignatureChecker(
@@ -378,10 +376,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             dataChunk = plainFact.nextObject();
         }
 
-        OpenPgpMetadata metadata;
-
-        if ( ! (dataChunk instanceof PGPLiteralData)) {
-
+        if (!(dataChunk instanceof PGPLiteralData)) {
             log.add(LogType.MSG_DC_ERROR_INVALID_DATA, indent);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
 
@@ -421,6 +416,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         }
         log.add(LogType.MSG_DC_CLEAR_META_TIME, indent + 1,
                 new Date(literalData.getModificationTime().getTime()).toString());
+
+        OpenPgpMetadata metadata;
 
         // return here if we want to decrypt the metadata only
         if (input.isDecryptMetadataOnly()) {
@@ -820,7 +817,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             result.encryptedData = encryptedDataAsymmetric;
 
             Map<ByteBuffer, byte[]> cachedSessionKeys = decryptorFactory.getCachedSessionKeys();
-            cryptoInput.addCryptoData(cachedSessionKeys);
             if (cachedSessionKeys.size() >= 1) {
                 Entry<ByteBuffer, byte[]> entry = cachedSessionKeys.entrySet().iterator().next();
                 result.sessionKey = entry.getKey().array();

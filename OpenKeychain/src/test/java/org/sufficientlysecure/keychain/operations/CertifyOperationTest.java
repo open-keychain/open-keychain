@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyActio
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -72,17 +73,17 @@ public class CertifyOperationTest {
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         {
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
-            parcel.mAddUserIds.add("derp");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase1));
+            builder.addUserId("derp");
+            builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(mKeyPhrase1));
 
-            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
             Assert.assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
@@ -90,23 +91,22 @@ public class CertifyOperationTest {
         }
 
         {
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
 
-            parcel.mAddUserIds.add("ditz");
+            builder.addUserId("ditz");
             byte[] uatdata = new byte[random.nextInt(150)+10];
             random.nextBytes(uatdata);
-            parcel.mAddUserAttribute.add(
-                    WrappedUserAttribute.fromSubpacket(random.nextInt(100)+1, uatdata));
+            builder.addUserAttribute(WrappedUserAttribute.fromSubpacket(random.nextInt(100)+1, uatdata));
 
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase2));
+            builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(mKeyPhrase2));
 
-            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
             Assert.assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
@@ -153,10 +153,10 @@ public class CertifyOperationTest {
                     Certs.UNVERIFIED, ring.getVerified());
         }
 
-        CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
-        actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(),
-                mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
-        CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(), mKeyPhrase1));
+        CertifyActionsParcel.Builder actions = CertifyActionsParcel.builder(mStaticRing1.getMasterKeyId());
+        actions.addAction(CertifyAction.createForUserIds(mStaticRing2.getMasterKeyId(),
+                mStaticRing2.getPublicKey().getUnorderedUserIds()));
+        CertifyResult result = op.execute(actions.build(), CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));
 
         Assert.assertTrue("certification must succeed", result.success());
 
@@ -181,10 +181,10 @@ public class CertifyOperationTest {
                     Certs.UNVERIFIED, ring.getVerified());
         }
 
-        CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
-        actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(), null,
+        CertifyActionsParcel.Builder actions = CertifyActionsParcel.builder(mStaticRing1.getMasterKeyId());
+        actions.addAction(CertifyAction.createForUserAttributes(mStaticRing2.getMasterKeyId(),
                 mStaticRing2.getPublicKey().getUnorderedUserAttributes()));
-        CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(), mKeyPhrase1));
+        CertifyResult result = op.execute(actions.build(), CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));
 
         Assert.assertTrue("certification must succeed", result.success());
 
@@ -203,11 +203,11 @@ public class CertifyOperationTest {
         CertifyOperation op = new CertifyOperation(RuntimeEnvironment.application,
                 KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
 
-        CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
-        actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
-                mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
+        CertifyActionsParcel.Builder actions = CertifyActionsParcel.builder(mStaticRing1.getMasterKeyId());
+        actions.addAction(CertifyAction.createForUserIds(mStaticRing1.getMasterKeyId(),
+                mStaticRing2.getPublicKey().getUnorderedUserIds()));
 
-        CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(), mKeyPhrase1));
+        CertifyResult result = op.execute(actions.build(), CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));
 
         Assert.assertFalse("certification with itself must fail!", result.success());
         Assert.assertTrue("error msg must be about self certification",
@@ -221,12 +221,12 @@ public class CertifyOperationTest {
                 KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
 
         {
-            CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
+            CertifyActionsParcel.Builder actions = CertifyActionsParcel.builder(mStaticRing1.getMasterKeyId());
             ArrayList<String> uids = new ArrayList<String>();
             uids.add("nonexistent");
-            actions.add(new CertifyAction(1234L, uids, null));
+            actions.addAction(CertifyAction.createForUserIds(1234L, uids));
 
-            CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(),
+            CertifyResult result = op.execute(actions.build(), CryptoInputParcel.createCryptoInputParcel(new Date(),
                     mKeyPhrase1));
 
             Assert.assertFalse("certification of nonexistent key must fail", result.success());
@@ -235,11 +235,11 @@ public class CertifyOperationTest {
         }
 
         {
-            CertifyActionsParcel actions = new CertifyActionsParcel(1234L);
-            actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
-                    mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
+            CertifyActionsParcel.Builder actions = CertifyActionsParcel.builder(1234L);
+            actions.addAction(CertifyAction.createForUserIds(mStaticRing1.getMasterKeyId(),
+                    mStaticRing2.getPublicKey().getUnorderedUserIds()));
 
-            CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(),
+            CertifyResult result = op.execute(actions.build(), CryptoInputParcel.createCryptoInputParcel(new Date(),
                     mKeyPhrase1));
 
             Assert.assertFalse("certification of nonexistent key must fail", result.success());

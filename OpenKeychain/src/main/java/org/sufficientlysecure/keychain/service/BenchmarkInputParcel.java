@@ -19,36 +19,16 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import android.os.Parcel;
+
 import android.os.Parcelable;
 
+import com.google.auto.value.AutoValue;
 
-public class BenchmarkInputParcel implements Parcelable {
 
-    public BenchmarkInputParcel() {
+@AutoValue
+public abstract class BenchmarkInputParcel implements Parcelable {
+
+    public static BenchmarkInputParcel newInstance() {
+        return new AutoValue_BenchmarkInputParcel();
     }
-
-    protected BenchmarkInputParcel(Parcel in) {
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-    }
-
-    public static final Creator<BenchmarkInputParcel> CREATOR = new Creator<BenchmarkInputParcel>() {
-        @Override
-        public BenchmarkInputParcel createFromParcel(Parcel in) {
-            return new BenchmarkInputParcel(in);
-        }
-
-        @Override
-        public BenchmarkInputParcel[] newArray(int size) {
-            return new BenchmarkInputParcel[size];
-        }
-    };
 }

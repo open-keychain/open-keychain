@@ -152,9 +152,11 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(mContext, mKeyRepository, mProgressable);
 
-            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(messageBytes);
+            PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder()
+                    .setInputBytes(messageBytes)
+                    .build();
 
-            DecryptVerifyResult decryptVerifyResult = op.execute(input, new CryptoInputParcel());
+            DecryptVerifyResult decryptVerifyResult = op.execute(input, CryptoInputParcel.createCryptoInputParcel());
 
             if (!decryptVerifyResult.success()) {
                 log.add(decryptVerifyResult, 1);

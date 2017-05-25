@@ -129,7 +129,7 @@ public class ImportKeysListCloudLoader
                 mEntryList.clear();
                 GetKeyResult pendingResult = new GetKeyResult(null,
                         RequiredInputParcel.createOrbotRequiredOperation(),
-                        new CryptoInputParcel());
+                        CryptoInputParcel.createCryptoInputParcel());
                 mEntryListWrapper = new AsyncTaskResultWrapper<>(mEntryList, pendingResult);
                 return;
             }

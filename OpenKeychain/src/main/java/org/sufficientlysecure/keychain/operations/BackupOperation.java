@@ -71,7 +71,7 @@ import org.sufficientlysecure.keychain.util.Log;
  * This class receives a source and/or destination of keys as input and performs
  * all steps for this backup.
  *
- * @see org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter#getSelectedEntries()
+ * see org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter#getSelectedEntries()
  * For the backup operation, the input consists of a set of key ids and
  * either the name of a file or an output uri to write to.
  */
@@ -104,8 +104,8 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                                 OutputStream outputStream) {
 
         OperationLog log = new OperationLog();
-        if (backupInput.mMasterKeyIds != null) {
-            log.add(LogType.MSG_BACKUP, 0, backupInput.mMasterKeyIds.length);
+        if (backupInput.getMasterKeyIds() != null) {
+            log.add(LogType.MSG_BACKUP, 0, backupInput.getMasterKeyIds().length);
         } else {
             log.add(LogType.MSG_BACKUP_ALL, 0);
         }
@@ -113,7 +113,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
         try {
             Uri plainUri = null;
             OutputStream plainOut;
-            if (backupInput.mIsEncrypted) {
+            if (backupInput.getIsEncrypted()) {
                 if (cryptoInput == null) {
                     throw new IllegalStateException("Encrypted backup must supply cryptoInput parameter");
                 }
@@ -121,23 +121,23 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                 plainUri = TemporaryFileProvider.createFile(mContext);
                 plainOut = mContext.getContentResolver().openOutputStream(plainUri);
             } else {
-                if (backupInput.mOutputUri == null || outputStream != null) {
+                if (backupInput.getOutputUri() == null || outputStream != null) {
                     throw new IllegalArgumentException("Unencrypted export to output stream is not supported!");
                 } else {
-                    plainOut = mContext.getContentResolver().openOutputStream(backupInput.mOutputUri);
+                    plainOut = mContext.getContentResolver().openOutputStream(backupInput.getOutputUri());
                 }
             }
 
             CountingOutputStream outStream = new CountingOutputStream(new BufferedOutputStream(plainOut));
             boolean backupSuccess = exportKeysToStream(
-                    log, backupInput.mMasterKeyIds, backupInput.mExportSecret, outStream);
+                    log, backupInput.getMasterKeyIds(), backupInput.getExportSecret(), outStream);
 
             if (!backupSuccess) {
                 // if there was an error, it will be in the log so we just have to return
                 return new ExportResult(ExportResult.RESULT_ERROR, log);
             }
 
-            if (!backupInput.mIsEncrypted) {
+            if (!backupInput.getIsEncrypted()) {
                 // log.add(LogType.MSG_EXPORT_NO_ENCRYPT, 1);
                 log.add(LogType.MSG_BACKUP_SUCCESS, 1);
                 return new ExportResult(ExportResult.RESULT_OK, log);
@@ -170,27 +170,29 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             throws FileNotFoundException {
         PgpSignEncryptOperation signEncryptOperation = new PgpSignEncryptOperation(mContext, mKeyRepository, mProgressable, mCancelled);
 
-        PgpSignEncryptData data = new PgpSignEncryptData();
-        data.setSymmetricPassphrase(cryptoInput.getPassphrase());
-        data.setEnableAsciiArmorOutput(backupInput.mEnableAsciiArmorOutput);
-        data.setAddBackupHeader(true);
-        PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(data);
+        PgpSignEncryptData.Builder builder = PgpSignEncryptData.builder();
+        builder.setSymmetricPassphrase(cryptoInput.getPassphrase());
+        builder.setEnableAsciiArmorOutput(backupInput.getEnableAsciiArmorOutput());
+        builder.setAddBackupHeader(true);
+        PgpSignEncryptData pgpSignEncryptData = builder.build();
 
         InputStream inStream = mContext.getContentResolver().openInputStream(plainUri);
 
         String filename;
-        if (backupInput.mMasterKeyIds != null && backupInput.mMasterKeyIds.length == 1) {
-            filename = Constants.FILE_BACKUP_PREFIX + KeyFormattingUtils.convertKeyIdToHex(backupInput.mMasterKeyIds[0]);
+        long[] masterKeyIds = backupInput.getMasterKeyIds();
+        if (masterKeyIds != null && masterKeyIds.length == 1) {
+            filename = Constants.FILE_BACKUP_PREFIX + KeyFormattingUtils.convertKeyIdToHex(
+                    masterKeyIds[0]);
         } else {
             filename = Constants.FILE_BACKUP_PREFIX + new SimpleDateFormat("yyyy-MM-dd", Locale
                     .getDefault()).format(new Date());
         }
-        filename += backupInput.mExportSecret ? Constants.FILE_EXTENSION_BACKUP_SECRET : Constants.FILE_EXTENSION_BACKUP_PUBLIC;
+        filename += backupInput.getExportSecret() ? Constants.FILE_EXTENSION_BACKUP_SECRET : Constants.FILE_EXTENSION_BACKUP_PUBLIC;
 
         InputData inputData = new InputData(inStream, exportedDataSize, filename);
 
         OutputStream outStream;
-        if (backupInput.mOutputUri == null) {
+        if (backupInput.getOutputUri() == null) {
             if (outputStream == null) {
                 throw new IllegalArgumentException("If output uri is not set, outputStream must not be null!");
             }
@@ -199,10 +201,11 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             if (outputStream != null) {
                 throw new IllegalArgumentException("If output uri is set, outputStream must null!");
             }
-            outStream = mContext.getContentResolver().openOutputStream(backupInput.mOutputUri);
+            outStream = mContext.getContentResolver().openOutputStream(backupInput.getOutputUri());
         }
 
-        return signEncryptOperation.execute(inputParcel, new CryptoInputParcel(), inputData, outStream);
+        return signEncryptOperation.execute(
+                pgpSignEncryptData, CryptoInputParcel.createCryptoInputParcel(), inputData, outStream);
     }
 
     boolean exportKeysToStream(OperationLog log, long[] masterKeyIds, boolean exportSecret, OutputStream outStream) {

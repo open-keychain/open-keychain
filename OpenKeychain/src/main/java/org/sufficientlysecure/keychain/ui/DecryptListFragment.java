@@ -637,9 +637,9 @@ public class DecryptListFragment
             return null;
         }
 
-        PgpDecryptVerifyInputParcel decryptInput = new PgpDecryptVerifyInputParcel()
+        PgpDecryptVerifyInputParcel.Builder decryptInput = PgpDecryptVerifyInputParcel.builder()
                 .setAllowSymmetricDecryption(true);
-        return new InputDataParcel(mCurrentInputUri, decryptInput);
+        return InputDataParcel.createInputDataParcel(mCurrentInputUri, decryptInput.build());
 
     }
 
@@ -779,7 +779,7 @@ public class DecryptListFragment
 
             @Override
             public ImportKeyringParcel createOperationInput() {
-                return new ImportKeyringParcel(keyList, keyserver);
+                return ImportKeyringParcel.createImportKeyringParcel(keyList, keyserver);
             }
 
             @Override

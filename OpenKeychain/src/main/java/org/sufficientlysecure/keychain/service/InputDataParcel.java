@@ -17,65 +17,24 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
 
+import android.net.Uri;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
+
+import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 
 
-public class InputDataParcel implements Parcelable {
+@AutoValue
+public abstract class InputDataParcel implements Parcelable {
+    public abstract Uri getInputUri();
+    @Nullable
+    public abstract PgpDecryptVerifyInputParcel getDecryptInput();
+    public abstract boolean getMimeDecode(); // TODO static value - ditch this?
 
-    private Uri mInputUri;
-
-    private PgpDecryptVerifyInputParcel mDecryptInput;
-    private boolean mMimeDecode = true; // TODO default to false
-
-    public InputDataParcel(Uri inputUri, PgpDecryptVerifyInputParcel decryptInput) {
-        mInputUri = inputUri;
-        mDecryptInput = decryptInput;
+    public static InputDataParcel createInputDataParcel(Uri inputUri, PgpDecryptVerifyInputParcel decryptInput) {
+        return new AutoValue_InputDataParcel(inputUri, decryptInput, true);
     }
-
-    InputDataParcel(Parcel source) {
-        // we do all of those here, so the PgpSignEncryptInput class doesn't have to be parcelable
-        mInputUri = source.readParcelable(getClass().getClassLoader());
-        mDecryptInput = source.readParcelable(getClass().getClassLoader());
-        mMimeDecode = source.readInt() != 0;
-    }
-
-    public Uri getInputUri() {
-        return mInputUri;
-    }
-
-    public PgpDecryptVerifyInputParcel getDecryptInput() {
-        return mDecryptInput;
-    }
-
-    public boolean getMimeDecode() {
-        return mMimeDecode;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mInputUri, 0);
-        dest.writeParcelable(mDecryptInput, 0);
-        dest.writeInt(mMimeDecode ? 1 : 0);
-    }
-
-    public static final Creator<InputDataParcel> CREATOR = new Creator<InputDataParcel>() {
-        public InputDataParcel createFromParcel(final Parcel source) {
-            return new InputDataParcel(source);
-        }
-
-        public InputDataParcel[] newArray(final int size) {
-            return new InputDataParcel[size];
-        }
-    };
-
 }
 

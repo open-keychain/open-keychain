@@ -213,7 +213,7 @@ public class ViewKeySecurityTokenFragment
 
     @Override
     public PromoteKeyringParcel createOperationInput() {
-        return new PromoteKeyringParcel(mMasterKeyId, mCardAid, mSubKeyIds);
+        return PromoteKeyringParcel.createPromoteKeyringParcel(mMasterKeyId, mCardAid, mSubKeyIds);
     }
 
     @Override

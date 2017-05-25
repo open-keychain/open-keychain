@@ -39,7 +39,7 @@ public class ConsolidateOperation extends BaseReadWriteOperation<ConsolidateInpu
     @Override
     public ConsolidateResult execute(ConsolidateInputParcel consolidateInputParcel,
                                      CryptoInputParcel cryptoInputParcel) {
-        if (consolidateInputParcel.mConsolidateRecovery) {
+        if (consolidateInputParcel.isStartFromRecovery()) {
             return mKeyWritableRepository.consolidateDatabaseStep2(mProgressable);
         } else {
             return mKeyWritableRepository.consolidateDatabaseStep1(mProgressable);

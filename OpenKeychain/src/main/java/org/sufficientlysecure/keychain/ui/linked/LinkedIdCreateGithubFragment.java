@@ -96,7 +96,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
     byte[] mFingerprint;
     long mMasterKeyId;
-    private SaveKeyringParcel mSaveKeyringParcel;
+    private SaveKeyringParcel.Builder mSkpBuilder;
     private TextView mLinkedIdTitle, mLinkedIdComment;
     private boolean mFinishOnStop;
 
@@ -405,13 +405,10 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 WrappedUserAttribute ua = LinkedAttribute.fromResource(resource).toUserAttribute();
-                mSaveKeyringParcel = new SaveKeyringParcel(mMasterKeyId, mFingerprint);
-                mSaveKeyringParcel.mAddUserAttribute.add(ua);
-
+                mSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(mMasterKeyId, mFingerprint);
+                mSkpBuilder.addUserAttribute(ua);
                 cryptoOperation();
-
             }
         }, 250);
 
@@ -421,7 +418,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     @Override
     public SaveKeyringParcel createOperationInput() {
         // if this is null, the cryptoOperation silently aborts - which is what we want in that case
-        return mSaveKeyringParcel;
+        return mSkpBuilder.build();
     }
 
     @Override

@@ -206,7 +206,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
                     byte[] decryptedSessionKey = mSecurityTokenHelper.decryptSessionKey(encryptedSessionKey, publicKeyRing.getPublicKey(tokenKeyId));
-                    mInputParcel.addCryptoData(encryptedSessionKey, decryptedSessionKey);
+                    mInputParcel = mInputParcel.withCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
                 break;
             }
@@ -218,13 +218,13 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
-                mInputParcel.addSignatureTime(mRequiredInput.mSignatureTime);
+                mInputParcel = mInputParcel.withSignatureTime(mRequiredInput.mSignatureTime);
 
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
                     byte[] signedHash = mSecurityTokenHelper.calculateSignature(hash, algo);
-                    mInputParcel.addCryptoData(hash, signedHash);
+                    mInputParcel = mInputParcel.withCryptoData(hash, signedHash);
                 }
                 break;
             }
@@ -266,7 +266,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     mSecurityTokenHelper.changeKey(key, passphrase);
 
                     // TODO: Is this really used anywhere?
-                    mInputParcel.addCryptoData(subkeyBytes, tokenSerialNumber);
+                    mInputParcel = mInputParcel.withCryptoData(subkeyBytes, tokenSerialNumber);
                 }
 
                 // change PINs afterwards

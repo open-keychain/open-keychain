@@ -17,6 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -38,7 +43,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -48,10 +53,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 public class EncryptTextFragment
         extends CachingCryptoOperationFragment<SignEncryptParcel, SignEncryptResult> {
@@ -181,18 +182,18 @@ public class EncryptTextFragment
             case R.id.encrypt_copy: {
                 hideKeyboard();
                 mShareAfterEncrypt = false;
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_share: {
                 hideKeyboard();
                 mShareAfterEncrypt = true;
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_paste: {
                 hideKeyboard();
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             default: {
@@ -233,22 +234,14 @@ public class EncryptTextFragment
         }
 
         // fill values for this action
-        PgpSignEncryptData data = new PgpSignEncryptData();
+        PgpSignEncryptData.Builder data = PgpSignEncryptData.builder();
 
         data.setCleartextSignature(true);
 
-        if (mUseCompression) {
-            data.setCompressionAlgorithm(
-                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT);
-        } else {
-            data.setCompressionAlgorithm(
-                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
+        if (!mUseCompression) {
+            data.setCompressionAlgorithm(OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
         }
         data.setHiddenRecipients(mHiddenRecipients);
-        data.setSymmetricEncryptionAlgorithm(
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
-        data.setSignatureHashAlgorithm(
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
 
         // Always use armor for messages
         data.setEnableAsciiArmorOutput(true);
@@ -286,10 +279,7 @@ public class EncryptTextFragment
             data.setSymmetricPassphrase(passphrase);
         }
 
-        SignEncryptParcel parcel = new SignEncryptParcel(data);
-        parcel.setBytes(mMessage.getBytes());
-
-        return parcel;
+        return SignEncryptParcel.createSignEncryptParcel(data.build(), mMessage.getBytes());
     }
 
     private void copyToClipboard(SignEncryptResult result) {

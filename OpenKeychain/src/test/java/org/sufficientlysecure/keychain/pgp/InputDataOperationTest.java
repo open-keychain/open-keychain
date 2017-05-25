@@ -128,9 +128,9 @@ public class InputDataOperationTest {
         InputDataOperation op = new InputDataOperation(spyApplication,
                 KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
-        InputDataParcel input = new InputDataParcel(fakeInputUri, null);
+        InputDataParcel input = InputDataParcel.createInputDataParcel(fakeInputUri, null);
 
-        InputDataResult result = op.execute(input, new CryptoInputParcel());
+        InputDataResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel());
 
         // must be successful, no verification, have two output URIs
         Assert.assertTrue(result.success());
@@ -308,8 +308,8 @@ public class InputDataOperationTest {
         InputDataOperation op = new InputDataOperation(spyApplication,
                 KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
-        InputDataParcel input = new InputDataParcel(FAKE_CONTENT_INPUT_URI_1, null);
-        return op.execute(input, new CryptoInputParcel());
+        InputDataParcel input = InputDataParcel.createInputDataParcel(FAKE_CONTENT_INPUT_URI_1, null);
+        return op.execute(input, CryptoInputParcel.createCryptoInputParcel());
     }
 
 }

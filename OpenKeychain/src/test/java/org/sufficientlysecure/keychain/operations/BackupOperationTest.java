@@ -58,6 +58,7 @@ import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -94,17 +95,17 @@ public class BackupOperationTest {
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         {
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
-            parcel.mAddUserIds.add("snips");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase1));
+            builder.addUserId("snips");
+            builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(mKeyPhrase1));
 
-            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
             assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
@@ -112,17 +113,17 @@ public class BackupOperationTest {
         }
 
         {
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
-            parcel.mAddUserIds.add("snails");
-            parcel.setNewUnlock(new ChangeUnlockParcel(new Passphrase("1234")));
+            builder.addUserId("snails");
+            builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase("1234")));
 
-            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
             assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
@@ -251,7 +252,7 @@ public class BackupOperationTest {
         BackupOperation op = new BackupOperation(spyApplication,
                 KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
-        BackupKeyringParcel parcel = new BackupKeyringParcel(
+        BackupKeyringParcel parcel = BackupKeyringParcel.createBackupKeyringParcel(
                 new long[] { mStaticRing1.getMasterKeyId() }, false, false, true, fakeOutputUri);
 
         ExportResult result = op.execute(parcel, null);
@@ -308,9 +309,9 @@ public class BackupOperationTest {
             BackupOperation op = new BackupOperation(spyApplication,
                     KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
-            BackupKeyringParcel parcel = new BackupKeyringParcel(
+            BackupKeyringParcel parcel = BackupKeyringParcel.createBackupKeyringParcel(
                     new long[] { mStaticRing1.getMasterKeyId() }, false, true, true, fakeOutputUri);
-            CryptoInputParcel inputParcel = new CryptoInputParcel(passphrase);
+            CryptoInputParcel inputParcel = CryptoInputParcel.createCryptoInputParcel(passphrase);
             ExportResult result = op.execute(parcel, inputParcel);
 
             verify(mockResolver).openOutputStream(fakePipedUri);
@@ -326,23 +327,26 @@ public class BackupOperationTest {
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
 
-            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(outStream.toByteArray());
-            input.setAllowSymmetricDecryption(true);
+            PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder()
+                    .setAllowSymmetricDecryption(true)
+                    .setInputBytes(outStream.toByteArray())
+                    .build();
 
             {
-                DecryptVerifyResult result = op.execute(input, new CryptoInputParcel());
+                DecryptVerifyResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel());
                 assertTrue("decryption must return pending without passphrase", result.isPending());
                 Assert.assertTrue("should contain pending passphrase log entry",
                         result.getLog().containsType(LogType.MSG_DC_PENDING_PASSPHRASE));
             }
             {
-                DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(new Passphrase("bad")));
+                DecryptVerifyResult result = op.execute(input,
+                        CryptoInputParcel.createCryptoInputParcel(new Passphrase("bad")));
                 assertFalse("decryption must fail with bad passphrase", result.success());
                 Assert.assertTrue("should contain bad passphrase log entry",
                         result.getLog().containsType(LogType.MSG_DC_ERROR_SYM_PASSPHRASE));
             }
 
-            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(passphrase));
+            DecryptVerifyResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel(passphrase));
             assertTrue("decryption must succeed with passphrase", result.success());
 
             assertEquals("backup filename should be backup_keyid.pub.asc",

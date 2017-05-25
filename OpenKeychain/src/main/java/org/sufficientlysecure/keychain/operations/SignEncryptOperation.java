@@ -26,7 +26,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
@@ -36,13 +35,11 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 
@@ -76,20 +73,6 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
 
         SecurityTokenSignOperationsBuilder pendingInputBuilder = null;
 
-        PgpSignEncryptData data = input.getData();
-        // if signing subkey has not explicitly been set, get first usable subkey capable of signing
-        if (data.getSignatureMasterKeyId() != Constants.key.none
-                && data.getSignatureSubKeyId() == null) {
-            try {
-                long signKeyId = mKeyRepository.getCachedPublicKeyRing(
-                        data.getSignatureMasterKeyId()).getSecretSignId();
-                data.setSignatureSubKeyId(signKeyId);
-            } catch (PgpKeyNotFoundException e) {
-                Log.e(Constants.TAG, "Key not found", e);
-                return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log, results);
-            }
-        }
-
         do {
             if (checkCancelled()) {
                 log.add(LogType.MSG_OPERATION_CANCELLED, 0);
@@ -98,13 +81,14 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(mContext, mKeyRepository,
                     new ProgressScaler(mProgressable, 100 * count / total, 100 * ++count / total, 100), mCancelled);
-            PgpSignEncryptInputParcel inputParcel = new PgpSignEncryptInputParcel(input.getData());
+            PgpSignEncryptInputParcel inputParcel;
             if (inputBytes != null) {
-                inputParcel.setInputBytes(inputBytes);
+                inputParcel = PgpSignEncryptInputParcel.createForBytes(
+                        input.getSignEncryptData(), outputUris.pollFirst(), inputBytes);
             } else {
-                inputParcel.setInputUri(inputUris.removeFirst());
+                inputParcel = PgpSignEncryptInputParcel.createForInputUri(
+                        input.getSignEncryptData(), outputUris.pollFirst(), inputUris.removeFirst());
             }
-            inputParcel.setOutputUri(outputUris.pollFirst());
 
             PgpSignEncryptResult result = op.execute(inputParcel, cryptoInput);
             results.add(result);
@@ -118,7 +102,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
                 }
                 if (pendingInputBuilder == null) {
                     pendingInputBuilder = new SecurityTokenSignOperationsBuilder(requiredInput.mSignatureTime,
-                            data.getSignatureMasterKeyId(), data.getSignatureSubKeyId());
+                            requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
                 }
                 pendingInputBuilder.addAll(requiredInput);
             } else if (!result.success()) {

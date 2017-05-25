@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -68,17 +69,17 @@ public class PromoteKeyOperationTest {
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         {
-            SaveKeyringParcel parcel = new SaveKeyringParcel();
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
-            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+            builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
-            parcel.mAddUserIds.add("derp");
-            parcel.setNewUnlock(new ChangeUnlockParcel(mKeyPhrase1));
+            builder.addUserId("derp");
+            builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(mKeyPhrase1));
 
-            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+            PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
             Assert.assertTrue("initial test key creation must succeed", result.success());
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
@@ -106,7 +107,8 @@ public class PromoteKeyOperationTest {
         PromoteKeyOperation op = new PromoteKeyOperation(RuntimeEnvironment.application,
                 KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null, null);
 
-        PromoteKeyResult result = op.execute(new PromoteKeyringParcel(mStaticRing.getMasterKeyId(), null, null), null);
+        PromoteKeyResult result = op.execute(
+                PromoteKeyringParcel.createPromoteKeyringParcel(mStaticRing.getMasterKeyId(), null, null), null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 
@@ -132,7 +134,8 @@ public class PromoteKeyOperationTest {
 
         byte[] aid = Hex.decode("D2760001240102000000012345670000");
 
-        PromoteKeyResult result = op.execute(new PromoteKeyringParcel(mStaticRing.getMasterKeyId(), aid, null), null);
+        PromoteKeyResult result = op.execute(
+                PromoteKeyringParcel.createPromoteKeyringParcel(mStaticRing.getMasterKeyId(), aid, null), null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 
@@ -160,9 +163,10 @@ public class PromoteKeyOperationTest {
         // only promote the first, rest stays dummy
         long keyId = KeyringTestingHelper.getSubkeyId(mStaticRing, 1);
 
-        PromoteKeyResult result = op.execute(new PromoteKeyringParcel(mStaticRing.getMasterKeyId(), aid, new long[] {
-            keyId
-        }), null);
+        PromoteKeyResult result = op.execute(
+                PromoteKeyringParcel.createPromoteKeyringParcel(mStaticRing.getMasterKeyId(), aid, new long[] {
+                    keyId
+                }), null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 

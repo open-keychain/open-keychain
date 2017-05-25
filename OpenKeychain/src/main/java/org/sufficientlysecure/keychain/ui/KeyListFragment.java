@@ -519,7 +519,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
             @Override
             public ImportKeyringParcel createOperationInput() {
-                return new ImportKeyringParcel(mKeyList, mKeyserver);
+                return ImportKeyringParcel.createImportKeyringParcel(mKeyList, mKeyserver);
             }
 
             @Override
@@ -553,7 +553,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
             @Override
             public ConsolidateInputParcel createOperationInput() {
-                return new ConsolidateInputParcel(false); // we want to perform a full consolidate
+                return ConsolidateInputParcel.createConsolidateInputParcel(false); // we want to perform a full consolidate
             }
 
             @Override
@@ -586,7 +586,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
             @Override
             public BenchmarkInputParcel createOperationInput() {
-                return new BenchmarkInputParcel(); // we want to perform a full consolidate
+                return BenchmarkInputParcel.newInstance(); // we want to perform a full consolidate
             }
 
             @Override

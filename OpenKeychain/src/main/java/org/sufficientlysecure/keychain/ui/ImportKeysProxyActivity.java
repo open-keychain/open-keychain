@@ -223,7 +223,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
 
     @Override
     public ImportKeyringParcel createOperationInput() {
-        return new ImportKeyringParcel(mKeyList, mKeyserver);
+        return ImportKeyringParcel.createImportKeyringParcel(mKeyList, mKeyserver);
     }
 
     @Override

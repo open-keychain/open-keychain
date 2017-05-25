@@ -18,104 +18,33 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
 import android.net.Uri;
-import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
-import java.util.HashSet;
+import com.google.auto.value.AutoValue;
 
 
-public class PgpSignEncryptInputParcel implements Parcelable {
+@AutoValue
+public abstract class PgpSignEncryptInputParcel implements Parcelable {
+    public abstract PgpSignEncryptData getData();
+    @Nullable
+    public abstract Uri getOutputUri();
+    @Nullable
+    public abstract Uri getInputUri();
+    @Nullable
+    @SuppressWarnings("mutable")
+    public abstract byte[] getInputBytes();
 
-    private PgpSignEncryptData data;
-
-    private Uri mInputUri;
-    private Uri mOutputUri;
-    private byte[] mInputBytes;
-
-    private HashSet<Long> mAllowedKeyIds;
-
-    public PgpSignEncryptInputParcel(PgpSignEncryptData data) {
-        this.data = data;
+    public static PgpSignEncryptInputParcel createForBytes(
+            PgpSignEncryptData signEncryptData, Uri outputUri, byte[] inputBytes) {
+        return new AutoValue_PgpSignEncryptInputParcel(signEncryptData, outputUri, null, inputBytes);
     }
 
-    PgpSignEncryptInputParcel(Parcel source) {
-        mInputUri = source.readParcelable(getClass().getClassLoader());
-        mOutputUri = source.readParcelable(getClass().getClassLoader());
-        mInputBytes = source.createByteArray();
-
-        data = source.readParcelable(getClass().getClassLoader());
-
-        mAllowedKeyIds  = (HashSet<Long>) source.readSerializable();
+    public static PgpSignEncryptInputParcel createForInputUri(
+            PgpSignEncryptData signEncryptData, Uri outputUri, Uri inputUri) {
+        return new AutoValue_PgpSignEncryptInputParcel(signEncryptData, outputUri, inputUri, null);
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mInputUri, 0);
-        dest.writeParcelable(mOutputUri, 0);
-        dest.writeByteArray(mInputBytes);
-
-        data.writeToParcel(dest, 0);
-
-        dest.writeSerializable(mAllowedKeyIds);
-    }
-
-    public void setInputBytes(byte[] inputBytes) {
-        this.mInputBytes = inputBytes;
-    }
-
-    byte[] getInputBytes() {
-        return mInputBytes;
-    }
-
-    public PgpSignEncryptInputParcel setInputUri(Uri uri) {
-        mInputUri = uri;
-        return this;
-    }
-
-    Uri getInputUri() {
-        return mInputUri;
-    }
-
-    public PgpSignEncryptInputParcel setOutputUri(Uri uri) {
-        mOutputUri = uri;
-        return this;
-    }
-
-    Uri getOutputUri() {
-        return mOutputUri;
-    }
-
-    public void setData(PgpSignEncryptData data) {
-        this.data = data;
-    }
-
-    public PgpSignEncryptData getData() {
-        return data;
-    }
-
-    HashSet<Long> getAllowedKeyIds() {
-        return mAllowedKeyIds;
-    }
-
-    public void setAllowedKeyIds(HashSet<Long> allowedKeyIds) {
-        mAllowedKeyIds = allowedKeyIds;
-    }
-
-    public static final Creator<PgpSignEncryptInputParcel> CREATOR = new Creator<PgpSignEncryptInputParcel>() {
-        public PgpSignEncryptInputParcel createFromParcel(final Parcel source) {
-            return new PgpSignEncryptInputParcel(source);
-        }
-
-        public PgpSignEncryptInputParcel[] newArray(final int size) {
-            return new PgpSignEncryptInputParcel[size];
-        }
-    };
-
 }
 

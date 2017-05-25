@@ -70,7 +70,7 @@ public class OrbotRequiredDialogActivity extends FragmentActivity
         mCryptoInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
         if (mCryptoInputParcel == null) {
             // compatibility with usages that don't use a CryptoInputParcel
-            mCryptoInputParcel = new CryptoInputParcel();
+            mCryptoInputParcel = CryptoInputParcel.createCryptoInputParcel();
         }
 
         mMessenger = getIntent().getParcelableExtra(EXTRA_MESSENGER);
@@ -147,7 +147,7 @@ public class OrbotRequiredDialogActivity extends FragmentActivity
     public void onNeutralButton() {
         sendMessage(MESSAGE_ORBOT_IGNORE);
         Intent intent = new Intent();
-        mCryptoInputParcel.addParcelableProxy(ParcelableProxy.getForNoProxy());
+        mCryptoInputParcel = mCryptoInputParcel.withParcelableProxy(ParcelableProxy.getForNoProxy());
         intent.putExtra(RESULT_CRYPTO_INPUT, mCryptoInputParcel);
         setResult(RESULT_OK, intent);
         finish();

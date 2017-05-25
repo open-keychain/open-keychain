@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
@@ -80,12 +81,13 @@ public class PgpCertifyOperation {
                 publicKey.getKeyID(), publicKey.getKeyID());
 
         try {
-            if (action.mUserIds != null) {
-                log.add(LogType.MSG_CRT_CERTIFY_UIDS, 2, action.mUserIds.size(),
-                        KeyFormattingUtils.convertKeyIdToHex(action.mMasterKeyId));
+            ArrayList<String> userIds = action.getUserIds();
+            if (userIds != null && !userIds.isEmpty()) {
+                log.add(LogType.MSG_CRT_CERTIFY_UIDS, 2, userIds.size(),
+                        KeyFormattingUtils.convertKeyIdToHex(action.getMasterKeyId()));
 
                 // fetch public key ring, add the certification and return it
-                for (String userId : action.mUserIds) {
+                for (String userId : userIds) {
                     try {
                         PGPSignature sig = signatureGenerator.generateCertification(userId, publicKey);
                         publicKey = PGPPublicKey.addCertification(publicKey, userId, sig);
@@ -96,12 +98,13 @@ public class PgpCertifyOperation {
 
             }
 
-            if (action.mUserAttributes != null) {
-                log.add(LogType.MSG_CRT_CERTIFY_UATS, 2, action.mUserAttributes.size(),
-                        KeyFormattingUtils.convertKeyIdToHex(action.mMasterKeyId));
+            ArrayList<WrappedUserAttribute> userAttributes = action.getUserAttributes();
+            if (userAttributes != null && !userAttributes.isEmpty()) {
+                log.add(LogType.MSG_CRT_CERTIFY_UATS, 2, userAttributes.size(),
+                        KeyFormattingUtils.convertKeyIdToHex(action.getMasterKeyId()));
 
                 // fetch public key ring, add the certification and return it
-                for (WrappedUserAttribute userAttribute : action.mUserAttributes) {
+                for (WrappedUserAttribute userAttribute : userAttributes) {
                     PGPUserAttributeSubpacketVector vector = userAttribute.getVector();
                     try {
                         PGPSignature sig = signatureGenerator.generateCertification(vector, publicKey);

@@ -19,61 +19,28 @@
 
 package org.sufficientlysecure.keychain.service;
 
+
 import android.net.Uri;
-import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
+
+import com.google.auto.value.AutoValue;
 
 
-public class BackupKeyringParcel implements Parcelable {
-    public Uri mCanonicalizedPublicKeyringUri;
+@AutoValue
+public abstract class BackupKeyringParcel implements Parcelable {
+    @Nullable
+    @SuppressWarnings("mutable")
+    public abstract long[] getMasterKeyIds();
+    public abstract boolean getExportSecret();
+    public abstract boolean getIsEncrypted();
+    public abstract boolean getEnableAsciiArmorOutput();
+    @Nullable
+    public abstract Uri getOutputUri();
 
-    public final boolean mExportSecret;
-    public final boolean mIsEncrypted;
-    public final boolean mEnableAsciiArmorOutput;
-    public final long mMasterKeyIds[];
-    public final Uri mOutputUri;
-
-    public BackupKeyringParcel(long[] masterKeyIds, boolean exportSecret, boolean isEncrypted, boolean enableAsciiArmorOutput, Uri outputUri) {
-        mMasterKeyIds = masterKeyIds;
-        mExportSecret = exportSecret;
-        mOutputUri = outputUri;
-        mIsEncrypted = isEncrypted;
-        mEnableAsciiArmorOutput = enableAsciiArmorOutput;
+    public static BackupKeyringParcel createBackupKeyringParcel(long[] masterKeyIds, boolean exportSecret,
+            boolean isEncrypted, boolean enableAsciiArmorOutput, Uri outputUri) {
+        return new AutoValue_BackupKeyringParcel(
+                masterKeyIds, exportSecret, isEncrypted, enableAsciiArmorOutput, outputUri);
     }
-
-    protected BackupKeyringParcel(Parcel in) {
-        mCanonicalizedPublicKeyringUri = (Uri) in.readValue(Uri.class.getClassLoader());
-        mExportSecret = in.readByte() != 0x00;
-        mOutputUri = (Uri) in.readValue(Uri.class.getClassLoader());
-        mMasterKeyIds = in.createLongArray();
-        mIsEncrypted = in.readInt() != 0;
-        mEnableAsciiArmorOutput = in.readInt() != 0;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(mCanonicalizedPublicKeyringUri);
-        dest.writeByte((byte) (mExportSecret ? 0x01 : 0x00));
-        dest.writeValue(mOutputUri);
-        dest.writeLongArray(mMasterKeyIds);
-        dest.writeInt(mIsEncrypted ? 1 : 0);
-        dest.writeInt(mEnableAsciiArmorOutput ? 1 : 0);
-    }
-
-    public static final Parcelable.Creator<BackupKeyringParcel> CREATOR = new Parcelable.Creator<BackupKeyringParcel>() {
-        @Override
-        public BackupKeyringParcel createFromParcel(Parcel in) {
-            return new BackupKeyringParcel(in);
-        }
-
-        @Override
-        public BackupKeyringParcel[] newArray(int size) {
-            return new BackupKeyringParcel[size];
-        }
-    };
 }

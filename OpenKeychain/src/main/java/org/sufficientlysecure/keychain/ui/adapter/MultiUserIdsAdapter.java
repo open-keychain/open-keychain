@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcel;
@@ -34,8 +37,6 @@ import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
-
-import java.util.ArrayList;
 
 public class MultiUserIdsAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
@@ -178,11 +179,12 @@ public class MultiUserIdsAdapter extends CursorAdapter {
                 p.recycle();
 
                 CertifyAction action = actions.get(keyId);
-                if (actions.get(keyId) == null) {
-                    actions.put(keyId, new CertifyAction(keyId, uids, null));
+                if (action == null) {
+                    action = CertifyAction.createForUserIds(keyId, uids);
                 } else {
-                    action.mUserIds.addAll(uids);
+                    action = action.withAddedUserIds(uids);
                 }
+                actions.put(keyId, action);
             }
         }
 

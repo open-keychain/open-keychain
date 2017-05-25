@@ -345,19 +345,19 @@ public class EncryptFilesFragment
             case R.id.encrypt_save: {
                 hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.SAVE;
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_share: {
                 hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.SHARE;
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_copy: {
                 hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.COPY;
-                cryptoOperation(new CryptoInputParcel(new Date()));
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 break;
             }
             case R.id.check_use_armor: {
@@ -577,12 +577,10 @@ public class EncryptFilesFragment
     }
 
     public SignEncryptParcel createOperationInput() {
-
         SignEncryptParcel actionsParcel = getCachedActionsParcel();
 
         // we have three cases here: nothing cached, cached except output, fully cached
         if (actionsParcel == null) {
-
             // clear output uris for now, they will be created by prepareOutputStreams later
             mOutputUris = null;
 
@@ -593,7 +591,6 @@ public class EncryptFilesFragment
             }
 
             cacheActionsParcel(actionsParcel);
-
         }
 
         // if it's incomplete, prepare output streams
@@ -606,9 +603,10 @@ public class EncryptFilesFragment
                 }
             }
 
-            actionsParcel.addOutputUris(mOutputUris);
+            actionsParcel = SignEncryptParcel.builder(actionsParcel)
+                    .addOutputUris(mOutputUris)
+                    .build();
             cacheActionsParcel(actionsParcel);
-
         }
 
         return actionsParcel;
@@ -623,21 +621,13 @@ public class EncryptFilesFragment
         }
 
         // fill values for this action
-        PgpSignEncryptData data = new PgpSignEncryptData();
+        PgpSignEncryptData.Builder data = PgpSignEncryptData.builder();
 
-        if (mUseCompression) {
-            data.setCompressionAlgorithm(
-                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT);
-        } else {
-            data.setCompressionAlgorithm(
-                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
+        if (!mUseCompression) {
+            data.setCompressionAlgorithm(PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
         }
         data.setHiddenRecipients(mHiddenRecipients);
         data.setEnableAsciiArmorOutput(mAfterEncryptAction == AfterEncryptAction.COPY || mUseArmor);
-        data.setSymmetricEncryptionAlgorithm(
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
-        data.setSignatureHashAlgorithm(
-                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
 
         EncryptActivity encryptActivity = (EncryptActivity) getActivity();
         EncryptModeFragment modeFragment = encryptActivity.getModeFragment();
@@ -675,10 +665,9 @@ public class EncryptFilesFragment
         }
 
 
-        SignEncryptParcel parcel = new SignEncryptParcel(data);
-        parcel.addInputUris(mFilesAdapter.getAsArrayList());
-
-        return parcel;
+        SignEncryptParcel.Builder builder = SignEncryptParcel.builder(data.build());
+        builder.addInputUris(mFilesAdapter.getAsArrayList());
+        return builder.build();
     }
 
     private Intent createSendIntent() {
@@ -733,7 +722,7 @@ public class EncryptFilesFragment
                     mOutputUris.add(data.getData());
                     // make sure this is correct at this point
                     mAfterEncryptAction = AfterEncryptAction.SAVE;
-                    cryptoOperation(new CryptoInputParcel(new Date()));
+                    cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     onCryptoOperationCancelled();
                 }

@@ -139,7 +139,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
     }
 
     private void startRevocationOperation() {
-        mRevokeOpHelper.cryptoOperation(new CryptoInputParcel(new Date(), false));
+        mRevokeOpHelper.cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date(), false));
     }
 
     private void startDeletionOperation() {
@@ -151,7 +151,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         return new CryptoOperationHelper.Callback<RevokeKeyringParcel, RevokeResult>() {
             @Override
             public RevokeKeyringParcel createOperationInput() {
-                return new RevokeKeyringParcel(mMasterKeyIds[0], true,
+                return RevokeKeyringParcel.createRevokeKeyringParcel(mMasterKeyIds[0], true,
                         (ParcelableHkpKeyserver) getIntent().getParcelableExtra(EXTRA_KEYSERVER));
             }
 
@@ -183,9 +183,12 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         return new CryptoOperationHelper.Callback<DeleteKeyringParcel, DeleteResult>() {
             @Override
             public DeleteKeyringParcel createOperationInput() {
-                return new DeleteKeyringParcel(mMasterKeyIds, mHasSecret);
+                if (mHasSecret) {
+                    return DeleteKeyringParcel.createDeleteSingleSecretKeyParcel(mMasterKeyIds[0]);
+                } else {
+                    return DeleteKeyringParcel.createDeletePublicKeysParcel(mMasterKeyIds);
+                }
             }
-
             @Override
             public void onCryptoOperationSuccess(DeleteResult result) {
                 returnResult(result);
