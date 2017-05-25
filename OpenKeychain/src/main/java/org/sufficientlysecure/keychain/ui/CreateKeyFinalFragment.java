@@ -63,6 +63,7 @@ import java.util.regex.Pattern;
 public class CreateKeyFinalFragment extends Fragment {
 
     public static final int REQUEST_EDIT_KEY = 0x00008007;
+    public static final String STATE_CUSTOM_CONFIGURATION = "state_save_keyring_parcel";
 
     TextView mNameEdit;
     TextView mEmailEdit;
@@ -72,7 +73,8 @@ public class CreateKeyFinalFragment extends Fragment {
     View mCustomKeyLayout;
     Button mCustomKeyRevertButton;
 
-    SaveKeyringParcel mSaveKeyringParcel;
+    private SaveKeyringParcel mSaveKeyringParcel;
+    private boolean isCustomConfiguration;
 
     private CryptoOperationHelper<UploadKeyringParcel, UploadResult> mUploadOpHelper;
     private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mCreateOpHelper;
@@ -228,6 +230,7 @@ public class CreateKeyFinalFragment extends Fragment {
     public void keyConfigUseCustom(SaveKeyringParcel customKeyConfiguration) {
         mSaveKeyringParcel = customKeyConfiguration;
         mCustomKeyLayout.setVisibility(View.VISIBLE);
+        isCustomConfiguration = true;
     }
 
     public void keyConfigRevertToDefault() {
@@ -237,6 +240,16 @@ public class CreateKeyFinalFragment extends Fragment {
         }
         mSaveKeyringParcel = createDefaultSaveKeyringParcel((CreateKeyActivity) activity);
         mCustomKeyLayout.setVisibility(View.GONE);
+        isCustomConfiguration = false;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (isCustomConfiguration) {
+            outState.putParcelable(STATE_CUSTOM_CONFIGURATION, mSaveKeyringParcel);
+        }
     }
 
     @Override
@@ -246,7 +259,9 @@ public class CreateKeyFinalFragment extends Fragment {
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
-        if (mSaveKeyringParcel == null) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_CUSTOM_CONFIGURATION)) {
+            keyConfigUseCustom(savedInstanceState.<SaveKeyringParcel>getParcelable(STATE_CUSTOM_CONFIGURATION));
+        } else {
             keyConfigRevertToDefault();
         }
 
