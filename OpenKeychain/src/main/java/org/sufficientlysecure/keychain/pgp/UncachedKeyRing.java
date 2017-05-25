@@ -947,19 +947,38 @@ public class UncachedKeyRing {
                     // If this key can sign, it MUST have a primary key binding certificate
                     if (needsPrimaryBinding) {
                         boolean ok = false;
-                        if (zert.getUnhashedSubPackets() != null) try {
-                            // Check all embedded signatures, if any of them fits
-                            PGPSignatureList list = zert.getUnhashedSubPackets().getEmbeddedSignatures();
-                            for (int i = 0; i < list.size(); i++) {
-                                WrappedSignature subsig = new WrappedSignature(list.get(i));
-                                if (subsig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
-                                    subsig.init(key);
-                                    if (subsig.verifySignature(masterKey, key)) {
-                                        ok = true;
-                                    } else {
-                                        log.add(LogType.MSG_KC_SUB_PRIMARY_BAD, indent);
-                                        badCerts += 1;
-                                        continue uids;
+                        try {
+                            if (zert.getUnhashedSubPackets() != null) {
+                                // Check all embedded signatures, if any of them fits
+                                PGPSignatureList list = zert.getUnhashedSubPackets().getEmbeddedSignatures();
+                                for (int i = 0; i < list.size(); i++) {
+                                    WrappedSignature subsig = new WrappedSignature(list.get(i));
+                                    if (subsig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
+                                        subsig.init(key);
+                                        if (subsig.verifySignature(masterKey, key)) {
+                                            ok = true;
+                                        } else {
+                                            log.add(LogType.MSG_KC_SUB_PRIMARY_BAD, indent);
+                                            badCerts += 1;
+                                            continue uids;
+                                        }
+                                    }
+                                }
+                            }
+                            if (!ok) {
+                                // Check all embedded signatures, if any of them fits
+                                PGPSignatureList list = zert.getHashedSubPackets().getEmbeddedSignatures();
+                                for (int i = 0; i < list.size(); i++) {
+                                    WrappedSignature subsig = new WrappedSignature(list.get(i));
+                                    if (subsig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
+                                        subsig.init(key);
+                                        if (subsig.verifySignature(masterKey, key)) {
+                                            ok = true;
+                                        } else {
+                                            log.add(LogType.MSG_KC_SUB_PRIMARY_BAD, indent);
+                                            badCerts += 1;
+                                            continue uids;
+                                        }
                                     }
                                 }
                             }
