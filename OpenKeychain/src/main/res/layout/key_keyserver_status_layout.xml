@@ -1,0 +1,65 @@
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/keyserver_status_layout"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:background="?selectableItemBackground"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/keyserver_icon"
+            tools:src="@drawable/ic_cloud_black_24dp"
+            tools:tint="@color/android_green_light"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/keyserver_status_title"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="@string/keyserver_title_published" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/keyserver_status_subtitle"
+                tools:text="Last updated: 2017-05-20" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/key_health_expander"
+            android:src="@drawable/ic_expand_more_black_24dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
+
+    </LinearLayout>
+
+</merge>
