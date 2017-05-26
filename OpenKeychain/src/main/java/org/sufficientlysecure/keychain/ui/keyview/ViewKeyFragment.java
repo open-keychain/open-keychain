@@ -45,13 +45,13 @@ import org.sufficientlysecure.keychain.ui.EditIdentitiesActivity;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
-import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthCardView;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.view.LinkedIdentitiesCardView;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.LinkedIdentitiesPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.LinkedIdentitiesPresenter.LinkedIdsFragMvpView;
-import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter;
+import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthView;
+import org.sufficientlysecure.keychain.ui.keyview.view.LinkedIdentitiesCardView;
+import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
@@ -80,7 +80,8 @@ public class ViewKeyFragment extends LoaderFragment implements LoaderManager.Loa
     SystemContactCardView mSystemContactCard;
     SystemContactPresenter mSystemContactPresenter;
 
-    KeyHealthCardView mKeyHealthCard;
+    KeyHealthView mKeyStatusHealth;
+
     KeyHealthPresenter mKeyHealthPresenter;
 
     private long mMasterKeyId;
@@ -123,7 +124,7 @@ public class ViewKeyFragment extends LoaderFragment implements LoaderManager.Loa
         });
 
         mSystemContactCard = (SystemContactCardView) view.findViewById(R.id.linked_system_contact_card);
-        mKeyHealthCard = (KeyHealthCardView) view.findViewById(R.id.subkey_status_card);
+        mKeyStatusHealth = (KeyHealthView) view.findViewById(R.id.key_status_health);
 
         return root;
     }
@@ -161,7 +162,7 @@ public class ViewKeyFragment extends LoaderFragment implements LoaderManager.Loa
         mSystemContactPresenter.startLoader(getLoaderManager());
 
         mKeyHealthPresenter = new KeyHealthPresenter(
-                getContext(), mKeyHealthCard, LOADER_ID_SUBKEY_STATUS, mMasterKeyId, mIsSecret);
+                getContext(), mKeyStatusHealth, LOADER_ID_SUBKEY_STATUS, mMasterKeyId, mIsSecret);
         mKeyHealthPresenter.startLoader(getLoaderManager());
     }
 

@@ -25,13 +25,13 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
@@ -46,7 +46,7 @@ import org.sufficientlysecure.keychain.ui.keyview.view.KeyStatusList.KeyDisplayS
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
-public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnClickListener {
+public class KeyHealthView extends LinearLayout implements KeyHealthMvpView, OnClickListener {
     private final View vLayout;
     private final TextView vTitle, vSubtitle;
     private final ImageView vIcon;
@@ -61,8 +61,10 @@ public class KeyHealthCardView extends CardView implements KeyHealthMvpView, OnC
 
     private KeyHealthClickListener keyHealthClickListener;
 
-    public KeyHealthCardView(Context context, AttributeSet attrs) {
+    public KeyHealthView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        setOrientation(VERTICAL);
 
         View view = LayoutInflater.from(context).inflate(R.layout.key_health_card_content, this, true);
 
