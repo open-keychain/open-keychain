@@ -20,48 +20,37 @@ package org.sufficientlysecure.keychain.ui.keyview;
 
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.ui.EditIdentitiesActivity;
-import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
-import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.LinkedIdentitiesPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.LinkedIdentitiesPresenter.LinkedIdsFragMvpView;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.ViewKeyMvpView;
+import org.sufficientlysecure.keychain.ui.keyview.view.IdentitiesCardView;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthView;
 import org.sufficientlysecure.keychain.ui.keyview.view.LinkedIdentitiesCardView;
 import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class ViewKeyFragment extends LoaderFragment implements LoaderManager.LoaderCallbacks<Cursor>,
-        LinkedIdsFragMvpView {
+public class ViewKeyFragment extends LoaderFragment implements LinkedIdsFragMvpView, ViewKeyMvpView {
 
     public static final String ARG_MASTER_KEY_ID = "master_key_id";
     public static final String ARG_IS_SECRET = "is_secret";
-
-    private ListView mUserIds;
 
     boolean mIsSecret = false;
 
@@ -70,9 +59,8 @@ public class ViewKeyFragment extends LoaderFragment implements LoaderManager.Loa
     private static final int LOADER_ID_LINKED_CONTACT = 3;
     private static final int LOADER_ID_SUBKEY_STATUS = 4;
 
-    private UserIdsAdapter mUserIdsAdapter;
-
-    private Uri mDataUri;
+    private IdentitiesCardView mIdentitiesCardView;
+    private IdentitiesPresenter mIdentitiesPresenter;
 
     LinkedIdentitiesCardView mLinkedIdsCard;
     LinkedIdentitiesPresenter mLinkedIdentitiesPresenter;
@@ -83,8 +71,6 @@ public class ViewKeyFragment extends LoaderFragment implements LoaderManager.Loa
     KeyHealthView mKeyStatusHealth;
 
     KeyHealthPresenter mKeyHealthPresenter;
-
-    private long mMasterKeyId;
 
     /**
      * Creates new instance of this fragment
@@ -105,23 +91,8 @@ public class ViewKeyFragment extends LoaderFragment implements LoaderManager.Loa
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_fragment, getContainer());
 
-        mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
-        Button userIdsEditButton = (Button) view.findViewById(R.id.view_key_card_user_ids_edit);
+        mIdentitiesCardView = (IdentitiesCardView) view.findViewById(R.id.card_identities);
         mLinkedIdsCard = (LinkedIdentitiesCardView) view.findViewById(R.id.card_linked_ids);
-
-        userIdsEditButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editIdentities(mDataUri);
-            }
-        });
-
-        mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showUserIdInfo(position);
-            }
-        });
 
         mSystemContactCard = (SystemContactCardView) view.findViewById(R.id.linked_system_contact_card);
         mKeyStatusHealth = (KeyHealthView) view.findViewById(R.id.key_status_health);
@@ -129,40 +100,32 @@ public class ViewKeyFragment extends LoaderFragment implements LoaderManager.Loa
         return root;
     }
 
-    private void editIdentities(Uri dataUri) {
-        Intent editIntent = new Intent(getActivity(), EditIdentitiesActivity.class);
-        editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
-        startActivityForResult(editIntent, 0);
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mMasterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
-        mDataUri = KeyRings.buildGenericKeyRingUri(mMasterKeyId);
+        long masterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
         mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);
 
-        // load user ids after we know if it's a secret key
-        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret);
-        mUserIds.setAdapter(mUserIdsAdapter);
-
         // initialize loaders, which will take care of auto-refresh on change
-        getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-        initCardButtonsVisibility(mIsSecret);
+//        initCardButtonsVisibility(mIsSecret);
+
+        mIdentitiesPresenter = new IdentitiesPresenter(
+                getContext(), mIdentitiesCardView, this, LOADER_ID_USER_IDS, masterKeyId, mIsSecret);
+        mIdentitiesPresenter.startLoader(getLoaderManager());
 
         if (Preferences.getPreferences(getActivity()).getExperimentalEnableLinkedIdentities()) {
             mLinkedIdentitiesPresenter = new LinkedIdentitiesPresenter(
-                    getContext(), mLinkedIdsCard, this, LOADER_ID_LINKED_IDS, mMasterKeyId, mIsSecret);
+                    getContext(), mLinkedIdsCard, this, LOADER_ID_LINKED_IDS, masterKeyId, mIsSecret);
             mLinkedIdentitiesPresenter.startLoader(getLoaderManager());
         }
 
         mSystemContactPresenter = new SystemContactPresenter(
-                getContext(), mSystemContactCard, LOADER_ID_LINKED_CONTACT, mMasterKeyId, mIsSecret);
+                getContext(), mSystemContactCard, LOADER_ID_LINKED_CONTACT, masterKeyId, mIsSecret);
         mSystemContactPresenter.startLoader(getLoaderManager());
 
         mKeyHealthPresenter = new KeyHealthPresenter(
-                getContext(), mKeyStatusHealth, LOADER_ID_SUBKEY_STATUS, mMasterKeyId, mIsSecret);
+                getContext(), mKeyStatusHealth, LOADER_ID_SUBKEY_STATUS, masterKeyId, mIsSecret);
         mKeyHealthPresenter.startLoader(getLoaderManager());
     }
 
@@ -180,22 +143,6 @@ public class ViewKeyFragment extends LoaderFragment implements LoaderManager.Loa
         });
     }
 
-    private void showUserIdInfo(final int position) {
-        if (!mIsSecret) {
-            final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
-            final int isVerified = mUserIdsAdapter.getIsVerified(position);
-
-            DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-                public void run() {
-                    UserIdInfoDialogFragment dialogFragment =
-                            UserIdInfoDialogFragment.newInstance(isRevoked, isVerified);
-
-                    dialogFragment.show(getActivity().getSupportFragmentManager(), "userIdInfoDialog");
-                }
-            });
-        }
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // if a result has been returned, display a notify
@@ -204,51 +151,6 @@ public class ViewKeyFragment extends LoaderFragment implements LoaderManager.Loa
             result.createNotify(getActivity()).show();
         } else {
             super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        switch (id) {
-            case LOADER_ID_USER_IDS: {
-                return UserIdsAdapter.createLoader(getActivity(), mDataUri);
-            }
-
-            case LOADER_ID_LINKED_IDS:
-            case LOADER_ID_LINKED_CONTACT:
-            case LOADER_ID_SUBKEY_STATUS: {
-                throw new IllegalStateException("This callback should never end up here!");
-            }
-
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        /* TODO better error handling? May cause problems when a key is deleted,
-         * because the notification triggers faster than the activity closes.
-         */
-        if (data == null) {
-            return;
-        }
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        switch (loader.getId()) {
-            case LOADER_ID_USER_IDS: {
-                setContentShown(true, false);
-                mUserIdsAdapter.swapCursor(data);
-
-                break;
-            }
-
-            case LOADER_ID_LINKED_IDS:
-            case LOADER_ID_LINKED_CONTACT:
-            case LOADER_ID_SUBKEY_STATUS: {
-                throw new IllegalStateException("This callback should never end up here!");
-            }
         }
     }
 
@@ -266,22 +168,21 @@ public class ViewKeyFragment extends LoaderFragment implements LoaderManager.Loa
         }
     }
 
-    /**
-     * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
-     * We need to make sure we are no longer using it.
-     */
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        switch (loader.getId()) {
-            case LOADER_ID_USER_IDS: {
-                mUserIdsAdapter.swapCursor(null);
-                break;
-            }
-        }
-    }
-
     public boolean isValidForData(boolean isSecret) {
         return isSecret == mIsSecret;
     }
 
+    @Override
+    public void startActivityAndShowResultSnackbar(Intent intent) {
+        startActivityForResult(intent, 0);
+    }
+
+    @Override
+    public void showDialogFragment(final DialogFragment dialogFragment, final String tag) {
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                dialogFragment.show(getActivity().getSupportFragmentManager(), tag);
+            }
+        });
+    }
 }
