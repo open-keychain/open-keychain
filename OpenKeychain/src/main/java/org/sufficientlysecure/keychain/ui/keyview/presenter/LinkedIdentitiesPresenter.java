@@ -87,19 +87,14 @@ public class LinkedIdentitiesPresenter implements LoaderCallbacks<Cursor> {
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         linkedIdsAdapter.swapCursor(data);
 
-        boolean hasLinkedIdentities = linkedIdsAdapter.getCount() > 0;
-        if (isSecret) {
-            view.showCard(true);
-            view.showEmptyView(!hasLinkedIdentities);
-        } else {
-            view.showCard(hasLinkedIdentities);
-            view.showEmptyView(false);
-        }
+        boolean anyDataShown = data.getCount() > 0;
+        view.setShowLinkedIdDivider(anyDataShown);
     }
 
     @Override
     public void onLoaderReset(Loader loader) {
         linkedIdsAdapter.swapCursor(null);
+        view.setShowLinkedIdDivider(false);
     }
 
     private void showLinkedId(final int position) {
@@ -118,8 +113,7 @@ public class LinkedIdentitiesPresenter implements LoaderCallbacks<Cursor> {
         void setSystemContactClickListener(LinkedIdsClickListener linkedIdsClickListener);
         void setLinkedIdsAdapter(LinkedIdsAdapter linkedIdsAdapter);
 
-        void showCard(boolean visible);
-        void showEmptyView(boolean visible);
+        void setShowLinkedIdDivider(boolean show);
     }
 
     public interface LinkedIdsFragMvpView {

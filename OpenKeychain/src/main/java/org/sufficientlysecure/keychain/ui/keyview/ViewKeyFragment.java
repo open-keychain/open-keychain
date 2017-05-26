@@ -42,7 +42,6 @@ import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresent
 import org.sufficientlysecure.keychain.ui.keyview.presenter.ViewKeyMvpView;
 import org.sufficientlysecure.keychain.ui.keyview.view.IdentitiesCardView;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthView;
-import org.sufficientlysecure.keychain.ui.keyview.view.LinkedIdentitiesCardView;
 import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -61,9 +60,7 @@ public class ViewKeyFragment extends LoaderFragment implements LinkedIdsFragMvpV
 
     private IdentitiesCardView mIdentitiesCardView;
     private IdentitiesPresenter mIdentitiesPresenter;
-
-    LinkedIdentitiesCardView mLinkedIdsCard;
-    LinkedIdentitiesPresenter mLinkedIdentitiesPresenter;
+    private LinkedIdentitiesPresenter mLinkedIdentitiesPresenter;
 
     SystemContactCardView mSystemContactCard;
     SystemContactPresenter mSystemContactPresenter;
@@ -92,7 +89,6 @@ public class ViewKeyFragment extends LoaderFragment implements LinkedIdsFragMvpV
         View view = inflater.inflate(R.layout.view_key_fragment, getContainer());
 
         mIdentitiesCardView = (IdentitiesCardView) view.findViewById(R.id.card_identities);
-        mLinkedIdsCard = (LinkedIdentitiesCardView) view.findViewById(R.id.card_linked_ids);
 
         mSystemContactCard = (SystemContactCardView) view.findViewById(R.id.linked_system_contact_card);
         mKeyStatusHealth = (KeyHealthView) view.findViewById(R.id.key_status_health);
@@ -107,16 +103,13 @@ public class ViewKeyFragment extends LoaderFragment implements LinkedIdsFragMvpV
         long masterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
         mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);
 
-        // initialize loaders, which will take care of auto-refresh on change
-//        initCardButtonsVisibility(mIsSecret);
-
         mIdentitiesPresenter = new IdentitiesPresenter(
                 getContext(), mIdentitiesCardView, this, LOADER_ID_USER_IDS, masterKeyId, mIsSecret);
         mIdentitiesPresenter.startLoader(getLoaderManager());
 
         if (Preferences.getPreferences(getActivity()).getExperimentalEnableLinkedIdentities()) {
             mLinkedIdentitiesPresenter = new LinkedIdentitiesPresenter(
-                    getContext(), mLinkedIdsCard, this, LOADER_ID_LINKED_IDS, masterKeyId, mIsSecret);
+                    getContext(), mIdentitiesCardView, this, LOADER_ID_LINKED_IDS, masterKeyId, mIsSecret);
             mLinkedIdentitiesPresenter.startLoader(getLoaderManager());
         }
 
@@ -151,20 +144,6 @@ public class ViewKeyFragment extends LoaderFragment implements LinkedIdsFragMvpV
             result.createNotify(getActivity()).show();
         } else {
             super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    private void initCardButtonsVisibility(boolean isSecret) {
-        LinearLayout buttonsUserIdsLayout =
-                (LinearLayout) getActivity().findViewById(R.id.view_key_card_user_ids_buttons);
-        LinearLayout buttonsLinkedIdsLayout =
-                (LinearLayout) getActivity().findViewById(R.id.view_key_card_linked_ids_buttons);
-        if (isSecret) {
-            buttonsUserIdsLayout.setVisibility(View.VISIBLE);
-            buttonsLinkedIdsLayout.setVisibility(View.VISIBLE);
-        } else {
-            buttonsUserIdsLayout.setVisibility(View.GONE);
-            buttonsLinkedIdsLayout.setVisibility(View.GONE);
         }
     }
 

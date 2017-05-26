@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -12,22 +13,46 @@
         android:text="@string/section_user_ids" />
 
     <org.sufficientlysecure.keychain.ui.widget.FixedListView
+        android:id="@+id/view_key_linked_ids"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:id="@+id/view_key_lid_divider"
+        android:background="?android:attr/listDivider"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+    <org.sufficientlysecure.keychain.ui.widget.FixedListView
         android:id="@+id/view_key_user_ids"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider" />
+
     <LinearLayout
         android:id="@+id/view_key_card_user_ids_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="left|start"
-        android:orientation="vertical">
+        android:gravity="right|end"
+        android:orientation="horizontal"
+        style="?buttonBarStyle">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider" />
+        <Button
+            android:id="@+id/view_key_card_linked_ids_add"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_linked_add_identity"
+            android:textColor="@color/card_view_button" />
 
         <Button
             android:id="@+id/view_key_card_user_ids_edit"
@@ -36,6 +61,7 @@
             android:layout_height="wrap_content"
             android:text="@string/key_view_action_edit"
             android:textColor="@color/card_view_button" />
+
     </LinearLayout>
 
 </LinearLayout>
