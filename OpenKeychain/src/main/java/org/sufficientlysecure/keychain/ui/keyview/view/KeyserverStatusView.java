@@ -25,34 +25,30 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyserverStatusPresenter.KeyserverStatusClickListener;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyserverStatusPresenter.KeyserverStatusMvpView;
 
 
-public class KeyserverStatusCardView extends CardView implements KeyserverStatusMvpView, OnClickListener {
+public class KeyserverStatusView extends FrameLayout implements KeyserverStatusMvpView {
     private final View vLayout;
     private final TextView vTitle;
     private final TextView vSubtitle;
     private final ImageView vIcon;
 
-    private KeyserverStatusClickListener keyHealthClickListener;
-
-    public KeyserverStatusCardView(Context context, AttributeSet attrs) {
+    public KeyserverStatusView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        View view = LayoutInflater.from(context).inflate(R.layout.key_keyserver_card_content, this, true);
+        View view = LayoutInflater.from(context).inflate(R.layout.key_keyserver_status_layout, this, true);
 
-        vLayout = view.findViewById(R.id.key_health_layout);
+        vLayout = view.findViewById(R.id.keyserver_status_layout);
 
         vTitle = (TextView) view.findViewById(R.id.keyserver_status_title);
         vSubtitle = (TextView) view.findViewById(R.id.keyserver_status_subtitle);
@@ -77,19 +73,6 @@ public class KeyserverStatusCardView extends CardView implements KeyserverStatus
             this.icon = icon;
             this.iconColor = iconColor;
         }
-    }
-
-    @Override
-    public void onClick(View view) {
-        if (keyHealthClickListener != null) {
-            keyHealthClickListener.onKeyRefreshClick();
-        }
-    }
-
-    @Override
-    public void setOnKeyserverClickListener(KeyserverStatusClickListener keyHealthClickListener) {
-        this.keyHealthClickListener = keyHealthClickListener;
-        vLayout.setClickable(keyHealthClickListener != null);
     }
 
     @Override

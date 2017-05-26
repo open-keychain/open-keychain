@@ -47,13 +47,6 @@ public class KeyserverStatusPresenter implements LoaderCallbacks<KeyserverStatus
 
         this.masterKeyId = masterKeyId;
         this.isSecret = isSecret;
-
-        view.setOnKeyserverClickListener(new KeyserverStatusClickListener() {
-            @Override
-            public void onKeyRefreshClick() {
-                KeyserverStatusPresenter.this.onKeyRefreshClick();
-            }
-        });
     }
 
     public void startLoader(LoaderManager loaderManager) {
@@ -84,20 +77,10 @@ public class KeyserverStatusPresenter implements LoaderCallbacks<KeyserverStatus
 
     }
 
-    private void onKeyRefreshClick() {
-
-    }
-
     public interface KeyserverStatusMvpView {
-        void setOnKeyserverClickListener(KeyserverStatusClickListener keyserverStatusClickListener);
-
         void setDisplayStatusPublished();
         void setDisplayStatusNotPublished();
         void setLastUpdated(Date lastUpdated);
         void setDisplayStatusUnknown();
-    }
-
-    public interface KeyserverStatusClickListener {
-        void onKeyRefreshClick();
     }
 }
