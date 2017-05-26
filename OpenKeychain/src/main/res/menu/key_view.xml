@@ -9,11 +9,6 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/menu_key_change_password"
-        android:title="@string/menu_change_password"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/menu_key_view_backup"
         android:title="@string/menu_export_key"
         app:showAsAction="never" />

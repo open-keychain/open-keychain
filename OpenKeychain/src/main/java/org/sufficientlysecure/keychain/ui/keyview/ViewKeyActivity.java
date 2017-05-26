@@ -37,8 +37,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.provider.ContactsContract;
 import android.support.annotation.IntDef;
 import android.support.design.widget.AppBarLayout;
@@ -69,7 +67,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
@@ -79,7 +76,6 @@ import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
-import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.BackupActivity;
@@ -97,7 +93,6 @@ import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyKeybaseFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.ContentDescriptionHint;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -132,8 +127,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     // For CryptoOperationHelper.Callback
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> importOpHelper;
-    private CryptoOperationHelper<ChangeUnlockParcel, EditKeyResult> editOpHelper;
-    private ChangeUnlockParcel changeUnlockParcel;
 
     private TextView statusText;
     private ImageView statusImage;
@@ -319,10 +312,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 startActivity(homeIntent);
                 return true;
             }
-            case R.id.menu_key_change_password: {
-                changePassword();
-                return true;
-            }
             case R.id.menu_key_view_backup: {
                 startPassphraseActivity(REQUEST_BACKUP);
                 return true;
@@ -361,75 +350,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         MenuItem backupKey = menu.findItem(R.id.menu_key_view_backup);
         backupKey.setVisible(isSecret);
         menu.findItem(R.id.menu_key_view_skt).setVisible(isSecret);
-        MenuItem changePassword = menu.findItem(R.id.menu_key_change_password);
-        changePassword.setVisible(isSecret);
 
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
         certifyFingerprint.setVisible(!isSecret && !isVerified && !isExpired && !isRevoked);
 
         return true;
-    }
-
-    private void changePassword() {
-        CryptoOperationHelper.Callback<ChangeUnlockParcel, EditKeyResult> editKeyCallback
-                = new CryptoOperationHelper.Callback<ChangeUnlockParcel, EditKeyResult>() {
-            @Override
-            public ChangeUnlockParcel createOperationInput() {
-                return changeUnlockParcel;
-            }
-
-            @Override
-            public void onCryptoOperationSuccess(EditKeyResult result) {
-                displayResult(result);
-            }
-
-            @Override
-            public void onCryptoOperationCancelled() {
-
-            }
-
-            @Override
-            public void onCryptoOperationError(EditKeyResult result) {
-                displayResult(result);
-            }
-
-            @Override
-            public boolean onCryptoSetProgress(String msg, int progress, int max) {
-                return false;
-            }
-        };
-
-        editOpHelper = new CryptoOperationHelper<>(2, this, editKeyCallback, R.string.progress_building_key);
-
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
-                    Bundle data = message.getData();
-
-                    // use new passphrase!
-                    changeUnlockParcel = ChangeUnlockParcel.createChangeUnlockParcel(
-                            masterKeyId, fingerprint,
-                            data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
-                    );
-
-                    editOpHelper.cryptoOperation();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        SetPassphraseDialogFragment setPassphraseDialog = SetPassphraseDialogFragment.newInstance(
-                messenger, R.string.title_change_passphrase);
-
-        setPassphraseDialog.show(getSupportFragmentManager(), "setPassphraseDialog");
-    }
-
-    private void displayResult(OperationResult result) {
-        result.createNotify(this).show();
     }
 
     private void scanQrCode() {
@@ -527,9 +452,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     protected void onActivityResult(@RequestType int requestCode, int resultCode, Intent data) {
         if (importOpHelper.handleActivityResult(requestCode, resultCode, data)) {
             return;
-        }
-        if (editOpHelper != null) {
-            editOpHelper.handleActivityResult(requestCode, resultCode, data);
         }
 
         if (resultCode != Activity.RESULT_OK) {
