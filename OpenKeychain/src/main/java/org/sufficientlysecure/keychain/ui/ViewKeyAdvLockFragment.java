@@ -37,6 +37,8 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -61,7 +63,6 @@ public class ViewKeyAdvLockFragment extends LoaderFragment implements OnClickLis
     public static final int REQUEST_CODE_PASSPHRASE = 0;
 
 
-    private Uri mDataUri;
     private ToolableViewAnimator viewAnimator;
     private KeyRepository keyRepository;
     private TextView lockStatusText;
@@ -75,6 +76,8 @@ public class ViewKeyAdvLockFragment extends LoaderFragment implements OnClickLis
             operationHelper;
     private EditText lockPasswordField;
     private EditText lockPasswordRepeat;
+
+    private LockType currentLockType;
 
 
     @Override
@@ -118,10 +121,8 @@ public class ViewKeyAdvLockFragment extends LoaderFragment implements OnClickLis
     }
 
     private void loadData(Uri dataUri) {
-        mDataUri = dataUri;
-
         try {
-            CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(mDataUri);
+            CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(dataUri);
             masterKeyId = cachedPublicKeyRing.extractOrGetMasterKeyId();
             fingerprint = cachedPublicKeyRing.getFingerprint();
         } catch (PgpKeyNotFoundException e) {
@@ -133,33 +134,86 @@ public class ViewKeyAdvLockFragment extends LoaderFragment implements OnClickLis
         setContentShown(true);
     }
 
+    private enum LockType {
+        NONE, PASSWORD, SECURITY_TOKEN, MIXED, UNAVAILABLE;
+
+        static LockType fromSecretKeyType(SecretKeyType secretKeyType) {
+            switch (secretKeyType) {
+                case PASSPHRASE:
+                    return PASSWORD;
+                case PASSPHRASE_EMPTY:
+                    return NONE;
+                case DIVERT_TO_CARD:
+                    return SECURITY_TOKEN;
+                case UNAVAILABLE:
+                case GNU_DUMMY:
+                    return UNAVAILABLE;
+            }
+            throw new IllegalArgumentException("all cases must be handled!");
+        }
+
+        /* This will combine two lock types, returning the  */
+        LockType plus(LockType other) {
+            if (this == UNAVAILABLE || other == UNAVAILABLE) {
+                return other == UNAVAILABLE ? this : other;
+            }
+
+            if (this == MIXED || other == MIXED) {
+                return MIXED;
+            }
+
+            if (this != other) {
+                return MIXED;
+            }
+
+            return this;
+        }
+    }
+
+    private LockType findCurrentLockType() {
+        try {
+            LockType lockType = LockType.UNAVAILABLE;
+
+            CanonicalizedPublicKeyRing canonicalizedPublicKeyRing =
+                    keyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
+            CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
+            for (CanonicalizedPublicKey subKey : canonicalizedPublicKeyRing.publicKeyIterator()) {
+                SecretKeyType secretKeyType = cachedPublicKeyRing.getSecretKeyType(subKey.getKeyId());
+                LockType subKeyLockType = LockType.fromSecretKeyType(secretKeyType);
+
+                lockType = lockType.plus(subKeyLockType);
+            }
+
+            return lockType;
+        } catch (NotFoundException e) {
+            throw new IllegalStateException("Key is gone?");
+        }
+    }
+
     private void refreshLockMethodDisplay() {
         lockCurrentNone.setVisibility(View.GONE);
         lockCurrentPassword.setVisibility(View.GONE);
 
-        try {
-            CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(mDataUri);
+        currentLockType = findCurrentLockType();
 
-            SecretKeyType secretKeyType = cachedPublicKeyRing.getSecretKeyType();
-            switch (secretKeyType) {
-                case PASSPHRASE_EMPTY:
-                    lockStatusText.setText("None");
-                    lockCurrentNone.setVisibility(View.VISIBLE);
-                    break;
-                case PASSPHRASE:
-                    lockStatusText.setText("Password");
-                    lockCurrentPassword.setVisibility(View.VISIBLE);
-                    break;
-                case DIVERT_TO_CARD:
-                    lockStatusText.setText("Security Token");
-                    break;
-                case GNU_DUMMY:
-                case UNAVAILABLE:
-                    lockStatusText.setText("Unavailable");
-                    break;
-            }
-        } catch (PgpKeyNotFoundException | NotFoundException e) {
-            throw new IllegalStateException("Key is gone?");
+        switch (currentLockType) {
+            case NONE:
+                lockStatusText.setText("None");
+                lockCurrentNone.setVisibility(View.VISIBLE);
+                break;
+            case PASSWORD:
+                lockStatusText.setText("Password");
+                lockCurrentPassword.setVisibility(View.VISIBLE);
+                break;
+            case SECURITY_TOKEN:
+                lockStatusText.setText("Security Token");
+                break;
+            case MIXED:
+                lockStatusText.setText("Mixed");
+                break;
+            case UNAVAILABLE:
+                lockStatusText.setText("Unavailable");
+                break;
         }
     }
 
@@ -167,7 +221,7 @@ public class ViewKeyAdvLockFragment extends LoaderFragment implements OnClickLis
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_action_mode_edit:
-                showPasswordDialog();
+                enterEditModeOrShowPasswordDialog();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -215,13 +269,34 @@ public class ViewKeyAdvLockFragment extends LoaderFragment implements OnClickLis
         });
     }
 
-    private void showPasswordDialog() {
+    private void enterEditModeOrShowPasswordDialog() {
         FragmentActivity activity = getActivity();
         if (activity == null) {
             return;
         }
 
-        Intent intent = new Intent(activity, PassphraseDialogActivity.class);
+        switch (currentLockType) {
+            case NONE:
+            case MIXED: // mixed might fail? not sure, but we try anyways! D:
+            case PASSWORD: {
+                showPasswordDialog();
+                break;
+            }
+
+            case SECURITY_TOKEN: {
+                Notify.create(getActivity(), "Key is on Security Token!", Style.ERROR).show();
+                break;
+            }
+
+            case UNAVAILABLE: {
+                Notify.create(getActivity(), "Stripped keys can't be locked!", Style.ERROR).show();
+                break;
+            }
+        }
+    }
+
+    private void showPasswordDialog() {
+        Intent intent = new Intent(getContext(), PassphraseDialogActivity.class);
         RequiredInputParcel requiredInput =
                 RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, masterKeyId);
         requiredInput.mSkipCaching = true;
@@ -268,6 +343,11 @@ public class ViewKeyAdvLockFragment extends LoaderFragment implements OnClickLis
     }
 
     private void checkAndRemovePassword() {
+        if (currentLockType == LockType.NONE) {
+            endActionMode();
+            return;
+        }
+
         setNewUnlockMechanism(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase()));
     }
 
