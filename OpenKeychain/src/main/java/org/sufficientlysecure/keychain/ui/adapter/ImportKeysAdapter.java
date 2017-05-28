@@ -192,6 +192,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         b.extraContainer.setVisibility(keyState.mShowed ? View.VISIBLE : View.GONE);
 
         b.progress.setVisibility(keyState.mProgress ? View.VISIBLE : View.GONE);
+        b.extra.importKey.setEnabled(!keyState.mProgress);
     }
 
     @Override
@@ -200,6 +201,10 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     }
 
     private void getKeyWithProgress(int position, ImportKeysListEntry entry, boolean skipSave) {
+        if (isLoading(position)) {
+            return;
+        }
+
         changeProgress(position, true);
         getKey(position, entry, skipSave);
     }
@@ -310,6 +315,11 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         KeyState keyState = mKeyStates[position];
         keyState.mShowed = showed;
         notifyItemChanged(position);
+    }
+
+    private boolean isLoading(int position) {
+        KeyState keyState = mKeyStates[position];
+        return keyState.mProgress;
     }
 
     private void changeProgress(int position, boolean progress) {
