@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.network;
 
-import java.io.IOException;
+
 import java.net.Proxy;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
@@ -46,8 +46,7 @@ public class OkHttpClientFactory {
                 .build();
     }
 
-    public static OkHttpClient getClientPinnedIfAvailable(URL url, Proxy proxy)
-            throws IOException, TlsCertificatePinning.TlsCertificatePinningException {
+    public static OkHttpClient getClientPinnedIfAvailable(URL url, Proxy proxy) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         // don't follow any redirects for keyservers, as discussed in the security audit
