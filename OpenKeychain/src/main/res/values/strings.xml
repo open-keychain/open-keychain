@@ -1844,6 +1844,11 @@
     <string name="key_health_partial_stripped_title">"Healthy (Partially Stripped)"</string>
     <string name="key_health_partial_stripped_subtitle">"Click for details"</string>
 
+    <string name="keyserver_title_published">"Published"</string>
+    <string name="keyserver_title_not_published">"Not Published"</string>
+    <string name="keyserver_title_unknown">"Unknown"</string>
+    <string name="keyserver_last_updated">"Last updated: %s"</string>
+
     <string name="key_insecure_bitstrength_2048_problem">"This key uses the <b>%1$s</b> algorithm with a strength of <b>%2$s bits</b>. A secure key should have a strength of 2048 bits."</string>
     <string name="key_insecure_bitstrength_2048_solution">"This key can\'t be upgraded. For secure communication, the owner must generate a new key."</string>
 

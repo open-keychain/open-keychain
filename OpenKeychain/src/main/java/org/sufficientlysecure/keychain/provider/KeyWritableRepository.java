@@ -1353,11 +1353,16 @@ public class KeyWritableRepository extends KeyRepository {
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
 
-    public Uri renewKeyLastUpdatedTime(long masterKeyId) {
+    public Uri renewKeyLastUpdatedTime(long masterKeyId, boolean seenOnKeyservers) {
         ContentValues values = new ContentValues();
         values.put(UpdatedKeys.MASTER_KEY_ID, masterKeyId);
         values.put(UpdatedKeys.LAST_UPDATED, GregorianCalendar.getInstance().getTimeInMillis() / 1000);
+        if (seenOnKeyservers) {
+            values.put(UpdatedKeys.SEEN_ON_KEYSERVERS, true);
+        }
 
+        // this will actually update/replace, doing the right thing™ for seenOnKeyservers value
+        // see `KeychainProvider.insert()`
         return mContentResolver.insert(UpdatedKeys.CONTENT_URI, values);
     }
 
