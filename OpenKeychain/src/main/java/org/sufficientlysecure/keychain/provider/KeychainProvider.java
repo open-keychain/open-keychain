@@ -295,6 +295,9 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.NAME, Tables.USER_PACKETS + "." + UserPackets.NAME);
                 projectionMap.put(KeyRings.EMAIL, Tables.USER_PACKETS + "." + UserPackets.EMAIL);
                 projectionMap.put(KeyRings.COMMENT, Tables.USER_PACKETS + "." + UserPackets.COMMENT);
+                projectionMap.put(KeyRings.LAST_UPDATED, Tables.UPDATED_KEYS + "." + UpdatedKeys.LAST_UPDATED);
+                projectionMap.put(KeyRings.SEEN_ON_KEYSERVERS, Tables.UPDATED_KEYS + "." + UpdatedKeys.SEEN_ON_KEYSERVERS);
+                projectionMap.put(KeyRings.DIRTY, Tables.UPDATED_KEYS + "." + UpdatedKeys.DIRTY);
                 projectionMap.put(KeyRings.HAS_DUPLICATE_USER_ID,
                             "(EXISTS (SELECT * FROM " + Tables.USER_PACKETS + " AS dups"
                                 + " WHERE dups." + UserPackets.MASTER_KEY_ID
@@ -341,9 +344,13 @@ public class KeychainProvider extends ContentProvider {
                         + ") LEFT JOIN " + Tables.CERTS + " ON ("
                             + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
-                            + Tables.CERTS + "." + KeyRings.MASTER_KEY_ID
+                            + Tables.CERTS + "." + Certs.MASTER_KEY_ID
                             + " AND " + Tables.CERTS + "." + Certs.VERIFIED
                                 + " = " + Certs.VERIFIED_SECRET
+                        + ") LEFT JOIN " + Tables.UPDATED_KEYS + " ON ("
+                            + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                + " = "
+                            + Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID
                         + ")"
                         // fairly expensive joins following, only do when requested
                         + (plist.contains(KeyRings.HAS_ENCRYPT) ?

@@ -122,7 +122,8 @@ public class KeychainContract {
     public static final String BASE_API_APPS = "api_apps";
     public static final String PATH_ALLOWED_KEYS = "allowed_keys";
 
-    public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
+    public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns,
+            UpdatedKeysColumns {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
         public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
         public static final String IS_SECURE = KeysColumns.IS_SECURE;
