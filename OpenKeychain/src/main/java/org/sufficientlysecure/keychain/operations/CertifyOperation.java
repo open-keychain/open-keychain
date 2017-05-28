@@ -85,8 +85,6 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
             Passphrase passphrase;
 
             switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
-                case PIN:
-                case PATTERN:
                 case PASSPHRASE:
                     passphrase = cryptoInput.getPassphrase();
                     if (passphrase == null) {

@@ -57,9 +57,9 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -252,10 +252,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
                             message = getString(R.string.passphrase_for, userId);
                             hint = getString(R.string.label_passphrase);
                             break;
-                        case PIN:
-                            message = getString(R.string.pin_for, userId);
-                            hint = getString(R.string.label_pin);
-                            break;
                         case DIVERT_TO_CARD:
                             message = getString(R.string.security_token_pin_for, userId);
                             hint = getString(R.string.label_pin);
@@ -290,11 +286,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             final ImageButton keyboard = (ImageButton) mLayout.findViewById(R.id.passphrase_keyboard);
 
-            if (keyType == CanonicalizedSecretKey.SecretKeyType.PIN) {
-                mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                keyboard.setVisibility(View.GONE);
-            } else if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD) {
+            if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD) {
                 if (Preferences.getPreferences(activity).useNumKeypadForSecurityTokenPin()) {
                     setKeyboardNumeric(keyboard);
                 } else {

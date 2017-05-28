@@ -24,7 +24,6 @@ import java.security.PrivateKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.bouncycastle.bcpg.S2K;
@@ -84,8 +83,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     public enum SecretKeyType {
-        UNAVAILABLE(0), GNU_DUMMY(1), PASSPHRASE(2), PASSPHRASE_EMPTY(3), DIVERT_TO_CARD(4), PIN(5),
-        PATTERN(6);
+        UNAVAILABLE(0), GNU_DUMMY(1), PASSPHRASE(2), PASSPHRASE_EMPTY(3), DIVERT_TO_CARD(4);
 
         final int mNum;
 
@@ -103,10 +101,6 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
                     return PASSPHRASE_EMPTY;
                 case 4:
                     return DIVERT_TO_CARD;
-                case 5:
-                    return PIN;
-                case 6:
-                    return PATTERN;
                 // if this case happens, it's probably a check from a database value
                 default:
                     return UNAVAILABLE;
@@ -172,11 +166,6 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             // It means the passphrase is empty
             return SecretKeyType.PASSPHRASE_EMPTY;
         } catch (PGPException e) {
-            HashMap<String, String> notation = getRing().getLocalNotationData();
-            if (notation.containsKey("unlock.pin@sufficientlysecure.org")
-                    && "1".equals(notation.get("unlock.pin@sufficientlysecure.org"))) {
-                return SecretKeyType.PIN;
-            }
             // Otherwise, it's just a regular ol' passphrase
             return SecretKeyType.PASSPHRASE;
         }

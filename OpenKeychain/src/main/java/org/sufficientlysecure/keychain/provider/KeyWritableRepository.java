@@ -701,11 +701,6 @@ public class KeyWritableRepository extends KeyRepository {
                                         KeyFormattingUtils.convertKeyIdToHex(id)
                                 );
                                 break;
-                            case PIN:
-                                log(LogType.MSG_IS_SUBKEY_PIN,
-                                        KeyFormattingUtils.convertKeyIdToHex(id)
-                                );
-                                break;
                             case GNU_DUMMY:
                                 log(LogType.MSG_IS_SUBKEY_STRIPPED,
                                         KeyFormattingUtils.convertKeyIdToHex(id)

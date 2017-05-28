@@ -263,8 +263,6 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                         break;
                     }
 
-                    case PIN:
-                    case PATTERN:
                     case PASSPHRASE: {
                         Passphrase localPassphrase = cryptoInput.getPassphrase();
                         if (localPassphrase == null) {
