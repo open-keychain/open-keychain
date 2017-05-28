@@ -71,10 +71,8 @@ public class TlsCertificatePinning {
      * Use pinned certificate for OkHttpClient if we have one.
      *
      * @return true, if certificate is available, false if not
-     * @throws TlsCertificatePinningException
-     * @throws IOException
      */
-    public static SSLSocketFactory getPinnedSslSocketFactory(URL url) throws TlsCertificatePinningException, IOException {
+    public static SSLSocketFactory getPinnedSslSocketFactory(URL url) {
         if (url.getProtocol().equals("https")) {
             // use certificate PIN from assets if we have one
             for (String host : sPinnedCertificates.keySet()) {
@@ -93,11 +91,8 @@ public class TlsCertificatePinning {
      * to URLs with passed certificate.
      *
      * @param certificate certificate to pin
-     * @throws TlsCertificatePinningException
-     * @throws IOException
      */
-    private static SSLSocketFactory pinCertificate(byte[] certificate)
-            throws TlsCertificatePinningException, IOException {
+    private static SSLSocketFactory pinCertificate(byte[] certificate) {
         // We don't use OkHttp's CertificatePinner since it can not be used to pin self-signed
         // certificate if such certificate is not accepted by TrustManager.
         // (Refer to note at end of description:
@@ -124,15 +119,9 @@ public class TlsCertificatePinning {
             context.init(null, tmf.getTrustManagers(), null);
 
             return context.getSocketFactory();
-        } catch (CertificateException | KeyStoreException | KeyManagementException | NoSuchAlgorithmException e) {
-            throw new TlsCertificatePinningException(e);
+        } catch (CertificateException | KeyStoreException |
+                KeyManagementException | NoSuchAlgorithmException | IOException e) {
+            throw new IllegalStateException(e);
         }
     }
-
-    public static class TlsCertificatePinningException extends Exception {
-        TlsCertificatePinningException(Exception e) {
-            super(e);
-        }
-    }
-
 }

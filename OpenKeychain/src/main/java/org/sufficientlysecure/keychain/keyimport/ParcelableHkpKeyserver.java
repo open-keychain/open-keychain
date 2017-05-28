@@ -49,14 +49,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
-import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 
 public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
 
@@ -91,7 +89,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
      * 5.2. Machine Readable Indexes</a>
      * in Internet-Draft OpenPGP HTTP Keyserver Protocol Document
      */
-    public static final Pattern PUB_KEY_LINE = Pattern
+    private static final Pattern PUB_KEY_LINE = Pattern
             .compile("pub:([0-9a-fA-F]+):([0-9]+):([0-9]+):([0-9]+):([0-9]*):([rde]*)[ \n\r]*" // pub line
                             + "((uid:([^:]*):([0-9]+):([0-9]*):([rde]*)[ \n\r]*)+)", // one or more uid lines
                     Pattern.CASE_INSENSITIVE
@@ -121,7 +119,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
      * </li>
      * </ul>
      */
-    public static final Pattern UID_LINE = Pattern
+    private static final Pattern UID_LINE = Pattern
             .compile("uid:([^:]*):([0-9]+):([0-9]*):([rde]*)",
                     Pattern.CASE_INSENSITIVE);
 
@@ -201,8 +199,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
 
     private String query(HttpUrl url, @NonNull ParcelableProxy proxy) throws Keyserver.QueryFailedException, HttpError {
         try {
-            OkHttpClient client =
-                    OkHttpClientFactory.getClientPinnedIfAvailable(url.url(), proxy.getProxy());
+            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url.url(), proxy.getProxy());
 
             Request request = new Request.Builder()
                     .url(url)
@@ -222,11 +219,11 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
-            throw new Keyserver.QueryFailedException("Keyserver '" + mUrl + "' is unavailable. Check your Internet connection!" +
-                    (proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy()));
-        } catch (TlsCertificatePinning.TlsCertificatePinningException e) {
-            Log.e(Constants.TAG, "Exception in pinning certs", e);
-            throw new Keyserver.QueryFailedException("Exception in pinning certs");
+            String proxyInfo = proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy();
+            String causeName = e.getCause().getClass().getSimpleName();
+            throw new Keyserver.QueryFailedException(String.format(
+                    "Network error (%s) for '%s'. Check your Internet connection! %s",
+                    causeName, mUrl, proxyInfo));
         }
     }
 
@@ -267,8 +264,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
 
             data = query(url, proxy);
         } catch (URISyntaxException e) {
-            Log.e(Constants.TAG, "Unsupported keyserver URI", e);
-            throw new Keyserver.QueryFailedException("Unsupported keyserver URI");
+            throw new IllegalStateException("Unsupported keyserver URI");
         } catch (HttpError e) {
             if (e.getData() != null) {
                 Log.d(Constants.TAG, "returned error data: " + e.getData().toLowerCase(Locale.ENGLISH));
@@ -398,8 +394,7 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
 
             data = query(url, proxy);
         } catch (URISyntaxException e) {
-            Log.e(Constants.TAG, "Unsupported keyserver URI", e);
-            throw new Keyserver.QueryFailedException("Unsupported keyserver URI");
+            throw new IllegalStateException("Unsupported keyserver URI");
         } catch (HttpError httpError) {
             Log.d(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
             if (httpError.getCode() == 404) {
@@ -451,9 +446,6 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
-            throw new Keyserver.AddKeyException();
-        } catch (TlsCertificatePinning.TlsCertificatePinningException e) {
-            Log.e(Constants.TAG, "Exception in pinning certs", e);
             throw new Keyserver.AddKeyException();
         } catch (URISyntaxException e) {
             Log.e(Constants.TAG, "Unsupported keyserver URI", e);
