@@ -56,18 +56,17 @@ import org.sufficientlysecure.keychain.util.Preferences;
 public class KeyserverSyncAdapterService extends Service {
 
     // how often a sync should be initiated, in s
-    public static final long SYNC_INTERVAL =
-            Constants.DEBUG_KEYSERVER_SYNC
-                    ? TimeUnit.MINUTES.toSeconds(1) : TimeUnit.DAYS.toSeconds(3);
+    public static final long SYNC_INTERVAL = Constants.DEBUG_KEYSERVER_SYNC ?
+            TimeUnit.MINUTES.toSeconds(1) : TimeUnit.DAYS.toSeconds(3);
     // time since last update after which a key should be updated again, in s
-    public static final long KEY_UPDATE_LIMIT =
-            Constants.DEBUG_KEYSERVER_SYNC ? 1 : TimeUnit.DAYS.toSeconds(7);
+    public static final long KEY_UPDATE_LIMIT = Constants.DEBUG_KEYSERVER_SYNC ?
+            120 : TimeUnit.DAYS.toSeconds(7);
     // time by which a sync is postponed in case screen is on
-    public static final long SYNC_POSTPONE_TIME =
-            Constants.DEBUG_KEYSERVER_SYNC ? 30 * 1000 : TimeUnit.MINUTES.toMillis(5);
+    public static final long SYNC_POSTPONE_TIME = Constants.DEBUG_KEYSERVER_SYNC ?
+            TimeUnit.SECONDS.toMillis(30) : TimeUnit.MINUTES.toMillis(5);
     // Time taken by Orbot before a new circuit is created
-    public static final int ORBOT_CIRCUIT_TIMEOUT_SECONDS =
-            Constants.DEBUG_KEYSERVER_SYNC ? 2 : (int) TimeUnit.MINUTES.toSeconds(10);
+    public static final int ORBOT_CIRCUIT_TIMEOUT_SECONDS = Constants.DEBUG_KEYSERVER_SYNC ?
+            2 : (int) TimeUnit.MINUTES.toSeconds(10);
 
 
     private static final String ACTION_IGNORE_TOR = "ignore_tor";
@@ -249,7 +248,7 @@ public class KeyserverSyncAdapterService extends Service {
                     NotificationManager manager =
                             (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                     manager.notify(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT,
-                            getOrbotNoification(KeyserverSyncAdapterService.this));
+                            getOrbotNotification(KeyserverSyncAdapterService.this));
                     // further action on user interaction with notification, intent should not be
                     // redelivered, therefore:
                     stopSelf(startId);
@@ -400,54 +399,25 @@ public class KeyserverSyncAdapterService extends Service {
     }
 
     /**
-     * 1. Get keys which have been updated recently and therefore do not need to
-     * be updated now
-     * 2. Get list of all keys and filter out ones that don't need to be updated
-     * 3. Return keys to be updated
-     *
      * @return list of keys that require update
      */
     private ArrayList<ParcelableKeyRing> getKeysToUpdate(Context context) {
-
-        // 1. Get keys which have been updated recently and don't need to updated now
-        final int INDEX_UPDATED_KEYS_MASTER_KEY_ID = 0;
-        final int INDEX_LAST_UPDATED = 1;
-
-        // all time in seconds not milliseconds
+        // current time in seconds
         final long CURRENT_TIME = GregorianCalendar.getInstance().getTimeInMillis() / 1000;
-        Cursor updatedKeysCursor = context.getContentResolver().query(
-                KeychainContract.UpdatedKeys.CONTENT_URI,
-                new String[]{
-                        KeychainContract.UpdatedKeys.MASTER_KEY_ID,
-                        KeychainContract.UpdatedKeys.LAST_UPDATED
-                },
-                "? - " + KeychainContract.UpdatedKeys.LAST_UPDATED + " < " + KEY_UPDATE_LIMIT,
-                new String[]{"" + CURRENT_TIME},
-                null
-        );
 
-        ArrayList<Long> ignoreMasterKeyIds = new ArrayList<>();
-        while (updatedKeysCursor != null && updatedKeysCursor.moveToNext()) {
-            long masterKeyId = updatedKeysCursor.getLong(INDEX_UPDATED_KEYS_MASTER_KEY_ID);
-            Log.d(Constants.TAG, "Keyserver sync: Ignoring {" + masterKeyId + "} last updated at {"
-                    + updatedKeysCursor.getLong(INDEX_LAST_UPDATED) + "}s");
-            ignoreMasterKeyIds.add(masterKeyId);
-        }
-        if (updatedKeysCursor != null) {
-            updatedKeysCursor.close();
-        }
-
-        // 2. Make a list of public keys which should be updated
+        // Get keys which have not been updated recently
         final int INDEX_MASTER_KEY_ID = 0;
         final int INDEX_FINGERPRINT = 1;
+        final int INDEX_LAST_UPDATED = 2;
         Cursor keyCursor = context.getContentResolver().query(
                 KeychainContract.KeyRings.buildUnifiedKeyRingsUri(),
                 new String[]{
                         KeychainContract.KeyRings.MASTER_KEY_ID,
-                        KeychainContract.KeyRings.FINGERPRINT
+                        KeychainContract.KeyRings.FINGERPRINT,
+                        KeychainContract.KeyRings.LAST_UPDATED
                 },
-                null,
-                null,
+                "? - " + KeychainContract.UpdatedKeys.LAST_UPDATED + " > " + KEY_UPDATE_LIMIT,
+                new String[]{String.valueOf(CURRENT_TIME)},
                 null
         );
 
@@ -458,16 +428,18 @@ public class KeyserverSyncAdapterService extends Service {
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
         while (keyCursor.moveToNext()) {
             long keyId = keyCursor.getLong(INDEX_MASTER_KEY_ID);
-            if (ignoreMasterKeyIds.contains(keyId)) {
-                continue;
-            }
-            Log.d(Constants.TAG, "Keyserver sync: Updating {" + keyId + "}");
             byte[] fingerprint = keyCursor.getBlob(INDEX_FINGERPRINT);
             String hexKeyId = KeyFormattingUtils.convertKeyIdToHex(keyId);
-            // we aren't updating from keybase as of now
+            // we aren't updating from keybase
             keyList.add(new ParcelableKeyRing(fingerprint, hexKeyId, null, null));
         }
         keyCursor.close();
+
+        if (keyList.isEmpty()) {
+            Log.d(Constants.TAG, "All keys are already up to date.");
+        } else {
+            Log.d(Constants.TAG, "Keys to update: " + keyList.toString());
+        }
 
         return keyList;
     }
@@ -489,7 +461,7 @@ public class KeyserverSyncAdapterService extends Service {
         context.startService(intent);
     }
 
-    private Notification getOrbotNoification(Context context) {
+    private Notification getOrbotNotification(Context context) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
                 .setLargeIcon(getBitmap(R.mipmap.ic_launcher, context))

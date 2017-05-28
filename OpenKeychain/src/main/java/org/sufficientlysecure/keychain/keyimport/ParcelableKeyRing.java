@@ -87,4 +87,8 @@ public class ParcelableKeyRing implements Parcelable {
         return 0;
     }
 
+    @Override
+    public String toString() {
+        return mKeyIdHex;
+    }
 }
