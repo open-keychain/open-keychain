@@ -366,8 +366,7 @@ public class KeyserverSyncAdapterService extends Service {
                 first = false;
             }
 
-            Log.d(Constants.TAG, "Updating key with fingerprint " + keyRing.mExpectedFingerprint +
-                    " with a wait time of " + waitTime + "s");
+            Log.d(Constants.TAG, "Updating key with a wait time of " + waitTime + "s");
             try {
                 Thread.sleep(waitTime * 1000);
             } catch (InterruptedException e) {
@@ -465,7 +464,7 @@ public class KeyserverSyncAdapterService extends Service {
             byte[] fingerprint = keyCursor.getBlob(INDEX_FINGERPRINT);
             String hexKeyId = KeyFormattingUtils.convertKeyIdToHex(keyId);
             // we aren't updating from keybase as of now
-            keyList.add(new ParcelableKeyRing(fingerprint, hexKeyId, null, null));
+            keyList.add(ParcelableKeyRing.createFromReference(fingerprint, hexKeyId, null, null));
         }
         keyCursor.close();
 

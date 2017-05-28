@@ -84,7 +84,7 @@ public class ImportKeysListCloudLoader
 
         // Now we have all the data needed to build the parcelable key ring for this key
         for (ImportKeysListEntry e : mEntryList) {
-            e.setParcelableKeyRing(new ParcelableKeyRing(e.getFingerprint(), e.getKeyIdHex(),
+            e.setParcelableKeyRing(ParcelableKeyRing.createFromReference(e.getFingerprint(), e.getKeyIdHex(),
                     e.getKeybaseName(), e.getFbUsername()));
         }
 

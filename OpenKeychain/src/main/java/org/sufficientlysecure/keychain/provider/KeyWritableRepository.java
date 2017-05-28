@@ -1054,7 +1054,7 @@ public class KeyWritableRepository extends KeyRepository {
                     if (cursor.isAfterLast()) {
                         return false;
                     }
-                    ring = new ParcelableKeyRing(cursor.getBlob(0));
+                    ring = ParcelableKeyRing.createFromEncodedBytes(cursor.getBlob(0));
                     cursor.moveToNext();
                     return true;
                 }
@@ -1116,7 +1116,7 @@ public class KeyWritableRepository extends KeyRepository {
                     if (cursor.isAfterLast()) {
                         return false;
                     }
-                    ring = new ParcelableKeyRing(cursor.getBlob(0));
+                    ring = ParcelableKeyRing.createFromEncodedBytes(cursor.getBlob(0));
                     cursor.moveToNext();
                     return true;
                 }

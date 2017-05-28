@@ -178,8 +178,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                 UncachedKeyRing key = null;
 
                 // If there is already byte data, use that
-                if (entry.mBytes != null) {
-                    key = UncachedKeyRing.decodeFromData(entry.mBytes);
+                if (entry.getBytes() != null) {
+                    key = UncachedKeyRing.decodeFromData(entry.getBytes());
                 } else {
                     try {
                         key = fetchKeyFromInternet(hkpKeyserver, proxy, log, entry, key);
@@ -216,7 +216,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                     if (key.isSecret()) {
                         result = mKeyWritableRepository.saveSecretKeyRing(key, canKeyRings, skipSave);
                     } else {
-                        result = mKeyWritableRepository.savePublicKeyRing(key, entry.mExpectedFingerprint, canKeyRings, skipSave);
+                        result = mKeyWritableRepository.savePublicKeyRing(key, entry.getExpectedFingerprint(), canKeyRings, skipSave);
                     }
                 }
                 if (!result.success()) {
@@ -325,7 +325,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         QueryNotFoundException queryNotFoundException = null;
 
         boolean canFetchFromKeyservers =
-                hkpKeyserver != null && (entry.mKeyIdHex != null || entry.mExpectedFingerprint != null);
+                hkpKeyserver != null && (entry.getKeyIdHex() != null || entry.getExpectedFingerprint()!= null);
         if (canFetchFromKeyservers) {
             UncachedKeyRing keyserverKey = null;
             try {
@@ -339,7 +339,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             }
         }
 
-        boolean hasKeybaseName = entry.mKeybaseName != null;
+        boolean hasKeybaseName = entry.getKeybaseName() != null;
         if (hasKeybaseName) {
             UncachedKeyRing keybaseKey = fetchKeyFromKeybase(proxy, log, entry);
             if (keybaseKey != null) {
@@ -347,7 +347,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             }
         }
 
-        boolean hasFacebookName = entry.mFbUsername != null;
+        boolean hasFacebookName = entry.getFbUsername() != null;
         if (hasFacebookName) {
             UncachedKeyRing facebookKey = fetchKeyFromFacebook(proxy, log, entry);
             if (facebookKey != null) {
@@ -370,14 +370,14 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             log.add(LogType.MSG_IMPORT_KEYSERVER, 1, hkpKeyserver);
 
             // Download by fingerprint, or keyId - whichever is available
-            if (entry.mExpectedFingerprint != null) {
-                String fingerprintHex = KeyFormattingUtils.convertFingerprintToHex(entry.mExpectedFingerprint);
+            if (entry.getExpectedFingerprint() != null) {
+                String fingerprintHex = KeyFormattingUtils.convertFingerprintToHex(entry.getExpectedFingerprint());
                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" +
                         fingerprintHex.substring(24));
                 data = hkpKeyserver.get("0x" + fingerprintHex, proxy).getBytes();
             } else {
-                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
-                data = hkpKeyserver.get(entry.mKeyIdHex, proxy).getBytes();
+                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.getKeyIdHex());
+                data = hkpKeyserver.get(entry.getKeyIdHex(), proxy).getBytes();
             }
             UncachedKeyRing keyserverKey = UncachedKeyRing.decodeFromData(data);
             if (keyserverKey != null) {
@@ -403,8 +403,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         }
 
         try {
-            log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.mKeybaseName);
-            byte[] data = keybaseServer.get(entry.mKeybaseName, proxy).getBytes();
+            log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.getKeybaseName());
+            byte[] data = keybaseServer.get(entry.getKeybaseName(), proxy).getBytes();
             UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
 
             if (keybaseKey != null) {
@@ -429,8 +429,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         }
 
         try {
-            log.add(LogType.MSG_IMPORT_FETCH_FACEBOOK, 2, entry.mFbUsername);
-            byte[] data = facebookServer.get(entry.mFbUsername, proxy).getBytes();
+            log.add(LogType.MSG_IMPORT_FETCH_FACEBOOK, 2, entry.getFbUsername());
+            byte[] data = facebookServer.get(entry.getFbUsername(), proxy).getBytes();
             UncachedKeyRing facebookKey = UncachedKeyRing.decodeFromData(data);
 
             if (facebookKey != null) {

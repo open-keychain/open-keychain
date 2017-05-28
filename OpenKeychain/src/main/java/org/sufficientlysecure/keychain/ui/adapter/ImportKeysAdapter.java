@@ -222,7 +222,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         ParcelableHkpKeyserver keyserver = null;
 
         ParcelableKeyRing keyRing = entry.getParcelableKeyRing();
-        if (keyRing.mBytes != null) {
+        if (keyRing.getBytes() != null) {
             // instead of giving the entries by Intent extra, cache them into a
             // file to prevent Java Binder problems on heavy imports
             // read FileImportCache for more info.

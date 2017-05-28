@@ -191,7 +191,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     }
 
     public void importKeys(byte[] keyringData) {
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(keyringData);
+        ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromEncodedBytes(keyringData);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 
@@ -199,7 +199,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     }
 
     public void importKeysFromFingerprint(byte[] fingerprint) {
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null, null);
+        ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(fingerprint, null, null, null);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 

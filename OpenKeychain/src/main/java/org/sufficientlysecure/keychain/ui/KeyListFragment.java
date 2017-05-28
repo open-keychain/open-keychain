@@ -503,7 +503,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         try {
             while (cursor.moveToNext()) {
                 byte[] fingerprint = cursor.getBlob(0); //fingerprint column is 0
-                ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null, null);
+                ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(fingerprint, null, null, null);
                 keyList.add(keyEntry);
             }
             mKeyList = keyList;

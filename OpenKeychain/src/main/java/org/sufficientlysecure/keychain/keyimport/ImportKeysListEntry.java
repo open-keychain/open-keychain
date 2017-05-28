@@ -302,7 +302,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
         try {
             byte[] encoded = ring.getEncoded();
-            mParcelableKeyRing = new ParcelableKeyRing(encoded);
+            mParcelableKeyRing = ParcelableKeyRing.createFromEncodedBytes(encoded);
         } catch (IOException ignored) {
         }
     }

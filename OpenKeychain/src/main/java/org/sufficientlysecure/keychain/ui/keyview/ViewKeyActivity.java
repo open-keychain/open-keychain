@@ -1163,7 +1163,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         byte[] blob = keyRepository.getCachedPublicKeyRing(dataUri).getFingerprint();
 
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(blob, null, null, null);
+        ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(blob, null, null, null);
         ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
         entries.add(keyEntry);
         mKeyList = entries;
