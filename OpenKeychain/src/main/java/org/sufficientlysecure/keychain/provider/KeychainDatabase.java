@@ -151,6 +151,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS " + Tables.UPDATED_KEYS + " ("
                     + UpdatedKeysColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY, "
                     + UpdatedKeysColumns.LAST_UPDATED + " INTEGER, "
+                    + UpdatedKeysColumns.DIRTY + " INTEGER, "
                     + "FOREIGN KEY(" + UpdatedKeysColumns.MASTER_KEY_ID + ") REFERENCES "
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
                     + ")";
@@ -308,14 +309,14 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             */
             case 20:
                 db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
-
             case 21:
                 db.execSQL("ALTER TABLE updated_keys ADD COLUMN seen_on_keyservers INTEGER;");
+                db.execSQL("ALTER TABLE updated_keys ADD COLUMN dirty INTEGER");
+        }
 
-                if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20 || oldVersion == 21) {
-                    // no consolidate for now, often crashes!
-                    return;
-                }
+        if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20 || oldVersion == 21) {
+            // no consolidate for now, often crashes!
+            return;
         }
 
         // TODO: don't depend on consolidate! make migrations inline!
