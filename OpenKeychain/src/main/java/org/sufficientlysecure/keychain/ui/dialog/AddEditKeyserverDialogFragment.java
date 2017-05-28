@@ -18,6 +18,11 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -44,23 +49,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 public class AddEditKeyserverDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "arg_messenger";
@@ -385,8 +384,6 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                         keyserverUriOnion.toURL(), proxy.getProxy());
                 clientTor.newCall(new Request.Builder().url(keyserverUriOnion.toURL()).build()).execute();
             }
-        } catch (TlsCertificatePinning.TlsCertificatePinningException e) {
-            reason = VerifyReturn.CONNECTION_FAILED;
         } catch (MalformedURLException | URISyntaxException e) {
             Log.w(Constants.TAG, "Invalid keyserver URL entered by user.");
             reason = VerifyReturn.INVALID_URL;

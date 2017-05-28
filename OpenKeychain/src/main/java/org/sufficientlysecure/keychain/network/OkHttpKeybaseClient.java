@@ -17,17 +17,14 @@
 
 package org.sufficientlysecure.keychain.network;
 
-import com.textuality.keybase.lib.KeybaseUrlConnectionClient;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.net.Proxy;
 import java.net.URL;
+
+import com.textuality.keybase.lib.KeybaseUrlConnectionClient;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 /**
  * Wrapper for Keybase Lib
@@ -38,15 +35,10 @@ public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
     public Response getUrlResponse(URL url, Proxy proxy, boolean isKeybase) throws IOException {
         OkHttpClient client;
 
-        try {
-            if (proxy != null) {
-                client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy);
-            } else {
-                client = OkHttpClientFactory.getSimpleClient();
-            }
-        } catch (TlsCertificatePinning.TlsCertificatePinningException e) {
-            Log.e(Constants.TAG, "TlsHelper failed", e);
-            throw new IOException("TlsHelper failed");
+        if (proxy != null) {
+            client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy);
+        } else {
+            client = OkHttpClientFactory.getSimpleClient();
         }
 
         Request request = new Request.Builder()

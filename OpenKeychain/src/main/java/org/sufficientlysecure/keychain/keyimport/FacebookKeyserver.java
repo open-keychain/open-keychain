@@ -19,20 +19,6 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
-import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
-import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -41,9 +27,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 
 public class FacebookKeyserver extends Keyserver {
     private static final String FB_KEY_URL_FORMAT
@@ -132,9 +131,6 @@ public class FacebookKeyserver extends Keyserver {
             throw new QueryFailedException("Cannot connect to Facebook. "
                     + "Check your Internet connection!"
                     + (proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy()));
-        } catch (TlsCertificatePinning.TlsCertificatePinningException e) {
-            Log.e(Constants.TAG, "Exception in cert pinning", e);
-            throw new QueryFailedException("Exception in cert pinning.");
         }
     }
 
