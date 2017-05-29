@@ -27,6 +27,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,6 +37,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.RequiresApi;
+import android.util.Base64;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -72,16 +75,20 @@ public class KeyTransferServerInteractor {
                 try {
                     int port = 1336;
 
-                    PKM pskKeyManager = new PKM();
+                    byte[] presharedKey = generatePresharedKey();
+                    PKM pskKeyManager = new PKM(presharedKey);
+
                     SSLContext sslContext = SSLContext.getInstance("TLS");
                     sslContext.init(new KeyManager[] { pskKeyManager }, new TrustManager[0], null);
                     serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(port);
 
-                    String qrCodeData = getIPAddress(true) + ":" + port + ":" + "swag";
+                    String presharedKeyEncoded = Base64.encodeToString(presharedKey, Base64.URL_SAFE | Base64.NO_PADDING);
+                    String qrCodeData = presharedKeyEncoded + "@" + getIPAddress(true) + ":" + port;
                     invokeListener(SHOW_CONNECTION_DETAILS, qrCodeData);
 
                     socket = serverSocket.accept();
                     invokeListener(CONNECTION_ESTABLISHED, socket.getInetAddress().toString());
+                    Arrays.fill(presharedKey, (byte) 0);
 
                     socket.setSoTimeout(500);
                     bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -130,6 +137,12 @@ public class KeyTransferServerInteractor {
         socketThread.start();
     }
 
+    public byte[] generatePresharedKey() {
+        byte[] presharedKey = new byte[16];
+        new SecureRandom().nextBytes(presharedKey);
+        return presharedKey;
+    }
+
     public void stopServer() {
         if (socketThread != null) {
             socketThread.interrupt();
@@ -156,6 +169,9 @@ public class KeyTransferServerInteractor {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                if (callback == null) {
+                    return;
+                }
                 switch (method) {
                     case SHOW_CONNECTION_DETAILS:
                         callback.onServerStarted(arg);
@@ -216,14 +232,20 @@ public class KeyTransferServerInteractor {
     }
 
     private static class PKM extends PskKeyManager implements KeyManager {
+        byte[] presharedKey;
+
+        private PKM(byte[] presharedKey) {
+            this.presharedKey = presharedKey;
+        }
+
         @Override
         public SecretKey getKey(String identityHint, String identity, Socket socket) {
-            return new SecretKeySpec("swag".getBytes(), "AES");
+            return new SecretKeySpec(presharedKey, "AES");
         }
 
         @Override
         public SecretKey getKey(String identityHint, String identity, SSLEngine engine) {
-            return new SecretKeySpec("swag".getBytes(), "AES");
+            return new SecretKeySpec(presharedKey, "AES");
         }
     }
 }

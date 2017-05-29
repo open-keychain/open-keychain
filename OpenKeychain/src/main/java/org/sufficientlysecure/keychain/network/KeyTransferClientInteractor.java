@@ -22,19 +22,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 
 import android.net.PskKeyManager;
+import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.RequiresApi;
+import android.util.Base64;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -42,7 +42,6 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
@@ -50,9 +49,8 @@ import org.sufficientlysecure.keychain.util.Log;
 
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public class KeyTransferClientInteractor {
-    private static final int SHOW_CONNECTION_DETAILS = 1;
     private static final int CONNECTION_ESTABLISHED = 2;
-    public static final int CONNECTION_LOST = 3;
+    private static final int CONNECTION_LOST = 3;
 
 
     private Thread socketThread;
@@ -64,6 +62,11 @@ public class KeyTransferClientInteractor {
     public void connectToServer(final String connectionDetails, KeyTransferClientCallback callback) {
         this.callback = callback;
 
+        Uri uri = Uri.parse(connectionDetails);
+        final byte[] presharedKey = Base64.decode(uri.getUserInfo(), Base64.URL_SAFE | Base64.NO_PADDING);
+        final String host = uri.getHost();
+        final int port = uri.getPort();
+
         handler = new Handler(Looper.getMainLooper());
         socketThread = new Thread() {
             @Override
@@ -72,13 +75,10 @@ public class KeyTransferClientInteractor {
                 Socket socket = null;
                 BufferedReader bufferedReader = null;
                 try {
-                    int port = 1336;
-
-                    PKM pskKeyManager = new PKM();
-                    SSLContext sslContext = null;
-                    sslContext = SSLContext.getInstance("TLS");
+                    PKM pskKeyManager = new PKM(presharedKey);
+                    SSLContext sslContext = SSLContext.getInstance("TLS");
                     sslContext.init(new KeyManager[] { pskKeyManager }, new TrustManager[0], null);
-                    socket = sslContext.getSocketFactory().createSocket(InetAddress.getByName(connectionDetails), port);
+                    socket = sslContext.getSocketFactory().createSocket(InetAddress.getByName(host), port);
 
                     invokeListener(CONNECTION_ESTABLISHED, socket.getInetAddress().toString());
 
@@ -169,14 +169,20 @@ public class KeyTransferClientInteractor {
     }
 
     private static class PKM extends PskKeyManager implements KeyManager {
+        byte[] presharedKey;
+
+        private PKM(byte[] presharedKey) {
+            this.presharedKey = presharedKey;
+        }
+
         @Override
         public SecretKey getKey(String identityHint, String identity, Socket socket) {
-            return new SecretKeySpec("swag".getBytes(), "AES");
+            return new SecretKeySpec(presharedKey, "AES");
         }
 
         @Override
         public SecretKey getKey(String identityHint, String identity, SSLEngine engine) {
-            return new SecretKeySpec("swag".getBytes(), "AES");
+            return new SecretKeySpec(presharedKey, "AES");
         }
     }
 }

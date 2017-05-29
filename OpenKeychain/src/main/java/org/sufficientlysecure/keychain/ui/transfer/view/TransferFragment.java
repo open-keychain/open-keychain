@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.ui.transfer.view;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -33,7 +35,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import com.google.zxing.client.android.Intents;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.QrCodeCaptureActivity;
 import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter;
 import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter.TransferMvpView;
 
@@ -42,10 +46,10 @@ import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter.T
 public class TransferFragment extends Fragment implements TransferMvpView {
     public static final int VIEW_WAITING = 0;
     public static final int VIEW_CONNECTED = 1;
+    public static final int REQUEST_CODE_SCAN = 1;
 
 
     private ImageView vQrCodeImage;
-    private View vScanButton;
     private TransferPresenter presenter;
     private ViewAnimator vTransferAnimator;
     private TextView vConnectionStatusText;
@@ -60,8 +64,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
         vConnectionStatusText = (TextView) view.findViewById(R.id.connection_status);
 
         vQrCodeImage = (ImageView) view.findViewById(R.id.qr_code_image);
-        vScanButton = view.findViewById(R.id.button_scan);
-        vScanButton.setOnClickListener(new OnClickListener() {
+
+        view.findViewById(R.id.button_scan).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (presenter != null) {
@@ -120,5 +124,25 @@ public class TransferFragment extends Fragment implements TransferMvpView {
                     }
                 });
         vQrCodeImage.requestLayout();
+    }
+
+    @Override
+    public void scanQrCode() {
+        Intent intent = new Intent(getActivity(), QrCodeCaptureActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_SCAN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_SCAN:
+                if (resultCode == Activity.RESULT_OK) {
+                    String qrCodeData = data.getStringExtra(Intents.Scan.RESULT);
+                    presenter.onQrCodeScanned(qrCodeData);
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

@@ -51,8 +51,12 @@ public class TransferPresenter implements KeyTransferServerCallback, KeyTransfer
     public void onClickScan() {
         clearConnections();
 
+        view.scanQrCode();
+    }
+
+    public void onQrCodeScanned(String qrCodeContent) {
         keyTransferClientInteractor = new KeyTransferClientInteractor();
-        keyTransferClientInteractor.connectToServer("10.100.40.126", this);
+        keyTransferClientInteractor.connectToServer(qrCodeContent, this);
     }
 
     private void clearConnections() {
@@ -73,7 +77,7 @@ public class TransferPresenter implements KeyTransferServerCallback, KeyTransfer
 
     @Override
     public void onServerStarted(String qrCodeData) {
-        Bitmap qrCodeBitmap = QrCodeUtils.getQRCodeBitmap(Uri.parse("pgp+transfer:" + qrCodeData), 0);
+        Bitmap qrCodeBitmap = QrCodeUtils.getQRCodeBitmap(Uri.parse("pgp+transfer://" + qrCodeData));
         view.setQrImage(qrCodeBitmap);
     }
 
@@ -93,5 +97,7 @@ public class TransferPresenter implements KeyTransferServerCallback, KeyTransfer
         void showWaitingForConnection();
 
         void setQrImage(Bitmap qrCode);
+
+        void scanQrCode();
     }
 }
