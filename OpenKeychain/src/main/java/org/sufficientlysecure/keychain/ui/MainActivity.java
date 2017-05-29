@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
+import org.sufficientlysecure.keychain.ui.transfer.view.TransferFragment;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -50,8 +51,9 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     static final int ID_ENCRYPT_DECRYPT = 2;
     static final int ID_APPS = 3;
     static final int ID_BACKUP = 4;
-    static final int ID_SETTINGS = 5;
-    static final int ID_HELP = 6;
+    static final int ID_TRANSFER = 5;
+    static final int ID_SETTINGS = 6;
+    static final int ID_HELP = 7;
 
     // both of these are used for instrumentation testing only
     public static final String EXTRA_SKIP_FIRST_TIME = "skip_first_time";
@@ -82,6 +84,8 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                 .withIdentifier(ID_APPS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_backup).withIcon(CommunityMaterial.Icon.cmd_backup_restore)
                                 .withIdentifier(ID_BACKUP).withSelectable(false),
+                        new PrimaryDrawerItem().withName(R.string.nav_transfer).withIcon(CommunityMaterial.Icon.cmd_backup_restore)
+                                .withIdentifier(ID_TRANSFER).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(R.string.menu_preferences).withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(ID_SETTINGS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.menu_help).withIcon(CommunityMaterial.Icon.cmd_help_circle).withIdentifier(ID_HELP).withSelectable(false)
@@ -104,6 +108,9 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                     break;
                                 case ID_BACKUP:
                                     onBackupSelected();
+                                    break;
+                                case ID_TRANSFER:
+                                    onTransferSelected();
                                     break;
                                 case ID_SETTINGS:
                                     intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -204,6 +211,13 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         mToolbar.setTitle(R.string.nav_backup);
         mDrawer.setSelection(ID_BACKUP, false);
         Fragment frag = new BackupRestoreFragment();
+        setFragment(frag, true);
+    }
+
+    private void onTransferSelected() {
+        mToolbar.setTitle(R.string.nav_transfer);
+        mDrawer.setSelection(ID_TRANSFER, false);
+        Fragment frag = new TransferFragment();
         setFragment(frag, true);
     }
 
