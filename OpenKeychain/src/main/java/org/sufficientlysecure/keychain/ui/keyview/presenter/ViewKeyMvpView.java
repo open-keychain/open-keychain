@@ -9,13 +9,8 @@ import android.support.v4.app.Fragment;
 public interface ViewKeyMvpView {
     void switchToFragment(Fragment frag, String backStackName);
 
+    void startActivity(Intent intent);
     void startActivityAndShowResultSnackbar(Intent intent);
     void showDialogFragment(DialogFragment dialogFragment, final String tag);
     void setContentShown(boolean show, boolean animate);
-
-    void addFakeBackStackItem(String tag, OnBackStackPoppedListener listener);
-
-    interface OnBackStackPoppedListener {
-        void onBackStackPopped();
-    }
 }
