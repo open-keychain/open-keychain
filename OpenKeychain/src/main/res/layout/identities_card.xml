@@ -12,21 +12,6 @@
         android:layout_height="wrap_content"
         android:text="@string/section_user_ids" />
 
-    <org.sufficientlysecure.keychain.ui.widget.FixedListView
-        android:id="@+id/view_key_linked_ids"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:id="@+id/view_key_lid_divider"
-        android:background="?android:attr/listDivider"
-        android:visibility="gone"
-        tools:visibility="visible"
-        />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/view_key_user_ids"
         android:layout_width="match_parent"

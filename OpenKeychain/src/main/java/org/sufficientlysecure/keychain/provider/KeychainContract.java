@@ -284,6 +284,10 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_USER_IDS).build();
         }
 
+        public static Uri buildLinkedIdsUri(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_LINKED_IDS).build();
+        }
+
         public static Uri buildLinkedIdsUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_LINKED_IDS).build();
         }

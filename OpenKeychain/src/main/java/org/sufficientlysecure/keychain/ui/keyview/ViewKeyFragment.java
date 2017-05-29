@@ -35,30 +35,25 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.LinkedIdentitiesPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.LinkedIdentitiesPresenter.LinkedIdsFragMvpView;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.ViewKeyMvpView;
 import org.sufficientlysecure.keychain.ui.keyview.view.IdentitiesCardView;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthView;
 import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class ViewKeyFragment extends LoaderFragment implements LinkedIdsFragMvpView, ViewKeyMvpView {
+public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
     public static final String ARG_MASTER_KEY_ID = "master_key_id";
     public static final String ARG_IS_SECRET = "is_secret";
 
     boolean mIsSecret = false;
 
-    private static final int LOADER_ID_USER_IDS = 1;
-    private static final int LOADER_ID_LINKED_IDS = 2;
-    private static final int LOADER_ID_LINKED_CONTACT = 3;
-    private static final int LOADER_ID_SUBKEY_STATUS = 4;
+    private static final int LOADER_IDENTITIES = 1;
+    private static final int LOADER_ID_LINKED_CONTACT = 2;
+    private static final int LOADER_ID_SUBKEY_STATUS = 3;
 
     private IdentitiesCardView mIdentitiesCardView;
     private IdentitiesPresenter mIdentitiesPresenter;
-    private LinkedIdentitiesPresenter mLinkedIdentitiesPresenter;
 
     SystemContactCardView mSystemContactCard;
     SystemContactPresenter mSystemContactPresenter;
@@ -102,14 +97,8 @@ public class ViewKeyFragment extends LoaderFragment implements LinkedIdsFragMvpV
         mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);
 
         mIdentitiesPresenter = new IdentitiesPresenter(
-                getContext(), mIdentitiesCardView, this, LOADER_ID_USER_IDS, masterKeyId, mIsSecret);
+                getContext(), mIdentitiesCardView, this, LOADER_IDENTITIES, masterKeyId, mIsSecret);
         mIdentitiesPresenter.startLoader(getLoaderManager());
-
-        if (Preferences.getPreferences(getActivity()).getExperimentalEnableLinkedIdentities()) {
-            mLinkedIdentitiesPresenter = new LinkedIdentitiesPresenter(
-                    getContext(), mIdentitiesCardView, this, LOADER_ID_LINKED_IDS, masterKeyId, mIsSecret);
-            mLinkedIdentitiesPresenter.startLoader(getLoaderManager());
-        }
 
         mSystemContactPresenter = new SystemContactPresenter(
                 getContext(), mSystemContactCard, LOADER_ID_LINKED_CONTACT, masterKeyId, mIsSecret);

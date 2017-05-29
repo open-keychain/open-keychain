@@ -18,20 +18,32 @@
 package org.sufficientlysecure.keychain.ui.keyview.presenter;
 
 
+import java.io.IOException;
 import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.EditIdentitiesActivity;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
+import org.sufficientlysecure.keychain.ui.keyview.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.LinkedIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.UserIdInfo;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
+import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 
 public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> {
@@ -55,7 +67,7 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         this.masterKeyId = masterKeyId;
         this.isSecret = isSecret;
 
-        identitiesAdapter = new IdentityAdapter(context);
+        identitiesAdapter = new IdentityAdapter(context, isSecret);
         view.setIdentitiesAdapter(identitiesAdapter);
 
         view.setEditIdentitiesButtonVisible(isSecret);
@@ -63,12 +75,17 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         view.setIdentitiesCardListener(new IdentitiesCardListener() {
             @Override
             public void onIdentityItemClick(int position) {
-                showUserIdInfo(position);
+                showIdentityInfo(position);
             }
 
             @Override
             public void onClickEditIdentities() {
                 editIdentities();
+            }
+
+            @Override
+            public void onClickAddIdentity() {
+                addLinkedIdentity();
             }
         });
     }
@@ -79,7 +96,8 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
 
     @Override
     public Loader<List<IdentityInfo>> onCreateLoader(int id, Bundle args) {
-        return new IdentityLoader(context, context.getContentResolver(), masterKeyId);
+        boolean showLinkedIds = Preferences.getPreferences(context).getExperimentalEnableLinkedIdentities();
+        return new IdentityLoader(context, context.getContentResolver(), masterKeyId, showLinkedIds);
     }
 
     @Override
@@ -93,20 +111,47 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         identitiesAdapter.setData(null);
     }
 
-    private void showUserIdInfo(final int position) {
-//        if (!isSecret) {
-//            final boolean isRevoked = identitiesAdapter.getIsRevoked(position);
-//            final int isVerified = identitiesAdapter.getIsVerified(position);
-//
-//            UserIdInfoDialogFragment dialogFragment = UserIdInfoDialogFragment.newInstance(isRevoked, isVerified);
-//            viewKeyMvpView.showDialogFragment(dialogFragment, "userIdInfoDialog");
-//        }
+    private void showIdentityInfo(final int position) {
+        IdentityInfo info = identitiesAdapter.getInfo(position);
+        if (info instanceof LinkedIdInfo) {
+            showLinkedId((LinkedIdInfo) info);
+        } else if (info instanceof UserIdInfo) {
+            showUserIdInfo((UserIdInfo) info);
+        }
+    }
+
+    private void showLinkedId(final LinkedIdInfo info) {
+        final LinkedIdViewFragment frag;
+        try {
+            Uri dataUri = UserPackets.buildLinkedIdsUri(KeyRings.buildGenericKeyRingUri(masterKeyId));
+            frag = LinkedIdViewFragment.newInstance(dataUri, info.getRank(), isSecret, masterKeyId);
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "IOException", e);
+            return;
+        }
+
+        viewKeyMvpView.switchToFragment(frag, "linked_id");
+    }
+
+    private void showUserIdInfo(UserIdInfo info) {
+        if (!isSecret) {
+            final int isVerified = info.getVerified();
+
+            UserIdInfoDialogFragment dialogFragment = UserIdInfoDialogFragment.newInstance(false, isVerified);
+            viewKeyMvpView.showDialogFragment(dialogFragment, "userIdInfoDialog");
+        }
     }
 
     private void editIdentities() {
         Intent editIntent = new Intent(context, EditIdentitiesActivity.class);
         editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(masterKeyId));
         viewKeyMvpView.startActivityAndShowResultSnackbar(editIntent);
+    }
+
+    private void addLinkedIdentity() {
+        Intent intent = new Intent(context, LinkedIdWizard.class);
+        intent.setData(KeyRings.buildUnifiedKeyRingUri(masterKeyId));
+        context.startActivity(intent);
     }
 
     public interface IdentitiesMvpView {
@@ -117,6 +162,8 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
 
     public interface IdentitiesCardListener {
         void onIdentityItemClick(int position);
+
         void onClickEditIdentities();
+        void onClickAddIdentity();
     }
 }

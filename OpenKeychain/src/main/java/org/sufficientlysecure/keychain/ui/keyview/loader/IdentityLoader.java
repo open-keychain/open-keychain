@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.keyview.loader;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,10 +26,14 @@ import java.util.List;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
+import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.linked.LinkedAttribute;
+import org.sufficientlysecure.keychain.linked.UriAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
 
@@ -63,34 +68,84 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
 
     private final ContentResolver contentResolver;
     private final long masterKeyId;
+    private final boolean showLinkedIds;
 
     private List<IdentityInfo> cachedResult;
 
 
-    public IdentityLoader(Context context, ContentResolver contentResolver, long masterKeyId) {
+    public IdentityLoader(Context context, ContentResolver contentResolver, long masterKeyId, boolean showLinkedIds) {
         super(context);
 
         this.contentResolver = contentResolver;
         this.masterKeyId = masterKeyId;
+        this.showLinkedIds = showLinkedIds;
     }
 
     @Override
     public List<IdentityInfo> loadInBackground() {
+        ArrayList<IdentityInfo> identities = new ArrayList<>();
+
+        if (showLinkedIds) {
+            loadLinkedIds(identities);
+        }
+        loadUserIds(identities);
+
+        return Collections.unmodifiableList(identities);
+    }
+
+    private void loadLinkedIds(ArrayList<IdentityInfo> identities) {
+        Cursor cursor = contentResolver.query(UserPackets.buildLinkedIdsUri(masterKeyId),
+                USER_PACKETS_PROJECTION, USER_IDS_WHERE, null, null);
+        if (cursor == null) {
+            Log.e(Constants.TAG, "Error loading key items!");
+            return;
+        }
+
+        try {
+            while (cursor.moveToNext()) {
+                int rank = cursor.getInt(INDEX_RANK);
+                int verified = cursor.getInt(INDEX_VERIFIED);
+                boolean isPrimary = cursor.getInt(INDEX_IS_PRIMARY) != 0;
+
+                byte[] data = cursor.getBlob(INDEX_ATTRIBUTE_DATA);
+                try {
+                    UriAttribute uriAttribute = LinkedAttribute.fromAttributeData(data);
+                    if (uriAttribute instanceof LinkedAttribute) {
+                        LinkedIdInfo identityInfo = LinkedIdInfo.create(rank, verified, isPrimary, uriAttribute);
+                        identities.add(identityInfo);
+                    }
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "Failed parsing uri attribute", e);
+                }
+            }
+        } finally {
+            cursor.close();
+        }
+    }
+
+    private void loadUserIds(ArrayList<IdentityInfo> identities) {
         Cursor cursor = contentResolver.query(UserPackets.buildUserIdsUri(masterKeyId),
                 USER_PACKETS_PROJECTION, USER_IDS_WHERE, null, null);
         if (cursor == null) {
             Log.e(Constants.TAG, "Error loading key items!");
-            return null;
+            return;
         }
 
         try {
-            ArrayList<IdentityInfo> identities = new ArrayList<>();
             while (cursor.moveToNext()) {
-                IdentityInfo identityInfo = new IdentityInfo(masterKeyId, cursor);
-                identities.add(identityInfo);
-            }
+                int rank = cursor.getInt(INDEX_RANK);
+                int verified = cursor.getInt(INDEX_VERIFIED);
+                boolean isPrimary = cursor.getInt(INDEX_IS_PRIMARY) != 0;
 
-            return Collections.unmodifiableList(identities);
+                if (!cursor.isNull(INDEX_NAME) || !cursor.isNull(INDEX_EMAIL)) {
+                    String name = cursor.getString(INDEX_NAME);
+                    String email = cursor.getString(INDEX_EMAIL);
+                    String comment = cursor.getString(INDEX_COMMENT);
+
+                    IdentityInfo identityInfo = UserIdInfo.create(rank, verified, isPrimary, name, email, comment);
+                    identities.add(identityInfo);
+                }
+            }
         } finally {
             cursor.close();
         }
@@ -116,36 +171,41 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         }
     }
 
-    public static class IdentityInfo {
-        final int position;
+    public interface IdentityInfo {
+        int getRank();
+        int getVerified();
+        boolean isPrimary();
+    }
 
-        public final int verified;
-        public final byte[] data;
-        public final String name;
-        public final String email;
-        public final String comment;
+    @AutoValue
+    public abstract static class UserIdInfo implements IdentityInfo {
+        public abstract int getRank();
+        public abstract int getVerified();
+        public abstract boolean isPrimary();
 
-        public boolean isPrimary;
+        @Nullable
+        public abstract String getName();
+        @Nullable
+        public abstract String getEmail();
+        @Nullable
+        public abstract String getComment();
 
-        IdentityInfo(long masterKeyId, Cursor cursor) {
-            position = cursor.getPosition();
+        static UserIdInfo create(int rank, int verified, boolean isPrimary, String name, String email,
+                String comment) {
+            return new AutoValue_IdentityLoader_UserIdInfo(rank, verified, isPrimary, name, email, comment);
+        }
+    }
 
-            verified = cursor.getInt(INDEX_VERIFIED);
-            if (cursor.isNull(INDEX_NAME)) {
-                data = cursor.getBlob(INDEX_ATTRIBUTE_DATA);
+    @AutoValue
+    public abstract static class LinkedIdInfo implements IdentityInfo {
+        public abstract int getRank();
+        public abstract int getVerified();
+        public abstract boolean isPrimary();
 
-                name = null;
-                email = null;
-                comment = null;
-            } else {
-                data = null;
+        public abstract UriAttribute getUriAttribute();
 
-                name = cursor.getString(INDEX_NAME);
-                email = cursor.getString(INDEX_EMAIL);
-                comment = cursor.getString(INDEX_COMMENT);
-            }
-
-            isPrimary = cursor.getInt(INDEX_IS_PRIMARY) != 0;
+        static LinkedIdInfo create(int rank, int verified, boolean isPrimary, UriAttribute uriAttribute) {
+            return new AutoValue_IdentityLoader_LinkedIdInfo(rank, verified, isPrimary, uriAttribute);
         }
     }
 }

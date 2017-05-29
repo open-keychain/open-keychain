@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui.keyview;
 
+
 import java.io.IOException;
 import java.util.Collections;
 
@@ -50,11 +51,11 @@ import android.widget.ViewAnimator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
-import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.LinkedResource;
+import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
+import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
@@ -63,7 +64,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
-import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.keyview.LinkedIdViewFragment.ViewHolder.VerifyState;
@@ -217,7 +218,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
             mViewHolder.mLinkedIdHolder.vVerified.setImageResource(R.drawable.octo_link_24dp);
         }
 
-        mViewHolder.mLinkedIdHolder.setData(mContext, mLinkedId);
+        mViewHolder.mLinkedIdHolder.bind(mContext, mLinkedId);
 
         setShowVerifying(false);
 
@@ -256,7 +257,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         private final ViewAnimator vVerifyingContainer;
         private final ViewAnimator vItemCertified;
         private final View vKeySpinnerContainer;
-        LinkedIdsAdapter.ViewHolder mLinkedIdHolder;
+        IdentityAdapter.LinkedIdViewHolder mLinkedIdHolder;
 
         private ViewAnimator vButtonSwitcher;
         private CertListWidget vLinkedCerts;
@@ -274,7 +275,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
             vKeySpinnerContainer = root.findViewById(R.id.cert_key_spincontainer);
             vButtonSwitcher = (ViewAnimator) root.findViewById(R.id.button_animator);
 
-            mLinkedIdHolder = new LinkedIdsAdapter.ViewHolder(root);
+            mLinkedIdHolder = new IdentityAdapter.LinkedIdViewHolder(root);
 
             vButtonVerify = root.findViewById(R.id.button_verify);
             vButtonRetry = root.findViewById(R.id.button_retry);
