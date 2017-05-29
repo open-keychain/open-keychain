@@ -24,8 +24,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,13 +36,10 @@ import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.TrustIdsPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.ViewKeyMvpView;
 import org.sufficientlysecure.keychain.ui.keyview.view.IdentitiesCardView;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthView;
 import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
-import org.sufficientlysecure.keychain.ui.keyview.view.TrustIdsIdCardView;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 
 public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
@@ -56,13 +51,9 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
     private static final int LOADER_IDENTITIES = 1;
     private static final int LOADER_ID_LINKED_CONTACT = 2;
     private static final int LOADER_ID_SUBKEY_STATUS = 3;
-    private static final int LOADER_ID_TRUST_IDS = 4;
 
     private IdentitiesCardView mIdentitiesCardView;
     private IdentitiesPresenter mIdentitiesPresenter;
-
-    private TrustIdsIdCardView mTrustIdsCard;
-    private TrustIdsPresenter mTrustIdsPresenter;
 
     SystemContactCardView mSystemContactCard;
     SystemContactPresenter mSystemContactPresenter;
@@ -92,8 +83,6 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
 
         mIdentitiesCardView = (IdentitiesCardView) view.findViewById(R.id.card_identities);
 
-        mTrustIdsCard = (TrustIdsIdCardView) view.findViewById(R.id.view_key_card_trust_ids);
-
         mSystemContactCard = (SystemContactCardView) view.findViewById(R.id.linked_system_contact_card);
         mKeyStatusHealth = (KeyHealthView) view.findViewById(R.id.key_status_health);
 
@@ -118,10 +107,6 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
         mKeyHealthPresenter = new KeyHealthPresenter(
                 getContext(), mKeyStatusHealth, LOADER_ID_SUBKEY_STATUS, masterKeyId, mIsSecret);
         mKeyHealthPresenter.startLoader(getLoaderManager());
-
-        mTrustIdsPresenter = new TrustIdsPresenter(
-                getContext(), mTrustIdsCard, this, LOADER_ID_TRUST_IDS, masterKeyId, false);
-        mTrustIdsPresenter.startLoader(getLoaderManager());
     }
 
     @Override
@@ -163,30 +148,6 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
                 dialogFragment.show(getActivity().getSupportFragmentManager(), tag);
-            }
-        });
-    }
-
-    @Override
-    public void addFakeBackStackItem(String tag, final OnBackStackPoppedListener listener) {
-        FragmentManager fragmentManager = getFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            return;
-        }
-
-        fragmentManager.beginTransaction()
-                .addToBackStack("expand_trust_id")
-                .commitAllowingStateLoss();
-        fragmentManager.executePendingTransactions();
-
-        fragmentManager.addOnBackStackChangedListener(new OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                FragmentManager fragMan = getFragmentManager();
-                fragMan.popBackStack("expand_trust_id", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                fragMan.removeOnBackStackChangedListener(this);
-
-                listener.onBackStackPopped();
             }
         });
     }

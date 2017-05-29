@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.ui.keyview.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.LinkedIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.TrustIdInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.UserIdInfo;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.util.Log;
@@ -117,6 +118,9 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
             showLinkedId((LinkedIdInfo) info);
         } else if (info instanceof UserIdInfo) {
             showUserIdInfo((UserIdInfo) info);
+        } else if (info instanceof TrustIdInfo) {
+            Intent trustIdIntent = ((TrustIdInfo) info).getTrustIdIntent();
+            viewKeyMvpView.startActivity(trustIdIntent);
         }
     }
 

@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.ViewHolder;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.LinkedIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.TrustIdInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.UserIdInfo;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -75,7 +76,11 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         int viewType = getItemViewType(position);
         if (viewType == VIEW_TYPE_USER_ID) {
-            ((UserIdViewHolder) holder).bind((UserIdInfo) info);
+            if (info instanceof TrustIdInfo) {
+                ((UserIdViewHolder) holder).bind((TrustIdInfo) info);
+            } else {
+                ((UserIdViewHolder) holder).bind((UserIdInfo) info);
+            }
         } else if (viewType == VIEW_TYPE_LINKED_ID) {
             ((LinkedIdViewHolder) holder).bind(context, (LinkedIdInfo) info, isSecret);
         } else {
@@ -97,7 +102,7 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
     @Override
     public int getItemViewType(int position) {
         IdentityInfo info = data.get(position);
-        if (info instanceof UserIdInfo) {
+        if (info instanceof UserIdInfo || info instanceof TrustIdInfo) {
             return VIEW_TYPE_USER_ID;
         } else if (info instanceof LinkedIdInfo) {
             return VIEW_TYPE_LINKED_ID;
@@ -189,6 +194,8 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
         private final TextView vName;
         private final TextView vAddress;
         private final TextView vComment;
+        private final ImageView vIcon;
+        private final ImageView vTrustIdAction;
 
         private UserIdViewHolder(View view) {
             super(view);
@@ -196,9 +203,36 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
             vName = (TextView) view.findViewById(R.id.user_id_item_name);
             vAddress = (TextView) view.findViewById(R.id.user_id_item_address);
             vComment = (TextView) view.findViewById(R.id.user_id_item_comment);
+
+            vIcon = (ImageView) view.findViewById(R.id.trust_id_app_icon);
+            vTrustIdAction = (ImageView) view.findViewById(R.id.trust_id_action);
+        }
+
+        public void bind(TrustIdInfo info) {
+            if (info.getUserIdInfo() != null) {
+                bindUserIdInfo(info.getUserIdInfo());
+            } else {
+                vName.setVisibility(View.GONE);
+                vComment.setVisibility(View.GONE);
+
+                vAddress.setText(info.getTrustId());
+                vAddress.setTypeface(null, Typeface.NORMAL);
+            }
+
+            vIcon.setImageDrawable(info.getAppIcon());
+            if (info.getTrustIdIntent() != null) {
+                vTrustIdAction.setVisibility(View.VISIBLE);
+            }
         }
 
         public void bind(UserIdInfo info) {
+            bindUserIdInfo(info);
+
+            vIcon.setVisibility(View.GONE);
+            vTrustIdAction.setVisibility(View.GONE);
+        }
+
+        private void bindUserIdInfo(UserIdInfo info) {
             if (info.getName() != null) {
                 vName.setText(info.getName());
             } else {
@@ -224,7 +258,6 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
                 vName.setTypeface(null, Typeface.NORMAL);
                 vAddress.setTypeface(null, Typeface.NORMAL);
             }
-
         }
 
     }
