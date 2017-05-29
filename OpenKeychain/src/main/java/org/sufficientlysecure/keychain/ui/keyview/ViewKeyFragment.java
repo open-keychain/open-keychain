@@ -28,7 +28,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
@@ -47,7 +46,6 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 
 public class ViewKeyFragment extends LoaderFragment implements LinkedIdsFragMvpView, ViewKeyMvpView {
-
     public static final String ARG_MASTER_KEY_ID = "master_key_id";
     public static final String ARG_IS_SECRET = "is_secret";
 

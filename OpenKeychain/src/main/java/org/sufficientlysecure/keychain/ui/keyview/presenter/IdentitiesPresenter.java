@@ -18,28 +18,29 @@
 package org.sufficientlysecure.keychain.ui.keyview.presenter;
 
 
+import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.EditIdentitiesActivity;
-import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
-import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
+import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
 
 
-public class IdentitiesPresenter implements LoaderCallbacks<Cursor> {
+public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> {
     private final Context context;
     private final IdentitiesMvpView view;
     private final ViewKeyMvpView viewKeyMvpView;
     private final int loaderId;
 
-    private final UserIdsAdapter userIdsAdapter;
+    private final IdentityAdapter identitiesAdapter;
 
     private final long masterKeyId;
     private final boolean isSecret;
@@ -54,8 +55,8 @@ public class IdentitiesPresenter implements LoaderCallbacks<Cursor> {
         this.masterKeyId = masterKeyId;
         this.isSecret = isSecret;
 
-        userIdsAdapter = new UserIdsAdapter(context, null, 0, !isSecret);
-        view.setUserIdsAdapter(userIdsAdapter);
+        identitiesAdapter = new IdentityAdapter(context);
+        view.setIdentitiesAdapter(identitiesAdapter);
 
         view.setEditIdentitiesButtonVisible(isSecret);
 
@@ -77,29 +78,29 @@ public class IdentitiesPresenter implements LoaderCallbacks<Cursor> {
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return UserIdsAdapter.createLoader(context, KeyRings.buildUnifiedKeyRingUri(masterKeyId));
+    public Loader<List<IdentityInfo>> onCreateLoader(int id, Bundle args) {
+        return new IdentityLoader(context, context.getContentResolver(), masterKeyId);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<List<IdentityInfo>> loader, List<IdentityInfo> data) {
         viewKeyMvpView.setContentShown(true, false);
-        userIdsAdapter.swapCursor(data);
+        identitiesAdapter.setData(data);
     }
 
     @Override
     public void onLoaderReset(Loader loader) {
-        userIdsAdapter.swapCursor(null);
+        identitiesAdapter.setData(null);
     }
 
     private void showUserIdInfo(final int position) {
-        if (!isSecret) {
-            final boolean isRevoked = userIdsAdapter.getIsRevoked(position);
-            final int isVerified = userIdsAdapter.getIsVerified(position);
-
-            UserIdInfoDialogFragment dialogFragment = UserIdInfoDialogFragment.newInstance(isRevoked, isVerified);
-            viewKeyMvpView.showDialogFragment(dialogFragment, "userIdInfoDialog");
-        }
+//        if (!isSecret) {
+//            final boolean isRevoked = identitiesAdapter.getIsRevoked(position);
+//            final int isVerified = identitiesAdapter.getIsVerified(position);
+//
+//            UserIdInfoDialogFragment dialogFragment = UserIdInfoDialogFragment.newInstance(isRevoked, isVerified);
+//            viewKeyMvpView.showDialogFragment(dialogFragment, "userIdInfoDialog");
+//        }
     }
 
     private void editIdentities() {
@@ -109,7 +110,7 @@ public class IdentitiesPresenter implements LoaderCallbacks<Cursor> {
     }
 
     public interface IdentitiesMvpView {
-        void setUserIdsAdapter(UserIdsAdapter userIdsAdapter);
+        void setIdentitiesAdapter(IdentityAdapter userIdsAdapter);
         void setIdentitiesCardListener(IdentitiesCardListener identitiesCardListener);
         void setEditIdentitiesButtonVisible(boolean show);
     }
