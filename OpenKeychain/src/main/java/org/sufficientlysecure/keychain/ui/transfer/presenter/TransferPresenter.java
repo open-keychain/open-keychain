@@ -220,22 +220,25 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     @Override
     public void onDataReceivedOk(String receivedData) {
-        Log.d(Constants.TAG, "received: " + receivedData);
-        view.showReceivingKeys();
+        Log.d(Constants.TAG, "received key");
 
+        UncachedKeyRing uncachedKeyRing;
         try {
-            // TODO move to worker thread?
-            UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(receivedData.getBytes());
-            String primaryUserId = uncachedKeyRing.getPublicKey().getPrimaryUserIdWithFallback();
-            UserId userId = OpenPgpUtils.splitUserId(primaryUserId);
-
-            ReceivedKeyItem receivedKeyItem = new ReceivedKeyItem(receivedData, uncachedKeyRing.getMasterKeyId(),
-                    uncachedKeyRing.getCreationTime(), userId.name, userId.email);
-            receivedKeyAdapter.addItem(receivedKeyItem);
-        } catch (PgpGeneralException | IOException e) {
+            uncachedKeyRing = UncachedKeyRing.decodeFromData(receivedData.getBytes());
+        } catch (PgpGeneralException | IOException | RuntimeException e) {
             Log.e(Constants.TAG, "error parsing incoming key", e);
             view.showErrorBadKey();
+            return;
         }
+
+        String primaryUserId = uncachedKeyRing.getPublicKey().getPrimaryUserIdWithFallback();
+        UserId userId = OpenPgpUtils.splitUserId(primaryUserId);
+
+        ReceivedKeyItem receivedKeyItem = new ReceivedKeyItem(receivedData, uncachedKeyRing.getMasterKeyId(),
+                uncachedKeyRing.getCreationTime(), userId.name, userId.email);
+        receivedKeyAdapter.addItem(receivedKeyItem);
+
+        view.showReceivingKeys();
     }
 
     @Override

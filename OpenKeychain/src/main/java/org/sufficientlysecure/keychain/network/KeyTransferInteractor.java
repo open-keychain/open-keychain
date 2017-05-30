@@ -51,6 +51,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
@@ -145,6 +146,8 @@ public class KeyTransferInteractor {
                 try {
                     handleOpenConnection(socket);
                     Log.d(Constants.TAG, "connection closed ok!");
+                } catch (SSLHandshakeException e) {
+                    invokeListener(CONNECTION_ERROR_CONNECT, null);
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error!", e);
                 }
@@ -172,7 +175,6 @@ public class KeyTransferInteractor {
                     invokeListener(CONNECTION_LISTENING, qrCodeData);
 
                     socket = serverSocket.accept();
-                    invokeListener(CONNECTION_ESTABLISHED, socket.getInetAddress().toString());
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error while listening!", e);
                     invokeListener(CONNECTION_ERROR_LISTEN, null);
@@ -187,7 +189,6 @@ public class KeyTransferInteractor {
                     sslSocket.setEnabledCipherSuites(enabledCipherSuites);
 
                     socket = sslSocket;
-                    invokeListener(CONNECTION_ESTABLISHED, socket.getInetAddress().toString());
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error while connecting!", e);
                     invokeListener(CONNECTION_ERROR_CONNECT, null);
@@ -211,8 +212,9 @@ public class KeyTransferInteractor {
 
         private void handleOpenConnection(Socket socket) throws IOException {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
             OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
+
+            invokeListener(CONNECTION_ESTABLISHED, socket.getInetAddress().toString());
 
             socket.setSoTimeout(500);
             while (!isInterrupted() && socket.isConnected() && !socket.isClosed()) {
