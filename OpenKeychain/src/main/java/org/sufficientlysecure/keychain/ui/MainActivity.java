@@ -84,7 +84,10 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                 .withIdentifier(ID_APPS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_backup).withIcon(CommunityMaterial.Icon.cmd_backup_restore)
                                 .withIdentifier(ID_BACKUP).withSelectable(false),
-                        new PrimaryDrawerItem().withName(R.string.nav_transfer).withIcon(CommunityMaterial.Icon.cmd_backup_restore)
+                        new PrimaryDrawerItem().withName(R.string.nav_transfer)
+                                .withIcon(R.drawable.ic_wifi_lock_24dp)
+                                .withIconColorRes(R.color.md_grey_600)
+                                .withIconTintingEnabled(true)
                                 .withIdentifier(ID_TRANSFER).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(R.string.menu_preferences).withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(ID_SETTINGS).withSelectable(false),
