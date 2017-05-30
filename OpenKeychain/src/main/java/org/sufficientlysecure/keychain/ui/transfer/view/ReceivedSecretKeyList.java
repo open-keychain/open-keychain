@@ -101,6 +101,13 @@ public class ReceivedSecretKeyList extends RecyclerView {
             data.add(receivedKeyItem);
             notifyItemInserted(data.size() -1);
         }
+
+        public void clear() {
+            data.clear();
+            finishedItems.clear();
+            focusedMasterKeyId = null;
+            notifyDataSetChanged();
+        }
     }
 
     static class ReceivedKeyViewHolder extends ViewHolder {

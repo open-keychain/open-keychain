@@ -60,7 +60,7 @@ public class TransferSecretKeyList extends RecyclerView {
         private Long focusedMasterKeyId;
         private List<SecretKeyItem> data;
         private ArrayList<Long> finishedItems = new ArrayList<>();
-        private boolean disableAll;
+        private boolean allItemsDisabled;
 
 
         public TransferKeyAdapter(Context context, LayoutInflater layoutInflater,
@@ -79,7 +79,7 @@ public class TransferSecretKeyList extends RecyclerView {
         public void onBindViewHolder(TransferKeyViewHolder holder, int position) {
             SecretKeyItem item = data.get(position);
             boolean isFinished = finishedItems.contains(item.masterKeyId);
-            holder.bind(context, item, onClickTransferKeyListener, focusedMasterKeyId, isFinished, disableAll);
+            holder.bind(context, item, onClickTransferKeyListener, focusedMasterKeyId, isFinished, allItemsDisabled);
         }
 
         @Override
@@ -116,8 +116,8 @@ public class TransferSecretKeyList extends RecyclerView {
             return new SecretKeyLoader(context, context.getContentResolver());
         }
 
-        public void disableAll() {
-            disableAll = true;
+        public void setAllDisabled(boolean allItemsdisablde) {
+            allItemsDisabled = allItemsdisablde;
             notifyItemRangeChanged(0, getItemCount());
         }
     }

@@ -187,6 +187,10 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         wasConnected = true;
 
         secretKeyAdapter.clearFinishedItems();
+        secretKeyAdapter.focusItem(null);
+        secretKeyAdapter.setAllDisabled(false);
+        receivedKeyAdapter.clear();
+
         view.showConnectionEstablished(otherName);
         view.addFakeBackStackItem(BACKSTACK_TAG_TRANSFER);
     }
@@ -199,7 +203,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
             connectionResetAndStartListen();
         } else {
             view.showViewDisconnected();
-            secretKeyAdapter.disableAll();
+            secretKeyAdapter.setAllDisabled(true);
         }
     }
 
