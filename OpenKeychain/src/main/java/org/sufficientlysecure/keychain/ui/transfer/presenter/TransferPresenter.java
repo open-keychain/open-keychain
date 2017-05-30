@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -37,12 +38,18 @@ import android.view.LayoutInflater;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.network.KeyTransferInteractor;
 import org.sufficientlysecure.keychain.network.KeyTransferInteractor.KeyTransferCallback;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.Callback;
 import org.sufficientlysecure.keychain.ui.transfer.loader.SecretKeyLoader.SecretKeyItem;
 import org.sufficientlysecure.keychain.ui.transfer.view.ReceivedSecretKeyList.OnClickImportKeyListener;
 import org.sufficientlysecure.keychain.ui.transfer.view.ReceivedSecretKeyList.ReceivedKeyAdapter;
@@ -61,10 +68,13 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     private final LoaderManager loaderManager;
     private final int loaderId;
 
-    private KeyTransferInteractor keyTransferClientInteractor;
-    private KeyTransferInteractor keyTransferServerInteractor;
     private final TransferKeyAdapter secretKeyAdapter;
     private final ReceivedKeyAdapter receivedKeyAdapter;
+
+    private KeyTransferInteractor keyTransferClientInteractor;
+    private KeyTransferInteractor keyTransferServerInteractor;
+
+    private boolean wasConnected = false;
 
     public TransferPresenter(Context context, LoaderManager loaderManager, int loaderId, TransferMvpView view) {
         this.context = context;
@@ -83,7 +93,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     public void onUiStart() {
         loaderManager.restartLoader(loaderId, null, this);
 
-        if (keyTransferServerInteractor == null && keyTransferClientInteractor == null) {
+        if (keyTransferServerInteractor == null && keyTransferClientInteractor == null && !wasConnected) {
             connectionStartListen();
         }
     }
@@ -115,26 +125,72 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     }
 
     @Override
-    public void onUiClickImportKey(String keyData) {
+    public void onUiClickImportKey(final long masterKeyId, String keyData) {
+        receivedKeyAdapter.focusItem(masterKeyId);
 
+        final ImportKeyringParcel importKeyringParcel = ImportKeyringParcel.createImportKeyringParcel(
+                ParcelableKeyRing.createFromEncodedBytes(keyData.getBytes()));
+
+        CryptoOperationHelper<ImportKeyringParcel,ImportKeyResult> op =
+                view.createCryptoOperationHelper(new Callback<ImportKeyringParcel,ImportKeyResult>() {
+                    @Override
+                    public ImportKeyringParcel createOperationInput() {
+                        return importKeyringParcel;
+                    }
+
+                    @Override
+                    public void onCryptoOperationSuccess(ImportKeyResult result) {
+                        receivedKeyAdapter.focusItem(null);
+                        receivedKeyAdapter.addToFinishedItems(masterKeyId);
+                        view.releaseCryptoOperationHelper();
+                        view.showResultNotification(result);
+                    }
+
+                    @Override
+                    public void onCryptoOperationCancelled() {
+                        view.releaseCryptoOperationHelper();
+                        receivedKeyAdapter.focusItem(null);
+                    }
+
+                    @Override
+                    public void onCryptoOperationError(ImportKeyResult result) {
+                        receivedKeyAdapter.focusItem(null);
+                        view.releaseCryptoOperationHelper();
+                        view.showResultNotification(result);
+                    }
+
+                    @Override
+                    public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                        return false;
+                    }
+                });
+
+        op.cryptoOperation();
     }
 
 
     @Override
     public void onServerStarted(String qrCodeData) {
-        Bitmap qrCodeBitmap = QrCodeUtils.getQRCodeBitmap(Uri.parse("pgp+transfer://" + qrCodeData));
+        Bitmap qrCodeBitmap = QrCodeUtils.getQRCodeBitmap(Uri.parse(qrCodeData));
         view.setQrImage(qrCodeBitmap);
     }
 
     @Override
     public void onConnectionEstablished(String otherName) {
+        wasConnected = true;
+
         secretKeyAdapter.clearFinishedItems();
         view.showConnectionEstablished(otherName);
     }
 
     @Override
     public void onConnectionLost() {
-        connectionStartListen();
+        if (!wasConnected) {
+            // display connection error?
+            connectionStartListen();
+            view.showErrorConnectionFailed();
+        }
+        // TODO handle error?
     }
 
     @Override
@@ -152,7 +208,8 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
                     uncachedKeyRing.getCreationTime(), userId.name, userId.email);
             receivedKeyAdapter.addItem(receivedKeyItem);
         } catch (PgpGeneralException | IOException e) {
-            e.printStackTrace();
+            Log.e(Constants.TAG, "error parsing incoming key", e);
+            view.showErrorBadKey();
         }
     }
 
@@ -231,7 +288,15 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         void scanQrCode();
         void setQrImage(Bitmap qrCode);
 
+        void releaseCryptoOperationHelper();
+
+        void showErrorBadKey();
+        void showErrorConnectionFailed();
+        void showResultNotification(ImportKeyResult result);
+
         void setSecretKeyAdapter(Adapter adapter);
         void setReceivedKeyAdapter(Adapter secretKeyAdapter);
+
+        <T extends Parcelable, S extends OperationResult> CryptoOperationHelper<T,S> createCryptoOperationHelper(Callback<T, S> callback);
     }
 }

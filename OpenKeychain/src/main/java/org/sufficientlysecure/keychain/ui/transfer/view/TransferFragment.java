@@ -18,16 +18,12 @@
 package org.sufficientlysecure.keychain.ui.transfer.view;
 
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -44,8 +40,12 @@ import android.widget.ViewAnimator;
 
 import com.google.zxing.client.android.Intents;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.QrCodeCaptureActivity;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.Callback;
 import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter;
 import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter.TransferMvpView;
 
@@ -54,8 +54,7 @@ import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter.T
 public class TransferFragment extends Fragment implements TransferMvpView {
     public static final int VIEW_WAITING = 0;
     public static final int VIEW_CONNECTED = 1;
-    public static final int VIEW_SEND_OK = 2;
-    public static final int VIEW_RECEIVING = 3;
+    public static final int VIEW_RECEIVING = 2;
 
     public static final int REQUEST_CODE_SCAN = 1;
     public static final int LOADER_ID = 1;
@@ -67,6 +66,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     private TextView vConnectionStatusText;
     private RecyclerView vTransferKeyList;
     private RecyclerView vReceivedKeyList;
+
+    private CryptoOperationHelper currentCryptoOperationHelper;
 
 
     @Override
@@ -90,15 +91,9 @@ public class TransferFragment extends Fragment implements TransferMvpView {
             }
         });
 
-        return view;
-    }
-
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
         presenter = new TransferPresenter(getContext(), getLoaderManager(), LOADER_ID, this);
+
+        return view;
     }
 
     @Override
@@ -163,7 +158,39 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     }
 
     @Override
+    public <T extends Parcelable, S extends OperationResult> CryptoOperationHelper<T,S> createCryptoOperationHelper(Callback<T, S> callback) {
+        CryptoOperationHelper<T,S> cryptoOperationHelper = new CryptoOperationHelper<>(1, this, callback, null);
+        currentCryptoOperationHelper = cryptoOperationHelper;
+        return cryptoOperationHelper;
+    }
+
+    @Override
+    public void releaseCryptoOperationHelper() {
+        currentCryptoOperationHelper = null;
+    }
+
+    @Override
+    public void showErrorBadKey() {
+
+    }
+
+    @Override
+    public void showErrorConnectionFailed() {
+
+    }
+
+    @Override
+    public void showResultNotification(ImportKeyResult result) {
+        result.createNotify(getActivity()).show(this);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (currentCryptoOperationHelper != null &&
+                currentCryptoOperationHelper.handleActivityResult(requestCode, resultCode, data)) {
+            return;
+        }
+
         switch (requestCode) {
             case REQUEST_CODE_SCAN:
                 if (resultCode == Activity.RESULT_OK) {

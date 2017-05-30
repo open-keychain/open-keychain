@@ -87,6 +87,11 @@ public class ReceivedSecretKeyList extends RecyclerView {
             return data.get(position).masterKeyId;
         }
 
+        public void addToFinishedItems(long masterKeyId) {
+            finishedItems.add(masterKeyId);
+            // doeesn't notify, because it's non-trivial and this is called in conjunction with other refreshing things!
+        }
+
         public void focusItem(Long masterKeyId) {
             focusedMasterKeyId = masterKeyId;
             notifyItemRangeChanged(0, getItemCount());
@@ -154,7 +159,7 @@ public class ReceivedSecretKeyList extends RecyclerView {
                 vImportButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onClickReceiveKeyListener.onUiClickImportKey(item.keyData);
+                        onClickReceiveKeyListener.onUiClickImportKey(item.masterKeyId, item.keyData);
                     }
                 });
             } else {
@@ -164,7 +169,7 @@ public class ReceivedSecretKeyList extends RecyclerView {
     }
 
     public interface OnClickImportKeyListener {
-        void onUiClickImportKey(String keyData);
+        void onUiClickImportKey(long masterKeyId, String keyData);
     }
 
     public static class ReceivedKeyItem {

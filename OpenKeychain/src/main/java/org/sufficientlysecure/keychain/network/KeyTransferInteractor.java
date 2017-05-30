@@ -124,7 +124,7 @@ public class KeyTransferInteractor {
                     serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(port);
 
                     String presharedKeyEncoded = Base64.encodeToString(presharedKey, Base64.URL_SAFE | Base64.NO_PADDING);
-                    String qrCodeData = presharedKeyEncoded + "@" + getIPAddress(true) + ":" + port;
+                    String qrCodeData = "pgp+transfer://" + presharedKeyEncoded + "@" + getIPAddress(true) + ":" + port;
                     invokeListener(CONNECTION_LISTENING, qrCodeData);
 
                     socket = serverSocket.accept();
@@ -135,8 +135,8 @@ public class KeyTransferInteractor {
                 }
 
                 handleOpenConnection(socket);
+                Log.d(Constants.TAG, "connection closed ok!");
             } catch (IOException e) {
-                invokeListener(CONNECTION_LOST, null);
                 Log.e(Constants.TAG, "error!", e);
             } finally {
                 try {
@@ -176,13 +176,8 @@ public class KeyTransferInteractor {
             socket.setSoTimeout(500);
             while (!isInterrupted() && socket.isConnected()) {
                 sendDataIfAvailable(socket, outputStream);
-
-                boolean connectionClosed = receiveDataIfAvailable(socket, bufferedReader);
-                if (connectionClosed) {
-                    break;
-                }
+                receiveDataIfAvailable(socket, bufferedReader);
             }
-
             Log.d(Constants.TAG, "disconnected");
             invokeListener(CONNECTION_LOST, null);
         }
@@ -196,6 +191,7 @@ public class KeyTransferInteractor {
             }
 
             if (firstLine == null) {
+                invokeListener(CONNECTION_LOST, null);
                 return true;
             }
 
@@ -204,7 +200,7 @@ public class KeyTransferInteractor {
             socket.setSoTimeout(500);
 
             invokeListener(CONNECTION_RECEIVE_OK, receivedData);
-            return false;
+            return true;
         }
 
         private boolean sendDataIfAvailable(Socket socket, OutputStream outputStream) throws IOException {

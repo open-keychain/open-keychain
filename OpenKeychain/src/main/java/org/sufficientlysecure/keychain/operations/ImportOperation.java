@@ -22,6 +22,7 @@ package org.sufficientlysecure.keychain.operations;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -477,7 +478,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     @NonNull
     @Override
     public ImportKeyResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
-        ArrayList<ParcelableKeyRing> keyList = importInput.getKeyList();
+        List<ParcelableKeyRing> keyList = importInput.getKeyList();
         HkpKeyserverAddress keyServer = importInput.getKeyserver();
         boolean skipSave = importInput.isSkipSave();
 
@@ -510,7 +511,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     }
 
     @NonNull
-    private ImportKeyResult multiThreadedKeyImport(ArrayList<ParcelableKeyRing> keyList,
+    private ImportKeyResult multiThreadedKeyImport(List<ParcelableKeyRing> keyList,
                                                    final HkpKeyserverAddress keyServer, final ParcelableProxy proxy,
                                                    final boolean skipSave) {
         Log.d(Constants.TAG, "Multi-threaded key import starting");
