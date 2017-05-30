@@ -33,6 +33,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.network.KeyTransferInteractor;
 import org.sufficientlysecure.keychain.network.KeyTransferInteractor.KeyTransferCallback;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -42,6 +43,7 @@ import org.sufficientlysecure.keychain.ui.transfer.loader.SecretKeyLoader.Secret
 import org.sufficientlysecure.keychain.ui.transfer.view.TransferSecretKeyList.OnClickTransferKeyListener;
 import org.sufficientlysecure.keychain.ui.transfer.view.TransferSecretKeyList.TransferKeyAdapter;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
+import org.sufficientlysecure.keychain.util.Log;
 
 
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
@@ -66,42 +68,44 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         view.setSecretKeyAdapter(secretKeyAdapter);
     }
 
-    public void onStart() {
+
+    public void onUiStart() {
         loaderManager.restartLoader(loaderId, null, this);
 
-        startServer();
+        if (keyTransferServerInteractor == null && keyTransferClientInteractor == null) {
+            connectionStartListen();
+        }
     }
 
-    public void onStop() {
-        clearConnections();
+    public void onUiStop() {
+        connectionClear();
     }
 
-    public void onClickScan() {
-        clearConnections();
+    public void onUiClickScan() {
+        connectionClear();
 
         view.scanQrCode();
     }
 
-    public void onQrCodeScanned(String qrCodeContent) {
-        keyTransferClientInteractor = new KeyTransferInteractor();
-        keyTransferClientInteractor.connectToServer(qrCodeContent, this);
+    public void onUiQrCodeScanned(String qrCodeContent) {
+        connectionStartConnect(qrCodeContent);
     }
 
-    private void clearConnections() {
-        if (keyTransferServerInteractor != null) {
-            keyTransferServerInteractor.closeConnection();
-            keyTransferServerInteractor = null;
-        }
-        if (keyTransferClientInteractor != null) {
-            keyTransferClientInteractor.closeConnection();
-            keyTransferClientInteractor = null;
+    @Override
+    public void onUiClickTransferKey(long masterKeyId) {
+        try {
+            byte[] armoredSecretKey =
+                    KeyRepository.createDatabaseInteractor(context).getSecretKeyRingAsArmoredData(masterKeyId);
+            connectionSend(armoredSecretKey);
+        } catch (IOException | NotFoundException | PgpGeneralException e) {
+            e.printStackTrace();
         }
     }
 
-    public void startServer() {
-        keyTransferServerInteractor = new KeyTransferInteractor();
-        keyTransferServerInteractor.startServer(this);
+    public void onUiFakeProgressFinished() {
+        view.showKeySentOk();
     }
+
 
     @Override
     public void onServerStarted(String qrCodeData) {
@@ -116,9 +120,56 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     @Override
     public void onConnectionLost() {
-        view.showWaitingForConnection();
-        startServer();
+        connectionStartListen();
     }
+
+    @Override
+    public void onDataReceivedOk(String receivedData) {
+        Log.d(Constants.TAG, "received: " + receivedData);
+    }
+
+    @Override
+    public void onDataSentOk(String arg) {
+        Log.d(Constants.TAG, "data sent ok!");
+        view.showFakeSendProgressDialog();
+    }
+
+
+    private void connectionStartConnect(String qrCodeContent) {
+        connectionClear();
+
+        keyTransferClientInteractor = new KeyTransferInteractor();
+        keyTransferClientInteractor.connectToServer(qrCodeContent, this);
+    }
+
+    private void connectionStartListen() {
+        connectionClear();
+
+        keyTransferServerInteractor = new KeyTransferInteractor();
+        keyTransferServerInteractor.startServer(this);
+
+        view.showWaitingForConnection();
+    }
+
+    private void connectionClear() {
+        if (keyTransferServerInteractor != null) {
+            keyTransferServerInteractor.closeConnection();
+            keyTransferServerInteractor = null;
+        }
+        if (keyTransferClientInteractor != null) {
+            keyTransferClientInteractor.closeConnection();
+            keyTransferClientInteractor = null;
+        }
+    }
+
+    private void connectionSend(byte[] armoredSecretKey) {
+        if (keyTransferClientInteractor != null) {
+            keyTransferClientInteractor.sendData(armoredSecretKey);
+        } else if (keyTransferServerInteractor != null) {
+            keyTransferServerInteractor.sendData(armoredSecretKey);
+        }
+    }
+
 
     @Override
     public Loader<List<SecretKeyItem>> onCreateLoader(int id, Bundle args) {
@@ -135,20 +186,6 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         secretKeyAdapter.setData(null);
     }
 
-    @Override
-    public void onClickTransferKey(long masterKeyId) {
-        try {
-            byte[] armoredSecretKey =
-                    KeyRepository.createDatabaseInteractor(context).getSecretKeyRingAsArmoredData(masterKeyId);
-            if (keyTransferClientInteractor != null) {
-                keyTransferClientInteractor.sendData(armoredSecretKey);
-            } else if (keyTransferServerInteractor != null) {
-                keyTransferServerInteractor.sendData(armoredSecretKey);
-            }
-        } catch (IOException | NotFoundException | PgpGeneralException e) {
-            e.printStackTrace();
-        }
-    }
 
     public interface TransferMvpView {
         void showWaitingForConnection();
@@ -158,5 +195,8 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         void setQrImage(Bitmap qrCode);
 
         void setSecretKeyAdapter(Adapter adapter);
+
+        void showFakeSendProgressDialog();
+        void showKeySentOk();
     }
 }

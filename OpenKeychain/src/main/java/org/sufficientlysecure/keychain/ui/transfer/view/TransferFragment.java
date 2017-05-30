@@ -18,11 +18,16 @@
 package org.sufficientlysecure.keychain.ui.transfer.view;
 
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -40,6 +45,7 @@ import android.widget.ViewAnimator;
 import com.google.zxing.client.android.Intents;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.QrCodeCaptureActivity;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter;
 import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter.TransferMvpView;
 
@@ -48,6 +54,8 @@ import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter.T
 public class TransferFragment extends Fragment implements TransferMvpView {
     public static final int VIEW_WAITING = 0;
     public static final int VIEW_CONNECTED = 1;
+    public static final int VIEW_SEND_OK = 2;
+
     public static final int REQUEST_CODE_SCAN = 1;
     public static final int LOADER_ID = 1;
 
@@ -74,7 +82,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
             @Override
             public void onClick(View v) {
                 if (presenter != null) {
-                    presenter.onClickScan();
+                    presenter.onUiClickScan();
                 }
             }
         });
@@ -94,14 +102,14 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     public void onStart() {
         super.onStart();
 
-        presenter.onStart();
+        presenter.onUiStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        presenter.onStop();
+        presenter.onUiStop();
     }
 
     @Override
@@ -111,8 +119,13 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
     @Override
     public void showConnectionEstablished(String hostname) {
-        vTransferAnimator.setDisplayedChild(VIEW_CONNECTED);
         vConnectionStatusText.setText("Connected to: " + hostname);
+        vTransferAnimator.setDisplayedChild(VIEW_CONNECTED);
+    }
+
+    @Override
+    public void showKeySentOk() {
+        vTransferAnimator.setDisplayedChild(VIEW_SEND_OK);
     }
 
     @Override
@@ -142,12 +155,43 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     }
 
     @Override
+    public void showFakeSendProgressDialog() {
+        final ProgressDialogFragment progressDialogFragment =
+                ProgressDialogFragment.newInstance("Sending key…", ProgressDialog.STYLE_HORIZONTAL, false);
+        progressDialogFragment.show(getFragmentManager(), "progress");
+
+        final Handler handler = new Handler();
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            int fakeProgress = 0;
+
+            @Override
+            public void run() {
+                fakeProgress += 6;
+                if (fakeProgress > 100) {
+                    cancel();
+                    progressDialogFragment.dismissAllowingStateLoss();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            presenter.onUiFakeProgressFinished();
+                        }
+                    });
+                    return;
+                }
+                progressDialogFragment.setProgress(fakeProgress, 100);
+            }
+        }, 0, 100);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CODE_SCAN:
                 if (resultCode == Activity.RESULT_OK) {
                     String qrCodeData = data.getStringExtra(Intents.Scan.RESULT);
-                    presenter.onQrCodeScanned(qrCodeData);
+                    presenter.onUiQrCodeScanned(qrCodeData);
                 }
                 break;
             default:

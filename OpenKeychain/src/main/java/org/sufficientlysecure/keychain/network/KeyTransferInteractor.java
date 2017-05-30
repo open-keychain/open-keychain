@@ -22,6 +22,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
@@ -53,9 +54,11 @@ import org.sufficientlysecure.keychain.util.Log;
 
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public class KeyTransferInteractor {
-    private static final int SHOW_CONNECTION_DETAILS = 1;
+    private static final int CONNECTION_LISTENING = 1;
     private static final int CONNECTION_ESTABLISHED = 2;
-    private static final int CONNECTION_LOST = 3;
+    private static final int CONNECTION_SEND_OK = 3;
+    private static final int CONNECTION_RECEIVE_OK = 4;
+    private static final int CONNECTION_LOST = 5;
 
 
     private TransferThread transferThread;
@@ -121,7 +124,7 @@ public class KeyTransferInteractor {
 
                     String presharedKeyEncoded = Base64.encodeToString(presharedKey, Base64.URL_SAFE | Base64.NO_PADDING);
                     String qrCodeData = presharedKeyEncoded + "@" + getIPAddress(true) + ":" + port;
-                    invokeListener(SHOW_CONNECTION_DETAILS, qrCodeData);
+                    invokeListener(CONNECTION_LISTENING, qrCodeData);
 
                     socket = serverSocket.accept();
                     invokeListener(CONNECTION_ESTABLISHED, socket.getInetAddress().toString());
@@ -131,6 +134,7 @@ public class KeyTransferInteractor {
                 }
 
                 handleOpenConnection(socket);
+                Log.d(Constants.TAG, "connection closed ok!");
             } catch (IOException e) {
                 Log.e(Constants.TAG, "error!", e);
             } finally {
@@ -164,31 +168,68 @@ public class KeyTransferInteractor {
         }
 
         private void handleOpenConnection(Socket socket) throws IOException {
-            socket.setSoTimeout(500);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+            socket.setSoTimeout(500);
             while (!isInterrupted() && socket.isConnected()) {
-                if (dataToSend != null) {
-                    BufferedOutputStream bufferedOutputStream =
-                            new BufferedOutputStream(socket.getOutputStream());
-                    bufferedOutputStream.write(dataToSend);
-                    bufferedOutputStream.close();
-                    dataToSend = null;
-                    break;
+                if (sendDataIfAvailable(socket)) {
+                    return;
                 }
-                try {
-                    String line = bufferedReader.readLine();
-                    if (line == null) {
-                        Log.d(Constants.TAG, "eof");
-                        break;
-                    }
-                    Log.d(Constants.TAG, "got line: " + line);
-                } catch (SocketTimeoutException e) {
-                    // ignore
+
+                if (receiveDataIfAvailable(socket, bufferedReader)) {
+                    return;
                 }
             }
             Log.d(Constants.TAG, "disconnected");
             invokeListener(CONNECTION_LOST, null);
+        }
+
+        private boolean receiveDataIfAvailable(Socket socket, BufferedReader bufferedReader) throws IOException {
+            String firstLine;
+            try {
+                firstLine = bufferedReader.readLine();
+            } catch (SocketTimeoutException e) {
+                return false;
+            }
+
+            if (firstLine == null) {
+                invokeListener(CONNECTION_LOST, null);
+                return true;
+            }
+
+            socket.setSoTimeout(2000);
+            String receivedData = receiveAfterFirstLineAndClose(bufferedReader, firstLine);
+            invokeListener(CONNECTION_RECEIVE_OK, receivedData);
+            return true;
+        }
+
+        private boolean sendDataIfAvailable(Socket socket) throws IOException {
+            if (dataToSend != null) {
+                byte[] data = dataToSend;
+                dataToSend = null;
+
+                socket.setSoTimeout(2000);
+                sendDataAndClose(socket.getOutputStream(), data);
+                invokeListener(CONNECTION_SEND_OK, null);
+                return true;
+            }
+            return false;
+        }
+
+        private String receiveAfterFirstLineAndClose(BufferedReader bufferedReader, String line) throws IOException {
+            StringBuilder builder = new StringBuilder();
+            do {
+                builder.append(line);
+                line = bufferedReader.readLine();
+            } while (line != null);
+
+            return builder.toString();
+        }
+
+        private void sendDataAndClose(OutputStream outputStream, byte[] data) throws IOException {
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
+            bufferedOutputStream.write(data);
+            bufferedOutputStream.close();
         }
 
         private void invokeListener(final int method, final String arg) {
@@ -203,11 +244,17 @@ public class KeyTransferInteractor {
                         return;
                     }
                     switch (method) {
-                        case SHOW_CONNECTION_DETAILS:
+                        case CONNECTION_LISTENING:
                             callback.onServerStarted(arg);
                             break;
                         case CONNECTION_ESTABLISHED:
                             callback.onConnectionEstablished(arg);
+                            break;
+                        case CONNECTION_RECEIVE_OK:
+                            callback.onDataReceivedOk(arg);
+                            break;
+                        case CONNECTION_SEND_OK:
+                            callback.onDataSentOk(arg);
                             break;
                         case CONNECTION_LOST:
                             callback.onConnectionLost();
@@ -218,7 +265,7 @@ public class KeyTransferInteractor {
             handler.post(runnable);
         }
 
-        public synchronized void sendDataAndClose(byte[] dataToSend) {
+        synchronized void sendDataAndClose(byte[] dataToSend) {
             this.dataToSend = dataToSend;
         }
 
@@ -258,6 +305,9 @@ public class KeyTransferInteractor {
         void onServerStarted(String qrCodeData);
         void onConnectionEstablished(String otherName);
         void onConnectionLost();
+
+        void onDataReceivedOk(String receivedData);
+        void onDataSentOk(String arg);
     }
 
     /**
@@ -293,7 +343,8 @@ public class KeyTransferInteractor {
                 }
             }
         } catch (Exception ex) {
-        } // for now eat exceptions
+            // ignore
+        }
         return "";
     }
 

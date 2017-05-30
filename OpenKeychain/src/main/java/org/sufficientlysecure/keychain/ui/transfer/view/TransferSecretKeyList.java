@@ -129,7 +129,7 @@ public class TransferSecretKeyList extends RecyclerView {
                 vSendButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onClickTransferKeyListener.onClickTransferKey(item.masterKeyId);
+                        onClickTransferKeyListener.onUiClickTransferKey(item.masterKeyId);
                     }
                 });
             } else {
@@ -139,6 +139,6 @@ public class TransferSecretKeyList extends RecyclerView {
     }
 
     public interface OnClickTransferKeyListener {
-        void onClickTransferKey(long masterKeyId);
+        void onUiClickTransferKey(long masterKeyId);
     }
 }
