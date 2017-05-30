@@ -1901,5 +1901,6 @@
     <string name="transfer_error_read_incoming">"Failed reading incoming key!"</string>
     <string name="transfer_error_connect">"Connection failed!"</string>
     <string name="transfer_error_listen">"Error waiting for connection!"</string>
+    <string name="transfer_not_available">"Sorry, this feature can only be used on Android 5 or newer :("</string>
 
 </resources>

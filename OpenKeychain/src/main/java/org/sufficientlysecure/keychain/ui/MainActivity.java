@@ -20,6 +20,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -42,6 +44,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.transfer.view.TransferFragment;
+import org.sufficientlysecure.keychain.ui.transfer.view.TransferNotAvailableFragment;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -176,7 +179,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     }
 
     private void setFragment(Fragment fragment, boolean addToBackStack) {
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
@@ -221,8 +223,13 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     private void onTransferSelected() {
         mToolbar.setTitle(R.string.nav_transfer);
         mDrawer.setSelection(ID_TRANSFER, false);
-        Fragment frag = new TransferFragment();
-        setFragment(frag, true);
+        if (Build.VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
+            Fragment frag = new TransferNotAvailableFragment();
+            setFragment(frag, true);
+        } else {
+            Fragment frag = new TransferFragment();
+            setFragment(frag, true);
+        }
     }
 
     @Override
