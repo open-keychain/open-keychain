@@ -185,6 +185,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         if (addToBackStack) {
             ft.addToBackStack(null);
         }
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
 
     }
