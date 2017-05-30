@@ -230,6 +230,11 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     }
 
     @Override
+    public void showErrorListenFailed() {
+        Notify.create(getActivity(), "Error setting up server!", Style.ERROR).show();
+    }
+
+    @Override
     public void showResultNotification(ImportKeyResult result) {
         result.createNotify(getActivity()).show();
     }

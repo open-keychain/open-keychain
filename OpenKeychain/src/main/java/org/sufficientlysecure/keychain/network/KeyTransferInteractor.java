@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.network;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -38,6 +39,7 @@ import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.Base64;
 
@@ -59,6 +61,8 @@ public class KeyTransferInteractor {
     private static final int CONNECTION_SEND_OK = 3;
     private static final int CONNECTION_RECEIVE_OK = 4;
     private static final int CONNECTION_LOST = 5;
+    private static final int CONNECTION_ERROR_CONNECT = 6;
+    private static final int CONNECTION_ERROR_LISTEN = 7;
 
 
     private TransferThread transferThread;
@@ -119,41 +123,56 @@ public class KeyTransferInteractor {
 
             Socket socket = null;
             try {
-                if (isServer) {
+                socket = getSocketListenOrConnect(sslContext);
+                if (socket == null) {
+                    return;
+                }
+
+                try {
+                    handleOpenConnection(socket);
+                    Log.d(Constants.TAG, "connection closed ok!");
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "error!", e);
+                }
+            } finally {
+                closeQuietly(socket);
+                closeQuietly(serverSocket);
+            }
+        }
+
+        @Nullable
+        private Socket getSocketListenOrConnect(SSLContext sslContext) {
+            Socket socket;
+            if (isServer) {
+                try {
                     int port = 1336;
                     serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(port);
 
-                    String presharedKeyEncoded = Base64.encodeToString(presharedKey, Base64.URL_SAFE | Base64.NO_PADDING);
-                    String qrCodeData = "pgp+transfer://" + presharedKeyEncoded + "@" + getIPAddress(true) + ":" + port;
+                    String presharedKeyEncoded =
+                            Base64.encodeToString(presharedKey, Base64.URL_SAFE | Base64.NO_PADDING);
+                    String qrCodeData =
+                            "pgp+transfer://" + presharedKeyEncoded + "@" + getIPAddress(true) + ":" + port;
                     invokeListener(CONNECTION_LISTENING, qrCodeData);
 
                     socket = serverSocket.accept();
                     invokeListener(CONNECTION_ESTABLISHED, socket.getInetAddress().toString());
-                } else {
-                    socket = sslContext.getSocketFactory().createSocket(InetAddress.getByName(clientHost), clientPort);
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "error while listening!", e);
+                    invokeListener(CONNECTION_ERROR_LISTEN, null);
+                    return null;
+                }
+            } else {
+                try {
+                    socket = sslContext.getSocketFactory()
+                            .createSocket(InetAddress.getByName(clientHost), clientPort);
                     invokeListener(CONNECTION_ESTABLISHED, socket.getInetAddress().toString());
-                }
-
-                handleOpenConnection(socket);
-                Log.d(Constants.TAG, "connection closed ok!");
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "error!", e);
-            } finally {
-                try {
-                    if (socket != null) {
-                        socket.close();
-                    }
                 } catch (IOException e) {
-                    // ignore
-                }
-                try {
-                    if (serverSocket != null) {
-                        serverSocket.close();
-                    }
-                } catch (IOException e) {
-                    // ignore
+                    Log.e(Constants.TAG, "error while connecting!", e);
+                    invokeListener(CONNECTION_ERROR_CONNECT, null);
+                    return null;
                 }
             }
+            return socket;
         }
 
         private static SSLContext createTlsPskSslContext(byte[] presharedKey) {
@@ -268,6 +287,13 @@ public class KeyTransferInteractor {
                             break;
                         case CONNECTION_LOST:
                             callback.onConnectionLost();
+                            break;
+                        case CONNECTION_ERROR_CONNECT:
+                            callback.onConnectionErrorConnect();
+                            break;
+                        case CONNECTION_ERROR_LISTEN:
+                            callback.onConnectionErrorListen();
+                            break;
                     }
                 }
             };
@@ -283,16 +309,8 @@ public class KeyTransferInteractor {
         @Override
         public void interrupt() {
             callback = null;
-
             super.interrupt();
-
-            if (serverSocket != null) {
-                try {
-                    serverSocket.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+            closeQuietly(serverSocket);
         }
     }
 
@@ -321,6 +339,9 @@ public class KeyTransferInteractor {
 
         void onDataReceivedOk(String receivedData);
         void onDataSentOk(String arg);
+
+        void onConnectionErrorConnect();
+        void onConnectionErrorListen();
     }
 
     /**
@@ -376,6 +397,16 @@ public class KeyTransferInteractor {
         @Override
         public SecretKey getKey(String identityHint, String identity, SSLEngine engine) {
             return new SecretKeySpec(presharedKey, "AES");
+        }
+    }
+
+    private static void closeQuietly(Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (IOException e) {
+            // ignore
         }
     }
 }

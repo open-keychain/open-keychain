@@ -249,6 +249,16 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         }, 750);
     }
 
+    @Override
+    public void onConnectionErrorConnect() {
+        view.showErrorConnectionFailed();
+    }
+
+    @Override
+    public void onConnectionErrorListen() {
+        view.showErrorListenFailed();
+    }
+
 
     private void connectionStartConnect(String qrCodeContent) {
         connectionClear();
@@ -336,6 +346,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
         void showErrorBadKey();
         void showErrorConnectionFailed();
+        void showErrorListenFailed();
         void showResultNotification(ImportKeyResult result);
 
         void setSecretKeyAdapter(Adapter adapter);
