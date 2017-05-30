@@ -31,8 +31,11 @@ import java.net.SocketTimeoutException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.net.PskKeyManager;
 import android.net.Uri;
@@ -49,6 +52,7 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
@@ -56,6 +60,16 @@ import org.sufficientlysecure.keychain.util.Log;
 
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public class KeyTransferInteractor {
+    private static final String[] ALLOWED_CIPHERSUITES = new String[] {
+            // only allow ephemeral diffie-hellman based PSK ciphers!
+            "TLS_DHE_PSK_WITH_AES_128_CBC_SHA",
+            "TLS_DHE_PSK_WITH_AES_256_CBC_SHA",
+            "TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256",
+            "TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA",
+            "TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA",
+            "TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256"
+    };
+
     private static final int CONNECTION_LISTENING = 1;
     private static final int CONNECTION_ESTABLISHED = 2;
     private static final int CONNECTION_SEND_OK = 3;
@@ -147,6 +161,9 @@ public class KeyTransferInteractor {
                 try {
                     int port = 1336;
                     serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(port);
+                    String[] supportedCipherSuites = serverSocket.getSupportedCipherSuites();
+                    String[] enabledCipherSuites = intersectArrays(supportedCipherSuites, ALLOWED_CIPHERSUITES);
+                    serverSocket.setEnabledCipherSuites(enabledCipherSuites);
 
                     String presharedKeyEncoded =
                             Base64.encodeToString(presharedKey, Base64.URL_SAFE | Base64.NO_PADDING);
@@ -163,8 +180,13 @@ public class KeyTransferInteractor {
                 }
             } else {
                 try {
-                    socket = sslContext.getSocketFactory()
+                    SSLSocket sslSocket = (SSLSocket) sslContext.getSocketFactory()
                             .createSocket(InetAddress.getByName(clientHost), clientPort);
+                    String[] supportedCipherSuites = sslSocket.getSupportedCipherSuites();
+                    String[] enabledCipherSuites = intersectArrays(supportedCipherSuites, ALLOWED_CIPHERSUITES);
+                    sslSocket.setEnabledCipherSuites(enabledCipherSuites);
+
+                    socket = sslSocket;
                     invokeListener(CONNECTION_ESTABLISHED, socket.getInetAddress().toString());
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error while connecting!", e);
@@ -408,5 +430,13 @@ public class KeyTransferInteractor {
         } catch (IOException e) {
             // ignore
         }
+    }
+
+    private static String[] intersectArrays(String[] array1, String[] array2) {
+        Set<String> s1 = new HashSet<>(Arrays.asList(array1));
+        Set<String> s2 = new HashSet<>(Arrays.asList(array2));
+        s1.retainAll(s2);
+
+        return s1.toArray(new String[0]);
     }
 }
