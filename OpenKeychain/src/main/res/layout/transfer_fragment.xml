@@ -55,27 +55,33 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="16dp">
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_margin="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:id="@+id/connection_status"
-                android:text="Connected to "
+                android:text="Connected to: 123.456.123.123"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_margin="8dp"
                 android:text="Available Keys:"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                style="@style/SectionHeader"
+                />
+
+            <org.sufficientlysecure.keychain.ui.transfer.view.TransferSecretKeyList
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/transfer_key_list"
+                android:padding="16dp"
+                />
 
         </LinearLayout>
 

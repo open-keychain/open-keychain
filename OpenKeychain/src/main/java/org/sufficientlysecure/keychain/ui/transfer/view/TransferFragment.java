@@ -26,6 +26,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,12 +49,14 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     public static final int VIEW_WAITING = 0;
     public static final int VIEW_CONNECTED = 1;
     public static final int REQUEST_CODE_SCAN = 1;
+    public static final int LOADER_ID = 1;
 
 
     private ImageView vQrCodeImage;
     private TransferPresenter presenter;
     private ViewAnimator vTransferAnimator;
     private TextView vConnectionStatusText;
+    private RecyclerView vTransferKeyList;
 
 
     @Override
@@ -62,6 +66,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
         vTransferAnimator = (ViewAnimator) view.findViewById(R.id.transfer_animator);
 
         vConnectionStatusText = (TextView) view.findViewById(R.id.connection_status);
+        vTransferKeyList = (RecyclerView) view.findViewById(R.id.transfer_key_list);
 
         vQrCodeImage = (ImageView) view.findViewById(R.id.qr_code_image);
 
@@ -82,22 +87,21 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        presenter = new TransferPresenter(getContext(), this);
+        presenter = new TransferPresenter(getContext(), getLoaderManager(), LOADER_ID, this);
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        presenter.startServer();
+        presenter.onStart();
     }
-
 
     @Override
     public void onStop() {
         super.onStop();
 
-        presenter.onDestroy();
+        presenter.onStop();
     }
 
     @Override
@@ -130,6 +134,11 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     public void scanQrCode() {
         Intent intent = new Intent(getActivity(), QrCodeCaptureActivity.class);
         startActivityForResult(intent, REQUEST_CODE_SCAN);
+    }
+
+    @Override
+    public void setSecretKeyAdapter(Adapter adapter) {
+        vTransferKeyList.setAdapter(adapter);
     }
 
     @Override
