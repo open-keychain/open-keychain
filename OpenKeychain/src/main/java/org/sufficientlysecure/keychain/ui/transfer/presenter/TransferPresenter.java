@@ -23,6 +23,8 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -76,6 +78,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     private KeyTransferInteractor keyTransferServerInteractor;
 
     private boolean wasConnected = false;
+    private boolean waitingForWifi = false;
 
     public TransferPresenter(Context context, LoaderManager loaderManager, int loaderId, TransferMvpView view) {
         this.context = context;
@@ -95,7 +98,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         loaderManager.restartLoader(loaderId, null, this);
 
         if (keyTransferServerInteractor == null && keyTransferClientInteractor == null && !wasConnected) {
-            connectionResetAndStartListen();
+            checkWifiResetAndStartListen();
         }
     }
 
@@ -115,7 +118,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     public void onUiBackStackPop() {
         if (wasConnected) {
-            connectionResetAndStartListen();
+            checkWifiResetAndStartListen();
         }
     }
 
@@ -175,6 +178,11 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         op.cryptoOperation();
     }
 
+    public void onWifiConnected() {
+        if (waitingForWifi) {
+            resetAndStartListen();
+        }
+    }
 
     @Override
     public void onServerStarted(String qrCodeData) {
@@ -200,7 +208,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         Log.d(Constants.TAG, "Lost connection!");
         if (!wasConnected) {
             view.showErrorConnectionFailed();
-            connectionResetAndStartListen();
+            checkWifiResetAndStartListen();
         } else {
             view.showViewDisconnected();
             secretKeyAdapter.setAllDisabled(true);
@@ -249,7 +257,18 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         keyTransferClientInteractor.connectToServer(qrCodeContent, this);
     }
 
-    private void connectionResetAndStartListen() {
+    private void checkWifiResetAndStartListen() {
+        if (!isWifiConnected()) {
+            waitingForWifi = true;
+            view.showNotOnWifi();
+            return;
+        }
+
+        resetAndStartListen();
+    }
+
+    private void resetAndStartListen() {
+        waitingForWifi = false;
         wasConnected = false;
         connectionClear();
 
@@ -257,6 +276,13 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         keyTransferServerInteractor.startServer(this);
 
         view.showWaitingForConnection();
+    }
+
+    private boolean isWifiConnected() {
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiNetwork = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        return wifiNetwork.isConnected();
     }
 
     private void connectionClear() {
@@ -296,6 +322,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
 
     public interface TransferMvpView {
+        void showNotOnWifi();
         void showWaitingForConnection();
         void showConnectionEstablished(String hostname);
         void showReceivingKeys();

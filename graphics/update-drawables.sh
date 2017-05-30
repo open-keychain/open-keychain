@@ -32,7 +32,7 @@ inkscape -w 72 -h 72 -e "$XXDPI_DIR/${NAME}_24dp.png" "$SRC_DIR/$NAME.svg"
 inkscape -w 96 -h 96 -e "$XXXDPI_DIR/${NAME}_24dp.png" "$SRC_DIR/$NAME.svg"
 done
 
-for NAME in "status_signature_expired_cutout" "status_signature_invalid_cutout" "status_signature_revoked_cutout" "status_signature_unknown_cutout" "status_signature_unverified_cutout" "status_signature_verified_cutout" "status_signature_verified_inner"
+for NAME in "ic_wifi_off" "status_signature_expired_cutout" "status_signature_invalid_cutout" "status_signature_revoked_cutout" "status_signature_unknown_cutout" "status_signature_unverified_cutout" "status_signature_verified_cutout" "status_signature_verified_inner"
 do
 echo $NAME
 inkscape -w 96 -h 96 -e "$MDPI_DIR/${NAME}_96dp.png" "$SRC_DIR/$NAME.svg"

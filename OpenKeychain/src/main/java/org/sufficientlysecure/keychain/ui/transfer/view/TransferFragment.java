@@ -19,8 +19,13 @@ package org.sufficientlysecure.keychain.ui.transfer.view;
 
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -58,6 +63,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     public static final int VIEW_WAITING = 0;
     public static final int VIEW_CONNECTED = 1;
     public static final int VIEW_RECEIVING = 2;
+    public static final int VIEW_NO_WIFI = 3;
 
     public static final int REQUEST_CODE_SCAN = 1;
     public static final int LOADER_ID = 1;
@@ -72,6 +78,17 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     private RecyclerView vReceivedKeyList;
 
     private CryptoOperationHelper currentCryptoOperationHelper;
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(intent.getAction())) {
+                NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+                if (networkInfo != null && networkInfo.isConnected()) {
+                    presenter.onWifiConnected();
+                }
+            }
+        }
+    };
 
 
     @Override
@@ -109,10 +126,31 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        getContext().registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        getContext().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
 
         presenter.onUiStop();
+    }
+
+    @Override
+    public void showNotOnWifi() {
+        vTransferAnimator.setDisplayedChild(VIEW_NO_WIFI);
     }
 
     @Override
