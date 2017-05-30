@@ -8,7 +8,7 @@
     android:id="@+id/transfer_animator"
     android:inAnimation="@anim/fade_in_delayed"
     android:outAnimation="@anim/fade_out"
-    custom:initialView="03">
+    custom:initialView="02">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -58,9 +58,17 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
+            android:text="Connection status:"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
-            android:id="@+id/connection_status"
-            android:text="Connected to: 123.456.123.123"
+            android:id="@+id/connection_status_1"
+            tools:text="Connected to 123.456.123.123"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -80,7 +88,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/transfer_key_list"
-                android:padding="16dp"
                 />
 
         </ScrollView>
@@ -97,9 +104,17 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
+            android:text="Connection status:"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
             android:id="@+id/connection_status_2"
-            android:text="Connected to: 123.456.123.123"
+            tools:text="Connected to 123.456.123.123"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -119,7 +134,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/received_key_list"
-                android:padding="16dp"
                 />
 
         </ScrollView>

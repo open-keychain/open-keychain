@@ -42,12 +42,13 @@ import com.google.zxing.client.android.Intents;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.QrCodeCaptureActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.Callback;
 import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter;
 import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter.TransferMvpView;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
 
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
@@ -63,7 +64,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     private ImageView vQrCodeImage;
     private TransferPresenter presenter;
     private ViewAnimator vTransferAnimator;
-    private TextView vConnectionStatusText;
+    private TextView vConnectionStatusText1;
+    private TextView vConnectionStatusText2;
     private RecyclerView vTransferKeyList;
     private RecyclerView vReceivedKeyList;
 
@@ -76,7 +78,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
         vTransferAnimator = (ViewAnimator) view.findViewById(R.id.transfer_animator);
 
-        vConnectionStatusText = (TextView) view.findViewById(R.id.connection_status);
+        vConnectionStatusText1 = (TextView) view.findViewById(R.id.connection_status_1);
+        vConnectionStatusText2 = (TextView) view.findViewById(R.id.connection_status_2);
         vTransferKeyList = (RecyclerView) view.findViewById(R.id.transfer_key_list);
         vReceivedKeyList = (RecyclerView) view.findViewById(R.id.received_key_list);
 
@@ -117,13 +120,20 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
     @Override
     public void showConnectionEstablished(String hostname) {
-        vConnectionStatusText.setText("Connected to: " + hostname);
+        vConnectionStatusText1.setText("Connected to: " + hostname);
+        vConnectionStatusText2.setText("Connected to: " + hostname);
         vTransferAnimator.setDisplayedChild(VIEW_CONNECTED);
     }
 
     @Override
     public void showReceivingKeys() {
         vTransferAnimator.setDisplayedChild(VIEW_RECEIVING);
+    }
+
+    @Override
+    public void showViewDisconnected() {
+        vConnectionStatusText1.setText("Disconnected!");
+        vConnectionStatusText2.setText("Disconnected!");
     }
 
     @Override
@@ -171,17 +181,17 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
     @Override
     public void showErrorBadKey() {
-
+        Notify.create(getActivity(), "Failed reading incoming key!", Style.ERROR).show();
     }
 
     @Override
     public void showErrorConnectionFailed() {
-
+        Notify.create(getActivity(), "Connection failed!", Style.ERROR).show();
     }
 
     @Override
     public void showResultNotification(ImportKeyResult result) {
-        result.createNotify(getActivity()).show(this);
+        result.createNotify(getActivity()).show();
     }
 
     @Override

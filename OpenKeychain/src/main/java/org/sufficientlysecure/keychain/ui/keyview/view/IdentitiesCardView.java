@@ -46,7 +46,7 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
 
         vIdentities = (RecyclerView) view.findViewById(R.id.view_key_user_ids);
         vIdentities.setLayoutManager(new LinearLayoutManager(context));
-        vIdentities.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST));
+        vIdentities.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST, false));
 
         Button userIdsEditButton = (Button) view.findViewById(R.id.view_key_card_user_ids_edit);
         userIdsEditButton.setOnClickListener(new OnClickListener() {

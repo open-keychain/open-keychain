@@ -45,7 +45,7 @@ public class ReceivedSecretKeyList extends RecyclerView {
 
     private void init(Context context) {
         setLayoutManager(new LinearLayoutManager(context));
-        addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST));
+        addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST, true));
     }
 
     public static class ReceivedKeyAdapter extends Adapter<ReceivedKeyViewHolder> {

@@ -8,7 +8,9 @@
     android:minHeight="?attr/listPreferredItemHeight"
     android:maxLines="1"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp">
 
     <LinearLayout
         android:layout_width="0dip"
@@ -54,7 +56,6 @@
         android:outAnimation="@anim/fade_out"
         android:inAnimation="@anim/fade_in"
         android:id="@+id/transfer_state"
-        android:measureAllChildren="false"
         custom:initialView="04">
 
         <Space
@@ -64,6 +65,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
             android:padding="8dp"
             android:id="@+id/button_transfer"
             android:src="@drawable/ic_play_arrow_white_24dp"
@@ -74,12 +76,14 @@
         <ProgressBar
             android:layout_width="36dp"
             android:layout_height="36dp"
+            android:layout_gravity="end|center_vertical"
             android:padding="8dp"
             />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
             android:padding="8dp"
             android:src="@drawable/ic_check_black_24dp"
             android:tint="@color/android_green_light"

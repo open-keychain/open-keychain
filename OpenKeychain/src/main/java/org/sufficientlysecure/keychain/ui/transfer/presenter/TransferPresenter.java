@@ -185,12 +185,14 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     @Override
     public void onConnectionLost() {
+        Log.d(Constants.TAG, "Lost connection!");
         if (!wasConnected) {
-            // display connection error?
             connectionStartListen();
             view.showErrorConnectionFailed();
+        } else {
+            view.showViewDisconnected();
+            secretKeyAdapter.disableAll();
         }
-        // TODO handle error?
     }
 
     @Override
@@ -201,7 +203,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         try {
             // TODO move to worker thread?
             UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(receivedData.getBytes());
-            String primaryUserId = uncachedKeyRing.getPublicKey().getPrimaryUserId();
+            String primaryUserId = uncachedKeyRing.getPublicKey().getPrimaryUserIdWithFallback();
             UserId userId = OpenPgpUtils.splitUserId(primaryUserId);
 
             ReceivedKeyItem receivedKeyItem = new ReceivedKeyItem(receivedData, uncachedKeyRing.getMasterKeyId(),
@@ -284,6 +286,8 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         void showWaitingForConnection();
         void showConnectionEstablished(String hostname);
         void showReceivingKeys();
+
+        void showViewDisconnected();
 
         void scanQrCode();
         void setQrImage(Bitmap qrCode);
