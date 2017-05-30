@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -96,7 +97,8 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         try {
             byte[] armoredSecretKey =
                     KeyRepository.createDatabaseInteractor(context).getSecretKeyRingAsArmoredData(masterKeyId);
-            connectionSend(armoredSecretKey);
+            secretKeyAdapter.focusItem(masterKeyId);
+            connectionSend(armoredSecretKey, Long.toString(masterKeyId));
         } catch (IOException | NotFoundException | PgpGeneralException e) {
             e.printStackTrace();
         }
@@ -129,9 +131,18 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     }
 
     @Override
-    public void onDataSentOk(String arg) {
+    public void onDataSentOk(String passthrough) {
         Log.d(Constants.TAG, "data sent ok!");
-        view.showFakeSendProgressDialog();
+        final long masterKeyId = Long.parseLong(passthrough);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                secretKeyAdapter.focusItem(null);
+                secretKeyAdapter.addToFinishedItems(masterKeyId);
+            }
+        }, 750);
+//        view.showFakeSendProgressDialog();
     }
 
 
@@ -162,11 +173,11 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         }
     }
 
-    private void connectionSend(byte[] armoredSecretKey) {
+    private void connectionSend(byte[] armoredSecretKey, String passthrough) {
         if (keyTransferClientInteractor != null) {
-            keyTransferClientInteractor.sendData(armoredSecretKey);
+            keyTransferClientInteractor.sendData(armoredSecretKey, passthrough);
         } else if (keyTransferServerInteractor != null) {
-            keyTransferServerInteractor.sendData(armoredSecretKey);
+            keyTransferServerInteractor.sendData(armoredSecretKey, passthrough);
         }
     }
 

@@ -91,6 +91,7 @@ public class KeyTransferInteractor {
 
         private SSLServerSocket serverSocket;
         private byte[] dataToSend;
+        private String sendPassthrough;
 
         static TransferThread createClientTransferThread(KeyTransferCallback callback, byte[] presharedKey,
                 String host, int port) {
@@ -209,8 +210,9 @@ public class KeyTransferInteractor {
                 dataToSend = null;
 
                 socket.setSoTimeout(2000);
-                sendDataAndClose(socket.getOutputStream(), data);
-                invokeListener(CONNECTION_SEND_OK, null);
+                sendData(socket.getOutputStream(), data);
+                invokeListener(CONNECTION_SEND_OK, sendPassthrough);
+                sendPassthrough = null;
                 return true;
             }
             return false;
@@ -226,7 +228,7 @@ public class KeyTransferInteractor {
             return builder.toString();
         }
 
-        private void sendDataAndClose(OutputStream outputStream, byte[] data) throws IOException {
+        private void sendData(OutputStream outputStream, byte[] data) throws IOException {
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
             bufferedOutputStream.write(data);
             bufferedOutputStream.close();
@@ -265,8 +267,9 @@ public class KeyTransferInteractor {
             handler.post(runnable);
         }
 
-        synchronized void sendDataAndClose(byte[] dataToSend) {
+        synchronized void sendData(byte[] dataToSend, String passthrough) {
             this.dataToSend = dataToSend;
+            this.sendPassthrough = passthrough;
         }
 
         @Override
@@ -297,8 +300,8 @@ public class KeyTransferInteractor {
         transferThread = null;
     }
 
-    public void sendData(byte[] dataToSend) {
-        transferThread.sendDataAndClose(dataToSend);
+    public void sendData(byte[] dataToSend, String passthrough) {
+        transferThread.sendData(dataToSend, passthrough);
     }
 
     public interface KeyTransferCallback {
