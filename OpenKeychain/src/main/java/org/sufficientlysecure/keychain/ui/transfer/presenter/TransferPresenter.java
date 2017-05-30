@@ -65,7 +65,8 @@ import org.sufficientlysecure.keychain.util.Log;
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<List<SecretKeyItem>>,
         OnClickTransferKeyListener, OnClickImportKeyListener {
-    public static final String BACKSTACK_TAG_TRANSFER = "transfer";
+    private static final String BACKSTACK_TAG_TRANSFER = "transfer";
+
     private final Context context;
     private final TransferMvpView view;
     private final LoaderManager loaderManager;
@@ -74,11 +75,13 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     private final TransferKeyAdapter secretKeyAdapter;
     private final ReceivedKeyAdapter receivedKeyAdapter;
 
+
     private KeyTransferInteractor keyTransferClientInteractor;
     private KeyTransferInteractor keyTransferServerInteractor;
 
     private boolean wasConnected = false;
     private boolean waitingForWifi = false;
+
 
     public TransferPresenter(Context context, LoaderManager loaderManager, int loaderId, TransferMvpView view) {
         this.context = context;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2017 Vincent Breitmoser <look@my.amazin.horse>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,8 +160,9 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
     @Override
     public void showConnectionEstablished(String hostname) {
-        vConnectionStatusText1.setText("Connected to: " + hostname);
-        vConnectionStatusText2.setText("Connected to: " + hostname);
+        String statusText = getString(R.string.transfer_status_connected, hostname);
+        vConnectionStatusText1.setText(statusText);
+        vConnectionStatusText2.setText(statusText);
         vTransferAnimator.setDisplayedChild(VIEW_CONNECTED);
     }
 
@@ -172,8 +173,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
     @Override
     public void showViewDisconnected() {
-        vConnectionStatusText1.setText("Disconnected!");
-        vConnectionStatusText2.setText("Disconnected!");
+        vConnectionStatusText1.setText(R.string.transfer_status_disconnected);
+        vConnectionStatusText2.setText(R.string.transfer_status_disconnected);
     }
 
     @Override
@@ -221,17 +222,17 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
     @Override
     public void showErrorBadKey() {
-        Notify.create(getActivity(), "Failed reading incoming key!", Style.ERROR).show();
+        Notify.create(getActivity(), R.string.transfer_error_read_incoming, Style.ERROR).show();
     }
 
     @Override
     public void showErrorConnectionFailed() {
-        Notify.create(getActivity(), "Connection failed!", Style.ERROR).show();
+        Notify.create(getActivity(), R.string.transfer_error_connect, Style.ERROR).show();
     }
 
     @Override
     public void showErrorListenFailed() {
-        Notify.create(getActivity(), "Error setting up server!", Style.ERROR).show();
+        Notify.create(getActivity(), R.string.transfer_error_listen, Style.ERROR).show();
     }
 
     @Override

@@ -33,8 +33,9 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="8dp"
             android:id="@+id/button_scan"
-            android:text="Scan"
+            android:text="@string/button_scan"
             android:drawableLeft="@drawable/ic_qrcode_white_24dp"
+            android:drawableTint="@color/md_black_1000"
             android:drawablePadding="8dp"
             />
 
@@ -43,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="8dp"
-            android:text="Scan with either device to establish a secure connection for device setup."
+            android:text="@string/transfer_scan_explanation"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </LinearLayout>
@@ -58,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
-            android:text="Connection status:"
+            android:text="@string/connection_status"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -75,7 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Available Keys:"
+            android:text="@string/section_transfer_keys"
             android:textAppearance="?android:attr/textAppearanceMedium"
             style="@style/SectionHeader"
             />
@@ -104,7 +105,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
-            android:text="Connection status:"
+            android:text="@string/connection_status"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -121,7 +122,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Received Keys:"
+            android:text="@string/section_received_keys"
             android:textAppearance="?android:attr/textAppearanceMedium"
             style="@style/SectionHeader"
             />
@@ -161,7 +162,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="8dp"
-            android:text="This feature can only be used on Wifi."
+            android:text="@string/transfer_scan_only_wifi"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </LinearLayout>
