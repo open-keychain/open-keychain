@@ -171,15 +171,12 @@ public class KeyTransferInteractor {
         private void handleOpenConnection(Socket socket) throws IOException {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+            OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
+
             socket.setSoTimeout(500);
             while (!isInterrupted() && socket.isConnected()) {
-                if (sendDataIfAvailable(socket)) {
-                    return;
-                }
-
-                if (receiveDataIfAvailable(socket, bufferedReader)) {
-                    return;
-                }
+                sendDataIfAvailable(socket, outputStream);
+                receiveDataIfAvailable(socket, bufferedReader);
             }
             Log.d(Constants.TAG, "disconnected");
             invokeListener(CONNECTION_LOST, null);
@@ -200,17 +197,23 @@ public class KeyTransferInteractor {
 
             socket.setSoTimeout(2000);
             String receivedData = receiveAfterFirstLineAndClose(bufferedReader, firstLine);
+            socket.setSoTimeout(500);
+
             invokeListener(CONNECTION_RECEIVE_OK, receivedData);
             return true;
         }
 
-        private boolean sendDataIfAvailable(Socket socket) throws IOException {
+        private boolean sendDataIfAvailable(Socket socket, OutputStream outputStream) throws IOException {
             if (dataToSend != null) {
                 byte[] data = dataToSend;
                 dataToSend = null;
 
                 socket.setSoTimeout(2000);
-                sendData(socket.getOutputStream(), data);
+                outputStream.write(data);
+                outputStream.write('\n');
+                outputStream.write('\n');
+                socket.setSoTimeout(500);
+
                 invokeListener(CONNECTION_SEND_OK, sendPassthrough);
                 sendPassthrough = null;
                 return true;
@@ -220,18 +223,20 @@ public class KeyTransferInteractor {
 
         private String receiveAfterFirstLineAndClose(BufferedReader bufferedReader, String line) throws IOException {
             StringBuilder builder = new StringBuilder();
+            boolean lastLineWasEmpty = "".equals(line);
             do {
-                builder.append(line);
+                boolean lineIsEmpty = "".equals(line);
+                if (lastLineWasEmpty && lineIsEmpty) {
+                    break;
+                }
+
+                builder.append(line).append('\n');
+
                 line = bufferedReader.readLine();
+                lastLineWasEmpty = lineIsEmpty;
             } while (line != null);
 
             return builder.toString();
-        }
-
-        private void sendData(OutputStream outputStream, byte[] data) throws IOException {
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-            bufferedOutputStream.write(data);
-            bufferedOutputStream.close();
         }
 
         private void invokeListener(final int method, final String arg) {
