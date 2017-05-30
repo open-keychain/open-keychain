@@ -55,6 +55,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     public static final int VIEW_WAITING = 0;
     public static final int VIEW_CONNECTED = 1;
     public static final int VIEW_SEND_OK = 2;
+    public static final int VIEW_RECEIVING = 3;
 
     public static final int REQUEST_CODE_SCAN = 1;
     public static final int LOADER_ID = 1;
@@ -65,6 +66,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     private ViewAnimator vTransferAnimator;
     private TextView vConnectionStatusText;
     private RecyclerView vTransferKeyList;
+    private RecyclerView vReceivedKeyList;
 
 
     @Override
@@ -75,6 +77,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
         vConnectionStatusText = (TextView) view.findViewById(R.id.connection_status);
         vTransferKeyList = (RecyclerView) view.findViewById(R.id.transfer_key_list);
+        vReceivedKeyList = (RecyclerView) view.findViewById(R.id.received_key_list);
 
         vQrCodeImage = (ImageView) view.findViewById(R.id.qr_code_image);
 
@@ -124,8 +127,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     }
 
     @Override
-    public void showKeySentOk() {
-        vTransferAnimator.setDisplayedChild(VIEW_SEND_OK);
+    public void showReceivingKeys() {
+        vTransferAnimator.setDisplayedChild(VIEW_RECEIVING);
     }
 
     @Override
@@ -155,34 +158,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     }
 
     @Override
-    public void showFakeSendProgressDialog() {
-        final ProgressDialogFragment progressDialogFragment =
-                ProgressDialogFragment.newInstance("Sending key…", ProgressDialog.STYLE_HORIZONTAL, false);
-        progressDialogFragment.show(getFragmentManager(), "progress");
-
-        final Handler handler = new Handler();
-
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            int fakeProgress = 0;
-
-            @Override
-            public void run() {
-                fakeProgress += 6;
-                if (fakeProgress > 100) {
-                    cancel();
-                    progressDialogFragment.dismissAllowingStateLoss();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            presenter.onUiFakeProgressFinished();
-                        }
-                    });
-                    return;
-                }
-                progressDialogFragment.setProgress(fakeProgress, 100);
-            }
-        }, 0, 100);
+    public void setReceivedKeyAdapter(Adapter adapter) {
+        vReceivedKeyList.setAdapter(adapter);
     }
 
     @Override

@@ -103,6 +103,10 @@ public class UncachedKeyRing {
         return mRing.getPublicKey().getKeyID();
     }
 
+    public long getCreationTime() {
+        return mRing.getPublicKey().getCreationTime().getTime();
+    }
+
     public UncachedPublicKey getPublicKey() {
         return new UncachedPublicKey(mRing.getPublicKey());
     }

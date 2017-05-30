@@ -54,7 +54,8 @@
         android:outAnimation="@anim/fade_out"
         android:inAnimation="@anim/fade_in"
         android:id="@+id/transfer_state"
-        custom:initialView="2">
+        android:measureAllChildren="false"
+        custom:initialView="04">
 
         <Space
             android:layout_width="wrap_content"
@@ -82,6 +83,14 @@
             android:padding="8dp"
             android:src="@drawable/ic_check_black_24dp"
             android:tint="@color/android_green_light"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:id="@+id/button_import"
+            android:text="Import"
             />
 
     </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>

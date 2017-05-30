@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -18,12 +17,10 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.transfer.loader.SecretKeyLoader;
-import org.sufficientlysecure.keychain.ui.transfer.loader.SecretKeyLoader.SecretKeyItem;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
 
 
-public class TransferSecretKeyList extends RecyclerView {
+public class ReceivedSecretKeyList extends RecyclerView {
     private static final int STATE_INVISIBLE = 0;
     private static final int STATE_BUTTON = 1;
     private static final int STATE_PROGRESS = 2;
@@ -31,17 +28,17 @@ public class TransferSecretKeyList extends RecyclerView {
     private static final int STATE_IMPORT_BUTTON = 4;
 
 
-    public TransferSecretKeyList(Context context) {
+    public ReceivedSecretKeyList(Context context) {
         super(context);
         init(context);
     }
 
-    public TransferSecretKeyList(Context context, @Nullable AttributeSet attrs) {
+    public ReceivedSecretKeyList(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public TransferSecretKeyList(Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public ReceivedSecretKeyList(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
     }
@@ -49,36 +46,35 @@ public class TransferSecretKeyList extends RecyclerView {
     private void init(Context context) {
         setLayoutManager(new LinearLayoutManager(context));
         addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST));
-        setItemAnimator(null);
     }
 
-    public static class TransferKeyAdapter extends RecyclerView.Adapter<TransferKeyViewHolder> {
+    public static class ReceivedKeyAdapter extends Adapter<ReceivedKeyViewHolder> {
         private final Context context;
         private final LayoutInflater layoutInflater;
-        private final OnClickTransferKeyListener onClickTransferKeyListener;
+        private final OnClickImportKeyListener onClickImportKeyListener;
 
         private Long focusedMasterKeyId;
-        private List<SecretKeyItem> data;
+        private List<ReceivedKeyItem> data = new ArrayList<>();
         private ArrayList<Long> finishedItems = new ArrayList<>();
 
 
-        public TransferKeyAdapter(Context context, LayoutInflater layoutInflater,
-                OnClickTransferKeyListener onClickTransferKeyListener) {
+        public ReceivedKeyAdapter(Context context, LayoutInflater layoutInflater,
+                OnClickImportKeyListener onClickImportKeyListener) {
             this.context = context;
             this.layoutInflater = layoutInflater;
-            this.onClickTransferKeyListener = onClickTransferKeyListener;
+            this.onClickImportKeyListener = onClickImportKeyListener;
         }
 
         @Override
-        public TransferKeyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new TransferKeyViewHolder(layoutInflater.inflate(R.layout.key_transfer_item, parent, false));
+        public ReceivedKeyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new ReceivedKeyViewHolder(layoutInflater.inflate(R.layout.key_transfer_item, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(TransferKeyViewHolder holder, int position) {
-            SecretKeyItem item = data.get(position);
+        public void onBindViewHolder(ReceivedKeyViewHolder holder, int position) {
+            ReceivedKeyItem item = data.get(position);
             boolean isFinished = finishedItems.contains(item.masterKeyId);
-            holder.bind(context, item, onClickTransferKeyListener, focusedMasterKeyId, isFinished);
+            holder.bind(context, item, onClickImportKeyListener, focusedMasterKeyId, isFinished);
         }
 
         @Override
@@ -91,51 +87,37 @@ public class TransferSecretKeyList extends RecyclerView {
             return data.get(position).masterKeyId;
         }
 
-        public void setData(List<SecretKeyItem> data) {
-            this.data = data;
-            notifyDataSetChanged();
-        }
-
-        public void clearFinishedItems() {
-            finishedItems.clear();
-            notifyItemRangeChanged(0, getItemCount());
-        }
-
-        public void addToFinishedItems(long masterKeyId) {
-            finishedItems.add(masterKeyId);
-            // doeesn't notify, because it's non-trivial and this is called in conjunction with other refreshing things!
-        }
-
         public void focusItem(Long masterKeyId) {
             focusedMasterKeyId = masterKeyId;
             notifyItemRangeChanged(0, getItemCount());
         }
 
-        public Loader<List<SecretKeyItem>> createLoader(Context context) {
-            return new SecretKeyLoader(context, context.getContentResolver());
+        public void addItem(ReceivedKeyItem receivedKeyItem) {
+            data.add(receivedKeyItem);
+            notifyItemInserted(data.size() -1);
         }
     }
 
-    static class TransferKeyViewHolder extends RecyclerView.ViewHolder {
+    static class ReceivedKeyViewHolder extends ViewHolder {
         private final TextView vName;
         private final TextView vEmail;
         private final TextView vCreation;
-        private final View vSendButton;
+        private final View vImportButton;
         private final ViewAnimator vState;
 
-        TransferKeyViewHolder(View itemView) {
+        ReceivedKeyViewHolder(View itemView) {
             super(itemView);
 
             vName = (TextView) itemView.findViewById(R.id.key_list_item_name);
             vEmail = (TextView) itemView.findViewById(R.id.key_list_item_email);
             vCreation = (TextView) itemView.findViewById(R.id.key_list_item_creation);
 
-            vSendButton = itemView.findViewById(R.id.button_transfer);
+            vImportButton = itemView.findViewById(R.id.button_import);
             vState = (ViewAnimator) itemView.findViewById(R.id.transfer_state);
         }
 
-        private void bind(Context context, final SecretKeyItem item,
-                final OnClickTransferKeyListener onClickTransferKeyListener, Long focusedMasterKeyId,
+        private void bind(Context context, final ReceivedKeyItem item,
+                final OnClickImportKeyListener onClickReceiveKeyListener, Long focusedMasterKeyId,
                 boolean isFinished) {
             if (item.name != null) {
                 vName.setText(item.name);
@@ -165,23 +147,40 @@ public class TransferSecretKeyList extends RecyclerView {
                 }
             } else {
                 itemView.animate().alpha(1.0f).start();
-                vState.setDisplayedChild(isFinished ? STATE_TRANSFERRED : STATE_BUTTON);
+                vState.setDisplayedChild(isFinished ? STATE_TRANSFERRED : STATE_IMPORT_BUTTON);
             }
 
-            if (focusedMasterKeyId == null && onClickTransferKeyListener != null) {
-                vSendButton.setOnClickListener(new OnClickListener() {
+            if (focusedMasterKeyId == null && onClickReceiveKeyListener != null) {
+                vImportButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onClickTransferKeyListener.onUiClickTransferKey(item.masterKeyId);
+                        onClickReceiveKeyListener.onUiClickImportKey(item.keyData);
                     }
                 });
             } else {
-                vSendButton.setOnClickListener(null);
+                vImportButton.setOnClickListener(null);
             }
         }
     }
 
-    public interface OnClickTransferKeyListener {
-        void onUiClickTransferKey(long masterKeyId);
+    public interface OnClickImportKeyListener {
+        void onUiClickImportKey(String keyData);
+    }
+
+    public static class ReceivedKeyItem {
+        private final String keyData;
+
+        private final long masterKeyId;
+        private final long creationMillis;
+        private final String name;
+        private final String email;
+
+        public ReceivedKeyItem(String keyData, long masterKeyId, long creationMillis, String name, String email) {
+            this.keyData = keyData;
+            this.masterKeyId = masterKeyId;
+            this.creationMillis = creationMillis;
+            this.name = name;
+            this.email = email;
+        }
     }
 }

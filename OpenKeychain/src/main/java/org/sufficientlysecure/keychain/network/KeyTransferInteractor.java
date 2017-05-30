@@ -135,8 +135,8 @@ public class KeyTransferInteractor {
                 }
 
                 handleOpenConnection(socket);
-                Log.d(Constants.TAG, "connection closed ok!");
             } catch (IOException e) {
+                invokeListener(CONNECTION_LOST, null);
                 Log.e(Constants.TAG, "error!", e);
             } finally {
                 try {
@@ -176,8 +176,13 @@ public class KeyTransferInteractor {
             socket.setSoTimeout(500);
             while (!isInterrupted() && socket.isConnected()) {
                 sendDataIfAvailable(socket, outputStream);
-                receiveDataIfAvailable(socket, bufferedReader);
+
+                boolean connectionClosed = receiveDataIfAvailable(socket, bufferedReader);
+                if (connectionClosed) {
+                    break;
+                }
             }
+
             Log.d(Constants.TAG, "disconnected");
             invokeListener(CONNECTION_LOST, null);
         }
@@ -191,7 +196,6 @@ public class KeyTransferInteractor {
             }
 
             if (firstLine == null) {
-                invokeListener(CONNECTION_LOST, null);
                 return true;
             }
 
@@ -200,7 +204,7 @@ public class KeyTransferInteractor {
             socket.setSoTimeout(500);
 
             invokeListener(CONNECTION_RECEIVE_OK, receivedData);
-            return true;
+            return false;
         }
 
         private boolean sendDataIfAvailable(Socket socket, OutputStream outputStream) throws IOException {
@@ -212,6 +216,7 @@ public class KeyTransferInteractor {
                 outputStream.write(data);
                 outputStream.write('\n');
                 outputStream.write('\n');
+                outputStream.flush();
                 socket.setSoTimeout(500);
 
                 invokeListener(CONNECTION_SEND_OK, sendPassthrough);

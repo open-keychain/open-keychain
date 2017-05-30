@@ -34,13 +34,19 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
 
+import org.openintents.openpgp.util.OpenPgpUtils;
+import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.network.KeyTransferInteractor;
 import org.sufficientlysecure.keychain.network.KeyTransferInteractor.KeyTransferCallback;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.ui.transfer.loader.SecretKeyLoader.SecretKeyItem;
+import org.sufficientlysecure.keychain.ui.transfer.view.ReceivedSecretKeyList.OnClickImportKeyListener;
+import org.sufficientlysecure.keychain.ui.transfer.view.ReceivedSecretKeyList.ReceivedKeyAdapter;
+import org.sufficientlysecure.keychain.ui.transfer.view.ReceivedSecretKeyList.ReceivedKeyItem;
 import org.sufficientlysecure.keychain.ui.transfer.view.TransferSecretKeyList.OnClickTransferKeyListener;
 import org.sufficientlysecure.keychain.ui.transfer.view.TransferSecretKeyList.TransferKeyAdapter;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
@@ -49,7 +55,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<List<SecretKeyItem>>,
-        OnClickTransferKeyListener {
+        OnClickTransferKeyListener, OnClickImportKeyListener {
     private final Context context;
     private final TransferMvpView view;
     private final LoaderManager loaderManager;
@@ -58,6 +64,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     private KeyTransferInteractor keyTransferClientInteractor;
     private KeyTransferInteractor keyTransferServerInteractor;
     private final TransferKeyAdapter secretKeyAdapter;
+    private final ReceivedKeyAdapter receivedKeyAdapter;
 
     public TransferPresenter(Context context, LoaderManager loaderManager, int loaderId, TransferMvpView view) {
         this.context = context;
@@ -67,6 +74,9 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
         secretKeyAdapter = new TransferKeyAdapter(context, LayoutInflater.from(context), this);
         view.setSecretKeyAdapter(secretKeyAdapter);
+
+        receivedKeyAdapter = new ReceivedKeyAdapter(context, LayoutInflater.from(context), this);
+        view.setReceivedKeyAdapter(receivedKeyAdapter);
     }
 
 
@@ -104,8 +114,9 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         }
     }
 
-    public void onUiFakeProgressFinished() {
-        view.showKeySentOk();
+    @Override
+    public void onUiClickImportKey(String keyData) {
+
     }
 
 
@@ -117,6 +128,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     @Override
     public void onConnectionEstablished(String otherName) {
+        secretKeyAdapter.clearFinishedItems();
         view.showConnectionEstablished(otherName);
     }
 
@@ -128,6 +140,20 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     @Override
     public void onDataReceivedOk(String receivedData) {
         Log.d(Constants.TAG, "received: " + receivedData);
+        view.showReceivingKeys();
+
+        try {
+            // TODO move to worker thread?
+            UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(receivedData.getBytes());
+            String primaryUserId = uncachedKeyRing.getPublicKey().getPrimaryUserId();
+            UserId userId = OpenPgpUtils.splitUserId(primaryUserId);
+
+            ReceivedKeyItem receivedKeyItem = new ReceivedKeyItem(receivedData, uncachedKeyRing.getMasterKeyId(),
+                    uncachedKeyRing.getCreationTime(), userId.name, userId.email);
+            receivedKeyAdapter.addItem(receivedKeyItem);
+        } catch (PgpGeneralException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -142,7 +168,6 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
                 secretKeyAdapter.addToFinishedItems(masterKeyId);
             }
         }, 750);
-//        view.showFakeSendProgressDialog();
     }
 
 
@@ -201,13 +226,12 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     public interface TransferMvpView {
         void showWaitingForConnection();
         void showConnectionEstablished(String hostname);
+        void showReceivingKeys();
 
         void scanQrCode();
         void setQrImage(Bitmap qrCode);
 
         void setSecretKeyAdapter(Adapter adapter);
-
-        void showFakeSendProgressDialog();
-        void showKeySentOk();
+        void setReceivedKeyAdapter(Adapter secretKeyAdapter);
     }
 }
