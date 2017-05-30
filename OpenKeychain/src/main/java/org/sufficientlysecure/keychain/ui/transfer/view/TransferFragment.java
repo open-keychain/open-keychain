@@ -27,6 +27,8 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
@@ -192,6 +194,27 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     @Override
     public void showResultNotification(ImportKeyResult result) {
         result.createNotify(getActivity()).show();
+    }
+
+    @Override
+    public void addFakeBackStackItem(final String tag) {
+        FragmentManager fragmentManager = getFragmentManager();
+
+        fragmentManager.beginTransaction()
+                .addToBackStack(tag)
+                .commitAllowingStateLoss();
+        fragmentManager.executePendingTransactions();
+
+        fragmentManager.addOnBackStackChangedListener(new OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                FragmentManager fragMan = getFragmentManager();
+                fragMan.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragMan.removeOnBackStackChangedListener(this);
+
+                presenter.onUiBackStackPop();
+            }
+        });
     }
 
     @Override

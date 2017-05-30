@@ -63,6 +63,7 @@ import org.sufficientlysecure.keychain.util.Log;
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<List<SecretKeyItem>>,
         OnClickTransferKeyListener, OnClickImportKeyListener {
+    public static final String BACKSTACK_TAG_TRANSFER = "transfer";
     private final Context context;
     private final TransferMvpView view;
     private final LoaderManager loaderManager;
@@ -94,7 +95,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         loaderManager.restartLoader(loaderId, null, this);
 
         if (keyTransferServerInteractor == null && keyTransferClientInteractor == null && !wasConnected) {
-            connectionStartListen();
+            connectionResetAndStartListen();
         }
     }
 
@@ -110,6 +111,12 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     public void onUiQrCodeScanned(String qrCodeContent) {
         connectionStartConnect(qrCodeContent);
+    }
+
+    public void onUiBackStackPop() {
+        if (wasConnected) {
+            connectionResetAndStartListen();
+        }
     }
 
     @Override
@@ -181,14 +188,15 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
         secretKeyAdapter.clearFinishedItems();
         view.showConnectionEstablished(otherName);
+        view.addFakeBackStackItem(BACKSTACK_TAG_TRANSFER);
     }
 
     @Override
     public void onConnectionLost() {
         Log.d(Constants.TAG, "Lost connection!");
         if (!wasConnected) {
-            connectionStartListen();
             view.showErrorConnectionFailed();
+            connectionResetAndStartListen();
         } else {
             view.showViewDisconnected();
             secretKeyAdapter.disableAll();
@@ -237,7 +245,8 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         keyTransferClientInteractor.connectToServer(qrCodeContent, this);
     }
 
-    private void connectionStartListen() {
+    private void connectionResetAndStartListen() {
+        wasConnected = false;
         connectionClear();
 
         keyTransferServerInteractor = new KeyTransferInteractor();
@@ -302,5 +311,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         void setReceivedKeyAdapter(Adapter secretKeyAdapter);
 
         <T extends Parcelable, S extends OperationResult> CryptoOperationHelper<T,S> createCryptoOperationHelper(Callback<T, S> callback);
+
+        void addFakeBackStackItem(String tag);
     }
 }

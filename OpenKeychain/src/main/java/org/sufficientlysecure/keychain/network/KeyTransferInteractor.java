@@ -83,12 +83,12 @@ public class KeyTransferInteractor {
 
     private static class TransferThread extends Thread {
         private final Handler handler;
-        private final KeyTransferCallback callback;
         private final byte[] presharedKey;
         private final boolean isServer;
         private final String clientHost;
         private final Integer clientPort;
 
+        private KeyTransferCallback callback;
         private SSLServerSocket serverSocket;
         private byte[] dataToSend;
         private String sendPassthrough;
@@ -174,9 +174,12 @@ public class KeyTransferInteractor {
             OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
 
             socket.setSoTimeout(500);
-            while (!isInterrupted() && socket.isConnected()) {
+            while (!isInterrupted() && socket.isConnected() && !socket.isClosed()) {
                 sendDataIfAvailable(socket, outputStream);
-                receiveDataIfAvailable(socket, bufferedReader);
+                boolean connectionTerminated = receiveDataIfAvailable(socket, bufferedReader);
+                if (connectionTerminated) {
+                    break;
+                }
             }
             Log.d(Constants.TAG, "disconnected");
             invokeListener(CONNECTION_LOST, null);
@@ -191,7 +194,6 @@ public class KeyTransferInteractor {
             }
 
             if (firstLine == null) {
-                invokeListener(CONNECTION_LOST, null);
                 return true;
             }
 
@@ -200,7 +202,7 @@ public class KeyTransferInteractor {
             socket.setSoTimeout(500);
 
             invokeListener(CONNECTION_RECEIVE_OK, receivedData);
-            return true;
+            return false;
         }
 
         private boolean sendDataIfAvailable(Socket socket, OutputStream outputStream) throws IOException {
@@ -280,6 +282,8 @@ public class KeyTransferInteractor {
 
         @Override
         public void interrupt() {
+            callback = null;
+
             super.interrupt();
 
             if (serverSocket != null) {
