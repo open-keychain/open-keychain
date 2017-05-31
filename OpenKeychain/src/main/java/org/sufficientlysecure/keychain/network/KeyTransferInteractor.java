@@ -414,6 +414,16 @@ public class KeyTransferInteractor {
         }
 
         @Override
+        public String chooseClientKeyIdentity(String identityHint, Socket socket) {
+            return identityHint;
+        }
+
+        @Override
+        public String chooseClientKeyIdentity(String identityHint, SSLEngine engine) {
+            return identityHint;
+        }
+
+        @Override
         public SecretKey getKey(String identityHint, String identity, Socket socket) {
             return new SecretKeySpec(presharedKey, "AES");
         }
