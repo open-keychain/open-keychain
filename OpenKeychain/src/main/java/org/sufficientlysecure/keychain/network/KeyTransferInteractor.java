@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import android.net.PskKeyManager;
@@ -44,7 +45,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.util.Base64;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -55,6 +55,7 @@ import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
+import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -85,7 +86,7 @@ public class KeyTransferInteractor {
 
     public void connectToServer(String connectionDetails, KeyTransferCallback callback) {
         Uri uri = Uri.parse(connectionDetails);
-        final byte[] presharedKey = Base64.decode(uri.getUserInfo(), Base64.URL_SAFE | Base64.NO_PADDING);
+        final byte[] presharedKey = Hex.decode(uri.getUserInfo());
         final String host = uri.getHost();
         final int port = uri.getPort();
 
@@ -147,6 +148,7 @@ public class KeyTransferInteractor {
                     handleOpenConnection(socket);
                     Log.d(Constants.TAG, "connection closed ok!");
                 } catch (SSLHandshakeException e) {
+                    Log.d(Constants.TAG, "ssl handshake error!", e);
                     invokeListener(CONNECTION_ERROR_CONNECT, null);
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error!", e);
@@ -168,10 +170,10 @@ public class KeyTransferInteractor {
                     String[] enabledCipherSuites = intersectArrays(supportedCipherSuites, ALLOWED_CIPHERSUITES);
                     serverSocket.setEnabledCipherSuites(enabledCipherSuites);
 
-                    String presharedKeyEncoded =
-                            Base64.encodeToString(presharedKey, Base64.URL_SAFE | Base64.NO_PADDING);
+                    String presharedKeyEncoded = Hex.toHexString(presharedKey);
                     String qrCodeData =
                             "pgp+transfer://" + presharedKeyEncoded + "@" + getIPAddress(true) + ":" + port;
+                    qrCodeData = qrCodeData.toUpperCase(Locale.getDefault());
                     invokeListener(CONNECTION_LISTENING, qrCodeData);
 
                     socket = serverSocket.accept();
