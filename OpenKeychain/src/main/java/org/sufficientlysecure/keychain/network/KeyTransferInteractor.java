@@ -164,15 +164,14 @@ public class KeyTransferInteractor {
             Socket socket;
             if (isServer) {
                 try {
-                    int port = 1336;
-                    serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(port);
+                    serverSocket = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(0);
                     String[] supportedCipherSuites = serverSocket.getSupportedCipherSuites();
                     String[] enabledCipherSuites = intersectArrays(supportedCipherSuites, ALLOWED_CIPHERSUITES);
                     serverSocket.setEnabledCipherSuites(enabledCipherSuites);
 
                     String presharedKeyEncoded = Hex.toHexString(presharedKey);
                     String qrCodeData =
-                            "pgp+transfer://" + presharedKeyEncoded + "@" + getIPAddress(true) + ":" + port;
+                            "pgp+transfer://" + presharedKeyEncoded + "@" + getIPAddress(true) + ":" + serverSocket.getLocalPort();
                     qrCodeData = qrCodeData.toUpperCase(Locale.getDefault());
                     invokeListener(CONNECTION_LISTENING, qrCodeData);
 
