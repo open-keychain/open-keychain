@@ -107,6 +107,11 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     public void onUiStop() {
         connectionClear();
+
+        if (wasConnected) {
+            view.showViewDisconnected();
+            secretKeyAdapter.setAllDisabled(true);
+        }
     }
 
     public void onUiClickScan() {
@@ -208,7 +213,6 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     @Override
     public void onConnectionLost() {
-        Log.d(Constants.TAG, "Lost connection!");
         if (!wasConnected) {
             view.showErrorConnectionFailed();
             checkWifiResetAndStartListen();
