@@ -8,7 +8,7 @@
     android:id="@+id/transfer_animator"
     android:inAnimation="@anim/fade_in_delayed"
     android:outAnimation="@anim/fade_out"
-    custom:initialView="03">
+    custom:initialView="0">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,15 +17,34 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <ImageView
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:id="@+id/qr_code_image"
-            tools:src="@drawable/ic_qrcode_white_24dp"
-            tools:tint="@color/md_black_1000"
-            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:weightSum="1">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.75"
+                android:layout_marginBottom="16dp"
+                custom:cardUseCompatPadding="true"
+                custom:cardCornerRadius="4dp"
+                >
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/qr_code_image"
+                    tools:layout_height="240dp"
+                    tools:src="@drawable/ic_qrcode_white_24dp"
+                    tools:tint="@color/md_black_1000"
+                    />
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
 
         <Button
             android:layout_width="wrap_content"
