@@ -26,6 +26,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
@@ -59,6 +60,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
 
     public Drawer mDrawer;
     private Toolbar mToolbar;
+    private int cursor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -163,6 +165,85 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
             }
         }
 
+    }
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if(mDrawer.isDrawerOpen()) {
+            if (keyCode == 20) {
+                cursor = (6 + cursor + 1) % 6;
+                switch (cursor + 1) {
+                    case ID_KEYS:
+                        mDrawer.setSelection(ID_KEYS, false);
+                        break;
+                    case ID_ENCRYPT_DECRYPT:
+                        mDrawer.setSelection(ID_ENCRYPT_DECRYPT, false);
+                        break;
+                    case ID_APPS:
+                        mDrawer.setSelection(ID_APPS, false);
+                        break;
+                    case ID_BACKUP:
+                        mDrawer.setSelection(ID_BACKUP, false);
+                        break;
+                    case ID_SETTINGS:
+                        mDrawer.setSelection(ID_SETTINGS, false);
+                        break;
+                    case ID_HELP:
+                        mDrawer.setSelection(ID_HELP, false);
+                        break;
+                }
+
+            } else if (keyCode == 19) {
+                cursor = (6 + cursor - 1) % 6;
+                switch (cursor + 1) {
+                    case ID_KEYS:
+                        mDrawer.setSelection(ID_KEYS, false);
+                        break;
+                    case ID_ENCRYPT_DECRYPT:
+                        mDrawer.setSelection(ID_ENCRYPT_DECRYPT, false);
+                        break;
+                    case ID_APPS:
+                        mDrawer.setSelection(ID_APPS, false);
+                        break;
+                    case ID_BACKUP:
+                        mDrawer.setSelection(ID_BACKUP, false);
+                        break;
+                    case ID_SETTINGS:
+                        mDrawer.setSelection(ID_SETTINGS, false);
+                        break;
+                    case ID_HELP:
+                        mDrawer.setSelection(ID_HELP, false);
+                        break;
+                }
+            }
+            if (keyCode == 66 || keyCode==23) {
+                Intent intent = null;
+                switch (cursor + 1) {
+                    case ID_KEYS:
+                        onKeysSelected();
+                        break;
+                    case ID_ENCRYPT_DECRYPT:
+                        onEnDecryptSelected();
+                        break;
+                    case ID_APPS:
+                        onAppsSelected();
+                        break;
+                    case ID_BACKUP:
+                        onBackupSelected();
+                        break;
+                    case ID_SETTINGS:
+                        intent = new Intent(MainActivity.this, SettingsActivity.class);
+                        break;
+                    case ID_HELP:
+                        intent = new Intent(MainActivity.this, HelpActivity.class);
+                        break;
+                }
+                if (intent != null) {
+                    MainActivity.this.startActivity(intent);
+                }
+                mDrawer.closeDrawer();
+            }
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     private void setFragment(Fragment fragment, boolean addToBackStack) {
