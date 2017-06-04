@@ -678,15 +678,15 @@ public class KeyFormattingUtils {
             holder.getSignatureAction().setDisplayedChild(sigActionDisplayedChild);
 
             String userId = result.getSignatureResult().getPrimaryUserId();
-            OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
-            if (userIdSplit.name != null) {
-                holder.getSignatureUserName().setText(userIdSplit.name);
+            //OpenPgpUtils.UserId userIdSplit = KeyRing.splitUserId(userId);
+            if (KeyRings.name != null) {
+                holder.getSignatureUserName().setText(KeyRings.name);
             } else {
                 holder.getSignatureUserName().setText(R.string.user_id_no_name);
             }
-            if (userIdSplit.email != null) {
+            if (KeyRings.email != null) {
                 holder.getSignatureUserEmail().setVisibility(View.VISIBLE);
-                holder.getSignatureUserEmail().setText(userIdSplit.email);
+                holder.getSignatureUserEmail().setText(KeyRings.email);
             } else {
                 holder.getSignatureUserEmail().setVisibility(View.GONE);
             }
