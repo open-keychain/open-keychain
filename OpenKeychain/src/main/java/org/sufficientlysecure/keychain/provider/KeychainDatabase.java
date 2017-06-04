@@ -212,6 +212,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         if (!db.isReadOnly()) {
             // Enable foreign key constraints
             db.execSQL("PRAGMA foreign_keys=ON;");
+            // Enable secure delete for older Android versions not using it by default
+            db.execSQL("PRAGMA secure_delete=ON;");
         }
     }
 
