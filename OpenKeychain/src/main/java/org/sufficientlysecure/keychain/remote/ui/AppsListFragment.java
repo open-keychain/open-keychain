@@ -202,6 +202,7 @@ public class AppsListFragment extends ListFragment implements
             availableAppsCursor.addRow(new Object[]{1, "com.fsck.k9", "K-9 Mail", 0, 0, R.drawable.apps_k9});
             availableAppsCursor.addRow(new Object[]{1, "com.zeapo.pwdstore", "Password Store", 0, 0, R.drawable.apps_password_store});
             availableAppsCursor.addRow(new Object[]{1, "eu.siacs.conversations", "Conversations (Instant Messaging)", 0, 0, R.drawable.apps_conversations});
+            availableAppsCursor.addRow(new Object[]{1, "io.oversec.one", "Oversec (Universal Encryption)", 0, 0, R.drawable.apps_oversec});
 
             MatrixCursor mergedCursor = new MatrixCursor(new String[]{
                     ApiApps._ID,
