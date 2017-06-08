@@ -340,6 +340,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     @Override
     public void onLoadFinished(Loader<List<SecretKeyItem>> loader, List<SecretKeyItem> data) {
         secretKeyAdapter.setData(data);
+        view.setShowSecretKeyEmptyView(data.isEmpty());
     }
 
     @Override
@@ -367,6 +368,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         void showResultNotification(ImportKeyResult result);
 
         void setSecretKeyAdapter(Adapter adapter);
+        void setShowSecretKeyEmptyView(boolean isEmpty);
         void setReceivedKeyAdapter(Adapter secretKeyAdapter);
 
         <T extends Parcelable, S extends OperationResult> CryptoOperationHelper<T,S> createCryptoOperationHelper(Callback<T, S> callback);

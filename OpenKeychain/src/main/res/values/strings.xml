@@ -1902,5 +1902,6 @@
     <string name="transfer_error_connect">"Connection failed!"</string>
     <string name="transfer_error_listen">"Error waiting for connection!"</string>
     <string name="transfer_not_available">"Sorry, this feature can only be used on Android 5 or newer :("</string>
+    <string name="transfer_list_empty">No keys on this device that could be sent.  Waiting for incoming keys…</string>
 
 </resources>

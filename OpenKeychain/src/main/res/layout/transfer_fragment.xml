@@ -104,11 +104,30 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <org.sufficientlysecure.keychain.ui.transfer.view.TransferSecretKeyList
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/transfer_key_list"
-                />
+                android:orientation="vertical">
+
+                <org.sufficientlysecure.keychain.ui.transfer.view.TransferSecretKeyList
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/transfer_key_list"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_horizontal"
+                    android:padding="12dp"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:id="@+id/transfer_key_list_empty"
+                    android:text="@string/transfer_list_empty"
+                    />
+
+            </LinearLayout>
 
         </ScrollView>
 

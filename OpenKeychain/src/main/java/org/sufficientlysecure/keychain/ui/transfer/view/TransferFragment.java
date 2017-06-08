@@ -75,6 +75,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     private TextView vConnectionStatusText1;
     private TextView vConnectionStatusText2;
     private RecyclerView vTransferKeyList;
+    private View vTransferKeyListEmptyView;
     private RecyclerView vReceivedKeyList;
 
     private CryptoOperationHelper currentCryptoOperationHelper;
@@ -100,6 +101,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
         vConnectionStatusText1 = (TextView) view.findViewById(R.id.connection_status_1);
         vConnectionStatusText2 = (TextView) view.findViewById(R.id.connection_status_2);
         vTransferKeyList = (RecyclerView) view.findViewById(R.id.transfer_key_list);
+        vTransferKeyListEmptyView = view.findViewById(R.id.transfer_key_list_empty);
         vReceivedKeyList = (RecyclerView) view.findViewById(R.id.received_key_list);
 
         vQrCodeImage = (ImageView) view.findViewById(R.id.qr_code_image);
@@ -201,6 +203,11 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     @Override
     public void setSecretKeyAdapter(Adapter adapter) {
         vTransferKeyList.setAdapter(adapter);
+    }
+
+    @Override
+    public void setShowSecretKeyEmptyView(boolean isEmpty) {
+        vTransferKeyListEmptyView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
     }
 
     @Override
