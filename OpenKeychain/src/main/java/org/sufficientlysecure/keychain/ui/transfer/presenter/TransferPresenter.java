@@ -80,6 +80,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     private KeyTransferInteractor keyTransferServerInteractor;
 
     private boolean wasConnected = false;
+    private boolean sentData = false;
     private boolean waitingForWifi = false;
 
 
@@ -224,8 +225,12 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     @Override
     public void onDataReceivedOk(String receivedData) {
-        Log.d(Constants.TAG, "received key");
+        if (sentData) {
+            Log.d(Constants.TAG, "received data, but we already sent a key! race condition, or other side misbehaving?");
+            return;
+        }
 
+        Log.d(Constants.TAG, "received data");
         UncachedKeyRing uncachedKeyRing;
         try {
             uncachedKeyRing = UncachedKeyRing.decodeFromData(receivedData.getBytes());
@@ -290,6 +295,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     private void resetAndStartListen() {
         waitingForWifi = false;
         wasConnected = false;
+        sentData = false;
         connectionClear();
 
         keyTransferServerInteractor = new KeyTransferInteractor();
@@ -317,6 +323,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     }
 
     private void connectionSend(byte[] armoredSecretKey, String passthrough) {
+        sentData = true;
         if (keyTransferClientInteractor != null) {
             keyTransferClientInteractor.sendData(armoredSecretKey, passthrough);
         } else if (keyTransferServerInteractor != null) {
