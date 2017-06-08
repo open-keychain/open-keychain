@@ -56,6 +56,7 @@ import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter;
 import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter.TransferMvpView;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.ui.widget.ConnectionStatusView;
 
 
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
@@ -74,6 +75,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     private ViewAnimator vTransferAnimator;
     private TextView vConnectionStatusText1;
     private TextView vConnectionStatusText2;
+    private ConnectionStatusView vConnectionStatusView1;
+    private ConnectionStatusView vConnectionStatusView2;
     private RecyclerView vTransferKeyList;
     private View vTransferKeyListEmptyView;
     private RecyclerView vReceivedKeyList;
@@ -100,6 +103,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
         vConnectionStatusText1 = (TextView) view.findViewById(R.id.connection_status_1);
         vConnectionStatusText2 = (TextView) view.findViewById(R.id.connection_status_2);
+        vConnectionStatusView1 = (ConnectionStatusView) view.findViewById(R.id.connection_status_icon_1);
+        vConnectionStatusView2 = (ConnectionStatusView) view.findViewById(R.id.connection_status_icon_2);
         vTransferKeyList = (RecyclerView) view.findViewById(R.id.transfer_key_list);
         vTransferKeyListEmptyView = view.findViewById(R.id.transfer_key_list_empty);
         vReceivedKeyList = (RecyclerView) view.findViewById(R.id.received_key_list);
@@ -163,8 +168,13 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     @Override
     public void showConnectionEstablished(String hostname) {
         String statusText = getString(R.string.transfer_status_connected, hostname);
+
         vConnectionStatusText1.setText(statusText);
         vConnectionStatusText2.setText(statusText);
+
+        vConnectionStatusView1.setConnected(true);
+        vConnectionStatusView2.setConnected(true);
+
         vTransferAnimator.setDisplayedChild(VIEW_CONNECTED);
     }
 
@@ -177,6 +187,9 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     public void showViewDisconnected() {
         vConnectionStatusText1.setText(R.string.transfer_status_disconnected);
         vConnectionStatusText2.setText(R.string.transfer_status_disconnected);
+
+        vConnectionStatusView1.setConnected(false);
+        vConnectionStatusView2.setConnected(false);
     }
 
     @Override

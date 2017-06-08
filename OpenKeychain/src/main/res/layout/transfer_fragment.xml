@@ -8,7 +8,7 @@
     android:id="@+id/transfer_animator"
     android:inAnimation="@anim/fade_in_delayed"
     android:outAnimation="@anim/fade_out"
-    custom:initialView="0">
+    custom:initialView="01">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -73,23 +73,47 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:text="@string/connection_status"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:id="@+id/connection_status_1"
-            tools:text="Connected to 123.456.123.123"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            <org.sufficientlysecure.keychain.ui.widget.ConnectionStatusView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:id="@+id/connection_status_icon_1"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_toRightOf="@+id/connection_status_icon_1"
+                android:layout_toEndOf="@+id/connection_status_icon_1"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="16dp"
+                android:id="@+id/connection_title_1"
+                android:text="@string/connection_status"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_toRightOf="@+id/connection_status_icon_1"
+                android:layout_toEndOf="@+id/connection_status_icon_1"
+                android:layout_below="@+id/connection_title_1"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:id="@+id/connection_status_1"
+                tools:text="Connected to 123.456.123.123"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </RelativeLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -138,23 +162,47 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:text="@string/connection_status"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:id="@+id/connection_status_2"
-            tools:text="Connected to 123.456.123.123"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            <org.sufficientlysecure.keychain.ui.widget.ConnectionStatusView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:id="@+id/connection_status_icon_2"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_toRightOf="@+id/connection_status_icon_2"
+                android:layout_toEndOf="@+id/connection_status_icon_2"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="16dp"
+                android:id="@+id/connection_title_2"
+                android:text="@string/connection_status"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_toRightOf="@+id/connection_status_icon_2"
+                android:layout_toEndOf="@+id/connection_status_icon_2"
+                android:layout_below="@+id/connection_title_2"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:id="@+id/connection_status_2"
+                tools:text="Connected to 123.456.123.123"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </RelativeLayout>
 
         <TextView
             android:layout_width="wrap_content"
