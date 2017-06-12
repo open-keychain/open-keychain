@@ -80,9 +80,20 @@ public class KeyTransferInteractor {
     private static final int CONNECTION_ERROR_CONNECT = 6;
     private static final int CONNECTION_ERROR_LISTEN = 7;
 
+    private static final int TIMEOUT_RECEIVING = 2000;
+    private static final int TIMEOUT_WAITING = 500;
+
+
+    private final String delimiterStart;
+    private final String delimiterEnd;
 
     private TransferThread transferThread;
 
+
+    public KeyTransferInteractor(String delimiterStart, String delimiterEnd) {
+        this.delimiterStart = delimiterStart;
+        this.delimiterEnd = delimiterEnd;
+    }
 
     public void connectToServer(String connectionDetails, KeyTransferCallback callback) {
         Uri uri = Uri.parse(connectionDetails);
@@ -90,18 +101,21 @@ public class KeyTransferInteractor {
         final String host = uri.getHost();
         final int port = uri.getPort();
 
-        transferThread = TransferThread.createClientTransferThread(callback, presharedKey, host, port);
+        transferThread = TransferThread.createClientTransferThread(delimiterStart, delimiterEnd, callback, presharedKey, host, port);
         transferThread.start();
     }
 
     public void startServer(KeyTransferCallback callback) {
         byte[] presharedKey = generatePresharedKey();
 
-        transferThread = TransferThread.createServerTransferThread(callback, presharedKey);
+        transferThread = TransferThread.createServerTransferThread(delimiterStart, delimiterEnd, callback, presharedKey);
         transferThread.start();
     }
 
     private static class TransferThread extends Thread {
+        private final String delimiterStart;
+        private final String delimiterEnd;
+
         private final Handler handler;
         private final byte[] presharedKey;
         private final boolean isServer;
@@ -113,17 +127,24 @@ public class KeyTransferInteractor {
         private byte[] dataToSend;
         private String sendPassthrough;
 
-        static TransferThread createClientTransferThread(KeyTransferCallback callback, byte[] presharedKey,
-                String host, int port) {
-            return new TransferThread(callback, presharedKey, false, host, port);
+        static TransferThread createClientTransferThread(String delimiterStart, String delimiterEnd,
+                KeyTransferCallback callback, byte[] presharedKey, String host, int port) {
+            return new TransferThread(delimiterStart, delimiterEnd, callback, presharedKey, false, host, port);
         }
 
-        static TransferThread createServerTransferThread(KeyTransferCallback callback, byte[] presharedKey) {
-            return new TransferThread(callback, presharedKey, true, null, null);
+        static TransferThread createServerTransferThread(String delimiterStart, String delimiterEnd,
+                KeyTransferCallback callback, byte[] presharedKey) {
+            return new TransferThread(delimiterStart, delimiterEnd, callback, presharedKey, true, null, null);
         }
 
-        private TransferThread(KeyTransferCallback callback, byte[] presharedKey, boolean isServer,
+        private TransferThread(String delimiterStart, String delimiterEnd,
+                KeyTransferCallback callback, byte[] presharedKey, boolean isServer,
                 String clientHost, Integer clientPort) {
+            super("TLS-PSK Key Transfer Thread");
+
+            this.delimiterStart = delimiterStart;
+            this.delimiterEnd = delimiterEnd;
+
             this.callback = callback;
             this.presharedKey = presharedKey;
             this.clientHost = clientHost;
@@ -217,7 +238,7 @@ public class KeyTransferInteractor {
 
             invokeListener(CONNECTION_ESTABLISHED, socket.getInetAddress().toString());
 
-            socket.setSoTimeout(500);
+            socket.setSoTimeout(TIMEOUT_WAITING);
             while (!isInterrupted() && socket.isConnected() && !socket.isClosed()) {
                 sendDataIfAvailable(socket, outputStream);
                 boolean connectionTerminated = receiveDataIfAvailable(socket, bufferedReader);
@@ -241,9 +262,15 @@ public class KeyTransferInteractor {
                 return true;
             }
 
-            socket.setSoTimeout(2000);
-            String receivedData = receiveAfterFirstLineAndClose(bufferedReader, firstLine);
-            socket.setSoTimeout(500);
+            boolean lineIsDelimiter = delimiterStart.equals(firstLine);
+            if (!lineIsDelimiter) {
+                Log.d(Constants.TAG, "bad beginning of key block?");
+                return false;
+            }
+
+            socket.setSoTimeout(TIMEOUT_RECEIVING);
+            String receivedData = receiveLinesUntilEndDelimiter(bufferedReader, firstLine);
+            socket.setSoTimeout(TIMEOUT_WAITING);
 
             invokeListener(CONNECTION_RECEIVE_OK, receivedData);
             return false;
@@ -254,12 +281,10 @@ public class KeyTransferInteractor {
                 byte[] data = dataToSend;
                 dataToSend = null;
 
-                socket.setSoTimeout(2000);
+                socket.setSoTimeout(TIMEOUT_RECEIVING);
                 outputStream.write(data);
-                outputStream.write('\n');
-                outputStream.write('\n');
                 outputStream.flush();
-                socket.setSoTimeout(500);
+                socket.setSoTimeout(TIMEOUT_WAITING);
 
                 invokeListener(CONNECTION_SEND_OK, sendPassthrough);
                 sendPassthrough = null;
@@ -268,19 +293,17 @@ public class KeyTransferInteractor {
             return false;
         }
 
-        private String receiveAfterFirstLineAndClose(BufferedReader bufferedReader, String line) throws IOException {
+        private String receiveLinesUntilEndDelimiter(BufferedReader bufferedReader, String line) throws IOException {
             StringBuilder builder = new StringBuilder();
-            boolean lastLineWasEmpty = "".equals(line);
             do {
-                boolean lineIsEmpty = "".equals(line);
-                if (lastLineWasEmpty && lineIsEmpty) {
+                boolean lineIsDelimiter = delimiterEnd.equals(line);
+                if (lineIsDelimiter) {
                     break;
                 }
 
                 builder.append(line).append('\n');
 
                 line = bufferedReader.readLine();
-                lastLineWasEmpty = lineIsEmpty;
             } while (line != null);
 
             return builder.toString();
@@ -363,7 +386,7 @@ public class KeyTransferInteractor {
         void onConnectionLost();
 
         void onDataReceivedOk(String receivedData);
-        void onDataSentOk(String arg);
+        void onDataSentOk(String passthrough);
 
         void onConnectionErrorConnect();
         void onConnectionErrorListen();

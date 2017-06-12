@@ -65,6 +65,8 @@ import org.sufficientlysecure.keychain.util.Log;
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<List<SecretKeyItem>>,
         OnClickTransferKeyListener, OnClickImportKeyListener {
+    private static final String DELIMITER_START = "-----BEGIN PGP PRIVATE KEY BLOCK-----";
+    private static final String DELIMITER_END = "-----END PGP PRIVATE KEY BLOCK-----";
     private static final String BACKSTACK_TAG_TRANSFER = "transfer";
 
     private final Context context;
@@ -278,7 +280,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     private void connectionStartConnect(String qrCodeContent) {
         connectionClear();
 
-        keyTransferClientInteractor = new KeyTransferInteractor();
+        keyTransferClientInteractor = new KeyTransferInteractor(DELIMITER_START, DELIMITER_END);
         keyTransferClientInteractor.connectToServer(qrCodeContent, this);
     }
 
@@ -298,7 +300,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         sentData = false;
         connectionClear();
 
-        keyTransferServerInteractor = new KeyTransferInteractor();
+        keyTransferServerInteractor = new KeyTransferInteractor(DELIMITER_START, DELIMITER_END);
         keyTransferServerInteractor.startServer(this);
 
         view.showWaitingForConnection();
