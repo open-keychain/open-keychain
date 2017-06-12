@@ -127,6 +127,10 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         view.scanQrCode();
     }
 
+    public void onUiClickDone() {
+        view.finishFragmentOrActivity();
+    }
+
     public void onUiQrCodeScanned(String qrCodeContent) {
         connectionStartConnect(qrCodeContent);
     }
@@ -145,6 +149,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
             secretKeyAdapter.focusItem(masterKeyId);
             connectionSend(armoredSecretKey, Long.toString(masterKeyId));
         } catch (IOException | NotFoundException | PgpGeneralException e) {
+            // TODO
             e.printStackTrace();
         }
     }
@@ -215,6 +220,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         receivedKeyAdapter.clear();
 
         view.showConnectionEstablished(otherName);
+        view.setShowDoneIcon(true);
         view.addFakeBackStackItem(BACKSTACK_TAG_TRANSFER);
     }
 
@@ -322,6 +328,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         keyTransferServerInteractor.startServer(this);
 
         view.showWaitingForConnection();
+        view.setShowDoneIcon(false);
     }
 
     private boolean isWifiConnected() {
@@ -389,6 +396,8 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         void showErrorConnectionError(String errorMessage);
         void showResultNotification(ImportKeyResult result);
 
+        void setShowDoneIcon(boolean showDoneIcon);
+
         void setSecretKeyAdapter(Adapter adapter);
         void setShowSecretKeyEmptyView(boolean isEmpty);
         void setReceivedKeyAdapter(Adapter secretKeyAdapter);
@@ -396,5 +405,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         <T extends Parcelable, S extends OperationResult> CryptoOperationHelper<T,S> createCryptoOperationHelper(Callback<T, S> callback);
 
         void addFakeBackStackItem(String tag);
+
+        void finishFragmentOrActivity();
     }
 }

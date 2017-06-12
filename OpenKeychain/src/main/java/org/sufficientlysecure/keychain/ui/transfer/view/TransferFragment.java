@@ -33,11 +33,15 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -50,6 +54,7 @@ import com.google.zxing.client.android.Intents;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.QrCodeCaptureActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.Callback;
@@ -97,7 +102,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
             }
         }
     };
-
+    private boolean showDoneIcon;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -125,6 +130,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
         });
 
         presenter = new TransferPresenter(getContext(), getLoaderManager(), LOADER_ID, this);
+
+        setHasOptionsMenu(true);
 
         return view;
     }
@@ -171,6 +178,22 @@ public class TransferFragment extends Fragment implements TransferMvpView {
         super.onStop();
 
         presenter.onUiStop();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (showDoneIcon) {
+            inflater.inflate(R.menu.transfer_menu, menu);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_done) {
+            presenter.onUiClickDone();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -234,6 +257,15 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     public void scanQrCode() {
         Intent intent = new Intent(getActivity(), QrCodeCaptureActivity.class);
         startActivityForResult(intent, REQUEST_CODE_SCAN);
+    }
+
+    @Override
+    public void setShowDoneIcon(boolean showDoneIcon) {
+        this.showDoneIcon = showDoneIcon;
+        FragmentActivity activity = getActivity();
+        if (activity != null) {
+            activity.invalidateOptionsMenu();
+        }
     }
 
     @Override
@@ -312,6 +344,18 @@ public class TransferFragment extends Fragment implements TransferMvpView {
                 presenter.onUiBackStackPop();
             }
         });
+    }
+
+    @Override
+    public void finishFragmentOrActivity() {
+        FragmentActivity activity = getActivity();
+        if (activity != null) {
+            if (activity instanceof MainActivity) {
+                ((MainActivity) activity).onKeysSelected();
+            } else {
+                activity.finish();
+            }
+        }
     }
 
     @Override

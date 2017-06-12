@@ -216,7 +216,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
 
     }
 
-    private void onKeysSelected() {
+    public void onKeysSelected() {
         mToolbar.setTitle(R.string.app_name);
         mDrawer.setSelection(ID_KEYS, false);
         Fragment frag = new KeyListFragment();
