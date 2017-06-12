@@ -78,7 +78,8 @@ public class KeyTransferInteractor {
     private static final int CONNECTION_RECEIVE_OK = 4;
     private static final int CONNECTION_LOST = 5;
     private static final int CONNECTION_ERROR_CONNECT = 6;
-    private static final int CONNECTION_ERROR_LISTEN = 7;
+    private static final int CONNECTION_ERROR_WHILE_CONNECTED = 7;
+    private static final int CONNECTION_ERROR_LISTEN = 8;
 
     private static final String QRCODE_URI_FORMAT = "PGP+TRANSFER://%s@%s:%s";
     private static final int TIMEOUT_RECEIVING = 2000;
@@ -174,7 +175,8 @@ public class KeyTransferInteractor {
                     Log.d(Constants.TAG, "ssl handshake error!", e);
                     invokeListener(CONNECTION_ERROR_CONNECT, null);
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "error!", e);
+                    Log.e(Constants.TAG, "communication error!", e);
+                    invokeListener(CONNECTION_ERROR_WHILE_CONNECTED, e.getLocalizedMessage());
                 }
             } finally {
                 closeQuietly(socket);
@@ -338,6 +340,9 @@ public class KeyTransferInteractor {
                         case CONNECTION_LOST:
                             callback.onConnectionLost();
                             break;
+                        case CONNECTION_ERROR_WHILE_CONNECTED:
+                            callback.onConnectionError(arg);
+                            break;
                         case CONNECTION_ERROR_CONNECT:
                             callback.onConnectionErrorConnect();
                             break;
@@ -392,6 +397,7 @@ public class KeyTransferInteractor {
 
         void onConnectionErrorConnect();
         void onConnectionErrorListen();
+        void onConnectionError(String arg);
     }
 
     /**
@@ -413,9 +419,11 @@ public class KeyTransferInteractor {
                     }
                     String sAddr = addr.getHostAddress();
                     boolean isIPv4 = sAddr.indexOf(':') < 0;
-                    if (isIPv4 && useIPv4) {
+                    if (useIPv4) {
+                        if (isIPv4) {
                             return sAddr;
-                    } else if (!isIPv4) {
+                        }
+                    } else {
                         int delimIndex = sAddr.indexOf('%'); // drop ip6 zone suffix
                         if (delimIndex >= 0) {
                             sAddr = sAddr.substring(0, delimIndex);

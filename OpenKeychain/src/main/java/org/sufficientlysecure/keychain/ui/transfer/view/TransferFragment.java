@@ -256,6 +256,16 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     }
 
     @Override
+    public void showErrorConnectionError(String errorMessage) {
+        if (errorMessage != null) {
+            String text = getString(R.string.transfer_error_generic_msg, errorMessage);
+            Notify.create(getActivity(), text, Style.ERROR).show();
+        } else {
+            Notify.create(getActivity(), R.string.transfer_error_generic, Style.ERROR).show();
+        }
+    }
+
+    @Override
     public void showResultNotification(ImportKeyResult result) {
         result.createNotify(getActivity()).show();
     }
