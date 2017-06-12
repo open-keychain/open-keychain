@@ -45,4 +45,12 @@ public abstract class ImportKeyringParcel implements Parcelable {
             ParcelableHkpKeyserver keyserver) {
         return new AutoValue_ImportKeyringParcel(keyList, keyserver, true);
     }
+
+    public static ImportKeyringParcel createFromFileCacheWithSkipSave() {
+        return new AutoValue_ImportKeyringParcel(null, null, true);
+    }
+
+    public static ImportKeyringParcel createFromFileCache() {
+        return new AutoValue_ImportKeyringParcel(null, null, false);
+    }
 }

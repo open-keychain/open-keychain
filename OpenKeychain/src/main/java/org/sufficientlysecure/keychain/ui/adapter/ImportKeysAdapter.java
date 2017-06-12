@@ -218,9 +218,6 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
     }
 
     private ImportKeyringParcel prepareKeyOperation(ImportKeysListEntry entry, boolean skipSave) {
-        ArrayList<ParcelableKeyRing> keysList = null;
-        ParcelableHkpKeyserver keyserver = null;
-
         ParcelableKeyRing keyRing = entry.getParcelableKeyRing();
         if (keyRing.getBytes() != null) {
             // instead of giving the entries by Intent extra, cache them into a
@@ -236,16 +233,23 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 Log.e(Constants.TAG, "Problem writing cache file", e);
                 Notify.create(mActivity, "Problem writing cache file!", Notify.Style.ERROR).show();
             }
-        } else {
-            keysList = new ArrayList<>();
-            keysList.add(keyRing);
-            keyserver = entry.getKeyserver();
-        }
 
-        if (skipSave) {
-            return ImportKeyringParcel.createWithSkipSave(keysList, keyserver);
+            if (skipSave) {
+                return ImportKeyringParcel.createFromFileCacheWithSkipSave();
+            } else {
+                return ImportKeyringParcel.createFromFileCache();
+            }
         } else {
-            return ImportKeyringParcel.createImportKeyringParcel(keysList, keyserver);
+            ArrayList<ParcelableKeyRing> keysList = new ArrayList<>();
+            keysList.add(keyRing);
+
+            ParcelableHkpKeyserver keyserver = entry.getKeyserver();
+
+            if (skipSave) {
+                return ImportKeyringParcel.createWithSkipSave(keysList, keyserver);
+            } else {
+                return ImportKeyringParcel.createImportKeyringParcel(keysList, keyserver);
+            }
         }
     }
 
