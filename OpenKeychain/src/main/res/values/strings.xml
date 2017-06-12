@@ -1904,8 +1904,12 @@
     <string name="transfer_error_generic">"Unknown communication error!"</string>
     <string name="transfer_error_generic_msg">"Communication error: %s"</string>
     <string name="transfer_not_available">"Sorry, this feature can only be used on Android 5 or newer :("</string>
-    <string name="transfer_list_empty">No keys on this device that could be sent.  Waiting for incoming keys…</string>
-    <string name="transfer_connecting">Connecting…</string>
-    <string name="first_time_secure_device_setup">Secure Device Setup</string>
+    <string name="transfer_list_empty">"No keys on this device that could be sent.  Waiting for incoming keys…"</string>
+    <string name="transfer_connecting">"Connecting…"</string>
+    <string name="first_time_secure_device_setup">"Secure Device Setup"</string>
+    <string name="transfer_confirm_cancel">"Cancel"</string>
+    <string name="transfer_confirm_ok">"Send"</string>
+    <string name="transfer_confirm_title">"Send your key?"</string>
+    <string name="transfer_confirm_text">"This will transfer full access to your key to the connected device. You should never send your own keys to devices you don't own!"</string>
 
 </resources>

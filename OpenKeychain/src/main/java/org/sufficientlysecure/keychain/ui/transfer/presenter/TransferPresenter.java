@@ -73,6 +73,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     private final TransferMvpView view;
     private final LoaderManager loaderManager;
     private final int loaderId;
+    private final KeyRepository databaseInteractor;
 
     private final TransferKeyAdapter secretKeyAdapter;
     private final ReceivedKeyAdapter receivedKeyAdapter;
@@ -84,6 +85,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     private boolean wasConnected = false;
     private boolean sentData = false;
     private boolean waitingForWifi = false;
+    private Long confirmingMasterKeyId;
 
 
     public TransferPresenter(Context context, LoaderManager loaderManager, int loaderId, TransferMvpView view) {
@@ -91,6 +93,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         this.view = view;
         this.loaderManager = loaderManager;
         this.loaderId = loaderId;
+        this.databaseInteractor = KeyRepository.createDatabaseInteractor(context);
 
         secretKeyAdapter = new TransferKeyAdapter(context, LayoutInflater.from(context), this);
         view.setSecretKeyAdapter(secretKeyAdapter);
@@ -117,6 +120,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
         if (wasConnected) {
             view.showViewDisconnected();
+            view.dismissConfirmationIfExists();
             secretKeyAdapter.setAllDisabled(true);
         }
     }
@@ -143,15 +147,22 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     @Override
     public void onUiClickTransferKey(long masterKeyId) {
-        try {
-            byte[] armoredSecretKey =
-                    KeyRepository.createDatabaseInteractor(context).getSecretKeyRingAsArmoredData(masterKeyId);
-            secretKeyAdapter.focusItem(masterKeyId);
-            connectionSend(armoredSecretKey, Long.toString(masterKeyId));
-        } catch (IOException | NotFoundException | PgpGeneralException e) {
-            // TODO
-            e.printStackTrace();
+        if (sentData) {
+            prepareAndSendKey(masterKeyId);
+        } else {
+            confirmingMasterKeyId = masterKeyId;
+            view.showConfirmSendDialog();
         }
+    }
+
+    public void onUiClickConfirmSend() {
+        if (confirmingMasterKeyId == null) {
+            return;
+        }
+        long masterKeyId = confirmingMasterKeyId;
+        confirmingMasterKeyId = null;
+
+        prepareAndSendKey(masterKeyId);
     }
 
     @Override
@@ -227,9 +238,13 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     @Override
     public void onConnectionLost() {
         if (!wasConnected) {
-            view.showErrorConnectionFailed();
             checkWifiResetAndStartListen();
+
+            view.showErrorConnectionFailed();
         } else {
+            connectionClear();
+
+            view.dismissConfirmationIfExists();
             view.showViewDisconnected();
             secretKeyAdapter.setAllDisabled(true);
         }
@@ -349,6 +364,17 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         }
     }
 
+    private void prepareAndSendKey(long masterKeyId) {
+        try {
+            byte[] armoredSecretKey = databaseInteractor.getSecretKeyRingAsArmoredData(masterKeyId);
+            secretKeyAdapter.focusItem(masterKeyId);
+            connectionSend(armoredSecretKey, Long.toString(masterKeyId));
+        } catch (IOException | NotFoundException | PgpGeneralException e) {
+            // TODO
+            e.printStackTrace();
+        }
+    }
+
     private void connectionSend(byte[] armoredSecretKey, String passthrough) {
         sentData = true;
         if (keyTransferClientInteractor != null) {
@@ -407,5 +433,8 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         void addFakeBackStackItem(String tag);
 
         void finishFragmentOrActivity();
+
+        void showConfirmSendDialog();
+        void dismissConfirmationIfExists();
     }
 }

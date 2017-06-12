@@ -21,6 +21,8 @@ package org.sufficientlysecure.keychain.ui.transfer.view;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -36,6 +38,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
@@ -103,6 +107,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
         }
     };
     private boolean showDoneIcon;
+    private AlertDialog confirmationDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -355,6 +360,41 @@ public class TransferFragment extends Fragment implements TransferMvpView {
             } else {
                 activity.finish();
             }
+        }
+    }
+
+    @Override
+    public void showConfirmSendDialog() {
+        if (confirmationDialog != null) {
+            return;
+        }
+        confirmationDialog = new Builder(getContext())
+                .setTitle(R.string.transfer_confirm_title)
+                .setMessage(R.string.transfer_confirm_text)
+                .setPositiveButton(R.string.transfer_confirm_ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if (whichButton == DialogInterface.BUTTON_POSITIVE) {
+                            presenter.onUiClickConfirmSend();
+                        } else {
+                            dialog.dismiss();
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.transfer_confirm_cancel, null)
+                .setOnDismissListener(new OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        confirmationDialog = null;
+                    }
+                })
+                .create();
+        confirmationDialog.show();
+    }
+
+    @Override
+    public void dismissConfirmationIfExists() {
+        if (confirmationDialog != null && confirmationDialog.isShowing()) {
+            confirmationDialog.dismiss();
         }
     }
 
