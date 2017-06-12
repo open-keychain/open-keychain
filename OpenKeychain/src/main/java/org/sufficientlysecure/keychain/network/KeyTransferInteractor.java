@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -82,7 +83,7 @@ public class KeyTransferInteractor {
     private static final int CONNECTION_ERROR_LISTEN = 8;
 
     private static final String QRCODE_URI_FORMAT = "PGP+TRANSFER://%s@%s:%s";
-    private static final int TIMEOUT_CONNECTING = 2500;
+    private static final int TIMEOUT_CONNECTING = 1500;
     private static final int TIMEOUT_RECEIVING = 2000;
     private static final int TIMEOUT_WAITING = 500;
     private static final int PSK_BYTE_LENGTH = 16;
@@ -209,13 +210,13 @@ public class KeyTransferInteractor {
                 }
             } else {
                 try {
-                    SSLSocket sslSocket = (SSLSocket) sslContext.getSocketFactory()
-                            .createSocket(InetAddress.getByName(clientHost), clientPort);
+                    SSLSocket sslSocket = (SSLSocket) sslContext.getSocketFactory().createSocket();
                     String[] supportedCipherSuites = sslSocket.getSupportedCipherSuites();
                     String[] enabledCipherSuites = intersectArrays(supportedCipherSuites, ALLOWED_CIPHERSUITES);
                     sslSocket.setEnabledCipherSuites(enabledCipherSuites);
 
                     socket = sslSocket;
+                    socket.connect(new InetSocketAddress(InetAddress.getByName(clientHost), clientPort), TIMEOUT_CONNECTING);
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error while connecting!", e);
                     invokeListener(CONNECTION_ERROR_CONNECT, null);
@@ -238,8 +239,6 @@ public class KeyTransferInteractor {
         }
 
         private void handleOpenConnection(Socket socket) throws IOException {
-            socket.setSoTimeout(TIMEOUT_CONNECTING);
-
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
 
