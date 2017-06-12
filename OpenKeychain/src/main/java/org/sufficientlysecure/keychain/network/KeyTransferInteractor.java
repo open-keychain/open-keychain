@@ -82,6 +82,7 @@ public class KeyTransferInteractor {
     private static final int CONNECTION_ERROR_LISTEN = 8;
 
     private static final String QRCODE_URI_FORMAT = "PGP+TRANSFER://%s@%s:%s";
+    private static final int TIMEOUT_CONNECTING = 2500;
     private static final int TIMEOUT_RECEIVING = 2000;
     private static final int TIMEOUT_WAITING = 500;
     private static final int PSK_BYTE_LENGTH = 16;
@@ -237,6 +238,8 @@ public class KeyTransferInteractor {
         }
 
         private void handleOpenConnection(Socket socket) throws IOException {
+            socket.setSoTimeout(TIMEOUT_CONNECTING);
+
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
 

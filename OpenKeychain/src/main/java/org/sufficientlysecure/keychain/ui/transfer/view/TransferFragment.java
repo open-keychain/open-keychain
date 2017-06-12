@@ -63,9 +63,10 @@ import org.sufficientlysecure.keychain.ui.widget.ConnectionStatusView;
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public class TransferFragment extends Fragment implements TransferMvpView {
     public static final int VIEW_WAITING = 0;
-    public static final int VIEW_CONNECTED = 1;
-    public static final int VIEW_RECEIVING = 2;
-    public static final int VIEW_NO_WIFI = 3;
+    public static final int VIEW_CONNECTING = 1;
+    public static final int VIEW_CONNECTED = 2;
+    public static final int VIEW_RECEIVING = 3;
+    public static final int VIEW_NO_WIFI = 4;
 
     public static final int REQUEST_CODE_SCAN = 1;
     public static final int LOADER_ID = 1;
@@ -180,6 +181,11 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     @Override
     public void showWaitingForConnection() {
         vTransferAnimator.setDisplayedChild(VIEW_WAITING);
+    }
+
+    @Override
+    public void showEstablishingConnection() {
+        vTransferAnimator.setDisplayedChild(VIEW_CONNECTING);
     }
 
     @Override

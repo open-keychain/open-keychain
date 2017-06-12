@@ -273,6 +273,8 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     @Override
     public void onConnectionErrorConnect() {
         view.showErrorConnectionFailed();
+
+        resetAndStartListen();
     }
 
     @Override
@@ -294,8 +296,10 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     private void connectionStartConnect(String qrCodeContent) {
         connectionClear();
 
+        view.showEstablishingConnection();
+
         keyTransferClientInteractor = new KeyTransferInteractor(DELIMITER_START, DELIMITER_END);
-        keyTransferClientInteractor.connectToServer(qrCodeContent, this);
+        keyTransferClientInteractor.connectToServer(qrCodeContent, TransferPresenter.this);
     }
 
     private void checkWifiResetAndStartListen() {
@@ -368,6 +372,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     public interface TransferMvpView {
         void showNotOnWifi();
         void showWaitingForConnection();
+        void showEstablishingConnection();
         void showConnectionEstablished(String hostname);
         void showReceivingKeys();
 
