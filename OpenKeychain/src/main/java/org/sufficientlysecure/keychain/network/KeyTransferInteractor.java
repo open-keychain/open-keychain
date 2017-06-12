@@ -80,8 +80,10 @@ public class KeyTransferInteractor {
     private static final int CONNECTION_ERROR_CONNECT = 6;
     private static final int CONNECTION_ERROR_LISTEN = 7;
 
+    private static final String QRCODE_URI_FORMAT = "PGP+TRANSFER://%s@%s:%s";
     private static final int TIMEOUT_RECEIVING = 2000;
     private static final int TIMEOUT_WAITING = 500;
+    private static final int PSK_BYTE_LENGTH = 16;
 
 
     private final String delimiterStart;
@@ -191,8 +193,8 @@ public class KeyTransferInteractor {
                     serverSocket.setEnabledCipherSuites(enabledCipherSuites);
 
                     String presharedKeyEncoded = Hex.toHexString(presharedKey);
-                    String qrCodeData =
-                            "pgp+transfer://" + presharedKeyEncoded + "@" + getIPAddress(true) + ":" + serverSocket.getLocalPort();
+                    String qrCodeData = String.format(
+                            QRCODE_URI_FORMAT, presharedKeyEncoded, getIPAddress(true), serverSocket.getLocalPort());
                     qrCodeData = qrCodeData.toUpperCase(Locale.getDefault());
                     invokeListener(CONNECTION_LISTENING, qrCodeData);
 
@@ -363,7 +365,7 @@ public class KeyTransferInteractor {
     }
 
     private static byte[] generatePresharedKey() {
-        byte[] presharedKey = new byte[16];
+        byte[] presharedKey = new byte[PSK_BYTE_LENGTH];
         new SecureRandom().nextBytes(presharedKey);
         return presharedKey;
     }
