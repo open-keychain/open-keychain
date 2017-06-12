@@ -100,6 +100,10 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     }
 
 
+    public void onUiInitFromIntentUri(final Uri initUri) {
+        connectionStartConnect(initUri.toString());
+    }
+
     public void onUiStart() {
         loaderManager.restartLoader(loaderId, null, this);
 

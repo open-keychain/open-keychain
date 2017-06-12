@@ -173,9 +173,33 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                 case ID_APPS:
                     onAppsSelected();
                     break;
+                case ID_TRANSFER:
+                    onTransferSelected();
+                    break;
             }
         }
 
+    }
+
+    @Override
+    public void onNewIntent(Intent data) {
+        super.onNewIntent(data);
+
+        setIntent(data);
+        if (data != null && data.hasExtra(EXTRA_INIT_FRAG)) {
+            // initialize FragmentLayout with KeyListFragment at first
+            switch (data.getIntExtra(EXTRA_INIT_FRAG, -1)) {
+                case ID_ENCRYPT_DECRYPT:
+                    onEnDecryptSelected();
+                    break;
+                case ID_APPS:
+                    onAppsSelected();
+                    break;
+                case ID_TRANSFER:
+                    onTransferSelected();
+                    break;
+            }
+        }
     }
 
     private void setFragment(Fragment fragment, boolean addToBackStack) {

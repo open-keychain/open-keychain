@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.transfer.view.TransferFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
@@ -143,6 +144,17 @@ public class ImportKeysProxyActivity extends FragmentActivity
 
         Log.d(Constants.TAG, "scanned: " + uri);
 
+        // example: pgp+transfer:
+        if (uri != null && uri.getScheme() != null && uri.getScheme().equalsIgnoreCase(Constants.TRANSFER_SCHEME)) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(MainActivity.EXTRA_INIT_FRAG, MainActivity.ID_TRANSFER);
+            intent.putExtra(TransferFragment.EXTRA_OPENPGP_SKT_INFO, uri);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         // example: openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282
         if (uri == null || uri.getScheme() == null ||
                 !uri.getScheme().toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
@@ -153,6 +165,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
             returnResult(intent);
             return;
         }
+
         final String fingerprintHex = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
         if (!fingerprintHex.matches("[a-fA-F0-9]{40}")) {
             SingletonResult result = new SingletonResult(

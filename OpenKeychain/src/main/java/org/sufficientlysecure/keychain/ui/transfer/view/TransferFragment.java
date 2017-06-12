@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -68,6 +69,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
     public static final int REQUEST_CODE_SCAN = 1;
     public static final int LOADER_ID = 1;
+
+    public static final String EXTRA_OPENPGP_SKT_INFO = "openpgp_skt_info";
 
 
     private ImageView vQrCodeImage;
@@ -123,6 +126,20 @@ public class TransferFragment extends Fragment implements TransferMvpView {
         presenter = new TransferPresenter(getContext(), getLoaderManager(), LOADER_ID, this);
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            return;
+        }
+
+        Intent activityIntent = getActivity().getIntent();
+        if (activityIntent != null && activityIntent.hasExtra(EXTRA_OPENPGP_SKT_INFO)) {
+            presenter.onUiInitFromIntentUri(activityIntent.<Uri>getParcelableExtra(EXTRA_OPENPGP_SKT_INFO));
+        }
     }
 
     @Override
