@@ -166,8 +166,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + ApiTrustIdentityColumns.MASTER_KEY_ID + " INTEGER NOT NULL, "
                     + "PRIMARY KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ", "
                         + ApiTrustIdentityColumns.IDENTIFIER + "), "
-                    + "FOREIGN KEY(" + ApiTrustIdentityColumns.MASTER_KEY_ID + ") REFERENCES "
-                        + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE, "
                     + "FOREIGN KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ") REFERENCES "
                         + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
                 + ")";

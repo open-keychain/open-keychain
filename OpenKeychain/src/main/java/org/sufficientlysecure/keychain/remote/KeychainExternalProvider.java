@@ -174,12 +174,18 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 projectionMap.put(EmailStatus.USER_ID,
                         Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
                 // we take the minimum (>0) here, where "1" is "verified by known secret key", "2" is "self-certified"
-                projectionMap.put(EmailStatus.USER_ID_STATUS, "CASE ( MIN (" + Certs.VERIFIED + " ) ) "
+                projectionMap.put(EmailStatus.USER_ID_STATUS, "CASE ( MIN (certs_user_id." + Certs.VERIFIED + " ) ) "
                         // remap to keep this provider contract independent from our internal representation
                         + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
                         + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
-                        + " WHEN NULL THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
+                        + " WHEN NULL THEN NULL"
                         + " END AS " + EmailStatus.USER_ID_STATUS);
+                projectionMap.put(EmailStatus.TRUST_ID_STATUS, "CASE ( MIN (certs_trust_id." + Certs.VERIFIED + " ) ) "
+                        // remap to keep this provider contract independent from our internal representation
+                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
+                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
+                        + " WHEN NULL THEN NULL"
+                        + " END AS " + EmailStatus.TRUST_ID_STATUS);
                 projectionMap.put(EmailStatus.MASTER_KEY_ID,
                         Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + EmailStatus.MASTER_KEY_ID);
                 projectionMap.put(EmailStatus.USER_ID,
@@ -198,27 +204,24 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                                 + Tables.USER_PACKETS + "." + UserPackets.USER_ID + " IS NOT NULL"
                                 + " AND " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " LIKE " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
                                 + ")"
+                                + " LEFT JOIN " + Tables.CERTS + " AS certs_user_id ON ("
+                                + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = certs_user_id." + Certs.MASTER_KEY_ID
+                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = certs_user_id." + Certs.RANK
+                                + ")"
                                 + " LEFT JOIN " + Tables.API_TRUST_IDENTITIES + " ON ("
                                 + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.IDENTIFIER + " LIKE queried_addresses.address"
                                 + " AND " + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.PACKAGE_NAME + " = \"" + callingPackageName + "\""
                                 + ")"
-                                + " JOIN " + Tables.CERTS + " ON ("
-                                + "(" + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
-                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = " + Tables.CERTS + "." + Certs.RANK + ")"
-                                + " OR " + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
+                                + " LEFT JOIN " + Tables.CERTS + " AS certs_trust_id ON ("
+                                + Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.MASTER_KEY_ID + " = certs_trust_id." + Certs.MASTER_KEY_ID
                                 + ")"
                 );
                 // in case there are multiple verifying certificates
-                groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
-                        + ", " + Tables.CERTS + "." + UserPackets.MASTER_KEY_ID;
+                groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES;
                 List<String> plist = Arrays.asList(projection);
                 if (plist.contains(EmailStatus.USER_ID)) {
                     groupBy += ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID;
                 }
-
-                // verified == 0 has no self-cert, which is basically an error case. never return that!
-                // verified == null is fine, because it means there was no join partner
-                qb.appendWhere(Tables.CERTS + "." + Certs.VERIFIED + " IS NULL OR " + Tables.CERTS + "." + Certs.VERIFIED + " > 0");
 
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = EmailStatus.EMAIL_ADDRESS;

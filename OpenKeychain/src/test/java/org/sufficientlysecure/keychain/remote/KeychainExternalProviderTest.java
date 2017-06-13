@@ -3,6 +3,7 @@ package org.sufficientlysecure.keychain.remote;
 
 import java.security.AccessControlException;
 import java.util.Collections;
+import java.util.Date;
 
 import android.content.ContentResolver;
 import android.content.pm.PackageInfo;
@@ -23,6 +24,7 @@ import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.provider.KeyRepositorySaveTest;
+import org.sufficientlysecure.keychain.provider.TrustIdentityDataAccessObject;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -43,6 +45,7 @@ public class KeychainExternalProviderTest {
     static final String USER_ID_SEC_1 = "twi <twi-sec@openkeychain.org>";
     static final long KEY_ID_SECRET = 0x5D4DA4423C39122FL;
     static final long KEY_ID_PUBLIC = 0x9A282CE2AB44A382L;
+    public static final String TRUST_ID = "tid";
 
 
     KeyWritableRepository databaseInteractor =
@@ -50,6 +53,7 @@ public class KeychainExternalProviderTest {
     ContentResolver contentResolver = RuntimeEnvironment.application.getContentResolver();
     ApiPermissionHelper apiPermissionHelper;
     ApiDataAccessObject apiDao;
+    private TrustIdentityDataAccessObject trustIdDao;
 
 
     @Before
@@ -63,6 +67,7 @@ public class KeychainExternalProviderTest {
 
         apiDao = new ApiDataAccessObject(RuntimeEnvironment.application);
         apiPermissionHelper = new ApiPermissionHelper(RuntimeEnvironment.application, apiDao);
+        trustIdDao = new TrustIdentityDataAccessObject(RuntimeEnvironment.application, PACKAGE_NAME);
 
         apiDao.insertApiApp(new AppSettings(PACKAGE_NAME, PACKAGE_SIGNATURE));
     }
@@ -173,7 +178,54 @@ public class KeychainExternalProviderTest {
     }
 
     @Test
-    public void testQuery__withConfirmedKey() throws Exception {
+    public void testQuery__trustId__withUnconfirmedKey() throws Exception {
+        insertSecretKeyringFrom("/test-keys/testring.sec");
+        insertPublicKeyringFrom("/test-keys/testring.pub");
+
+        trustIdDao.setMasterKeyIdForTrustId("tid", KEY_ID_PUBLIC, new Date());
+
+        Cursor cursor = contentResolver.query(
+                EmailStatus.CONTENT_URI, new String[] {
+                        EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID_STATUS, EmailStatus.USER_ID,
+                        EmailStatus.TRUST_ID_STATUS },
+                null, new String [] { TRUST_ID }, null
+            );
+
+        assertNotNull(cursor);
+        assertTrue(cursor.moveToFirst());
+        assertEquals("tid", cursor.getString(0));
+        assertEquals(null, cursor.getString(2));
+        assertEquals(0, cursor.getInt(1));
+        assertEquals(1, cursor.getInt(3));
+        assertFalse(cursor.moveToNext());
+    }
+
+    @Test
+    public void testQuery__trustId__withConfirmedKey() throws Exception {
+        insertSecretKeyringFrom("/test-keys/testring.sec");
+        insertPublicKeyringFrom("/test-keys/testring.pub");
+
+        trustIdDao.setMasterKeyIdForTrustId("tid", KEY_ID_PUBLIC, new Date());
+        certifyKey(KEY_ID_SECRET, KEY_ID_PUBLIC, USER_ID_1);
+
+        Cursor cursor = contentResolver.query(
+                EmailStatus.CONTENT_URI, new String[] {
+                        EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID_STATUS, EmailStatus.USER_ID,
+                        EmailStatus.TRUST_ID_STATUS },
+                null, new String [] { TRUST_ID }, null
+        );
+
+        assertNotNull(cursor);
+        assertTrue(cursor.moveToFirst());
+        assertEquals("tid", cursor.getString(0));
+        assertEquals(null, cursor.getString(2));
+        assertEquals(0, cursor.getInt(1));
+        assertEquals(2, cursor.getInt(3));
+        assertFalse(cursor.moveToNext());
+    }
+
+    @Test
+    public void testQuery__withTrustId() throws Exception {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
