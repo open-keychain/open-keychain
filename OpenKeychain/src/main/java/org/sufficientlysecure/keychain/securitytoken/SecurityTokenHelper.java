@@ -206,7 +206,7 @@ public class SecurityTokenHelper {
         mPw1ValidatedForDecrypt = false;
         mPw3Validated = false;
 
-        if (mOpenPgpCapabilities.isHasSM()) {
+        if (mOpenPgpCapabilities.isHasAESSM()) {
             try {
                 SCP11bSecureMessaging.establish(this, ctx);
             } catch (SecureMessagingException e) {
