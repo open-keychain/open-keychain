@@ -108,7 +108,16 @@ public class OpenPgpCapabilities {
         mHasKeyImport = (v[0] & MASK_KEY_IMPORT) != 0;
         mAttriburesChangable = (v[0] & MASK_ATTRIBUTES_CHANGABLE) != 0;
 
-        mSMAESKeySize = (v[1] == 1) ? 16 : 32;
+        mSMAESKeySize = 0;
+
+        switch(v[1]) {
+        case 1:
+            mSMAESKeySize = 16;
+            break;
+        case 2:
+            mSMAESKeySize = 32;
+            break;
+        }
 
         mMaxCmdLen = (v[6] << 8) + v[7];
         mMaxRspLen = (v[8] << 8) + v[9];
@@ -140,6 +149,10 @@ public class OpenPgpCapabilities {
 
     public int getSMAESKeySize() {
         return mSMAESKeySize;
+    }
+
+    public boolean isHasAESSM() {
+        return isHasSM() && ((mSMAESKeySize == 16) || (mSMAESKeySize == 32));
     }
 
     public int getMaxCmdLen() {
