@@ -249,9 +249,12 @@ public class TransferFragment extends Fragment implements TransferMvpView {
                 new OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
+                        int viewSize = vQrCodeImage.getWidth();
+                        if (viewSize == 0) {
+                            return;
+                        }
                         // create actual bitmap in display dimensions
-                        Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
-                                vQrCodeImage.getWidth(), vQrCodeImage.getWidth(), false);
+                        Bitmap scaled = Bitmap.createScaledBitmap(qrCode, viewSize, viewSize, false);
                         vQrCodeImage.setImageBitmap(scaled);
                     }
                 });
