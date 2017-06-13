@@ -1890,9 +1890,9 @@
     <string name="identity_context_forget">Forget</string>
 
     <string name="button_scan">"Scan"</string>
-    <string name="transfer_scan_explanation">"Scan with either device to establish a secure connection for device setup."</string>
+    <string name="transfer_scan_explanation">"To transfer your keys, establish a secure connection by scanning with either device."</string>
     <string name="connection_status">"Connection status:"</string>
-    <string name="section_transfer_keys">"Available keys for fransfer"</string>
+    <string name="section_transfer_keys">"Available keys for transfer"</string>
     <string name="section_received_keys">"Received keys"</string>
     <string name="transfer_scan_only_wifi">"This feature can only be used on Wifi."</string>
     <string name="button_import">"Import"</string>
