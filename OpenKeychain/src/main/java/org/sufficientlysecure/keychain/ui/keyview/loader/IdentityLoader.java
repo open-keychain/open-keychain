@@ -39,7 +39,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiTrustIdentity;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
@@ -108,15 +108,15 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
     }
 
     private static final String[] TRUST_IDS_PROJECTION = new String[] {
-            ApiTrustIdentity._ID,
-            ApiTrustIdentity.PACKAGE_NAME,
-            ApiTrustIdentity.IDENTIFIER,
+            ApiAutocryptPeer._ID,
+            ApiAutocryptPeer.PACKAGE_NAME,
+            ApiAutocryptPeer.IDENTIFIER,
     };
     private static final int INDEX_PACKAGE_NAME = 1;
     private static final int INDEX_TRUST_ID = 2;
 
     private void correlateOrAddTrustIds(ArrayList<IdentityInfo> identities) {
-        Cursor cursor = contentResolver.query(ApiTrustIdentity.buildByMasterKeyId(masterKeyId),
+        Cursor cursor = contentResolver.query(ApiAutocryptPeer.buildByMasterKeyId(masterKeyId),
                 TRUST_IDS_PROJECTION, null, null, null);
         if (cursor == null) {
             Log.e(Constants.TAG, "Error loading trust ids!");
@@ -126,19 +126,19 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         try {
             while (cursor.moveToNext()) {
                 String packageName = cursor.getString(INDEX_PACKAGE_NAME);
-                String trustId = cursor.getString(INDEX_TRUST_ID);
+                String autocryptPeer = cursor.getString(INDEX_TRUST_ID);
 
                 Drawable drawable = packageIconGetter.getDrawableForPackageName(packageName);
-                Intent trustIdIntent = getTrustIdActivityIntentIfResolvable(packageName, trustId);
+                Intent autocryptPeerIntent = getTrustIdActivityIntentIfResolvable(packageName, autocryptPeer);
 
-                UserIdInfo associatedUserIdInfo = findUserIdMatchingTrustId(identities, trustId);
+                UserIdInfo associatedUserIdInfo = findUserIdMatchingTrustId(identities, autocryptPeer);
                 if (associatedUserIdInfo != null) {
                     int position = identities.indexOf(associatedUserIdInfo);
-                    TrustIdInfo trustIdInfo = TrustIdInfo.create(associatedUserIdInfo, trustId, drawable, trustIdIntent);
-                    identities.set(position, trustIdInfo);
+                    TrustIdInfo autocryptPeerInfo = TrustIdInfo.create(associatedUserIdInfo, autocryptPeer, drawable, autocryptPeerIntent);
+                    identities.set(position, autocryptPeerInfo);
                 } else {
-                    TrustIdInfo trustIdInfo = TrustIdInfo.create(trustId, drawable, trustIdIntent);
-                    identities.add(trustIdInfo);
+                    TrustIdInfo autocryptPeerInfo = TrustIdInfo.create(autocryptPeer, drawable, autocryptPeerIntent);
+                    identities.add(autocryptPeerInfo);
                 }
             }
         } finally {
@@ -146,11 +146,11 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         }
     }
 
-    private Intent getTrustIdActivityIntentIfResolvable(String packageName, String trustId) {
+    private Intent getTrustIdActivityIntentIfResolvable(String packageName, String autocryptPeer) {
         Intent intent = new Intent();
         intent.setAction(packageName + ".AUTOCRYPT_PEER_ACTION");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(OpenPgpApi.EXTRA_TRUST_IDENTITY, trustId);
+        intent.putExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID, autocryptPeer);
 
         List<ResolveInfo> resolveInfos = getContext().getPackageManager().queryIntentActivities(intent, 0);
         if (resolveInfos != null && !resolveInfos.isEmpty()) {
@@ -160,11 +160,11 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         }
     }
 
-    private static UserIdInfo findUserIdMatchingTrustId(List<IdentityInfo> identities, String trustId) {
+    private static UserIdInfo findUserIdMatchingTrustId(List<IdentityInfo> identities, String autocryptPeer) {
         for (IdentityInfo identityInfo : identities) {
             if (identityInfo instanceof UserIdInfo) {
                 UserIdInfo userIdInfo = (UserIdInfo) identityInfo;
-                if (trustId.equals(userIdInfo.getEmail())) {
+                if (autocryptPeer.equals(userIdInfo.getEmail())) {
                     return userIdInfo;
                 }
             }
@@ -312,14 +312,14 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         @Nullable
         public abstract Intent getTrustIdIntent();
 
-        static TrustIdInfo create(UserIdInfo userIdInfo, String trustId, Drawable appIcon, Intent trustIdIntent) {
+        static TrustIdInfo create(UserIdInfo userIdInfo, String autocryptPeer, Drawable appIcon, Intent autocryptPeerIntent) {
             return new AutoValue_IdentityLoader_TrustIdInfo(userIdInfo.getRank(), userIdInfo.getVerified(),
-                    userIdInfo.isPrimary(), trustId, appIcon, userIdInfo, trustIdIntent);
+                    userIdInfo.isPrimary(), autocryptPeer, appIcon, userIdInfo, autocryptPeerIntent);
         }
 
-        static TrustIdInfo create(String trustId, Drawable appIcon, Intent trustIdIntent) {
+        static TrustIdInfo create(String autocryptPeer, Drawable appIcon, Intent autocryptPeerIntent) {
             return new AutoValue_IdentityLoader_TrustIdInfo(
-                    0, Certs.VERIFIED_SELF, false, trustId, appIcon, null, trustIdIntent);
+                    0, Certs.VERIFIED_SELF, false, autocryptPeer, appIcon, null, autocryptPeerIntent);
         }
     }
 

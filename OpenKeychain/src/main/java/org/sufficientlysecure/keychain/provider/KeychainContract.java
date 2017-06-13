@@ -95,7 +95,7 @@ public class KeychainContract {
         String IDENTIFIER = "identifier";
     }
 
-    interface ApiTrustIdentityColumns {
+    interface ApiAutocryptPeerColumns {
         String PACKAGE_NAME = "package_name";
         String IDENTIFIER = "identifier";
         String LAST_UPDATED = "last_updated";
@@ -131,7 +131,7 @@ public class KeychainContract {
     public static final String PATH_BY_PACKAGE_NAME = "by_package_name";
     public static final String PATH_BY_KEY_ID = "by_key_id";
 
-    public static final String BASE_TRUST_IDENTITIES = "trust_ids";
+    public static final String BASE_AUTOCRYPT_PEERS = "autocrypt_peers";
 
     public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
@@ -345,16 +345,16 @@ public class KeychainContract {
         }
     }
 
-    public static class ApiTrustIdentity implements ApiTrustIdentityColumns, BaseColumns {
+    public static class ApiAutocryptPeer implements ApiAutocryptPeerColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
-                .appendPath(BASE_TRUST_IDENTITIES).build();
+                .appendPath(BASE_AUTOCRYPT_PEERS).build();
 
         public static Uri buildByKeyUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(uri.getPathSegments().get(1)).build();
         }
 
-        public static Uri buildByPackageNameAndTrustId(String packageName, String trustId) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName).appendPath(trustId).build();
+        public static Uri buildByPackageNameAndAutocryptId(String packageName, String autocryptPeer) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName).appendPath(autocryptPeer).build();
         }
 
         public static Uri buildByMasterKeyId(long masterKeyId) {

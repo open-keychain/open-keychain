@@ -22,7 +22,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiTrustIdentityColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeerColumns;
 
 
 public class KeychainExternalContract {
@@ -35,7 +35,7 @@ public class KeychainExternalContract {
     private static final Uri BASE_CONTENT_URI_EXTERNAL = Uri
             .parse("content://" + CONTENT_AUTHORITY_EXTERNAL);
     public static final String BASE_EMAIL_STATUS = "email_status";
-    public static final String BASE_TRUST_IDENTITIES = "trust_ids";
+    public static final String BASE_AUTOCRYPT_PEERS = "autocrypt_peers";
 
 
     public static class EmailStatus implements BaseColumns {
@@ -43,8 +43,8 @@ public class KeychainExternalContract {
         public static final String USER_ID = "user_id";
         public static final String USER_ID_STATUS = "email_status";
         public static final String MASTER_KEY_ID = "master_key_id";
-        public static final String TRUST_ID_LAST_UPDATE = "trust_id_last_update";
-        public static final String TRUST_ID_STATUS = "trust_id_status";
+        public static final String AUTOCRYPT_PEER_LAST_SEEN = "autocrypt_peer_last_seen";
+        public static final String AUTOCRYPT_PEER_STATE = "autocrypt_peer_state";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_EXTERNAL.buildUpon()
                 .appendPath(BASE_EMAIL_STATUS).build();
@@ -53,16 +53,16 @@ public class KeychainExternalContract {
                 "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.email_status";
     }
 
-    public static class ApiTrustIdentity implements ApiTrustIdentityColumns, BaseColumns {
+    public static class ApiAutocryptPeer implements ApiAutocryptPeerColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_EXTERNAL.buildUpon()
-                .appendPath(BASE_TRUST_IDENTITIES).build();
+                .appendPath(BASE_AUTOCRYPT_PEERS).build();
 
         public static Uri buildByPackageNameUri(String packageName) {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).build();
         }
 
-        public static Uri buildByPackageNameAndTrustIdUri(String packageName, String trustId) {
-            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendEncodedPath(trustId).build();
+        public static Uri buildByPackageNameAndTrustIdUri(String packageName, String autocryptPeer) {
+            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendEncodedPath(autocryptPeer).build();
         }
     }
 

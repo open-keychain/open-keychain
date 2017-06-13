@@ -24,7 +24,7 @@ import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.provider.KeyRepositorySaveTest;
-import org.sufficientlysecure.keychain.provider.TrustIdentityDataAccessObject;
+import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -45,7 +45,7 @@ public class KeychainExternalProviderTest {
     static final String USER_ID_SEC_1 = "twi <twi-sec@openkeychain.org>";
     static final long KEY_ID_SECRET = 0x5D4DA4423C39122FL;
     static final long KEY_ID_PUBLIC = 0x9A282CE2AB44A382L;
-    public static final String TRUST_ID = "tid";
+    public static final String AUTOCRYPT_PEER = "tid";
 
 
     KeyWritableRepository databaseInteractor =
@@ -53,7 +53,7 @@ public class KeychainExternalProviderTest {
     ContentResolver contentResolver = RuntimeEnvironment.application.getContentResolver();
     ApiPermissionHelper apiPermissionHelper;
     ApiDataAccessObject apiDao;
-    private TrustIdentityDataAccessObject trustIdDao;
+    AutocryptPeerDataAccessObject autocryptPeerDao;
 
 
     @Before
@@ -67,7 +67,7 @@ public class KeychainExternalProviderTest {
 
         apiDao = new ApiDataAccessObject(RuntimeEnvironment.application);
         apiPermissionHelper = new ApiPermissionHelper(RuntimeEnvironment.application, apiDao);
-        trustIdDao = new TrustIdentityDataAccessObject(RuntimeEnvironment.application, PACKAGE_NAME);
+        autocryptPeerDao = new AutocryptPeerDataAccessObject(RuntimeEnvironment.application, PACKAGE_NAME);
 
         apiDao.insertApiApp(new AppSettings(PACKAGE_NAME, PACKAGE_SIGNATURE));
     }
@@ -178,17 +178,17 @@ public class KeychainExternalProviderTest {
     }
 
     @Test
-    public void testQuery__trustId__withUnconfirmedKey() throws Exception {
+    public void testQuery__autocryptPeer__withUnconfirmedKey() throws Exception {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        trustIdDao.setMasterKeyIdForTrustId("tid", KEY_ID_PUBLIC, new Date());
+        autocryptPeerDao.setMasterKeyIdForAutocryptPeer("tid", KEY_ID_PUBLIC, new Date());
 
         Cursor cursor = contentResolver.query(
                 EmailStatus.CONTENT_URI, new String[] {
                         EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID_STATUS, EmailStatus.USER_ID,
-                        EmailStatus.TRUST_ID_STATUS },
-                null, new String [] { TRUST_ID }, null
+                        EmailStatus.AUTOCRYPT_PEER_STATE },
+                null, new String [] { AUTOCRYPT_PEER }, null
             );
 
         assertNotNull(cursor);
@@ -201,18 +201,18 @@ public class KeychainExternalProviderTest {
     }
 
     @Test
-    public void testQuery__trustId__withConfirmedKey() throws Exception {
+    public void testQuery__withAutocryptPeer__withConfirmedKey() throws Exception {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        trustIdDao.setMasterKeyIdForTrustId("tid", KEY_ID_PUBLIC, new Date());
+        autocryptPeerDao.setMasterKeyIdForAutocryptPeer("tid", KEY_ID_PUBLIC, new Date());
         certifyKey(KEY_ID_SECRET, KEY_ID_PUBLIC, USER_ID_1);
 
         Cursor cursor = contentResolver.query(
                 EmailStatus.CONTENT_URI, new String[] {
                         EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID_STATUS, EmailStatus.USER_ID,
-                        EmailStatus.TRUST_ID_STATUS },
-                null, new String [] { TRUST_ID }, null
+                        EmailStatus.AUTOCRYPT_PEER_STATE },
+                null, new String [] { AUTOCRYPT_PEER }, null
         );
 
         assertNotNull(cursor);
@@ -225,7 +225,7 @@ public class KeychainExternalProviderTest {
     }
 
     @Test
-    public void testQuery__withTrustId() throws Exception {
+    public void testQuery__withAutocryptPeer() throws Exception {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 

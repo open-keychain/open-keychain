@@ -35,7 +35,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiTrustIdentity;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -203,11 +203,11 @@ public class KeychainProvider extends ContentProvider {
          *
          * </pre>
          */
-        matcher.addURI(authority, KeychainContract.BASE_TRUST_IDENTITIES + "/" +
+        matcher.addURI(authority, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
                 KeychainContract.PATH_BY_KEY_ID + "/*", TRUST_IDS_BY_MASTER_KEY_ID);
-        matcher.addURI(authority, KeychainContract.BASE_TRUST_IDENTITIES + "/" +
+        matcher.addURI(authority, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
                 KeychainContract.PATH_BY_PACKAGE_NAME + "/*", TRUST_IDS_BY_PACKAGE_NAME);
-        matcher.addURI(authority, KeychainContract.BASE_TRUST_IDENTITIES + "/" +
+        matcher.addURI(authority, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
                 KeychainContract.PATH_BY_PACKAGE_NAME + "/*/*", TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID);
 
 
@@ -343,7 +343,7 @@ public class KeychainProvider extends ContentProvider {
                         "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
                                 + " < " + new Date().getTime() / 1000 + ") AS " + KeyRings.IS_EXPIRED);
                 projectionMap.put(KeyRings.API_KNOWN_TO_PACKAGE_NAMES,
-                        "GROUP_CONCAT(aTI." + ApiTrustIdentity.PACKAGE_NAME + ") AS "
+                        "GROUP_CONCAT(aTI." + ApiAutocryptPeer.PACKAGE_NAME + ") AS "
                         + KeyRings.API_KNOWN_TO_PACKAGE_NAMES);
                 qb.setProjectionMap(projectionMap);
 
@@ -414,7 +414,7 @@ public class KeychainProvider extends ContentProvider {
                                 + " >= " + new Date().getTime() / 1000 + " )"
                                 + ")" : "")
                         + (plist.contains(KeyRings.API_KNOWN_TO_PACKAGE_NAMES) ?
-                            " LEFT JOIN " + Tables.API_TRUST_IDENTITIES + " AS aTI ON ("
+                            " LEFT JOIN " + Tables.API_AUTOCRYPT_PEERS + " AS aTI ON ("
                                     +"aTI." + Keys.MASTER_KEY_ID
                                     + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                     + ")" : "")
@@ -672,32 +672,32 @@ public class KeychainProvider extends ContentProvider {
                 }
 
                 HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(ApiTrustIdentity._ID, "oid AS " + ApiTrustIdentity._ID);
-                projectionMap.put(ApiTrustIdentity.PACKAGE_NAME, ApiTrustIdentity.PACKAGE_NAME);
-                projectionMap.put(ApiTrustIdentity.IDENTIFIER, ApiTrustIdentity.IDENTIFIER);
-                projectionMap.put(ApiTrustIdentity.MASTER_KEY_ID, ApiTrustIdentity.MASTER_KEY_ID);
-                projectionMap.put(ApiTrustIdentity.LAST_UPDATED, ApiTrustIdentity.LAST_UPDATED);
+                projectionMap.put(ApiAutocryptPeer._ID, "oid AS " + ApiAutocryptPeer._ID);
+                projectionMap.put(ApiAutocryptPeer.PACKAGE_NAME, ApiAutocryptPeer.PACKAGE_NAME);
+                projectionMap.put(ApiAutocryptPeer.IDENTIFIER, ApiAutocryptPeer.IDENTIFIER);
+                projectionMap.put(ApiAutocryptPeer.MASTER_KEY_ID, ApiAutocryptPeer.MASTER_KEY_ID);
+                projectionMap.put(ApiAutocryptPeer.LAST_UPDATED, ApiAutocryptPeer.LAST_UPDATED);
                 qb.setProjectionMap(projectionMap);
 
-                qb.setTables(Tables.API_TRUST_IDENTITIES);
+                qb.setTables(Tables.API_AUTOCRYPT_PEERS);
 
                 if (match == TRUST_IDS_BY_MASTER_KEY_ID) {
                     long masterKeyId = Long.parseLong(uri.getLastPathSegment());
 
-                    selection = Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.MASTER_KEY_ID + " = ?";
+                    selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " = ?";
                     selectionArgs = new String[] { Long.toString(masterKeyId) };
                 } else if (match == TRUST_IDS_BY_PACKAGE_NAME) {
                     String packageName = uri.getPathSegments().get(2);
 
-                    selection = Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.PACKAGE_NAME + " = ?";
+                    selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME + " = ?";
                     selectionArgs = new String[] { packageName };
                 } else { // TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID
                     String packageName = uri.getPathSegments().get(2);
-                    String trustId = uri.getPathSegments().get(3);
+                    String autocryptPeer = uri.getPathSegments().get(3);
 
-                    selection = Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.PACKAGE_NAME + " = ? AND " +
-                            Tables.API_TRUST_IDENTITIES + "." + ApiTrustIdentity.IDENTIFIER + " = ?";
-                    selectionArgs = new String[] { packageName, trustId };
+                    selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME + " = ? AND " +
+                            Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.IDENTIFIER + " = ?";
+                    selectionArgs = new String[] { packageName, autocryptPeer };
                 }
 
                 break;
@@ -998,21 +998,21 @@ public class KeychainProvider extends ContentProvider {
                     break;
                 }
                 case TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID: {
-                    Long masterKeyId = values.getAsLong(ApiTrustIdentity.MASTER_KEY_ID);
-                    long updateTime = values.getAsLong(KeychainContract.ApiTrustIdentity.LAST_UPDATED);
+                    Long masterKeyId = values.getAsLong(ApiAutocryptPeer.MASTER_KEY_ID);
+                    long updateTime = values.getAsLong(ApiAutocryptPeer.LAST_UPDATED);
                     if (masterKeyId == null) {
                         throw new IllegalArgumentException("master_key_id must be a non-null value!");
                     }
 
                     ContentValues actualValues = new ContentValues();
                     String packageName = uri.getPathSegments().get(2);
-                    actualValues.put(ApiTrustIdentity.PACKAGE_NAME, packageName);
-                    actualValues.put(ApiTrustIdentity.IDENTIFIER, uri.getLastPathSegment());
-                    actualValues.put(ApiTrustIdentity.MASTER_KEY_ID, masterKeyId);
-                    actualValues.put(ApiTrustIdentity.LAST_UPDATED, updateTime);
+                    actualValues.put(ApiAutocryptPeer.PACKAGE_NAME, packageName);
+                    actualValues.put(ApiAutocryptPeer.IDENTIFIER, uri.getLastPathSegment());
+                    actualValues.put(ApiAutocryptPeer.MASTER_KEY_ID, masterKeyId);
+                    actualValues.put(ApiAutocryptPeer.LAST_UPDATED, updateTime);
 
                     try {
-                        db.replace(Tables.API_TRUST_IDENTITIES, null, actualValues);
+                        db.replace(Tables.API_AUTOCRYPT_PEERS, null, actualValues);
                     } finally {
                         db.close();
                     }

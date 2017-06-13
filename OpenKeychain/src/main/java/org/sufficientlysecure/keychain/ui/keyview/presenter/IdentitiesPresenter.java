@@ -119,8 +119,8 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         } else if (info instanceof UserIdInfo) {
             showUserIdInfo((UserIdInfo) info);
         } else if (info instanceof TrustIdInfo) {
-            Intent trustIdIntent = ((TrustIdInfo) info).getTrustIdIntent();
-            viewKeyMvpView.startActivity(trustIdIntent);
+            Intent autocryptPeerIntent = ((TrustIdInfo) info).getTrustIdIntent();
+            viewKeyMvpView.startActivity(autocryptPeerIntent);
         }
     }
 

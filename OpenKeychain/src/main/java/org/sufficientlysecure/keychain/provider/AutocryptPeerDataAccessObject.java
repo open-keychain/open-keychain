@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2014-2016 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ * Copyright (C) 2017 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,15 +26,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiTrustIdentity;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 
 
-public class TrustIdentityDataAccessObject {
+public class AutocryptPeerDataAccessObject {
     private final SimpleContentResolverInterface mQueryInterface;
     private final String packageName;
 
 
-    public TrustIdentityDataAccessObject(Context context, String packageName) {
+    public AutocryptPeerDataAccessObject(Context context, String packageName) {
         this.packageName = packageName;
 
         final ContentResolver contentResolver = context.getContentResolver();
@@ -63,18 +62,18 @@ public class TrustIdentityDataAccessObject {
         };
     }
 
-    public TrustIdentityDataAccessObject(SimpleContentResolverInterface queryInterface, String packageName) {
+    public AutocryptPeerDataAccessObject(SimpleContentResolverInterface queryInterface, String packageName) {
         mQueryInterface = queryInterface;
         this.packageName = packageName;
     }
 
-    public Long getMasterKeyIdForTrustId(String trustId) {
+    public Long getMasterKeyIdForAutocryptPeer(String autocryptId) {
         Cursor cursor = mQueryInterface.query(
-                ApiTrustIdentity.buildByPackageNameAndTrustId(packageName, trustId), null, null, null, null);
+                ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), null, null, null, null);
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
-                int masterKeyIdColumn = cursor.getColumnIndex(ApiTrustIdentity.MASTER_KEY_ID);
+                int masterKeyIdColumn = cursor.getColumnIndex(ApiAutocryptPeer.MASTER_KEY_ID);
                 return cursor.getLong(masterKeyIdColumn);
             }
         } finally {
@@ -86,13 +85,13 @@ public class TrustIdentityDataAccessObject {
         return null;
     }
 
-    public Date getLastUpdateForTrustId(String trustId) {
-        Cursor cursor = mQueryInterface.query(ApiTrustIdentity.buildByPackageNameAndTrustId(packageName, trustId),
+    public Date getLastUpdateForAutocryptPeer(String autocryptId) {
+        Cursor cursor = mQueryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
                 null, null, null, null);
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
-                long lastUpdated = cursor.getColumnIndex(ApiTrustIdentity.LAST_UPDATED);
+                long lastUpdated = cursor.getColumnIndex(ApiAutocryptPeer.LAST_UPDATED);
                 return new Date(lastUpdated);
             }
         } finally {
@@ -103,15 +102,15 @@ public class TrustIdentityDataAccessObject {
         return null;
     }
 
-    public void setMasterKeyIdForTrustId(String trustId, long masterKeyId, Date date) {
-        Date lastUpdated = getLastUpdateForTrustId(trustId);
+    public void setMasterKeyIdForAutocryptPeer(String autocryptId, long masterKeyId, Date date) {
+        Date lastUpdated = getLastUpdateForAutocryptPeer(autocryptId);
         if (lastUpdated != null && lastUpdated.after(date)) {
             throw new IllegalArgumentException("Database entry was newer than the one to be inserted! Cannot backdate");
         }
 
         ContentValues cv = new ContentValues();
-        cv.put(ApiTrustIdentity.MASTER_KEY_ID, masterKeyId);
-        cv.put(ApiTrustIdentity.LAST_UPDATED, date.getTime());
-        mQueryInterface.update(ApiTrustIdentity.buildByPackageNameAndTrustId(packageName, trustId), cv, null, null);
+        cv.put(ApiAutocryptPeer.MASTER_KEY_ID, masterKeyId);
+        cv.put(ApiAutocryptPeer.LAST_UPDATED, date.getTime());
+        mQueryInterface.update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
     }
 }

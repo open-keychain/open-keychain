@@ -33,7 +33,7 @@ import android.provider.BaseColumns;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiTrustIdentityColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeerColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
@@ -66,7 +66,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String API_APPS = "api_apps";
         String API_ALLOWED_KEYS = "api_allowed_keys";
         String OVERRIDDEN_WARNINGS = "overridden_warnings";
-        String API_TRUST_IDENTITIES = "api_trust_identities";
+        String API_AUTOCRYPT_PEERS = "api_autocrypt_peers";
     }
 
     private static final String CREATE_KEYRINGS_PUBLIC =
@@ -158,15 +158,15 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
                     + ")";
 
-    private static final String CREATE_API_TRUST_IDENTITIES =
-            "CREATE TABLE IF NOT EXISTS " + Tables.API_TRUST_IDENTITIES + " ("
-                    + ApiTrustIdentityColumns.PACKAGE_NAME + " TEXT NOT NULL, "
-                    + ApiTrustIdentityColumns.IDENTIFIER + " TEXT NOT NULL, "
-                    + ApiTrustIdentityColumns.LAST_UPDATED + " INTEGER NOT NULL, "
-                    + ApiTrustIdentityColumns.MASTER_KEY_ID + " INTEGER NOT NULL, "
-                    + "PRIMARY KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ", "
-                        + ApiTrustIdentityColumns.IDENTIFIER + "), "
-                    + "FOREIGN KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ") REFERENCES "
+    private static final String CREATE_API_AUTOCRYPT_PEERS =
+            "CREATE TABLE IF NOT EXISTS " + Tables.API_AUTOCRYPT_PEERS + " ("
+                    + ApiAutocryptPeerColumns.PACKAGE_NAME + " TEXT NOT NULL, "
+                    + ApiAutocryptPeerColumns.IDENTIFIER + " TEXT NOT NULL, "
+                    + ApiAutocryptPeerColumns.LAST_UPDATED + " INTEGER NOT NULL, "
+                    + ApiAutocryptPeerColumns.MASTER_KEY_ID + " INTEGER NOT NULL, "
+                    + "PRIMARY KEY(" + ApiAutocryptPeerColumns.PACKAGE_NAME + ", "
+                        + ApiAutocryptPeerColumns.IDENTIFIER + "), "
+                    + "FOREIGN KEY(" + ApiAutocryptPeerColumns.PACKAGE_NAME + ") REFERENCES "
                         + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
                 + ")";
 
@@ -213,7 +213,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
         db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
-        db.execSQL(CREATE_API_TRUST_IDENTITIES);
+        db.execSQL(CREATE_API_AUTOCRYPT_PEERS);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
         db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
@@ -334,21 +334,16 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE updated_keys ADD COLUMN seen_on_keyservers INTEGER;");
 
             case 22:
-                db.execSQL("CREATE TABLE IF NOT EXISTS " + Tables.API_TRUST_IDENTITIES + " ("
-                        + ApiTrustIdentityColumns.PACKAGE_NAME + " TEXT NOT NULL, "
-                        + ApiTrustIdentityColumns.IDENTIFIER + " TEXT NOT NULL, "
-                        + ApiTrustIdentityColumns.LAST_UPDATED + " INTEGER NOT NULL, "
-                        + ApiTrustIdentityColumns.MASTER_KEY_ID + " INTEGER NOT NULL, "
-                        + "PRIMARY KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ", "
-                            + ApiTrustIdentityColumns.IDENTIFIER + "), "
-                        + "FOREIGN KEY(" + ApiTrustIdentityColumns.MASTER_KEY_ID + ") REFERENCES "
-                            + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE, "
-                        + "FOREIGN KEY(" + ApiTrustIdentityColumns.PACKAGE_NAME + ") REFERENCES "
-                            + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
+                db.execSQL("CREATE TABLE IF NOT EXISTS api_autocrypt_peers ("
+                        + "package_name TEXT NOT NULL, "
+                        + "identifier TEXT NOT NULL, "
+                        + "last_updated INTEGER NOT NULL, "
+                        + "master_key_id INTEGER NOT NULL, "
+                        + "PRIMARY KEY(package_name, identifier), "
+                        + "FOREIGN KEY(package_name) REFERENCES api_apps(package_name) ON DELETE CASCADE"
                     + ")");
 
                 if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20 || oldVersion == 21 || oldVersion == 22) {
-                    // no consolidate for now, often crashes!
                     return;
                 }
         }

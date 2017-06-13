@@ -44,10 +44,10 @@ import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpError;
-import org.openintents.openpgp.OpenPgpInlineKeyUpdate;
+import org.openintents.openpgp.AutocryptPeerUpdate;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
-import org.openintents.openpgp.OpenPgpSignatureResult.TrustIdentityResult;
+import org.openintents.openpgp.OpenPgpSignatureResult.AutocryptPeerResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
@@ -73,7 +73,7 @@ import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
-import org.sufficientlysecure.keychain.provider.TrustIdentityDataAccessObject;
+import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResultStatus;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
@@ -88,7 +88,7 @@ public class OpenPgpService extends Service {
     public static final int API_VERSION_WITHOUT_SIGNATURE_ONLY_FLAG = 8;
     public static final int API_VERSION_WITH_DECRYPTION_RESULT = 8;
     public static final int API_VERSION_WITH_RESULT_NO_SIGNATURE = 8;
-    public static final int API_VERSION_WITH_TRUST_IDENTITIES = 12;
+    public static final int API_VERSION_WITH_AUTOCRYPT = 12;
 
     public static final List<Integer> SUPPORTED_VERSIONS =
             Collections.unmodifiableList(Arrays.asList(7, 8, 9, 10, 11, 12));
@@ -360,9 +360,9 @@ public class OpenPgpService extends Service {
             byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
             String senderAddress = data.getStringExtra(OpenPgpApi.EXTRA_SENDER_ADDRESS);
 
-            TrustIdentityDataAccessObject trustIdentityDao = new TrustIdentityDataAccessObject(
+            AutocryptPeerDataAccessObject autocryptPeerentityDao = new AutocryptPeerDataAccessObject(
                     getBaseContext(), mApiPermissionHelper.getCurrentCallingPackage());
-            String senderTrustId = updateTrustIdStateFromIntent(data, trustIdentityDao);
+            updateAutocryptPeerStateFromIntent(data, autocryptPeerentityDao);
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mKeyRepository, progressable);
 
@@ -449,41 +449,41 @@ public class OpenPgpService extends Service {
                 mApiPendingIntentFactory.createSecurityProblemIntent(packageName, securityProblem, supportOverride));
     }
 
-    private String updateTrustIdStateFromIntent(Intent data, TrustIdentityDataAccessObject trustIdentityDao)
+    private String updateAutocryptPeerStateFromIntent(Intent data, AutocryptPeerDataAccessObject autocryptPeerDao)
             throws PgpGeneralException, IOException {
-        String trustId = data.getStringExtra(OpenPgpApi.EXTRA_TRUST_IDENTITY);
-        OpenPgpInlineKeyUpdate inlineKeyUpdate = data.getParcelableExtra(OpenPgpApi.EXTRA_INLINE_KEY_DATA);
+        String autocryptPeerId = data.getStringExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID);
+        AutocryptPeerUpdate inlineKeyUpdate = data.getParcelableExtra(OpenPgpApi.EXTRA_INLINE_KEY_DATA);
         if (inlineKeyUpdate == null) {
             return null;
         }
 
         UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(inlineKeyUpdate.getKeyData());
         if (uncachedKeyRing.isSecret()) {
-            Log.e(Constants.TAG, "Found secret key in trust id! - Ignoring");
+            Log.e(Constants.TAG, "Found secret key in autocrypt id! - Ignoring");
             return null;
         }
         // this will merge if the key already exists - no worries!
         KeyWritableRepository.createDatabaseReadWriteInteractor(this).savePublicKeyRing(uncachedKeyRing);
         long inlineMasterKeyId = uncachedKeyRing.getMasterKeyId();
 
-        Date lastUpdate = trustIdentityDao.getLastUpdateForTrustId(trustId);
+        Date lastUpdate = autocryptPeerDao.getLastUpdateForAutocryptPeer(autocryptPeerId);
         Date updateTimestamp = inlineKeyUpdate.getTimestamp();
-        Long trustedMasterKeyId = trustIdentityDao.getMasterKeyIdForTrustId(trustId);
+        Long autocryptMasterKeyId = autocryptPeerDao.getMasterKeyIdForAutocryptPeer(autocryptPeerId);
 
         if (lastUpdate != null && lastUpdate.after(updateTimestamp)) {
-            Log.d(Constants.TAG, "Key for trust id is newer, ignoring other");
-            return trustId;
-        } else if (trustedMasterKeyId == null) {
-            Log.d(Constants.TAG, "No binding for trust id, pinning key");
-            trustIdentityDao.setMasterKeyIdForTrustId(trustId, inlineMasterKeyId, updateTimestamp);
-        } else if (inlineMasterKeyId == trustedMasterKeyId) {
+            Log.d(Constants.TAG, "Key for autocrypt peer is newer, ignoring other");
+            return autocryptPeerId;
+        } else if (autocryptMasterKeyId == null) {
+            Log.d(Constants.TAG, "No binding for autocrypt peer, pinning key");
+            autocryptPeerDao.setMasterKeyIdForAutocryptPeer(autocryptPeerId, inlineMasterKeyId, updateTimestamp);
+        } else if (inlineMasterKeyId == autocryptMasterKeyId) {
             Log.d(Constants.TAG, "Key id is the same - doing nothing");
         } else {
             // TODO danger in result intent!
-            trustIdentityDao.setMasterKeyIdForTrustId(trustId, inlineMasterKeyId, updateTimestamp);
+            autocryptPeerDao.setMasterKeyIdForAutocryptPeer(autocryptPeerId, inlineMasterKeyId, updateTimestamp);
         }
 
-        return trustId;
+        return autocryptPeerId;
     }
 
     private void processDecryptionResultForResultIntent(int targetApiVersion, Intent result,
@@ -568,19 +568,19 @@ public class OpenPgpService extends Service {
             }
         }
 
-        String trustIdentity = data.getStringExtra(OpenPgpApi.EXTRA_TRUST_IDENTITY);
-        if (trustIdentity != null) {
-            if (targetApiVersion < API_VERSION_WITH_TRUST_IDENTITIES) {
-                throw new IllegalStateException("API version conflict, trust identities are supported v12 and up!");
+        String autocryptPeerentity = data.getStringExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID);
+        if (autocryptPeerentity != null) {
+            if (targetApiVersion < API_VERSION_WITH_AUTOCRYPT) {
+                throw new IllegalStateException("API version conflict, autocrypt is supported v12 and up!");
             }
-            signatureResult = processTrustIdentityInfoToSignatureResult(signatureResult, trustIdentity);
+            signatureResult = processAutocryptPeerInfoToSignatureResult(signatureResult, autocryptPeerentity);
         }
 
         result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
     }
 
-    private OpenPgpSignatureResult processTrustIdentityInfoToSignatureResult(OpenPgpSignatureResult signatureResult,
-            String trustIdentity) {
+    private OpenPgpSignatureResult processAutocryptPeerInfoToSignatureResult(OpenPgpSignatureResult signatureResult,
+            String autocryptPeerentity) {
         boolean hasValidSignature =
                 signatureResult.getResult() == OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED ||
                 signatureResult.getResult() == OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED;
@@ -588,18 +588,18 @@ public class OpenPgpService extends Service {
             return signatureResult;
         }
 
-        TrustIdentityDataAccessObject trustIdentityDao = new TrustIdentityDataAccessObject(getBaseContext(),
+        AutocryptPeerDataAccessObject autocryptPeerentityDao = new AutocryptPeerDataAccessObject(getBaseContext(),
                 mApiPermissionHelper.getCurrentCallingPackage());
-        Long tofuTrustedMasterKeyId = trustIdentityDao.getMasterKeyIdForTrustId(trustIdentity);
+        Long autocryptPeerMasterKeyId = autocryptPeerentityDao.getMasterKeyIdForAutocryptPeer(autocryptPeerentity);
 
         long masterKeyId = signatureResult.getKeyId();
-        if (tofuTrustedMasterKeyId == null) {
-            trustIdentityDao.setMasterKeyIdForTrustId(trustIdentity, masterKeyId, new Date());
-            return signatureResult.withTrustIdentityResult(TrustIdentityResult.NEW);
-        } else  if (masterKeyId == tofuTrustedMasterKeyId) {
-            return signatureResult.withTrustIdentityResult(TrustIdentityResult.OK);
+        if (autocryptPeerMasterKeyId == null) {
+            autocryptPeerentityDao.setMasterKeyIdForAutocryptPeer(autocryptPeerentity, masterKeyId, new Date());
+            return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.NEW);
+        } else  if (masterKeyId == autocryptPeerMasterKeyId) {
+            return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.OK);
         } else {
-            return signatureResult.withTrustIdentityResult(TrustIdentityResult.MISMATCH);
+            return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.MISMATCH);
         }
     }
 
@@ -746,14 +746,14 @@ public class OpenPgpService extends Service {
         }
     }
 
-    private Intent updateTrustIdKeyImpl(Intent data) {
+    private Intent updateAutocryptPeerImpl(Intent data) {
         try {
             Intent result = new Intent();
 
-            String trustId = data.getStringExtra(OpenPgpApi.EXTRA_TRUST_IDENTITY);
-            OpenPgpInlineKeyUpdate inlineKeyUpdate = data.getParcelableExtra(OpenPgpApi.EXTRA_INLINE_KEY_DATA);
-            if (inlineKeyUpdate == null || trustId == null) {
-                throw new IllegalArgumentException("need to specify both trust_id and inline_key_data!");
+            String autocryptPeer = data.getStringExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID);
+            AutocryptPeerUpdate inlineKeyUpdate = data.getParcelableExtra(OpenPgpApi.EXTRA_INLINE_KEY_DATA);
+            if (inlineKeyUpdate == null || autocryptPeer == null) {
+                throw new IllegalArgumentException("need to specify both autocrypt_peer_id and inline_key_data!");
             }
 
             UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(inlineKeyUpdate.getKeyData());
@@ -761,10 +761,10 @@ public class OpenPgpService extends Service {
             // this will merge if the key already exists - no worries!
             KeyWritableRepository.createDatabaseReadWriteInteractor(this).savePublicKeyRing(uncachedKeyRing);
 
-            TrustIdentityDataAccessObject trustIdentityDao = new TrustIdentityDataAccessObject(getBaseContext(),
+            AutocryptPeerDataAccessObject autocryptPeerentityDao = new AutocryptPeerDataAccessObject(getBaseContext(),
                     mApiPermissionHelper.getCurrentCallingPackage());
 
-            Date lastUpdate = trustIdentityDao.getLastUpdateForTrustId(trustId);
+            Date lastUpdate = autocryptPeerentityDao.getLastUpdateForAutocryptPeer(autocryptPeer);
 
             Date updateTimestamp = inlineKeyUpdate.getTimestamp();
             boolean updateIsNewerThanLastUpdate = lastUpdate == null || lastUpdate.before(updateTimestamp);
@@ -772,23 +772,23 @@ public class OpenPgpService extends Service {
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
             }
-            Log.d(Constants.TAG, "Key for trust id is newer");
+            Log.d(Constants.TAG, "Key for autocrypt peer is newer");
 
-            Long trustedMasterKeyId = trustIdentityDao.getMasterKeyIdForTrustId(trustId);
-            if (trustedMasterKeyId == null) {
-                Log.d(Constants.TAG, "No binding for trust id, pinning key");
-                trustIdentityDao.setMasterKeyIdForTrustId(trustId, inlineMasterKeyId, updateTimestamp);
-            } else if (inlineMasterKeyId == trustedMasterKeyId) {
+            Long autocryptPeerMasterKeyId = autocryptPeerentityDao.getMasterKeyIdForAutocryptPeer(autocryptPeer);
+            if (autocryptPeerMasterKeyId == null) {
+                Log.d(Constants.TAG, "No binding for autocrypt peer, pinning key");
+                autocryptPeerentityDao.setMasterKeyIdForAutocryptPeer(autocryptPeer, inlineMasterKeyId, updateTimestamp);
+            } else if (inlineMasterKeyId == autocryptPeerMasterKeyId) {
                 Log.d(Constants.TAG, "Key id is the same - doing nothing");
             } else {
                 // TODO danger in result intent!
-                trustIdentityDao.setMasterKeyIdForTrustId(trustId, inlineMasterKeyId, updateTimestamp);
+                autocryptPeerentityDao.setMasterKeyIdForAutocryptPeer(autocryptPeer, inlineMasterKeyId, updateTimestamp);
             }
 
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
             return result;
         } catch (Exception e) {
-            Log.d(Constants.TAG, "exception in updateTrustIdKeyImpl", e);
+            Log.d(Constants.TAG, "exception in updateAutocryptPeerImpl", e);
             return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
@@ -964,8 +964,8 @@ public class OpenPgpService extends Service {
             case OpenPgpApi.ACTION_BACKUP: {
                 return backupImpl(data, outputStream);
             }
-            case OpenPgpApi.ACTION_UPDATE_TRUST_ID: {
-                return updateTrustIdKeyImpl(data);
+            case OpenPgpApi.ACTION_UPDATE_AUTOCRYPT_PEER: {
+                return updateAutocryptPeerImpl(data);
             }
             default: {
                 return null;
