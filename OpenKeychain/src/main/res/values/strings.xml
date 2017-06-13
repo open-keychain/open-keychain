@@ -1890,6 +1890,7 @@
     <string name="identity_context_forget">Forget</string>
 
     <string name="button_scan">"Scan"</string>
+    <string name="button_more_info">"More Info"</string>
     <string name="transfer_scan_explanation">"To transfer your keys, establish a secure connection by scanning with either device."</string>
     <string name="connection_status">"Connection status:"</string>
     <string name="section_transfer_keys">"Available keys for transfer"</string>

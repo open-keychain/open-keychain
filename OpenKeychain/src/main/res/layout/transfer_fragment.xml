@@ -57,25 +57,35 @@
 
         </LinearLayout>
 
-        <Button
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp"
-            android:id="@+id/button_scan"
-            android:text="@string/button_scan"
-            android:drawableLeft="@drawable/ic_qrcode_white_24dp"
-            android:drawableTint="@color/md_black_1000"
-            android:drawablePadding="8dp"
-            />
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            tools:ignore="ButtonStyle" >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp"
-            android:text="@string/transfer_scan_explanation"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:id="@+id/button_help"
+                android:text="@string/button_more_info"
+                android:drawableLeft="@drawable/ic_live_help_24dp"
+                android:drawableTint="@color/md_black_1000"
+                android:drawablePadding="8dp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:id="@+id/button_scan"
+                android:text="@string/button_scan"
+                android:drawableLeft="@drawable/ic_qrcode_white_24dp"
+                android:drawableTint="@color/md_black_1000"
+                android:drawablePadding="8dp"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
 
