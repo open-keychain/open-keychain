@@ -1330,10 +1330,14 @@ public class PgpKeyOperation {
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                 Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.getCharArray());
         // Build key encryptor based on new passphrase
-        PBESecretKeyEncryptor keyEncryptorNew = new JcePBESecretKeyEncryptorBuilder(
-                PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
-                PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(newPassphrase.getCharArray());
+        PBESecretKeyEncryptor keyEncryptorNew = null;
+        if (newPassphrase != null && !newPassphrase.isEmpty()) {
+            keyEncryptorNew = new JcePBESecretKeyEncryptorBuilder(
+                    PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
+                    PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME)
+                    .build(newPassphrase.getCharArray());
+        }
         boolean keysModified = false;
 
         for (PGPSecretKey sKey : new IterableIterator<>(sKR.getSecretKeys())) {

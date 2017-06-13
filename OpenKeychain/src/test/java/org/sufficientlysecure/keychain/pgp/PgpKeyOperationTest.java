@@ -1192,8 +1192,6 @@ public class PgpKeyOperationTest {
             Assert.assertTrue("key modification must succeed", result.success());
             Assert.assertFalse("log must not contain a warning",
                     result.getLog().containsWarnings());
-            Assert.assertTrue("log must contain an empty passphrase retry notice",
-                result.getLog().containsType(LogType.MSG_MF_PASSPHRASE_EMPTY_RETRY));
             modified = result.getRing();
         }
 
