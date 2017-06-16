@@ -85,13 +85,30 @@ public class AutocryptPeerDataAccessObject {
         return null;
     }
 
-    public Date getLastUpdateForAutocryptPeer(String autocryptId) {
+    public Date getLastSeen(String autocryptId) {
         Cursor cursor = mQueryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
                 null, null, null, null);
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
-                long lastUpdated = cursor.getColumnIndex(ApiAutocryptPeer.LAST_UPDATED);
+                long lastUpdated = cursor.getColumnIndex(ApiAutocryptPeer.LAST_SEEN);
+                return new Date(lastUpdated);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    public Date getLastSeenKey(String autocryptId) {
+        Cursor cursor = mQueryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
+                null, null, null, null);
+
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                long lastUpdated = cursor.getColumnIndex(ApiAutocryptPeer.LAST_SEEN_KEY);
                 return new Date(lastUpdated);
             }
         } finally {
@@ -103,14 +120,36 @@ public class AutocryptPeerDataAccessObject {
     }
 
     public void setMasterKeyIdForAutocryptPeer(String autocryptId, long masterKeyId, Date date) {
-        Date lastUpdated = getLastUpdateForAutocryptPeer(autocryptId);
+        Date lastUpdated = getLastSeen(autocryptId);
         if (lastUpdated != null && lastUpdated.after(date)) {
             throw new IllegalArgumentException("Database entry was newer than the one to be inserted! Cannot backdate");
         }
 
         ContentValues cv = new ContentValues();
         cv.put(ApiAutocryptPeer.MASTER_KEY_ID, masterKeyId);
-        cv.put(ApiAutocryptPeer.LAST_UPDATED, date.getTime());
+        cv.put(ApiAutocryptPeer.LAST_SEEN_KEY, date.getTime());
+        mQueryInterface.update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
+    }
+
+    public void updateToResetState(String autocryptId, Date effectiveDate) {
+        updateAutocryptState(autocryptId, effectiveDate, ApiAutocryptPeer.RESET);
+    }
+
+    public void updateToMutualState(String autocryptId, Date effectiveDate, long masterKeyId) {
+        setMasterKeyIdForAutocryptPeer(autocryptId, masterKeyId, effectiveDate);
+        updateAutocryptState(autocryptId, effectiveDate, ApiAutocryptPeer.MUTUAL);
+    }
+
+    public void updateToAvailableState(String autocryptId, Date effectiveDate, long masterKeyId) {
+        setMasterKeyIdForAutocryptPeer(autocryptId, masterKeyId, effectiveDate);
+        updateAutocryptState(autocryptId, effectiveDate, ApiAutocryptPeer.AVAILABLE);
+    }
+
+    private void updateAutocryptState(String autocryptId, Date date, int status) {
+        ContentValues cv = new ContentValues();
+        cv.put(ApiAutocryptPeer.MASTER_KEY_ID, (Integer) null);
+        cv.put(ApiAutocryptPeer.LAST_SEEN, date.getTime());
+        cv.put(ApiAutocryptPeer.STATUS, status);
         mQueryInterface.update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
     }
 }

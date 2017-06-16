@@ -98,7 +98,9 @@ public class KeychainContract {
     interface ApiAutocryptPeerColumns {
         String PACKAGE_NAME = "package_name";
         String IDENTIFIER = "identifier";
-        String LAST_UPDATED = "last_updated";
+        String LAST_SEEN = "last_updated";
+        String LAST_SEEN_KEY = "last_seen_key";
+        String STATUS = "status";
         String MASTER_KEY_ID = "master_key_id";
     }
 
@@ -348,6 +350,11 @@ public class KeychainContract {
     public static class ApiAutocryptPeer implements ApiAutocryptPeerColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_AUTOCRYPT_PEERS).build();
+
+        public static final int RESET = 0;
+        public static final int GOSSIP = 1;
+        public static final int AVAILABLE = 2;
+        public static final int MUTUAL = 3;
 
         public static Uri buildByKeyUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(uri.getPathSegments().get(1)).build();

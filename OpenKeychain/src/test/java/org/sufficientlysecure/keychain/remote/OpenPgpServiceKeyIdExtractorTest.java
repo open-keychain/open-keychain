@@ -205,14 +205,14 @@ public class OpenPgpServiceKeyIdExtractorTest {
     }
 
     private void setupContentResolverResult() {
-        MatrixCursor resultCursor = new MatrixCursor(OpenPgpServiceKeyIdExtractor.PROJECTION_KEY_SEARCH);
+        MatrixCursor resultCursor = new MatrixCursor(OpenPgpServiceKeyIdExtractor.PROJECTION_MAIL_STATUS);
         when(contentResolver.query(
                 any(Uri.class), any(String[].class), any(String.class), any(String[].class), any(String.class)))
                 .thenReturn(resultCursor);
     }
 
     private void setupContentResolverResult(String[] userIds, Long[] resultKeyIds, int[] verified) {
-        MatrixCursor resultCursor = new MatrixCursor(OpenPgpServiceKeyIdExtractor.PROJECTION_KEY_SEARCH);
+        MatrixCursor resultCursor = new MatrixCursor(OpenPgpServiceKeyIdExtractor.PROJECTION_MAIL_STATUS);
         for (int i = 0; i < userIds.length; i++) {
             resultCursor.addRow(new Object[] { userIds[i], resultKeyIds[i], verified[i] });
         }

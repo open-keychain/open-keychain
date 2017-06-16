@@ -676,7 +676,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(ApiAutocryptPeer.PACKAGE_NAME, ApiAutocryptPeer.PACKAGE_NAME);
                 projectionMap.put(ApiAutocryptPeer.IDENTIFIER, ApiAutocryptPeer.IDENTIFIER);
                 projectionMap.put(ApiAutocryptPeer.MASTER_KEY_ID, ApiAutocryptPeer.MASTER_KEY_ID);
-                projectionMap.put(ApiAutocryptPeer.LAST_UPDATED, ApiAutocryptPeer.LAST_UPDATED);
+                projectionMap.put(ApiAutocryptPeer.LAST_SEEN, ApiAutocryptPeer.LAST_SEEN);
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(Tables.API_AUTOCRYPT_PEERS);
@@ -999,7 +999,7 @@ public class KeychainProvider extends ContentProvider {
                 }
                 case TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID: {
                     Long masterKeyId = values.getAsLong(ApiAutocryptPeer.MASTER_KEY_ID);
-                    long updateTime = values.getAsLong(ApiAutocryptPeer.LAST_UPDATED);
+                    long updateTime = values.getAsLong(ApiAutocryptPeer.LAST_SEEN);
                     if (masterKeyId == null) {
                         throw new IllegalArgumentException("master_key_id must be a non-null value!");
                     }
@@ -1009,7 +1009,7 @@ public class KeychainProvider extends ContentProvider {
                     actualValues.put(ApiAutocryptPeer.PACKAGE_NAME, packageName);
                     actualValues.put(ApiAutocryptPeer.IDENTIFIER, uri.getLastPathSegment());
                     actualValues.put(ApiAutocryptPeer.MASTER_KEY_ID, masterKeyId);
-                    actualValues.put(ApiAutocryptPeer.LAST_UPDATED, updateTime);
+                    actualValues.put(ApiAutocryptPeer.LAST_SEEN, updateTime);
 
                     try {
                         db.replace(Tables.API_AUTOCRYPT_PEERS, null, actualValues);

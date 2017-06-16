@@ -26,6 +26,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPee
 
 
 public class KeychainExternalContract {
+    public static final int KEY_STATUS_UNAVAILABLE = 0;
     public static final int KEY_STATUS_UNVERIFIED = 1;
     public static final int KEY_STATUS_VERIFIED = 2;
 
@@ -35,6 +36,7 @@ public class KeychainExternalContract {
     private static final Uri BASE_CONTENT_URI_EXTERNAL = Uri
             .parse("content://" + CONTENT_AUTHORITY_EXTERNAL);
     public static final String BASE_EMAIL_STATUS = "email_status";
+    public static final String BASE_AUTOCRYPT_PEER_STATUS = "autocrypt_status";
     public static final String BASE_AUTOCRYPT_PEERS = "autocrypt_peers";
 
 
@@ -43,14 +45,25 @@ public class KeychainExternalContract {
         public static final String USER_ID = "user_id";
         public static final String USER_ID_STATUS = "email_status";
         public static final String MASTER_KEY_ID = "master_key_id";
-        public static final String AUTOCRYPT_PEER_LAST_SEEN = "autocrypt_peer_last_seen";
-        public static final String AUTOCRYPT_PEER_STATE = "autocrypt_peer_state";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_EXTERNAL.buildUpon()
                 .appendPath(BASE_EMAIL_STATUS).build();
 
         public static final String CONTENT_TYPE =
                 "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.email_status";
+    }
+
+    public static class AutocryptPeerStatus implements BaseColumns {
+        public static final String EMAIL_ADDRESS = "email_address";
+        public static final String MASTER_KEY_ID = "master_key_id";
+        public static final String AUTOCRYPT_PEER_LAST_SEEN = "autocrypt_peer_last_seen";
+        public static final String AUTOCRYPT_PEER_STATUS = "autocrypt_peer_state";
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_EXTERNAL.buildUpon()
+                .appendPath(BASE_EMAIL_STATUS).build();
+
+        public static final String CONTENT_TYPE =
+                "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.autocrypt_status";
     }
 
     public static class ApiAutocryptPeer implements ApiAutocryptPeerColumns, BaseColumns {

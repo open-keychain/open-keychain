@@ -187,7 +187,7 @@ public class KeychainExternalProviderTest {
         Cursor cursor = contentResolver.query(
                 EmailStatus.CONTENT_URI, new String[] {
                         EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID_STATUS, EmailStatus.USER_ID,
-                        EmailStatus.AUTOCRYPT_PEER_STATE },
+                        EmailStatus.AUTOCRYPT_PEER_STATUS },
                 null, new String [] { AUTOCRYPT_PEER }, null
             );
 
@@ -211,7 +211,7 @@ public class KeychainExternalProviderTest {
         Cursor cursor = contentResolver.query(
                 EmailStatus.CONTENT_URI, new String[] {
                         EmailStatus.EMAIL_ADDRESS, EmailStatus.USER_ID_STATUS, EmailStatus.USER_ID,
-                        EmailStatus.AUTOCRYPT_PEER_STATE },
+                        EmailStatus.AUTOCRYPT_PEER_STATUS },
                 null, new String [] { AUTOCRYPT_PEER }, null
         );
 
