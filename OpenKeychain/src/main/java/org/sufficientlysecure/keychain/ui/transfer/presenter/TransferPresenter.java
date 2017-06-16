@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.transfer.presenter;
 
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import android.content.Context;
@@ -299,6 +300,13 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     }
 
     @Override
+    public void onConnectionErrorNoRouteToHost(String wifiSsid) {
+        view.showErrorConnectionFailed();
+
+        resetAndStartListen();
+    }
+
+    @Override
     public void onConnectionErrorListen() {
         view.showErrorListenFailed();
     }
@@ -320,7 +328,11 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         view.showEstablishingConnection();
 
         keyTransferClientInteractor = new KeyTransferInteractor(DELIMITER_START, DELIMITER_END);
-        keyTransferClientInteractor.connectToServer(qrCodeContent, TransferPresenter.this);
+        try {
+            keyTransferClientInteractor.connectToServer(qrCodeContent, TransferPresenter.this);
+        } catch (URISyntaxException e) {
+            view.showErrorConnectionFailed();
+        }
     }
 
     private void checkWifiResetAndStartListen() {
@@ -340,7 +352,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         connectionClear();
 
         keyTransferServerInteractor = new KeyTransferInteractor(DELIMITER_START, DELIMITER_END);
-        keyTransferServerInteractor.startServer(this);
+        keyTransferServerInteractor.startServer(this, null);
 
         view.showWaitingForConnection();
         view.setShowDoneIcon(false);

@@ -27,8 +27,10 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -36,11 +38,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import android.net.PskKeyManager;
-import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
@@ -56,7 +56,6 @@ import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
-import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -78,11 +77,11 @@ public class KeyTransferInteractor {
     private static final int CONNECTION_SEND_OK = 3;
     private static final int CONNECTION_RECEIVE_OK = 4;
     private static final int CONNECTION_LOST = 5;
-    private static final int CONNECTION_ERROR_CONNECT = 6;
-    private static final int CONNECTION_ERROR_WHILE_CONNECTED = 7;
-    private static final int CONNECTION_ERROR_LISTEN = 8;
+    private static final int CONNECTION_ERROR_NO_ROUTE_TO_HOST = 6;
+    private static final int CONNECTION_ERROR_CONNECT = 7;
+    private static final int CONNECTION_ERROR_WHILE_CONNECTED = 8;
+    private static final int CONNECTION_ERROR_LISTEN = 0;
 
-    private static final String QRCODE_URI_FORMAT = "PGP+TRANSFER://%s@%s:%s";
     private static final int TIMEOUT_CONNECTING = 1500;
     private static final int TIMEOUT_RECEIVING = 2000;
     private static final int TIMEOUT_WAITING = 500;
@@ -100,20 +99,18 @@ public class KeyTransferInteractor {
         this.delimiterEnd = delimiterEnd;
     }
 
-    public void connectToServer(String connectionDetails, KeyTransferCallback callback) {
-        Uri uri = Uri.parse(connectionDetails);
-        final byte[] presharedKey = Hex.decode(uri.getUserInfo());
-        final String host = uri.getHost();
-        final int port = uri.getPort();
+    public void connectToServer(String qrCodeContent, KeyTransferCallback callback) throws URISyntaxException {
+        SktUri sktUri = SktUri.parse(qrCodeContent);
 
-        transferThread = TransferThread.createClientTransferThread(delimiterStart, delimiterEnd, callback, presharedKey, host, port);
+        transferThread = TransferThread.createClientTransferThread(delimiterStart, delimiterEnd, callback,
+                sktUri.getPresharedKey(), sktUri.getHost(), sktUri.getPort(), sktUri.getWifiSsid());
         transferThread.start();
     }
 
-    public void startServer(KeyTransferCallback callback) {
+    public void startServer(KeyTransferCallback callback, String wifiSsid) {
         byte[] presharedKey = generatePresharedKey();
 
-        transferThread = TransferThread.createServerTransferThread(delimiterStart, delimiterEnd, callback, presharedKey);
+        transferThread = TransferThread.createServerTransferThread(delimiterStart, delimiterEnd, callback, presharedKey, wifiSsid);
         transferThread.start();
     }
 
@@ -126,6 +123,7 @@ public class KeyTransferInteractor {
         private final boolean isServer;
         private final String clientHost;
         private final Integer clientPort;
+        private final String wifiSsid;
 
         private KeyTransferCallback callback;
         private SSLServerSocket serverSocket;
@@ -133,18 +131,18 @@ public class KeyTransferInteractor {
         private String sendPassthrough;
 
         static TransferThread createClientTransferThread(String delimiterStart, String delimiterEnd,
-                KeyTransferCallback callback, byte[] presharedKey, String host, int port) {
-            return new TransferThread(delimiterStart, delimiterEnd, callback, presharedKey, false, host, port);
+                KeyTransferCallback callback, byte[] presharedKey, String host, int port, String wifiSsid) {
+            return new TransferThread(delimiterStart, delimiterEnd, callback, presharedKey, false, host, port, wifiSsid);
         }
 
         static TransferThread createServerTransferThread(String delimiterStart, String delimiterEnd,
-                KeyTransferCallback callback, byte[] presharedKey) {
-            return new TransferThread(delimiterStart, delimiterEnd, callback, presharedKey, true, null, null);
+                KeyTransferCallback callback, byte[] presharedKey, String wifiSsid) {
+            return new TransferThread(delimiterStart, delimiterEnd, callback, presharedKey, true, null, null, wifiSsid);
         }
 
         private TransferThread(String delimiterStart, String delimiterEnd,
                 KeyTransferCallback callback, byte[] presharedKey, boolean isServer,
-                String clientHost, Integer clientPort) {
+                String clientHost, Integer clientPort, String wifiSsid) {
             super("TLS-PSK Key Transfer Thread");
 
             this.delimiterStart = delimiterStart;
@@ -154,6 +152,7 @@ public class KeyTransferInteractor {
             this.presharedKey = presharedKey;
             this.clientHost = clientHost;
             this.clientPort = clientPort;
+            this.wifiSsid = wifiSsid;
             this.isServer = isServer;
 
             handler = new Handler(Looper.getMainLooper());
@@ -196,11 +195,8 @@ public class KeyTransferInteractor {
                     String[] enabledCipherSuites = intersectArrays(supportedCipherSuites, ALLOWED_CIPHERSUITES);
                     serverSocket.setEnabledCipherSuites(enabledCipherSuites);
 
-                    String presharedKeyEncoded = Hex.toHexString(presharedKey);
-                    String qrCodeData = String.format(
-                            QRCODE_URI_FORMAT, presharedKeyEncoded, getIPAddress(true), serverSocket.getLocalPort());
-                    qrCodeData = qrCodeData.toUpperCase(Locale.getDefault());
-                    invokeListener(CONNECTION_LISTENING, qrCodeData);
+                    SktUri sktUri = SktUri.create(getIPAddress(true), serverSocket.getLocalPort(), presharedKey, wifiSsid);
+                    invokeListener(CONNECTION_LISTENING, sktUri.toUriString());
 
                     socket = serverSocket.accept();
                 } catch (IOException e) {
@@ -219,7 +215,11 @@ public class KeyTransferInteractor {
                     socket.connect(new InetSocketAddress(InetAddress.getByName(clientHost), clientPort), TIMEOUT_CONNECTING);
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error while connecting!", e);
-                    invokeListener(CONNECTION_ERROR_CONNECT, null);
+                    if (e instanceof NoRouteToHostException) {
+                        invokeListener(CONNECTION_ERROR_NO_ROUTE_TO_HOST, wifiSsid);
+                    } else {
+                        invokeListener(CONNECTION_ERROR_CONNECT, null);
+                    }
                     return null;
                 }
             }
@@ -345,6 +345,9 @@ public class KeyTransferInteractor {
                         case CONNECTION_ERROR_WHILE_CONNECTED:
                             callback.onConnectionError(arg);
                             break;
+                        case CONNECTION_ERROR_NO_ROUTE_TO_HOST:
+                            callback.onConnectionErrorNoRouteToHost(wifiSsid);
+                            break;
                         case CONNECTION_ERROR_CONNECT:
                             callback.onConnectionErrorConnect();
                             break;
@@ -398,6 +401,7 @@ public class KeyTransferInteractor {
         void onDataSentOk(String passthrough);
 
         void onConnectionErrorConnect();
+        void onConnectionErrorNoRouteToHost(String wifiSsid);
         void onConnectionErrorListen();
         void onConnectionError(String arg);
     }

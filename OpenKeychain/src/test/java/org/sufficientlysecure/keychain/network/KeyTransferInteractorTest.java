@@ -1,19 +1,14 @@
 package org.sufficientlysecure.keychain.network;
 
 
-import java.security.Security;
+import java.net.URISyntaxException;
 
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.RequiresApi;
 
 import junit.framework.Assert;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
-import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.network.KeyTransferInteractor.KeyTransferCallback;
 
 import static junit.framework.Assert.assertTrue;
@@ -38,7 +33,7 @@ public class KeyTransferInteractorTest {
     }
 
 //    @Test
-    public void testServerShouldGiveSuccessCallback() {
+    public void testServerShouldGiveSuccessCallback() throws URISyntaxException {
         KeyTransferInteractor serverKeyTransferInteractor = new KeyTransferInteractor(DELIM_START, DELIM_END);
 
         serverKeyTransferInteractor.startServer(new SimpleKeyTransferCallback() {
@@ -51,7 +46,7 @@ public class KeyTransferInteractorTest {
             public void onConnectionEstablished(String otherName) {
                 serverConnectionEstablished = true;
             }
-        });
+        }, null);
         waitForLooperCallback();
         Assert.assertNotNull(receivedQrCodeData);
 
@@ -101,6 +96,11 @@ public class KeyTransferInteractorTest {
         @Override
         public void onDataSentOk(String passthrough) {
             fail("unexpected callback: onDataSentOk");
+        }
+
+        @Override
+        public void onConnectionErrorNoRouteToHost(String wifiSsid) {
+            fail("unexpected callback: onConnectionErrorNoRouteToHost");
         }
 
         @Override
