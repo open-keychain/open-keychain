@@ -42,9 +42,7 @@ public class OpaqueKeyTest {
 
     @Test
     public void testOpaqueSubKey__canonicalize__shouldFail() throws Exception {
-        // key from GnuPG's test suite, sample msg generated using GnuPG v2.1.18
-        // TODO use for actual tests once eddsa is supported!
-        UncachedKeyRing ring = readRingFromResource("/test-keys/eddsa-sample-1-pub.asc");
+        UncachedKeyRing ring = readRingFromResource("/test-keys/unknown-sample-1.pub");
 
         OperationLog log = new OperationLog();
         ring.canonicalize(log, 0);
@@ -61,12 +59,12 @@ public class OpaqueKeyTest {
         OperationLog log = new OperationLog();
         ring.canonicalize(log, 0);
 
-        assertTrue(log.containsType(LogType.MSG_KC_ERROR_MASTER_ALGO));
+        assertTrue(log.containsType(LogType.MSG_KC_SUB_BAD));
     }
 
     @Test
     public void testOpaqueSubKey__canonicalize__shouldStrip() throws Exception {
-        UncachedKeyRing ring = readRingFromResource("/test-keys/eddsa-subkey.pub.asc");
+        UncachedKeyRing ring = readRingFromResource("/test-keys/unknown-subkey.pub.asc");
 
         OperationLog log = new OperationLog();
         CanonicalizedKeyRing canonicalizedKeyRing = ring.canonicalize(log, 0);
@@ -78,7 +76,7 @@ public class OpaqueKeyTest {
     @Test
     public void testOpaqueSubKey__reencode__shouldBeIdentical() throws Exception {
         byte[] rawKeyData = TestDataUtil.readFully(
-                OpaqueKeyTest.class.getResourceAsStream("/test-keys/eddsa-subkey.pub.asc"));
+                OpaqueKeyTest.class.getResourceAsStream("/test-keys/unknown-subkey.pub.asc"));
 
         UncachedKeyRing ring = UncachedKeyRing.decodeFromData(rawKeyData);
 

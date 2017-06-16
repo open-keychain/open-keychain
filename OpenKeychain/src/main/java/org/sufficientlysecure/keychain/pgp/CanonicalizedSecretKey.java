@@ -209,6 +209,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             mPrivateKey = mSecretKey.extractPrivateKey(keyDecryptor);
             mPrivateKeyState = PRIVATE_KEY_STATE_UNLOCKED;
         } catch (PGPException e) {
+            Log.e(Constants.TAG, "Error extracting private key!", e);
             return false;
         }
         if (mPrivateKey == null) {

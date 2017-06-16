@@ -250,6 +250,7 @@ public class UncachedKeyRing {
         PublicKeyAlgorithmTags.ECDSA, // 19
         PublicKeyAlgorithmTags.ELGAMAL_GENERAL, // 20
         // PublicKeyAlgorithmTags.DIFFIE_HELLMAN, // 21
+        PublicKeyAlgorithmTags.EDDSA, // 22
     };
 
     /** "Canonicalizes" a public key, removing inconsistencies in the process.
