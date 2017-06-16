@@ -27,6 +27,8 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
@@ -351,8 +353,10 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         sentData = false;
         connectionClear();
 
+        String wifiSsid = getConnectedWifiSsid();
+
         keyTransferServerInteractor = new KeyTransferInteractor(DELIMITER_START, DELIMITER_END);
-        keyTransferServerInteractor.startServer(this, null);
+        keyTransferServerInteractor.startServer(this, wifiSsid);
 
         view.showWaitingForConnection();
         view.setShowDoneIcon(false);
@@ -363,6 +367,23 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         NetworkInfo wifiNetwork = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         return wifiNetwork.isConnected();
+    }
+
+    private String getConnectedWifiSsid() {
+        WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager == null) {
+            return null;
+        }
+        WifiInfo info = wifiManager.getConnectionInfo();
+        if (info == null) {
+            return null;
+        }
+        // getSSID will return the ssid in quotes if it is valid utf-8. we only return it in that case.
+        String ssid = info.getSSID();
+        if (ssid.charAt(0) != '"') {
+            return null;
+        }
+        return ssid.substring(1, ssid.length() -1);
     }
 
     private void connectionClear() {
