@@ -54,6 +54,8 @@ Select SDK Platform for API levels 25.
 6. Execute ``./gradlew assembleFdroidDebug``
 7. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-fdroid-debug.apk``
 
+The "google" flavor is only used to include donations via Play Store, for development the "fdroid" flavor should be used.
+
 ### Run Tests
 1. Use OpenJDK instead of Oracle JDK
 2. Execute ``./gradlew clean testFdroidDebugUnitTest --continue``

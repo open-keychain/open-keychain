@@ -252,6 +252,12 @@ android {
         }
     }
 
+    variantFilter { variant ->
+        if(variant.buildType.name.equals('debug') && variant.getFlavors().get(0).name.equals('google')) {
+            variant.setIgnore(true);
+        }
+    }
+
     /*
      * To sign release build, create file gradle.properties in ~/.gradle/ with this content:
      *
