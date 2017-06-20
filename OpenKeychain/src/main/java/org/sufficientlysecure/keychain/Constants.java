@@ -75,7 +75,7 @@ public final class Constants {
     public static final String FINGERPRINT_SCHEME = "openpgp4fpr";
 
     // used by openpgp-skt
-    public static final String TRANSFER_SCHEME = "pgp+transfer";
+    public static final String SKT_SCHEME = "OPGPSKT";
 
     public static final String BOUNCY_CASTLE_PROVIDER_NAME = BouncyCastleProvider.PROVIDER_NAME;
 

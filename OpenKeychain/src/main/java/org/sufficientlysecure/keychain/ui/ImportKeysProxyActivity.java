@@ -145,7 +145,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
         Log.d(Constants.TAG, "scanned: " + uri);
 
         // example: pgp+transfer:
-        if (uri != null && uri.getScheme() != null && uri.getScheme().equalsIgnoreCase(Constants.TRANSFER_SCHEME)) {
+        if (uri != null && uri.getScheme() != null && uri.getScheme().equalsIgnoreCase(Constants.SKT_SCHEME)) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra(MainActivity.EXTRA_INIT_FRAG, MainActivity.ID_TRANSFER);
             intent.putExtra(TransferFragment.EXTRA_OPENPGP_SKT_INFO, uri);

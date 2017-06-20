@@ -17,9 +17,8 @@ import org.sufficientlysecure.keychain.util.Log;
 
 @AutoValue
 abstract class SktUri {
-    private static final String SKT_SCHEME = "OPGPSKT";
-    private static final String QRCODE_URI_FORMAT = SKT_SCHEME + ":%s/%d/%s";
-    private static final String QRCODE_URI_FORMAT_SSID = SKT_SCHEME + ":%s/%d/%s/SSID:%s";
+    private static final String QRCODE_URI_FORMAT = Constants.SKT_SCHEME + ":%s/%d/%s";
+    private static final String QRCODE_URI_FORMAT_SSID = Constants.SKT_SCHEME + ":%s/%d/%s/SSID:%s";
 
 
     public abstract String getHost();
@@ -31,7 +30,7 @@ abstract class SktUri {
 
     @NonNull
     public static SktUri parse(String input) throws URISyntaxException {
-        if (!input.startsWith(SKT_SCHEME + ":")) {
+        if (!input.startsWith(Constants.SKT_SCHEME + ":")) {
             throw new URISyntaxException(input, "invalid scheme");
         }
 
