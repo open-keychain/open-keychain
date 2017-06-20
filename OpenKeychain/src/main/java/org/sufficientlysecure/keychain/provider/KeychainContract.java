@@ -100,7 +100,7 @@ public class KeychainContract {
         String IDENTIFIER = "identifier";
         String LAST_SEEN = "last_updated";
         String LAST_SEEN_KEY = "last_seen_key";
-        String STATUS = "status";
+        String STATE = "state";
         String MASTER_KEY_ID = "master_key_id";
     }
 

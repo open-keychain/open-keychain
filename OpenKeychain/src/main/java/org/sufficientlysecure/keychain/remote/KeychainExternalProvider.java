@@ -21,7 +21,6 @@ import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -48,7 +47,6 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.ApiAutocryptPeer;
-import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptPeerStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
 import org.sufficientlysecure.keychain.util.Log;
@@ -59,8 +57,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
     private static final int AUTOCRYPT_PEER = 201;
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 302;
-    private static final int AUTOCRYPT_PEER_STATUS = 401;
-    private static final int AUTOCRYPT_PEER_STATUS_INTERNAL = 402;
 
     public static final String TEMP_TABLE_QUERIED_ADDRESSES = "queried_addresses";
     public static final String TEMP_TABLE_COLUMN_ADDRES = "address";
@@ -91,9 +87,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
         matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_PEERS + "/*", AUTOCRYPT_PEER);
 
-        matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_PEER_STATUS, AUTOCRYPT_PEER_STATUS);
-        matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_PEER_STATUS + "/*", AUTOCRYPT_PEER_STATUS_INTERNAL);
-
         // can only query status of calling app - for internal use only!
         matcher.addURI(KeychainContract.CONTENT_AUTHORITY, KeychainContract.BASE_API_APPS + "/*", API_APPS_BY_PACKAGE_NAME);
 
@@ -120,9 +113,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         final int match = mUriMatcher.match(uri);
         switch (match) {
             case EMAIL_STATUS:
-            case EMAIL_STATUS_INTERNAL:
-            case AUTOCRYPT_PEER_STATUS:
-            case AUTOCRYPT_PEER_STATUS_INTERNAL:
                 return EmailStatus.CONTENT_TYPE;
 
             case API_APPS:
@@ -178,21 +168,38 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(EmailStatus._ID, "email AS _id");
-                projectionMap.put(EmailStatus.EMAIL_ADDRESS, // this is actually the queried address
-                        TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES + " AS " + EmailStatus.EMAIL_ADDRESS);
-                projectionMap.put(EmailStatus.USER_ID,
-                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
+                projectionMap.put(EmailStatus.ADDRESS, // this is actually the queried address
+                        TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES + " AS " + EmailStatus.ADDRESS);
+
+                projectionMap.put(EmailStatus.UID_ADDRESS,
+                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.UID_ADDRESS);
                 // we take the minimum (>0) here, where "1" is "verified by known secret key", "2" is "self-certified"
-                projectionMap.put(EmailStatus.USER_ID_STATUS, "CASE ( MIN (certs_user_id." + Certs.VERIFIED + " ) ) "
+                projectionMap.put(EmailStatus.UID_KEY_STATUS, "CASE ( MIN (certs_user_id." + Certs.VERIFIED + " ) ) "
                         // remap to keep this provider contract independent from our internal representation
-                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
-                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
+                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + EmailStatus.KEY_STATUS_UNVERIFIED
+                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + EmailStatus.KEY_STATUS_VERIFIED
                         + " WHEN NULL THEN NULL"
-                        + " END AS " + EmailStatus.USER_ID_STATUS);
-                projectionMap.put(EmailStatus.MASTER_KEY_ID,
-                        Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + EmailStatus.MASTER_KEY_ID);
-                projectionMap.put(EmailStatus.USER_ID,
-                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
+                        + " END AS " + EmailStatus.UID_KEY_STATUS);
+                projectionMap.put(EmailStatus.UID_MASTER_KEY_ID,
+                        Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + EmailStatus.UID_MASTER_KEY_ID);
+                projectionMap.put(EmailStatus.UID_CANDIDATES,
+                        "COUNT(DISTINCT " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID +
+                                ") AS " + EmailStatus.UID_CANDIDATES);
+
+                projectionMap.put(EmailStatus.AUTOCRYPT_KEY_STATUS, "CASE ( MIN (certs_autocrypt_peer." + Certs.VERIFIED + " ) ) "
+                        // remap to keep this provider contract independent from our internal representation
+                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + EmailStatus.KEY_STATUS_UNVERIFIED
+                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + EmailStatus.KEY_STATUS_VERIFIED
+                        + " WHEN NULL THEN NULL"
+                        + " END AS " + EmailStatus.AUTOCRYPT_KEY_STATUS);
+                projectionMap.put(EmailStatus.AUTOCRYPT_MASTER_KEY_ID,
+                        Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " AS " + EmailStatus.AUTOCRYPT_MASTER_KEY_ID);
+                projectionMap.put(EmailStatus.AUTOCRYPT_PEER_STATE, Tables.API_AUTOCRYPT_PEERS + "." +
+                        ApiAutocryptPeer.STATE + " AS " + EmailStatus.AUTOCRYPT_LAST_SEEN_KEY);
+                projectionMap.put(EmailStatus.AUTOCRYPT_LAST_SEEN, Tables.API_AUTOCRYPT_PEERS + "." +
+                        ApiAutocryptPeer.LAST_SEEN + " AS " + EmailStatus.AUTOCRYPT_LAST_SEEN);
+                projectionMap.put(EmailStatus.AUTOCRYPT_LAST_SEEN_KEY, Tables.API_AUTOCRYPT_PEERS + "." +
+                        ApiAutocryptPeer.LAST_SEEN_KEY + " AS " + EmailStatus.AUTOCRYPT_LAST_SEEN_KEY);
                 qb.setProjectionMap(projectionMap);
 
                 if (projection == null) {
@@ -209,66 +216,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                                 + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = certs_user_id." + Certs.MASTER_KEY_ID
                                 + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = certs_user_id." + Certs.RANK
                                 + ")"
-                );
-                // in case there are multiple verifying certificates
-                groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES;
-                List<String> plist = Arrays.asList(projection);
-                if (plist.contains(EmailStatus.USER_ID)) {
-                    groupBy += ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID;
-                }
-
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = EmailStatus.EMAIL_ADDRESS;
-                }
-
-                // uri to watch is all /key_rings/
-                uri = KeyRings.CONTENT_URI;
-                break;
-            }
-
-            case AUTOCRYPT_PEER_STATUS_INTERNAL:
-                if (!BuildConfig.APPLICATION_ID.equals(callingPackageName)) {
-                    throw new AccessControlException("This URI can only be called internally!");
-                }
-
-                // override package name to use any external
-                // callingPackageName = uri.getLastPathSegment();
-
-            case AUTOCRYPT_PEER_STATUS: {
-                boolean callerIsAllowed = (match == AUTOCRYPT_PEER_STATUS_INTERNAL) || mApiPermissionHelper.isAllowedIgnoreErrors();
-                if (!callerIsAllowed) {
-                    throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
-                }
-
-                db.execSQL("CREATE TEMPORARY TABLE " + TEMP_TABLE_QUERIED_ADDRESSES + " (" + TEMP_TABLE_COLUMN_ADDRES + " TEXT);");
-                ContentValues cv = new ContentValues();
-                for (String address : selectionArgs) {
-                    cv.put(TEMP_TABLE_COLUMN_ADDRES, address);
-                    db.insert(TEMP_TABLE_QUERIED_ADDRESSES, null, cv);
-                }
-
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(AutocryptPeerStatus._ID, "email AS _id");
-                projectionMap.put(AutocryptPeerStatus.EMAIL_ADDRESS, // this is actually the queried address
-                        TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES + " AS " + AutocryptPeerStatus.EMAIL_ADDRESS);
-                projectionMap.put(AutocryptPeerStatus.AUTOCRYPT_PEER_STATUS, "CASE ( MIN (certs_autocrypt_peer." + Certs.VERIFIED + " ) ) "
-                        // remap to keep this provider contract independent from our internal representation
-                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
-                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
-                        + " WHEN NULL THEN NULL"
-                        + " END AS " + AutocryptPeerStatus.AUTOCRYPT_PEER_STATUS);
-                projectionMap.put(AutocryptPeerStatus.MASTER_KEY_ID,
-                        Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + AutocryptPeerStatus.MASTER_KEY_ID);
-                projectionMap.put(AutocryptPeerStatus.AUTOCRYPT_PEER_LAST_SEEN, Tables.API_AUTOCRYPT_PEERS + "." +
-                        ApiAutocryptPeer.LAST_SEEN + " AS " + AutocryptPeerStatus.AUTOCRYPT_PEER_LAST_SEEN);
-                qb.setProjectionMap(projectionMap);
-
-                if (projection == null) {
-                    throw new IllegalArgumentException("Please provide a projection!");
-                }
-
-                qb.setTables(
-                        TEMP_TABLE_QUERIED_ADDRESSES
                                 + " LEFT JOIN " + Tables.API_AUTOCRYPT_PEERS + " ON ("
                                 + Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.IDENTIFIER + " LIKE queried_addresses.address"
                                 + " AND " + Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME + " = \"" + callingPackageName + "\""
@@ -279,10 +226,9 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 );
                 // in case there are multiple verifying certificates
                 groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES;
-                List<String> plist = Arrays.asList(projection);
 
                 if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES;
+                    sortOrder = EmailStatus.ADDRESS;
                 }
 
                 // uri to watch is all /key_rings/
@@ -305,6 +251,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 projectionMap.put(ApiAutocryptPeer.IDENTIFIER, ApiAutocryptPeer.IDENTIFIER);
                 projectionMap.put(ApiAutocryptPeer.MASTER_KEY_ID, ApiAutocryptPeer.MASTER_KEY_ID);
                 projectionMap.put(ApiAutocryptPeer.LAST_SEEN, ApiAutocryptPeer.LAST_SEEN);
+                projectionMap.put(ApiAutocryptPeer.LAST_SEEN_KEY, ApiAutocryptPeer.LAST_SEEN_KEY);
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(Tables.API_AUTOCRYPT_PEERS);

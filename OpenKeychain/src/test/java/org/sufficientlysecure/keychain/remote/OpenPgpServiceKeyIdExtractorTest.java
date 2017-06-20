@@ -74,7 +74,7 @@ public class OpenPgpServiceKeyIdExtractorTest {
         assertArrayEqualsSorted(KEY_IDS, keyIdResult.getKeyIds());
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void returnKeyIdsFromIntent__withUserIds__withEmptyQueryResult() throws Exception {
         Intent intent = new Intent();
         intent.putExtra(OpenPgpApi.EXTRA_USER_IDS, USER_IDS);
@@ -82,15 +82,10 @@ public class OpenPgpServiceKeyIdExtractorTest {
         setupContentResolverResult();
 
         PendingIntent pendingIntent = mock(PendingIntent.class);
-        setupPendingIntentFactoryResult(pendingIntent);
+        setupSelectPubkeyPendingIntentFactoryResult(pendingIntent);
 
 
-        KeyIdResult keyIdResult = openPgpServiceKeyIdExtractor.returnKeyIdsFromIntent(intent, false,
-                BuildConfig.APPLICATION_ID);
-
-
-        assertEquals(KeyIdResultStatus.NO_KEYS, keyIdResult.getStatus());
-        assertTrue(keyIdResult.hasKeySelectionPendingIntent());
+        openPgpServiceKeyIdExtractor.returnKeyIdsFromIntent(intent, false, BuildConfig.APPLICATION_ID);
     }
 
     @Test
@@ -99,7 +94,7 @@ public class OpenPgpServiceKeyIdExtractorTest {
         intent.putExtra(OpenPgpApi.EXTRA_USER_IDS, new String[] { });
 
         PendingIntent pendingIntent = mock(PendingIntent.class);
-        setupPendingIntentFactoryResult(pendingIntent);
+        setupSelectPubkeyPendingIntentFactoryResult(pendingIntent);
 
 
         KeyIdResult keyIdResult = openPgpServiceKeyIdExtractor.returnKeyIdsFromIntent(intent, false,
@@ -117,7 +112,7 @@ public class OpenPgpServiceKeyIdExtractorTest {
         intent.putExtra(OpenPgpApi.EXTRA_USER_IDS, new String[0]);
 
         PendingIntent pendingIntent = mock(PendingIntent.class);
-        setupPendingIntentFactoryResult(pendingIntent);
+        setupSelectPubkeyPendingIntentFactoryResult(pendingIntent);
 
         KeyIdResult keyIdResult = openPgpServiceKeyIdExtractor.returnKeyIdsFromIntent(intent, false,
                 BuildConfig.APPLICATION_ID);
@@ -135,7 +130,7 @@ public class OpenPgpServiceKeyIdExtractorTest {
         setupContentResolverResult();
 
         PendingIntent pendingIntent = mock(PendingIntent.class);
-        setupPendingIntentFactoryResult(pendingIntent);
+        setupSelectPubkeyPendingIntentFactoryResult(pendingIntent);
 
 
         KeyIdResult keyIdResult = openPgpServiceKeyIdExtractor.returnKeyIdsFromIntent(intent, true,
@@ -152,7 +147,7 @@ public class OpenPgpServiceKeyIdExtractorTest {
         Intent intent = new Intent();
         intent.putExtra(OpenPgpApi.EXTRA_USER_IDS, USER_IDS);
 
-        setupContentResolverResult(USER_IDS, new Long[] { 123L, 234L }, new int[] { 0, 0 });
+        setupContentResolverResult(USER_IDS, new Long[] { 123L, 234L }, new int[] { 0, 0 }, new int[] { 1, 1, 1 });
 
 
         KeyIdResult keyIdResult = openPgpServiceKeyIdExtractor.returnKeyIdsFromIntent(intent, false,
@@ -170,11 +165,11 @@ public class OpenPgpServiceKeyIdExtractorTest {
         intent.putExtra(OpenPgpApi.EXTRA_USER_IDS, USER_IDS);
 
         setupContentResolverResult(new String[] {
-                USER_IDS[0], USER_IDS[0], USER_IDS[1]
-        }, new Long[] { 123L, 345L, 234L }, new int[] { 0, 0, 0 });
+                USER_IDS[0], USER_IDS[1]
+        }, new Long[] { 123L, 234L }, new int[] { 0, 0 }, new int[] { 2, 1 });
 
         PendingIntent pendingIntent = mock(PendingIntent.class);
-        setupPendingIntentFactoryResult(pendingIntent);
+        setupDeduplicatePendingIntentFactoryResult(pendingIntent);
 
 
         KeyIdResult keyIdResult = openPgpServiceKeyIdExtractor.returnKeyIdsFromIntent(intent, false,
@@ -190,10 +185,10 @@ public class OpenPgpServiceKeyIdExtractorTest {
         Intent intent = new Intent();
         intent.putExtra(OpenPgpApi.EXTRA_USER_IDS, USER_IDS);
 
-        setupContentResolverResult(USER_IDS, new Long[] { null, 234L }, new int[] { 0, 0 });
+        setupContentResolverResult(USER_IDS, new Long[] { null, 234L }, new int[] { 0, 0 }, new int[] { 0, 1 });
 
         PendingIntent pendingIntent = mock(PendingIntent.class);
-        setupPendingIntentFactoryResult(pendingIntent);
+        setupSelectPubkeyPendingIntentFactoryResult(pendingIntent);
 
 
         KeyIdResult keyIdResult = openPgpServiceKeyIdExtractor.returnKeyIdsFromIntent(intent, false,
@@ -211,10 +206,10 @@ public class OpenPgpServiceKeyIdExtractorTest {
                 .thenReturn(resultCursor);
     }
 
-    private void setupContentResolverResult(String[] userIds, Long[] resultKeyIds, int[] verified) {
+    private void setupContentResolverResult(String[] userIds, Long[] resultKeyIds, int[] verified, int[] candidates) {
         MatrixCursor resultCursor = new MatrixCursor(OpenPgpServiceKeyIdExtractor.PROJECTION_MAIL_STATUS);
         for (int i = 0; i < userIds.length; i++) {
-            resultCursor.addRow(new Object[] { userIds[i], resultKeyIds[i], verified[i] });
+            resultCursor.addRow(new Object[] { userIds[i], resultKeyIds[i], verified[i], candidates[i], null, null, null });
         }
 
         when(contentResolver.query(
@@ -222,12 +217,16 @@ public class OpenPgpServiceKeyIdExtractorTest {
                 .thenReturn(resultCursor);
     }
 
-    private void setupPendingIntentFactoryResult(PendingIntent pendingIntent) {
+    private void setupSelectPubkeyPendingIntentFactoryResult(PendingIntent pendingIntent) {
         when(apiPendingIntentFactory.createSelectPublicKeyPendingIntent(
                 any(Intent.class), any(long[].class), any(ArrayList.class), any(ArrayList.class), any(Boolean.class)))
                 .thenReturn(pendingIntent);
     }
 
+    private void setupDeduplicatePendingIntentFactoryResult(PendingIntent pendingIntent) {
+        when(apiPendingIntentFactory.createDeduplicatePendingIntent(
+                any(String.class), any(Intent.class), any(ArrayList.class))).thenReturn(pendingIntent);
+    }
 
     private static void assertArrayEqualsSorted(long[] a, long[] b) {
         long[] tmpA = Arrays.copyOf(a, a.length);

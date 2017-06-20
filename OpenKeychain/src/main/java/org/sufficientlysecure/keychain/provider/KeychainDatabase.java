@@ -164,7 +164,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + ApiAutocryptPeerColumns.IDENTIFIER + " TEXT NOT NULL, "
                     + ApiAutocryptPeerColumns.LAST_SEEN + " INTEGER NOT NULL, "
                     + ApiAutocryptPeerColumns.LAST_SEEN_KEY + " INTEGER NOT NULL, "
-                    + ApiAutocryptPeerColumns.STATUS + " INTEGER NOT NULL, "
+                    + ApiAutocryptPeerColumns.STATE + " INTEGER NOT NULL, "
                     + ApiAutocryptPeerColumns.MASTER_KEY_ID + " INTEGER NULL, "
                     + "PRIMARY KEY(" + ApiAutocryptPeerColumns.PACKAGE_NAME + ", "
                         + ApiAutocryptPeerColumns.IDENTIFIER + "), "

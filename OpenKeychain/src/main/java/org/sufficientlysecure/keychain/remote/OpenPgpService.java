@@ -606,7 +606,7 @@ public class OpenPgpService extends Service {
 
         long masterKeyId = signatureResult.getKeyId();
         if (autocryptPeerMasterKeyId == null) {
-            autocryptPeerentityDao.setMasterKeyIdForAutocryptPeer(autocryptPeerentity, masterKeyId, new Date());
+            autocryptPeerentityDao.updateToGossipState(autocryptPeerentity, new Date(), masterKeyId);
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.NEW);
         } else  if (masterKeyId == autocryptPeerMasterKeyId) {
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.OK);

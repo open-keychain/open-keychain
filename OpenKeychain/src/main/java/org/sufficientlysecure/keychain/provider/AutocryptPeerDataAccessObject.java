@@ -119,37 +119,30 @@ public class AutocryptPeerDataAccessObject {
         return null;
     }
 
-    public void setMasterKeyIdForAutocryptPeer(String autocryptId, long masterKeyId, Date date) {
-        Date lastUpdated = getLastSeen(autocryptId);
-        if (lastUpdated != null && lastUpdated.after(date)) {
-            throw new IllegalArgumentException("Database entry was newer than the one to be inserted! Cannot backdate");
-        }
-
-        ContentValues cv = new ContentValues();
-        cv.put(ApiAutocryptPeer.MASTER_KEY_ID, masterKeyId);
-        cv.put(ApiAutocryptPeer.LAST_SEEN_KEY, date.getTime());
-        mQueryInterface.update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
+    public void updateToResetState(String autocryptId, Date effectiveDate) {
+        updateAutocryptState(autocryptId, effectiveDate, null, ApiAutocryptPeer.RESET);
     }
 
-    public void updateToResetState(String autocryptId, Date effectiveDate) {
-        updateAutocryptState(autocryptId, effectiveDate, ApiAutocryptPeer.RESET);
+    public void updateToGossipState(String autocryptId, Date effectiveDate, long masterKeyId) {
+        updateAutocryptState(autocryptId, effectiveDate, masterKeyId, ApiAutocryptPeer.GOSSIP);
     }
 
     public void updateToMutualState(String autocryptId, Date effectiveDate, long masterKeyId) {
-        setMasterKeyIdForAutocryptPeer(autocryptId, masterKeyId, effectiveDate);
-        updateAutocryptState(autocryptId, effectiveDate, ApiAutocryptPeer.MUTUAL);
+        updateAutocryptState(autocryptId, effectiveDate, masterKeyId, ApiAutocryptPeer.MUTUAL);
     }
 
     public void updateToAvailableState(String autocryptId, Date effectiveDate, long masterKeyId) {
-        setMasterKeyIdForAutocryptPeer(autocryptId, masterKeyId, effectiveDate);
-        updateAutocryptState(autocryptId, effectiveDate, ApiAutocryptPeer.AVAILABLE);
+        updateAutocryptState(autocryptId, effectiveDate, masterKeyId, ApiAutocryptPeer.AVAILABLE);
     }
 
-    private void updateAutocryptState(String autocryptId, Date date, int status) {
+    private void updateAutocryptState(String autocryptId, Date date, Long masterKeyId, int status) {
         ContentValues cv = new ContentValues();
-        cv.put(ApiAutocryptPeer.MASTER_KEY_ID, (Integer) null);
+        cv.put(ApiAutocryptPeer.MASTER_KEY_ID, masterKeyId);
         cv.put(ApiAutocryptPeer.LAST_SEEN, date.getTime());
-        cv.put(ApiAutocryptPeer.STATUS, status);
+        if (masterKeyId != null) {
+            cv.put(ApiAutocryptPeer.LAST_SEEN_KEY, masterKeyId);
+        }
+        cv.put(ApiAutocryptPeer.STATE, status);
         mQueryInterface.update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
     }
 }
