@@ -75,6 +75,7 @@ import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
+import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.AutocryptState;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResultStatus;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
@@ -306,22 +307,25 @@ public class OpenPgpService extends Service {
         Intent result = new Intent();
         result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
 
-        switch (keyIdResult.getStatus()) {
-            case MISSING: {
-                result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_UNAVAILABLE);
-                break;
-            }
-            case NO_KEYS:
-            case NO_KEYS_ERROR: {
-                result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_UNAVAILABLE);
-                break;
-            }
-            case DUPLICATE: {
+        AutocryptState combinedAutocryptState = keyIdResult.getCombinedAutocryptState();
+        if (combinedAutocryptState == null) {
+            result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_UNAVAILABLE);
+            return result;
+
+        }
+
+        switch (combinedAutocryptState) {
+            case GOSSIP:
+            case RESET: {
                 result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_DISCOURAGE);
                 break;
             }
-            case OK: {
+            case AVAILABLE: {
                 result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_AVAILABLE);
+                break;
+            }
+            case MUTUAL: {
+                result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_RECOMMEND);
                 break;
             }
             default: {
