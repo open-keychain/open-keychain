@@ -151,7 +151,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 }
 
                 // override package name to use any external
-                // callingPackageName = uri.getLastPathSegment();
+                 callingPackageName = uri.getLastPathSegment();
 
             case EMAIL_STATUS: {
                 boolean callerIsAllowed = (match == EMAIL_STATUS_INTERNAL) || mApiPermissionHelper.isAllowedIgnoreErrors();
