@@ -28,6 +28,7 @@ import android.os.Build;
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.ui.RemoteBackupActivity;
+import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicateActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteImportKeysActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemotePassphraseDialogActivity;
@@ -96,6 +97,16 @@ public class ApiPendingIntentFactory {
 
         return createInternal(data, intent);
     }
+
+    PendingIntent createDeduplicatePendingIntent(String packageName, Intent data, ArrayList<String> duplicateEmails) {
+        Intent intent = new Intent(mContext, RemoteDeduplicateActivity.class);
+
+        intent.putExtra(RemoteDeduplicateActivity.EXTRA_PACKAGE_NAME, packageName);
+        intent.putExtra(RemoteDeduplicateActivity.EXTRA_DUPLICATE_EMAILS, duplicateEmails);
+
+        return createInternal(data, intent);
+    }
+
 
     PendingIntent createImportFromKeyserverPendingIntent(Intent data, long masterKeyId) {
         Intent intent = new Intent(mContext, RemoteImportKeysActivity.class);

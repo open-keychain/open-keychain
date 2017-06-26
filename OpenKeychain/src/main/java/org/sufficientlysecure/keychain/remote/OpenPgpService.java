@@ -333,6 +333,7 @@ public class OpenPgpService extends Service {
 
         switch (combinedAutocryptState) {
             case EXTERNAL:
+            case SELECTED:
             case GOSSIP:
             case RESET: {
                 result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_DISCOURAGE);

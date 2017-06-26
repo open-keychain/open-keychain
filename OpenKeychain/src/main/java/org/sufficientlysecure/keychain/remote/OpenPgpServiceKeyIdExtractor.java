@@ -18,7 +18,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
-import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -153,7 +152,7 @@ class OpenPgpServiceKeyIdExtractor {
         }
 
         if (!duplicateEmails.isEmpty()) {
-            return createDuplicateKeysResult(data, keyIds, missingEmails, duplicateEmails);
+            return createDuplicateKeysResult(data, callingPackageName, duplicateEmails);
         }
 
         if (keyIds.isEmpty()) {
@@ -222,7 +221,7 @@ class OpenPgpServiceKeyIdExtractor {
     }
 
     enum AutocryptState {
-        EXTERNAL, RESET, GOSSIP, AVAILABLE, MUTUAL;
+        EXTERNAL, RESET, GOSSIP, SELECTED, AVAILABLE, MUTUAL;
 
         static AutocryptState fromDbValue(int state) {
             switch (state) {
@@ -230,6 +229,8 @@ class OpenPgpServiceKeyIdExtractor {
                     return RESET;
                 case ApiAutocryptPeer.AVAILABLE:
                     return AVAILABLE;
+                case ApiAutocryptPeer.SELECTED:
+                    return SELECTED;
                 case ApiAutocryptPeer.GOSSIP:
                     return GOSSIP;
                 case ApiAutocryptPeer.MUTUAL:
@@ -248,6 +249,9 @@ class OpenPgpServiceKeyIdExtractor {
             }
             if (this == GOSSIP || other == GOSSIP) {
                 return GOSSIP;
+            }
+            if (this == SELECTED || other == SELECTED) {
+                return SELECTED;
             }
             if (this == AVAILABLE || other == AVAILABLE) {
                 return AVAILABLE;
@@ -358,11 +362,9 @@ class OpenPgpServiceKeyIdExtractor {
         return new KeyIdResult(selectKeyPendingIntent, KeyIdResultStatus.NO_KEYS);
     }
 
-    private KeyIdResult createDuplicateKeysResult(Intent data,
-            HashSet<Long> selectedKeyIds, ArrayList<String> missingEmails, ArrayList<String> duplicateEmails) {
-        long[] keyIdsArray = KeyFormattingUtils.getUnboxedLongArray(selectedKeyIds);
-        PendingIntent selectKeyPendingIntent = apiPendingIntentFactory.createSelectPublicKeyPendingIntent(
-                data, keyIdsArray, missingEmails, duplicateEmails, false);
+    private KeyIdResult createDuplicateKeysResult(Intent data, String packageName, ArrayList<String> duplicateEmails) {
+        PendingIntent selectKeyPendingIntent = apiPendingIntentFactory.createDeduplicatePendingIntent(
+                packageName, data, duplicateEmails);
 
         return new KeyIdResult(selectKeyPendingIntent, KeyIdResultStatus.DUPLICATE);
     }

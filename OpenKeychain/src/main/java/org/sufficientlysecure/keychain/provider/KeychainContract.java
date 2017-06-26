@@ -353,8 +353,9 @@ public class KeychainContract {
 
         public static final int RESET = 0;
         public static final int GOSSIP = 1;
-        public static final int AVAILABLE = 2;
-        public static final int MUTUAL = 3;
+        public static final int SELECTED = 2;
+        public static final int AVAILABLE = 3;
+        public static final int MUTUAL = 4;
 
         public static Uri buildByKeyUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(uri.getPathSegments().get(1)).build();
