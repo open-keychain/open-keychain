@@ -123,6 +123,7 @@ class OpenPgpServiceKeyIdExtractor {
 
                 if (addressQueryResult.uidMasterKeyId != null) {
                     keyIds.add(addressQueryResult.uidMasterKeyId);
+                    combinedAutocryptState = AutocryptState.EXTERNAL;
 
                     if (addressQueryResult.uidHasMultipleCandidates) {
                         duplicateEmails.add(queriedAddress);
@@ -219,7 +220,7 @@ class OpenPgpServiceKeyIdExtractor {
     }
 
     enum AutocryptState {
-        RESET, GOSSIP, AVAILABLE, MUTUAL;
+        EXTERNAL, RESET, GOSSIP, AVAILABLE, MUTUAL;
 
         static AutocryptState fromDbValue(int state) {
             switch (state) {
@@ -237,6 +238,9 @@ class OpenPgpServiceKeyIdExtractor {
         }
 
         public AutocryptState combineWith(AutocryptState other) {
+            if (this == EXTERNAL || other == EXTERNAL) {
+                return EXTERNAL;
+            }
             if (this == RESET || other == RESET) {
                 return RESET;
             }

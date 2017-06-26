@@ -309,12 +309,30 @@ public class OpenPgpService extends Service {
 
         AutocryptState combinedAutocryptState = keyIdResult.getCombinedAutocryptState();
         if (combinedAutocryptState == null) {
-            result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_UNAVAILABLE);
+            switch (keyIdResult.getStatus()) {
+                case NO_KEYS:
+                case NO_KEYS_ERROR:
+                case MISSING: {
+                    result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_UNAVAILABLE);
+                    break;
+                }
+                case DUPLICATE: {
+                    if (keyIdResult.hasKeySelectionPendingIntent()) {
+                        result.putExtra(OpenPgpApi.RESULT_INTENT, keyIdResult.getKeySelectionPendingIntent());
+                    }
+                    result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_DISCOURAGE);
+                    break;
+                }
+                case OK: {
+                    result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_DISCOURAGE);
+                    break;
+                }
+            }
             return result;
-
         }
 
         switch (combinedAutocryptState) {
+            case EXTERNAL:
             case GOSSIP:
             case RESET: {
                 result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_DISCOURAGE);
@@ -325,7 +343,7 @@ public class OpenPgpService extends Service {
                 break;
             }
             case MUTUAL: {
-                result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_RECOMMEND);
+                result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_MUTUAL);
                 break;
             }
             default: {
