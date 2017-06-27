@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
@@ -226,6 +227,14 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 );
                 // in case there are multiple verifying certificates
                 groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES;
+
+                // can't have an expired master key for the uid candidate
+                qb.appendWhere("(EXISTS (SELECT * FROM " + Tables.KEYS + " WHERE "
+                        + Tables.KEYS + "." + Keys.KEY_ID + " = " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
+                        + " AND " + Tables.KEYS + "." + Keys.IS_REVOKED + " = 0"
+                        + " AND NOT " + "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
+                        + " < " + new Date().getTime() / 1000 + ")"
+                        + ")) OR " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " IS NULL");
 
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = EmailStatus.ADDRESS;
