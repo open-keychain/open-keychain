@@ -19,6 +19,12 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -45,11 +51,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 public class KeychainProvider extends ContentProvider {
 

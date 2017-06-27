@@ -16,6 +16,8 @@ import android.support.annotation.VisibleForTesting;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
+import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
+import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
@@ -24,13 +26,13 @@ import org.sufficientlysecure.keychain.util.Log;
 class OpenPgpServiceKeyIdExtractor {
     @VisibleForTesting
     static final String[] PROJECTION_MAIL_STATUS = {
-            EmailStatus.ADDRESS,
-            EmailStatus.UID_MASTER_KEY_ID,
-            EmailStatus.UID_KEY_STATUS,
-            EmailStatus.UID_CANDIDATES,
-            EmailStatus.AUTOCRYPT_MASTER_KEY_ID,
-            EmailStatus.AUTOCRYPT_KEY_STATUS,
-            EmailStatus.AUTOCRYPT_PEER_STATE
+            AutocryptStatus.ADDRESS,
+            AutocryptStatus.UID_MASTER_KEY_ID,
+            AutocryptStatus.UID_KEY_STATUS,
+            AutocryptStatus.UID_CANDIDATES,
+            AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID,
+            AutocryptStatus.AUTOCRYPT_KEY_STATUS,
+            AutocryptStatus.AUTOCRYPT_PEER_STATE
     };
     private static final int INDEX_EMAIL_ADDRESS = 0;
     private static final int INDEX_MASTER_KEY_ID = 1;
@@ -108,7 +110,7 @@ class OpenPgpServiceKeyIdExtractor {
                 if (addressQueryResult.autocryptMasterKeyId != null) {
                     keyIds.add(addressQueryResult.autocryptMasterKeyId);
 
-                    if (addressQueryResult.autocryptKeyStatus != EmailStatus.KEY_STATUS_VERIFIED) {
+                    if (addressQueryResult.autocryptKeyStatus != KeychainExternalContract.KEY_STATUS_VERIFIED) {
                         anyKeyNotVerified = true;
                     }
 
@@ -129,7 +131,7 @@ class OpenPgpServiceKeyIdExtractor {
                         duplicateEmails.add(queriedAddress);
                     }
 
-                    if (addressQueryResult.uidKeyStatus != EmailStatus.KEY_STATUS_VERIFIED) {
+                    if (addressQueryResult.uidKeyStatus != KeychainExternalContract.KEY_STATUS_VERIFIED) {
                         anyKeyNotVerified = true;
                     }
 
@@ -169,7 +171,7 @@ class OpenPgpServiceKeyIdExtractor {
     @NonNull
     private HashMap<String, AddressQueryResult> getStatusMapForQueriedAddresses(String[] encryptionUserIds, String callingPackageName) {
         HashMap<String,AddressQueryResult> keyRows = new HashMap<>();
-        Uri queryUri = EmailStatus.CONTENT_URI.buildUpon().appendPath(callingPackageName).build();
+        Uri queryUri = AutocryptStatus.CONTENT_URI.buildUpon().appendPath(callingPackageName).build();
         Cursor cursor = contentResolver.query(queryUri, PROJECTION_MAIL_STATUS, null, encryptionUserIds, null);
         if (cursor == null) {
             throw new IllegalStateException("Internal error, received null cursor!");

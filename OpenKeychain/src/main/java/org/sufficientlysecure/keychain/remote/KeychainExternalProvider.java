@@ -17,10 +17,12 @@
 
 package org.sufficientlysecure.keychain.remote;
 
+
 import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -40,6 +42,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
@@ -47,15 +50,17 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
-import org.sufficientlysecure.keychain.provider.KeychainExternalContract.ApiAutocryptPeer;
+import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class KeychainExternalProvider extends ContentProvider implements SimpleContentResolverInterface {
     private static final int EMAIL_STATUS = 101;
-    private static final int EMAIL_STATUS_INTERNAL = 102;
-    private static final int AUTOCRYPT_PEER = 201;
+
+    private static final int AUTOCRYPT_STATUS = 201;
+    private static final int AUTOCRYPT_STATUS_INTERNAL = 202;
+
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 302;
 
@@ -76,7 +81,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
         String authority = KeychainExternalContract.CONTENT_AUTHORITY_EXTERNAL;
 
-        /**
+        /*
          * list email_status
          *
          * <pre>
@@ -84,9 +89,9 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
          * </pre>
          */
         matcher.addURI(authority, KeychainExternalContract.BASE_EMAIL_STATUS, EMAIL_STATUS);
-        matcher.addURI(authority, KeychainExternalContract.BASE_EMAIL_STATUS + "/*", EMAIL_STATUS_INTERNAL);
 
-        matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_PEERS + "/*", AUTOCRYPT_PEER);
+        matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_STATUS, AUTOCRYPT_STATUS);
+        matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_STATUS + "/*", AUTOCRYPT_STATUS_INTERNAL);
 
         // can only query status of calling app - for internal use only!
         matcher.addURI(KeychainContract.CONTENT_AUTHORITY, KeychainContract.BASE_API_APPS + "/*", API_APPS_BY_PACKAGE_NAME);
@@ -146,16 +151,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         String callingPackageName = mApiPermissionHelper.getCurrentCallingPackage();
 
         switch (match) {
-            case EMAIL_STATUS_INTERNAL:
-                if (!BuildConfig.APPLICATION_ID.equals(callingPackageName)) {
-                    throw new AccessControlException("This URI can only be called internally!");
-                }
-
-                // override package name to use any external
-                 callingPackageName = uri.getLastPathSegment();
-
             case EMAIL_STATUS: {
-                boolean callerIsAllowed = (match == EMAIL_STATUS_INTERNAL) || mApiPermissionHelper.isAllowedIgnoreErrors();
+                boolean callerIsAllowed = mApiPermissionHelper.isAllowedIgnoreErrors();
                 if (!callerIsAllowed) {
                     throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
                 }
@@ -169,38 +166,113 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(EmailStatus._ID, "email AS _id");
-                projectionMap.put(EmailStatus.ADDRESS, // this is actually the queried address
-                        TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES + " AS " + EmailStatus.ADDRESS);
-
-                projectionMap.put(EmailStatus.UID_ADDRESS,
-                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.UID_ADDRESS);
+                projectionMap.put(EmailStatus.EMAIL_ADDRESS, // this is actually the queried address
+                        TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES + " AS " + EmailStatus.EMAIL_ADDRESS);
+                projectionMap.put(EmailStatus.USER_ID,
+                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
                 // we take the minimum (>0) here, where "1" is "verified by known secret key", "2" is "self-certified"
-                projectionMap.put(EmailStatus.UID_KEY_STATUS, "CASE ( MIN (certs_user_id." + Certs.VERIFIED + " ) ) "
+                projectionMap.put(EmailStatus.USER_ID_STATUS, "CASE ( MIN (" + Certs.VERIFIED + " ) ) "
                         // remap to keep this provider contract independent from our internal representation
-                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + EmailStatus.KEY_STATUS_UNVERIFIED
-                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + EmailStatus.KEY_STATUS_VERIFIED
-                        + " WHEN NULL THEN NULL"
-                        + " END AS " + EmailStatus.UID_KEY_STATUS);
-                projectionMap.put(EmailStatus.UID_MASTER_KEY_ID,
-                        Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + EmailStatus.UID_MASTER_KEY_ID);
-                projectionMap.put(EmailStatus.UID_CANDIDATES,
-                        "COUNT(DISTINCT " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID +
-                                ") AS " + EmailStatus.UID_CANDIDATES);
+                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
+                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
+                        + " WHEN NULL THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
+                        + " END AS " + EmailStatus.USER_ID_STATUS);
+                projectionMap.put(EmailStatus.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
+                projectionMap.put(EmailStatus.MASTER_KEY_ID,
+                        Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + EmailStatus.MASTER_KEY_ID);
+                qb.setProjectionMap(projectionMap);
 
-                projectionMap.put(EmailStatus.AUTOCRYPT_KEY_STATUS, "CASE ( MIN (certs_autocrypt_peer." + Certs.VERIFIED + " ) ) "
+                if (projection == null) {
+                    throw new IllegalArgumentException("Please provide a projection!");
+                }
+
+                qb.setTables(
+                        TEMP_TABLE_QUERIED_ADDRESSES
+                                + " LEFT JOIN " + Tables.USER_PACKETS + " ON ("
+                                + Tables.USER_PACKETS + "." + UserPackets.USER_ID + " IS NOT NULL"
+                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " LIKE " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
+                                + ")"
+                                + " LEFT JOIN " + Tables.CERTS + " ON ("
+                                + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
+                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = " + Tables.CERTS + "." + Certs.RANK
+                                + ")"
+                );
+                // in case there are multiple verifying certificates
+                groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES;
+                List<String> plist = Arrays.asList(projection);
+                if (plist.contains(EmailStatus.USER_ID)) {
+                    groupBy += ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID;
+                }
+
+                // verified == 0 has no self-cert, which is basically an error case. never return that!
+                // verified == null is fine, because it means there was no join partner
+                qb.appendWhere(Tables.CERTS + "." + Certs.VERIFIED + " IS NULL OR " + Tables.CERTS + "." + Certs.VERIFIED + " > 0");
+
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = EmailStatus.EMAIL_ADDRESS;
+                }
+
+                // uri to watch is all /key_rings/
+                uri = KeyRings.CONTENT_URI;
+
+                break;
+            }
+
+            case AUTOCRYPT_STATUS_INTERNAL:
+                if (!BuildConfig.APPLICATION_ID.equals(callingPackageName)) {
+                    throw new AccessControlException("This URI can only be called internally!");
+                }
+
+                // override package name to use any external
+                 callingPackageName = uri.getLastPathSegment();
+
+            case AUTOCRYPT_STATUS: {
+                boolean callerIsAllowed = (match == AUTOCRYPT_STATUS_INTERNAL) || mApiPermissionHelper.isAllowedIgnoreErrors();
+                if (!callerIsAllowed) {
+                    throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
+                }
+
+                db.execSQL("CREATE TEMPORARY TABLE " + TEMP_TABLE_QUERIED_ADDRESSES + " (" + TEMP_TABLE_COLUMN_ADDRES + " TEXT);");
+                ContentValues cv = new ContentValues();
+                for (String address : selectionArgs) {
+                    cv.put(TEMP_TABLE_COLUMN_ADDRES, address);
+                    db.insert(TEMP_TABLE_QUERIED_ADDRESSES, null, cv);
+                }
+
+                HashMap<String, String> projectionMap = new HashMap<>();
+                projectionMap.put(AutocryptStatus._ID, "email AS _id");
+                projectionMap.put(AutocryptStatus.ADDRESS, // this is actually the queried address
+                        TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES + " AS " + AutocryptStatus.ADDRESS);
+
+                projectionMap.put(AutocryptStatus.UID_ADDRESS,
+                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + AutocryptStatus.UID_ADDRESS);
+                // we take the minimum (>0) here, where "1" is "verified by known secret key", "2" is "self-certified"
+                projectionMap.put(AutocryptStatus.UID_KEY_STATUS, "CASE ( MIN (certs_user_id." + Certs.VERIFIED + " ) ) "
                         // remap to keep this provider contract independent from our internal representation
-                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + EmailStatus.KEY_STATUS_UNVERIFIED
-                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + EmailStatus.KEY_STATUS_VERIFIED
+                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
+                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
                         + " WHEN NULL THEN NULL"
-                        + " END AS " + EmailStatus.AUTOCRYPT_KEY_STATUS);
-                projectionMap.put(EmailStatus.AUTOCRYPT_MASTER_KEY_ID,
-                        Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " AS " + EmailStatus.AUTOCRYPT_MASTER_KEY_ID);
-                projectionMap.put(EmailStatus.AUTOCRYPT_PEER_STATE, Tables.API_AUTOCRYPT_PEERS + "." +
-                        ApiAutocryptPeer.STATE + " AS " + EmailStatus.AUTOCRYPT_LAST_SEEN_KEY);
-                projectionMap.put(EmailStatus.AUTOCRYPT_LAST_SEEN, Tables.API_AUTOCRYPT_PEERS + "." +
-                        ApiAutocryptPeer.LAST_SEEN + " AS " + EmailStatus.AUTOCRYPT_LAST_SEEN);
-                projectionMap.put(EmailStatus.AUTOCRYPT_LAST_SEEN_KEY, Tables.API_AUTOCRYPT_PEERS + "." +
-                        ApiAutocryptPeer.LAST_SEEN_KEY + " AS " + EmailStatus.AUTOCRYPT_LAST_SEEN_KEY);
+                        + " END AS " + AutocryptStatus.UID_KEY_STATUS);
+                projectionMap.put(AutocryptStatus.UID_MASTER_KEY_ID,
+                        Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + AutocryptStatus.UID_MASTER_KEY_ID);
+                projectionMap.put(AutocryptStatus.UID_CANDIDATES,
+                        "COUNT(DISTINCT " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID +
+                                ") AS " + AutocryptStatus.UID_CANDIDATES);
+
+                projectionMap.put(AutocryptStatus.AUTOCRYPT_KEY_STATUS, "CASE ( MIN (certs_autocrypt_peer." + Certs.VERIFIED + " ) ) "
+                        // remap to keep this provider contract independent from our internal representation
+                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
+                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
+                        + " WHEN NULL THEN NULL"
+                        + " END AS " + AutocryptStatus.AUTOCRYPT_KEY_STATUS);
+                projectionMap.put(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID,
+                        Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " AS " + AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID);
+                projectionMap.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, Tables.API_AUTOCRYPT_PEERS + "." +
+                        ApiAutocryptPeer.STATE + " AS " + AutocryptStatus.AUTOCRYPT_LAST_SEEN_KEY);
+                projectionMap.put(AutocryptStatus.AUTOCRYPT_LAST_SEEN, Tables.API_AUTOCRYPT_PEERS + "." +
+                        ApiAutocryptPeer.LAST_SEEN + " AS " + AutocryptStatus.AUTOCRYPT_LAST_SEEN);
+                projectionMap.put(AutocryptStatus.AUTOCRYPT_LAST_SEEN_KEY, Tables.API_AUTOCRYPT_PEERS + "." +
+                        ApiAutocryptPeer.LAST_SEEN_KEY + " AS " + AutocryptStatus.AUTOCRYPT_LAST_SEEN_KEY);
                 qb.setProjectionMap(projectionMap);
 
                 if (projection == null) {
@@ -237,41 +309,11 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                         + ")) OR " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " IS NULL");
 
                 if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = EmailStatus.ADDRESS;
+                    sortOrder = AutocryptStatus.ADDRESS;
                 }
 
                 // uri to watch is all /key_rings/
                 uri = KeyRings.CONTENT_URI;
-                break;
-            }
-
-            case AUTOCRYPT_PEER: {
-                boolean callerIsAllowed = mApiPermissionHelper.isAllowedIgnoreErrors();
-                if (!callerIsAllowed) {
-                    throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
-                }
-
-                if (projection == null) {
-                    throw new IllegalArgumentException("Please provide a projection!");
-                }
-
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(ApiAutocryptPeer._ID, "oid AS " + ApiAutocryptPeer._ID);
-                projectionMap.put(ApiAutocryptPeer.IDENTIFIER, ApiAutocryptPeer.IDENTIFIER);
-                projectionMap.put(ApiAutocryptPeer.MASTER_KEY_ID, ApiAutocryptPeer.MASTER_KEY_ID);
-                projectionMap.put(ApiAutocryptPeer.LAST_SEEN, ApiAutocryptPeer.LAST_SEEN);
-                projectionMap.put(ApiAutocryptPeer.LAST_SEEN_KEY, ApiAutocryptPeer.LAST_SEEN_KEY);
-                qb.setProjectionMap(projectionMap);
-
-                qb.setTables(Tables.API_AUTOCRYPT_PEERS);
-
-                // allow access to columns of the calling package exclusively!
-                qb.appendWhere(Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME +
-                        " = " + mApiPermissionHelper.getCurrentCallingPackage());
-
-                qb.appendWhere(Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.IDENTIFIER + " = ");
-                qb.appendWhereEscapeString(uri.getLastPathSegment());
-
                 break;
             }
 
@@ -336,64 +378,12 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        Log.v(Constants.TAG, "insert(uri=" + uri + ")");
-
-        int match = mUriMatcher.match(uri);
-        if (match != AUTOCRYPT_PEER) {
-            throw new UnsupportedOperationException();
-        }
-
-        boolean callerIsAllowed = mApiPermissionHelper.isAllowedIgnoreErrors();
-        if (!callerIsAllowed) {
-            throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
-        }
-
-        Long masterKeyId = values.getAsLong(ApiAutocryptPeer.MASTER_KEY_ID);
-        if (masterKeyId == null) {
-            throw new IllegalArgumentException("master_key_id must be a non-null value!");
-        }
-
-        ContentValues actualValues = new ContentValues();
-        actualValues.put(ApiAutocryptPeer.PACKAGE_NAME, mApiPermissionHelper.getCurrentCallingPackage());
-        actualValues.put(ApiAutocryptPeer.IDENTIFIER, uri.getLastPathSegment());
-        actualValues.put(ApiAutocryptPeer.MASTER_KEY_ID, masterKeyId);
-        actualValues.put(ApiAutocryptPeer.LAST_SEEN, new Date().getTime() / 1000);
-
-        SQLiteDatabase db = getDb().getWritableDatabase();
-        try {
-            db.insert(Tables.API_AUTOCRYPT_PEERS, null, actualValues);
-            return uri;
-        } finally {
-            db.close();
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        Log.v(Constants.TAG, "delete(uri=" + uri + ")");
-
-        int match = mUriMatcher.match(uri);
-        if (match != AUTOCRYPT_PEER || selection != null || selectionArgs != null) {
-            throw new UnsupportedOperationException();
-        }
-
-        boolean callerIsAllowed = mApiPermissionHelper.isAllowedIgnoreErrors();
-        if (!callerIsAllowed) {
-            throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
-        }
-
-        String actualSelection = ApiAutocryptPeer.PACKAGE_NAME + " = ? AND " + ApiAutocryptPeer.IDENTIFIER + " = ?";
-        String[] actualSelectionArgs = new String[] {
-                mApiPermissionHelper.getCurrentCallingPackage(),
-                uri.getLastPathSegment()
-        };
-
-        SQLiteDatabase db = getDb().getWritableDatabase();
-        try {
-            return db.delete(Tables.API_AUTOCRYPT_PEERS, actualSelection, actualSelectionArgs);
-        } finally {
-            db.close();
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
