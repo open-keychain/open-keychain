@@ -79,9 +79,9 @@ public class KeychainProvider extends ContentProvider {
     private static final int UPDATED_KEYS = 500;
     private static final int UPDATED_KEYS_SPECIFIC = 501;
 
-    private static final int TRUST_IDS_BY_MASTER_KEY_ID = 601;
-    private static final int TRUST_IDS_BY_PACKAGE_NAME = 602;
-    private static final int TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID = 603;
+    private static final int AUTOCRYPT_PEERS_BY_MASTER_KEY_ID = 601;
+    private static final int AUTOCRYPT_PEERS_BY_PACKAGE_NAME = 602;
+    private static final int AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID = 603;
 
     protected UriMatcher mUriMatcher;
 
@@ -204,11 +204,11 @@ public class KeychainProvider extends ContentProvider {
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
-                KeychainContract.PATH_BY_KEY_ID + "/*", TRUST_IDS_BY_MASTER_KEY_ID);
+                KeychainContract.PATH_BY_KEY_ID + "/*", AUTOCRYPT_PEERS_BY_MASTER_KEY_ID);
         matcher.addURI(authority, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
-                KeychainContract.PATH_BY_PACKAGE_NAME + "/*", TRUST_IDS_BY_PACKAGE_NAME);
+                KeychainContract.PATH_BY_PACKAGE_NAME + "/*", AUTOCRYPT_PEERS_BY_PACKAGE_NAME);
         matcher.addURI(authority, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
-                KeychainContract.PATH_BY_PACKAGE_NAME + "/*/*", TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID);
+                KeychainContract.PATH_BY_PACKAGE_NAME + "/*/*", AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID);
 
 
         /**
@@ -664,9 +664,9 @@ public class KeychainProvider extends ContentProvider {
                 break;
             }
 
-            case TRUST_IDS_BY_MASTER_KEY_ID:
-            case TRUST_IDS_BY_PACKAGE_NAME:
-            case TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID: {
+            case AUTOCRYPT_PEERS_BY_MASTER_KEY_ID:
+            case AUTOCRYPT_PEERS_BY_PACKAGE_NAME:
+            case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {
                 if (selection != null || selectionArgs != null) {
                     throw new UnsupportedOperationException();
                 }
@@ -681,17 +681,17 @@ public class KeychainProvider extends ContentProvider {
 
                 qb.setTables(Tables.API_AUTOCRYPT_PEERS);
 
-                if (match == TRUST_IDS_BY_MASTER_KEY_ID) {
+                if (match == AUTOCRYPT_PEERS_BY_MASTER_KEY_ID) {
                     long masterKeyId = Long.parseLong(uri.getLastPathSegment());
 
                     selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " = ?";
                     selectionArgs = new String[] { Long.toString(masterKeyId) };
-                } else if (match == TRUST_IDS_BY_PACKAGE_NAME) {
+                } else if (match == AUTOCRYPT_PEERS_BY_PACKAGE_NAME) {
                     String packageName = uri.getPathSegments().get(2);
 
                     selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME + " = ?";
                     selectionArgs = new String[] { packageName };
-                } else { // TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID
+                } else { // AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID
                     String packageName = uri.getPathSegments().get(2);
                     String autocryptPeer = uri.getPathSegments().get(3);
 
@@ -931,6 +931,15 @@ public class KeychainProvider extends ContentProvider {
                 break;
             }
 
+            case AUTOCRYPT_PEERS_BY_MASTER_KEY_ID:
+                String selection  = ApiAutocryptPeer.MASTER_KEY_ID + " = " + uri.getLastPathSegment();
+                if (!TextUtils.isEmpty(additionalSelection)) {
+                    selection += " AND (" + additionalSelection + ")";
+                }
+                count = db.delete(Tables.API_AUTOCRYPT_PEERS, selection, selectionArgs);
+                uri = KeyRings.buildGenericKeyRingUri(uri.getLastPathSegment());
+                break;
+
             case API_APPS_BY_PACKAGE_NAME: {
                 count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, additionalSelection),
                         selectionArgs);
@@ -997,7 +1006,7 @@ public class KeychainProvider extends ContentProvider {
                     db.update(Tables.UPDATED_KEYS, values, null, null);
                     break;
                 }
-                case TRUST_IDS_BY_PACKAGE_NAME_AND_TRUST_ID: {
+                case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {
                     Long masterKeyId = values.getAsLong(ApiAutocryptPeer.MASTER_KEY_ID);
                     if (masterKeyId == null) {
                         throw new IllegalArgumentException("master_key_id must be a non-null value!");
