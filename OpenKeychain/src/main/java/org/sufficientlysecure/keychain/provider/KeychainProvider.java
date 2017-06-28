@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -904,6 +905,7 @@ public class KeychainProvider extends ContentProvider {
         int count;
         final int match = mUriMatcher.match(uri);
 
+        ContentResolver contentResolver = getContext().getContentResolver();
         switch (match) {
             // dangerous
             case KEY_RINGS_UNIFIED: {
@@ -918,7 +920,7 @@ public class KeychainProvider extends ContentProvider {
                 }
                 // corresponding keys and userIds are deleted by ON DELETE CASCADE
                 count = db.delete(Tables.KEY_RINGS_PUBLIC, selection, selectionArgs);
-                uri = KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1));
+                contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1)), null);
                 break;
             }
             case KEY_RING_SECRET: {
@@ -928,7 +930,7 @@ public class KeychainProvider extends ContentProvider {
                     selection += " AND (" + additionalSelection + ")";
                 }
                 count = db.delete(Tables.KEY_RINGS_SECRET, selection, selectionArgs);
-                uri = KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1));
+                contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1)), null);
                 break;
             }
 
@@ -948,6 +950,11 @@ public class KeychainProvider extends ContentProvider {
 
                 count = db.delete(Tables.API_AUTOCRYPT_PEERS, selection, selectionArgs);
 
+                if (masterKeyId != null) {
+                    contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(masterKeyId), null);
+                }
+                contentResolver.notifyChange(
+                        ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptPeer), null);
                 break;
             }
 
@@ -957,7 +964,7 @@ public class KeychainProvider extends ContentProvider {
                     selection += " AND (" + additionalSelection + ")";
                 }
                 count = db.delete(Tables.API_AUTOCRYPT_PEERS, selection, selectionArgs);
-                uri = KeyRings.buildGenericKeyRingUri(uri.getLastPathSegment());
+                contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(uri.getLastPathSegment()), null);
                 break;
 
             case API_APPS_BY_PACKAGE_NAME: {
@@ -975,9 +982,6 @@ public class KeychainProvider extends ContentProvider {
             }
         }
 
-        // notify of changes in db
-        getContext().getContentResolver().notifyChange(uri, null);
-
         return count;
     }
 
@@ -989,6 +993,7 @@ public class KeychainProvider extends ContentProvider {
         Log.v(Constants.TAG, "update(uri=" + uri + ", values=" + values.toString() + ")");
 
         final SQLiteDatabase db = getDb().getWritableDatabase();
+        ContentResolver contentResolver = getContext().getContentResolver();
 
         int count = 0;
         try {
@@ -1052,6 +1057,8 @@ public class KeychainProvider extends ContentProvider {
                                 values.getAsLong(ApiAutocryptPeer.STATE));
                     }
 
+                    contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(masterKeyId), null);
+
                     try {
                         db.replace(Tables.API_AUTOCRYPT_PEERS, null, actualValues);
                     } finally {
@@ -1065,7 +1072,7 @@ public class KeychainProvider extends ContentProvider {
             }
 
             // notify of changes in db
-            getContext().getContentResolver().notifyChange(uri, null);
+            contentResolver.notifyChange(uri, null);
 
         } catch (SQLiteConstraintException e) {
             Log.d(Constants.TAG, "Constraint exception on update! Entry already existing?", e);

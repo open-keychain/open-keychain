@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.linked.UriAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.util.PackageIconGetter;
@@ -92,6 +93,8 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
 
         this.identityObserver = new ForceLoadContentObserver();
         this.packageIconGetter = PackageIconGetter.getInstance(context);
+
+        this.identityObserver = new ForceLoadContentObserver();
     }
 
     @Override
