@@ -34,6 +34,7 @@ import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
 
@@ -72,6 +73,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
 
     private List<IdentityInfo> cachedResult;
 
+    private ForceLoadContentObserver identityObserver;
 
     public IdentityLoader(Context context, ContentResolver contentResolver, long masterKeyId, boolean showLinkedIds) {
         super(context);
@@ -79,6 +81,8 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         this.contentResolver = contentResolver;
         this.masterKeyId = masterKeyId;
         this.showLinkedIds = showLinkedIds;
+
+        this.identityObserver = new ForceLoadContentObserver();
     }
 
     @Override
@@ -169,6 +173,16 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         if (takeContentChanged() || cachedResult == null) {
             forceLoad();
         }
+
+        getContext().getContentResolver().registerContentObserver(
+                KeyRings.buildGenericKeyRingUri(masterKeyId), true, identityObserver);
+    }
+
+    @Override
+    protected void onAbandon() {
+        super.onAbandon();
+
+        getContext().getContentResolver().unregisterContentObserver(identityObserver);
     }
 
     public interface IdentityInfo {
