@@ -124,7 +124,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:text="@string/first_time_secure_device_setup"
+            android:text="@string/first_time_secure_wifi_transfer"
             android:textAllCaps="true"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:drawableRight="@drawable/ic_chevron_right_grey_24dp"

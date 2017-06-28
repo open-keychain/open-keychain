@@ -19,6 +19,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/menu_key_view_skt"
+        android:title="@string/menu_secure_wifi_transfer"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_key_view_delete"
         android:icon="@drawable/ic_delete_grey_24dp"
         android:title="@string/menu_delete_key"

@@ -1907,7 +1907,8 @@
     <string name="transfer_not_available">"Sorry, this feature can only be used on Android 5 or newer :("</string>
     <string name="transfer_list_empty">"No keys on this device that could be sent.  Waiting for incoming keys…"</string>
     <string name="transfer_connecting">"Connecting…"</string>
-    <string name="first_time_secure_device_setup">"Secure Wifi Transfer"</string>
+    <string name="first_time_secure_wifi_transfer">"Secure Wifi Transfer"</string>
+    <string name="menu_secure_wifi_transfer">"Secure Wifi Transfer"</string>
     <string name="transfer_confirm_cancel">"Cancel"</string>
     <string name="transfer_confirm_ok">"Send"</string>
     <string name="transfer_confirm_title">"Send your key?"</string>

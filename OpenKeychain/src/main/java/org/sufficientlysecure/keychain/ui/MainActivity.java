@@ -54,7 +54,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     static final int ID_ENCRYPT_DECRYPT = 2;
     static final int ID_APPS = 3;
     static final int ID_BACKUP = 4;
-    static final int ID_TRANSFER = 5;
+    public static final int ID_TRANSFER = 5;
     static final int ID_SETTINGS = 6;
     static final int ID_HELP = 7;
 

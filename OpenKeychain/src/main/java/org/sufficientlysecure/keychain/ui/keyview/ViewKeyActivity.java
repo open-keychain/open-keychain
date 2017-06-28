@@ -371,6 +371,13 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 startPassphraseActivity(REQUEST_BACKUP);
                 return true;
             }
+            case R.id.menu_key_view_skt: {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra(MainActivity.EXTRA_INIT_FRAG, MainActivity.ID_TRANSFER);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
+            }
             case R.id.menu_key_view_delete: {
                 deleteKey();
                 return true;
@@ -405,6 +412,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem backupKey = menu.findItem(R.id.menu_key_view_backup);
         backupKey.setVisible(mIsSecret);
+        menu.findItem(R.id.menu_key_view_skt).setVisible(mIsSecret);
         MenuItem changePassword = menu.findItem(R.id.menu_key_change_password);
         changePassword.setVisible(mIsSecret);
 
