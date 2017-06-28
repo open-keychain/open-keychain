@@ -1886,4 +1886,6 @@
     <string name="dialog_insecure_button_view_key">View Key</string>
     <string name="dialog_insecure_button_ok">Got it</string>
 
+    <string name="identity_context_forget">Forget</string>
+
 </resources>

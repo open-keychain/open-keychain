@@ -932,6 +932,25 @@ public class KeychainProvider extends ContentProvider {
                 break;
             }
 
+            case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {
+                String packageName = uri.getPathSegments().get(2);
+                String autocryptPeer = uri.getPathSegments().get(3);
+
+                String selection = ApiAutocryptPeer.PACKAGE_NAME + " = ? AND " + ApiAutocryptPeer.IDENTIFIER + " = ?";
+                selectionArgs = new String[] { packageName, autocryptPeer };
+
+                Cursor cursor = db.query(Tables.API_AUTOCRYPT_PEERS, new String[] { ApiAutocryptPeer.MASTER_KEY_ID },
+                        selection, selectionArgs, null, null, null);
+                Long masterKeyId = null;
+                if (cursor != null && cursor.moveToNext() && !cursor.isNull(0)) {
+                    masterKeyId = cursor.getLong(0);
+                }
+
+                count = db.delete(Tables.API_AUTOCRYPT_PEERS, selection, selectionArgs);
+
+                break;
+            }
+
             case AUTOCRYPT_PEERS_BY_MASTER_KEY_ID:
                 String selection  = ApiAutocryptPeer.MASTER_KEY_ID + " = " + uri.getLastPathSegment();
                 if (!TextUtils.isEmpty(additionalSelection)) {

@@ -134,10 +134,10 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
                 UserIdInfo associatedUserIdInfo = findUserIdMatchingTrustId(identities, autocryptPeer);
                 if (associatedUserIdInfo != null) {
                     int position = identities.indexOf(associatedUserIdInfo);
-                    TrustIdInfo autocryptPeerInfo = TrustIdInfo.create(associatedUserIdInfo, autocryptPeer, drawable, autocryptPeerIntent);
+                    TrustIdInfo autocryptPeerInfo = TrustIdInfo.create(associatedUserIdInfo, autocryptPeer, packageName, drawable, autocryptPeerIntent);
                     identities.set(position, autocryptPeerInfo);
                 } else {
-                    TrustIdInfo autocryptPeerInfo = TrustIdInfo.create(autocryptPeer, drawable, autocryptPeerIntent);
+                    TrustIdInfo autocryptPeerInfo = TrustIdInfo.create(autocryptPeer, packageName, drawable, autocryptPeerIntent);
                     identities.add(autocryptPeerInfo);
                 }
             }
@@ -305,6 +305,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         public abstract boolean isPrimary();
 
         public abstract String getTrustId();
+        public abstract String getPackageName();
         @Nullable
         public abstract Drawable getAppIcon();
         @Nullable
@@ -312,14 +313,15 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         @Nullable
         public abstract Intent getTrustIdIntent();
 
-        static TrustIdInfo create(UserIdInfo userIdInfo, String autocryptPeer, Drawable appIcon, Intent autocryptPeerIntent) {
+        static TrustIdInfo create(UserIdInfo userIdInfo, String autocryptPeer, String packageName,
+                Drawable appIcon, Intent autocryptPeerIntent) {
             return new AutoValue_IdentityLoader_TrustIdInfo(userIdInfo.getRank(), userIdInfo.getVerified(),
-                    userIdInfo.isPrimary(), autocryptPeer, appIcon, userIdInfo, autocryptPeerIntent);
+                    userIdInfo.isPrimary(), autocryptPeer, packageName, appIcon, userIdInfo, autocryptPeerIntent);
         }
 
-        static TrustIdInfo create(String autocryptPeer, Drawable appIcon, Intent autocryptPeerIntent) {
+        static TrustIdInfo create(String autocryptPeer, String packageName, Drawable appIcon, Intent autocryptPeerIntent) {
             return new AutoValue_IdentityLoader_TrustIdInfo(
-                    0, Certs.VERIFIED_SELF, false, autocryptPeer, appIcon, null, autocryptPeerIntent);
+                    0, Certs.VERIFIED_SELF, false, autocryptPeer, packageName, appIcon, null, autocryptPeerIntent);
         }
     }
 

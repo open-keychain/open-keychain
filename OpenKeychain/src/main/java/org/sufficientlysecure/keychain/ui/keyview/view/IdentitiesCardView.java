@@ -32,7 +32,6 @@ import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter.IdentitiesCardListener;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter.IdentitiesMvpView;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
 
 
 public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
@@ -58,16 +57,6 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
                 }
             }
         });
-
-        vIdentities.addOnItemTouchListener(new RecyclerItemClickListener(context,
-                new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        if (identitiesCardListener != null) {
-                            identitiesCardListener.onIdentityItemClick(position);
-                        }
-                    }
-                }));
 
         Button linkedIdsAddButton = (Button) view.findViewById(R.id.view_key_card_linked_ids_add);
 

@@ -28,13 +28,16 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.EditIdentitiesActivity;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.IdentityClickListener;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.ui.keyview.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader;
@@ -68,17 +71,23 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         this.masterKeyId = masterKeyId;
         this.isSecret = isSecret;
 
-        identitiesAdapter = new IdentityAdapter(context, isSecret);
+        identitiesAdapter = new IdentityAdapter(context, isSecret, new IdentityClickListener() {
+            @Override
+            public void onClickIdentity(int position) {
+                showIdentityInfo(position);
+            }
+
+            @Override
+            public void onClickIdentityMore(int position, View anchor) {
+                showIdentityContextMenu(position, anchor);
+
+            }
+        });
         view.setIdentitiesAdapter(identitiesAdapter);
 
         view.setEditIdentitiesButtonVisible(isSecret);
 
         view.setIdentitiesCardListener(new IdentitiesCardListener() {
-            @Override
-            public void onIdentityItemClick(int position) {
-                showIdentityInfo(position);
-            }
-
             @Override
             public void onClickEditIdentities() {
                 editIdentities();
@@ -120,8 +129,14 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
             showUserIdInfo((UserIdInfo) info);
         } else if (info instanceof TrustIdInfo) {
             Intent autocryptPeerIntent = ((TrustIdInfo) info).getTrustIdIntent();
-            viewKeyMvpView.startActivity(autocryptPeerIntent);
+            if (autocryptPeerIntent != null) {
+                viewKeyMvpView.startActivity(autocryptPeerIntent);
+            }
         }
+    }
+
+    private void showIdentityContextMenu(int position, View anchor) {
+        viewKeyMvpView.showContextMenu(position, anchor);
     }
 
     private void showLinkedId(final LinkedIdInfo info) {
@@ -158,6 +173,18 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         context.startActivity(intent);
     }
 
+    public void onClickForgetIdentity(int position) {
+        TrustIdInfo info = (TrustIdInfo) identitiesAdapter.getInfo(position);
+        if (info == null) {
+            Log.e(Constants.TAG, "got a 'forget' click on a bad trust id");
+            return;
+        }
+
+        AutocryptPeerDataAccessObject autocryptPeerDao =
+                new AutocryptPeerDataAccessObject(context, info.getPackageName());
+        autocryptPeerDao.delete(info.getTrustId());
+    }
+
     public interface IdentitiesMvpView {
         void setIdentitiesAdapter(IdentityAdapter userIdsAdapter);
         void setIdentitiesCardListener(IdentitiesCardListener identitiesCardListener);
@@ -165,8 +192,6 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
     }
 
     public interface IdentitiesCardListener {
-        void onIdentityItemClick(int position);
-
         void onClickEditIdentities();
         void onClickAddIdentity();
     }

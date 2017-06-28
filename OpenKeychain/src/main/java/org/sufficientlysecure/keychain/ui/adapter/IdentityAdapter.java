@@ -28,6 +28,7 @@ import android.os.Build.VERSION_CODES;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -53,15 +54,17 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
     private final Context context;
     private final LayoutInflater layoutInflater;
     private final boolean isSecret;
+    private final IdentityClickListener identityClickListener;
 
     private List<IdentityInfo> data;
 
 
-    public IdentityAdapter(Context context, boolean isSecret) {
+    public IdentityAdapter(Context context, boolean isSecret, IdentityClickListener identityClickListener) {
         super();
         this.layoutInflater = LayoutInflater.from(context);
         this.context = context;
         this.isSecret = isSecret;
+        this.identityClickListener = identityClickListener;
     }
 
     public void setData(List<IdentityInfo> data) {
@@ -91,7 +94,8 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_USER_ID) {
-            return new UserIdViewHolder(layoutInflater.inflate(R.layout.view_key_identity_user_id, parent, false));
+            return new UserIdViewHolder(
+                    layoutInflater.inflate(R.layout.view_key_identity_user_id, parent, false), identityClickListener);
         } else if (viewType == VIEW_TYPE_LINKED_ID) {
             return new LinkedIdViewHolder(layoutInflater.inflate(R.layout.linked_id_item, parent, false));
         } else {
@@ -195,9 +199,9 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
         private final TextView vAddress;
         private final TextView vComment;
         private final ImageView vIcon;
-        private final ImageView vTrustIdAction;
+        private final ImageView vMore;
 
-        private UserIdViewHolder(View view) {
+        private UserIdViewHolder(View view, final IdentityClickListener identityClickListener) {
             super(view);
 
             vName = (TextView) view.findViewById(R.id.user_id_item_name);
@@ -205,7 +209,21 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
             vComment = (TextView) view.findViewById(R.id.user_id_item_comment);
 
             vIcon = (ImageView) view.findViewById(R.id.trust_id_app_icon);
-            vTrustIdAction = (ImageView) view.findViewById(R.id.trust_id_action);
+            vMore = (ImageView) view.findViewById(R.id.user_id_item_more);
+
+            view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    identityClickListener.onClickIdentity(getAdapterPosition());
+                }
+            });
+
+            vMore.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    identityClickListener.onClickIdentityMore(getAdapterPosition(), v);
+                }
+            });
         }
 
         public void bind(TrustIdInfo info) {
@@ -220,16 +238,16 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
             }
 
             vIcon.setImageDrawable(info.getAppIcon());
-            if (info.getTrustIdIntent() != null) {
-                vTrustIdAction.setVisibility(View.VISIBLE);
-            }
+            vMore.setVisibility(View.VISIBLE);
+
+            itemView.setClickable(info.getTrustIdIntent() != null);
         }
 
         public void bind(UserIdInfo info) {
             bindUserIdInfo(info);
 
             vIcon.setVisibility(View.GONE);
-            vTrustIdAction.setVisibility(View.GONE);
+            vMore.setVisibility(View.GONE);
         }
 
         private void bindUserIdInfo(UserIdInfo info) {
@@ -260,5 +278,10 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
             }
         }
 
+    }
+
+    public interface IdentityClickListener {
+        void onClickIdentity(int position);
+        void onClickIdentityMore(int position, View anchor);
     }
 }

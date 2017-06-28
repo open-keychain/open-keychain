@@ -25,7 +25,11 @@ import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.PopupMenu.OnDismissListener;
+import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,7 +48,7 @@ import org.sufficientlysecure.keychain.ui.keyview.view.KeyserverStatusView;
 import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
 
 
-public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
+public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, OnMenuItemClickListener {
     public static final String ARG_MASTER_KEY_ID = "master_key_id";
     public static final String ARG_IS_SECRET = "is_secret";
 
@@ -66,6 +70,8 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
 
     KeyHealthPresenter mKeyHealthPresenter;
     KeyserverStatusPresenter mKeyserverStatusPresenter;
+
+    private Integer displayedContextMenuPosition;
 
     /**
      * Creates new instance of this fragment
@@ -160,5 +166,38 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
                 dialogFragment.show(getActivity().getSupportFragmentManager(), tag);
             }
         });
+    }
+
+    @Override
+    public void showContextMenu(int position, View anchor) {
+        displayedContextMenuPosition = position;
+
+        PopupMenu menu = new PopupMenu(getContext(), anchor);
+        menu.inflate(R.menu.identity_context_menu);
+        menu.setOnMenuItemClickListener(this);
+        menu.setOnDismissListener(new OnDismissListener() {
+            @Override
+            public void onDismiss(PopupMenu popupMenu) {
+                displayedContextMenuPosition = null;
+            }
+        });
+        menu.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (displayedContextMenuPosition == null) {
+            return false;
+        }
+
+        switch (item.getItemId()) {
+            case R.id.autocrypt_forget:
+                int position = displayedContextMenuPosition;
+                displayedContextMenuPosition = null;
+                mIdentitiesPresenter.onClickForgetIdentity(position);
+                return true;
+        }
+
+        return false;
     }
 }
