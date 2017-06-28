@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 
 
 public class KeychainExternalContract {
@@ -65,10 +66,11 @@ public class KeychainExternalContract {
         public static final String AUTOCRYPT_LAST_SEEN = "autocrypt_last_seen";
         public static final String AUTOCRYPT_LAST_SEEN_KEY = "autocrypt_last_seen_key";
 
-        public static final int AUTOCRYPT_PEER_RESET = 0;
-        public static final int AUTOCRYPT_PEER_GOSSIP = 1;
-        public static final int AUTOCRYPT_PEER_AVAILABLE = 2;
-        public static final int AUTOCRYPT_PEER_MUTUAL = 3;
+        public static final int AUTOCRYPT_PEER_RESET = ApiAutocryptPeer.RESET;
+        public static final int AUTOCRYPT_PEER_GOSSIP = ApiAutocryptPeer.GOSSIP;
+        public static final int AUTOCRYPT_PEER_SELECTED = ApiAutocryptPeer.SELECTED;
+        public static final int AUTOCRYPT_PEER_AVAILABLE = ApiAutocryptPeer.AVAILABLE;
+        public static final int AUTOCRYPT_PEER_MUTUAL = ApiAutocryptPeer.MUTUAL;
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_EXTERNAL.buildUpon()
                 .appendPath(BASE_AUTOCRYPT_STATUS).build();
