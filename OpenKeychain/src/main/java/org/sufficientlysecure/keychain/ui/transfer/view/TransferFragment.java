@@ -52,7 +52,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.ViewAnimator;
 
 import com.google.zxing.client.android.Intents;
 import org.sufficientlysecure.keychain.R;
@@ -67,16 +66,11 @@ import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter.T
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.ConnectionStatusView;
+import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 
 
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
 public class TransferFragment extends Fragment implements TransferMvpView {
-    public static final int VIEW_WAITING = 0;
-    public static final int VIEW_CONNECTING = 1;
-    public static final int VIEW_CONNECTED = 2;
-    public static final int VIEW_RECEIVING = 3;
-    public static final int VIEW_NO_WIFI = 4;
-
     public static final int REQUEST_CODE_SCAN = 1;
     public static final int LOADER_ID = 1;
 
@@ -85,7 +79,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
     private ImageView vQrCodeImage;
     private TransferPresenter presenter;
-    private ViewAnimator vTransferAnimator;
+    private ToolableViewAnimator vTransferAnimator;
     private TextView vConnectionStatusText1;
     private TextView vConnectionStatusText2;
     private ConnectionStatusView vConnectionStatusView1;
@@ -113,7 +107,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.transfer_fragment, container, false);
 
-        vTransferAnimator = (ViewAnimator) view.findViewById(R.id.transfer_animator);
+        vTransferAnimator = (ToolableViewAnimator) view.findViewById(R.id.transfer_animator);
 
         vConnectionStatusText1 = (TextView) view.findViewById(R.id.connection_status_1);
         vConnectionStatusText2 = (TextView) view.findViewById(R.id.connection_status_2);
@@ -203,17 +197,17 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
     @Override
     public void showNotOnWifi() {
-        vTransferAnimator.setDisplayedChild(VIEW_NO_WIFI);
+        vTransferAnimator.setDisplayedChildId(R.id.transfer_layout_no_wifi);
     }
 
     @Override
     public void showWaitingForConnection() {
-        vTransferAnimator.setDisplayedChild(VIEW_WAITING);
+        vTransferAnimator.setDisplayedChildId(R.id.transfer_layout_waiting);
     }
 
     @Override
     public void showEstablishingConnection() {
-        vTransferAnimator.setDisplayedChild(VIEW_CONNECTING);
+        vTransferAnimator.setDisplayedChildId(R.id.transfer_layout_connecting);
     }
 
     @Override
@@ -226,12 +220,12 @@ public class TransferFragment extends Fragment implements TransferMvpView {
         vConnectionStatusView1.setConnected(true);
         vConnectionStatusView2.setConnected(true);
 
-        vTransferAnimator.setDisplayedChild(VIEW_CONNECTED);
+        vTransferAnimator.setDisplayedChildId(R.id.transfer_layout_connected);
     }
 
     @Override
     public void showReceivingKeys() {
-        vTransferAnimator.setDisplayedChild(VIEW_RECEIVING);
+        vTransferAnimator.setDisplayedChildId(R.id.transfer_layout_passive);
     }
 
     @Override

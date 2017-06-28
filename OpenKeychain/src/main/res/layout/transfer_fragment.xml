@@ -13,6 +13,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_waiting"
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:padding="16dp">
@@ -92,6 +93,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_connecting"
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:padding="16dp">
@@ -116,6 +118,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_connected"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -205,6 +208,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_passive"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -275,6 +279,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_no_wifi"
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:padding="16dp">
