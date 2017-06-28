@@ -848,7 +848,7 @@
     <string name="drawer_close">"Close navigation drawer"</string>
     <string name="my_keys">"My Keys"</string>
     <string name="nav_backup">"Backup/Restore"</string>
-    <string name="nav_transfer">"Secure Device Setup"</string>
+    <string name="nav_transfer">"Secure Wifi Transfer"</string>
 
     <!-- hints -->
     <string name="encrypt_content_edit_text_hint">"Type text"</string>
@@ -1907,7 +1907,7 @@
     <string name="transfer_not_available">"Sorry, this feature can only be used on Android 5 or newer :("</string>
     <string name="transfer_list_empty">"No keys on this device that could be sent.  Waiting for incoming keys…"</string>
     <string name="transfer_connecting">"Connecting…"</string>
-    <string name="first_time_secure_device_setup">"Secure Device Setup"</string>
+    <string name="first_time_secure_device_setup">"Secure Wifi Transfer"</string>
     <string name="transfer_confirm_cancel">"Cancel"</string>
     <string name="transfer_confirm_ok">"Send"</string>
     <string name="transfer_confirm_title">"Send your key?"</string>
