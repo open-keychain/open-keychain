@@ -42,6 +42,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -102,6 +103,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     };
     private boolean showDoneIcon;
     private AlertDialog confirmationDialog;
+    private TextView vWifiErrorInstructions;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -116,6 +118,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
         vTransferKeyList = (RecyclerView) view.findViewById(R.id.transfer_key_list);
         vTransferKeyListEmptyView = view.findViewById(R.id.transfer_key_list_empty);
         vReceivedKeyList = (RecyclerView) view.findViewById(R.id.received_key_list);
+        vWifiErrorInstructions = (TextView) view.findViewById(R.id.transfer_wifi_error_instructions);
 
         vQrCodeImage = (ImageView) view.findViewById(R.id.qr_code_image);
 
@@ -124,6 +127,15 @@ public class TransferFragment extends Fragment implements TransferMvpView {
             public void onClick(View v) {
                 if (presenter != null) {
                     presenter.onUiClickScan();
+                }
+            }
+        });
+
+        view.findViewById(R.id.button_scan_again).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (presenter != null) {
+                    presenter.onUiClickScanAgain();
                 }
             }
         });
@@ -221,6 +233,18 @@ public class TransferFragment extends Fragment implements TransferMvpView {
         vConnectionStatusView2.setConnected(true);
 
         vTransferAnimator.setDisplayedChildId(R.id.transfer_layout_connected);
+    }
+
+    @Override
+    public void showWifiError(String wifiSsid) {
+        vTransferAnimator.setDisplayedChildId(R.id.transfer_layout_wifi_error);
+
+        if (!TextUtils.isEmpty(wifiSsid)) {
+            vWifiErrorInstructions
+                    .setText(getResources().getString(R.string.transfer_error_wifi_text_instructions_ssid, wifiSsid));
+        } else {
+            vWifiErrorInstructions.setText(R.string.transfer_error_wifi_text_instructions);
+        }
     }
 
     @Override

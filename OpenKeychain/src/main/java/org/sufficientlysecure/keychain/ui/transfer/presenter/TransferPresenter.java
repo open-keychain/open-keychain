@@ -134,6 +134,10 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         view.scanQrCode();
     }
 
+    public void onUiClickScanAgain() {
+        onUiClickScan();
+    }
+
     public void onUiClickDone() {
         view.finishFragmentOrActivity();
     }
@@ -296,6 +300,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     @Override
     public void onConnectionErrorConnect() {
+        view.showWaitingForConnection();
         view.showErrorConnectionFailed();
 
         resetAndStartListen();
@@ -303,9 +308,17 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     @Override
     public void onConnectionErrorNoRouteToHost(String wifiSsid) {
-        view.showErrorConnectionFailed();
+        connectionClear();
 
-        resetAndStartListen();
+        String ownWifiSsid = getConnectedWifiSsid();
+        if (!wifiSsid.equalsIgnoreCase(ownWifiSsid)) {
+            view.showWifiError(wifiSsid);
+        } else {
+            view.showWaitingForConnection();
+            view.showErrorConnectionFailed();
+
+            resetAndStartListen();
+        }
     }
 
     @Override
@@ -440,6 +453,9 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         void showWaitingForConnection();
         void showEstablishingConnection();
         void showConnectionEstablished(String hostname);
+
+        void showWifiError(String wifiSsid);
+
         void showReceivingKeys();
 
         void showViewDisconnected();

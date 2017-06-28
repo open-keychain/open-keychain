@@ -8,7 +8,7 @@
     android:id="@+id/transfer_animator"
     android:inAnimation="@anim/fade_in_delayed"
     android:outAnimation="@anim/fade_out"
-    custom:initialView="0">
+    custom:initialView="05">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -300,6 +300,58 @@
             android:layout_margin="8dp"
             android:text="@string/transfer_scan_only_wifi"
             android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_wifi_error"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/ic_wifi_question_96dp"
+            android:tint="@color/md_grey_600"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/transfer_error_wifi_text"
+            tools:text="Connection failed!"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:gravity="center_horizontal"
+            android:id="@+id/transfer_wifi_error_instructions"
+            android:text="@string/transfer_error_wifi_text_instructions"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/button_scan_again"
+            android:text="@string/button_scan_again"
+            android:drawableLeft="@drawable/ic_qrcode_white_24dp"
+            android:drawableTint="@color/md_black_1000"
+            android:drawablePadding="8dp"
+            />
 
     </LinearLayout>
 
