@@ -1254,10 +1254,10 @@
 
     <!-- Messages for VerifySignedLiteralData operation -->
     <string name="msg_vl">"Starting signature check"</string>
-    <string name="msg_vl_error_no_siglist">"No signature list in signed literal data!"</string>
+    <string name="msg_vl_error_no_siglist">"No signature list in signed literal data packet!"</string>
     <string name="msg_vl_error_wrong_key">"Message not signed with expected key!"</string>
     <string name="msg_vl_error_no_signature">"Missing signature data!"</string>
-    <string name="msg_vl_error_missing_literal">"No payload in signed literal data"</string>
+    <string name="msg_vl_error_missing_literal">"No data in signed literal data packet"</string>
     <string name="msg_vl_clear_meta_file">"Filename: %s"</string>
     <string name="msg_vl_clear_meta_mime">"MIME type: %s"</string>
     <string name="msg_vl_clear_meta_time">"Modification time: %s"</string>
