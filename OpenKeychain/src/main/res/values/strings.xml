@@ -335,8 +335,8 @@
     <string name="passphrase_for_symmetric_encryption">"Enter password"</string>
     <string name="passphrase_for_backup">"Enter backup code"</string>
     <string name="passphrase_for">"Enter password for '%s'"</string>
-    <string name="passphrase_keyboard_hint_alpha">"Change to alphabetic keyboard"</string>
-    <string name="passphrase_keyboard_hint_numeric">"Change to numeric keyboard"</string>
+    <string name="passphrase_keyboard_hint_alpha">"Switch to alphabetic keyboard"</string>
+    <string name="passphrase_keyboard_hint_numeric">"Switch to numeric keyboard"</string>
     <string name="pin_for">"Enter PIN for '%s'"</string>
     <string name="security_token_pin_for">"Enter PIN to access Security Token for '%s'"</string>
     <string name="security_token_nfc_text">"Hold Security Token against the NFC marker at the back of your device."</string>
@@ -610,7 +610,7 @@
         <item quantity="other">"Error deleting %1$d keys."</item>
     </plurals>
     <string name="delete_nothing">"Nothing to delete."</string>
-    <string name="delete_cancelled">"Delete operation cancelled."</string>
+    <string name="delete_cancelled">"Deletion cancelled."</string>
 
     <!-- Revoke result toast (snackbar) -->
     <string name="revoke_ok">"Successfully revoked key."</string>
@@ -784,7 +784,7 @@
     <string name="edit_key_error_add_identity">"Add at least one identity!"</string>
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
     <string name="edit_key_error_bad_security_token_algo">"Algorithm not supported by Security Token!"</string>
-    <string name="edit_key_error_bad_security_token_size">"RSA key lower than 2048 bits is not supported by Security Token since OpenPGP card specification 3.x!"</string>
+    <string name="edit_key_error_bad_security_token_size">"RSA key lower than 2048 bits are not supported by Security Tokens since OpenPGP card specification 3.x!"</string>
     <string name="edit_key_error_bad_security_token_curve">"Curve not supported by Security Token!"</string>
     <string name="edit_key_error_bad_security_token_stripped">"Cannot move key to Security Token (either stripped or already on Security Token)!"</string>
 
@@ -1117,8 +1117,6 @@
     <string name="msg_mf_error_duplicate_keytocard_for_slot">"Security Token supports only one slot per key type."</string>
     <string name="msg_mf_error_invalid_flags_for_keytocard">"Inappropriate key flags for Security Token key."</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
-    <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
-    <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
     <string name="msg_mf_passphrase">"Changing password for keyring"</string>
     <string name="msg_mf_pin">"Changing PIN on card"</string>
     <string name="msg_mf_admin_pin">"Changing Admin PIN on card"</string>
@@ -1294,7 +1292,7 @@
     <string name="msg_pse_error_sig">"Encountered OpenPGP signature exception!"</string>
     <string name="msg_pse_error_unlock">"Unknown error unlocking key!"</string>
     <string name="msg_pse_error_key_not_allowed">"Key selected for encryption is not allowed"</string>
-    <string name="msg_pse_error_revoked_or_expired">"Revoked/Expired key cannot be used for sign or encryption"</string>
+    <string name="msg_pse_error_revoked_or_expired">"Revoked/Expired key cannot be used for signature generation or encryption"</string>
     <string name="msg_pse_key_ok">"Encrypting for key: %s"</string>
     <string name="msg_pse_key_unknown">"Missing key for encryption: %s"</string>
     <string name="msg_pse_key_warn">"Bad key for encryption: %s"</string>
@@ -1496,7 +1494,7 @@
 
     <!-- Keyserver sync -->
     <string name="keyserver_sync_orbot_notif_title">"Sync From Servers requires Orbot"</string>
-    <string name="keyserver_sync_orbot_notif_msg">"Tap to start orbot"</string>
+    <string name="keyserver_sync_orbot_notif_msg">"Tap to start Orbot"</string>
     <string name="keyserver_sync_orbot_notif_start">"Start Orbot"</string>
     <string name="keyserver_sync_orbot_notif_ignore">"Direct"</string>
 
@@ -1787,13 +1785,13 @@
         <item>100 EUR</item>
     </string-array>
     <string name="redirect_import_key_title">"Scan with OpenKeychain!"</string>
-    <string name="redirect_import_key_message">"You scanned a OpenPGP QR Code with another app, please scan with Openkeychain directly to be safe."</string>
+    <string name="redirect_import_key_message">"You scanned a OpenPGP QR Code with another app. Please scan with Openkeychain directly to be safe."</string>
     <string name="redirect_import_key_yes">"Scan again"</string>
     <string name="redirect_import_key_no">"Close"</string>
     <string name="title_activity_redirect_key">"Key import redirection"</string>
 
     <string name="request_permission_title">Allow access to your key?</string>
-    <string name="request_permission_msg">%1$s requests access to one of your keys, which allows it to decrypt messages sent to this key. You can revoke access later in OpenKeychain.</string>
+    <string name="request_permission_msg">%1$s requests access to one of your keys, which will allow it to decrypt messages sent to this key. You can revoke access later in OpenKeychain.</string>
     <string name="requested_key_unavailable_warning">This key is not available. To use it, you must import it as one of your own!</string>
     <string name="button_allow">Allow</string>
     <string name="button_cancel">Cancel</string>
@@ -1861,19 +1859,19 @@
     <string name="dialog_insecure_title">Security Warning</string>
     <string name="dialog_insecure_recommend_title">Recommended Action</string>
     <string name="insecure_encrypt_bitstrength">"The key you used to receive (decrypt) this message is outdated!\n\nThe algorithm (%s) is configured with a strength of 1024 bits or less, which has been considered insecure for general use since 2006."</string>
-    <string name="insecure_encrypt_bitstrength_suggestion">The key in use is insecure, and cannot be updated. To communicate securely, you must create a new key!</string>
+    <string name="insecure_encrypt_bitstrength_suggestion">The key in use is insecure, and cannot be upgraded. To communicate securely, you must create a new key!</string>
     <string name="insecure_sign_bitstrength">"The key that sent (signed) this message is outdated!\n\nThe algorithm (%s) is configured with a strength of 1024 bits or less, which has been considered insecure for general use since 2006."</string>
-    <string name="insecure_sign_bitstrength_suggestion">The key in use is insecure, and cannot be updated. To communicate securely, the sender must create a new key!</string>
+    <string name="insecure_sign_bitstrength_suggestion">The key in use is insecure, and cannot be upgraded. To communicate securely, the sender must create a new key!</string>
     <string name="insecure_encrypt_not_whitelisted_curve">"The key that received (decrypted) this message is using the elliptic curve with OID %1$s, which is not whitelisted!"</string>
     <string name="insecure_sign_not_whitelisted_curve">"The key this message was sent (signed) from is using the elliptic curve with OID %1$s, which is not whitelisted!"</string>
-    <string name="insecure_encrypt_unidentified">"There is an unidentified security problem with the key used to receive (decrypyt) this message!"</string>
+    <string name="insecure_encrypt_unidentified">"There is an unidentified security problem with the key used to receive (decrypt) this message!"</string>
     <string name="insecure_sign_unidentified">"There is an unidentified security problem with the key used to send (sign) this message!"</string>
     <string name="insecure_report_suggestion">"This might be a problem in OpenKeychain, please report on our issue tracker!"</string>
 
     <string name="insecure_mdc">"This message was not signed, and did also not contain a Modification Detection Code (MDC). It may have been modified by an attacker!"</string>
     <string name="insecure_mdc_suggestion">"A missing MDC is a problem in the sending software, or an attack. For secure end-to-end communication, messages should also be signed by the sender!"</string>
 
-    <string name="insecure_symmetric_algo">"This message was encrypted using the symmetric %s algorithm. This is considered insecure, or at least exotic!"</string>
+    <string name="insecure_symmetric_algo">"This message was encrypted using the %s algorithm. This is considered insecure, or at least exotic!"</string>
     <string name="insecure_hash_algo">"This message was signed using the %s hashing algorithm. This is considered insecure, or at least exotic!"</string>
     <string name="dialog_insecure_override">If you don\'t want to be warned about this specific security problem in the future, you can suppress this warning.</string>
     <string name="dialog_insecure_override_title">Suppress this warning</string>

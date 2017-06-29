@@ -6,7 +6,7 @@
 
 ## 4.3
   * Better support for large keys
-  * Improve import of Gpg4win asc files
+  * Fix import of Gpg4win files with broken encodings
 
 
 ## 4.2
@@ -136,7 +136,7 @@
   * Many fixes for key import, also fixes stripped keys
   * Honor and display key authenticate flags
   * User interface to generate custom keys
-  * Fixing user id revocation certificates
+  * Fixing user ID revocation certificates
   * New cloud search (searches over traditional keyservers and keybase.io)
   * Support for stripping keys inside OpenKeychain
   * Experimental YubiKey support: Support for signature generation and decryption
