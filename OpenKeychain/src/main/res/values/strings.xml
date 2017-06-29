@@ -19,7 +19,7 @@
     <string name="title_preferences">"Settings"</string>
     <string name="title_api_registered_apps">"Apps"</string>
     <string name="title_key_server_preference">"OpenPGP keyservers"</string>
-    <string name="title_smartpgp_authorities_preference">"SmartPGP authorities"</string>
+    <string name="title_smartpgp_authorities_preference">"SmartPGP: Trusted authorities"</string>
     <string name="title_cache_ttl_preference">"Customize 'Remember' choices"</string>
     <string name="title_change_passphrase">"Change Password"</string>
     <string name="title_share_fingerprint_with">"Share fingerprint with…"</string>
@@ -181,7 +181,6 @@
     <string name="label_ecc_curve">"Elliptic Curve"</string>
     <string name="label_main_user_id">"Primary identity"</string>
     <string name="label_name">"Name"</string>
-    <string name="label_comment">"Comment"</string>
     <string name="label_email">"Email"</string>
     <string name="label_send_key">"Synchronize with the Internet"</string>
     <string name="label_fingerprint">"Fingerprint"</string>
@@ -194,9 +193,9 @@
     <string name="label_enable_compression">"Enable compression"</string>
     <string name="label_encrypt_filenames">"Encrypt filenames"</string>
     <string name="label_hidden_recipients">"Hide recipients"</string>
-    <string name="label_smartpgp_verify">SmartPGP verify certificate</string>
-    <string name="label_smartpgp_verify_summary">"Validate tokens certificates against a set of trusted certification authorities"</string>
-    <string name="label_smartpgp_roots">SmartPGP trusted authorities</string>
+    <string name="label_smartpgp_verify">SmartPGP: Verify certificates</string>
+    <string name="label_smartpgp_verify_summary">"Verify certificates on SmartPGP Security Tokens against a set of trusted authorities"</string>
+    <string name="label_smartpgp_roots">SmartPGP: Trusted authorities</string>
 
     <string name="label_verify_keyserver_connection">"Test connection"</string>
     <string name="label_only_trusted_keyserver">"Only trusted keyserver"</string>
@@ -231,7 +230,7 @@
     <string name="label_experimental_settings_word_confirm_summary">"Confirm keys with phrases instead of hexadecimal fingerprints"</string>
     <string name="label_experimental_settings_linked_identities_title">"Linked Identities"</string>
     <string name="label_experimental_settings_linked_identities_summary">"Link keys to Twitter, GitHub, websites or DNS (similar to keybase.io but decentralized)"</string>
-    <string name="label_experimental_settings_keybase_title">"Keybase.io Proofs"</string>
+    <string name="label_experimental_settings_keybase_title">"Keybase.io proofs"</string>
     <string name="label_experimental_settings_keybase_summary">"Contact keybase.io for key proofs and show them every time a key is displayed"</string>
     <string name="label_experimental_settings_theme_summary">"(The icons and many screens are not yet adjusted accordingly for the dark theme)"</string>
 
@@ -840,7 +839,6 @@
     <!-- Add/Edit SmartPGP authority -->
     <string name="add_smartpgp_authority_dialog_title">"Add authority"</string>
     <string name="show_smartpgp_authority_dialog_title">"Edit authority"</string>
-    <string name="smartpgp_authority_preference_deleted">"%s deleted"</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>
@@ -1215,7 +1213,7 @@
     <string name="msg_dc_clear_meta_file">"Filename: %s"</string>
     <string name="msg_dc_clear_meta_mime">"MIME type: %s"</string>
     <string name="msg_dc_clear_meta_size">"File size: %s"</string>
-    <string name="msg_dc_clear_meta_size_unknown">"File size is unknown"</string>
+    <string name="msg_dc_clear_meta_size_unknown">"File size: unknown"</string>
     <string name="msg_dc_clear_meta_time">"Modification time: %s"</string>
     <string name="msg_dc_clear_signature_bad">"Signature check NOT OK!"</string>
     <string name="msg_dc_clear_signature_check">"Verifying signature data"</string>
@@ -1788,7 +1786,6 @@
     <string name="redirect_import_key_message">"You scanned a OpenPGP QR Code with another app. Please scan with Openkeychain directly to be safe."</string>
     <string name="redirect_import_key_yes">"Scan again"</string>
     <string name="redirect_import_key_no">"Close"</string>
-    <string name="title_activity_redirect_key">"Key import redirection"</string>
 
     <string name="request_permission_title">Allow access to your key?</string>
     <string name="request_permission_msg">%1$s requests access to one of your keys, which will allow it to decrypt messages sent to this key. You can revoke access later in OpenKeychain.</string>

@@ -751,7 +751,7 @@
         <activity
             android:name=".ui.RedirectImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_activity_redirect_key"
+            android:label="@string/title_import_keys"
             android:theme="@style/Theme.Keychain.Transparent">
 
             <!-- VIEW with fingerprint scheme:
