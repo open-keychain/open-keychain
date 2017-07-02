@@ -8,7 +8,7 @@
     android:id="@+id/transfer_animator"
     android:inAnimation="@anim/fade_in_delayed"
     android:outAnimation="@anim/fade_out"
-    custom:initialView="05">
+    custom:initialView="03">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -158,8 +158,9 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
                 android:id="@+id/connection_status_1"
-                tools:text="Connected to 123.456.123.123"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="Connected"/>
 
         </RelativeLayout>
 
@@ -248,8 +249,10 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
                 android:id="@+id/connection_status_2"
-                tools:text="Connected to 123.456.123.123"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="Connected"
+                />
 
         </RelativeLayout>
 

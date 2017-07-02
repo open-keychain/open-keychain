@@ -224,10 +224,10 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
     @Override
     public void showConnectionEstablished(String hostname) {
-        String statusText = getString(R.string.transfer_status_connected, hostname);
+        // String statusText = getString(R.string.transfer_status_connected, hostname);
 
-        vConnectionStatusText1.setText(statusText);
-        vConnectionStatusText2.setText(statusText);
+        vConnectionStatusText1.setText(R.string.transfer_status_connected);
+        vConnectionStatusText2.setText(R.string.transfer_status_connected);
 
         vConnectionStatusView1.setConnected(true);
         vConnectionStatusView2.setConnected(true);

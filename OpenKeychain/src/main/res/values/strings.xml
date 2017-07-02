@@ -1897,7 +1897,7 @@
     <string name="section_received_keys">"Received keys"</string>
     <string name="transfer_scan_only_wifi">"This feature can only be used on Wifi."</string>
     <string name="button_import">"Import"</string>
-    <string name="transfer_status_connected">"Connected to %s"</string>
+    <string name="transfer_status_connected">"Connected"</string>
     <string name="transfer_status_disconnected">"Disconnected!"</string>
     <string name="transfer_error_read_incoming">"Failed reading incoming key!"</string>
     <string name="transfer_error_connect">"Connection failed!"</string>
