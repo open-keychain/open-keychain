@@ -358,8 +358,10 @@ class SCP11bSecureMessaging implements SecureMessaging {
                 throw new SecureMessagingException("No key in token for secure messaging");
             }
 
-            final int fieldSize = pkcard.getParams().getCurve().getField().getFieldSize();
+            final EllipticCurve curve = pkcard.getParams().getCurve();
+            final int fieldSize = curve.getField().getFieldSize();
             int keySize;
+
             if(fieldSize < 512) {
                 keySize = 16;
             } else {
