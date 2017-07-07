@@ -60,6 +60,7 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
+import java.security.spec.EllipticCurve;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.ArrayList;
@@ -277,18 +278,11 @@ class SCP11bSecureMessaging implements SecureMessaging {
     public static void establish(final SecurityTokenHelper t, final Context ctx)
             throws SecureMessagingException, IOException {
 
-        final int keySize = t.getOpenPgpCapabilities().getSMAESKeySize();
-
-        t.clearSecureMessaging();
-
-        if ((keySize != 16)
-                && (keySize != 32)) {
-            throw  new SecureMessagingException("invalid key size");
-        }
-
         CommandAPDU cmd;
         ResponseAPDU resp;
         Iso7816TLV[] tlvs;
+
+        t.clearSecureMessaging();
 
         // retrieving key algorithm
         cmd = new CommandAPDU(0, (byte)0xCA, (byte)0x00,
@@ -363,6 +357,16 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
             if (pkcard == null) {
                 throw new SecureMessagingException("No key in token for secure messaging");
+            }
+
+            final EllipticCurve curve = pkcard.getParams().getCurve();
+            final int fieldSize = curve.getField().getFieldSize();
+            int keySize;
+
+            if(fieldSize < 512) {
+                keySize = 16;
+            } else {
+                keySize = 32;
             }
 
             final KeyPair ekoce = generateECDHKeyPair(eckf);
