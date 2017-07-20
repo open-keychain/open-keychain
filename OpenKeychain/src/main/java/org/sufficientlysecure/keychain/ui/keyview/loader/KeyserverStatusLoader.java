@@ -27,6 +27,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.ui.keyview.loader.KeyserverStatusLoader.KeyserverStatus;
 
@@ -45,12 +46,15 @@ public class KeyserverStatusLoader extends AsyncTaskLoader<KeyserverStatus> {
 
     private KeyserverStatus cachedResult;
 
+    private ForceLoadContentObserver keyserverStatusObserver;
 
     public KeyserverStatusLoader(Context context, ContentResolver contentResolver, long masterKeyId) {
         super(context);
 
         this.contentResolver = contentResolver;
         this.masterKeyId = masterKeyId;
+
+        this.keyserverStatusObserver = new ForceLoadContentObserver();
     }
 
     @Override
@@ -95,6 +99,16 @@ public class KeyserverStatusLoader extends AsyncTaskLoader<KeyserverStatus> {
         if (takeContentChanged() || cachedResult == null) {
             forceLoad();
         }
+
+        getContext().getContentResolver().registerContentObserver(
+                KeyRings.buildGenericKeyRingUri(masterKeyId), true, keyserverStatusObserver);
+    }
+
+    @Override
+    protected void onAbandon() {
+        super.onAbandon();
+
+        getContext().getContentResolver().unregisterContentObserver(keyserverStatusObserver);
     }
 
     public static class KeyserverStatus {

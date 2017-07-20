@@ -780,12 +780,12 @@ public class KeychainProvider extends ContentProvider {
                     break;
                 }
                 case UPDATED_KEYS: {
+                    keyId = values.getAsLong(UpdatedKeys.MASTER_KEY_ID);
                     try {
                         db.insertOrThrow(Tables.UPDATED_KEYS, null, values);
                     } catch (SQLiteConstraintException e) {
-                        String masterKeyId = values.getAsString(UpdatedKeys.MASTER_KEY_ID);
                         db.update(Tables.UPDATED_KEYS, values,
-                                UpdatedKeys.MASTER_KEY_ID + " = ?", new String[] { masterKeyId });
+                                UpdatedKeys.MASTER_KEY_ID + " = ?", new String[] { Long.toString(keyId) });
                     }
                     rowUri = UpdatedKeys.CONTENT_URI;
                     break;
