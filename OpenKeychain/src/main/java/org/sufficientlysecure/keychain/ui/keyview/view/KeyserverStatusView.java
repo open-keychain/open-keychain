@@ -88,7 +88,7 @@ public class KeyserverStatusView extends FrameLayout implements KeyserverStatusM
     @Override
     public void setDisplayStatusUnknown() {
         setDisplayStatus(KeyserverDisplayStatus.UNKNOWN);
-        vSubtitle.setVisibility(View.GONE);
+        vSubtitle.setText(R.string.keyserver_last_updated_never);
     }
 
     @Override

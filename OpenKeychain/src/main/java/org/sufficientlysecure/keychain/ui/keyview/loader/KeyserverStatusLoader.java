@@ -68,9 +68,12 @@ public class KeyserverStatusLoader extends AsyncTaskLoader<KeyserverStatus> {
 
         try {
             if (cursor.moveToFirst()) {
+                if (cursor.isNull(INDEX_SEEN_ON_KEYSERVERS) || cursor.isNull(INDEX_LAST_UPDATED)) {
+                    return new KeyserverStatus(masterKeyId);
+                }
+
                 boolean isPublished = cursor.getInt(INDEX_SEEN_ON_KEYSERVERS) != 0;
-                Date lastUpdated = cursor.isNull(INDEX_LAST_UPDATED) ?
-                        null : new Date(cursor.getLong(INDEX_LAST_UPDATED) * 1000);
+                Date lastUpdated = new Date(cursor.getLong(INDEX_LAST_UPDATED) * 1000);
 
                 return new KeyserverStatus(masterKeyId, isPublished, lastUpdated);
             }
