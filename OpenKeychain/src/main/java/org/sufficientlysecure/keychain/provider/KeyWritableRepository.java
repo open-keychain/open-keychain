@@ -1349,11 +1349,13 @@ public class KeyWritableRepository extends KeyRepository {
     }
 
     public Uri renewKeyLastUpdatedTime(long masterKeyId, boolean seenOnKeyservers) {
+        boolean isFirstKeyserverStatusCheck = getSeenOnKeyservers(masterKeyId) == null;
+
         ContentValues values = new ContentValues();
         values.put(UpdatedKeys.MASTER_KEY_ID, masterKeyId);
         values.put(UpdatedKeys.LAST_UPDATED, GregorianCalendar.getInstance().getTimeInMillis() / 1000);
-        if (seenOnKeyservers) {
-            values.put(UpdatedKeys.SEEN_ON_KEYSERVERS, true);
+        if (seenOnKeyservers || isFirstKeyserverStatusCheck) {
+            values.put(UpdatedKeys.SEEN_ON_KEYSERVERS, seenOnKeyservers);
         }
 
         // this will actually update/replace, doing the right thing™ for seenOnKeyservers value
