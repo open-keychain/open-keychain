@@ -70,7 +70,9 @@
         android:layout_width="match_parent"
         android:layout_height="1dip"
         android:id="@+id/key_health_divider"
-        android:background="?android:attr/listDivider" />
+        android:background="?android:attr/listDivider"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -122,18 +124,24 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
         android:id="@+id/key_expiry_layout"
         android:visibility="gone"
         tools:visibility="visible">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider"
+            />
+
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:id="@+id/key_expiry_text"
             android:textAppearance="?android:textAppearanceSmall"
             tools:text="@string/key_expiry_text"
