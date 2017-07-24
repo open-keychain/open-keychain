@@ -197,6 +197,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_UPDATE_KEYS);
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
+        db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
         db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
@@ -307,7 +308,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 }
             */
             case 20:
-                db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
+                db.execSQL(
+                        "CREATE TABLE IF NOT EXISTS overridden_warnings ("
+                                + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                                + "identifier TEXT NOT NULL UNIQUE "
+                                + ")");
+
                 if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20) {
                     // no consolidate for now, often crashes!
                     return;
