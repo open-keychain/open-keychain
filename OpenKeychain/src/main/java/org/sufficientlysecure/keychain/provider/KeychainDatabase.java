@@ -151,6 +151,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS " + Tables.UPDATED_KEYS + " ("
                     + UpdatedKeysColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY, "
                     + UpdatedKeysColumns.LAST_UPDATED + " INTEGER, "
+                    + UpdatedKeysColumns.SEEN_ON_KEYSERVERS + " INTEGER, "
                     + "FOREIGN KEY(" + UpdatedKeysColumns.MASTER_KEY_ID + ") REFERENCES "
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
                     + ")";
