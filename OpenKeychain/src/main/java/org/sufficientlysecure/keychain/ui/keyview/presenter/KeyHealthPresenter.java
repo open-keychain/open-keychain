@@ -115,9 +115,11 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
             view.setKeyStatus(keyHealthStatus);
             view.setPrimaryExpiryDate(subkeyStatus.keyCertify.mExpiry);
             view.setShowExpander(false);
+            view.hideExpandedInfo();
         } else {
             view.setKeyStatus(keyHealthStatus);
             view.setShowExpander(keyHealthStatus != KeyHealthStatus.REVOKED);
+            view.hideExpandedInfo();
         }
     }
 

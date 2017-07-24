@@ -35,10 +35,12 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter;
+import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyserverStatusPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.ViewKeyMvpView;
 import org.sufficientlysecure.keychain.ui.keyview.view.IdentitiesCardView;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthView;
+import org.sufficientlysecure.keychain.ui.keyview.view.KeyserverStatusView;
 import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
 
 
@@ -51,6 +53,7 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
     private static final int LOADER_IDENTITIES = 1;
     private static final int LOADER_ID_LINKED_CONTACT = 2;
     private static final int LOADER_ID_SUBKEY_STATUS = 3;
+    private static final int LOADER_ID_KEYSERVER_STATUS = 4;
 
     private IdentitiesCardView mIdentitiesCardView;
     private IdentitiesPresenter mIdentitiesPresenter;
@@ -59,8 +62,10 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
     SystemContactPresenter mSystemContactPresenter;
 
     KeyHealthView mKeyStatusHealth;
+    KeyserverStatusView mKeyStatusKeyserver;
 
     KeyHealthPresenter mKeyHealthPresenter;
+    KeyserverStatusPresenter mKeyserverStatusPresenter;
 
     /**
      * Creates new instance of this fragment
@@ -85,6 +90,7 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
 
         mSystemContactCard = (SystemContactCardView) view.findViewById(R.id.linked_system_contact_card);
         mKeyStatusHealth = (KeyHealthView) view.findViewById(R.id.key_status_health);
+        mKeyStatusKeyserver = (KeyserverStatusView) view.findViewById(R.id.key_status_keyserver);
 
         return root;
     }
@@ -107,6 +113,10 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView {
         mKeyHealthPresenter = new KeyHealthPresenter(
                 getContext(), mKeyStatusHealth, LOADER_ID_SUBKEY_STATUS, masterKeyId, mIsSecret);
         mKeyHealthPresenter.startLoader(getLoaderManager());
+
+        mKeyserverStatusPresenter = new KeyserverStatusPresenter(
+                getContext(), mKeyStatusKeyserver, LOADER_ID_KEYSERVER_STATUS, masterKeyId, mIsSecret);
+        mKeyserverStatusPresenter.startLoader(getLoaderManager());
     }
 
     @Override

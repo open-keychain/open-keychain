@@ -280,6 +280,32 @@ public class KeyRepository {
         return lastUpdateTime;
     }
 
+    @Nullable
+    Boolean getSeenOnKeyservers(long masterKeyId) {
+        Cursor cursor = mContentResolver.query(
+                UpdatedKeys.CONTENT_URI,
+                new String[] { UpdatedKeys.SEEN_ON_KEYSERVERS },
+                UpdatedKeys.MASTER_KEY_ID + " = ?",
+                new String[] { "" + masterKeyId },
+                null
+        );
+        if (cursor == null) {
+            return null;
+        }
+
+        Boolean seenOnKeyservers;
+        try {
+            if (!cursor.moveToNext()) {
+                return null;
+            }
+            seenOnKeyservers = cursor.isNull(0) ? null : cursor.getInt(0) != 0;
+        } finally {
+            cursor.close();
+        }
+        return seenOnKeyservers;
+    }
+
+
     public final byte[] loadPublicKeyRingData(long masterKeyId) throws NotFoundException {
         byte[] data = (byte[]) getGenericDataOrNull(KeyRingData.buildPublicKeyRingUri(masterKeyId),
                 KeyRingData.KEY_RING_DATA, FIELD_TYPE_BLOB);

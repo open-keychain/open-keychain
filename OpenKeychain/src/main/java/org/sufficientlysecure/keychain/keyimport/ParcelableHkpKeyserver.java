@@ -466,6 +466,29 @@ public class ParcelableHkpKeyserver extends Keyserver implements Parcelable {
         return getHostID();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (! (obj instanceof ParcelableHkpKeyserver)) {
+            return false;
+        }
+
+        ParcelableHkpKeyserver other = (ParcelableHkpKeyserver) obj;
+        if (other.mUrl == null ^ mUrl == null) {
+            return false;
+        }
+        if (other.mOnion == null ^ mOnion == null) {
+            return false;
+        }
+        if (mUrl != null && !mUrl.equals(other.mUrl)) {
+            return false;
+        }
+        if (mOnion != null && !mOnion.equals(other.mOnion)) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Tries to find a server responsible for a given domain
      *

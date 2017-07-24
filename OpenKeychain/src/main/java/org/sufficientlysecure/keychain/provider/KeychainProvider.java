@@ -639,10 +639,10 @@ public class KeychainProvider extends ContentProvider {
             case UPDATED_KEYS_SPECIFIC: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 qb.setTables(Tables.UPDATED_KEYS);
-                projectionMap.put(UpdatedKeys.MASTER_KEY_ID, Tables.UPDATED_KEYS + "."
-                        + UpdatedKeys.MASTER_KEY_ID);
-                projectionMap.put(UpdatedKeys.LAST_UPDATED, Tables.UPDATED_KEYS + "."
-                        + UpdatedKeys.LAST_UPDATED);
+                projectionMap.put(UpdatedKeys.MASTER_KEY_ID, Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID);
+                projectionMap.put(UpdatedKeys.LAST_UPDATED, Tables.UPDATED_KEYS + "." + UpdatedKeys.LAST_UPDATED);
+                projectionMap.put(UpdatedKeys.SEEN_ON_KEYSERVERS,
+                        Tables.UPDATED_KEYS + "." + UpdatedKeys.SEEN_ON_KEYSERVERS);
                 qb.setProjectionMap(projectionMap);
                 if (match == UPDATED_KEYS_SPECIFIC) {
                     qb.appendWhere(UpdatedKeys.MASTER_KEY_ID + " = ");
@@ -780,9 +780,14 @@ public class KeychainProvider extends ContentProvider {
                     break;
                 }
                 case UPDATED_KEYS: {
-                    long updatedKeyId = db.replace(Tables.UPDATED_KEYS, null, values);
-                    rowUri = UpdatedKeys.CONTENT_URI.buildUpon().appendPath("" + updatedKeyId)
-                            .build();
+                    keyId = values.getAsLong(UpdatedKeys.MASTER_KEY_ID);
+                    try {
+                        db.insertOrThrow(Tables.UPDATED_KEYS, null, values);
+                    } catch (SQLiteConstraintException e) {
+                        db.update(Tables.UPDATED_KEYS, values,
+                                UpdatedKeys.MASTER_KEY_ID + " = ?", new String[] { Long.toString(keyId) });
+                    }
+                    rowUri = UpdatedKeys.CONTENT_URI;
                     break;
                 }
                 case API_APPS: {
@@ -909,6 +914,19 @@ public class KeychainProvider extends ContentProvider {
                 case API_APPS_BY_PACKAGE_NAME: {
                     count = db.update(Tables.API_APPS, values,
                             buildDefaultApiAppsSelection(uri, selection), selectionArgs);
+                    break;
+                }
+                case UPDATED_KEYS: {
+                    if (values.size() != 2 ||
+                            !values.containsKey(UpdatedKeys.SEEN_ON_KEYSERVERS) ||
+                            !values.containsKey(UpdatedKeys.LAST_UPDATED) ||
+                            values.get(UpdatedKeys.LAST_UPDATED) != null ||
+                            values.get(UpdatedKeys.SEEN_ON_KEYSERVERS) != null ||
+                            selection != null || selectionArgs != null) {
+                        throw new UnsupportedOperationException("can only reset all keys");
+                    }
+
+                    db.update(Tables.UPDATED_KEYS, values, null, null);
                     break;
                 }
                 default: {

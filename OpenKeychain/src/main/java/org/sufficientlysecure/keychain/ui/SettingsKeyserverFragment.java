@@ -18,6 +18,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -38,6 +43,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.ui.dialog.AddEditKeyserverDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -45,19 +52,19 @@ import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperAdapt
 import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperDragCallback;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperViewHolder;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-import java.util.ArrayList;
-import java.util.Collections;
 
 public class SettingsKeyserverFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
 
     private static final String ARG_KEYSERVER_ARRAY = "arg_keyserver_array";
     private ItemTouchHelper mItemTouchHelper;
 
-    private ArrayList<ParcelableHkpKeyserver> mKeyservers;
+    private ArrayList<ParcelableHkpKeyserver> mKeyserversMutable;
+    private List<ParcelableHkpKeyserver> mKeyservers;
     private KeyserverListAdapter mAdapter;
+
+    private KeyWritableRepository databaseReadWriteInteractor;
 
     public static SettingsKeyserverFragment newInstance(ArrayList<ParcelableHkpKeyserver> keyservers) {
         Bundle args = new Bundle();
@@ -72,6 +79,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
+        databaseReadWriteInteractor = KeyWritableRepository.createDatabaseReadWriteInteractor(getContext());
 
         return inflater.inflate(R.layout.settings_keyserver_fragment, null);
     }
@@ -80,9 +88,10 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mKeyservers = getArguments().getParcelableArrayList(ARG_KEYSERVER_ARRAY);
+        mKeyserversMutable = getArguments().getParcelableArrayList(ARG_KEYSERVER_ARRAY);
+        mKeyservers = Collections.unmodifiableList(new ArrayList<>(mKeyserversMutable));
 
-        mAdapter = new KeyserverListAdapter(mKeyservers);
+        mAdapter = new KeyserverListAdapter(mKeyserversMutable);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.keyserver_recycler_view);
         // recyclerView.setHasFixedSize(true); // the size of the first item changes
@@ -143,7 +152,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
                         if (deleted) {
                             Notify.create(getActivity(),
                                     getActivity().getString(
-                                            R.string.keyserver_preference_deleted, mKeyservers.get(position)),
+                                            R.string.keyserver_preference_deleted, mKeyserversMutable.get(position)),
                                     Notify.Style.OK)
                                     .show();
                             deleteKeyserver(position);
@@ -187,27 +196,27 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     }
 
     private void addKeyserver(ParcelableHkpKeyserver keyserver) {
-        mKeyservers.add(keyserver);
-        mAdapter.notifyItemInserted(mKeyservers.size() - 1);
+        mKeyserversMutable.add(keyserver);
+        mAdapter.notifyItemInserted(mKeyserversMutable.size() - 1);
         saveKeyserverList();
     }
 
     private void editKeyserver(ParcelableHkpKeyserver newKeyserver, int position) {
-        mKeyservers.set(position, newKeyserver);
+        mKeyserversMutable.set(position, newKeyserver);
         mAdapter.notifyItemChanged(position);
         saveKeyserverList();
     }
 
     private void deleteKeyserver(int position) {
-        if (mKeyservers.size() == 1) {
+        if (mKeyserversMutable.size() == 1) {
             Notify.create(getActivity(), R.string.keyserver_preference_cannot_delete_last,
                     Notify.Style.ERROR).show();
             return;
         }
-        mKeyservers.remove(position);
+        mKeyserversMutable.remove(position);
         // we use this
         mAdapter.notifyItemRemoved(position);
-        if (position == 0 && mKeyservers.size() > 0) {
+        if (position == 0 && mKeyserversMutable.size() > 0) {
             // if we deleted the first item, we need the adapter to redraw the new first item
             mAdapter.notifyItemChanged(0);
         }
@@ -215,13 +224,20 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     }
 
     private void saveKeyserverList() {
-        Preferences.getPreferences(getActivity()).setKeyServers(mKeyservers);
+        if (mKeyserversMutable.equals(mKeyservers)) {
+            return;
+        }
+
+        Preferences.getPreferences(getActivity()).setKeyServers(mKeyserversMutable);
+        mKeyservers = Collections.unmodifiableList(new ArrayList<>(mKeyserversMutable));
+
+        databaseReadWriteInteractor.resetAllLastUpdatedTimes();
     }
 
     @Override
     public void onItemClick(View view, int position) {
         startEditKeyserverDialog(AddEditKeyserverDialogFragment.DialogAction.EDIT,
-                mKeyservers.get(position), position);
+                mKeyserversMutable.get(position), position);
     }
 
     public class KeyserverListAdapter extends RecyclerView.Adapter<KeyserverListAdapter.ViewHolder>
