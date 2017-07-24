@@ -916,6 +916,19 @@ public class KeychainProvider extends ContentProvider {
                             buildDefaultApiAppsSelection(uri, selection), selectionArgs);
                     break;
                 }
+                case UPDATED_KEYS: {
+                    if (values.size() != 2 ||
+                            !values.containsKey(UpdatedKeys.SEEN_ON_KEYSERVERS) ||
+                            !values.containsKey(UpdatedKeys.LAST_UPDATED) ||
+                            values.get(UpdatedKeys.LAST_UPDATED) != null ||
+                            values.get(UpdatedKeys.SEEN_ON_KEYSERVERS) != null ||
+                            selection != null || selectionArgs != null) {
+                        throw new UnsupportedOperationException("can only reset all keys");
+                    }
+
+                    db.update(Tables.UPDATED_KEYS, values, null, null);
+                    break;
+                }
                 default: {
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
                 }

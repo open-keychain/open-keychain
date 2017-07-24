@@ -1363,4 +1363,11 @@ public class KeyWritableRepository extends KeyRepository {
         return mContentResolver.insert(UpdatedKeys.CONTENT_URI, values);
     }
 
+    public void resetAllLastUpdatedTimes() {
+        ContentValues values = new ContentValues();
+        values.putNull(UpdatedKeys.LAST_UPDATED);
+        values.putNull(UpdatedKeys.SEEN_ON_KEYSERVERS);
+        mContentResolver.update(UpdatedKeys.CONTENT_URI, values, null, null);
+    }
+
 }
