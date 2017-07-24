@@ -1185,19 +1185,29 @@ public class KeyWritableRepository extends KeyRepository {
             ArrayList<ContentValues> updatedKeysValues = new ArrayList<>();
             final int INDEX_MASTER_KEY_ID = 0;
             final int INDEX_LAST_UPDATED = 1;
+            final int INDEX_SEEN_ON_KEYSERVERS = 2;
             Cursor lastUpdatedCursor = mContentResolver.query(
                     UpdatedKeys.CONTENT_URI,
                     new String[]{
                             UpdatedKeys.MASTER_KEY_ID,
-                            UpdatedKeys.LAST_UPDATED
+                            UpdatedKeys.LAST_UPDATED,
+                            UpdatedKeys.SEEN_ON_KEYSERVERS
                     },
                     null, null, null);
             while (lastUpdatedCursor.moveToNext()) {
                 ContentValues values = new ContentValues();
                 values.put(UpdatedKeys.MASTER_KEY_ID,
                         lastUpdatedCursor.getLong(INDEX_MASTER_KEY_ID));
-                values.put(UpdatedKeys.LAST_UPDATED,
-                        lastUpdatedCursor.getLong(INDEX_LAST_UPDATED));
+                if (!lastUpdatedCursor.isNull(INDEX_LAST_UPDATED)) {
+                    values.put(UpdatedKeys.LAST_UPDATED, lastUpdatedCursor.getLong(INDEX_LAST_UPDATED));
+                } else {
+                    values.putNull(UpdatedKeys.LAST_UPDATED);
+                }
+                if (!lastUpdatedCursor.isNull(INDEX_SEEN_ON_KEYSERVERS)) {
+                    values.put(UpdatedKeys.SEEN_ON_KEYSERVERS, lastUpdatedCursor.getInt(INDEX_SEEN_ON_KEYSERVERS));
+                } else {
+                    values.putNull(UpdatedKeys.SEEN_ON_KEYSERVERS);
+                }
                 updatedKeysValues.add(values);
             }
             lastUpdatedCursor.close();
