@@ -28,7 +28,7 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 
 
@@ -37,7 +37,7 @@ public abstract class CertifyActionsParcel implements Parcelable {
     public abstract long getMasterKeyId();
     public abstract ArrayList<CertifyAction> getCertifyActions();
     @Nullable
-    public abstract ParcelableHkpKeyserver getParcelableKeyServer();
+    public abstract HkpKeyserverAddress getParcelableKeyServer();
 
     public static Builder builder(long masterKeyId) {
         return new AutoValue_CertifyActionsParcel.Builder()
@@ -49,7 +49,7 @@ public abstract class CertifyActionsParcel implements Parcelable {
     public abstract static class Builder {
         abstract Builder setMasterKeyId(long masterKeyId);
         public abstract Builder setCertifyActions(ArrayList<CertifyAction> certifyActions);
-        public abstract Builder setParcelableKeyServer(ParcelableHkpKeyserver uri);
+        public abstract Builder setParcelableKeyServer(HkpKeyserverAddress uri);
 
         abstract ArrayList<CertifyAction> getCertifyActions();
 

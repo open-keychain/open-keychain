@@ -28,7 +28,7 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -78,7 +78,7 @@ public abstract class SaveKeyringParcel implements Parcelable {
     public abstract boolean isShouldUpload();
     public abstract boolean isShouldUploadAtomic();
     @Nullable
-    public abstract ParcelableHkpKeyserver getUploadKeyserver();
+    public abstract HkpKeyserverAddress getUploadKeyserver();
 
     @Nullable
     public abstract ChangeUnlockParcel getNewUnlock();
@@ -151,9 +151,9 @@ public abstract class SaveKeyringParcel implements Parcelable {
         abstract Builder setRevokeSubKeys(List<Long> revokeSubKeys);
         abstract Builder setShouldUpload(boolean upload);
         abstract Builder setShouldUploadAtomic(boolean uploadAtomic);
-        abstract Builder setUploadKeyserver(ParcelableHkpKeyserver keyserver);
+        abstract Builder setUploadKeyserver(HkpKeyserverAddress keyserver);
 
-        public void setUpdateOptions(boolean upload, boolean uploadAtomic, ParcelableHkpKeyserver keyserver) {
+        public void setUpdateOptions(boolean upload, boolean uploadAtomic, HkpKeyserverAddress keyserver) {
             setShouldUpload(upload);
             setShouldUploadAtomic(uploadAtomic);
             setUploadKeyserver(keyserver);

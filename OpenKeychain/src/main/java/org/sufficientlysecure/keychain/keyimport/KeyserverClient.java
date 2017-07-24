@@ -1,7 +1,5 @@
 /*
  * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2011-2014 Thialfihar <thi@thialfihar.org>
- * Copyright (C) 2011 Senecaso
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public abstract class Keyserver {
+public interface KeyserverClient {
 
-    public static class CloudSearchFailureException extends Exception {
+    class CloudSearchFailureException extends Exception {
         private static final long serialVersionUID = 2703768928624654515L;
 
         public CloudSearchFailureException(String message) {
@@ -39,7 +37,7 @@ public abstract class Keyserver {
         }
     }
 
-    public static class QueryFailedException extends CloudSearchFailureException {
+    class QueryFailedException extends CloudSearchFailureException {
         private static final long serialVersionUID = 2703768928624654512L;
 
         public QueryFailedException(String message) {
@@ -47,7 +45,7 @@ public abstract class Keyserver {
         }
     }
 
-    public static class QueryNotFoundException extends QueryFailedException {
+    class QueryNotFoundException extends QueryFailedException {
         private static final long serialVersionUID = 2693768928624654513L;
 
         public QueryNotFoundException(String message) {
@@ -55,52 +53,37 @@ public abstract class Keyserver {
         }
     }
 
-    public static class QueryNeedsRepairException extends CloudSearchFailureException {
+    class QueryNeedsRepairException extends CloudSearchFailureException {
         private static final long serialVersionUID = 2693768928624654512L;
     }
 
-    public static class TooManyResponsesException extends QueryNeedsRepairException {
+    class TooManyResponsesException extends QueryNeedsRepairException {
         private static final long serialVersionUID = 2703768928624654513L;
     }
 
-    public static class QueryTooShortException extends QueryNeedsRepairException {
+    class QueryTooShortException extends QueryNeedsRepairException {
         private static final long serialVersionUID = 2703768928624654514L;
     }
 
     /**
      * query too short _or_ too many responses
      */
-    public static class QueryTooShortOrTooManyResponsesException extends QueryNeedsRepairException {
+    class QueryTooShortOrTooManyResponsesException extends QueryNeedsRepairException {
         private static final long serialVersionUID = 2703768928624654518L;
     }
 
-    public static class QueryNoEnabledSourceException extends QueryNeedsRepairException {
+    class QueryNoEnabledSourceException extends QueryNeedsRepairException {
         private static final long serialVersionUID = 2703768928624654519L;
     }
 
-    public static class AddKeyException extends Exception {
+    class AddKeyException extends Exception {
         private static final long serialVersionUID = -507574859137295530L;
     }
 
-    public abstract List<ImportKeysListEntry> search(String query, ParcelableProxy proxy)
+    List<ImportKeysListEntry> search(String query, ParcelableProxy proxy)
             throws QueryFailedException, QueryNeedsRepairException;
 
-    public abstract String get(String keyIdHex, ParcelableProxy proxy) throws QueryFailedException;
+    String get(String keyIdHex, ParcelableProxy proxy) throws QueryFailedException;
 
-    public abstract void add(String armoredKey, ParcelableProxy proxy) throws AddKeyException;
-
-    public static String readAll(InputStream in, String encoding) throws IOException {
-        ByteArrayOutputStream raw = new ByteArrayOutputStream();
-
-        byte buffer[] = new byte[1 << 16];
-        int n = 0;
-        while ((n = in.read(buffer)) != -1) {
-            raw.write(buffer, 0, n);
-        }
-
-        if (encoding == null) {
-            encoding = "utf8";
-        }
-        return raw.toString(encoding);
-    }
+    void add(String armoredKey, ParcelableProxy proxy) throws AddKeyException;
 }

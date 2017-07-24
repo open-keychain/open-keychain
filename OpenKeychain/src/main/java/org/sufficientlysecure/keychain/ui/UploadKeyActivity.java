@@ -35,7 +35,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -52,7 +52,7 @@ public class UploadKeyActivity extends BaseActivity
     private Uri mDataUri;
 
     // CryptoOperationHelper.Callback vars
-    private ParcelableHkpKeyserver mKeyserver;
+    private HkpKeyserverAddress mKeyserver;
     private CryptoOperationHelper<UploadKeyringParcel, UploadResult> mUploadOpHelper;
 
     @Override
@@ -94,11 +94,11 @@ public class UploadKeyActivity extends BaseActivity
     }
 
     private String[] getKeyserversArray() {
-        ArrayList<ParcelableHkpKeyserver> keyservers = Preferences.getPreferences(this)
+        ArrayList<HkpKeyserverAddress> keyservers = Preferences.getPreferences(this)
                 .getKeyServers();
         String[] keyserversArray = new String[keyservers.size()];
         int i = 0;
-        for (ParcelableHkpKeyserver k : keyservers) {
+        for (HkpKeyserverAddress k : keyservers) {
             keyserversArray[i] = k.getUrl();
             i++;
         }
@@ -121,7 +121,7 @@ public class UploadKeyActivity extends BaseActivity
     private void uploadKey() {
         String keyserverUrl = (String) mKeyServerSpinner.getSelectedItem();
         // TODO: Currently, not using onion addresses here!
-        mKeyserver = new ParcelableHkpKeyserver(keyserverUrl);
+        mKeyserver = HkpKeyserverAddress.createFromUri(keyserverUrl);
 
         mUploadOpHelper = new CryptoOperationHelper<>(1, this, this, R.string.progress_uploading);
         mUploadOpHelper.cryptoOperation();

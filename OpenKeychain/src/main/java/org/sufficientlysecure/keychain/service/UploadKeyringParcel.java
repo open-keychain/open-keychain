@@ -25,11 +25,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
+
 
 @AutoValue
 public abstract class UploadKeyringParcel implements Parcelable {
-    public abstract ParcelableHkpKeyserver getKeyserver();
+    public abstract HkpKeyserverAddress getKeyserver();
     @Nullable
     public abstract Long getMasterKeyId();
     @Nullable
@@ -37,11 +38,11 @@ public abstract class UploadKeyringParcel implements Parcelable {
     public abstract byte[] getUncachedKeyringBytes();
 
 
-    public static UploadKeyringParcel createWithKeyId(ParcelableHkpKeyserver keyserver, long masterKeyId) {
+    public static UploadKeyringParcel createWithKeyId(HkpKeyserverAddress keyserver, long masterKeyId) {
         return new AutoValue_UploadKeyringParcel(keyserver, masterKeyId, null);
     }
 
-    public static UploadKeyringParcel createWithKeyringBytes(ParcelableHkpKeyserver keyserver,
+    public static UploadKeyringParcel createWithKeyringBytes(HkpKeyserverAddress keyserver,
             @NonNull byte[] uncachedKeyringBytes) {
         return new AutoValue_UploadKeyringParcel(keyserver, null, uncachedKeyringBytes);
     }

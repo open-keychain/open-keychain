@@ -25,7 +25,7 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 
 @AutoValue
@@ -33,16 +33,16 @@ public abstract class ImportKeyringParcel implements Parcelable {
     @Nullable // If null, keys are expected to be read from a cache file in ImportExportOperations
     public abstract ArrayList<ParcelableKeyRing> getKeyList();
     @Nullable // must be set if keys are to be imported from a keyserver
-    public abstract ParcelableHkpKeyserver getKeyserver();
+    public abstract HkpKeyserverAddress getKeyserver();
     public abstract boolean isSkipSave();
 
     public static ImportKeyringParcel createImportKeyringParcel(ArrayList<ParcelableKeyRing> keyList,
-            ParcelableHkpKeyserver keyserver) {
+            HkpKeyserverAddress keyserver) {
         return new AutoValue_ImportKeyringParcel(keyList, keyserver, false);
     }
 
     public static ImportKeyringParcel createWithSkipSave(ArrayList<ParcelableKeyRing> keyList,
-            ParcelableHkpKeyserver keyserver) {
+            HkpKeyserverAddress keyserver) {
         return new AutoValue_ImportKeyringParcel(keyList, keyserver, true);
     }
 

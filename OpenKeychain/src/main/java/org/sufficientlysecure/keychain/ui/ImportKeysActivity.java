@@ -28,7 +28,8 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.FacebookKeyserver;
+import org.sufficientlysecure.keychain.keyimport.FacebookKeyserverClient;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
@@ -43,7 +44,6 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
@@ -119,7 +119,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
         }
 
         if (Intent.ACTION_VIEW.equals(action)) {
-            if (FacebookKeyserver.isFacebookHost(dataUri)) {
+            if (FacebookKeyserverClient.isFacebookHost(dataUri)) {
                 action = ACTION_IMPORT_KEY_FROM_FACEBOOK;
             } else if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
                 action = ACTION_SEARCH_KEYSERVER_FROM_URL;
@@ -202,7 +202,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 break;
             }
             case ACTION_IMPORT_KEY_FROM_FACEBOOK: {
-                String fbUsername = FacebookKeyserver.getUsernameFromUri(dataUri);
+                String fbUsername = FacebookKeyserverClient.getUsernameFromUri(dataUri);
 
                 Preferences.CloudSearchPrefs cloudSearchPrefs =
                         new Preferences.CloudSearchPrefs(false, true, true, null);
@@ -212,7 +212,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
             }
             case ACTION_SEARCH_KEYSERVER_FROM_URL: {
                 // get keyserver from URL
-                ParcelableHkpKeyserver keyserver = new ParcelableHkpKeyserver(
+                HkpKeyserverAddress keyserver = HkpKeyserverAddress.createFromUri(
                         dataUri.getScheme() + "://" + dataUri.getAuthority());
                 Preferences.CloudSearchPrefs cloudSearchPrefs = new Preferences.CloudSearchPrefs(
                         true, false, false, keyserver);

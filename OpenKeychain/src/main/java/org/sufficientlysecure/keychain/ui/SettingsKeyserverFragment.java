@@ -43,7 +43,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.ui.dialog.AddEditKeyserverDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -60,13 +60,13 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     private static final String ARG_KEYSERVER_ARRAY = "arg_keyserver_array";
     private ItemTouchHelper mItemTouchHelper;
 
-    private ArrayList<ParcelableHkpKeyserver> mKeyserversMutable;
-    private List<ParcelableHkpKeyserver> mKeyservers;
+    private ArrayList<HkpKeyserverAddress> mKeyserversMutable;
+    private List<HkpKeyserverAddress> mKeyservers;
     private KeyserverListAdapter mAdapter;
 
     private KeyWritableRepository databaseReadWriteInteractor;
 
-    public static SettingsKeyserverFragment newInstance(ArrayList<ParcelableHkpKeyserver> keyservers) {
+    public static SettingsKeyserverFragment newInstance(ArrayList<HkpKeyserverAddress> keyservers) {
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_KEYSERVER_ARRAY, keyservers);
 
@@ -139,7 +139,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     }
 
     private void startEditKeyserverDialog(AddEditKeyserverDialogFragment.DialogAction action,
-                                          ParcelableHkpKeyserver keyserver, final int position) {
+                                          HkpKeyserverAddress keyserver, final int position) {
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -168,7 +168,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
                                     R.string.add_keyserver_without_verification,
                                     Notify.Style.WARN).show();
                         }
-                        ParcelableHkpKeyserver keyserver = data.getParcelable(
+                        HkpKeyserverAddress keyserver = data.getParcelable(
                                 AddEditKeyserverDialogFragment.MESSAGE_KEYSERVER);
 
                         AddEditKeyserverDialogFragment.DialogAction dialogAction
@@ -195,13 +195,13 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
         dialogFragment.show(getFragmentManager(), "addKeyserverDialog");
     }
 
-    private void addKeyserver(ParcelableHkpKeyserver keyserver) {
+    private void addKeyserver(HkpKeyserverAddress keyserver) {
         mKeyserversMutable.add(keyserver);
         mAdapter.notifyItemInserted(mKeyserversMutable.size() - 1);
         saveKeyserverList();
     }
 
-    private void editKeyserver(ParcelableHkpKeyserver newKeyserver, int position) {
+    private void editKeyserver(HkpKeyserverAddress newKeyserver, int position) {
         mKeyserversMutable.set(position, newKeyserver);
         mAdapter.notifyItemChanged(position);
         saveKeyserverList();
@@ -243,9 +243,9 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     public class KeyserverListAdapter extends RecyclerView.Adapter<KeyserverListAdapter.ViewHolder>
             implements ItemTouchHelperAdapter {
 
-        private final ArrayList<ParcelableHkpKeyserver> mKeyservers;
+        private final ArrayList<HkpKeyserverAddress> mKeyservers;
 
-        public KeyserverListAdapter(ArrayList<ParcelableHkpKeyserver> keyservers) {
+        public KeyserverListAdapter(ArrayList<HkpKeyserverAddress> keyservers) {
             mKeyservers = keyservers;
         }
 

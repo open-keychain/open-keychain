@@ -43,7 +43,7 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
@@ -140,7 +140,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
     private void lookupUnknownKey(long unknownKeyId) {
 
         final ArrayList<ParcelableKeyRing> keyList;
-        final ParcelableHkpKeyserver keyserver;
+        final HkpKeyserverAddress keyserver;
 
         // search config
         keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();

@@ -24,17 +24,18 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
+
 
 @AutoValue
 public abstract class RevokeKeyringParcel implements Parcelable {
     public abstract long getMasterKeyId();
     public abstract boolean isShouldUpload();
     @Nullable
-    public abstract ParcelableHkpKeyserver getKeyserver();
+    public abstract HkpKeyserverAddress getKeyserver();
 
     public static RevokeKeyringParcel createRevokeKeyringParcel(long masterKeyId, boolean upload,
-            ParcelableHkpKeyserver keyserver) {
+            HkpKeyserverAddress keyserver) {
         return new AutoValue_RevokeKeyringParcel(masterKeyId, upload, keyserver);
     }
 }

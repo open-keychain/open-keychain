@@ -27,8 +27,9 @@ import android.support.annotation.Nullable;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverClient;
+import org.sufficientlysecure.keychain.keyimport.KeyserverClient.AddKeyException;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
@@ -94,7 +95,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             log.add(LogType.MSG_UPLOAD_PROXY, 1, parcelableProxy.getProxy().toString());
         }
 
-        ParcelableHkpKeyserver hkpKeyserver;
+        HkpKeyserverAddress hkpKeyserver;
         {
             hkpKeyserver = uploadInput.getKeyserver();
             log.add(LogType.MSG_UPLOAD_SERVER, 1, hkpKeyserver.toString());
@@ -139,11 +140,13 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
     @NonNull
     private UploadResult uploadKeyRingToServer(
-            OperationLog log, ParcelableHkpKeyserver server, CanonicalizedPublicKeyRing keyring,
+            OperationLog log, HkpKeyserverAddress hkpKeyserverAddress, CanonicalizedPublicKeyRing keyring,
             ParcelableProxy proxy) {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
+
+        HkpKeyserverClient keyserverInteractor = HkpKeyserverClient.fromHkpKeyserverAddress(hkpKeyserverAddress);
 
         try {
             aos = new ArmoredOutputStream(bos);
@@ -151,7 +154,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             aos.close();
 
             String armoredKey = bos.toString("UTF-8");
-            server.add(armoredKey, proxy);
+            keyserverInteractor.add(armoredKey, proxy);
 
             updateProgress(R.string.progress_uploading, 1, 1);
 

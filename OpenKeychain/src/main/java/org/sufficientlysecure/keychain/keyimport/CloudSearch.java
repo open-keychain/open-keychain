@@ -37,20 +37,20 @@ public class CloudSearch {
 
     public static ArrayList<ImportKeysListEntry> search(
             @NonNull final String query, Preferences.CloudSearchPrefs cloudPrefs, @NonNull final ParcelableProxy proxy)
-            throws Keyserver.CloudSearchFailureException {
+            throws KeyserverClient.CloudSearchFailureException {
 
-        final ArrayList<Keyserver> servers = new ArrayList<>();
+        final ArrayList<KeyserverClient> servers = new ArrayList<>();
         // it's a Vector for sync, multiple threads might report problems
-        final Vector<Keyserver.CloudSearchFailureException> problems = new Vector<>();
+        final Vector<KeyserverClient.CloudSearchFailureException> problems = new Vector<>();
 
         if (cloudPrefs.searchKeyserver) {
-            servers.add(cloudPrefs.keyserver);
+            servers.add(HkpKeyserverClient.fromHkpKeyserverAddress(cloudPrefs.keyserver));
         }
         if (cloudPrefs.searchKeybase) {
-            servers.add(KeybaseKeyserver.getInstance());
+            servers.add(KeybaseKeyserverClient.getInstance());
         }
         if (cloudPrefs.searchFacebook) {
-            servers.add(FacebookKeyserver.getInstance());
+            servers.add(FacebookKeyserverClient.getInstance());
         }
 
         int numberOfServers = servers.size();
@@ -58,13 +58,13 @@ public class CloudSearch {
 
         if (numberOfServers > 0) {
             ArrayList<Thread> searchThreads = new ArrayList<>();
-            for (final Keyserver keyserver : servers) {
+            for (final KeyserverClient keyserverClient : servers) {
                 Runnable r = new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            results.addAll(keyserver.search(query, proxy));
-                        } catch (Keyserver.CloudSearchFailureException e) {
+                            results.addAll(keyserverClient.search(query, proxy));
+                        } catch (KeyserverClient.CloudSearchFailureException e) {
                             problems.add(e);
                         }
                         results.finishedAdding(); // notifies if all searchers done
@@ -90,14 +90,14 @@ public class CloudSearch {
             if (results.outstandingSuppliers() > 0) {
                 String message = "Launched " + servers.size() + " cloud searchers, but " +
                         results.outstandingSuppliers() + "failed to complete.";
-                problems.add(new Keyserver.QueryFailedException(message));
+                problems.add(new KeyserverClient.QueryFailedException(message));
             }
         } else {
-            problems.add(new Keyserver.QueryNoEnabledSourceException());
+            problems.add(new KeyserverClient.QueryNoEnabledSourceException());
         }
 
         if (!problems.isEmpty()) {
-            for (Keyserver.CloudSearchFailureException e : problems) {
+            for (KeyserverClient.CloudSearchFailureException e : problems) {
                 Log.d(Constants.TAG, "Cloud search exception: " + e.getLocalizedMessage());
             }
 

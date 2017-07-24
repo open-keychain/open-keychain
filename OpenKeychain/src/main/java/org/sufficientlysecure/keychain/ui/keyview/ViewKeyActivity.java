@@ -69,7 +69,7 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
@@ -144,7 +144,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     protected Uri mDataUri;
 
     // For CryptoOperationHelper.Callback
-    private ParcelableHkpKeyserver mKeyserver;
+    private HkpKeyserverAddress mKeyserver;
     private ArrayList<ParcelableKeyRing> mKeyList;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
     private CryptoOperationHelper<ChangeUnlockParcel, EditKeyResult> mEditOpHelper;
