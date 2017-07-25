@@ -157,7 +157,8 @@ public final class Constants {
     }
 
     /**
-     * information to connect to Orbot's localhost HTTP proxy
+     * Orbot's default localhost HTTP proxy
+     * Orbot's SOCKS proxy is not fully supported by OkHttp
      */
     public static final class Orbot {
         public static final String PROXY_HOST = "127.0.0.1";

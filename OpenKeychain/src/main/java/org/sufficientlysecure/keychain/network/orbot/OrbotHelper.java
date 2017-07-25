@@ -79,6 +79,7 @@ import java.util.List;
 
 /**
  * This class is taken from the NetCipher library: https://github.com/guardianproject/NetCipher/
+ * All calls that use a shell have been removed.
  */
 public class OrbotHelper {
 

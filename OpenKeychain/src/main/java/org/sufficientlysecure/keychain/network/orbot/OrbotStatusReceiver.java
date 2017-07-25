@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2017 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,15 +30,14 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class OrbotStatusReceiver extends BroadcastReceiver {
 
-    //TODO: These two Strings are missing in older versions of NetCipher.
-    //TODO: Once they are present in OrbotHelper (not ProxyHelper) point to OrbotHelpers Strings instead.
+    // TODO: These two Strings are missing in older versions of NetCipher.
+    // TODO: Once they are present in OrbotHelper (not ProxyHelper) point to OrbotHelpers Strings instead.
     public final static String EXTRA_PROXY_PORT_HTTP = "org.torproject.android.intent.extra.HTTP_PROXY_PORT";
     public final static String EXTRA_PROXY_PORT_SOCKS = "org.torproject.android.intent.extra.SOCKS_PROXY_PORT";
 
-    //Variables representing Orbots status
     private boolean torRunning;
-    private int proxy_port_http;
-    private int proxy_port_socks;
+    private int proxyPortHttp;
+    private int proxyPortSocks;
 
     private static OrbotStatusReceiver instance;
 
@@ -51,26 +52,24 @@ public class OrbotStatusReceiver extends BroadcastReceiver {
         return instance;
     }
 
-
     @Override
     public void onReceive(Context context, Intent intent) {
         if (OrbotHelper.ACTION_STATUS.equals(intent.getAction())) {
-            Log.i(Constants.TAG, context.getPackageName() + " received intent : " + intent.getAction() + " " + intent.getPackage());
-            String status = intent.getStringExtra(OrbotHelper.EXTRA_STATUS) + " (" + intent.getStringExtra(OrbotHelper.EXTRA_PACKAGE_NAME) + ")";
+            String status = intent.getStringExtra(OrbotHelper.EXTRA_STATUS);
             this.torRunning = (intent.getStringExtra(OrbotHelper.EXTRA_STATUS).equals(OrbotHelper.STATUS_ON));
 
-            Log.d(Constants.TAG, "Orbot status: " + status);
+            Log.d(Constants.TAG, "Receiver: Orbot status: " + status);
             if (torRunning) {
                 Bundle extras = intent.getExtras();
 
                 if (extras.containsKey(EXTRA_PROXY_PORT_HTTP)) {
-                    this.proxy_port_http = extras.getInt(EXTRA_PROXY_PORT_HTTP, -1);
-                    Log.i(Constants.TAG, "Http proxy set to " + proxy_port_http);
+                    this.proxyPortHttp = extras.getInt(EXTRA_PROXY_PORT_HTTP, -1);
+                    Log.i(Constants.TAG, "Receiver: Orbot Http proxy at " + proxyPortHttp);
                 }
 
                 if (extras.containsKey(EXTRA_PROXY_PORT_SOCKS)) {
-                    this.proxy_port_socks = extras.getInt(EXTRA_PROXY_PORT_SOCKS, -1);
-                    Log.i(Constants.TAG, "Socks proxy set to " + proxy_port_socks);
+                    this.proxyPortSocks = extras.getInt(EXTRA_PROXY_PORT_SOCKS, -1);
+                    Log.i(Constants.TAG, "Receiver: Orbot Socks proxy at " + proxyPortSocks);
                 }
             }
         }
@@ -83,11 +82,11 @@ public class OrbotStatusReceiver extends BroadcastReceiver {
 
     public int getProxyPortHttp(Context context) {
         OrbotHelper.requestStartTor(context);
-        return this.proxy_port_http;
+        return this.proxyPortHttp;
     }
 
     public int getProxyPortSocks(Context context) {
         OrbotHelper.requestStartTor(context);
-        return this.proxy_port_socks;
+        return this.proxyPortSocks;
     }
 }
