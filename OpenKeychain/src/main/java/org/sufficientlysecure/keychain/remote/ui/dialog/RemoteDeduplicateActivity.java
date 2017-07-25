@@ -50,6 +50,7 @@ import android.widget.TextView;
 
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeyInfo;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicatePresenter.RemoteDeduplicateView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
@@ -171,7 +172,9 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
                         return;
                     }
 
-                    activity.setResult(RESULT_OK, null);
+                    Intent passthroughData = activity.getIntent().getParcelableExtra(
+                            RemoteSecurityTokenOperationActivity.EXTRA_DATA);
+                    activity.setResult(RESULT_OK, passthroughData);
                     activity.finish();
                 }
 

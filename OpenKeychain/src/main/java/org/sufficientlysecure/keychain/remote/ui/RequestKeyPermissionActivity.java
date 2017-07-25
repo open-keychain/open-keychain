@@ -163,7 +163,9 @@ public class RequestKeyPermissionActivity extends FragmentActivity {
                         return;
                     }
 
-                    activity.setResult(Activity.RESULT_OK);
+                    Intent passthroughData = activity.getIntent().getParcelableExtra(
+                            RemoteSecurityTokenOperationActivity.EXTRA_DATA);
+                    activity.setResult(RESULT_OK, passthroughData);
                     activity.finish();
                 }
 
