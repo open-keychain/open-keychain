@@ -95,6 +95,15 @@ public class KeychainContract {
         String IDENTIFIER = "identifier";
     }
 
+    interface ApiAutocryptPeerColumns {
+        String PACKAGE_NAME = "package_name";
+        String IDENTIFIER = "identifier";
+        String LAST_SEEN = "last_updated";
+        String LAST_SEEN_KEY = "last_seen_key";
+        String STATE = "state";
+        String MASTER_KEY_ID = "master_key_id";
+    }
+
     public static final String CONTENT_AUTHORITY = Constants.PROVIDER_AUTHORITY;
 
     private static final Uri BASE_CONTENT_URI_INTERNAL = Uri
@@ -121,6 +130,11 @@ public class KeychainContract {
     public static final String BASE_API_APPS = "api_apps";
     public static final String PATH_ALLOWED_KEYS = "allowed_keys";
 
+    public static final String PATH_BY_PACKAGE_NAME = "by_package_name";
+    public static final String PATH_BY_KEY_ID = "by_key_id";
+
+    public static final String BASE_AUTOCRYPT_PEERS = "autocrypt_peers";
+
     public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
         public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
@@ -133,6 +147,7 @@ public class KeychainContract {
         public static final String HAS_CERTIFY = "has_certify";
         public static final String HAS_AUTHENTICATE = "has_authenticate";
         public static final String HAS_DUPLICATE_USER_ID = "has_duplicate_user_id";
+        public static final String API_KNOWN_TO_PACKAGE_NAMES = "known_to_apps";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
@@ -329,6 +344,29 @@ public class KeychainContract {
         public static Uri buildBaseUri(String packageName) {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ALLOWED_KEYS)
                     .build();
+        }
+    }
+
+    public static class ApiAutocryptPeer implements ApiAutocryptPeerColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_AUTOCRYPT_PEERS).build();
+
+        public static final int RESET = 0;
+        public static final int GOSSIP = 1;
+        public static final int SELECTED = 2;
+        public static final int AVAILABLE = 3;
+        public static final int MUTUAL = 4;
+
+        public static Uri buildByKeyUri(Uri uri) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(uri.getPathSegments().get(1)).build();
+        }
+
+        public static Uri buildByPackageNameAndAutocryptId(String packageName, String autocryptPeer) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName).appendPath(autocryptPeer).build();
+        }
+
+        public static Uri buildByMasterKeyId(long masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(Long.toString(masterKeyId)).build();
         }
     }
 

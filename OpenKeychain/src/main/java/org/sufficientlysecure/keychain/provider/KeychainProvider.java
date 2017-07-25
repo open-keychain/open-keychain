@@ -19,7 +19,14 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -35,6 +42,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -44,11 +52,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 public class KeychainProvider extends ContentProvider {
 
@@ -77,6 +80,10 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int UPDATED_KEYS = 500;
     private static final int UPDATED_KEYS_SPECIFIC = 501;
+
+    private static final int AUTOCRYPT_PEERS_BY_MASTER_KEY_ID = 601;
+    private static final int AUTOCRYPT_PEERS_BY_PACKAGE_NAME = 602;
+    private static final int AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID = 603;
 
     protected UriMatcher mUriMatcher;
 
@@ -189,6 +196,22 @@ public class KeychainProvider extends ContentProvider {
 
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
                 + KeychainContract.PATH_ALLOWED_KEYS, API_ALLOWED_KEYS);
+
+        /**
+         * Trust Identity access
+         *
+         * <pre>
+         * trust_ids/by_key_id/_
+         *
+         * </pre>
+         */
+        matcher.addURI(authority, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
+                KeychainContract.PATH_BY_KEY_ID + "/*", AUTOCRYPT_PEERS_BY_MASTER_KEY_ID);
+        matcher.addURI(authority, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
+                KeychainContract.PATH_BY_PACKAGE_NAME + "/*", AUTOCRYPT_PEERS_BY_PACKAGE_NAME);
+        matcher.addURI(authority, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
+                KeychainContract.PATH_BY_PACKAGE_NAME + "/*/*", AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID);
+
 
         /**
          * to access table containing last updated dates of keys
@@ -321,6 +344,9 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(KeyRings.IS_EXPIRED,
                         "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
                                 + " < " + new Date().getTime() / 1000 + ") AS " + KeyRings.IS_EXPIRED);
+                projectionMap.put(KeyRings.API_KNOWN_TO_PACKAGE_NAMES,
+                        "GROUP_CONCAT(aTI." + ApiAutocryptPeer.PACKAGE_NAME + ") AS "
+                        + KeyRings.API_KNOWN_TO_PACKAGE_NAMES);
                 qb.setProjectionMap(projectionMap);
 
                 if (projection == null) {
@@ -389,6 +415,11 @@ public class KeychainProvider extends ContentProvider {
                                 + " AND ( kC." + Keys.EXPIRY + " IS NULL OR kC." + Keys.EXPIRY
                                 + " >= " + new Date().getTime() / 1000 + " )"
                                 + ")" : "")
+                        + (plist.contains(KeyRings.API_KNOWN_TO_PACKAGE_NAMES) ?
+                            " LEFT JOIN " + Tables.API_AUTOCRYPT_PEERS + " AS aTI ON ("
+                                    +"aTI." + Keys.MASTER_KEY_ID
+                                    + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                    + ")" : "")
                     );
                 qb.appendWhere(Tables.KEYS + "." + Keys.RANK + " = 0");
                 // in case there are multiple verifying certificates
@@ -635,6 +666,45 @@ public class KeychainProvider extends ContentProvider {
                 break;
             }
 
+            case AUTOCRYPT_PEERS_BY_MASTER_KEY_ID:
+            case AUTOCRYPT_PEERS_BY_PACKAGE_NAME:
+            case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {
+                if (selection != null || selectionArgs != null) {
+                    throw new UnsupportedOperationException();
+                }
+
+                HashMap<String, String> projectionMap = new HashMap<>();
+                projectionMap.put(ApiAutocryptPeer._ID, "oid AS " + ApiAutocryptPeer._ID);
+                projectionMap.put(ApiAutocryptPeer.PACKAGE_NAME, ApiAutocryptPeer.PACKAGE_NAME);
+                projectionMap.put(ApiAutocryptPeer.IDENTIFIER, ApiAutocryptPeer.IDENTIFIER);
+                projectionMap.put(ApiAutocryptPeer.MASTER_KEY_ID, ApiAutocryptPeer.MASTER_KEY_ID);
+                projectionMap.put(ApiAutocryptPeer.LAST_SEEN, ApiAutocryptPeer.LAST_SEEN);
+                qb.setProjectionMap(projectionMap);
+
+                qb.setTables(Tables.API_AUTOCRYPT_PEERS);
+
+                if (match == AUTOCRYPT_PEERS_BY_MASTER_KEY_ID) {
+                    long masterKeyId = Long.parseLong(uri.getLastPathSegment());
+
+                    selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " = ?";
+                    selectionArgs = new String[] { Long.toString(masterKeyId) };
+                } else if (match == AUTOCRYPT_PEERS_BY_PACKAGE_NAME) {
+                    String packageName = uri.getPathSegments().get(2);
+
+                    selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME + " = ?";
+                    selectionArgs = new String[] { packageName };
+                } else { // AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID
+                    String packageName = uri.getPathSegments().get(2);
+                    String autocryptPeer = uri.getPathSegments().get(3);
+
+                    selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME + " = ? AND " +
+                            Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.IDENTIFIER + " = ?";
+                    selectionArgs = new String[] { packageName, autocryptPeer };
+                }
+
+                break;
+            }
+
             case UPDATED_KEYS:
             case UPDATED_KEYS_SPECIFIC: {
                 HashMap<String, String> projectionMap = new HashMap<>();
@@ -835,6 +905,7 @@ public class KeychainProvider extends ContentProvider {
         int count;
         final int match = mUriMatcher.match(uri);
 
+        ContentResolver contentResolver = getContext().getContentResolver();
         switch (match) {
             // dangerous
             case KEY_RINGS_UNIFIED: {
@@ -849,7 +920,7 @@ public class KeychainProvider extends ContentProvider {
                 }
                 // corresponding keys and userIds are deleted by ON DELETE CASCADE
                 count = db.delete(Tables.KEY_RINGS_PUBLIC, selection, selectionArgs);
-                uri = KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1));
+                contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1)), null);
                 break;
             }
             case KEY_RING_SECRET: {
@@ -859,9 +930,42 @@ public class KeychainProvider extends ContentProvider {
                     selection += " AND (" + additionalSelection + ")";
                 }
                 count = db.delete(Tables.KEY_RINGS_SECRET, selection, selectionArgs);
-                uri = KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1));
+                contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1)), null);
                 break;
             }
+
+            case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {
+                String packageName = uri.getPathSegments().get(2);
+                String autocryptPeer = uri.getPathSegments().get(3);
+
+                String selection = ApiAutocryptPeer.PACKAGE_NAME + " = ? AND " + ApiAutocryptPeer.IDENTIFIER + " = ?";
+                selectionArgs = new String[] { packageName, autocryptPeer };
+
+                Cursor cursor = db.query(Tables.API_AUTOCRYPT_PEERS, new String[] { ApiAutocryptPeer.MASTER_KEY_ID },
+                        selection, selectionArgs, null, null, null);
+                Long masterKeyId = null;
+                if (cursor != null && cursor.moveToNext() && !cursor.isNull(0)) {
+                    masterKeyId = cursor.getLong(0);
+                }
+
+                count = db.delete(Tables.API_AUTOCRYPT_PEERS, selection, selectionArgs);
+
+                if (masterKeyId != null) {
+                    contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(masterKeyId), null);
+                }
+                contentResolver.notifyChange(
+                        ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptPeer), null);
+                break;
+            }
+
+            case AUTOCRYPT_PEERS_BY_MASTER_KEY_ID:
+                String selection  = ApiAutocryptPeer.MASTER_KEY_ID + " = " + uri.getLastPathSegment();
+                if (!TextUtils.isEmpty(additionalSelection)) {
+                    selection += " AND (" + additionalSelection + ")";
+                }
+                count = db.delete(Tables.API_AUTOCRYPT_PEERS, selection, selectionArgs);
+                contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(uri.getLastPathSegment()), null);
+                break;
 
             case API_APPS_BY_PACKAGE_NAME: {
                 count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, additionalSelection),
@@ -878,9 +982,6 @@ public class KeychainProvider extends ContentProvider {
             }
         }
 
-        // notify of changes in db
-        getContext().getContentResolver().notifyChange(uri, null);
-
         return count;
     }
 
@@ -892,6 +993,7 @@ public class KeychainProvider extends ContentProvider {
         Log.v(Constants.TAG, "update(uri=" + uri + ", values=" + values.toString() + ")");
 
         final SQLiteDatabase db = getDb().getWritableDatabase();
+        ContentResolver contentResolver = getContext().getContentResolver();
 
         int count = 0;
         try {
@@ -929,13 +1031,48 @@ public class KeychainProvider extends ContentProvider {
                     db.update(Tables.UPDATED_KEYS, values, null, null);
                     break;
                 }
+                case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {
+                    Long masterKeyId = values.getAsLong(ApiAutocryptPeer.MASTER_KEY_ID);
+                    if (masterKeyId == null) {
+                        throw new IllegalArgumentException("master_key_id must be a non-null value!");
+                    }
+
+                    ContentValues actualValues = new ContentValues();
+                    String packageName = uri.getPathSegments().get(2);
+                    actualValues.put(ApiAutocryptPeer.PACKAGE_NAME, packageName);
+                    actualValues.put(ApiAutocryptPeer.IDENTIFIER, uri.getLastPathSegment());
+                    actualValues.put(ApiAutocryptPeer.MASTER_KEY_ID, masterKeyId);
+
+                    Long newLastSeen = values.getAsLong(ApiAutocryptPeer.LAST_SEEN);
+                    if (newLastSeen != null) {
+                        actualValues.put(ApiAutocryptPeer.LAST_SEEN, newLastSeen);
+                    }
+
+                    if (values.containsKey(ApiAutocryptPeer.LAST_SEEN_KEY)) {
+                        actualValues.put(ApiAutocryptPeer.LAST_SEEN_KEY,
+                                values.getAsLong(ApiAutocryptPeer.LAST_SEEN_KEY));
+                    }
+                    if (values.containsKey(ApiAutocryptPeer.STATE)) {
+                        actualValues.put(ApiAutocryptPeer.STATE,
+                                values.getAsLong(ApiAutocryptPeer.STATE));
+                    }
+
+                    contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(masterKeyId), null);
+
+                    try {
+                        db.replace(Tables.API_AUTOCRYPT_PEERS, null, actualValues);
+                    } finally {
+                        db.close();
+                    }
+                    break;
+                }
                 default: {
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
                 }
             }
 
             // notify of changes in db
-            getContext().getContentResolver().notifyChange(uri, null);
+            contentResolver.notifyChange(uri, null);
 
         } catch (SQLiteConstraintException e) {
             Log.d(Constants.TAG, "Constraint exception on update! Entry already existing?", e);

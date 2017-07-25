@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="?selectableItemBackground"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:orientation="horizontal"
+        android:maxLines="1"
+        android:padding="8dp"
+        >
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:padding="8dp"
+            android:id="@+id/trust_id_app_icon"
+            tools:src="@drawable/apps_k9"/>
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/trust_id_name"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="alice@example.com"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="8dp"
+            android:id="@+id/user_id_item_more"
+            android:background="?selectableItemBackground"
+            android:src="@drawable/ic_chat_black_24dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/trust_id_button_bar"
+        android:visibility="gone"
+        tools:visibility="visible"
+        style="?android:buttonBarStyle">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:id="@+id/view_key_card_user_ids_edit"
+            android:text="Forget"
+            android:textColor="@color/card_view_button"
+            style="?android:attr/buttonBarButtonStyle"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

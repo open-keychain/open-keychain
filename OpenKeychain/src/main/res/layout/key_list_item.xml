@@ -2,7 +2,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?attr/listPreferredItemHeight"
@@ -11,7 +10,15 @@
     android:orientation="horizontal"
     android:descendantFocusability="blocksDescendants"
     android:background="@drawable/list_item_ripple"
-    android:focusable="false">
+    android:focusable="false"
+    tools:layout_marginTop="30dp">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="4dp"
+        android:id="@+id/key_list_item_tid_icon"
+        tools:src="@drawable/apps_k9" />
 
     <LinearLayout
         android:id="@+id/key_list_item_data"
@@ -24,8 +31,7 @@
         android:paddingLeft="8dp"
         android:paddingRight="4dp"
         android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        tools:visibility="gone">
+        android:paddingBottom="4dp">
 
         <TextView
             android:id="@+id/key_list_item_name"
@@ -60,7 +66,8 @@
         android:layout_width="wrap_content"
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:layout_gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:visibility="gone">
 
         <View
             android:layout_width="1dip"

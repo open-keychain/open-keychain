@@ -4,7 +4,6 @@ package org.sufficientlysecure.keychain.remote;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
 
 import android.app.PendingIntent;
 import android.content.ContentResolver;
@@ -16,22 +15,31 @@ import android.support.annotation.VisibleForTesting;
 
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
-import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
+import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 
 class OpenPgpServiceKeyIdExtractor {
     @VisibleForTesting
-    static final String[] PROJECTION_KEY_SEARCH = {
-            "email_address",
-            "master_key_id",
-            "email_status",
+    static final String[] PROJECTION_MAIL_STATUS = {
+            AutocryptStatus.ADDRESS,
+            AutocryptStatus.UID_MASTER_KEY_ID,
+            AutocryptStatus.UID_KEY_STATUS,
+            AutocryptStatus.UID_CANDIDATES,
+            AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID,
+            AutocryptStatus.AUTOCRYPT_KEY_STATUS,
+            AutocryptStatus.AUTOCRYPT_PEER_STATE
     };
     private static final int INDEX_EMAIL_ADDRESS = 0;
     private static final int INDEX_MASTER_KEY_ID = 1;
-    private static final int INDEX_EMAIL_STATUS = 2;
+    private static final int INDEX_USER_ID_STATUS = 2;
+    private static final int INDEX_USER_ID_CANDIDATES = 3;
+    private static final int INDEX_AUTOCRYPT_MASTER_KEY_ID = 4;
+    private static final int INDEX_AUTOCRYPT_KEY_STATUS = 5;
+    private static final int INDEX_AUTOCRYPT_PEER_STATE = 6;
 
 
     private final ApiPendingIntentFactory apiPendingIntentFactory;
@@ -58,7 +66,7 @@ class OpenPgpServiceKeyIdExtractor {
             for (long keyId : data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS_SELECTED)) {
                 encryptKeyIds.add(keyId);
             }
-            result = createKeysOkResult(encryptKeyIds, false);
+            result = createKeysOkResult(encryptKeyIds, false, null);
         } else if (data.hasExtra(OpenPgpApi.EXTRA_USER_IDS) || askIfNoUserIdsProvided) {
             String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
             result = returnKeyIdsFromEmails(data, userIds, callingPackageName);
@@ -85,32 +93,54 @@ class OpenPgpServiceKeyIdExtractor {
         HashSet<Long> keyIds = new HashSet<>();
         ArrayList<String> missingEmails = new ArrayList<>();
         ArrayList<String> duplicateEmails = new ArrayList<>();
+        AutocryptState combinedAutocryptState = null;
 
         if (hasAddresses) {
-            HashMap<String, UserIdStatus> keyRows = getStatusMapForQueriedAddresses(encryptionAddresses, callingPackageName);
+            HashMap<String, AddressQueryResult> userIdEntries = getStatusMapForQueriedAddresses(
+                    encryptionAddresses, callingPackageName);
 
             boolean anyKeyNotVerified = false;
-            for (Entry<String, UserIdStatus> entry : keyRows.entrySet()) {
-                String queriedAddress = entry.getKey();
-                UserIdStatus userIdStatus = entry.getValue();
+            for (String queriedAddress : encryptionAddresses) {
+                AddressQueryResult addressQueryResult = userIdEntries.get(queriedAddress);
+                if (addressQueryResult == null) {
+                    throw new IllegalStateException("No result for address - shouldn't happen!");
+                }
 
-                if (userIdStatus.masterKeyId == null) {
-                    missingEmails.add(queriedAddress);
+                if (addressQueryResult.autocryptMasterKeyId != null) {
+                    keyIds.add(addressQueryResult.autocryptMasterKeyId);
+
+                    if (addressQueryResult.autocryptKeyStatus != KeychainExternalContract.KEY_STATUS_VERIFIED) {
+                        anyKeyNotVerified = true;
+                    }
+
+                    if (combinedAutocryptState == null) {
+                        combinedAutocryptState = addressQueryResult.autocryptState;
+                    } else {
+                        combinedAutocryptState = combinedAutocryptState.combineWith(addressQueryResult.autocryptState);
+                    }
+
                     continue;
                 }
 
-                keyIds.add(userIdStatus.masterKeyId);
+                if (addressQueryResult.uidMasterKeyId != null) {
+                    keyIds.add(addressQueryResult.uidMasterKeyId);
+                    combinedAutocryptState = AutocryptState.EXTERNAL;
 
-                if (userIdStatus.hasDuplicate) {
-                    duplicateEmails.add(queriedAddress);
+                    if (addressQueryResult.uidHasMultipleCandidates) {
+                        duplicateEmails.add(queriedAddress);
+                    }
+
+                    if (addressQueryResult.uidKeyStatus != KeychainExternalContract.KEY_STATUS_VERIFIED) {
+                        anyKeyNotVerified = true;
+                    }
+
+                    continue;
                 }
 
-                if (!userIdStatus.verified) {
-                    anyKeyNotVerified = true;
-                }
+                missingEmails.add(queriedAddress);
             }
 
-            if (keyRows.size() != encryptionAddresses.length) {
+            if (userIdEntries.size() != encryptionAddresses.length) {
                 Log.e(Constants.TAG, "Number of rows doesn't match number of retrieved rows! Probably a bug?");
             }
 
@@ -122,14 +152,14 @@ class OpenPgpServiceKeyIdExtractor {
         }
 
         if (!duplicateEmails.isEmpty()) {
-            return createDuplicateKeysResult(data, keyIds, missingEmails, duplicateEmails);
+            return createDuplicateKeysResult(data, callingPackageName, duplicateEmails);
         }
 
         if (keyIds.isEmpty()) {
             return createNoKeysResult(data, keyIds, missingEmails, duplicateEmails);
         }
 
-        return createKeysOkResult(keyIds, allKeysConfirmed);
+        return createKeysOkResult(keyIds, allKeysConfirmed, combinedAutocryptState);
     }
 
     /** This method queries the KeychainExternalProvider for all addresses given in encryptionUserIds.
@@ -138,10 +168,10 @@ class OpenPgpServiceKeyIdExtractor {
      * verification status exist, the first one is returned and marked as having a duplicate.
      */
     @NonNull
-    private HashMap<String, UserIdStatus> getStatusMapForQueriedAddresses(String[] encryptionUserIds, String callingPackageName) {
-        HashMap<String,UserIdStatus> keyRows = new HashMap<>();
-        Uri queryUri = EmailStatus.CONTENT_URI.buildUpon().appendPath(callingPackageName).build();
-        Cursor cursor = contentResolver.query(queryUri, PROJECTION_KEY_SEARCH, null, encryptionUserIds, null);
+    private HashMap<String, AddressQueryResult> getStatusMapForQueriedAddresses(String[] encryptionUserIds, String callingPackageName) {
+        HashMap<String,AddressQueryResult> keyRows = new HashMap<>();
+        Uri queryUri = AutocryptStatus.CONTENT_URI.buildUpon().appendPath(callingPackageName).build();
+        Cursor cursor = contentResolver.query(queryUri, PROJECTION_MAIL_STATUS, null, encryptionUserIds, null);
         if (cursor == null) {
             throw new IllegalStateException("Internal error, received null cursor!");
         }
@@ -149,24 +179,21 @@ class OpenPgpServiceKeyIdExtractor {
         try {
             while (cursor.moveToNext()) {
                 String queryAddress = cursor.getString(INDEX_EMAIL_ADDRESS);
-                Long masterKeyId = cursor.isNull(INDEX_MASTER_KEY_ID) ? null : cursor.getLong(INDEX_MASTER_KEY_ID);
-                boolean isVerified = cursor.getInt(INDEX_EMAIL_STATUS) == KeychainExternalContract.KEY_STATUS_VERIFIED;
-                UserIdStatus userIdStatus = new UserIdStatus(masterKeyId, isVerified);
+                Long uidMasterKeyId =
+                        cursor.isNull(INDEX_MASTER_KEY_ID) ? null : cursor.getLong(INDEX_MASTER_KEY_ID);
+                int uidKeyStatus = cursor.getInt(INDEX_USER_ID_STATUS);
+                boolean uidHasMultipleCandidates = cursor.getInt(INDEX_USER_ID_CANDIDATES) > 1;
 
-                boolean seenBefore = keyRows.containsKey(queryAddress);
-                if (!seenBefore) {
-                    keyRows.put(queryAddress, userIdStatus);
-                    continue;
-                }
+                Long autocryptMasterKeyId =
+                        cursor.isNull(INDEX_AUTOCRYPT_MASTER_KEY_ID) ? null : cursor.getLong(INDEX_AUTOCRYPT_MASTER_KEY_ID);
+                int autocryptKeyStatus = cursor.getInt(INDEX_AUTOCRYPT_KEY_STATUS);
+                int autocryptPeerStatus = cursor.getInt(INDEX_AUTOCRYPT_PEER_STATE);
 
-                UserIdStatus previousUserIdStatus = keyRows.get(queryAddress);
-                if (previousUserIdStatus.masterKeyId == null) {
-                    keyRows.put(queryAddress, userIdStatus);
-                } else if (!previousUserIdStatus.verified && userIdStatus.verified) {
-                    keyRows.put(queryAddress, userIdStatus);
-                } else if (previousUserIdStatus.verified == userIdStatus.verified) {
-                    previousUserIdStatus.hasDuplicate = true;
-                }
+                AddressQueryResult status = new AddressQueryResult(
+                                uidMasterKeyId, uidKeyStatus, uidHasMultipleCandidates, autocryptMasterKeyId,
+                                autocryptKeyStatus, AutocryptState.fromDbValue(autocryptPeerStatus));
+
+                keyRows.put(queryAddress, status);
             }
         } finally {
             cursor.close();
@@ -174,14 +201,65 @@ class OpenPgpServiceKeyIdExtractor {
         return keyRows;
     }
 
-    private static class UserIdStatus {
-        private final Long masterKeyId;
-        private final boolean verified;
-        private boolean hasDuplicate;
+    private static class AddressQueryResult {
+        private final Long uidMasterKeyId;
+        private final int uidKeyStatus;
+        private boolean uidHasMultipleCandidates;
+        private final Long autocryptMasterKeyId;
+        private final int autocryptKeyStatus;
+        private final AutocryptState autocryptState;
 
-        UserIdStatus(Long masterKeyId, boolean verified) {
-            this.masterKeyId = masterKeyId;
-            this.verified = verified;
+        AddressQueryResult(Long uidMasterKeyId, int uidKeyStatus, boolean uidHasMultipleCandidates, Long autocryptMasterKeyId,
+                int autocryptKeyStatus, AutocryptState autocryptState) {
+            this.uidMasterKeyId = uidMasterKeyId;
+            this.uidKeyStatus = uidKeyStatus;
+            this.uidHasMultipleCandidates = uidHasMultipleCandidates;
+            this.autocryptMasterKeyId = autocryptMasterKeyId;
+            this.autocryptKeyStatus = autocryptKeyStatus;
+            this.autocryptState = autocryptState;
+        }
+    }
+
+    enum AutocryptState {
+        EXTERNAL, RESET, GOSSIP, SELECTED, AVAILABLE, MUTUAL;
+
+        static AutocryptState fromDbValue(int state) {
+            switch (state) {
+                case ApiAutocryptPeer.RESET:
+                    return RESET;
+                case ApiAutocryptPeer.AVAILABLE:
+                    return AVAILABLE;
+                case ApiAutocryptPeer.SELECTED:
+                    return SELECTED;
+                case ApiAutocryptPeer.GOSSIP:
+                    return GOSSIP;
+                case ApiAutocryptPeer.MUTUAL:
+                    return MUTUAL;
+                default:
+                    throw new IllegalStateException();
+            }
+        }
+
+        public AutocryptState combineWith(AutocryptState other) {
+            if (this == EXTERNAL || other == EXTERNAL) {
+                return EXTERNAL;
+            }
+            if (this == RESET || other == RESET) {
+                return RESET;
+            }
+            if (this == GOSSIP || other == GOSSIP) {
+                return GOSSIP;
+            }
+            if (this == SELECTED || other == SELECTED) {
+                return SELECTED;
+            }
+            if (this == AVAILABLE || other == AVAILABLE) {
+                return AVAILABLE;
+            }
+            if (this == MUTUAL && other == MUTUAL) {
+                return MUTUAL;
+            }
+            throw new IllegalStateException("Bug: autocrypt states can't be combined!");
         }
     }
 
@@ -191,6 +269,7 @@ class OpenPgpServiceKeyIdExtractor {
         private final HashSet<Long> mExplicitKeyIds;
         private final KeyIdResultStatus mStatus;
         private final boolean mAllKeysConfirmed;
+        private final AutocryptState mCombinedAutocryptState;
 
         private KeyIdResult(PendingIntent keySelectionPendingIntent, KeyIdResultStatus keyIdResultStatus) {
             mKeySelectionPendingIntent = keySelectionPendingIntent;
@@ -198,13 +277,17 @@ class OpenPgpServiceKeyIdExtractor {
             mAllKeysConfirmed = false;
             mStatus = keyIdResultStatus;
             mExplicitKeyIds = null;
+            mCombinedAutocryptState = null;
         }
-        private KeyIdResult(HashSet<Long> keyIds, boolean allKeysConfirmed, KeyIdResultStatus keyIdResultStatus) {
+
+        private KeyIdResult(HashSet<Long> keyIds, boolean allKeysConfirmed, KeyIdResultStatus keyIdResultStatus,
+                AutocryptState combinedAutocryptState) {
             mKeySelectionPendingIntent = null;
             mUserKeyIds = keyIds;
             mAllKeysConfirmed = allKeysConfirmed;
             mStatus = keyIdResultStatus;
             mExplicitKeyIds = null;
+            mCombinedAutocryptState = combinedAutocryptState;
         }
 
         private KeyIdResult(KeyIdResult keyIdResult, HashSet<Long> explicitKeyIds) {
@@ -213,6 +296,7 @@ class OpenPgpServiceKeyIdExtractor {
             mAllKeysConfirmed = keyIdResult.mAllKeysConfirmed;
             mStatus = keyIdResult.mStatus;
             mExplicitKeyIds = explicitKeyIds;
+            mCombinedAutocryptState = keyIdResult.mCombinedAutocryptState;
         }
 
         boolean hasKeySelectionPendingIntent() {
@@ -254,14 +338,19 @@ class OpenPgpServiceKeyIdExtractor {
         KeyIdResultStatus getStatus() {
             return mStatus;
         }
+
+        public AutocryptState getCombinedAutocryptState() {
+            return mCombinedAutocryptState;
+        }
     }
 
     enum KeyIdResultStatus {
         OK, MISSING, DUPLICATE, NO_KEYS, NO_KEYS_ERROR
     }
 
-    private KeyIdResult createKeysOkResult(HashSet<Long> encryptKeyIds, boolean allKeysConfirmed) {
-        return new KeyIdResult(encryptKeyIds, allKeysConfirmed, KeyIdResultStatus.OK);
+    private KeyIdResult createKeysOkResult(HashSet<Long> encryptKeyIds, boolean allKeysConfirmed,
+            AutocryptState combinedAutocryptState) {
+        return new KeyIdResult(encryptKeyIds, allKeysConfirmed, KeyIdResultStatus.OK, combinedAutocryptState);
     }
 
     private KeyIdResult createNoKeysResult(Intent data,
@@ -273,11 +362,9 @@ class OpenPgpServiceKeyIdExtractor {
         return new KeyIdResult(selectKeyPendingIntent, KeyIdResultStatus.NO_KEYS);
     }
 
-    private KeyIdResult createDuplicateKeysResult(Intent data,
-            HashSet<Long> selectedKeyIds, ArrayList<String> missingEmails, ArrayList<String> duplicateEmails) {
-        long[] keyIdsArray = KeyFormattingUtils.getUnboxedLongArray(selectedKeyIds);
-        PendingIntent selectKeyPendingIntent = apiPendingIntentFactory.createSelectPublicKeyPendingIntent(
-                data, keyIdsArray, missingEmails, duplicateEmails, false);
+    private KeyIdResult createDuplicateKeysResult(Intent data, String packageName, ArrayList<String> duplicateEmails) {
+        PendingIntent selectKeyPendingIntent = apiPendingIntentFactory.createDeduplicatePendingIntent(
+                packageName, data, duplicateEmails);
 
         return new KeyIdResult(selectKeyPendingIntent, KeyIdResultStatus.DUPLICATE);
     }

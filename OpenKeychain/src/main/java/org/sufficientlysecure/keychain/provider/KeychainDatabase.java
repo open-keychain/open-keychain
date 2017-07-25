@@ -33,6 +33,7 @@ import android.provider.BaseColumns;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeerColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
@@ -52,7 +53,7 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 22;
+    private static final int DATABASE_VERSION = 23;
     private Context mContext;
 
     public interface Tables {
@@ -65,6 +66,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String API_APPS = "api_apps";
         String API_ALLOWED_KEYS = "api_allowed_keys";
         String OVERRIDDEN_WARNINGS = "overridden_warnings";
+        String API_AUTOCRYPT_PEERS = "api_autocrypt_peers";
     }
 
     private static final String CREATE_KEYRINGS_PUBLIC =
@@ -156,6 +158,20 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
                     + ")";
 
+    private static final String CREATE_API_AUTOCRYPT_PEERS =
+            "CREATE TABLE IF NOT EXISTS " + Tables.API_AUTOCRYPT_PEERS + " ("
+                    + ApiAutocryptPeerColumns.PACKAGE_NAME + " TEXT NOT NULL, "
+                    + ApiAutocryptPeerColumns.IDENTIFIER + " TEXT NOT NULL, "
+                    + ApiAutocryptPeerColumns.LAST_SEEN + " INTEGER NOT NULL, "
+                    + ApiAutocryptPeerColumns.LAST_SEEN_KEY + " INTEGER NOT NULL, "
+                    + ApiAutocryptPeerColumns.STATE + " INTEGER NOT NULL, "
+                    + ApiAutocryptPeerColumns.MASTER_KEY_ID + " INTEGER NULL, "
+                    + "PRIMARY KEY(" + ApiAutocryptPeerColumns.PACKAGE_NAME + ", "
+                        + ApiAutocryptPeerColumns.IDENTIFIER + "), "
+                    + "FOREIGN KEY(" + ApiAutocryptPeerColumns.PACKAGE_NAME + ") REFERENCES "
+                        + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
+                + ")";
+
     private static final String CREATE_API_APPS =
             "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -199,6 +215,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
         db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
+        db.execSQL(CREATE_API_AUTOCRYPT_PEERS);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
         db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
@@ -318,8 +335,17 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 21:
                 db.execSQL("ALTER TABLE updated_keys ADD COLUMN seen_on_keyservers INTEGER;");
 
-                if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20 || oldVersion == 21) {
-                    // no consolidate for now, often crashes!
+            case 22:
+                db.execSQL("CREATE TABLE IF NOT EXISTS api_autocrypt_peers ("
+                        + "package_name TEXT NOT NULL, "
+                        + "identifier TEXT NOT NULL, "
+                        + "last_updated INTEGER NOT NULL, "
+                        + "master_key_id INTEGER NOT NULL, "
+                        + "PRIMARY KEY(package_name, identifier), "
+                        + "FOREIGN KEY(package_name) REFERENCES api_apps(package_name) ON DELETE CASCADE"
+                    + ")");
+
+                if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20 || oldVersion == 21 || oldVersion == 22) {
                     return;
                 }
         }

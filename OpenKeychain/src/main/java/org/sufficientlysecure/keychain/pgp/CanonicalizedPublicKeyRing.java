@@ -18,6 +18,13 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import android.support.annotation.Nullable;
+
 import org.bouncycastle.openpgp.PGPObjectFactory;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
@@ -27,8 +34,6 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
-import java.io.IOException;
-import java.util.Iterator;
 
 public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
 
@@ -82,6 +87,69 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
                 it.remove();
             }
         });
+    }
+
+    /** Returns a minimized version of this key.
+     *
+     * The minimized version includes:
+     * - the master key
+     * - the current best signing key (if any)
+     * - one encryption key (if any)
+     * - the user id that matches the userIdToKeep parameter, or the primary user id if none matches
+     * each with their most recent binding certificates
+     */
+    public CanonicalizedPublicKeyRing minimize(@Nullable String userIdToKeep) throws IOException, PgpKeyNotFoundException {
+        CanonicalizedPublicKey masterKey = getPublicKey();
+        PGPPublicKey masterPubKey = masterKey.getPublicKey();
+        boolean userIdStrippedOk = false;
+        if (userIdToKeep != null) {
+            try {
+                masterPubKey = PGPPublicKeyUtils.keepOnlyUserId(masterPubKey, userIdToKeep);
+                userIdStrippedOk = true;
+            } catch (NoSuchElementException e) {
+                // will be handled because userIdStrippedOk is false
+            }
+        }
+
+        if (!userIdStrippedOk) {
+            byte[] rawPrimaryUserId = getRawPrimaryUserId();
+            masterPubKey = PGPPublicKeyUtils.keepOnlyRawUserId(masterPubKey, rawPrimaryUserId);
+        }
+
+        masterPubKey = PGPPublicKeyUtils.keepOnlySelfCertsForUserIds(masterPubKey);
+        masterPubKey = PGPPublicKeyUtils.removeAllUserAttributes(masterPubKey);
+        masterPubKey = PGPPublicKeyUtils.removeAllDirectKeyCerts(masterPubKey);
+
+        PGPPublicKeyRing resultRing = new PGPPublicKeyRing(masterPubKey.getEncoded(), new JcaKeyFingerprintCalculator());
+
+        Long encryptId;
+        try {
+            encryptId = getEncryptId();
+            // only add if this key doesn't coincide with master key
+            if (encryptId != getMasterKeyId()) {
+                CanonicalizedPublicKey encryptKey = getPublicKey(encryptId);
+                PGPPublicKey encryptPubKey = encryptKey.getPublicKey();
+                resultRing = PGPPublicKeyRing.insertPublicKey(resultRing, encryptPubKey);
+            }
+        } catch (PgpKeyNotFoundException e) {
+            // no encryption key: can't be reasonably minimized
+            return null;
+        }
+
+        try {
+            long signingId = getSigningId();
+            // only add if this key doesn't coincide with master or encryption key
+            if (signingId != encryptId && signingId != getMasterKeyId()) {
+                CanonicalizedPublicKey signingKey = getPublicKey(signingId);
+                PGPPublicKey signingPubKey = signingKey.getPublicKey();
+                resultRing = PGPPublicKeyRing.insertPublicKey(resultRing, signingPubKey);
+            }
+        } catch (PgpKeyNotFoundException e) {
+            // no signing key: can't be reasonably minimized
+            return null;
+        }
+
+        return new CanonicalizedPublicKeyRing(resultRing, getVerified());
     }
 
     /** Create a dummy secret ring from this key */
