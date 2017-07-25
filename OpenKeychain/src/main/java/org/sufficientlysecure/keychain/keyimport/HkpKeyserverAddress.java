@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
@@ -33,10 +34,11 @@ public abstract class HkpKeyserverAddress implements Parcelable {
     private static final short PORT_DEFAULT_HKPS = 443;
 
     public abstract String getUrl();
+    @Nullable
     public abstract String getOnion();
 
 
-    public static HkpKeyserverAddress createWithOnionProxy(@NonNull String url, String onion) {
+    public static HkpKeyserverAddress createWithOnionProxy(@NonNull String url, @Nullable String onion) {
         return new AutoValue_HkpKeyserverAddress(url, onion == null ? null : onion.trim());
     }
 
