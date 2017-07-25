@@ -189,7 +189,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             String serverSummary = context.getResources().getQuantityString(
                     R.plurals.n_keyservers, servers.size(), servers.size());
             return serverSummary + "; " + context.getString(R.string.label_preferred) + ": " + sPreferences
-                    .getPreferredKeyserver();
+                    .getPreferredKeyserver().getUrl();
         }
     }
 
