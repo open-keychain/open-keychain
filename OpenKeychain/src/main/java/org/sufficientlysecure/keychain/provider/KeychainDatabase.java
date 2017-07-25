@@ -340,7 +340,9 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                         + "package_name TEXT NOT NULL, "
                         + "identifier TEXT NOT NULL, "
                         + "last_updated INTEGER NOT NULL, "
-                        + "master_key_id INTEGER NOT NULL, "
+                        + "last_seen_key INTEGER NOT NULL, "
+                        + "state INTEGER NOT NULL, "
+                        + "master_key_id INTEGER NULL, "
                         + "PRIMARY KEY(package_name, identifier), "
                         + "FOREIGN KEY(package_name) REFERENCES api_apps(package_name) ON DELETE CASCADE"
                     + ")");
