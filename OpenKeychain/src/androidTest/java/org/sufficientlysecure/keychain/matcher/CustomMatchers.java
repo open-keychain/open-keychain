@@ -28,12 +28,10 @@ import android.widget.ViewAnimator;
 
 import com.nispok.snackbar.Snackbar;
 
-import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
-import org.sufficientlysecure.keychain.ui.adapter.KeySectionedListAdapter;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -45,6 +43,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.sufficientlysecure.keychain.matcher.DrawableMatcher.withDrawable;
+
 
 
 public abstract class CustomMatchers {
@@ -90,15 +89,16 @@ public abstract class CustomMatchers {
     }
 
     public static Matcher<RecyclerView.ViewHolder> withKeyHolderId(final long keyId) {
-        return new BoundedMatcher<RecyclerView.ViewHolder, KeySectionedListAdapter.KeyItemViewHolder>
-                (KeySectionedListAdapter.KeyItemViewHolder.class) {
+        return new BoundedMatcher<RecyclerView.ViewHolder, org.sufficientlysecure.keychain.ui.util.recyclerview.item.KeyItem.ViewHolder>(org.sufficientlysecure.keychain.ui.util.recyclerview.item.KeyItem.ViewHolder.class) {
+
             @Override
             public void describeTo(Description description) {
+
                 description.appendText("with ViewHolder id: " + keyId);
             }
 
             @Override
-            protected boolean matchesSafely(KeySectionedListAdapter.KeyItemViewHolder item) {
+            protected boolean matchesSafely(org.sufficientlysecure.keychain.ui.util.recyclerview.item.KeyItem.ViewHolder item) {
                 return item.getItemId() == keyId;
             }
         };

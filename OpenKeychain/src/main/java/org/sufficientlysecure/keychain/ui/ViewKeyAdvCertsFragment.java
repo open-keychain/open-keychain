@@ -28,20 +28,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
 
-import com.tonicartos.superslim.LayoutManager;
-
+import org.jetbrains.annotations.NotNull;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.ui.adapter.CertSectionedListAdapter;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.cursor.CertCursor;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.BaseHeaderItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.CertHeaderItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.CertItem;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class ViewKeyAdvCertsFragment extends RecyclerFragment<CertSectionedListAdapter>
-        implements LoaderManager.LoaderCallbacks<Cursor>, CertSectionedListAdapter.CertListListener {
+import java.util.ArrayList;
+import java.util.List;
+
+import eu.davidea.flexibleadapter.FlexibleAdapter;
+import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
+
+public class ViewKeyAdvCertsFragment extends RecyclerFragment<FlexibleAdapter<CertItem>>
+        implements LoaderManager.LoaderCallbacks<Cursor>, FlexibleAdapter.OnItemClickListener {
 
     public static final String ARG_DATA_URI = "data_uri";
     private Uri mDataUriCerts;
+    private List<CertItem> mCertItemList = new ArrayList<>();
 
     /**
      * Creates new instance of this fragment
@@ -75,32 +84,67 @@ public class ViewKeyAdvCertsFragment extends RecyclerFragment<CertSectionedListA
             mDataUriCerts = KeychainContract.Certs.buildCertsUri(dataUri);
         }
 
-        CertSectionedListAdapter adapter = new CertSectionedListAdapter(getActivity(), null);
-        adapter.setCertListListener(this);
+        CertFlexibleAdapter adapter = new CertFlexibleAdapter(mCertItemList);
+        adapter.setDisplayHeadersAtStartUp(true)
+                .setStickyHeaders(true, getHeaderContainerWithPadding(16, 16))
+                .setAnimationOnScrolling(true);
+        adapter.addListener(this);
 
         setAdapter(adapter);
-        setLayoutManager(new LayoutManager(getActivity()));
+        setLayoutManager(new SmoothScrollLinearLayoutManager(getActivity()));
 
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public boolean onItemClick(int position) {
+        final CertItem certItem = mCertItemList.get(position);
+        if(certItem.getMasterKeyId() != 0L) {
+            Intent viewIntent = new Intent(getActivity(), ViewCertActivity.class);
+            viewIntent.setData(KeychainContract.Certs.buildCertsSpecificUri(
+                    certItem.getMasterKeyId(), certItem.getRank(), certItem.getSignerKeyId()));
+            startActivity(viewIntent);
+        }
+        return true;
+    }
+
+    class CertFlexibleAdapter extends FlexibleAdapter<CertItem> {
+        CertFlexibleAdapter(@NotNull List<CertItem> certItems) {
+            super(certItems);
+        }
+
+
     }
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getActivity(), mDataUriCerts,
-                CertSectionedListAdapter.CertCursor.CERTS_PROJECTION, null, null,
-                CertSectionedListAdapter.CertCursor.CERTS_SORT_ORDER);
+                CertCursor.CERTS_PROJECTION, null, null,
+                CertCursor.CERTS_SORT_ORDER);
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mCertItemList.clear();
+
         // Avoid NullPointerExceptions, if we get an empty result set.
         if (data.getCount() == 0) {
             return;
         }
 
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        getAdapter().swapCursor(CertSectionedListAdapter.CertCursor.wrap(data));
+        if (data.moveToFirst()) {
+            while (!data.isAfterLast()) {
+                mCertItemList.add(new CertItem(null, CertCursor.wrap(data)));
+                data.moveToNext();
+            }
+        }
+
+        for (CertItem certItem : mCertItemList) {
+            certItem.setHeader(BaseHeaderItem.getInstance(this, certItem.getSection(), CertHeaderItem.class));
+        }
+
+        List<CertItem> itemList = new ArrayList<>(mCertItemList);
+        getAdapter().updateDataSet(itemList);
 
         if (isResumed()) {
             showList(true);
@@ -114,16 +158,6 @@ public class ViewKeyAdvCertsFragment extends RecyclerFragment<CertSectionedListA
      * We need to make sure we are no longer using it.
      */
     public void onLoaderReset(Loader<Cursor> loader) {
-        getAdapter().swapCursor(null);
-    }
 
-    @Override
-    public void onClick(long masterKeyId, long signerKeyId, long rank) {
-        if(masterKeyId != 0L) {
-            Intent viewIntent = new Intent(getActivity(), ViewCertActivity.class);
-            viewIntent.setData(KeychainContract.Certs.buildCertsSpecificUri(
-                    masterKeyId, rank, signerKeyId));
-            startActivity(viewIntent);
-        }
     }
 }

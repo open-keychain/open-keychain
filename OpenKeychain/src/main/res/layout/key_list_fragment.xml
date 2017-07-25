@@ -38,23 +38,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@android:id/list"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:paddingBottom="72dp"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="32dp"
-                    android:paddingStart="16dp" />
+                    android:layout_height="match_parent">
 
-                <com.futuremind.recyclerviewfastscroll.FastScroller
-                    android:id="@+id/fastscroll"
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@android:id/list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingStart="16dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="32dp"
+                        android:paddingEnd="32dp"
+                        android:paddingBottom="72dp"
+                        android:clipToPadding="false"/>
+                </FrameLayout>
+
+                <eu.davidea.fastscroller.FastScroller
+                    android:id="@+id/fast_scroller"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignTop="@android:id/list"
+                    android:layout_alignBottom="@android:id/list"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:orientation="vertical"
-                    app:fastscroll__bubbleColor="@color/primary" />
+                    tools:visibility="visible"/>
 
             </RelativeLayout>
 

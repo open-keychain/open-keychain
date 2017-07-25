@@ -25,14 +25,16 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,10 +45,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ViewAnimator;
 
-import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.tonicartos.superslim.LayoutManager;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -63,32 +63,49 @@ import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.ui.adapter.KeySectionedListAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.cursor.KeyListCursor;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.KeyHeaderItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.KeyItem;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
+import eu.davidea.fastscroller.FastScroller;
+import eu.davidea.flexibleadapter.FlexibleAdapter;
+import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
+import eu.davidea.flexibleadapter.helpers.ActionModeHelper;
+import eu.davidea.flexibleadapter.items.IFlexible;
+import eu.davidea.flexibleadapter.utils.Utils;
+
+import static org.sufficientlysecure.keychain.Constants.TAG;
+
+public class KeyListFragment extends RecyclerFragment<KeyListFragment.KeyFlexibleAdapter<KeyItem>>
         implements SearchView.OnQueryTextListener,
-        LoaderManager.LoaderCallbacks<Cursor>, FabContainer {
+        LoaderManager.LoaderCallbacks<Cursor>, FabContainer,
+        FlexibleAdapter.OnItemLongClickListener,
+        FlexibleAdapter.OnItemClickListener {
 
     static final int REQUEST_ACTION = 1;
     private static final int REQUEST_DELETE = 2;
     private static final int REQUEST_VIEW_KEY = 3;
 
+    private boolean mConsumed = false;
+
+    private List<KeyItem> mKeyItems = new ArrayList<>();
     // saves the mode object for multiselect, needed for reset at some point
     private ActionMode mActionMode = null;
+    private ActionModeHelper mActionModeHelper;
 
     private Button vSearchButton;
     private ViewAnimator vSearchContainer;
-    private String mQuery;
 
     private FloatingActionsMenu mFab;
 
@@ -106,6 +123,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             getActivity().getMenuInflater().inflate(R.menu.key_list_multi, menu);
+            getAdapter().setMode(FlexibleAdapter.MODE_MULTI);
             return true;
         }
 
@@ -149,49 +167,66 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             mActionMode = null;
+
             if (getAdapter() != null) {
-                getAdapter().finishSelection();
+                getAdapter().setMode(FlexibleAdapter.MODE_IDLE);
             }
         }
     };
 
-    private final KeySectionedListAdapter.KeyListListener mKeyListener
-            = new KeySectionedListAdapter.KeyListListener() {
-        @Override
-        public void onKeyDummyItemClicked() {
-            createKey();
-        }
+    private void initializeActionModeHelper(int mode) {
+        mActionModeHelper = new ActionModeHelper(getAdapter(), R.menu.key_list_multi, mActionCallback) {
+            @Override
+            public void updateContextTitle(int count) {
+                if (mActionMode != null) {
+                    mActionMode.setTitle(getResources().getQuantityString(R.plurals.key_list_selected_keys,
+                            count, count));
+                }
+            }
+        }.withDefaultMode(mode);
+    }
 
+    @Override
+    public void onItemLongClick(int position) {
+        mActionModeHelper.onLongClick((AppCompatActivity) getActivity(), position);
+    }
+
+    @Override
+    public boolean onItemClick(int position) {
+        // Action on elements are allowed if Mode is IDLE, otherwise selection has priority
+        if (getAdapter().getMode() != FlexibleAdapter.MODE_IDLE && mActionModeHelper != null) {
+            mConsumed = mActionModeHelper.onClick(position);
+            return mConsumed;
+        }
+        // Handle the item click listener
+        // We don't need to activate anything
+        mConsumed = false;
+        return false;
+    }
+
+    private final KeyItem.KeyListListener mKeyListener
+            = new KeyItem.KeyListListener() {
         @Override
-        public void onKeyItemClicked(long masterKeyId) {
+        public void onKeyItemClicked(int position) {
+            if ((getAdapter().getMode() != FlexibleAdapter.MODE_IDLE && mActionModeHelper != null)
+                    || mConsumed) {
+                return;
+            }
+
+            long masterKeyId = getAdapter().getItemId(position);
             Intent viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
             viewIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
             startActivityForResult(viewIntent, REQUEST_VIEW_KEY);
         }
 
         @Override
-        public void onSlingerButtonClicked(long masterKeyId) {
+        public void onSlingerButtonClicked(int position) {
+            long masterKeyId = getAdapter().getItemId(position);
             Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
             safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
             startActivityForResult(safeSlingerIntent, REQUEST_ACTION);
         }
 
-        @Override
-        public void onSelectionStateChanged(int selectedCount) {
-            if (selectedCount < 1) {
-                if (mActionMode != null) {
-                    mActionMode.finish();
-                }
-            } else {
-                if (mActionMode == null) {
-                    mActionMode = getActivity().startActionMode(mActionCallback);
-                }
-
-                String keysSelected = getResources().getQuantityString(
-                        R.plurals.key_list_selected_keys, selectedCount, selectedCount);
-                mActionMode.setTitle(keysSelected);
-            }
-        }
     };
 
 
@@ -261,15 +296,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
             }
         });
 
-        KeySectionedListAdapter adapter = new KeySectionedListAdapter(getContext(), null);
-        adapter.setKeyListener(mKeyListener);
-
-        setAdapter(adapter);
-        setLayoutManager(new LayoutManager(getActivity()));
-
-        FastScroller fastScroller = (FastScroller) getActivity().findViewById(R.id.fastscroll);
-        fastScroller.setRecyclerView(getRecyclerView());
-
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
@@ -282,7 +308,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         }
 
         Intent searchIntent = new Intent(activity, ImportKeysActivity.class);
-        searchIntent.putExtra(ImportKeysActivity.EXTRA_QUERY, mQuery);
+        searchIntent.putExtra(ImportKeysActivity.EXTRA_QUERY, getQuery());
         searchIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
         startActivity(searchIntent);
     }
@@ -292,8 +318,8 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
         Uri uri;
-        if (!TextUtils.isEmpty(mQuery)) {
-            uri = KeyRings.buildUnifiedKeyRingsFindByUserIdUri(mQuery);
+        if (!TextUtils.isEmpty(getQuery())) {
+            uri = KeyRings.buildUnifiedKeyRingsFindByUserIdUri(getQuery());
         } else {
             uri = KeyRings.buildUnifiedKeyRingsUri();
         }
@@ -301,16 +327,64 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getActivity(), uri,
-                KeySectionedListAdapter.KeyListCursor.PROJECTION, null, null,
-                KeySectionedListAdapter.KeyListCursor.ORDER);
+                PROJECTION, null, null,
+                ORDER);
     }
+
+    public static final String ORDER = KeychainContract.KeyRings.HAS_ANY_SECRET
+            + " DESC, " + KeychainContract.KeyRings.USER_ID + " COLLATE NOCASE ASC";
+
+    public static final String[] PROJECTION = {
+            KeyRings._ID,
+            KeychainContract.KeyRings.MASTER_KEY_ID,
+            KeychainContract.KeyRings.USER_ID,
+            KeychainContract.KeyRings.IS_REVOKED,
+            KeychainContract.KeyRings.IS_EXPIRED,
+            KeychainContract.KeyRings.IS_SECURE,
+            KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
+            KeychainContract.KeyRings.CREATION,
+            KeychainContract.KeyRings.NAME,
+            KeychainContract.KeyRings.EMAIL,
+            KeychainContract.KeyRings.COMMENT,
+            KeychainContract.KeyRings.VERIFIED,
+            KeychainContract.KeyRings.HAS_ANY_SECRET,
+            KeychainContract.KeyRings.FINGERPRINT,
+            KeychainContract.KeyRings.HAS_ENCRYPT};
+
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        getAdapter().setSearchQuery(mQuery);
-        getAdapter().swapCursor(KeySectionedListAdapter.KeyListCursor.wrap(data));
+
+        mKeyItems.clear();
+
+        if (data.moveToFirst()) {
+            while (!data.isAfterLast()) {
+                mKeyItems.add(new KeyItem(null, KeyListCursor.wrap(data), mKeyListener));
+                data.moveToNext();
+            }
+        }
+
+        data.close();
+
+        KeyItem.setHeaders(getContext(), mKeyItems);
+
+        List<KeyItem> keyItemList = new ArrayList<>(mKeyItems);
+        if (getAdapter() == null) {
+            KeyFlexibleAdapter<KeyItem> adapter = new KeyFlexibleAdapter<>(keyItemList);
+            adapter.setDisplayHeadersAtStartUp(true)
+                    .setStickyHeaders(true, getHeaderContainerWithPadding(16, 32))
+                    .setAnimationOnScrolling(true);
+            setLayoutManager(new SmoothScrollLinearLayoutManager(getActivity()));
+            setAdapter(adapter);
+        } else {
+            getAdapter().updateDataSet(keyItemList, true);
+            getAdapter().notifyDataSetChanged();    // to refresh the existing view holder
+        }
+        getAdapter().addListener(this);
+        initializeActionModeHelper(FlexibleAdapter.MODE_MULTI);
+
+        FastScroller fastScroller = (FastScroller) getActivity().findViewById(R.id.fast_scroller);
+        getAdapter().setFastScroller(fastScroller, Utils.colorAccent);
 
         // end action mode, if any
         if (mActionMode != null) {
@@ -323,10 +397,15 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        // This is called when the last Cursor provided to onLoadFinished()
-        // above is about to be closed. We need to make sure we are no
-        // longer using it.
-        getAdapter().swapCursor(null);
+        // Since we retrieve all data at beginning now, it's no necessity
+        // to reset the cursor.
+    }
+
+    private String getQuery() {
+        if (getAdapter() == null) {
+            return "";
+        }
+        return getAdapter().getSearchText();
     }
 
     @Override
@@ -360,7 +439,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                mQuery = null;
+                getAdapter().setSearchText(null);
                 getLoaderManager().restartLoader(0, null, KeyListFragment.this);
 
                 // enable swipe-to-refresh
@@ -389,7 +468,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                     Notify.create(getActivity(), "Restored debug_backup.db", Notify.Style.OK).show();
                     getActivity().getContentResolver().notifyChange(KeychainContract.KeyRings.CONTENT_URI, null);
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "IO Error", e);
+                    Log.e(TAG, "IO Error", e);
                     Notify.create(getActivity(), "IO Error " + e.getMessage(), Notify.Style.ERROR).show();
                 }
                 return true;
@@ -399,7 +478,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                     KeychainDatabase.debugBackup(getActivity(), false);
                     Notify.create(getActivity(), "Backup to debug_backup.db completed", Notify.Style.OK).show();
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "IO Error", e);
+                    Log.e(TAG, "IO Error", e);
                     Notify.create(getActivity(), "IO Error: " + e.getMessage(), Notify.Style.ERROR).show();
                 }
                 return true;
@@ -434,19 +513,20 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
     @Override
     public boolean onQueryTextChange(String s) {
-        Log.d(Constants.TAG, "onQueryTextChange s:" + s);
+        Log.d(TAG, "onQueryTextChange s:" + s);
         // Called when the action bar search text has changed.  Update the
         // search filter, and restart the loader to do a new query with this
         // filter.
         // If the nav drawer is opened, onQueryTextChange("") is executed.
         // This hack prevents restarting the loader.
-        if (!s.equals(mQuery)) {
-            mQuery = s;
+
+        if (!s.equals(getQuery())) {
+            getAdapter().setSearchText(s);
             getLoaderManager().restartLoader(0, null, this);
         }
 
         if (s.length() > 2) {
-            vSearchButton.setText(getString(R.string.btn_search_for_query, mQuery));
+            vSearchButton.setText(getString(R.string.btn_search_for_query, getQuery()));
             vSearchContainer.setDisplayedChild(1);
             vSearchContainer.setVisibility(View.VISIBLE);
         } else {
@@ -676,4 +756,51 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         anim.start();
     }
 
+    static final class KeyFlexibleAdapter<T extends IFlexible> extends FlexibleAdapter<T> {
+
+        KeyFlexibleAdapter(@Nullable List<T> items) {
+            super(items);
+        }
+
+        @Override
+        public String onCreateBubbleText(int position) {
+            if (getItem(position) instanceof KeyItem) {
+                KeyItem keyItem = (KeyItem) getItem(position);
+                if (keyItem.isSecret()) {
+                    return "My";
+                } else if (keyItem.getName() != null) {
+                    return keyItem.getSection();
+                } else {
+                    return null;
+                }
+            } else if (getItem(position) instanceof KeyHeaderItem) {
+                KeyHeaderItem keyHeaderItem = (KeyHeaderItem) getItem(position);
+                return keyHeaderItem.getTitle();
+            }
+            return null;
+        }
+
+        long[] getSelectedMasterKeyIds() {
+            long[] ids = new long[getSelectedItemCount()];
+            for (int i = 0; i < getSelectedPositions().size(); i++) {
+                int position = getSelectedPositions().get(i);
+                ids[i] = (((KeyItem) getItem(position)).getKeyId());
+            }
+            return ids;
+        }
+
+        boolean isAnySecretKeySelected() {
+            for (Integer position : getSelectedPositions()) {
+                if (((KeyItem) getItem(position)).isSecret()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return ((KeyItem) getItem(position)).getKeyId();
+        }
+    }
 }

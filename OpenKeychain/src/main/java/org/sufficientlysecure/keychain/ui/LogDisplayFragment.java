@@ -26,28 +26,39 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.tonicartos.superslim.LayoutManager;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
-import org.sufficientlysecure.keychain.ui.adapter.NestedLogAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.ShareLogDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.LogDummyItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.LogHeaderItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.LogItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.RegularLogHeaderItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.RegularLogItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.SublogHeaderItem;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.item.SublogItem;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import eu.davidea.flexibleadapter.FlexibleAdapter;
+import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
 
 
-public class LogDisplayFragment extends RecyclerFragment<NestedLogAdapter>
-        implements NestedLogAdapter.LogActionListener {
+public class LogDisplayFragment extends RecyclerFragment<FlexibleAdapter<LogItem>>
+        implements FlexibleAdapter.OnItemClickListener {
     private OperationResult mResult;
 
     public static final String EXTRA_RESULT = "log";
     private Uri mLogTempFile;
+
+    private List<LogItem> items = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,11 +87,42 @@ public class LogDisplayFragment extends RecyclerFragment<NestedLogAdapter>
             return;
         }
 
-        NestedLogAdapter adapter = new NestedLogAdapter(getContext(), mResult.getLog());
-        adapter.setListener(this);
+        @SuppressWarnings("unused")
+        final int ENTRY_TYPE_REGULAR = 0;
+        @SuppressWarnings("unused")
+        final int ENTRY_TYPE_SUBLOG = 1;
+        final int LOG_ENTRY_ITEM_INDENT = 2;
+
+        items.clear();
+
+        LogHeaderItem lastHeader = null;
+        for (OperationResult.LogEntryParcel parcel : mResult.getLog()) {
+            if (parcel.mIndent < LOG_ENTRY_ITEM_INDENT) {
+                if (parcel instanceof SubLogEntryParcel) {
+                    lastHeader = new SublogHeaderItem(parcel);
+                } else {
+                    lastHeader = new RegularLogHeaderItem(parcel);
+                }
+                // force the header to be shown
+                items.add(new LogDummyItem(lastHeader));
+            } else {
+                if (parcel instanceof SubLogEntryParcel) {
+                    items.add(new SublogItem(lastHeader, parcel));
+                } else {
+                    items.add(new RegularLogItem(lastHeader, parcel));
+                }
+            }
+        }
+
+        List<LogItem> itemList = new ArrayList<>(items);
+
+        FlexibleAdapter<LogItem> adapter = new FlexibleAdapter<>(itemList);
+        adapter.setDisplayHeadersAtStartUp(true)
+                .setStickyHeaders(true, getHeaderContainerWithPadding());
+        adapter.addListener(this);
         setAdapter(adapter);
 
-        setLayoutManager(new LayoutManager(getContext()));
+        setLayoutManager(new SmoothScrollLinearLayoutManager(getContext()));
     }
 
     @Override
@@ -135,9 +177,16 @@ public class LogDisplayFragment extends RecyclerFragment<NestedLogAdapter>
     }
 
     @Override
-    public void onSubEntryClicked(SubLogEntryParcel subLogEntryParcel) {
-        Intent intent = new Intent(getActivity(), LogDisplayActivity.class);
-        intent.putExtra(LogDisplayFragment.EXTRA_RESULT, subLogEntryParcel.getSubResult());
-        startActivity(intent);
+    public boolean onItemClick(int position) {
+        LogItem item = getAdapter().getItem(position);
+        if (item instanceof SublogItem) {
+            Intent intent = new Intent(getActivity(), LogDisplayActivity.class);
+            intent.putExtra(LogDisplayFragment.EXTRA_RESULT,
+                    ((SubLogEntryParcel) item.getEntry()).getSubResult());
+            startActivity(intent);
+            return true;
+        }
+        return false;
     }
+
 }
