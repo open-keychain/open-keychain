@@ -53,7 +53,7 @@ import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
@@ -185,7 +185,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
 
         public static String keyserverSummary(Context context) {
-            ArrayList<ParcelableHkpKeyserver> servers = sPreferences.getKeyServers();
+            ArrayList<HkpKeyserverAddress> servers = sPreferences.getKeyServers();
             String serverSummary = context.getResources().getQuantityString(
                     R.plurals.n_keyservers, servers.size(), servers.size());
             return serverSummary + "; " + context.getString(R.string.label_preferred) + ": " + sPreferences

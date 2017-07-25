@@ -17,21 +17,29 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import android.content.Context;
-
-import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.Keyserver;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import android.content.Context;
+
+import de.measite.minidns.Client;
+import de.measite.minidns.Question;
+import de.measite.minidns.Record;
+import de.measite.minidns.record.SRV;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverClient;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.keyimport.KeyserverClient;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 
 public class EmailKeyHelper {
     // TODO: Make this not require a proxy in it's constructor, redesign when it is to be used
@@ -40,15 +48,15 @@ public class EmailKeyHelper {
             implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
         private ArrayList<ParcelableKeyRing> mKeyList;
-        private ParcelableHkpKeyserver mKeyserver;
+        private HkpKeyserverAddress mKeyserver;
 
-        public ImportContactKeysCallback(Context context, ParcelableHkpKeyserver keyserver,
+        public ImportContactKeysCallback(Context context, HkpKeyserverAddress keyserver,
                                          ParcelableProxy proxy) {
             this(context, new ContactHelper(context).getContactMails(), keyserver, proxy);
         }
 
         public ImportContactKeysCallback(Context context, List<String> mails,
-                                         ParcelableHkpKeyserver keyserver, ParcelableProxy proxy) {
+                                         HkpKeyserverAddress keyserver, ParcelableProxy proxy) {
             Set<ImportKeysListEntry> entries = new HashSet<>();
             for (String mail : mails) {
                 entries.addAll(getEmailKeys(context, mail, proxy));
@@ -76,7 +84,7 @@ public class EmailKeyHelper {
         // Try _hkp._tcp SRV record first
         String[] mailparts = mail.split("@");
         if (mailparts.length == 2) {
-            ParcelableHkpKeyserver hkp = ParcelableHkpKeyserver.resolve(mailparts[1]);
+            HkpKeyserverAddress hkp = findKeyserverFromDns(mailparts[1]);
             if (hkp != null) {
                 keys.addAll(getEmailKeys(mail, hkp, proxy));
             }
@@ -84,7 +92,7 @@ public class EmailKeyHelper {
 
         if (keys.isEmpty()) {
             // Most users don't have the SRV record, so ask a default server as well
-            ParcelableHkpKeyserver server = Preferences.getPreferences(context).getPreferredKeyserver();
+            HkpKeyserverAddress server = Preferences.getPreferences(context).getPreferredKeyserver();
             if (server != null) {
                 keys.addAll(getEmailKeys(mail, server, proxy));
             }
@@ -92,11 +100,12 @@ public class EmailKeyHelper {
         return keys;
     }
 
-    public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer,
+    public static List<ImportKeysListEntry> getEmailKeys(String mail, HkpKeyserverAddress keyServer,
                                                          ParcelableProxy proxy) {
         Set<ImportKeysListEntry> keys = new HashSet<>();
         try {
-            for (ImportKeysListEntry key : keyServer.search(mail, proxy)) {
+            for (ImportKeysListEntry key : HkpKeyserverClient
+                    .fromHkpKeyserverAddress(keyServer).search(mail, proxy)) {
                 if (key.isRevokedOrExpiredOrInsecure()) continue;
                 for (String userId : key.getUserIds()) {
                     if (userId.toLowerCase().contains(mail.toLowerCase(Locale.ENGLISH))) {
@@ -104,8 +113,31 @@ public class EmailKeyHelper {
                     }
                 }
             }
-        } catch (Keyserver.CloudSearchFailureException ignored) {
+        } catch (KeyserverClient.CloudSearchFailureException ignored) {
         }
         return new ArrayList<>(keys);
+    }
+
+    public static HkpKeyserverAddress findKeyserverFromDns(String domain) {
+        try {
+            Record[] records = new Client().query(new Question("_hkp._tcp." + domain, Record.TYPE.SRV)).getAnswers();
+            if (records.length > 0) {
+                Arrays.sort(records, new Comparator<Record>() {
+                    @Override
+                    public int compare(Record lhs, Record rhs) {
+                        if (lhs.getPayload().getType() != Record.TYPE.SRV) return 1;
+                        if (rhs.getPayload().getType() != Record.TYPE.SRV) return -1;
+                        return ((SRV) lhs.getPayload()).getPriority() - ((SRV) rhs.getPayload()).getPriority();
+                    }
+                });
+                Record record = records[0]; // This is our best choice
+                if (record.getPayload().getType() == Record.TYPE.SRV) {
+                    SRV payload = (SRV) record.getPayload();
+                    return HkpKeyserverAddress.createFromUri(payload.getName() + ":" + payload.getPort());
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 }

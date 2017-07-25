@@ -44,18 +44,18 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 
-public class FacebookKeyserver extends Keyserver {
+public class FacebookKeyserverClient implements KeyserverClient {
     private static final String FB_KEY_URL_FORMAT
             = "https://www.facebook.com/%s/publickey/download";
     private static final String FB_HOST = "facebook.com";
     private static final String FB_HOST_WWW = "www." + FB_HOST;
 
 
-    public static FacebookKeyserver getInstance() {
-        return new FacebookKeyserver();
+    public static FacebookKeyserverClient getInstance() {
+        return new FacebookKeyserverClient();
     }
 
-    private FacebookKeyserver() { }
+    private FacebookKeyserverClient() { }
 
 
     @Override

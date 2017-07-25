@@ -35,8 +35,8 @@ import android.view.ViewGroup;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListItemBinding;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysOperationCallback;
@@ -243,7 +243,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             ArrayList<ParcelableKeyRing> keysList = new ArrayList<>();
             keysList.add(keyRing);
 
-            ParcelableHkpKeyserver keyserver = entry.getKeyserver();
+            HkpKeyserverAddress keyserver = entry.getKeyserver();
 
             if (skipSave) {
                 return ImportKeyringParcel.createWithSkipSave(keysList, keyserver);

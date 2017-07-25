@@ -74,6 +74,7 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
@@ -96,7 +97,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableHashMap;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
@@ -760,7 +760,7 @@ public class DecryptListFragment
     private void lookupUnknownKey(final Uri inputUri, long unknownKeyId) {
 
         final ArrayList<ParcelableKeyRing> keyList;
-        final ParcelableHkpKeyserver keyserver;
+        final HkpKeyserverAddress keyserver;
 
         // search config
         keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();

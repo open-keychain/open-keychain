@@ -22,7 +22,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class SettingsKeyServerActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        ArrayList<ParcelableHkpKeyserver> servers = intent.getParcelableArrayListExtra(EXTRA_KEY_SERVERS);
+        ArrayList<HkpKeyserverAddress> servers = intent.getParcelableArrayListExtra(EXTRA_KEY_SERVERS);
         loadFragment(savedInstanceState, servers);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -58,7 +58,7 @@ public class SettingsKeyServerActivity extends BaseActivity {
         setContentView(R.layout.key_server_preference);
     }
 
-    private void loadFragment(Bundle savedInstanceState, ArrayList<ParcelableHkpKeyserver> keyservers) {
+    private void loadFragment(Bundle savedInstanceState, ArrayList<HkpKeyserverAddress> keyservers) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.

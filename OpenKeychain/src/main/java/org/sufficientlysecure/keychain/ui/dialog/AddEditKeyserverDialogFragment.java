@@ -53,7 +53,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
@@ -100,7 +100,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
 
     public static AddEditKeyserverDialogFragment newInstance(Messenger messenger,
                                                              DialogAction action,
-                                                             ParcelableHkpKeyserver keyserver,
+                                                             HkpKeyserverAddress keyserver,
                                                              int position) {
         AddEditKeyserverDialogFragment frag = new AddEditKeyserverDialogFragment();
         Bundle args = new Bundle();
@@ -149,7 +149,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
             }
             case EDIT: {
                 alert.setTitle(R.string.edit_keyserver_dialog_title);
-                ParcelableHkpKeyserver keyserver = getArguments().getParcelable(ARG_KEYSERVER);
+                HkpKeyserverAddress keyserver = getArguments().getParcelable(ARG_KEYSERVER);
                 mKeyserverEditText.setText(keyserver.getUrl());
                 mKeyserverEditOnionText.setText(keyserver.getOnion());
                 break;
@@ -235,7 +235,8 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                     String keyserverUrl = mKeyserverEditText.getText().toString();
                     String keyserverOnion = mKeyserverEditOnionText.getText() == null ? null
                             : mKeyserverEditOnionText.getText().toString();
-                    final ParcelableHkpKeyserver keyserver = new ParcelableHkpKeyserver(keyserverUrl, keyserverOnion);
+                    final HkpKeyserverAddress keyserver =
+                            HkpKeyserverAddress.createWithOnionProxy(keyserverUrl, keyserverOnion);
                     if (mVerifyKeyserverCheckBox.isChecked()) {
                         final ParcelableProxy proxy = Preferences.getPreferences(getActivity())
                                 .getParcelableProxy();
@@ -281,7 +282,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
         }
     }
 
-    public void keyserverEdited(ParcelableHkpKeyserver keyserver, boolean verified) {
+    public void keyserverEdited(HkpKeyserverAddress keyserver, boolean verified) {
         dismiss();
         Bundle data = new Bundle();
         data.putSerializable(MESSAGE_DIALOG_ACTION, mDialogAction);
@@ -326,11 +327,11 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
 
     }
 
-    public void verifyConnection(ParcelableHkpKeyserver keyserver, final ParcelableProxy proxy, final boolean onlyTrustedKeyserver) {
+    public void verifyConnection(HkpKeyserverAddress keyserver, final ParcelableProxy proxy, final boolean onlyTrustedKeyserver) {
 
-        new AsyncTask<ParcelableHkpKeyserver, Void, VerifyReturn>() {
+        new AsyncTask<HkpKeyserverAddress, Void, VerifyReturn>() {
             ProgressDialog mProgressDialog;
-            ParcelableHkpKeyserver mKeyserver;
+            HkpKeyserverAddress mKeyserver;
 
             @Override
             protected void onPreExecute() {
@@ -341,7 +342,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
             }
 
             @Override
-            protected VerifyReturn doInBackground(ParcelableHkpKeyserver... keyservers) {
+            protected VerifyReturn doInBackground(HkpKeyserverAddress... keyservers) {
                 mKeyserver = keyservers[0];
 
                 return verifyKeyserver(mKeyserver, proxy, onlyTrustedKeyserver);
@@ -359,7 +360,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
         }.execute(keyserver);
     }
 
-    private VerifyReturn verifyKeyserver(ParcelableHkpKeyserver keyserver, final ParcelableProxy proxy, final boolean onlyTrustedKeyserver) {
+    private VerifyReturn verifyKeyserver(HkpKeyserverAddress keyserver, final ParcelableProxy proxy, final boolean onlyTrustedKeyserver) {
         VerifyReturn reason = VerifyReturn.GOOD;
         try {
             URI keyserverUriHttp = keyserver.getUrlURI();

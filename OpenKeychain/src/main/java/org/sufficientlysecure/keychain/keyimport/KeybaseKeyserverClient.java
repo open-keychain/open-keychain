@@ -31,13 +31,13 @@ import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeybaseKeyserver extends Keyserver {
+public class KeybaseKeyserverClient implements KeyserverClient {
 
-    public static KeybaseKeyserver getInstance() {
-        return new KeybaseKeyserver();
+    public static KeybaseKeyserverClient getInstance() {
+        return new KeybaseKeyserverClient();
     }
 
-    private KeybaseKeyserver() { }
+    private KeybaseKeyserverClient() { }
 
     @Override
     public ArrayList<ImportKeysListEntry> search(String query, ParcelableProxy proxy) throws QueryFailedException,

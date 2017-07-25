@@ -63,7 +63,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private String mAlgorithm;
 
     private UserId mPrimaryUserId;
-    private ParcelableHkpKeyserver mKeyserver;
+    private HkpKeyserverAddress mKeyserver;
     private String mKeybaseName;
     private String mFbUsername;
 
@@ -189,11 +189,11 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mPrimaryUserId = primaryUserId;
     }
 
-    public ParcelableHkpKeyserver getKeyserver() {
+    public HkpKeyserverAddress getKeyserver() {
         return mKeyserver;
     }
 
-    public void setKeyserver(ParcelableHkpKeyserver keyserver) {
+    public void setKeyserver(HkpKeyserverAddress keyserver) {
         mKeyserver = keyserver;
     }
 
@@ -399,7 +399,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mBitStrength = source.readInt() != 0 ? source.readInt() : null;
             vr.mAlgorithm = source.readString();
             vr.mSecretKey = source.readByte() == 1;
-            vr.mKeyserver = source.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
+            vr.mKeyserver = source.readParcelable(HkpKeyserverAddress.class.getClassLoader());
             vr.mKeybaseName = source.readString();
             vr.mFbUsername = source.readString();
 

@@ -24,7 +24,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.CloudSearch;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.Keyserver;
+import org.sufficientlysecure.keychain.keyimport.KeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -167,23 +167,23 @@ public class ImportKeysListCloudLoader
             }
             GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_OK, null);
             mEntryListWrapper = new AsyncTaskResultWrapper<>(mEntryList, getKeyResult);
-        } catch (Keyserver.CloudSearchFailureException e) {
+        } catch (KeyserverClient.CloudSearchFailureException e) {
             // convert exception to result parcel
             int error = GetKeyResult.RESULT_ERROR;
             OperationResult.LogType logType = null;
-            if (e instanceof Keyserver.QueryFailedException) {
+            if (e instanceof KeyserverClient.QueryFailedException) {
                 error = GetKeyResult.RESULT_ERROR_QUERY_FAILED;
                 logType = OperationResult.LogType.MSG_GET_QUERY_FAILED;
-            } else if (e instanceof Keyserver.TooManyResponsesException) {
+            } else if (e instanceof KeyserverClient.TooManyResponsesException) {
                 error = GetKeyResult.RESULT_ERROR_TOO_MANY_RESPONSES;
                 logType = OperationResult.LogType.MSG_GET_TOO_MANY_RESPONSES;
-            } else if (e instanceof Keyserver.QueryTooShortException) {
+            } else if (e instanceof KeyserverClient.QueryTooShortException) {
                 error = GetKeyResult.RESULT_ERROR_QUERY_TOO_SHORT;
                 logType = OperationResult.LogType.MSG_GET_QUERY_TOO_SHORT;
-            } else if (e instanceof Keyserver.QueryTooShortOrTooManyResponsesException) {
+            } else if (e instanceof KeyserverClient.QueryTooShortOrTooManyResponsesException) {
                 error = GetKeyResult.RESULT_ERROR_TOO_SHORT_OR_TOO_MANY_RESPONSES;
                 logType = OperationResult.LogType.MSG_GET_QUERY_TOO_SHORT_OR_TOO_MANY_RESPONSES;
-            } else if (e instanceof Keyserver.QueryNoEnabledSourceException) {
+            } else if (e instanceof KeyserverClient.QueryNoEnabledSourceException) {
                 error = GetKeyResult.RESULT_ERROR_NO_ENABLED_SOURCE;
                 logType = OperationResult.LogType.MSG_GET_NO_ENABLED_SOURCE;
             }

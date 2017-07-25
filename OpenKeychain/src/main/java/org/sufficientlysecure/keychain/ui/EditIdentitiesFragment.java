@@ -41,7 +41,7 @@ import android.widget.ListView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -388,7 +388,7 @@ public class EditIdentitiesFragment extends Fragment
 
         final long masterKeyId = editKeyResult.mMasterKeyId;
         // upload to favorite keyserver
-        final ParcelableHkpKeyserver keyserver = Preferences.getPreferences(activity).getPreferredKeyserver();
+        final HkpKeyserverAddress keyserver = Preferences.getPreferences(activity).getPreferredKeyserver();
 
         CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult> callback
                 = new CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult>() {

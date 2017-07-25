@@ -32,7 +32,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 
 import java.io.Serializable;
@@ -128,13 +128,13 @@ public class Preferences {
         editor.commit();
     }
 
-    public ArrayList<ParcelableHkpKeyserver> getKeyServers() {
+    public ArrayList<HkpKeyserverAddress> getKeyServers() {
         String rawData = mSharedPreferences.getString(Constants.Pref.KEY_SERVERS,
                 Constants.Defaults.KEY_SERVERS);
         if ("".equals(rawData)) {
             return new ArrayList<>();
         }
-        ArrayList<ParcelableHkpKeyserver> servers = new ArrayList<>();
+        ArrayList<HkpKeyserverAddress> servers = new ArrayList<>();
         String[] entries = rawData.split(",");
         for (String entry : entries) {
             String[] addresses = entry.trim().split(";");
@@ -145,20 +145,20 @@ public class Preferences {
                 continue;
             }
 
-            servers.add(new ParcelableHkpKeyserver(url, onion));
+            servers.add(HkpKeyserverAddress.createWithOnionProxy(url, onion));
         }
         return servers;
     }
 
-    public ParcelableHkpKeyserver getPreferredKeyserver() {
-        ArrayList<ParcelableHkpKeyserver> keyservers = getKeyServers();
+    public HkpKeyserverAddress getPreferredKeyserver() {
+        ArrayList<HkpKeyserverAddress> keyservers = getKeyServers();
         return keyservers.size() == 0 ? null : keyservers.get(0);
     }
 
-    public void setKeyServers(ArrayList<ParcelableHkpKeyserver> keyservers) {
+    public void setKeyServers(ArrayList<HkpKeyserverAddress> keyservers) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         String rawData = "";
-        for (ParcelableHkpKeyserver server : keyservers) {
+        for (HkpKeyserverAddress server : keyservers) {
             if (server.getUrl().isEmpty()) {
                 continue;
             }
@@ -381,7 +381,7 @@ public class Preferences {
         public final boolean searchKeyserver;
         public final boolean searchKeybase;
         public final boolean searchFacebook;
-        public final ParcelableHkpKeyserver keyserver;
+        public final HkpKeyserverAddress keyserver;
 
         /**
          * @param searchKeyserver should passed keyserver be searched
@@ -389,7 +389,7 @@ public class Preferences {
          * @param keyserver       the keyserver url authority to search on
          */
         public CloudSearchPrefs(boolean searchKeyserver, boolean searchKeybase,
-                                boolean searchFacebook, ParcelableHkpKeyserver keyserver) {
+                                boolean searchFacebook, HkpKeyserverAddress keyserver) {
             this.searchKeyserver = searchKeyserver;
             this.searchKeybase = searchKeybase;
             this.searchFacebook = searchFacebook;
@@ -400,7 +400,7 @@ public class Preferences {
             searchKeyserver = in.readByte() != 0x00;
             searchKeybase = in.readByte() != 0x00;
             searchFacebook = in.readByte() != 0x00;
-            keyserver = in.readParcelable(ParcelableHkpKeyserver.class.getClassLoader());
+            keyserver = in.readParcelable(HkpKeyserverAddress.class.getClassLoader());
         }
 
         @Override
@@ -467,22 +467,22 @@ public class Preferences {
                     // fall through
                 case 3: {
                     // migrate keyserver to hkps
-                    ArrayList<ParcelableHkpKeyserver> servers = getKeyServers();
-                    ListIterator<ParcelableHkpKeyserver> it = servers.listIterator();
+                    ArrayList<HkpKeyserverAddress> servers = getKeyServers();
+                    ListIterator<HkpKeyserverAddress> it = servers.listIterator();
                     while (it.hasNext()) {
-                        ParcelableHkpKeyserver server = it.next();
+                        HkpKeyserverAddress server = it.next();
                         if (server == null) {
                             continue;
                         }
                         switch (server.getUrl()) {
                             case "pool.sks-keyservers.net": {
                                 // use HKPS!
-                                it.set(new ParcelableHkpKeyserver("hkps://hkps.pool.sks-keyservers.net", null));
+                                it.set(HkpKeyserverAddress.createFromUri("hkps://hkps.pool.sks-keyservers.net"));
                                 break;
                             }
                             case "pgp.mit.edu": {
                                 // use HKPS!
-                                it.set(new ParcelableHkpKeyserver("hkps://pgp.mit.edu", null));
+                                it.set(HkpKeyserverAddress.createFromUri("hkps://pgp.mit.edu"));
                                 break;
                             }
                             case "subkeys.pgp.net": {
@@ -509,15 +509,15 @@ public class Preferences {
                 // fall through
                 case 7: {
                     // add onion address to sks-keyservers.net
-                    ArrayList<ParcelableHkpKeyserver> servers = getKeyServers();
-                    ListIterator<ParcelableHkpKeyserver> it = servers.listIterator();
+                    ArrayList<HkpKeyserverAddress> servers = getKeyServers();
+                    ListIterator<HkpKeyserverAddress> it = servers.listIterator();
                     while (it.hasNext()) {
-                        ParcelableHkpKeyserver server = it.next();
+                        HkpKeyserverAddress server = it.next();
                         if (server == null) {
                             continue;
                         }
                         if ("hkps://hkps.pool.sks-keyservers.net".equals(server.getUrl())) {
-                            it.set(new ParcelableHkpKeyserver(
+                            it.set(HkpKeyserverAddress.createWithOnionProxy(
                                     "hkps://hkps.pool.sks-keyservers.net",
                                     "hkp://jirk5u4osbsr34t5.onion"));
                         }

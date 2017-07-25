@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.keyimport.ParcelableHkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     public static final String EXTRA_FINGERPRINT = "fingerprint";
 
     // for CryptoOperationHelper
-    private ParcelableHkpKeyserver mKeyserver;
+    private HkpKeyserverAddress mKeyserver;
     private ArrayList<ParcelableKeyRing> mKeyList;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
 
