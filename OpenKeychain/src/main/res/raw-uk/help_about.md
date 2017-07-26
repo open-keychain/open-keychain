@@ -1,72 +1,80 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (Увага: Будь ласка розміщуйте кожне речення у окремому рядку, Transifex розмістить кожен рядок у відповідному полі для перекладу!)
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](https://www.openkeychain.org) — це реалізація  OpenPGP для Android.
 
-License: GPLv3+
+Ліцензія: GPLv3+
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (Зауваження: за алфавітним порядком)
 
-## Main Developers
-  * Dominik Schürmann (Maintainer)
-  * Vincent Breitmoser
+## Головні розробники
+  *Домінік Шурман (супроводжувач)
+  *Вінсент Брейтмозер
 
-## Top Contributors
-  * Adithya Abraham Philip
-  * Ash Hughes
+## Вагомий внесок зробили:
+  * Адит'я Абрагам Філіп
+  * Андреа Торлаші
+  * Арно Фонтен
+  *Еш Гуджес
   * 'mar-v-in'
-  * 'Thialfihar' (APG developer)
-  * Tim Bray
+  * Nikita Mikhailov
+  * 'Thialfihar' (APG розробник)
+  *Тім Брей
+  * Тобіас Ертал
 
-## Occasional Contributors
-  * Art O Cathain
-  * Brian C. Barnes
-  * Bahtiar 'kalkin' Gadimov
-  * Daniel Albert
-  * Daniel Hammann
-  * Daniel Haß
-  * Daniel Nelz
-  * Daniel Ramos
-  * Greg Witczak
+## Допомагали
+  * Alex Fong Jie Wen
+  * Андреа Торлаші
+  *Арт О'Катен
+  *Браян С. Барнс
+  *Бахтіяр 'kalkin' Ґадімов
+  *Даніель Альберт
+  *Даніель Гаман
+  *Даніель Габ
+  *Даніель Нельц
+  * Даніель Рамос
+  *Ґреґ Вітчак
   * 'iseki'
-  * Ishan Khanna
+  *  Ішан Ханна
   * 'jellysheep'
   * 'Jesperbk'
   * 'jkolo'
-  * Joey Castillo
-  * Kai Jiang
-  * Kartik Arora
+  * Джо Кастільйо
+  * Кай Цзян
+  * Картік Арора
   * 'Kent'
   * 'ligi'
-  * Lukas Zorich
-  * Manoj Khanna
-  * Markus Doits
-  * Miroojin Bakshi
-  * Morgan Gangwere
-  * Nikhil Peter Raj
-  * Paul Sarbinowski
+  * Лукаш Зоріч
+  * Маной Ханна
+  * Маркус Дойтс
+  * Міхал Кепковскі
+  * Міроджін Бакші
+  * Морґан Ґанґвер
+  * Ніхіл Петер Радж
+  * Пауль Сарбіновскі
+  * Petter Arvidsson
   * 'Senecaso'
   * Signe Rüsch
   * Sreeram Boyapati
   * 'steelman'
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (Зауваження: за алфавітним порядком)
 
-## Libraries
-  * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)
-  * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache License v2)
-  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Apache License v2)
-  * [KeybaseLib](https://github.com/timbray/KeybaseLib) (Apache License v2)
-  * [Markdown4J](https://github.com/jdcasey/markdown4j) (Apache License v2)
-  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache License v2)
-  * [MiniDNS](https://github.com/rtreffer/minidns) (Apache License v2)
-  * [OkHttp](https://square.github.io/okhttp/) (Apache License v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache License v2)
-  * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT License)
-  * [Snackbar](https://github.com/nispok/snackbar) (MIT License)
-  * [BouncyCastle](https://github.com/open-keychain/bouncycastle) (MIT X11 License)
-  * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache License v2)
-  * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Apache License v2)
-  * [ZXing](https://github.com/zxing/zxing) (Apache License v2)
-  * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Apache License v2)
+## Бібліотеки
+  * [Бібліотеки підтримки Android](http://developer.android.com/tools/support-library/index.html) (ліцензія Apache в.2)
+  * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (ліцензія Apache в.2)
+  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview)  (ліцензія Apache в.2)
+  * [KeybaseLib](https://github.com/timbray/KeybaseLib)  (ліцензія Apache в.2)
+  * [Markdown4J](https://github.com/jdcasey/markdown4j)  (ліцензія Apache в.2)
+  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer)  (ліцензія Apache в.2)
+  * [MiniDNS](https://github.com/rtreffer/minidns) (ліцензія Apache в.2)
+  * [OkHttp](https://square.github.io/okhttp/)  (ліцензія Apache в.2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (ліцензія Apache в.2)
+  * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (ліцензія MIT)
+  * [Snackbar](https://github.com/nispok/snackbar) (ліцензія MIT)
+  * [BouncyCastle](https://github.com/open-keychain/bouncycastle) (ліцензія MIT X11)
+  * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders)  (ліцензія Apache в.2)
+  * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete)  (ліцензія Apache в.2)
+  * [ZXing](https://github.com/zxing/zxing) (ліцензія Apache в.2)
+  * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded)  (ліцензія Apache в.2)

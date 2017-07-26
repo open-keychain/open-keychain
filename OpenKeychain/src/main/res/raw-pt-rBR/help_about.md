@@ -14,12 +14,18 @@ Licença: GPLv3+
 
 ## Principais Colaboradores
   * Adithya Abraham Philip
+  * Andrea Torlaschi
+  * Arnaud Fontaine
   * Ash Hughes
   * 'mar-v-in'
+  * Nikita Mikhailov
   * 'Thialfihar' (APG desenvolvedor)
   * Tim Bray
+  * Tobias Erthal
 
 ## Colaboradores Ocasionais
+  * Alex Fong Jie Wen
+  * Andrea Torlaschi
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar 'kalkin' Gadimov
@@ -42,10 +48,12 @@ Licença: GPLv3+
   * Lukas Zorich
   * Manoj Khanna
   * Markus Doits
+  * Michal Kepkowski
   * Miroojin Bakshi
   * Morgan Gangwere
   * Nikhil Peter Raj
   * Paul Sarbinowski
+  * Petter Arvidsson
   * 'Senecaso'
   * Signe Rüsch
   * Sreeram Boyapati

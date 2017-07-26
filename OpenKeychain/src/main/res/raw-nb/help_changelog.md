@@ -1,13 +1,36 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  * New key status displays detailed information why a key is considered insecure or defective
+
+
+## 4.3
+  * Bedre støtte for store nøkler
+  * Fix import of Gpg4win files with broken encodings
+
+
+## 4.2
+
+  * Eksperimentell støtte for elliptisk kurve-kryptering med sikkerhetssymboler
+  * Ny design for nøkkelimporteringsgrensesnittet
+  * Designforbedringer av nøkkellister
+  * Støtte for nøkkeltjener på løk-adresse
+
+
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * Bedre oppdaging av e-poster og annet innhold når åpnet
 
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
+  * Eksperimentell støtte for sikkerhetssymboler over USB
   * Allow password changing of stripped keys
 
 
@@ -37,7 +60,7 @@
   * Sikkerhetsutbedringer basert på eksterne sikkerhetsgjennomganger
   * YubiKey NEO key creation wizard
   * Grunnleggende intern MIME-støtte
-  * Automatic key synchronization
+  * Automatisk nøkkelsynkronisering
   * Experimental feature: link keys to Github, Twitter accounts
   * Eksperimentell funksjon: nøkkelbekreftelse via fraser
   * Eksperimentell funksjon: mørk drakt
@@ -96,7 +119,7 @@
 
 ## 3.1
 
-  * Fix crash on Android 5
+  * Fikset kræsj på Android 5
   * New certify screen
   * Secure Exchange directly from key list (SafeSlinger library)
   * New QR Code program flow
@@ -108,7 +131,7 @@
 
 ## 3.0.1
 
-  * Better handling of large key imports
+  * Bedre håndtering av store nøkkelimporter
   * Improved subkey selection
 
 
@@ -119,7 +142,7 @@
   * Many fixes for key import, also fixes stripped keys
   * Honor and display key authenticate flags
   * User interface to generate custom keys
-  * Fixing user id revocation certificates
+  * Fixing user ID revocation certificates
   * New cloud search (searches over traditional keyservers and keybase.io)
   * Support for stripping keys inside OpenKeychain
   * Experimental YubiKey support: Support for signature generation and decryption

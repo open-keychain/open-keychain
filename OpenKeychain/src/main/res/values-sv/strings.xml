@@ -61,7 +61,6 @@
   <string name="section_fingerprint">Fingeravtryck</string>
   <string name="section_phrases">Uttryck</string>
   <string name="section_encrypt">Kryptera</string>
-  <string name="section_decrypt">Dekryptera/Verifiera</string>
   <string name="section_current_expiry">Aktuellt utgångsdatum</string>
   <string name="section_new_expiry">Nytt utgångsdaum</string>
   <!--button-->
@@ -118,11 +117,11 @@
   <string name="menu_select_all">Markera alla</string>
   <string name="menu_export_all_keys">Exportera alla nycklar</string>
   <string name="menu_update_all_keys">Uppdatera alla nycklar</string>
-  <string name="menu_advanced">Avancerad</string>
   <string name="menu_certify_fingerprint">Bekräfta med fingeravtryck</string>
   <string name="menu_certify_fingerprint_phrases">Bekräfta med fraser</string>
   <string name="menu_share_log">Dela logg</string>
   <string name="menu_change_password">Ändra lösenord</string>
+  <string name="menu_advanced">Avancerad</string>
   <string name="menu_keyserver_add">Lägg till</string>
   <!--label-->
   <string name="label_message">Text</string>
@@ -140,7 +139,6 @@
   <string name="label_file_ascii_armor">Aktivera ASCII-format</string>
   <string name="label_write_version_header">Låt andra se att du använder OpenKeychain</string>
   <string name="label_write_version_header_summary">Skriver \'OpenKeychain v2.7\' till OpenPGP-signaturer, chiffertext och exporterade nycklar.</string>
-  <string name="label_use_num_keypad_for_security_token_pin">Använd sifferknapparna för säkerhetstoken PIN</string>
   <string name="label_asymmetric_from">Signera med:</string>
   <string name="label_to">Kryptera till</string>
   <string name="label_delete_after_encryption">Radera filer efter kryptering</string>
@@ -148,11 +146,10 @@
   <string name="label_encryption_algorithm">Krypteringsalgoritm</string>
   <string name="label_hash_algorithm">Hash-algoritm</string>
   <string name="label_symmetric">Kryptera med lösenord</string>
-  <string name="label_passphrase_cache_ttl">Anpassa \"Kom ihåg\" val</string>
+  <string name="label_passphrase_cache_ttl">Anpassa \"Kom ihåg\"-val</string>
   <string name="label_passphrase_cache_subs">Kom ihåg lösenord genom undernyckel</string>
   <string name="label_message_compression">Textkompression</string>
   <string name="label_file_compression">Filkompression</string>
-  <string name="label_keyservers">Välj OpenPGP-nyckelservrar</string>
   <string name="label_key_id">Nyckel-ID</string>
   <string name="label_key_created">Nyckel skapad %s</string>
   <string name="label_creation">Skapande</string>
@@ -162,7 +159,6 @@
   <string name="label_ecc_curve">Elliptic Curve</string>
   <string name="label_main_user_id">Primär identitet</string>
   <string name="label_name">Namn</string>
-  <string name="label_comment">Kommentar</string>
   <string name="label_email">E-post</string>
   <string name="label_send_key">Synkronisera med Internet</string>
   <string name="label_fingerprint">Fingeravtryck</string>
@@ -178,8 +174,8 @@
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_keyserver_dialog_delete">Radera nyckelserver</string>
   <string name="label_theme">Tema</string>
-  <string name="pref_keyserver">OpenPGP nyckelservrar</string>
-  <string name="pref_keyserver_summary">Sök nycklar på valda OpenPGP nyckelservrar (HKP-protokollet)</string>
+  <string name="pref_keyserver">OpenPGP-nyckelservrar</string>
+  <string name="pref_keyserver_summary">Sök nycklar på valda OpenPGP-nyckelservrar (HKP-protokollet)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Sök nycklar på keybase.io</string>
   <string name="pref_facebook">Facebook</string>
@@ -187,7 +183,7 @@
   <string name="label_sync_settings_keyserver_title">Automatiska nyckel uppdateringar</string>
   <string name="label_sync_settings_keyserver_summary_on">Var tredje dag, uppdateras nycklar från den föredragna nyckelserver </string>
   <string name="label_sync_settings_keyserver_summary_off">Nycklar uppdateras inte automatiskt</string>
-  <string name="label_sync_settings_wifi_title">Synkronisera bara på Wifi</string>
+  <string name="label_sync_settings_wifi_title">Synkronisera endast på Wifi</string>
   <string name="label_sync_settings_contacts_title">Länka nycklar till kontakter</string>
   <string name="label_sync_settings_contacts_summary_on">Länka nycklar till kontakter baserade på namn och e-postadresser. Detta sker helt offline på enheten.</string>
   <string name="label_sync_settings_contacts_summary_off">Nya nycklar kommer inte att kopplas till kontakter</string>
@@ -199,7 +195,8 @@
   <string name="label_experimental_settings_word_confirm_summary">Bekräfta nycklar med fraser istället för hexadecimala fingeravtryck</string>
   <string name="label_experimental_settings_linked_identities_title">Länkade identiteter</string>
   <string name="label_experimental_settings_linked_identities_summary">Länka nycklarna till Twitter, GitHub, webbplatser eller DNS (liknande keybase.io men decentraliserade)</string>
-  <string name="label_experimental_settings_keybase_title">Keybase.io-bevis</string>
+  <string name="label_experimental_settings_keybase_summary">Kontakta keybase.io för nyckelbevis och visa dem varje gång en nyckel visas</string>
+  <string name="label_experimental_settings_theme_summary">(Ikonerna och många skärmar är ännu inte justerade för det mörka temat)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Aktivera Tor</string>
   <string name="pref_proxy_tor_summary">Kräver att Orbot är installerad</string>
@@ -231,6 +228,10 @@
   <plurals name="n_keyservers">
     <item quantity="one">%d nyckelserver</item>
     <item quantity="other">%d nyckelservrar</item>
+  </plurals>
+  <plurals name="n_authorities">
+    <item quantity="one">%d auktoritet</item>
+    <item quantity="other">%d auktoriteter</item>
   </plurals>
   <string name="secret_key">Privat nyckel:</string>
   <!--choice-->
@@ -328,12 +329,12 @@
   <string name="error_integrity_check_failed">integritetskontroll misslyckades! Data har modifierats!</string>
   <string name="error_wrong_passphrase">fel lösenord</string>
   <string name="error_could_not_extract_private_key">kunde inte extrahera privat nyckel</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Du behöver Android 4.1 för att använda Androids NFC Beam-funktion!</string>
   <string name="error_nfc_needed">NFC måste vara aktiverat!</string>
   <string name="error_beam_needed">Beam måste vara aktiverat!</string>
+  <string name="error_nothing">Inget att visa ännu.</string>
   <string name="error_nothing_import">Inga nycklar hittades!</string>
-  <string name="error_nothing_import_selected">Inga nycklar valda för import!</string>
   <string name="error_contacts_key_id_missing">Det gick inte att hämta nyckel-ID:t från kontakter!</string>
   <string name="error_generic_report_bug">Ett generiskt fel inträffade, skapa en ny buggrapport för OpenKeychain.</string>
   <string name="error_denied_storage_permission">Kan inte läsa filer från lagring eftersom åtkomst har nekats!</string>
@@ -390,7 +391,6 @@
   <string name="progress_extracting_key">extraherar nyckel…</string>
   <string name="progress_preparing_streams">förbereder strömmar…</string>
   <string name="progress_encrypting">krypterar data…</string>
-  <string name="progress_decrypting">dekrypterar data…</string>
   <string name="progress_preparing_signature">förebereder signatur…</string>
   <string name="progress_processing_signature">bearbetar signatur…</string>
   <string name="progress_generating_signature">genererar signatur…</string>
@@ -442,13 +442,10 @@
   <string name="import_tab_cloud">Nyckelsökning</string>
   <string name="import_tab_direct">Fil/urklipp</string>
   <string name="import_tab_qr_code">QR-kod/NFC</string>
-  <string name="import_import">Importera markerade nycklar</string>
-  <string name="import_qr_code_wrong">Något är fel med QR-koden! Försök igen!</string>
   <string name="import_qr_code_too_short_fingerprint">Fingeravtrycket är för kort!</string>
   <string name="import_qr_code_button">Skanna QR-kod</string>
   <string name="import_qr_code_text">Håll din kamera över QR-koden!</string>
-  <!--Import from URL-->
-  <string name="import_url_warn_no_search_parameter">Ingen sökfråga definierad. Du kan fortfarande söka manuellt på denna nyckelserver .</string>
+  <string name="btn_import">Importera</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Detaljer</string>
   <string name="with_warnings">, med varningar</string>
@@ -485,12 +482,7 @@
     <item quantity="one">Raderade nyckel%2$s.</item>
     <item quantity="other">Raderade %1$d nycklar%2$s.</item>
   </plurals>
-  <plurals name="delete_fail">
-    <item quantity="one">Fel vid radering av en nyckel%2$s.</item>
-    <item quantity="other">Fel vid radering av %1$d nycklar.</item>
-  </plurals>
   <string name="delete_nothing">Inget att radera.</string>
-  <string name="delete_cancelled">Raderingsoperation avbruten.</string>
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">Återkallat nyckel.</string>
   <string name="revoke_nothing">Inget att återkalla.</string>
@@ -517,21 +509,13 @@
   <string name="api_settings_select_key">Välj nyckel</string>
   <string name="api_settings_create_key">Skapa ny nyckel</string>
   <string name="api_settings_save">Spara</string>
-  <string name="api_settings_save_msg">Konto har sparats</string>
   <string name="api_settings_cancel">Avbryt</string>
   <string name="api_settings_revoke">Återkalla åtkomst</string>
   <string name="api_settings_start">Starta app</string>
-  <string name="api_settings_delete_account">Radera konto</string>
   <string name="api_settings_package_name">Paketnamn</string>
-  <string name="api_settings_accounts">Konton (gamla API:t)</string>
   <string name="api_settings_advanced">Avancerad</string>
   <string name="api_settings_allowed_keys">Tillåtna nycklar</string>
   <string name="api_settings_settings">Inställningar</string>
-  <string name="api_settings_key">Kontonyckel:</string>
-  <string name="api_settings_accounts_empty">Inga konton kopplade till denna app.</string>
-  <string name="api_create_account_text">Ingen nyckel är konfigurerad för detta konto. Välj en av dina existerande nycklar eller skapa en ny.\nAppar kan endast dekryptera/signera med nycklarna som valts här!</string>
-  <string name="api_update_account_text">Nyckeln som sparats för detta konto har raderats. Välj en annan!\nAppar kan endast dekryptera/signera med nycklarna som valts här!</string>
-  <string name="api_register_text">Appen som visas vill kryptera/dekryptera meddelanden och signera dem i ditt namn.\nTillåt åtkomst?\n\nVARNING: Om du inte vet varför denna sida visas, neka åtkomst! Du kan återkalla åtkomst senare från \'Appar\' sidan.</string>
   <string name="api_register_allow">Tillåt åtkomst</string>
   <string name="api_register_disallow">Tillåt inte åtkomst</string>
   <string name="api_register_error_select_key">Välj en nyckel!</string>
@@ -633,16 +617,12 @@
   <string name="create_key_edit">Ändra nyckelkonfiguration</string>
   <string name="create_key_add_email">Lägg till e-postadress</string>
   <string name="create_key_email_already_exists_text">E-postadress har redan lagts till</string>
-  <string name="create_key_email_invalid_email">Formatet på e-postadressen är ogiltigt</string>
   <string name="create_key_yubi_key_pin_text">Välj en PIN-kod med 6 siffror.</string>
   <string name="create_key_yubi_key_pin">PIN</string>
   <string name="create_key_yubi_key_admin_pin">Administratör PIN</string>
   <string name="create_key_yubi_key_pin_repeat">Upprepa PIN</string>
   <string name="create_key_yubi_key_pin_not_correct">PIN är inte korrekt!</string>
   <!--View key-->
-  <string name="view_key_revoked">Återkallad: Nyckeln bör inte användas längre!</string>
-  <string name="view_key_expired">Utgånget: Kontakten behöver utöka nyckelns giltighetstid!</string>
-  <string name="view_key_expired_secret">Utgånget: Du kan förlänga nyckelns giltighetstid genom att editera den!</string>
   <string name="view_key_my_key">Min nyckel</string>
   <string name="view_key_verified">Bekräftad nyckel</string>
   <string name="view_key_unverified">Obekräftad: Skanna QR-kod för att bekräfta nyckeln!</string>
@@ -652,6 +632,7 @@
   <string name="add_keyserver_connection_verified">Anslutning bekräftad!</string>
   <string name="add_keyserver_without_verification">Nyckelserver tillagd utan verifiering.</string>
   <string name="add_keyserver_invalid_url">Ogiltig URL!</string>
+  <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Nycklar</string>
   <string name="nav_encrypt_decrypt">Kryptera/dekryptera</string>
@@ -972,18 +953,12 @@
   <string name="msg_lv_match">Söker efter token</string>
   <string name="msg_bench_enc_time">Krypteringstid: %ss</string>
   <string name="msg_bench_enc_time_avg">Genomsnittlig tidsåtgång för att kryptera 5 MB: %ss</string>
-  <string name="msg_acc_saved">Konto sparat</string>
   <string name="msg_get_too_many_responses">Nyckel sökfråga gav alltför många kandidater. Vänligen förfina din förfråga!</string>
   <string name="msg_get_query_too_short">Sökfråga för kort. Vänligen förfina din förfråga!</string>
   <string name="msg_download_query_failed">Ett fel uppstod vid sökning efter nycklar.</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
-  <plurals name="passp_cache_notif_n_keys">
-    <item quantity="one">%d lösenord ihågkommet</item>
-    <item quantity="other">%d lösenord ihågkomna</item>
-  </plurals>
-  <string name="passp_cache_notif_keys">Ihågkomna lösenord</string>
   <!--Keyserver sync-->
   <string name="keyserver_sync_orbot_notif_title">Synkronisering från servrar kräver Orbot</string>
   <!--First Time-->
@@ -993,7 +968,7 @@
   <string name="first_time_security_token">Använd säkerhetstoken</string>
   <string name="first_time_skip">Hoppa över inställning</string>
   <string name="first_time_blank_security_token_yes">Använd denna säkerhetstoken</string>
-  <string name="backup_text">Säkerhetskopior som innehåller dina egna nycklar får aldrig delas med andra människor!</string>
+  <string name="backup_text">Säkerhetskopior som innehåller dina egna nycklar får aldrig delas med andra personer!</string>
   <string name="backup_all">Alla nycklar + dina egna nycklar</string>
   <string name="backup_public_keys">Alla nycklar</string>
   <string name="backup_section">Säkerhetskopiering</string>
@@ -1015,7 +990,6 @@
   <string name="key_unavailable">otillgänglig</string>
   <string name="secret_cannot_multiple">Dina egna nycklar kan bara raderas var för sig!</string>
   <string name="title_view_cert">Visa certifikatinformation</string>
-  <string name="unknown_algorithm">okänd</string>
   <string name="can_sign_not">kan inte signera</string>
   <string name="error_no_encrypt_subkey">Ingen krypteringsundernyckel tillgänglig!</string>
   <string name="contact_show_key">Visa nyckel (%s)</string>
@@ -1029,7 +1003,6 @@
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
   <string name="account_privacy_title">Integritet</string>
-  <string name="account_privacy_text">OpenKeychain synkroniserar inte dina kontakter med Internet. Den länkar bara kontakter med nycklar baserade på namn och e-postadresser. Detta sker offline på enheten.</string>
   <string name="sync_notification_permission_required_text">Tryck för att konfigurera länkning till kontakter</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
@@ -1056,9 +1029,7 @@
   <string name="snack_security_token_view">Visa</string>
   <string name="snack_security_token_import">Importera</string>
   <string name="security_token_create">Håll säkerhetstoken mot baksidan av din enhet.</string>
-  <string name="btn_import">Importera</string>
   <string name="btn_reset">Återställ</string>
-  <string name="security_token_import_radio">Importera nyckel</string>
   <string name="security_token_error">Fel: %s</string>
   <string name="security_token_error_try_again">Försök igen</string>
   <string name="btn_delete_original">Radera ursprunglig fil</string>

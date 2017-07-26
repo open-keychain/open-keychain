@@ -1,5 +1,28 @@
 [//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  * New key status displays detailed information why a key is considered insecure or defective
+
+
+## 4.3
+  * Better support for large keys
+  * Fix import of Gpg4win files with broken encodings
+
+
+## 4.2
+
+  * Experimental support for Elliptic Curve Encryption with Security Tokens
+  * Redesigned key import screen
+  * Design improvements to key lists
+  * Support for keyserver onion addresses
+
+
 ## 4.1
 
   * Better detection of emails and other content when opened
@@ -119,7 +142,7 @@
   * Zuzenketa ugari giltza inportatzean, zuzenduta baita ere giltzen zuriketa
   * Ohoretu eta erakutsi giltza egiaztapen ikurrak
   * Erabiltzaile interfazea norbere giltzak sortzeko
-  * Zuzenduta erabiltzaile id ukatze egiaztagiriak
+  * Fixing user ID revocation certificates
   * Hodei bilaketa berria (ohiko giltza-zerbitzari eta keybase.io gain bilatzen da)
   * Sostengua giltza zuriketarako OpenKeychain barne
   * YubiKey sostengu esperimentala: Sostengua sinadura sortze eta dekriptaketarako

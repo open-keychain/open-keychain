@@ -3,7 +3,7 @@
 ## تأیید کلید
 بدون تأیید، شما نمی‌توانید مطمئن باشید که یک کلید متعلق به همان شخص است.
 The simplest way to confirm a key is by scanning the QR Code or exchanging it via NFC.
-To confirm keys between more than two persons, we suggest to use the key exchange method available for your keys.
+To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
 
 ## Key Status
 

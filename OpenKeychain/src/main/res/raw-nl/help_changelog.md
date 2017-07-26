@@ -1,5 +1,28 @@
 [//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  * Nieuw overzicht met gedetailleerde informatie over sleutelstatus, waarom een sleutel beschouwd wordt als onveilig of defect
+
+
+## 4.3
+  * Betere ondersteuning voor grote sleutels
+  * Importeren van Gpg4win-bestanden met beschadigde coderingen hersteld
+
+
+## 4.2
+
+  * Experimentele ondersteuning voor Elliptic Curve Encryption met Security Tokens
+  * Nieuw design voor sleutelimporteringsscherm
+  * Verbeterd design voor sleutellijsten
+  * Ondersteuning voor sleutelserver-.onion-adressen
+
+
 ## 4.1
 
   * Betere herkenning van e-mails en andere inhoud bij openen
@@ -68,7 +91,7 @@
 
 ## 3.2
 
-  * Eerste versie waarin YubiKey volledig wordt ondersteund vanuit de gebruikersinterface: sleutels aanmaken, YubiKey binden aan sleutels, ...
+  * Eerste versie waarin YubiKey volledig wordt ondersteund vanuit de gebruikersinterface: sleutels aanmaken, YubiKey binden aan sleutels, …
   * Material design
   * Integratie van QR-code scannen (nieuwe permissies vereist)
   * Sleutelaanmaakwizard verbeterd
@@ -76,7 +99,7 @@
   * Vereist Android 4
   * Nieuw design voor sleutelscherm
   * Cryptovoorkeuren vereenvoudigd, betere selectie van veilige ciphers
-  * API: ondertekeningen ontkoppeld, vrije selectie van ondertekeningssleutel, ...
+  * API: ondertekeningen ontkoppeld, vrije selectie van ondertekeningssleutel, …
   * Oplossing voor probleem waarbij sommige geldige sleutels weergegeven werden als ingetrokken of verlopen
   * Aanvaard geen ondertekeningen door verlopen of ingetrokken subsleutels
   * Ondersteuning voor Keybase.io in geavanceerde modus
@@ -137,7 +160,7 @@
   * Oplossing voor sleutelvlaggen (ondersteunt nu Mailvelope 0.7 sleutels)
   * Verbeterde behandeling van wachtwoorden
   * Sleutels delen via SafeSlinger
-  * Experimentele ondersteuning voor YubiKey: instelling om andere PIN's toe te laten, momenteel werkt ondertekenen enkel via de OpenPGP API, niet binnen OpenKeychain
+  * Experimentele ondersteuning voor YubiKey: instelling om andere pincodes toe te laten, momenteel werkt ondertekenen enkel via de OpenPGP-API, niet binnen OpenKeychain
   * Oplossing voor gestripte sleutels
   * SHA256 als standaard voor compatibiliteit
   * Intent API is veranderd, zie https://github.com/open-keychain/open-keychain/wiki/Intent-API
@@ -191,9 +214,9 @@ Deze release zou niet mogelijk zijn zonder het werkt van Vincent Breitmoser (GSo
 
 ## 2.5
 
-  * Oplossing voor ontcijfering van symmetrische OpenPGP berichten/bestanden
+  * Oplossing voor ontsleuteling van symmetrische OpenPGP berichten/bestanden
   * Nieuw ontwerp voor sleutelbewerkingsscherm (dank aan Ash Hughes)
-  * Nieuw modern design voor versleutelings/ontcijferingsschermen
+  * Nieuw modern design voor versleutelings-/ontsleutelingsschermen
   * OpenPGP API versie 3 (meerdere api accounts, interne fixes, sleutel lookup)
 
 
@@ -212,7 +235,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Zet navigatiedrawer op tablets vast
   * Suggesties voor e-mailadress bij aanmaken van sleutels
   * Zoeken in publieke sleutellijsten
-  * En veel meer verbeteringen en fixes...
+  * En veel meer verbeteringen en oplossingen…
 
 
 ## 2.3.1
@@ -300,7 +323,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Duitse en Italiaanse vertaling
   * Veel kleiner pakket, door verminderde BC bronnen
   * Nieuwe GUI voor voorkeuren
-  * Layout wijzigingen voor localisatie
+  * Wijzigingen in opmaak voor lokalisatie
   * Bugfix voor ondertekeningen
 
 
@@ -318,7 +341,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * Filterbare sleutellijsten
   * Slimmere preselectie van cryptosleutels
-  * Nieuwe Intents voor VIEW en SEND, laat toe bestanden te versleutelen/ontcijferen vanuit bestandsbeheerders
+  * Nieuwe intents voor VIEW en SEND, laat toe bestanden te versleutelen/ontsleutelen vanuit bestandsbeheerders
   * Oplossingen en nieuwe functies (sleutel preselectie) voor K-9 Mail, nieuwe beta build beschikbaar
 
 

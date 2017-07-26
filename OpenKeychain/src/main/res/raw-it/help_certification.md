@@ -1,9 +1,9 @@
 [//]: # (NOTA: Si prega di mettere ogni frase in una propria linea, Transifex mette ogni riga nel proprio campo di traduzione!)
 
 ## Conferma chiave
-Senza conferma, non puoi essere sicuro la chiave veramente corrisponde a una persona specifica.
-Il modo più semplice per confermare una chiave è la scansione del codice QR o scambiarla via NFC.
-Per confermare le chiavi tra più di due persone, si consiglia di utilizzare il metodo di scambio di chiavi a disposizione per le vostre chiavi.
+Senza conferma, non puoi essere sicuro la chiave veramente corrisponda a una persona specifica.
+Il modo più semplice per confermare una chiave è la scansione del codice QR o lo scambio via NFC.
+Per confermare le chiavi tra più di due persone, consigliamo di usare il metodo di scambio chiavi disponibile per le tue chiavi.
 
 ## Stato chiave
 
@@ -17,12 +17,12 @@ Scaduta: Questa chiave non è più valida. Solo il proprietario può estendere l
 Revoca: Questa chiave non è più valida. È stata revocata dal suo proprietario.
 
 ## Informazioni avanzate
-Una "conferma chiave" in OpenKeychain è attuato mediante la creazione di una certificazione secondo lo standard OpenPGP.
+Una "conferma chiave" in OpenKeychain è attuata mediante la creazione di una certificazione secondo lo standard OpenPGP.
 Questa certificazione è un ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) indicata nella norma per:
-"L'emittente di tale certificazione non va alcun particolare asserzione da quanto accurato il certificatore ha verificato che il proprietario della chiave è infatti la persona descritta dal ID utente."
+"L'emittente di tale certificazione non fa alcuna particolare asserzione da quanto accurato il certificatore ha verificato che il proprietario della chiave è infatti la persona descritta dal ID utente."
 
 Tradizionalmente, certificazioni (anche con livelli di certificazione più elevati, come "certificazioni positivi" (0x13)) sono organizzate su OpenPGP nel web di confidenza ("Web of trust").
 Il nostro modello di conferma chiave è un concetto molto più semplice per evitare problemi di usabilità comuni relativi a questo Web of Trust.
-Assumiamo che le chiavi vengono verificati solo fino ad un certo grado che è ancora abbastanza utilizzabile da eseguire "in movimento".
+Assumiamo che le chiavi vengono verificate solo fino ad un certo grado che è ancora abbastanza utilizzabile da eseguire "in movimento".
 Inoltre, non implementiamo (potenzialmente transitive) firme fiduciarie o un database ownertrust come in GnuPG.
-Inoltre, chiavi che contengono almeno un ID utente certificata da una chiave di fiducia saranno contrassegnati come "confermato" negli elenchi principali.
+Inoltre, chiavi che contengono almeno un ID utente certificata da una chiave di fiducia saranno contrassegnati come "confermate" negli elenchi principali.

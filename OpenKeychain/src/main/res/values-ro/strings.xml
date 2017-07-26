@@ -34,7 +34,6 @@
   <string name="section_share_key">Cheie</string>
   <string name="section_fingerprint">Amprentă</string>
   <string name="section_encrypt">Criptează</string>
-  <string name="section_decrypt">Decriptează / Verifică</string>
   <!--button-->
   <string name="btn_save_file">Salvează fișierul</string>
   <string name="btn_save">Salvează</string>
@@ -71,8 +70,8 @@
   <string name="menu_nfc_preferences">Setări NFC</string>
   <string name="menu_select_all">Selectează tot</string>
   <string name="menu_update_all_keys">Actualizează toate cheile</string>
-  <string name="menu_advanced">Avansat</string>
   <string name="menu_change_password">Schimbă parola</string>
+  <string name="menu_advanced">Avansat</string>
   <string name="menu_keyserver_add">Adaugă</string>
   <!--label-->
   <string name="label_message">Text</string>
@@ -93,7 +92,6 @@
   <string name="label_key_size">Mărime cheie</string>
   <string name="label_ecc_curve">Curbă eliptică</string>
   <string name="label_name">Nume</string>
-  <string name="label_comment">Comentariu</string>
   <string name="label_email">Email</string>
   <string name="label_send_key">Sincronizează pe Internet</string>
   <string name="label_fingerprint">Amprentă</string>
@@ -160,7 +158,7 @@
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_wrong_passphrase">parolă greșită</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_encrypted">Criptat</string>
   <string name="decrypt_result_action_show">Arată</string>
@@ -202,7 +200,7 @@
   <!--Import-->
   <string name="import_tab_cloud">Căutare chei</string>
   <string name="import_qr_code_button">Scanează cod QR</string>
-  <!--Import from URL-->
+  <string name="btn_import">Importă</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Detalii</string>
   <!--Import result toast-->
@@ -216,7 +214,6 @@
   <string name="api_settings_save">Salvează</string>
   <string name="api_settings_cancel">Anulare</string>
   <string name="api_settings_start">Pornește aplicația</string>
-  <string name="api_settings_delete_account">Șterge contul</string>
   <string name="api_settings_advanced">Avansat</string>
   <string name="api_settings_settings">Setări</string>
   <!--Share-->
@@ -258,6 +255,7 @@
   <string name="view_key_my_key">Cheia mea</string>
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_invalid_url">URL invalid!</string>
+  <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Chei</string>
   <string name="nav_encrypt_decrypt">Criptare/Decriptare</string>
@@ -292,7 +290,6 @@
   <string name="msg_backup_error_db">Eroare bază de date!</string>
   <string name="msg_upload_error_not_found">Cheia nu a fost găsită!</string>
   <!--Linked Identity verification-->
-  <string name="msg_acc_saved">Cont salvat</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -330,8 +327,6 @@
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Setări</string>
   <string name="snack_security_token_import">Importă</string>
-  <string name="btn_import">Importă</string>
-  <string name="security_token_import_radio">Importă o cheie</string>
   <string name="security_token_error_unknown">Eroare necunoscută</string>
   <string name="security_token_error_try_again">Încearcă din nou</string>
   <string name="linked_create_verify">Verifică</string>

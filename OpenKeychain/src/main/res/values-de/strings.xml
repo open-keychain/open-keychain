@@ -111,19 +111,22 @@
   <string name="menu_help">Hilfe</string>
   <string name="menu_export_key">Schlüssel sichern</string>
   <string name="menu_delete_key">Schlüssel löschen</string>
+  <string name="menu_status">Schlüsselstatus betrachten</string>
   <string name="menu_manage_keys">Meine Schlüssel verwalten</string>
   <string name="menu_search">Suchen</string>
+  <string name="menu_open">Öffnen</string>
+  <string name="menu_read_clipboard">Aus der Zwischenablage lesen</string>
   <string name="menu_nfc_preferences">NFC-Einstellungen</string>
   <string name="menu_beam_preferences">Beam-Einstellungen</string>
   <string name="menu_encrypt_to">Verschlüsseln an…</string>
   <string name="menu_select_all">Alles auswählen</string>
   <string name="menu_export_all_keys">Alle Schlüssel exportieren</string>
   <string name="menu_update_all_keys">Alle Schlüssel aktualisieren</string>
-  <string name="menu_advanced">Erweitert</string>
   <string name="menu_certify_fingerprint">Über Fingerabdruck bestätigen</string>
   <string name="menu_certify_fingerprint_phrases">Über Phrasen bestätigen</string>
   <string name="menu_share_log">Protokoll teilen</string>
   <string name="menu_change_password">Passwort ändern</string>
+  <string name="menu_advanced">Erweitert</string>
   <string name="menu_keyserver_add">Hinzufügen</string>
   <!--label-->
   <string name="label_message">Text</string>
@@ -137,11 +140,11 @@
   <string name="label_passphrase_again">Passwort wiederholen</string>
   <string name="label_show_passphrase">Passwort anzeigen</string>
   <string name="label_algorithm">Algorithmus</string>
+  <string name="label_algorithm_colon">Algorithmus:</string>
   <string name="label_ascii_armor">Datei: ASCII-Armor</string>
   <string name="label_file_ascii_armor">ASCII-Armor aktivieren</string>
   <string name="label_write_version_header">Lass andere wissen dass du OpenKeychain nutzt</string>
   <string name="label_write_version_header_summary">Fügt \'OpenKeychain v2.7\' zu OpenPGP-Signaturen, Daten und exportierten Schlüsseln hinzu</string>
-  <string name="label_use_num_keypad_for_security_token_pin">Zifferntastatur für Sicherheits-PIN des Security-Tokens verwenden</string>
   <string name="label_asymmetric_from">Signiere mit:</string>
   <string name="label_to">Verschlüsseln an</string>
   <string name="label_delete_after_encryption">Dateien nach Verschlüsselung löschen</string>
@@ -155,16 +158,17 @@
   <string name="label_file_compression">Dateikomprimierung</string>
   <string name="label_keyservers">OpenPGP-Schlüsselserver verwalten</string>
   <string name="label_key_id">Schlüssel-ID</string>
+  <string name="label_key_id_colon">Schlüssel-ID:</string>
   <string name="label_key_created">Schlüssel wurde erzeugt %s</string>
   <string name="label_key_type">Typ</string>
   <string name="label_creation">Erzeugungsdatum</string>
+  <string name="label_creation_colon">Erstellung:</string>
   <string name="label_expiry">Ablaufdatum</string>
   <string name="label_usage">Verwendungszweck</string>
   <string name="label_key_size">Schlüssellänge</string>
   <string name="label_ecc_curve">Elliptische Kurve</string>
   <string name="label_main_user_id">Hauptidentität</string>
   <string name="label_name">Name</string>
-  <string name="label_comment">Kommentar</string>
   <string name="label_email">E-Mail</string>
   <string name="label_send_key">Mit dem Internet synchronisieren</string>
   <string name="label_fingerprint">Fingerabdruck</string>
@@ -172,6 +176,7 @@
   <string name="label_keyservers_title">Schlüsselserver</string>
   <string name="label_keyserver_settings_hint">Ziehen um Sortierung zu ändern, berühren zum Bearbeiten/Löschen</string>
   <string name="label_selected_keyserver_title">Ausgewählter Schlüsselserver</string>
+  <string name="label_selected_smartpgp_authority_title">Ausgewählte Zertifizierungsstelle</string>
   <string name="label_preferred">bevorzugt</string>
   <string name="label_enable_compression">Komprimierung aktivieren</string>
   <string name="label_encrypt_filenames">Dateinamen verschlüsseln</string>
@@ -179,8 +184,11 @@
   <string name="label_verify_keyserver_connection">Verbindung testen</string>
   <string name="label_only_trusted_keyserver">Erlaube nur vertrauenswürdige Schlüsselserver</string>
   <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_enter_keyserver_onion">Optionale Tor .onion URL</string>
   <string name="label_keyserver_dialog_delete">Schlüsselserver löschen</string>
   <string name="label_theme">Design</string>
+  <string name="label_enter_smartpgp_authority_name">Name</string>
+  <string name="label_smartpgp_authority_dialog_delete">Zertifizierungsstelle entfernen</string>
   <string name="pref_keyserver">OpenPGP-Schlüsselserver</string>
   <string name="pref_keyserver_summary">Schlüssel auf ausgewählten OpenPGP-Schlüsselservern suchen (HKP-Protokoll)</string>
   <string name="pref_keybase">Keybase.io</string>
@@ -202,7 +210,6 @@
   <string name="label_experimental_settings_word_confirm_summary">Schlüssel über Phrasen anstelle hexadezimaler Fingerabdrücke bestätigen</string>
   <string name="label_experimental_settings_linked_identities_title">Verknüpfte-Identitäten</string>
   <string name="label_experimental_settings_linked_identities_summary">Schlüssel mit Twitter, GitHub, Webseiten oder DNS verknüpfen (ähnlich wie bei Keybase.io, aber dezentralisiert)</string>
-  <string name="label_experimental_settings_keybase_title">Keybase.io-Nachweise</string>
   <string name="label_experimental_settings_keybase_summary">Keybase.io für Schlüsselnachweise kontaktieren und diese jedesmal zeigen, wenn ein Schlüssel angezeigt wird</string>
   <string name="label_experimental_settings_theme_summary">(Die Symbole und viele Bildschirme sind noch nicht an das dunkle Design angepasst)</string>
   <!--Proxy Preferences-->
@@ -242,6 +249,10 @@
     <item quantity="one">%d Schlüsselserver</item>
     <item quantity="other">%d Schlüsselserver</item>
   </plurals>
+  <plurals name="n_authorities">
+    <item quantity="one">%d Zertifizierungsstelle</item>
+    <item quantity="other">%d Zertifizierungsstellen</item>
+  </plurals>
   <string name="secret_key">Privater Schlüssel:</string>
   <!--choice-->
   <string name="choice_none">Keine</string>
@@ -267,6 +278,8 @@
   <string name="rsa_4096_description_html">größere Dateigröße, bis nach 2040 als sicher erachtet</string>
   <string name="ecc_p256">ECC P-256</string>
   <string name="ecc_p256_description_html">sehr kleine Dateigröße, bis 2040 als sicher erachtet &lt;br/&gt; &lt;u&gt;experimentell, nicht von allen Implementierungen unterstützt&lt;/u&gt;</string>
+  <string name="ecc_p384">ECC P-384</string>
+  <string name="ecc_p384_description_html">sehr kleine Dateigröße, bis 2040 als sicher erachtet <br></br> <u>experimentell, nicht von allen Implementierungen unterstützt</u></string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">kleine Dateigröße, bis nach 2040 als sicher erachtet &lt;br/&gt; &lt;u&gt;experimentell, nicht von allen Implementierungen unterstützt&lt;/u&gt;</string>
   <string name="usage_none">Keine (nur Unterschlüssel-Bindung)</string>
@@ -347,12 +360,13 @@
   <string name="error_integrity_check_failed">Integritätscheck fehlgeschlagen! Die Daten wurden verändert!</string>
   <string name="error_wrong_passphrase">falsches Passwort</string>
   <string name="error_could_not_extract_private_key">Privater Schlüssel konnte nicht extrahiert werden</string>
-  <!--errors without preceeding Error:-->
+  <string name="error_wrong_security_token">Dieses Security-Token enthält nicht den benötigten Schlüssel</string>
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Android 4.1 wird benötigt um Androids NFC-Beam nutzen zu können!</string>
   <string name="error_nfc_needed">NFC muss aktiviert sein!</string>
   <string name="error_beam_needed">Beam muss aktiviert sein!</string>
+  <string name="error_nothing">Noch nichts zu zeigen.</string>
   <string name="error_nothing_import">Keine Schlüssel gefunden!</string>
-  <string name="error_nothing_import_selected">Keine Schlüssel für den Import ausgewählt!</string>
   <string name="error_contacts_key_id_missing">Abrufen der Schlüsselkennung von den Kontakten ist fehlgeschlagen!</string>
   <string name="error_generic_report_bug">Ein allgemeiner Fehler trat auf, bitte reiche einen Fehlerbericht ein!</string>
   <string name="error_denied_storage_permission">Aus dem Speicher können keine Dateien gelesen werden, da der Zugriff verweigert wurde!</string>
@@ -379,6 +393,7 @@
   <string name="progress_done">Fertig.</string>
   <string name="progress_cancel">Abbrechen</string>
   <string name="progress_cancelling">Wird abgebrochen...</string>
+  <string name="progress_downloading">downloading…</string>
   <string name="progress_saving">Wird gespeichert…</string>
   <string name="progress_importing">Wird importiert…</string>
   <string name="progress_benchmarking">Leistungstest wird ausgeführt...</string>
@@ -415,7 +430,8 @@
   <string name="progress_extracting_key">Schlüssel wird extrahiert…</string>
   <string name="progress_preparing_streams">Datenstrom wird vorbereitet…</string>
   <string name="progress_encrypting">Daten werden verschlüsselt…</string>
-  <string name="progress_decrypting">Daten werden entschlüsselt…</string>
+  <string name="progress_prepare_decryption">Starte Entschlüsselung...</string>
+  <string name="progress_decrypting">Entschlüsseln der Daten...</string>
   <string name="progress_preparing_signature">Signatur wird vorbereitet…</string>
   <string name="progress_processing_signature">Signatur wird verarbeitet…</string>
   <string name="progress_generating_signature">Signatur wird erzeugt…</string>
@@ -468,14 +484,17 @@
   <string name="import_tab_cloud">Schlüsselsuche</string>
   <string name="import_tab_direct">Datei/Zwischenablage</string>
   <string name="import_tab_qr_code">QR-Code/NFC</string>
-  <string name="import_import">Ausgewählte Schlüssel importieren</string>
-  <string name="import_qr_code_wrong">QR-Code ist fehlerhaft! Bitte erneut versuchen!</string>
+  <string name="import_found_keys">%1$d Schlüssel gefunden</string>
+  <string name="import_qr_code_wrong">QR Code-Format nicht unterstützt (format specification: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!</string>
   <string name="import_qr_code_fp">Fingerabdruck ist fehlerhaft oder zu kurz!</string>
   <string name="import_qr_code_too_short_fingerprint">Fingerabdruck ist zu kurz!</string>
   <string name="import_qr_code_button">QR-Code einscannen</string>
   <string name="import_qr_code_text">Halte deine Kamera über den QR-Code!</string>
-  <!--Import from URL-->
-  <string name="import_url_warn_no_search_parameter">Kein Suchbegriff angegeben. Eine manuelle Suche auf diesem Schlüsselserver ist trotzdem möglich.</string>
+  <string name="btn_import">Import</string>
+  <string name="btn_import_keys">Alle Schlüssel importieren</string>
+  <string name="btn_view_list">Liste ansehen</string>
+  <string name="btn_refresh">Aktualisieren</string>
+  <string name="btn_go_to_key">Gehe zu Schlüssel</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Details</string>
   <string name="with_warnings">, mit Warnungen</string>
@@ -521,11 +540,10 @@
     <item quantity="other">%1$d Schlüssel wurden erfolgreich gelöscht%2$s.</item>
   </plurals>
   <plurals name="delete_fail">
-    <item quantity="one">Fehler beim Löschen eines Schlüssels%2$s.</item>
+    <item quantity="one">Fehler beim Löschen eines Schlüssels.</item>
     <item quantity="other">Fehler beim Löschen von %1$d Schlüsseln.</item>
   </plurals>
   <string name="delete_nothing">Nichts zu löschen.</string>
-  <string name="delete_cancelled">Löschvorgang wurde abgebrochen.</string>
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">Schlüssel erfolgreich widerrufen.</string>
   <string name="revoke_fail">Fehler beim Widerrufen des Schlüssels!</string>
@@ -556,22 +574,16 @@
   <string name="api_settings_select_key">Schlüssel auswählen</string>
   <string name="api_settings_create_key">Neuen Schlüssel erzeugen</string>
   <string name="api_settings_save">Speichern</string>
-  <string name="api_settings_save_msg">Benutzerkonto wurde gespeichert</string>
   <string name="api_settings_cancel">Abbrechen</string>
   <string name="api_settings_revoke">Zugriff widerufen</string>
   <string name="api_settings_start">Anwendung starten</string>
-  <string name="api_settings_delete_account">Benutzerkonto löschen</string>
   <string name="api_settings_package_name">Paketname</string>
   <string name="api_settings_package_certificate">SHA-256 des Paketzertifikats</string>
-  <string name="api_settings_accounts">Benutzerkonten (veraltete API)</string>
   <string name="api_settings_advanced">Erweitert</string>
   <string name="api_settings_allowed_keys">Erlaubte Schlüssel</string>
   <string name="api_settings_settings">Einstellungen</string>
-  <string name="api_settings_key">Schlüssel des Benutzerkontos:</string>
-  <string name="api_settings_accounts_empty">Keine Benutzerkonten mit dieser Anwendung verknüpft.</string>
-  <string name="api_create_account_text">Für dieses Benutzerkonto ist kein Schlüssel konfiguriert. Bitte wähle einen deiner existierenden Schlüssel aus oder erzeuge einen neuen.\nApps können nur hier ausgewählte Schlüssel nutzen!</string>
-  <string name="api_update_account_text">Der Schlüssel für dieses Benutzerkonto wurde gelöscht. Bitte wähle einen anderen aus!\nApps können nur hier ausgewählte Schlüssel nutzen.</string>
-  <string name="api_register_text">Folgende Anwendung möchte Nachrichten ver-/entschlüsseln und in deinem Namen signieren.\nZugriff erlauben?\n\nVORSICHT: Solltest du nicht wissen warum dieser Bildschirm angezeigt wird, erlaube den Zugriff nicht! Du kannst den Zugriff später über den \'Apps\'-Bildschirm widerrufen.</string>
+  <string name="api_register_title">Zugriff auf OpenKeyChain erlauben?</string>
+  <string name="api_register_text">%s erbittet OpenKeychain als Krypto-Anbieter zu verwenden. Sie werden immer noch um die Erlaubnis gebeten, bevor die App einen beliebigen Schlüssel zur Entschlüsselung verwenden kann. \ N \ nSie können den Zugriff später im Bildschirm \"Apps\" widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
   <string name="api_register_error_select_key">Bitte einen Schlüssel auswählen!</string>
@@ -690,14 +702,15 @@
   <string name="edit_key_error_add_identity">Füge mindestens eine Identität hinzu!</string>
   <string name="edit_key_error_add_subkey">Füge mindestens einen Unterschlüssel hinzu!</string>
   <string name="edit_key_error_bad_security_token_algo">Algorithmus wird vom Security-Token nicht unterstützt!</string>
-  <string name="edit_key_error_bad_security_token_size">Schlüssellänge wird von diesem Security-Token nicht unterstützt!</string>
-  <string name="edit_key_error_bad_security_token_stripped">Schlüssel kann nicht auf Security-Token verschoben werden (entweder gekürzt oder bereits \'auf Security-Token umgeleitet\')!</string>
+  <string name="edit_key_error_bad_security_token_curve">Kurve vom Security-Token nicht unterstützt!</string>
+  <string name="edit_key_error_bad_security_token_stripped">Der Schlüssel kann nicht auf den Security-Token verschoben werden (Entweder abgeschnitten oder schon im Security-Token)!</string>
   <!--Create key-->
   <string name="create_key_upload">Mit dem Internet synchronisieren</string>
   <string name="create_key_empty">Dieses Feld darf nicht leer sein</string>
   <string name="create_key_passphrases_not_equal">Passwörter stimmen nicht überein</string>
   <string name="create_key_final_text">Du hast folgende Identität eingegeben:</string>
   <string name="create_key_final_robot_text">Die Schlüsselerzeugung dauert eine Weile, trink in der Zwischenzeit einen Kaffee...</string>
+  <string name="create_key_final_email_valid_warning">Viele Anwendungen funktionieren besser, wenn sie mit Schlüsseln versorgt werden, die ausschließlich gültige E-Mail-Adressen enthalten</string>
   <string name="create_key_rsa">(3 Unterschlüssel, RSA, 4096 Bit)</string>
   <string name="create_key_custom">(Benutzerdefinierte Schlüsselkonfiguration)</string>
   <string name="create_key_name_text">Verknüpfe einen Namen mit diesem Schlüssel. Es kann ein voller Name wie z.B. \"John Doe\", oder ein Spitzname wie z.B. \"Johnny\", sein.</string>
@@ -708,7 +721,7 @@
   <string name="create_key_add_email">E-Mail-Adresse hinzufügen</string>
   <string name="create_key_add_email_text">Es sind weitere E-Mail-Adressen mit diesem Schlüssel verknüpft, die zur sicheren Kommunikation verwendet werden können.</string>
   <string name="create_key_email_already_exists_text">E-Mail-Adresse wurde bereits hinzugefügt</string>
-  <string name="create_key_email_invalid_email">Format der E-Mail-Adresse ist ungültig</string>
+  <string name="create_key_email_empty_email">E-Mail-Adresse darf nicht leer sein</string>
   <string name="create_key_yubi_key_pin_text">Bitte wähle eine PIN mit 6 Ziffern.</string>
   <string name="create_key_yubi_key_admin_pin_text">Bitte notiere die Administrator-PIN und bewahre sie an einem sicheren Ort auf (sie wird benötigt, wenn 3-mal die falsche PIN eingegeben wurde).</string>
   <string name="create_key_yubi_key_pin">PIN</string>
@@ -716,11 +729,12 @@
   <string name="create_key_yubi_key_pin_repeat">PIN wiederholen</string>
   <string name="create_key_yubi_key_pin_not_correct">PIN ist nicht korrekt!</string>
   <string name="create_key_yubi_key_pin_too_short">PIN muss mindestens 6 Ziffern lang sein!</string>
-  <string name="create_key_yubi_key_pin_insecure">Bitte wähle eine sichere PIN, nicht 000000, 123456 oder ähnliche Kombinationen.</string>
+  <string name="create_key_yubi_key_pin_insecure">Bitte wählen Sie eine sichere PIN, nicht 000000, 123456 oder ähnliche Kombinationen (die Top 20 der meisten ausgewählten PINs sind nicht erlaubt)</string>
+  <string name="create_key_yubi_key_algorithm_text">Wählen sie bitte für jeden Schlüssel einen Algorithmus aus.</string>
+  <string name="create_key_yubi_key_algorithm_sign_text">Signaturschlüssel</string>
+  <string name="create_key_yubi_key_algorithm_dec_text">Schlüssel zum Entschlüsseln</string>
+  <string name="create_key_yubi_key_algorithm_auth_text">Authentifizierungsschlüssel</string>
   <!--View key-->
-  <string name="view_key_revoked">Widerrufen: Schlüssel darf nicht mehr genutzt werden!</string>
-  <string name="view_key_expired">Abgelaufen: Der Kontakt muss die Gültigkeit des Schlüssels verlängern!</string>
-  <string name="view_key_expired_secret">Abgelaufen: Du kannst die Gültigkeit des Schlüssels verlängern, indem du ihn bearbeitest!</string>
   <string name="view_key_my_key">Mein Schlüssel</string>
   <string name="view_key_verified">Bestätigter Schlüssel</string>
   <string name="view_key_unverified">Unbestätigt: QR-Code einscannen, um den Schlüssel zu bestätigen!</string>
@@ -735,6 +749,9 @@
   <string name="add_keyserver_connection_failed">Verbindung zum Schlüsselserver fehlgeschlagen. Bitte überprüfe die URL und deine Internetverbindung.</string>
   <string name="keyserver_preference_deleted">%s gelöscht</string>
   <string name="keyserver_preference_cannot_delete_last">Der letzte Schlüsselserver kann nicht gelöscht werden. Mindestens einer wird benötigt!</string>
+  <!--Add/Edit SmartPGP authority-->
+  <string name="add_smartpgp_authority_dialog_title">Zertifizierungsstelle hinzufügen</string>
+  <string name="show_smartpgp_authority_dialog_title">Zertifizierungsstelle bearbeiten</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Schlüssel</string>
   <string name="nav_encrypt_decrypt">Verschlüsseln/Entschlüsseln</string>
@@ -866,9 +883,8 @@
   <string name="msg_is_subkey_nonexistent">Unterschlüssel %s in privatem Schlüssel nicht verfügbar</string>
   <string name="msg_is_subkey_ok">Privater Unterschlüssel %s als verfügbar markiert</string>
   <string name="msg_is_subkey_empty">Privater Unterschlüssel %s als verfügbar, mit leerem Passwort, markiert</string>
-  <string name="msg_is_subkey_pin">Privater Unterschlüssel %s als verfügbar markiert, mit PIN</string>
   <string name="msg_is_subkey_stripped">Privater Unterschlüssel %s wurde als gekürzt markiert</string>
-  <string name="msg_is_subkey_divert">Privater Unterschlüssel %s als \'auf Security-Token umgeleitet\' markiert</string>
+  <string name="msg_is_subkey_divert">Privater Unterschlüssel %s markiert als Schlüssel auf Security-Token</string>
   <string name="msg_is_success_identical">Schlüsselbund enthält keine neuen Daten, es gibt nichts zu tun</string>
   <string name="msg_is_success">Privater Schlüsselbund erfolgreich importiert</string>
   <!--Keyring Canonicalization log entries-->
@@ -973,9 +989,10 @@
   <string name="msg_cr_error_flags_ecdh">Falsche Schlüsselattribute ausgewählt, ECDH kann nicht zum Signieren verwendet werden!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Schlüsselbund %s wird verändert</string>
-  <string name="msg_mf_divert">Kryptographische Vorgänge werden auf Security-Token umgeleitet</string>
-  <string name="msg_mf_error_divert_newsub">Die Erzeugung neuer Unterschlüssel wird für \'auf Security-Token umgeleitete\' Hauptschlüssel nicht unterstützt!</string>
-  <string name="msg_mf_error_divert_serial">Die Seriennummer eines \'auf Security-Token umgeleiteten\' Schlüssels muss 16 Byte lang sein! Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
+  <string name="msg_mf_divert">Nutze Security-Token für kryptografische Vorgänge</string>
+  <string name="msg_mf_error_all_keys_stripped">alle Schlüssel sind gekürzt!</string>
+  <string name="msg_mf_error_divert_newsub">Die Erstellung neuer Unterschlüssel wird bei Hauptschlüsseln auf Security-Tokens nicht unterstützt</string>
+  <string name="msg_mf_error_divert_serial">Die Seriennummer eines Schlüssels auf Sicherheits-Token muss 16 Bytes sein! Dies ist ein Programmierfehler, bitte einen Fehlerbericht einreichen!</string>
   <string name="msg_mf_error_encode">Kodierungsfehler!</string>
   <string name="msg_mf_error_fingerprint">Tatsächlicher Fingerabdruck des Schlüssels entspricht nicht dem Erwarteten!</string>
   <string name="msg_mf_error_keyid">Keine Schlüssel-ID gefunden. Dies ist ein interner Fehler, bitte reiche einen Fehlerbericht ein!</string>
@@ -988,16 +1005,15 @@
   <string name="msg_mf_error_null_expiry">Ablaufdatum kann bei Unterschlüsselerzeugung nicht \"identisch wie vorher\" sein. Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_mf_error_noop">Nichts zu tun!</string>
   <string name="msg_mf_error_passphrase_master">Schwerer Fehler beim Entschlüsseln des Hauptschlüssels! Dies ist wahrscheinlich ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
+  <string name="msg_mf_error_passphrases_unchanged">Kein Passwort geändert!</string>
   <string name="msg_mf_error_pgp">Interner OpenPGP-Fehler!</string>
   <string name="msg_mf_error_sig">Signaturfehler!</string>
   <string name="msg_mf_error_sub_stripped">Gekürzter Unterschlüssel %s kann nicht verändert werden!</string>
   <string name="msg_mf_error_subkey_missing">Versuch mit fehlendem Unterschlüssel %s zu arbeiten!</string>
   <string name="msg_mf_error_conflicting_nfc_commands">Der Schlüssel kann nicht auf den Security-Token verschoben werden, wenn im selben Vorgang darauf eine Signatur erzeugt wird.</string>
-  <string name="msg_mf_error_duplicate_keytocard_for_slot">Der Security-Token unterstützt nur einen Slot pro Schlüsseltyp.</string>
+  <string name="msg_mf_error_duplicate_keytocard_for_slot">Security-Token unterstützt nur einen Slot pro Schlüsseltyp.</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">Ungeeignete Schlüsselattribute für Schlüssel des Security-Tokens.</string>
   <string name="msg_mf_master">Hauptbeglaubigungen werden verändert</string>
-  <string name="msg_mf_notation_empty">Leeres Vermerk-Paket wird hinzugefügt</string>
-  <string name="msg_mf_notation_pin">PIN-Vermerk-Paket wird hinzugefügt</string>
   <string name="msg_mf_passphrase">Passwort für Schlüsselbund wird geändert</string>
   <string name="msg_mf_pin">PIN des Security-Tokens wird geändert</string>
   <string name="msg_mf_admin_pin">Admin-PIN des Security-Tokens wird geändert</string>
@@ -1008,7 +1024,7 @@
   <string name="msg_mf_primary_new">Beglaubigung für neue primäre User-ID wird erzeugt</string>
   <string name="msg_mf_restricted_mode">Wechsle zu eingeschränktem Vorgangsmodus</string>
   <string name="msg_mf_subkey_change">Unterschlüssel %s wird verändert</string>
-  <string name="msg_mf_require_divert">Kryptographische Vorgänge werden auf Security-Token umgeleitet</string>
+  <string name="msg_mf_require_divert">Nutze Security-Token für kryptografische Vorgänge</string>
   <string name="msg_mf_require_passphrase">Für die Vorgänge ist ein Passwort erforderlich</string>
   <string name="msg_mf_subkey_new">Neue Unterschlüssel vom Typ %s werden hinzugefügt</string>
   <string name="msg_mf_subkey_new_id">Neue Unterschlüsselkennung: %s</string>
@@ -1091,7 +1107,6 @@
   <string name="msg_dc_clear_meta_file">Dateiname: %s</string>
   <string name="msg_dc_clear_meta_mime">MIME-Typ: %s</string>
   <string name="msg_dc_clear_meta_size">Dateigröße: %s</string>
-  <string name="msg_dc_clear_meta_size_unknown">Dateigröße unbekannt</string>
   <string name="msg_dc_clear_meta_time">Änderungszeit: %s</string>
   <string name="msg_dc_clear_signature_bad">Signaturprüfung NICHT in Ordnung!</string>
   <string name="msg_dc_clear_signature_check">Signaturdaten werden verifiziert</string>
@@ -1099,7 +1114,7 @@
   <string name="msg_dc_clear_signature">Signaturdaten werden für später gespeichert</string>
   <string name="msg_dc_clear">Klartextdaten werden verarbeitet</string>
   <string name="msg_dc_error_bad_passphrase">Fehler beim Entsperren des Schlüssels, falsches Passwort!</string>
-  <string name="msg_dc_error_sym_passphrase">Fehler beim Entschlüsseln der Daten, falsches Passwort?</string>
+  <string name="msg_dc_error_sym_passphrase">Fehler beim Entschlüsseln! (falsches Passwort?)</string>
   <string name="msg_dc_error_corrupt_data">Daten beschädigt!</string>
   <string name="msg_dc_error_extract_key">Unbekannter Fehler beim Entsperren des Schlüssels!</string>
   <string name="msg_dc_error_integrity_check">Integritätsprüfung fehlgeschlagen!</string>
@@ -1131,10 +1146,8 @@
   <string name="msg_dc_insecure_key">Unsicherer Schlüssel: Entweder ist die Bitlänge von RSA/DSA/ElGamal zu kurz oder die ECC-Kurve bzw. der ECC-Algorithmus wird als unsicher angesehen! Das kann vorkommen wenn die Anwendung veraltet ist, oder durch einen Angriff.</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">Signaturprüfung wird gestartet</string>
-  <string name="msg_vl_error_no_siglist">Keine Signaturliste in signierten Literaldaten!</string>
   <string name="msg_vl_error_wrong_key">Nachricht wurde nicht mit dem erwarteten Schlüssel signiert!</string>
   <string name="msg_vl_error_no_signature">Signaturdaten fehlen!</string>
-  <string name="msg_vl_error_missing_literal">Keine Nutzdaten in signierten Literaldaten</string>
   <string name="msg_vl_clear_meta_file">Dateiname: %s</string>
   <string name="msg_vl_clear_meta_mime">MIME-Typ: %s</string>
   <string name="msg_vl_clear_meta_time">Änderungszeit: %s</string>
@@ -1164,6 +1177,7 @@
   <string name="msg_pse_error_pgp">Interner OpenPGP-Fehler!</string>
   <string name="msg_pse_error_sig">Es ist ein OpenPGP-Signatur-Ausnahmefehler aufgetreten!</string>
   <string name="msg_pse_error_unlock">Unbekannter Fehler beim Entsperren des Schlüssels!</string>
+  <string name="msg_pse_error_key_not_allowed">Der zum Entschlüsseln gewählte Schlüssel ist nicht erlaubt</string>
   <string name="msg_pse_key_ok">Verschlüssele für Schlüssel: %s</string>
   <string name="msg_pse_key_unknown">Fehlender Schlüssel für Verschlüsselung: %s</string>
   <string name="msg_pse_key_warn">Fehlerhafter Schlüssel für Verschlüsselung: %s</string>
@@ -1315,13 +1329,13 @@
   <string name="msg_data_mime_type">Content-Typ: %s</string>
   <string name="msg_data_ok">Datenverarbeitung erfolgreich!</string>
   <string name="msg_data_skip_mime">MIME-Analyse wird übersprungen</string>
-  <string name="msg_acc_saved">Benutzerkonto gespeichert</string>
   <string name="msg_get_success">Erfolgreich heruntergeladen!</string>
   <string name="msg_get_file_not_found">Eingabedatei wurde nicht gefunden!</string>
   <string name="msg_get_no_valid_keys">Keine gültigen Schlüssel in der Datei/Zwischenablage gefunden!</string>
   <string name="msg_get_too_many_responses">Die Schlüsselanfrage liefert zu viele Ergebnisse. Bitte präzisiere deine Suchanfrage!</string>
   <string name="msg_get_query_too_short">Suchanfrage zu kurz. Bitte ändere deine Anfrage!</string>
   <string name="msg_get_query_too_short_or_too_many_responses">Keine oder zu viele Schlüssel wurden gefunden. Bitte präzisiere deine Anfrage!</string>
+  <string name="msg_get_no_enabled_source">Aktivieren sie wenigstens eine Quelle zum Download!</string>
   <string name="msg_download_query_failed">Beim Suchen der Schlüssel ist ein Fehler aufgetreten.</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">Versuche Keybase.io-Verifikation für %s</string>
@@ -1338,15 +1352,14 @@
   <!--PassphraseCache-->
   <string name="passp_cache_notif_touch_to_clear">Berühren, um Passwörter zu löschen.</string>
   <plurals name="passp_cache_notif_n_keys">
-    <item quantity="one">%d Passwort gemerkt</item>
-    <item quantity="other">%d Passwörter gemerkt</item>
+    <item quantity="one">%d Passwort gespeichert</item>
+    <item quantity="other">%d Passwörter gespeichert</item>
   </plurals>
-  <string name="passp_cache_notif_keys">Gemerkte Passwörter</string>
+  <string name="passp_cache_notif_keys">Passwörter gespeichert</string>
   <string name="passp_cache_notif_clear">Passwörter vergessen</string>
   <string name="passp_cache_notif_pwd">Passwort</string>
   <!--Keyserver sync-->
   <string name="keyserver_sync_orbot_notif_title">Synchronisierung von Servern erfordert Orbot</string>
-  <string name="keyserver_sync_orbot_notif_msg">Berühren um Orbot zu starten</string>
   <string name="keyserver_sync_orbot_notif_start">Orbot starten</string>
   <string name="keyserver_sync_orbot_notif_ignore">Direkt</string>
   <!--First Time-->
@@ -1379,12 +1392,12 @@
   <string name="error_key_not_found">Schlüssel wurde nicht gefunden!</string>
   <string name="error_key_processing">Fehler bei der Verarbeitung des Schlüssels!</string>
   <string name="key_stripped">gekürzt</string>
-  <string name="key_divert">auf Security-Token umleiten</string>
+  <string name="key_divert">auf dem Security-Token</string>
   <string name="key_no_passphrase">kein Passwort</string>
   <string name="key_unavailable">nicht verfügbar</string>
   <string name="secret_cannot_multiple">Deine eigenen Schlüssel können nur einzeln gelöscht werden!</string>
   <string name="title_view_cert">Beglaubigungsdetails anzeigen</string>
-  <string name="unknown_algorithm">unbekannt</string>
+  <string name="unknown">unbekannt</string>
   <string name="can_sign_not">kann nicht signieren</string>
   <string name="error_no_encrypt_subkey">Kein Verschlüsselungs-Unterschlüssel verfügbar!</string>
   <string name="contact_show_key">Schlüssel anzeigen (%s)</string>
@@ -1402,7 +1415,7 @@
   <!--Android Account-->
   <string name="account_no_manual_account_creation">OpenKeychain-Benutzerkonten können nicht manuell erzeugt werden.</string>
   <string name="account_privacy_title">Datenschutz</string>
-  <string name="account_privacy_text">OpenKeychain synchronisiert deine Kontakte nicht mit dem Internet. Es verknüpft lediglich Kontakte mit Schlüsseln auf der Basis von Namen und E-Mail-Adressen. Das alles findet offline auf deinem Gerät statt.</string>
+  <string name="account_privacy_text">OpenKeychain synchronisiert Ihre Kontakte nicht mit dem Internet. Es verbindet nur Kontakte mit Schlüssel, die auf Namen und E-Mail-Adressen basieren. Dies geschieht auf Ihrem Gerät offline.</string>
   <string name="sync_notification_permission_required_title">Zugang zu Kontakten erforderlich</string>
   <string name="sync_notification_permission_required_text">Berühren, um Kontaktverknüpfung zu konfigurieren</string>
   <!--Passphrase wizard-->
@@ -1441,10 +1454,10 @@
   <string name="security_token_status_unbound">Security-Token stimmt überein und kann mit dem Schlüssel verbunden werden</string>
   <string name="security_token_status_partly">Security-Token stimmt überein und ist teilweise mit dem Schlüssel verbunden</string>
   <string name="security_token_create">Halte den Security-Token gegen die Rückseite deines Geräts.</string>
-  <string name="security_token_reset_or_import">Dieser Security-Token enthält bereits einen Schlüssel. Du kannst den Schlüssel über die Cloud importieren oder den Security-Token zurücksetzen.</string>
-  <string name="btn_import">Import</string>
+  <string name="security_token_reset_or_import">Dieses Sicherheits-Token enthält bereits einen Schlüssel. Um es zu benutzen, benötigen wir zusätzliche Schlüsselinformationen. Diese Informationen können auf einem Keyserver gesucht oder aus einer Datei importiert werden.</string>
   <string name="btn_reset">Zurücksetzen</string>
-  <string name="security_token_import_radio">Schlüssel Importieren</string>
+  <string name="security_token_import_radio">Suche Schlüsselinformation auf Schlüsselserver</string>
+  <string name="security_token_file_radio">Importiere Schlüsselinformation von Datei</string>
   <string name="security_token_reset_radio">Security-Token zurücksetzen</string>
   <string name="security_token_reset_warning">Das Zurücksetzen des Security-Tokens zerstört die darauf gespeicherten Schlüssel vollständig. Mit diesen Schlüssel verschlüsselte Nachrichten/Dateien können danach nicht mehr entschlüsselt werden!</string>
   <string name="snack_security_token_other">Es ist ein anderer Schlüssel auf dem Security-Token  gespeichert!</string>
@@ -1454,17 +1467,16 @@
     <item quantity="other">Falsche PIN\n%d Versuche verbleibend</item>
   </plurals>
   <string name="security_token_error_terminated">Der Security-Token befindet sich in beendetem Zustand.</string>
-  <string name="security_token_error_wrong_length">Eingegebene PIN zu kurz. PINs müssen mindestens 6 Ziffern lang sein.</string>
+  <string name="security_token_error_wrong_length">Eingegebene PIN zu kurz. PINs sind wenigstens 6 Zeichen lang.\n(Fehler: Falsche Länge)</string>
   <string name="security_token_error_conditions_not_satisfied">Nutzungsbedingungen werden nicht erfüllt. </string>
-  <string name="security_token_error_security_not_satisfied">Sicherheitsstatus wird nicht erfüllt.</string>
+  <string name="security_token_error_security_not_satisfied">Falsche PIN!\n(Bedenken sie, dass sie nur 3 Versuche haben!)</string>
   <string name="security_token_error_authentication_blocked">PIN nach zu vielen Versuchen gesperrt.</string>
   <string name="security_token_error_data_not_found">Schlüssel oder Objekt wurde nicht gefunden!</string>
   <string name="security_token_error_unknown">Unbekannter Fehler</string>
-  <string name="security_token_error_bad_data">Der Security-Token meldete ungültige Daten.</string>
   <string name="security_token_error_chaining_error">Der Security-Token erwartete das letzte Kommando in einer Reihe.</string>
   <string name="security_token_error_header">Der Security-Token meldete ungültige %s Byte.</string>
   <string name="security_token_error_tag_lost">Security-Token wurde zu früh abgenommen. Halte den Security-Token an die Rückseite, bis der Vorgang beendet ist.</string>
-  <string name="security_token_error_iso_dep_not_supported">Security-Token unterstützt ISO-DEP (ISO 14443-4) nicht</string>
+  <string name="security_token_error_iso_dep_not_supported">Security-Token unterstützt den geforderten Kommunikationsstandard (ISO-DEP, ISO 14443-4) nicht</string>
   <string name="security_token_error_try_again">Erneut versuchen</string>
   <string name="btn_delete_original">Originaldatei löschen</string>
   <string name="snack_encrypt_filenames_on">Dateinamen <b>sind</b> verschlüsselt.</string>
@@ -1512,7 +1524,7 @@
   <string name="linked_create_twitter_handle">Twitter-Handle</string>
   <string name="linked_create_twitter_2_1">Berühre einen der Knöpfe, um den Tweet abzusenden!</string>
   <string name="linked_create_twitter_2_2">Du kannst den Tweet vor dem Absenden beliebig bearbeiten, solange der Text in Klammern unverändert bleibt.</string>
-  <string name="linked_create_twitter_2_3">Sobald dein Tweet als &lt;b&gt;@%s&lt;/b&gt; veröffentlich wurde, berühre die Verifizieren-Schaltfläche, um deine Chronik danach zu durchsuchen.</string>
+  <string name="linked_create_twitter_2_3">Sobald Ihr Tweet als <b>@%s</b> veröffentlicht wird, berühren sie die Schaltfläche Überprüfen, um Ihre Zeitleiste zu scannen.</string>
   <string name="linked_create_twitter_2_4">Berühre nach erfolgreicher Verifikation \'Abschließen\', um die Verknüpfte-Identität deinem Schlüsselbund hinzuzufügen und den Vorgang zu beenden.</string>
   <string name="linked_create_verify">Verifizieren</string>
   <string name="linked_text_clipboard">Text wurde in die Zwischenablage kopiert</string>
@@ -1532,7 +1544,6 @@
   <string name="linked_select_1">Eine \'Verknüpfte-Identität\' verbindet deinen PGP-Schlüssel mit einem Dienst im Internet.</string>
   <string name="linked_select_2">Bitte wähle einen Typ aus:</string>
   <string name="linked_id_generic_text">Diese Datei erhebt Anspruch auf den Besitz des OpenPGP-Schlüssels mit der langen ID %2$s.\n\nToken des Nachweises:\n%1$s</string>
-  <string name="linked_id_github_text">Dieses Gist bestätigt die Verknüpfte-Identität innerhalb meines OpenPGP-Schlüssels und verknüpft es mit diesem GitHub-Benutzerkonto.\nToken des Nachweises:\n%1$s</string>
   <string name="linked_verifying">Wird verifiziert…</string>
   <string name="linked_verify_success">Verifiziert!</string>
   <string name="linked_verify_error">Verifikationsfehler!</string>

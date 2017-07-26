@@ -3,7 +3,7 @@
 ## Confirmation de clé
 Sans confirmation, vous ne pouvez pas être certain qu'une clé correspond à une personne déterminée.
 La façon la plus simple de confirmer une clé est en lisant le code QR ou en l'échangeant par NFC.
-Pour confirmer des clés entre plus de deux personnes, nous suggérons d'utiliser la méthode d'échange de clé proposée pour vos clés.
+Pour confirmer des clés entre plus de deux personnes, nous suggérons d'utiliser la méthode d'échange de clés proposée pour vos clés.
 
 ## État de la clé
 

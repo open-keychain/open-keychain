@@ -14,12 +14,18 @@ Licence : GPLv3+
 
 ## Meilleurs contributeurs
   * Adithya Abraham Philip
+  * Andrea Torlaschi
+  * Arnaud Fontaine
   * Ash Hughes
   * « mar-v-in »
-  * 'Thialfihar' (développeur APG)
+  * Nikita Mikhailov
+  * « Thialfihar » (développeur APG)
   * Tim Bray
+  * Tobias Erthal
 
 ## Contributeurs occasionnels
+  * Alex Fong Jie Wen
+  * Andrea Torlaschi
   * Art O Cathain
   * Brian C. Barnes
   * Bahtiar « kalkin » Gadimov
@@ -29,27 +35,29 @@ Licence : GPLv3+
   * Daniel Nelz
   * Daniel Ramos
   * Greg Witczak
-  * 'iseki'
+  * « iseki »
   * Ishan Khanna
-  * 'jellysheep'
-  * 'Jesperbk'
-  * 'jkolo'
+  * « jellysheep »
+  * « Jesperbk »
+  * « jkolo »
   * Joey Castillo
   * Kai Jiang
   * Kartik Arora
-  * 'Kent'
-  * 'ligi'
+  * « Kent »
+  * « ligi »
   * Lukas Zorich
   * Manoj Khanna
   * Markus Doits
+  * Michal Kepkowski
   * Miroojin Bakshi
   * Morgan Gangwere
   * Nikhil Peter Raj
   * Paul Sarbinowski
+  * Petter Arvidsson
   * « Senecaso »
   * Signe Rüsch
   * Sreeram Boyapati
-  * 'steelman'
+  * « steelman »
 
 [//] : # (NOTE : tri alphabétique)
 

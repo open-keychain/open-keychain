@@ -1,5 +1,28 @@
 [//]: # (Observe: ¡Por favor ingrese cada enunciado en su propia línea, Transifex coloca cada línea en su propio campo de traducción!)
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  * El estado de la nueva clave muestra información detallada del porque una clave está considerada insegura o defectuosa
+
+
+## 4.3
+  * Mejor soporte para claves grandes
+  * Fix import of Gpg4win files with broken encodings
+
+
+## 4.2
+
+  * Soporte experimental para Criptografía de Curva Elíptica con Token de Seguridad
+  * Pantalla de importación de clave rediseñada
+  * Mejoras de diseño de listas de claves
+  * Soporte para direcciones de servidores de clave onion
+
+
 ## 4.1
 
   * Mejor detección de correos electrónicos y otros contenidos cuando se abre
@@ -13,21 +36,21 @@
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Detección y manejo de datos de texto
+  * Mejoras del rendimiento
+  * Mejoras de IU para manejo de Token de Seguridad
 
 
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Edición de clave rediseñada
+  * Elija el tiempo de recordar las contraseñas introducidas individualmente
+  * Importar clave de Facebook
 
 
 ## 3.7
 
-  * Improved Android 6 support (permissions, integration into text selection)
+  * Mejorado el soporte de Android 6 (permisos, integración en selección de texto)
   * API: Versión 10
 
 
@@ -54,21 +77,21 @@
 
 ## 3.4
 
-  * Anonymous key download over Tor
+  * Descarga de llave anónima a través de Tor
   * Soporte de proxy
-  * Better YubiKey error handling
+  * Mejor manejo del error YubiKey
 
 
 ## 3.3
 
   * Nueva pantalla de descifrado
   * Descifrado de múltiples archivos a la vez
-  * Better handling of YubiKey errors
+  * Mejor manejo de errores YubiKey
 
 
 ## 3.2
 
-  * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
+  * Primera versión con soporte YubiKey completo disponible desde la interfaz de usuario: Editar claves, enlazar YubiKey a las claves,...
   * Material design
   * Integration of QR Code Scanning (New permissions required)
   * Improved key creation wizard
@@ -119,7 +142,7 @@
   * Many fixes for key import, also fixes stripped keys
   * Honor and display key authenticate flags
   * User interface to generate custom keys
-  * Fixing user id revocation certificates
+  * Fixing user ID revocation certificates
   * New cloud search (searches over traditional keyservers and keybase.io)
   * Support for stripping keys inside OpenKeychain
   * Experimental YubiKey support: Support for signature generation and decryption

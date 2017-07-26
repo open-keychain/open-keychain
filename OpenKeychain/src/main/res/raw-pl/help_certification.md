@@ -3,7 +3,7 @@
 ## Potwiedzenie klucza
 Bez potwierdzenia nie masz pewności czy klucz odpowiada danej osobie.
 Najłatwiejszą drogą potwierdzenia klucza jest zeskanowanie kodu QR lub wysłanie go przez NFC
-To confirm keys between more than two persons, we suggest to use the key exchange method available for your keys.
+To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
 
 ## Key Status
 

@@ -56,7 +56,6 @@
   <string name="section_fingerprint">지문</string>
   <string name="section_phrases">문구</string>
   <string name="section_encrypt">암호화</string>
-  <string name="section_decrypt">복호화 / 확인</string>
   <string name="section_current_expiry">현재 만료일자</string>
   <string name="section_new_expiry">새 만료일자</string>
   <!--button-->
@@ -131,7 +130,6 @@
   <string name="label_passphrase_cache_subs">서브키 당 암호 기억</string>
   <string name="label_message_compression">텍스트 압축</string>
   <string name="label_file_compression">파일 압축</string>
-  <string name="label_keyservers">OpenPGP 키서버 선택</string>
   <string name="label_key_id">키 ID</string>
   <string name="label_key_created">키가 %s 에 만들어짐</string>
   <string name="label_creation">생성</string>
@@ -141,7 +139,6 @@
   <string name="label_ecc_curve">타원 곡선</string>
   <string name="label_main_user_id">기본 신원</string>
   <string name="label_name">이름</string>
-  <string name="label_comment">코멘트</string>
   <string name="label_email">이메일</string>
   <string name="label_send_key">인터넷과 동기화</string>
   <string name="label_fingerprint">지문</string>
@@ -171,7 +168,6 @@
   <string name="label_experimental_settings_word_confirm_summary">키를 16진수 지문이 아닌 문구로 확인</string>
   <string name="label_experimental_settings_linked_identities_title">연결된 신원</string>
   <string name="label_experimental_settings_linked_identities_summary">키를 Twitter, GitHub, 웹사이트 혹은 DNS에 연결 (keybase.io와 비슷하지만 중앙집중되지 않음)</string>
-  <string name="label_experimental_settings_keybase_title">Keybase.io 증명</string>
   <string name="label_experimental_settings_keybase_summary">keybase.io에 연결해서 키가 표시될 때 마다 키 증명을 표시</string>
   <string name="label_experimental_settings_theme_summary">(아이콘이나 많은 화면이 검은 테마에 알맞게 아직 조정되지 않았습니다)</string>
   <!--Proxy Preferences-->
@@ -290,12 +286,11 @@
   <string name="error_integrity_check_failed">무결성 체크 실패! 데이터가 수정되었습니다!</string>
   <string name="error_wrong_passphrase">암호 오류</string>
   <string name="error_could_not_extract_private_key">개인키를 추출할 수 없음</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">NFC 빔 기능을 쓰기 위해선 안드로이드 4.1 이상이 필요합니다!</string>
   <string name="error_nfc_needed">NFC가 활성화 되어 있어야 합니다!</string>
   <string name="error_beam_needed">빔이 활성화 되어 있어야 합니다!</string>
   <string name="error_nothing_import">키를 찾을 수 없습니다!</string>
-  <string name="error_nothing_import_selected">가져올 키가 선택되지 않았습니다!</string>
   <string name="error_contacts_key_id_missing">연락처에서 키 ID를 가져오는 것을 실패했습니다!</string>
   <string name="error_generic_report_bug">알려지지 않은 오류가 발생했습니다. OpenKeychain에 새로운 버그 리포트를 만들어 주세요.</string>
   <!--results shown after decryption/verification-->
@@ -356,7 +351,6 @@
   <string name="progress_extracting_key">키를 추출하는 중...</string>
   <string name="progress_preparing_streams">스트림을 준비하는 중...</string>
   <string name="progress_encrypting">데이터를 암호화 하는 중...</string>
-  <string name="progress_decrypting">데이터를 복호화 하는 중...</string>
   <string name="progress_preparing_signature">서명을 준비하는 중...</string>
   <string name="progress_processing_signature">서명을 처리하는 중...</string>
   <string name="progress_generating_signature">서명을 생성하는 중...</string>
@@ -408,14 +402,10 @@
   <string name="import_tab_cloud">키 </string>
   <string name="import_tab_direct">파일/클립보드</string>
   <string name="import_tab_qr_code">QR 코드/NFC</string>
-  <string name="import_import">선택한 키를 가져오기</string>
-  <string name="import_qr_code_wrong">QR 코드가 올바르지 않습니다! 다시 시도해 주세요!</string>
   <string name="import_qr_code_fp">지문이 잘못되었거나 너무 짧습니다!</string>
   <string name="import_qr_code_too_short_fingerprint">지문이 너무 짧습니다!</string>
   <string name="import_qr_code_button">QR 코드를 스캔</string>
   <string name="import_qr_code_text">QR 코드를 카메라로 비춰주세요!</string>
-  <!--Import from URL-->
-  <string name="import_url_warn_no_search_parameter">검색 구문이 정의되지 않았습니다. 이 서버에서 수동으로 검색 할 수 있습니다.</string>
   <!--Generic result toast-->
   <string name="snackbar_details">자세히</string>
   <string name="with_warnings">경고와 함께</string>
@@ -451,11 +441,7 @@
   <plurals name="delete_ok">
     <item quantity="other">성공적으로 %1$d 개의 키 삭제 (%2$s)</item>
   </plurals>
-  <plurals name="delete_fail">
-    <item quantity="other">%1$d 개의 키의 삭제를 실패했습니다.</item>
-  </plurals>
   <string name="delete_nothing">삭제할 게 없습니다.</string>
-  <string name="delete_cancelled">삭제 작업이 취소되었습니다.</string>
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">성공적으로 키를 무효화 했습니다.</string>
   <string name="revoke_fail">키 무효화 실패!</string>
@@ -481,21 +467,13 @@
   <string name="api_settings_select_key">키 선택</string>
   <string name="api_settings_create_key">새로운 키 만들기</string>
   <string name="api_settings_save">저장</string>
-  <string name="api_settings_save_msg">계정이 저장됨</string>
   <string name="api_settings_cancel">취소</string>
   <string name="api_settings_revoke">권한 무효화</string>
   <string name="api_settings_start">어플리케이션 시작</string>
-  <string name="api_settings_delete_account">계정 삭제</string>
   <string name="api_settings_package_name">패키지 이름</string>
   <string name="api_settings_package_certificate">패키지 인증서의 SHA-256 해시</string>
-  <string name="api_settings_accounts">계정 (오래된 API)</string>
   <string name="api_settings_allowed_keys">혀용된 키</string>
   <string name="api_settings_settings">설정</string>
-  <string name="api_settings_key">계정 키:</string>
-  <string name="api_settings_accounts_empty">이 앱에 계정이 연결되어 있지 않습니다.</string>
-  <string name="api_create_account_text">이 계정에 키가 설정되어 있지 않습니다. 이미 존재하는 키 중 하나를 선택하거나 새 키를 만드세요.\n앱은 여기에서 선택된 키로만 복호화/서명할 수 있습니다!</string>
-  <string name="api_update_account_text">이 계정으로 설정되어 있던 키가 삭제되었습니다. 다른 키를 선택하세요!\n앱은 여기에서 선택된 키로만 복호화/서명할 수 있습니다!</string>
-  <string name="api_register_text">표시된 앱이 당신의 이름으로 메세지를 암호화/복호화 하고 서명하려고 합니다.\n접근을 허용할까요?\n\n경고: 왜 이 화면이 나타났는지 모르겠다면 접근을 허용하지 마세요! 나중에 \'앱\' 화면에서 접근을 무효화 할 수 있습니다.</string>
   <string name="api_register_allow">접근 허용</string>
   <string name="api_register_disallow">접근 허용하지 않음</string>
   <string name="api_register_error_select_key">키를 선택해 주세요!</string>
@@ -524,6 +502,7 @@
   <string name="create_key_yubi_key_pin">PIN</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
+  <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_apps">앱</string>
   <!--hints-->

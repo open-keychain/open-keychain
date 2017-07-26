@@ -3,7 +3,7 @@
 ## Confirmação de chave
 Sem confirmação, você não pode ter certeza se uma chave realmente corresponde a uma pessoa específica.
 A maneira mais simples para confirmar a chave é fazendo a leitura de um código QR ou trocá-lo via NFC.
-Para confirmar chaves entre mais de duas pessoas, sugerimos usar o método de troca de chaves disponível para suas chaves.
+Para confirmação de chaves entre mais de duas pessoas, sugerimos utilizar o método de troca de chave disponível para suas chaves.
 
 ## Estado de chave
 

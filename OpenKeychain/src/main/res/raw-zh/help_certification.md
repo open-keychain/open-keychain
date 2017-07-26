@@ -3,7 +3,7 @@
 ## 密钥确认
 在进行确认之前，您无法可靠地将一个密钥与特定人物关联起来。
 确认密钥的最简单方式是扫描二维码或者通过NFC进行交换。
-在2人以上的团体内进行密钥确认时，我们建议使用密钥交换的方法。
+To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
 
 ## 密钥状态
 

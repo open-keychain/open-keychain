@@ -1,337 +1,360 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (Увага: Будь ласка розміщуйте кожне речення у окремому рядку, Transifex розмістить кожен рядок у відповідному полі для перекладу!)
+
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  * Новий статус ключа відображає інформацію, чому ключ вважається незахищеним чи дефектним
+
+
+## 4.3
+  * Краща підтримка великих ключів
+  * Виправлено імпорт файлів Gpg4win із пошкодженим кодуванням
+
+
+## 4.2
+
+  * Експериментальна підтримка Elliptic Curve Encryption з Security Tokens
+  * Перероблено екран імпорту ключа
+  * Покращено дизайн екрану з переліком ключів
+  * Підтримка серверу ключів з onion адресами
+
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * Покращено визначення ел. пошт та інших видів матеріалів під час відкриття
 
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
-  * Allow password changing of stripped keys
+  * Експериментальна підтримка Security Tokens через USB
+  * Дозволена зміна паролю для урізаних ключів
 
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Визначення та робота з тектовою інформацією
+  * Покращення продуктивності
+  * Покращення інтерфейсу для роботи з Security Token
 
 
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Редизайн редагування ключа
+  * Індивідуальний вибір часу введення паролів
+  * Імпорт ключа через Фейсбук
 
 
 ## 3.7
 
-  * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * Покращено подтримку Android 6 (дозволи, інтеграція у виділення тексту)
+  * API: Версія 10
 
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
-  * API: Version 9
+  * Зашифровані резервні копії
+  * Виправлення безпеки на основі зовнішнього аудиту безпеки
+  * Майстер створення ключа YubiKey NEO
+  * Базова підтримка internal MIME
+  * Автоматична синхронізація ключа
+  * Експериментальні можливості: прив'язка ключа Github, облікові записи Twitter
+  * Експериментальні можливості: підтвердження ключа фразами
+  * Ескпериментальні можливості: темна тема
+  * API: Версія 9
 
 
 ## 3.5
 
-  * Key revocation on key deletion
-  * Improved checks for insecure cryptography
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  * Відкликання ключа після його видалення
+  * Покращені перевірки на небезпечну криптографію
+  * Виправлення: не закривався OpenKeychain після першого успішного завершення помічника
+  * API: Версія 8
 
 
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
-  * Better YubiKey error handling
+  * Анонімне отримання ключа через Tor
+  * Підтримка проксі
+  * Покращена підтримка обробки помилок YubiKey
 
 
 ## 3.3
 
-  * New decryption screen
-  * Decryption of multiple files at once
-  * Better handling of YubiKey errors
+  * Новий екран розшифрування
+  * Розшифровування кількох файлів одночасно
+  * Покращено обробку помилок YubiKey
 
 
 ## 3.2
 
-  * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
-  * Material design
-  * Integration of QR Code Scanning (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
-  * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
-  * Method to update all keys at once
+  * Перша версія з повною підтримкою YubiKey, що доступна через інтерфейс: Редагування ключів, в'язка YubiKey до ключів, ...
+  * Матеріальний дизайн
+  * Інтеграція сканування QR кодів (Необхідно затвердити нові дозволи)
+  * Покращено помічника створення ключа
+  * Виправлено втрату контактів після синхронізації
+  * Потребує Android 4
+  * Змінено екран ключа
+  * Спрощено налаштування криптування, покращено вибір захисних шифрів
+  * API: Відокремлено підписи, вільний вибір ключа для підпису,...
+  * Виправлено: Деякі дійсні ключі були позначені як відкликані чи застарілі
+  * Не приймаються підписи застарілих чи відкликаних ключів
+  * Підтримка Keybase.io у розширеному виді
+  * Метод оновлення всіх ключів відразу
 
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * Виправлено екпорт ключів до файлу (тепер до справжнього)
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * Виправлено експорт ключів до файлів (вони записувались частково)
+  * Виправлено збій на Android 2.3
 
 
 ## 3.1
 
-  * Fix crash on Android 5
-  * New certify screen
-  * Secure Exchange directly from key list (SafeSlinger library)
-  * New QR Code program flow
-  * Redesigned decrypt screen
-  * New icon usage and colors
-  * Fix import of secret keys from Symantec Encryption Desktop
-  * Experimental YubiKey support: Subkey IDs are now checked correctly
+  * Виправлено збій на Android 5
+  * Новий екран сертифікації
+  * Безпечний обмін безпосередньо зі списку ключів (бібліотека SafeSlinger)
+  * Новий порядок сканування QR коду
+  * Змінено дизайн екрану розшифрування
+  * Нове використання піктограм та кольорів
+  * Виправлено імпорт секретних ключів з Symantec Encryption Desktop
+  * Експериментальна підтримка YubiKey: індентифікатори залежних ключів перевіряються коректно
 
 
 ## 3.0.1
 
-  * Better handling of large key imports
-  * Improved subkey selection
+  * Покращено підтримку імпорту великих ключів
+  * Покращено вибір залежних ключів
 
 
 ## 3.0
 
-  * Propose installable compatible apps in apps list
-  * New design for decryption screens
-  * Many fixes for key import, also fixes stripped keys
-  * Honor and display key authenticate flags
-  * User interface to generate custom keys
-  * Fixing user id revocation certificates
-  * New cloud search (searches over traditional keyservers and keybase.io)
-  * Support for stripping keys inside OpenKeychain
-  * Experimental YubiKey support: Support for signature generation and decryption
+  * Пропозиція сумісних додатків для встановлення в списку додатків
+  * Новий дизайн екранів розшифрування
+  * Багато виправлень щодо імпорту ключів. Також виправлено часткові ключі.
+  * Відображаються прапорці авторизації ключа
+  * Інтерфейс користувача для генерування ключів на замовлення
+  * Виправлено відкликання сертифікатів за ідентифікатором користувача
+  * Новий хмарний пошук (пошук через традиційні сервери ключів та keybase.io)
+  * Підтримка часткових ключів в OpenKeychain
+  * Експериментальна підтримка YubiKey: підтримка генерування підпису та розшифрування
 
 
 ## 2.9.2
 
-  * Fix keys broken in 2.9.1
-  * Experimental YubiKey support: Decryption now working via API
+  * Виправлено пошкодження ключів в 2.9.1
+  * Експериментальна підтримка YubiKey: розшифрування працює через API
 
 
 ## 2.9.1
 
-  * Split encrypt screen into two
-  * Fix key flags handling (now supporting Mailvelope 0.7 keys)
-  * Improved passphrase handling
-  * Key sharing via SafeSlinger
-  * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
-  * Fix usage of stripped keys
-  * SHA256 as default for compatibility
-  * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
-  * OpenPGP API now handles revoked/expired keys and returns all user ids
+  * Екран шифрування розділено на два екрани
+  * Виправлено прапорці обробки ключа (відтепер підтримуються ключі Mailvelope 0.7)
+  * Покращено обробку парольної фрази
+  * Можливість поширення ключів через SafeSlinger
+  * Експериментальна підтримка YubiKey: налаштування підтримки PINs, зараз підписування працює з застосуванням OpenPGP API, не в OpenKeychain
+  * Виправлено використання часткових ключів
+  * SHA256 як типове для сумісності
+  * API викликів було змінено, дивіться https://github.com/open-keychain/open-keychain/wiki/Intent-API
+  * OpenPGP API зараз оброблює відкликані та застарілі ключі та повертає всі ідентифікатори користувача
 
 
 ## 2.9
 
-  * Fixing crashes introduced in v2.8
-  * Experimental ECC support
-  * Experimental YubiKey support: Only signing with imported keys
+  * Виправлено збої, які з'явилися у версії 2.8
+  * Експериментальна підтримка ECC
+  * Експериментальная підтримка YubiKey: тільки підписування з імпортованими ключами
 
 
 ## 2.8
 
-  * So many bugs have been fixed in this release that we focus on the main new features
-  * Key edit: awesome new design, key revocation
-  * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
-  * New first time screen
-  * New key creation screen: autocompletion of name and email based on your personal Android accounts
-  * File encryption: awesome new design, support for encrypting multiple files
-  * New icons to show status of key (by Brennan Novak)
-  * Important bug fix: Importing of large key collections from a file is now possible
-  * Notification showing cached passphrases
-  * Keys are connected to Android's contacts
+  * У цьому випуску було виправлено багато помилок, тому ми звернемо увагу на головні нові можливості
+  * Редагування ключа: новий чудовий дизайн, відкликання ключа
+  * Імпорт ключа: новий чудовий дизайн, захищені з"єднання з сервером ключів через hkps, розділення сервера ключів через записи DNS SRV
+  * Новий екран першого запуску
+  * Новий екран створення ключа: автозаповнення імені та ел. пошти, що базується на вашому особистому профілі на Android
+  * Шифрування файлу: новий чудовий дизайн, підтримка шифрування кількох файлів
+  * Нові піктограми відображення статусу ключа (від Бренана Новака)
+  * Важливе виправлення: імпортування великих колекцій ключів з файлу вже можливе
+  * Повідомлення показує кешовану парольну фразу
+  * Ключі прив'язані до контактів Android
 
-This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
+Ця версія була б неможливою без роботи Вінсента Брейтмозера (GSoC 2014), mar-v-in (GSoC 2014), Даніеля Альберта, Арт О'Катен, Даніеля Хасс, Тіма Брея, Thialfihar
 
 ## 2.7
 
-  * Purple! (Dominik, Vincent)
-  * New key view design (Dominik, Vincent)
-  * New flat Android buttons (Dominik, Vincent)
-  * API fixes (Dominik)
-  * Keybase.io import (Tim Bray)
+  * Пурпурний!! (Домінік, Вінсент)
+  * Новий дизайн перегляду ключу (Домінік, Вінсент)
+  * Нові плоскі кнопки Android (Домінік, Вінсент)
+  * Виправлення API (Домінік)
+  * Імпорт з Keybase.io  (Тім Брей)
 
 
 ## 2.6.1
 
-  * Some fixes for regression bugs
+  * Деякі виправлення для накопичених вад
 
 
 ## 2.6
 
-  * Key certifications (thanks to Vincent Breitmoser)
-  * Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
-  * New design for signature verification
-  * Custom key length (thanks to Greg Witczak)
-  * Fix share-functionality from other apps
+  * Сертифікації ключів (завдяки Вінсенту Брейтмозеру)
+  * Підтримка часткових секретних ключів для GnuPG  (завдяки Вінсенту Брейтмозеру)
+  * Новий дизайн для перевірки підпису
+  * Нестандартна довжина ключа (завдяки Ґреґу Вітчаку)
+  * Виправлено розподілене користування з іншими додатками
 
 
 ## 2.5
 
-  * Fix decryption of symmetric OpenPGP messages/files
-  * Refactored key edit screen (thanks to Ash Hughes)
-  * New modern design for encrypt/decrypt screens
-  * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
+  * Виправлено розшифрування симетричного OpenPGP повідомлень/файлів
+  * Перероблено екран редагування ключа (завдяки Ешу Гюджу)
+  * Новий сучасний дизайн екранів шифрування/розшифрування
+  * OpenPGP API версій 3 (підтримка профілів з кількома API, внутрішні виправлення, пошук ключа)
 
 
 ## 2.4
-Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
-Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
+Висловлюємо подяку всім учасникам Google Summer з Code 2014, які зробили цей випуск багатим на нові можливості та виправлення помилок!
+Окрім кількох невеликих латок, значна частина виправлень була виконана цими людьми (перераховані в алфавітному порядку):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
-  * New unified key list
-  * Colorized key fingerprint
-  * Support for keyserver ports
-  * Deactivate possibility to generate weak keys
-  * Much more internal work on the API
-  * Certify user ids
-  * Keyserver query based on machine-readable output
-  * Lock navigation drawer on tablets
-  * Suggestions for emails on creation of keys
-  * Search in public key lists
-  * And much more improvements and fixes…
+  * Новий уніфікований список ключів
+  * Кольоровий відбиток ключа
+  * Підтримка портів серверів ключів
+  * Деактивовано можливість генерування слабких ключів
+  * Значна внутрішня робота над API
+  * Сертифікація ідентифікаторів коистувача
+  * Запит до серверу ключів базується на машинному виводі
+  * Фіксація меню навігації на планшетах
+  * Пропозиції для листів при створенні ключів
+  * Пошук у списках відкритих ключів
+  * Додано багато покращень та виправлень...
 
 
 ## 2.3.1
 
-  * Hotfix for crash when upgrading from old versions
+  * Свіже виправлення збою при оновленні зі старих версій
 
 
 ## 2.3
 
-  * Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
-  * Fix setting expiry dates on keys (thanks to Ash Hughes)
-  * More internal fixes when editing keys (thanks to Ash Hughes)
-  * Querying keyservers directly from the import screen
-  * Fix layout and dialog style on Android 2.2-3.0
-  * Fix crash on keys with empty user ids
-  * Fix crash and empty lists when coming back from signing screen
-  * Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source
-  * Fix upload of key from signing screen
+  * Виключено непотрібний експорт публічного ключа під час експорту секретного ключа (завдяки Ash Hughes)
+  * Виправлено встановлення дат закінчення терміну дії ключа (завдяки Ash Hughes)
+  * Багато внутрішніх виправлень під час редагування ключа (завдяки Ash Hughes)
+  * Опитування серверів ключів з екрану імпорту ключів
+  * Виправлено розмітку та стиль діалогу для Android 2.2-3.0
+  * Виправлено падіння на ключах з порожнім ідентифікатором користувача
+  * Виправлено падіння та порожні списки після повернення з екрану підпису
+  * Bouncy Castle (шифрувальна бібліотека) оновлена з 1.47 до 1.50 та зібрана з сирця
+  * Виправлено завантаження ключа з екрану підпису
 
 
 ## 2.2
 
-  * New design with navigation drawer
-  * New public key list design
-  * New public key view
-  * Bug fixes for importing of keys
-  * Key cross-certification (thanks to Ash Hughes)
-  * Handle UTF-8 passwords properly (thanks to Ash Hughes)
-  * First version with new languages (thanks to the contributors on Transifex)
-  * Sharing of keys via QR Codes fixed and improved
-  * Package signature verification for API
+  * Новий дизайн меню навігації
+  * Новий дизайн списку публічних ключів
+  * Новий вигляд публічного ключа
+  * Виправлення імпорту ключів
+  * Перехресна сертифікація ключів (завдяки Ash Hughes)
+  * Коректна підтримка паролів у кодуванні UTF-8 (завдяки Ash Hughes)
+  * Перша версія з багатьма новими мовами (дякуємо перекладачам із Transifex)
+  * Виправлення і поліпшення передачі ключів через QR коди
+  * Перевірка підпису пакету для API
 
 
 ## 2.1.1
 
-  * API Updates, preparation for K-9 Mail integration
+  * Оновлення API, підготовка до інтеграції K-9 Mail
 
 
 ## 2.1
 
-  * Lots of bug fixes
-  * New API for developers
-  * PRNG bug fix by Google
+  * Багато помилок виправлено
+  * Нове API для розробників
+  * PRNG виправлення від Google
 
 
 ## 2.0
 
-  * Complete redesign
-  * Share public keys via QR codes, NFC beam
-  * Sign keys
-  * Upload keys to server
-  * Fixes import issues
-  * New AIDL API
+  * Повний редизайн
+  * Передача публічних ключів через QR коди, NFC біни
+  * Ключі для підпису
+  * Завантаження ключів на сервер
+  * Виправлено імпортування
+  * Нове AIDL API
 
 
 ## 1.0.8
 
-  * Basic keyserver support
+  * Базова підтримка серверу ключів
   * App2sd
-  * More choices for passphrase cache: 1, 2, 4, 8, hours
-  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Bugfixes
-  * Optimizations
+  * Більше варіантів для кешування парольної фрази: 1, 2, 4, 8 годин
+  * Перекладачі: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+  * Виправлення помилок
+  * Оптимізація
 
 
 ## 1.0.7
 
-  * Fixed problem with signature verification of texts with trailing newline
-  * More options for passphrase cache time to live (20, 40, 60 mins)
+  * Виправлена проблема з перевіркою підпису тексту та переносом на новий рядок
+  * Більше опцій для кешування парольної фрази (20, 40, 60 хвилин)
 
 
 ## 1.0.6
 
-  * Account adding crash on Froyo fixed
-  * Secure file deletion
-  * Option to delete key file after import
-  * Stream encryption/decryption (gallery, etc.)
-  * New options (language, force v3 signatures)
-  * Interface changes
-  * Bugfixes
+  * Виправлена помилка додавання нового профілю на Froyo
+  * Безпечне видалення файлу
+  * Опція видалення ключа після імпорту
+  * Потік шифрування/дешифрування (галерея, тощо)
+  * Нові опції (мова, примусове застосування v3 підписів)
+  * Зміни в інтерфейсі
+  * Виправлення помилок
 
 
 ## 1.0.5
 
-  * German and Italian translation
-  * Much smaller package, due to reduced BC sources
-  * New preferences GUI
-  * Layout adjustment for localization
-  * Signature bugfix
+  * Переклад на німецьку та італійську мови
+  * Зменшений розмір пакету завдяки зменшеному розміру BC файлів коду
+  * Нові налаштування графічного інтерфейсу
+  * Вирівнювання розмітки для локалізації
+  * Виправлення підпису
 
 
 ## 1.0.4
 
-  * Fixed another crash caused by some SDK bug with query builder
+  * Виправлено падіння, викликане деякими помилками SDK, пов'язаних з створенням об'єкту запиту
 
 
 ## 1.0.3
 
-  * Fixed crashes during encryption/signing and possibly key export
+  * Виправлено шифрування/підписівання та можливість єкспорту ключа
 
 
 ## 1.0.2
 
-  * Filterable key lists
-  * Smarter pre-selection of encryption keys
-  * New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
-  * Fixes and additional features (key preselection) for K-9 Mail, new beta build available
+  * До списку ключів можна застосовувати фільтри
+  * Розумне попереднє виділення зашифрованих ключів
+  * Нова можливість обробки для перегляду та відправки, що дозволяє шифрувати та розшифровувати файли поза файловими менеджерами
+  * Виправлення та додаткові можливості (попереднє виділення ключа) для K-9 Mail, нова бета-збірка доступна
 
 
 ## 1.0.1
 
-  * GMail account listing was broken in 1.0.0, fixed again
+  * Список в GMail профілі був пошкоджений в 1.0.0, виправлено знову
 
 
 ## 1.0.0
 
-  * K-9 Mail integration, APG supporting beta build of K-9 Mail
-  * Support of more file managers (including ASTRO)
-  * Slovenian translation
-  * New database, much faster, less memory usage
-  * Defined Intents and content provider for other apps
-  * Bugfixes
+  * K-9 Mail інтегровано, APG підтримує бета збірку K-9 Mail
+  * Підтримка багатьох файлових менеджерів (включаючи ASTRO)
+  * Переклад на словенську
+  * Нова база данних, набагато швидша, потребує менше пам"яті
+  * Визначено обробники (виклики) та постачальники вмісту для інших додатків
+  * Виправлення помилок

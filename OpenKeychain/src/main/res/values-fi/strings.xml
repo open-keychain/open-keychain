@@ -45,7 +45,6 @@
   <string name="section_key_server">Avainpalvelin</string>
   <string name="section_fingerprint">Sormenjälki</string>
   <string name="section_encrypt">Salaa</string>
-  <string name="section_decrypt">Pura salaus / todenna</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Pura, todenna ja tallenna tiedosto</string>
   <string name="btn_encrypt_share_file">Salaa ja jaa tiedosto</string>
@@ -120,7 +119,6 @@
   <string name="label_ecc_curve">Elliptinen käyrä</string>
   <string name="label_main_user_id">Pääidentiteetti</string>
   <string name="label_name">Nimi</string>
-  <string name="label_comment">Kommentti</string>
   <string name="label_email">Email</string>
   <string name="label_fingerprint">Sormenjälki</string>
   <string name="expiry_date_dialog_title">Aseta umpeutumispäivämäärä</string>
@@ -188,7 +186,7 @@
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_wrong_passphrase">väärä salasana</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_encrypted">Salattu</string>
   <string name="decrypt_result_not_encrypted">Ei salattu</string>
@@ -217,7 +215,6 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
-  <!--Import from URL-->
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -237,6 +234,7 @@
   <!--Create key-->
   <!--View key-->
   <!--Add/Edit keyserver-->
+  <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
@@ -266,7 +264,6 @@
   <string name="label_cert_type">Tyyppi</string>
   <string name="key_no_passphrase">ei salasanaa</string>
   <string name="key_unavailable">ei saatavilla</string>
-  <string name="unknown_algorithm">tunnistamaton</string>
   <string name="contact_show_key">Näytä avain (%s)</string>
   <string name="key_colon">Avain:</string>
   <!--Android Account-->

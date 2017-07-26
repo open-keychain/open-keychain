@@ -43,7 +43,7 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
@@ -57,7 +57,6 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
-  <!--Import from URL-->
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -77,6 +76,7 @@
   <!--Create key-->
   <!--View key-->
   <!--Add/Edit keyserver-->
+  <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->

@@ -1,5 +1,28 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  * 新しい鍵ステータスに、キーが安全でないとみなされる理由の詳細情報を表示
+
+
+## 4.3
+  * 巨大な鍵のサポートを改善
+  * 破損したエンコーディングのGpg4winファイルのインポートを修正
+
+
+## 4.2
+
+  * セキュリティトークンによる楕円曲線暗号の実験的サポート
+  * 鍵インポート画面の再デザイン
+  * 鍵一覧のデザインの改善
+  * 鍵サーバ onion アドレスのサポート
+
+
 ## 4.1
 
   * メールやその他のコンテンツを開いた時の検出を改良

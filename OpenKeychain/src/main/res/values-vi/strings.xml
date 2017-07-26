@@ -62,7 +62,6 @@
   <string name="section_fingerprint">Mã nhận dạng</string>
   <string name="section_phrases">Mật khẩu</string>
   <string name="section_encrypt">Mã hóa</string>
-  <string name="section_decrypt">Giải mã/Kiểm tra</string>
   <string name="section_current_expiry">Hạn dùng hiện tại</string>
   <string name="section_new_expiry">Hạn dùng mới</string>
   <!--button-->
@@ -119,11 +118,11 @@
   <string name="menu_select_all">Chọn tất cả</string>
   <string name="menu_export_all_keys">Xuất tất cả khóa</string>
   <string name="menu_update_all_keys">Cập nhật tất cả khóa</string>
-  <string name="menu_advanced">Nâng cao</string>
   <string name="menu_certify_fingerprint">Xác nhận bằng mã nhận dạng</string>
   <string name="menu_certify_fingerprint_phrases">Xác nhận bằng mật khẩu</string>
   <string name="menu_share_log">Chia sẻ nhật ký</string>
   <string name="menu_change_password">Thay đổi mật khẩu</string>
+  <string name="menu_advanced">Nâng cao</string>
   <string name="menu_keyserver_add">Thêm</string>
   <!--label-->
   <string name="label_message">Văn bản</string>
@@ -141,7 +140,6 @@
   <string name="label_file_ascii_armor">Bật ASCII Armor</string>
   <string name="label_write_version_header">Để người khác biết bạn đang dùng OpenKeychain</string>
   <string name="label_write_version_header_summary">Thêm cụm từ \'OpenKeychain v2.7\' vào chữ ký, nội dung mã và khóa xuất ra dạng PGP</string>
-  <string name="label_use_num_keypad_for_security_token_pin">Sử dụng khóa số cho Security Token PIN</string>
   <string name="label_asymmetric_from">Ký số với:</string>
   <string name="label_to">Mã hóa với</string>
   <string name="label_delete_after_encryption">Xóa tệp gốc sau khi mã hóa</string>
@@ -153,7 +151,6 @@
   <string name="label_passphrase_cache_subs">Ghi nhớ mật khẩu bằng khóa con</string>
   <string name="label_message_compression">Nén văn bản</string>
   <string name="label_file_compression">Nén tệp tin</string>
-  <string name="label_keyservers">Quản lý máy chủ lưu khóa</string>
   <string name="label_key_id">ID của khóa</string>
   <string name="label_key_created">Khóa đã tạo %s</string>
   <string name="label_key_type">Kiểu</string>
@@ -164,7 +161,6 @@
   <string name="label_ecc_curve">Đường cong Elliptic</string>
   <string name="label_main_user_id">Định danh chính</string>
   <string name="label_name">Tên</string>
-  <string name="label_comment">Ghi chú</string>
   <string name="label_email">Thư điện tử</string>
   <string name="label_send_key">Đồng bộ với Internet</string>
   <string name="label_fingerprint">Mã nhận dạng</string>
@@ -202,7 +198,6 @@
   <string name="label_experimental_settings_word_confirm_summary">Xác nhận khóa bằng mật khẩu thay vì sử dụng mã nhận dạng thập lục phân</string>
   <string name="label_experimental_settings_linked_identities_title">Các định danh đã liên kết</string>
   <string name="label_experimental_settings_linked_identities_summary">Liên kết khóa với Twitter, GitHub, website hoặc DNS (tương tự như đưa lên keybase.io nhưng có phân cấp)</string>
-  <string name="label_experimental_settings_keybase_title">Minh chứng keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Liên hệ với keybase.io để minh chứng khóa và hiển thị chúng mỗi khi khóa được gọi</string>
   <string name="label_experimental_settings_theme_summary">(Các biểu tượng và nhiều màn hình không được thêm vào giao diện dạng tối)</string>
   <!--Proxy Preferences-->
@@ -215,7 +210,7 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
@@ -229,7 +224,6 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
-  <!--Import from URL-->
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -249,6 +243,7 @@
   <!--Create key-->
   <!--View key-->
   <!--Add/Edit keyserver-->
+  <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Quản lý Khóa</string>
   <string name="nav_encrypt_decrypt">Tiện ích bảo mật</string>

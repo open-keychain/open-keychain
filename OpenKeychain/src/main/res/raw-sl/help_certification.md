@@ -3,7 +3,7 @@
 ## Potrjevanje ključev
 Brez overitve ne morete vedeti, če nek ključ zares pripada določeni osebi.
 Najbolj preprost način za overitev ključa je skeniranje kode QR ali izmenjava ključev preko NFC.
-Za overjanje ključev med več kot dvema osebama priporočamo uporabo izmenjave, ki je na voljo za vaše ključe.
+To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
 
 ## Status ključa
 

@@ -1,5 +1,28 @@
 [//]: # (NOTA: coloque cada frase em sua própria linha, o Transifex coloca cada linha em seu próprio campo de tradução!)
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  * New key status displays detailed information why a key is considered insecure or defective
+
+
+## 4.3
+  *Melhor suporte para chaves grandes
+  * Corrigido importação de arquivos Gpg4win com quebra de codificação
+
+
+## 4.2
+
+  * Suporte experimental para Criptografia de Curvas Elípticas com Tokens de Segurança
+  *Melhoria na tela de importação de chave
+  *Melhoria no projeto para as listas de chave
+  * Support for keyserver onion addresses
+
+
 ## 4.1
 
   * Melhor detecção de emails e outros conteúdos quando aberto
@@ -108,7 +131,7 @@
 
 ## 3.0.1
 
-  * Better handling of large key imports
+  *Melhoria no manuseio da importação de chave grande
   * Improved subkey selection
 
 
@@ -119,7 +142,7 @@
   * Many fixes for key import, also fixes stripped keys
   * Honor and display key authenticate flags
   * User interface to generate custom keys
-  * Fixing user id revocation certificates
+  * Fixing user ID revocation certificates
   * New cloud search (searches over traditional keyservers and keybase.io)
   * Support for stripping keys inside OpenKeychain
   * Experimental YubiKey support: Support for signature generation and decryption
@@ -127,19 +150,19 @@
 
 ## 2.9.2
 
-  * Fix keys broken in 2.9.1
+  Chaves corrigidas em 2.9.1
   * Experimental YubiKey support: Decryption now working via API
 
 
 ## 2.9.1
 
-  * Split encrypt screen into two
+  Dividir a tela de cifragem em duas
   * Fix key flags handling (now supporting Mailvelope 0.7 keys)
   * Improved passphrase handling
-  * Key sharing via SafeSlinger
+  Compartilhamento de chave via SafeSlinger
   * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Fix usage of stripped keys
-  * SHA256 as default for compatibility
+  SHA256 como padrão para compatibilidade
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
   * OpenPGP API now handles revoked/expired keys and returns all user ids
 
@@ -147,7 +170,7 @@
 ## 2.9
 
   * Fixing crashes introduced in v2.8
-  * Experimental ECC support
+  Suporte experimental a ECC
   * Experimental YubiKey support: Only signing with imported keys
 
 
@@ -160,7 +183,7 @@
   * New key creation screen: autocompletion of name and email based on your personal Android accounts
   * File encryption: awesome new design, support for encrypting multiple files
   * New icons to show status of key (by Brennan Novak)
-  * Important bug fix: Importing of large key collections from a file is now possible
+  Importante correção de erro: agora é possível a importação de múltiplas chaves grandes de um arquivo
   * Notification showing cached passphrases
   * Keys are connected to Android's contacts
 
@@ -194,25 +217,25 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
   * Fix decryption of symmetric OpenPGP messages/files
   * Refactored key edit screen (thanks to Ash Hughes)
   * New modern design for encrypt/decrypt screens
-  * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
+  *API OpenPGP versão 3 (múltiplas contas api, correções internas, chave de pesquisa)
 
 
 ## 2.4
 Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
-Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
+Além das pequenas retificações, um número notável de retificações foram feitas pelas seguintes pessoas (em ordem alfabética):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
-  * New unified key list
-  * Colorized key fingerprint
+  Nova lista de chaves unificadas
+  Impressão digital colorizada
   * Support for keyserver ports
   * Deactivate possibility to generate weak keys
   * Much more internal work on the API
   * Certify user ids
   * Keyserver query based on machine-readable output
   * Lock navigation drawer on tablets
-  * Suggestions for emails on creation of keys
-  * Search in public key lists
-  * And much more improvements and fixes…
+  Sugestões para e-mails na criação de chaves
+  Pesquisa em listas de chave pública
+  E muito mais melhorias e correções...
 
 
 ## 2.3.1

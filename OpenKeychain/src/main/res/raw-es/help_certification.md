@@ -3,7 +3,7 @@
 ## Confirmación de clave
 Sin confirmación, no puede estar seguro de si una clave corresponde realmente a una persona específica.
 La forma más sencilla de confirmar una clave es escaneando el código QR o intercambiándolo vía NFC.
-Para confirmar claves entre más de dos personas, sugerimos usar el método de intercambio de claves disponible para sus claves.
+Para confirmar las claves entre más de dos personas, sugerimos usar el método de intercambio de clave disponible para sus claves.
 
 ## Estado de la clave
 

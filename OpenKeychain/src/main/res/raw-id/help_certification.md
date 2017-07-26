@@ -3,7 +3,7 @@
 ## Konfirmasi Kunci
 Tanpa konfirmasi, anda tidak bisa yakin bahwa suatu kunci memang benar kepunyaan seseorang.
 Cara paling mudah untuk mengkonfirmasi kunci adalah dengan memindai kode QR atau bertukar kunci melalui NFC.
-Untuk mengkonfirmasi kunci dengan lebih dari 2 orang, kami menyarankan untuk menggunakan metode pertukaran kunci yang sesuai.
+To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
 
 ## Status Kunci
 

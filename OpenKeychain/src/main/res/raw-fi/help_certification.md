@@ -3,7 +3,7 @@
 ## Avaimen varmennus
 Ilman vahvistusta et voi olla varma, että avain oikeasti kuuluu tietylle henkilölle.
 Yksinkertaisin tapa avaimen varmentamiseksi on skannata QR-koodi tai vaihtaa se NFC:n kautta.
-Useamman kuin kahden ihmisen avaimen vahvistamiseksi suosittelemme käyttämään saatavilla olevaa avainten vaihtotapaa.
+To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
 
 ## Avaimen tila
 

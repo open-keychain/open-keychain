@@ -40,7 +40,6 @@
   <string name="section_key_server">Serwer kluczy</string>
   <string name="section_fingerprint">Odcisk klucza</string>
   <string name="section_encrypt">Zaszyfruj</string>
-  <string name="section_decrypt">Odszyfruj / weryfikuj</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Odszyfruj, weryfikuj i zapisz plik</string>
   <string name="btn_encrypt_share_file">Szyfruj i podziel się plikiem</string>
@@ -85,8 +84,8 @@
   <string name="menu_encrypt_to">Zaszyfruj do...</string>
   <string name="menu_select_all">Wybierz wszystko</string>
   <string name="menu_export_all_keys">Eksportuj wszystkie klucze</string>
-  <string name="menu_advanced">Zaawansowane</string>
   <string name="menu_change_password">Zmień hasło</string>
+  <string name="menu_advanced">Zaawansowane</string>
   <string name="menu_keyserver_add">Dodaj</string>
   <!--label-->
   <string name="label_message">Tekst</string>
@@ -111,7 +110,6 @@
   <string name="label_symmetric">Zaszyfruj za pomocą hasła</string>
   <string name="label_message_compression">Kompresja tekstu</string>
   <string name="label_file_compression">Kompresja pliku</string>
-  <string name="label_keyservers">Wybierz serwery kluczy OpenPGP</string>
   <string name="label_key_id">Identyfikator klucza</string>
   <string name="label_creation">Utworzenia</string>
   <string name="label_expiry">Wygaśnięcia</string>
@@ -120,7 +118,6 @@
   <string name="label_ecc_curve">Elliptic Curve - Krzywe Eliptyczne</string>
   <string name="label_main_user_id">Główna tożsamość</string>
   <string name="label_name">Imię</string>
-  <string name="label_comment">Komentarz</string>
   <string name="label_email">Adres email</string>
   <string name="label_fingerprint">Odcisk</string>
   <string name="expiry_date_dialog_title">Ustaw datę wygaśnięcia</string>
@@ -226,7 +223,7 @@
   <string name="error_invalid_data">Brak treści szyfrowanej lub podpisanej OpenPGP!</string>
   <string name="error_integrity_check_failed">Sprawdzanie spójności zakończone niepowodzeniem! Dane były modyfikowane!</string>
   <string name="error_could_not_extract_private_key">nie można wyodrębnić klucza prywatnego</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Potrzebujesz Androida 4.1 aby korzystać z Android NFC Beam</string>
   <string name="error_nothing_import">Nie znaleziono kluczy!</string>
   <string name="error_contacts_key_id_missing">Pobieranie ID klucza z kontaktów nie powiodło się!</string>
@@ -275,7 +272,6 @@
   <string name="progress_extracting_key">wyodrębnianie klucza...</string>
   <string name="progress_preparing_streams">przygotowywanie strumieni...</string>
   <string name="progress_encrypting">szyfrowanie danych...</string>
-  <string name="progress_decrypting">deszyfrowywanie danych...</string>
   <string name="progress_preparing_signature">przygotowywanie podpisu...</string>
   <string name="progress_processing_signature">przetwarzanie podpisu...</string>
   <string name="progress_generating_signature">generowanie podpisu...</string>
@@ -320,11 +316,8 @@
   <string name="import_tab_keyserver">Serwery kluczy</string>
   <string name="import_tab_direct">Plik/Schowek</string>
   <string name="import_tab_qr_code">Kod QR/NFC</string>
-  <string name="import_import">Zaimportuj wybrane klucze</string>
-  <string name="import_qr_code_wrong">Kod QR zniekształcony! Spróbuj jeszcze raz!</string>
   <string name="import_qr_code_button">Skanuj kod QR</string>
   <string name="import_qr_code_text">Umieść kod QR przed kamerą!</string>
-  <!--Import from URL-->
   <!--Generic result toast-->
   <string name="with_warnings">, z ostrzeżeniami</string>
   <string name="with_cancelled">, aż anulowano</string>
@@ -374,14 +367,7 @@
     <item quantity="many">Pomyślnie usunięto %1$d kluczy%2$s.</item>
     <item quantity="other">Pomyślnie usunięto %1$d kluczy%2$s.</item>
   </plurals>
-  <plurals name="delete_fail">
-    <item quantity="one">Błąd usuwania jednego klucza%2$s.</item>
-    <item quantity="few">Błąd usuwania %1$d kluczy.</item>
-    <item quantity="many">Błąd usuwania %1$d kluczy.</item>
-    <item quantity="other">Błąd usuwania %1$d kluczy.</item>
-  </plurals>
   <string name="delete_nothing">Nie ma nic do usunięcia.</string>
-  <string name="delete_cancelled">Operacja usuwania anulowana.</string>
   <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <plurals name="certify_keys_with_errors">
@@ -405,20 +391,11 @@
   <string name="api_settings_no_key">Nie wybrano klucza</string>
   <string name="api_settings_select_key">Wybierz klucz</string>
   <string name="api_settings_save">Zapisz</string>
-  <string name="api_settings_save_msg">Konto zostało zapisane</string>
   <string name="api_settings_cancel">Anuluj</string>
   <string name="api_settings_revoke">Odwołaj dostęp</string>
   <string name="api_settings_start">Uruchom aplikację</string>
-  <string name="api_settings_delete_account">Usuń konto</string>
   <string name="api_settings_package_name">Nazwa paczki</string>
   <string name="api_settings_settings">Ustawienia</string>
-  <string name="api_settings_key">Klucz konta:</string>
-  <string name="api_settings_accounts_empty">Brak kont połączonych z tą aplikacją.</string>
-  <string name="api_create_account_text">Nie ma żadnego klucza skonfigurowanego dla tego konta. Prosimy o wybranie jednego istniejącego już klucza lub utworzenie nowego.\nAplikacje mogą tylko odszyfrować/podpisać kluczami które są tutaj wybrane!</string>
-  <string name="api_update_account_text">Klucz zapisany dla tego konta został usunięty. Prosimy o wybranie innego.\nAplikacje mogą tylko odszyfrować/podpisać kluczami które są tutaj wybrane!</string>
-  <string name="api_register_text">Wyświetlona aplikacja chce szyfrować/odszyfrowywać wiadomości i podpisać je Twoim imieniem.\nZezwolić?
-
-OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezwalaj na dostęp! Możesz unieważnić dostęp później używając ekranu \'Aplikacje\'.</string>
   <string name="api_register_allow">Zezwól na dostęp</string>
   <string name="api_register_disallow">Odmów dostępu</string>
   <string name="api_register_error_select_key">Wybierz klucz!</string>
@@ -486,6 +463,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="create_key_edit">Zmień ustawienia klucza</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
+  <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Klucze</string>
   <string name="nav_encrypt_decrypt">Zaszyfruj/Odszyfruj</string>
@@ -589,7 +567,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
     <item quantity="other">Nie udało się usunąć %d kluczy</item>
   </plurals>
   <!--Linked Identity verification-->
-  <string name="msg_acc_saved">Zapisano konto</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -611,7 +588,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="key_unavailable">niedostepne</string>
   <string name="secret_cannot_multiple">Twoje klucze mogą być usuwane tylko pojedynczo!</string>
   <string name="title_view_cert">Zweryfikuj szczegóły certyfikatu</string>
-  <string name="unknown_algorithm">nieznany</string>
   <string name="can_sign_not">nie może podpisać</string>
   <string name="error_no_encrypt_subkey">Brak pod-klucza szyfrowania!</string>
   <string name="contact_show_key">Pokaż klucz (%s)</string>

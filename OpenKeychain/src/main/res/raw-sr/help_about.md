@@ -14,12 +14,18 @@
 
 ## Главни доприносиоци
   * Adithya Abraham Philip
+  * Andrea Torlaschi
+  * Arnaud Fontaine
   * Еш Хјуџис (Ash Hughes)
   * „mar-v-in“
+  * Nikita Mikhailov
   * „Thialfihar“ (АПГ програмер)
   * Tim Bray
+  * Tobias Erthal
 
 ## Повремени доприносиоци
+  * Alex Fong Jie Wen
+  * Andrea Torlaschi
   * Арт Окатаин (Art O Cathain)
   * Брајан Ц. Барнс (Brian C. Barnes)
   * Бахтјар „kalkin“ Гадимов (Bahtiar Gadimov)
@@ -42,10 +48,12 @@
   * Лукас Зорић (Lukas Zorich)
   * Маноџ Кана (Manoj Khanna)
   * Маркус Доитс (Markus Doits)
+  * Michal Kepkowski
   * Мироџин Бакши (Miroojin Bakshi)
   * Морган Гангвер (Morgan Gangwere)
   * Никил Питер Раџ (Nikhil Peter Raj)
   * Паул Сарбиновски (Paul Sarbinowski)
+  * Petter Arvidsson
   * „Senecaso“
   * Signe Rüsch
   * Sreeram Boyapati

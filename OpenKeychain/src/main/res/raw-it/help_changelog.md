@@ -1,5 +1,28 @@
 [//]: # (NOTA: Si prega di mettere ogni frase in una propria linea, Transifex mette ogni riga nel proprio campo di traduzione!)
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  * New key status displays detailed information why a key is considered insecure or defective
+
+
+## 4.3
+  * Better support for large keys
+  * Fix import of Gpg4win files with broken encodings
+
+
+## 4.2
+
+  * Experimental support for Elliptic Curve Encryption with Security Tokens
+  * Redesigned key import screen
+  * Design improvements to key lists
+  * Support for keyserver onion addresses
+
+
 ## 4.1
 
   * Better detection of emails and other content when opened
@@ -119,7 +142,7 @@
   * Many fixes for key import, also fixes stripped keys
   * Honor and display key authenticate flags
   * User interface to generate custom keys
-  * Fixing user id revocation certificates
+  * Fixing user ID revocation certificates
   * New cloud search (searches over traditional keyservers and keybase.io)
   * Support for stripping keys inside OpenKeychain
   * Experimental YubiKey support: Support for signature generation and decryption

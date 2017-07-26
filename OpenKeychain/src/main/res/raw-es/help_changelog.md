@@ -1,5 +1,28 @@
 [//]: # (NOTA: ¡Por favor ponga cada frase en su propia línea, Transifex pone cada línea en su propio campo de traducción!)
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  * El nuevo estado de la clave muestra información detallada de por qué se considera una clave insegura o defectuosa.
+
+
+## 4.3
+  * Mejor soporte para claves grandes
+  * Corrige la importación de ficheros de Gpg4win con codificaciones rotas
+
+
+## 4.2
+
+  * Soporte experimental para cifrado de curva elíptica con tokens de seguridad
+  * Se rediseñó la pantalla de importación de clave
+  * Mejoras de diseño para listas de claves
+  * Soporte para direcciones onion de sevidor de claves
+
+
 ## 4.1
 
   * Mejor detección de correos electrónicos y otros contenidos cuando está abierto
@@ -7,7 +30,7 @@
 
 ## 4.0
 
-  * Soporte experimental para credenciales (tokens) de seguridad sobre USB
+  * Soporte experimental para tokens de seguridad sobre USB
   * Permite el cambio de contraseña de claves desnudas
 
 
@@ -15,7 +38,7 @@
 
   * Detección y manejo de datos de texto
   * Mejoras de rendimiento
-  * Mejoras de la interfaz de usuario para el manejo de credenciales (tokens) de seguridad
+  * Mejoras de la interfaz de usuario para el manejo de tokens de seguridad
 
 
 ## 3.8
@@ -119,7 +142,7 @@
   * Muchas reparaciones para la importación de claves, también repara claves desnudas
   * Respeta y muestra los distintivos de autentificación de claves
   * Interfaz de usuario para generar claves personalizadas
-  * Repara certificados de revocación de identificación de usuario
+  * Corregido de certificados de revocación de identificación de usuario
   * Nueva búsqueda en la nube (busca sobre servidores de claves tradicionales y keybase.io)
   * Soporte para desnudar claves dentro de OpenKeychain
   * Soporte experimental para YubiKey: Soporte para generación de firma y descifrado
@@ -319,7 +342,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Listas de claves filtrables
   * Pre-selección más inteligente de claves de cifrado
   * Nuevo manejo de Intent para VIEW y SEND (ver y enviar), permite que los ficheros sean cifrados/descifrados fuera de los administradores de ficheros
-  * Reparaciones y características adicionales (preselección de clave) para K-9 Mail, nueva versión beta disponible
+  * Correcciones y características adicionales (preselección de clave) para K-9 Mail, nueva versión beta disponible
 
 
 ## 1.0.1

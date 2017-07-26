@@ -1,5 +1,28 @@
 [//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  *  Le nouvel état des clé affiche en détail pourquoi une clef est considérée comme non fiable ou défectueuse
+
+
+## 4.3
+  * Meilleure prise en charge des clé de grande taille
+  * Correctif - Importation des fichiers Gpg4win avec des encodages brisés
+
+
+## 4.2
+
+  * Prise en charge expérimentale du chiffrement à courbe elliptique avec des jetons de sécurité
+  * Nouvelle conception de l'écran d'importation des clés
+  * Amélioration de la conception des listes de clés
+  * Prise en charge des adresses « onion » de serveurs de clés
+
+
 ## 4.1
 
   * Meilleure détection des courriels et autres contenus à l'ouverture
@@ -288,7 +311,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * Correctif - Plantage lors de l'ajout de compte sur Froyo
   * Suppression sécurisée de fichiers
-  * Option de suppression du fichier clé après l'importation
+  * Option de suppression du fichier clé après importation
   * Chiffrement/déchiffrement de flux (galerie, etc.)
   * Nouvelles options (langue, forcer les signatures v3)
   * Changements dans l'interface

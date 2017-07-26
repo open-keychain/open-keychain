@@ -1,5 +1,28 @@
 [//]: #
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  * New key status displays detailed information why a key is considered insecure or defective
+
+
+## 4.3
+  * Better support for large keys
+  * Fix import of Gpg4win files with broken encodings
+
+
+## 4.2
+
+  * Experimental support for Elliptic Curve Encryption with Security Tokens
+  * Redesigned key import screen
+  * Design improvements to key lists
+  * Support for keyserver onion addresses
+
+
 ## 4.1
 
   * Better detection of emails and other content when opened
@@ -119,7 +142,7 @@
   * Много поправки за увоз кључа, такође поправљени огољени кључеви
   * Поштовање и приказ заставица аутентификације кључа
   * Корисничко сучеље за прављење прилагођених кључева
-  * Поправка корисничког ид-а сертификата опозива
+  * Fixing user ID revocation certificates
   * Нова клауд претрага (тражи преко традиционални сервера кључева и keybase.io)
   * Подршка за огољивање кључева унутар Отвореног кључарника
   * Експериментална подршка за Јубикључ: подршка за генерисање потписа и дешифровање

@@ -3,7 +3,7 @@
 ## Giltza Baieztapena
 Baieztapenik gabe, ezin zara zihur egon giltza bat egitan norbanako zehatz batena den.
 Giltza bat baieztatzeko bide arruntena QR Kodea eskaneatzea edo hura NFC bidez trukatzea da.
-Giltzak bi norbanako baino gehiagoren artean baieztatzeko, zure giltzentzat eskuragarrai dagoen giltza trukea metodoa erabiltzea gomendatzen dugu.
+To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
 
 ## Giltza Egoera
 

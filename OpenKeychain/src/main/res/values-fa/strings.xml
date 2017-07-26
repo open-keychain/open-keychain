@@ -41,7 +41,6 @@
   <string name="section_key_server">سرور کلید</string>
   <string name="section_fingerprint">اثر انگشت</string>
   <string name="section_encrypt">رمزگذاری</string>
-  <string name="section_decrypt">رمزگشایی/بررسی</string>
   <string name="section_current_expiry">انقضأ فعلی</string>
   <string name="section_new_expiry">انقضأ جدید</string>
   <!--button-->
@@ -109,7 +108,6 @@
   <string name="label_passphrase_cache_subs">رمز‌عبورها را با زیرکلیدها به یاد داشته باش</string>
   <string name="label_message_compression">فشرده‌کردن متن</string>
   <string name="label_file_compression">فشرده‌کردن فایل</string>
-  <string name="label_keyservers">سرور کلید OpenPGP را انتخاب کنید</string>
   <string name="label_key_id">هویت کلید</string>
   <string name="label_key_created">کلید ساخته شد %s</string>
   <string name="label_creation">ساخت</string>
@@ -118,7 +116,6 @@
   <string name="label_key_size">اندازهٔ کلید</string>
   <string name="label_main_user_id">هویت اصلی</string>
   <string name="label_name">نام</string>
-  <string name="label_comment">توضیحات</string>
   <string name="label_email">ایمیل</string>
   <string name="label_fingerprint">اثر انگشت</string>
   <string name="expiry_date_dialog_title">تعیین تاریخ انقضأ</string>
@@ -171,7 +168,7 @@
   <string name="error_no_signature_key">کلیدی برای امضاء کردن داده نشد</string>
   <string name="error_wrong_passphrase">رمزعبور اشتباه است</string>
   <string name="error_could_not_extract_private_key">نمی‌توان کلید شخصی را خارج کرد</string>
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">امضاء نشده</string>
   <string name="decrypt_result_invalid_signature">امضاء معتبر نیست!</string>
@@ -218,7 +215,6 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
-  <!--Import from URL-->
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -258,6 +254,7 @@
   <string name="create_key_custom">(تنظیمات شخصیِ کلید)</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
+  <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->

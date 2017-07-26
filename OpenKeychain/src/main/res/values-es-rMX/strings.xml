@@ -53,7 +53,6 @@
   <string name="section_fingerprint">Huella digital</string>
   <string name="section_phrases">Frase</string>
   <string name="section_encrypt">Cifrar</string>
-  <string name="section_decrypt">Descifrar/verificar</string>
   <string name="section_current_expiry">Expiración actual</string>
   <string name="section_new_expiry">Nueva expiración</string>
   <!--button-->
@@ -126,7 +125,6 @@
   <string name="label_symmetric">Cifrar con contraseña</string>
   <string name="label_message_compression">Compresión de texto</string>
   <string name="label_file_compression">Compresión de archivo</string>
-  <string name="label_keyservers">Seleccione servidor de claves OpenGPG</string>
   <string name="label_key_id">Identificador de clave</string>
   <string name="label_key_created">Clave creada el %s</string>
   <string name="label_creation">Creación</string>
@@ -136,7 +134,6 @@
   <string name="label_ecc_curve">Curva elíptica</string>
   <string name="label_main_user_id">Identidad principal</string>
   <string name="label_name">Nombre</string>
-  <string name="label_comment">Comentario</string>
   <string name="label_email">Correo electrónico</string>
   <string name="label_send_key">Sincronizar con Internet</string>
   <string name="label_fingerprint">Huella digital</string>
@@ -220,7 +217,7 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <!--errors without preceeding Error:-->
+  <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
@@ -237,7 +234,6 @@
   <!--Import-->
   <string name="import_tab_keyserver">Servidor de claves</string>
   <string name="import_tab_cloud">Búsqueda de clave</string>
-  <!--Import from URL-->
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -268,6 +264,7 @@
   <string name="create_key_yubi_key_pin">NIP</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
+  <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_apps">Apps</string>
   <!--hints-->

@@ -3,7 +3,7 @@
 ## Nyckelbekräftelse
 Utan bekräftelse kan du inte vara säker på om en nyckel verkligen motsvarar en viss person.
 Det enklaste sättet att bekräfta en nyckel är genom att skanna QR-koden eller att utbyta den via NFC.
-För att bekräfta nycklar mellan fler än två personer föreslår vi att du använder utbytesmetoden som är tillgänglig för dina nycklar.
+To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
 
 ## Nyckelstatus
 

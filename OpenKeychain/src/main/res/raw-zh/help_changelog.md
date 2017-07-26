@@ -1,5 +1,28 @@
 [//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
+## 4.4
+  * New key status displays detailed information why a key is considered insecure or defective
+
+
+## 4.3
+  * Better support for large keys
+  * Fix import of Gpg4win files with broken encodings
+
+
+## 4.2
+
+  * Experimental support for Elliptic Curve Encryption with Security Tokens
+  * Redesigned key import screen
+  * Design improvements to key lists
+  * Support for keyserver onion addresses
+
+
 ## 4.1
 
   * 改进启动时对电子邮件和其他内容的检测
@@ -119,7 +142,7 @@
   * 修复密钥导入的众多问题，其中有剥离密的钥问题
   * 头衔和显示密钥验证的旗帜标记
   * 产生自定义密钥的用户界面
-  * 修复使用者ID废除证书
+  * Fixing user ID revocation certificates
   * 新的云搜索（通过传统的密钥服务器和keybase.io搜索）
   * OpenKeychain支持剥离密钥
   * 试验性的YubiKey支持：支持生成签名和解密
