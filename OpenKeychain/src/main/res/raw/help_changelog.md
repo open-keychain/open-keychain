@@ -1,5 +1,11 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
+
 ## 4.4
   * New key status displays detailed information why a key is considered insecure or defective
 

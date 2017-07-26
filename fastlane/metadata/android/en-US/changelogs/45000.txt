@@ -1,0 +1,5 @@
+4.5
+  * Detailed description for security problems
+  * Display keyserver status per key
+  * Support for EdDSA
+  * Fix pgp.mit.edu (new certificate)
