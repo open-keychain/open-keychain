@@ -537,6 +537,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         auth_dialog.setContentView(R.layout.oauth_webview);
         WebView web = (WebView) auth_dialog.findViewById(R.id.web_view);
         web.getSettings().setSaveFormData(false);
+        web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setUserAgentString("OpenKeychain " + BuildConfig.VERSION_NAME);
         web.setWebViewClient(new WebViewClient() {
 
