@@ -34,7 +34,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.net.Uri;
-import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -112,7 +111,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -157,7 +155,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private ImageButton mActionEncryptFile;
     private ImageButton mActionEncryptText;
-    private ImageButton mActionNfc;
     private FloatingActionButton mFab;
     private ImageView mPhoto;
     private FrameLayout mPhotoLayout;
@@ -165,9 +162,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private CardView mQrCodeLayout;
 
     private String mQrCodeLoaded;
-
-    // NFC
-    private NfcHelper mNfcHelper;
 
     private static final int LOADER_ID_UNIFIED = 0;
 
@@ -211,7 +205,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         mActionEncryptFile = (ImageButton) findViewById(R.id.view_key_action_encrypt_files);
         mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
-        mActionNfc = (ImageButton) findViewById(R.id.view_key_action_nfc);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mPhoto = (ImageView) findViewById(R.id.view_key_photo);
         mPhotoLayout = (FrameLayout) findViewById(R.id.view_key_photo_layout);
@@ -224,7 +217,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         ContentDescriptionHint.setup(mActionEncryptFile);
         ContentDescriptionHint.setup(mActionEncryptText);
-        ContentDescriptionHint.setup(mActionNfc);
         ContentDescriptionHint.setup(mFab);
 
 
@@ -321,19 +313,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
         });
 
-        mActionNfc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mNfcHelper.invokeNfcBeam();
-            }
-        });
-
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
         getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-
-        mNfcHelper = new NfcHelper(this, mKeyRepository);
-        mNfcHelper.initNfc(mDataUri);
 
         if (savedInstanceState == null && getIntent().hasExtra(EXTRA_DISPLAY_RESULT)) {
             OperationResult result = getIntent().getParcelableExtra(EXTRA_DISPLAY_RESULT);
@@ -998,7 +980,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
-                        mActionNfc.setVisibility(View.INVISIBLE);
                         hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (!mIsSecure) {
@@ -1010,7 +991,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
-                        mActionNfc.setVisibility(View.INVISIBLE);
                         hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsExpired) {
@@ -1022,7 +1002,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
                         mActionEncryptText.setVisibility(View.INVISIBLE);
-                        mActionNfc.setVisibility(View.INVISIBLE);
                         hideFab();
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsSecret) {
@@ -1059,13 +1038,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
 
-                        // invokeBeam is available from API 21
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                                && NfcAdapter.getDefaultAdapter(this) != null) {
-                            mActionNfc.setVisibility(View.VISIBLE);
-                        } else {
-                            mActionNfc.setVisibility(View.INVISIBLE);
-                        }
                         showFab();
                         // noinspection deprecation (no getDrawable with theme at current minApi level 15!)
                         mFab.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
@@ -1073,7 +1045,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
                         mQrCodeLayout.setVisibility(View.GONE);
-                        mActionNfc.setVisibility(View.INVISIBLE);
 
                         if (mIsVerified) {
                             mStatusText.setText(R.string.view_key_verified);
