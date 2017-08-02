@@ -27,7 +27,6 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -39,6 +38,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -94,9 +94,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_adv_share_fragment, getContainer());
 
-        ContentResolver contentResolver = ViewKeyAdvShareFragment.this.getActivity().getContentResolver();
-        KeyRepository keyRepository = KeyRepository.createDatabaseInteractor(getContext());
-        mNfcHelper = new NfcHelper(getActivity(), keyRepository);
+        mNfcHelper = NfcHelper.getInstance();
 
         mFingerprintView = (TextView) view.findViewById(R.id.view_key_fingerprint);
         mQrCode = (ImageView) view.findViewById(R.id.view_key_qr_code);
@@ -176,7 +174,11 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             vKeyNfcButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mNfcHelper.invokeNfcBeam();
+                    FragmentActivity activity = getActivity();
+                    if (activity == null) {
+                        return;
+                    }
+                    mNfcHelper.invokeNfcBeam(activity);
                 }
             });
         } else {
@@ -359,7 +361,9 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
 
         // Prepare the NfcHelper
-        mNfcHelper.initNfc(mDataUri);
+        FragmentActivity activity = getActivity();
+        KeyRepository keyRepository = KeyRepository.createDatabaseInteractor(activity);
+        mNfcHelper.initNfcIfSupported(activity, keyRepository, mDataUri);
     }
 
     static final String[] UNIFIED_PROJECTION = new String[]{

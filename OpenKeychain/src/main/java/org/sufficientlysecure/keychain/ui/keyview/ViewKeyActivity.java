@@ -166,9 +166,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private String mQrCodeLoaded;
 
-    // NFC
-    private NfcHelper mNfcHelper;
-
     private static final int LOADER_ID_UNIFIED = 0;
 
     private boolean mIsSecret = false;
@@ -321,19 +318,18 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
         });
 
+        final NfcHelper nfcHelper = NfcHelper.getInstance();
+        nfcHelper.initNfcIfSupported(this, mKeyRepository, mDataUri);
         mActionNfc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mNfcHelper.invokeNfcBeam();
+                nfcHelper.invokeNfcBeam(ViewKeyActivity.this);
             }
         });
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
         getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-
-        mNfcHelper = new NfcHelper(this, mKeyRepository);
-        mNfcHelper.initNfc(mDataUri);
 
         if (savedInstanceState == null && getIntent().hasExtra(EXTRA_DISPLAY_RESULT)) {
             OperationResult result = getIntent().getParcelableExtra(EXTRA_DISPLAY_RESULT);

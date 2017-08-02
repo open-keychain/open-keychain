@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2015 Kent Nguyen <kentnguyen@moneylover.me>
+ * Copyright (C) 2017 Vincent Breitmoser <look@my.amazin.horse>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,12 +29,14 @@ import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.nfc.NfcAdapter.CreateNdefMessageCallback;
 import android.nfc.NfcEvent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -46,167 +48,156 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 /**
  * This class contains NFC functionality that can be shared across Fragments or Activities.
  */
-
 public class NfcHelper {
-
-    private Activity mActivity;
-    private KeyRepository mKeyRepository;
-
-    /**
-     * NFC: This handler receives a message from onNdefPushComplete
-     */
-    private static NfcHandler mNfcHandler;
-
-    private NfcAdapter mNfcAdapter;
-    private NfcAdapter.CreateNdefMessageCallback mNdefCallback;
-    private NfcAdapter.OnNdefPushCompleteCallback mNdefCompleteCallback;
-    private byte[] mNfcKeyringBytes;
     private static final int NFC_SENT = 1;
 
-    /**
-     * Initializes the NfcHelper.
-     */
-    public NfcHelper(final Activity activity, final KeyRepository keyRepository) {
-        mActivity = activity;
-        mKeyRepository = keyRepository;
 
-        mNfcHandler = new NfcHandler(mActivity);
+    public static NfcHelper getInstance() {
+            return new NfcHelper();
     }
 
-    /**
-     * Return true if the NFC Adapter of this Helper has any features enabled.
-     *
-     * @return true if this NFC Adapter has any features enabled
-     */
-    public boolean isEnabled() {
-        return mNfcAdapter.isEnabled();
-    }
+    private NfcHelper() { }
 
-    /**
-     * NFC: Initialize NFC sharing if OS and device supports it
-     */
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public void initNfc(final Uri dataUri) {
+    public void initNfcIfSupported(final Activity activity, final KeyRepository keyRepository, final Uri dataUri) {
         // check if NFC Beam is supported (>= Android 4.1)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            return;
+        }
 
-            // Implementation for the CreateNdefMessageCallback interface
-            mNdefCallback = new NfcAdapter.CreateNdefMessageCallback() {
-                @Override
-                public NdefMessage createNdefMessage(NfcEvent event) {
+        // Check for available NFC Adapter
+        final NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(activity);
+        if (nfcAdapter == null) {
+            return;
+        }
+
+        final NfcHandler nfcHandler = new NfcHandler(activity);
+
+        // Implementation for the OnNdefPushCompleteCallback interface
+        final NfcAdapter.OnNdefPushCompleteCallback ndefCompleteCallback = new NfcAdapter.OnNdefPushCompleteCallback() {
+            @Override
+            public void onNdefPushComplete(NfcEvent event) {
+                // A handler is needed to send messages to the activity when this
+                // callback occurs, because it happens from a binder thread
+                nfcHandler.obtainMessage(NFC_SENT).sendToTarget();
+            }
+        };
+
+        /* Retrieve mNfcKeyringBytes here asynchronously (to not block the UI) and init nfc adapter afterwards.
+         * nfcKeyringBytes can not be retrieved in createNdefMessage, because this process has no permissions
+         * to query the Uri.
+         */
+        AsyncTask<Void, Void, byte[]> initTask = new AsyncTask<Void, Void, byte[]>() {
+            protected byte[] doInBackground(Void... unused) {
+                try {
+                    long masterKeyId = keyRepository.getCachedPublicKeyRing(dataUri).extractOrGetMasterKeyId();
+                    return keyRepository.loadPublicKeyRingData(masterKeyId);
+                } catch (NotFoundException | PgpKeyNotFoundException e) {
+                    Log.e(Constants.TAG, "key not found!", e);
+                    return null;
+                } catch (IllegalStateException e) {
+                    // we specifically handle the database error if the blob is too large: "Couldn't read row 0, col 0
+                    // from CursorWindow.  Make sure the Cursor is initialized correctly before accessing data from it."
+                    if (!e.getMessage().startsWith("Couldn't read row")) {
+                        throw e;
+                    }
+                    Log.e(Constants.TAG, "key blob too large to retrieve", e);
+                    return null;
+                }
+            }
+
+            protected void onPostExecute(final byte[] keyringBytes) {
+                if (keyringBytes == null) {
+                    Log.e(Constants.TAG, "Could not obtain keyring bytes, NFC not available!");
+                }
+
+                if (activity.isFinishing()) {
+                    return;
+                }
+
+                // Implementation for the CreateNdefMessageCallback interface
+                CreateNdefMessageCallback ndefCallback = new NfcAdapter.CreateNdefMessageCallback() {
+                    @Override
+                    public NdefMessage createNdefMessage(NfcEvent event) {
                     /*
                      * When a device receives a push with an AAR in it, the application specified in the AAR is
                      * guaranteed to run. The AAR overrides the tag dispatch system. You can add it back in to
                      * guarantee that this activity starts when receiving a beamed message. For now, this code
                      * uses the tag dispatch system.
                      */
-                    return new NdefMessage(NdefRecord.createMime(Constants.MIME_TYPE_KEYS,
-                            mNfcKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
-                }
-            };
+                        return new NdefMessage(NdefRecord.createMime(Constants.MIME_TYPE_KEYS, keyringBytes),
+                                NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
+                    }
+                };
 
-            // Implementation for the OnNdefPushCompleteCallback interface
-            mNdefCompleteCallback = new NfcAdapter.OnNdefPushCompleteCallback() {
-                @Override
-                public void onNdefPushComplete(NfcEvent event) {
-                    // A handler is needed to send messages to the activity when this
-                    // callback occurs, because it happens from a binder thread
-                    mNfcHandler.obtainMessage(NFC_SENT).sendToTarget();
-                }
-            };
+                // Register callback to set NDEF message
+                nfcAdapter.setNdefPushMessageCallback(ndefCallback, activity);
+                // Register callback to listen for message-sent success
+                nfcAdapter.setOnNdefPushCompleteCallback(ndefCompleteCallback, activity);
 
-            // Check for available NFC Adapter
-            mNfcAdapter = NfcAdapter.getDefaultAdapter(mActivity);
-            if (mNfcAdapter != null) {
-                /*
-                 * Retrieve mNfcKeyringBytes here asynchronously (to not block the UI)
-                 * and init nfc adapter afterwards.
-                 * mNfcKeyringBytes can not be retrieved in createNdefMessage, because this process
-                 * has no permissions to query the Uri.
-                 */
-                AsyncTask<Void, Void, Void> initTask =
-                        new AsyncTask<Void, Void, Void>() {
-                            protected Void doInBackground(Void... unused) {
-                                try {
-                                    long masterKeyId = mKeyRepository.getCachedPublicKeyRing(dataUri)
-                                            .extractOrGetMasterKeyId();
-                                    mNfcKeyringBytes = mKeyRepository.loadPublicKeyRingData(masterKeyId);
-                                } catch (NotFoundException | PgpKeyNotFoundException e) {
-                                    Log.e(Constants.TAG, "key not found!", e);
-                                }
-
-                                // no AsyncTask return (Void)
-                                return null;
-                            }
-
-                            protected void onPostExecute(Void unused) {
-                                if (mActivity.isFinishing()) {
-                                    return;
-                                }
-
-                                // Register callback to set NDEF message
-                                mNfcAdapter.setNdefPushMessageCallback(mNdefCallback,
-                                        mActivity);
-                                // Register callback to listen for message-sent success
-                                mNfcAdapter.setOnNdefPushCompleteCallback(mNdefCompleteCallback,
-                                        mActivity);
-                            }
-                        };
-
-                initTask.execute();
+                Log.d(Constants.TAG, "NFC NDEF enabled!");
             }
-        }
+        };
+
+        initTask.execute();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void invokeNfcBeam() {
-        // Check if device supports NFC
-        if (!mActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
-            Notify.create(mActivity, R.string.no_nfc_support, Notify.LENGTH_LONG, Notify.Style.ERROR).show();
+    public void invokeNfcBeam(@NonNull final Activity activity) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return;
         }
-        // Check for available NFC Adapter
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(mActivity);
-        if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
-            Notify.create(mActivity, R.string.error_nfc_needed, Notify.LENGTH_LONG, Notify.Style.ERROR, new Notify.ActionListener() {
-                @Override
-                public void onAction() {
-                    Intent intentSettings = new Intent(Settings.ACTION_NFC_SETTINGS);
-                    mActivity.startActivity(intentSettings);
+
+        boolean hasNfc = activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC);
+        if (!hasNfc) {
+            Notify.create(activity, R.string.no_nfc_support, Notify.LENGTH_LONG, Notify.Style.ERROR).show();
+            return;
+        }
+        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(activity);
+
+        boolean isNfcEnabled = nfcAdapter != null && nfcAdapter.isEnabled();
+        if (!isNfcEnabled) {
+            Notify.create(activity, R.string.error_nfc_needed, Notify.LENGTH_LONG, Notify.Style.ERROR,
+                    new Notify.ActionListener() {
+                        @Override
+                        public void onAction() {
+                            Intent intentSettings = new Intent(Settings.ACTION_NFC_SETTINGS);
+                            activity.startActivity(intentSettings);
                 }
             }, R.string.menu_nfc_preferences).show();
 
             return;
         }
 
-        if (!mNfcAdapter.isNdefPushEnabled()) {
-            Notify.create(mActivity, R.string.error_beam_needed, Notify.LENGTH_LONG, Notify.Style.ERROR, new Notify.ActionListener() {
+        if (!nfcAdapter.isNdefPushEnabled()) {
+            Notify.create(activity, R.string.error_beam_needed, Notify.LENGTH_LONG, Notify.Style.ERROR, new Notify.ActionListener() {
                 @Override
                 public void onAction() {
                     Intent intentSettings = new Intent(Settings.ACTION_NFCSHARING_SETTINGS);
-                    mActivity.startActivity(intentSettings);
+                    activity.startActivity(intentSettings);
                 }
             }, R.string.menu_beam_preferences).show();
 
             return;
         }
 
-        mNfcAdapter.invokeBeam(mActivity);
+        nfcAdapter.invokeBeam(activity);
     }
 
     private static class NfcHandler extends Handler {
-        private final WeakReference<Activity> mActivityReference;
+        private final WeakReference<Activity> activityReference;
 
-        public NfcHandler(Activity activity) {
-            mActivityReference = new WeakReference<>(activity);
+        NfcHandler(Activity activity) {
+            activityReference = new WeakReference<>(activity);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            if (mActivityReference.get() != null) {
+            if (activityReference.get() != null) {
                 switch (msg.what) {
                     case NFC_SENT:
-                        Notify.create(mActivityReference.get(), R.string.nfc_successful, Notify.Style.OK).show();
+                        Notify.create(activityReference.get(), R.string.nfc_successful, Notify.Style.OK).show();
                         break;
                 }
             }
