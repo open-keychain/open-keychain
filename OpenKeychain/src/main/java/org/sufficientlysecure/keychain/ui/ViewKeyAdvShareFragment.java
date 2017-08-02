@@ -38,7 +38,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -68,7 +67,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.NfcHelper;
 
 public class ViewKeyAdvShareFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -78,8 +76,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
     private TextView mFingerprintView;
-
-    NfcHelper mNfcHelper;
 
     private static final int LOADER_ID_UNIFIED = 0;
 
@@ -93,8 +89,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_adv_share_fragment, getContainer());
-
-        mNfcHelper = NfcHelper.getInstance();
 
         mFingerprintView = (TextView) view.findViewById(R.id.view_key_fingerprint);
         mQrCode = (ImageView) view.findViewById(R.id.view_key_qr_code);
@@ -137,7 +131,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View vFingerprintShareButton = view.findViewById(R.id.view_key_action_fingerprint_share);
         View vFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         View vKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
-        View vKeyNfcButton = view.findViewById(R.id.view_key_action_key_nfc);
         View vKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         ImageButton vKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
         View vKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
@@ -168,22 +161,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 shareKey(true);
             }
         });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            vKeyNfcButton.setVisibility(View.VISIBLE);
-            vKeyNfcButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FragmentActivity activity = getActivity();
-                    if (activity == null) {
-                        return;
-                    }
-                    mNfcHelper.invokeNfcBeam(activity);
-                }
-            });
-        } else {
-            vKeyNfcButton.setVisibility(View.GONE);
-        }
 
         vKeySafeSlingerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -359,11 +336,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
         getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-
-        // Prepare the NfcHelper
-        FragmentActivity activity = getActivity();
-        KeyRepository keyRepository = KeyRepository.createDatabaseInteractor(activity);
-        mNfcHelper.initNfcIfSupported(activity, keyRepository, mDataUri);
     }
 
     static final String[] UNIFIED_PROJECTION = new String[]{
