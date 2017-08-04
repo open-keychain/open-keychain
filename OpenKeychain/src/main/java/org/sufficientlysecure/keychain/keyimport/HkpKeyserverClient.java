@@ -376,7 +376,8 @@ public class HkpKeyserverClient implements KeyserverClient {
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
             String proxyInfo = proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy();
-            String causeName = e.getCause().getClass().getSimpleName();
+            Throwable cause = e.getCause();
+            String causeName = cause != null ? cause.getClass().getSimpleName() : "generic";
             throw new KeyserverClient.QueryFailedException(String.format(
                     "Network error (%s) for '%s'. Check your Internet connection! %s",
                     causeName, hkpKeyserver.getUrl(), proxyInfo));
