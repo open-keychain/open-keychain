@@ -27,6 +27,7 @@ import java.io.IOException;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
@@ -282,8 +283,38 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // tbale name for user_ids changed to user_packets
                 db.execSQL("DROP TABLE IF EXISTS certs");
                 db.execSQL("DROP TABLE IF EXISTS user_ids");
-                db.execSQL(CREATE_USER_PACKETS);
-                db.execSQL(CREATE_CERTS);
+                db.execSQL("CREATE TABLE IF NOT EXISTS user_packets("
+                    + "master_key_id INTEGER, "
+                    + "type INT, "
+                    + "user_id TEXT, "
+                    + "attribute_data BLOB, "
+
+                    + "is_primary INTEGER, "
+                    + "is_revoked INTEGER, "
+                    + "rank INTEGER, "
+
+                    + "PRIMARY KEY(master_key_id, rank), "
+                    + "FOREIGN KEY(master_key_id) REFERENCES "
+                        + "keyrings_public(master_key_id) ON DELETE CASCADE"
+                + ")");
+                db.execSQL("CREATE TABLE IF NOT EXISTS certs("
+                    + "master_key_id INTEGER,"
+                    + "rank INTEGER, " // rank of certified uid
+
+                    + "key_id_certifier INTEGER, " // certifying key
+                    + "type INTEGER, "
+                    + "verified INTEGER, "
+                    + "creation INTEGER, "
+
+                    + "data BLOB, "
+
+                    + "PRIMARY KEY(master_key_id, rank, "
+                        + "key_id_certifier), "
+                    + "FOREIGN KEY(master_key_id) REFERENCES "
+                        + "keyrings_public(master_key_id) ON DELETE CASCADE,"
+                    + "FOREIGN KEY(master_key_id, rank) REFERENCES "
+                        + "user_packets(master_key_id, rank) ON DELETE CASCADE"
+                + ")");
             case 9:
                 // do nothing here, just consolidate
             case 10:
@@ -292,7 +323,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // no longer needed, api_accounts is deprecated
                 // db.execSQL("DELETE FROM api_accounts WHERE key_id BETWEEN 0 AND 3");
             case 11:
-                db.execSQL(CREATE_UPDATE_KEYS);
+                db.execSQL("CREATE TABLE IF NOT EXISTS updated_keys ("
+                        + "master_key_id INTEGER PRIMARY KEY, "
+                        + "last_updated INTEGER, "
+                        + "FOREIGN KEY(master_key_id) REFERENCES "
+                        + "keyrings_public(master_key_id) ON DELETE CASCADE"
+                        + ")");
             case 12:
                 // do nothing here, just consolidate
             case 13:
@@ -333,7 +369,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                                     + ")");
 
             case 21:
-                db.execSQL("ALTER TABLE updated_keys ADD COLUMN seen_on_keyservers INTEGER;");
+                try {
+                    db.execSQL("ALTER TABLE updated_keys ADD COLUMN seen_on_keyservers INTEGER;");
+                } catch (SQLiteException e) {
+                    // don't bother, the column probably already existed
+                }
 
             case 22:
                 db.execSQL("CREATE TABLE IF NOT EXISTS api_autocrypt_peers ("
