@@ -306,6 +306,7 @@ public class OpenPgpService extends Service {
     private Intent getAutocryptStatusResult(KeyIdResult keyIdResult) {
         Intent result = new Intent();
         result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+        result.putExtra(OpenPgpApi.RESULT_KEYS_CONFIRMED, keyIdResult.isAllKeysConfirmed());
 
         AutocryptState combinedAutocryptState = keyIdResult.getCombinedAutocryptState();
         if (combinedAutocryptState == null) {
