@@ -653,7 +653,7 @@
     <string name="api_settings_allowed_keys">"Allowed Keys"</string>
     <string name="api_settings_settings">"Settings"</string>
     <string name="api_register_title">"Allow access to OpenKeychain?"</string>
-    <string name="api_register_text">"%s requests to use OpenKeychain as a crypto provider. You will still be asked for permission before the app can use any of your keys for decryption.\n\nYou can revoke access later in the 'Apps' screen."</string>
+    <string name="api_register_text">"%s requests to use OpenKeychain as a crypto provider. You will still be asked for permission before the app can use any of your keys for decryption.\n\nYou can revoke access later in the 'Apps' screen in OpenKeychain."</string>
     <string name="api_register_allow">"Allow access"</string>
     <string name="api_register_disallow">"Disallow access"</string>
     <string name="api_register_error_select_key">"Please select a key!"</string>
