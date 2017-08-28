@@ -71,6 +71,10 @@ public class CryptoInputParcelCacheService extends Service {
 
     public static void addCryptoInputParcel(Context context, Intent data, CryptoInputParcel inputParcel) {
         UUID mTicket = addCryptoInputParcel(context, inputParcel);
+
+        // prevent crashes with ClassNotFoundException when unmarshalling: org.openintents.openpgp.AutocryptPeerUpdate
+        data.setExtrasClassLoader(CryptoInputParcelCacheService.class.getClassLoader());
+
         // And write out the UUID most and least significant bits.
         data.putExtra(OpenPgpApi.EXTRA_CALL_UUID1, mTicket.getMostSignificantBits());
         data.putExtra(OpenPgpApi.EXTRA_CALL_UUID2, mTicket.getLeastSignificantBits());
