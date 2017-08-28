@@ -1,10 +1,10 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 ## 4.5
-  * Detailed description for security problems
-  * Display keyserver status per key
-  * Support for EdDSA
-  * Fix pgp.mit.edu (new certificate)
+  * Детальное описание проблем безопасности
+  * Отображение статуса сервера для каждого ключа
+  * Поддержка EdDSA
+  * Исправлен pgp.mit.edu (новый сертификат)
 
 ## 4.4
   * Новый статус ключа отображает подробную информацию о том, почему ключ признан небезопасным или дефектным

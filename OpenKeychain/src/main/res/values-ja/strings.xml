@@ -581,7 +581,7 @@
   <string name="api_settings_allowed_keys">受け入れる鍵</string>
   <string name="api_settings_settings">設定</string>
   <string name="api_register_title">OpenKeychainへのアクセスを許可しますか?</string>
-  <string name="api_register_text">%s が暗号化プロバイダーとしてOpenKeyChainの使用を要求しています。また、復号化のカギを使用する前にもアクセス許可を尋ねられます。\n\n後で\'アプリ\'画面でアクセスを取り消すことができます。</string>
+  <string name="api_register_text">%s が暗号化プロバイダーとしてOpenKeyChainの使用を要求しています。また、復号化のカギを使用する前にもアクセス許可を尋ねられます。\n\n後でOpenKeychainの\'アプリ\'画面からアクセスを取り消すことができます。</string>
   <string name="api_register_allow">許可されたアクセス</string>
   <string name="api_register_disallow">許可されないアクセス</string>
   <string name="api_register_error_select_key">鍵を選択してください!</string>

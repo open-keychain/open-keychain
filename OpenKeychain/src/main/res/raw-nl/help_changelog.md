@@ -1,10 +1,10 @@
 [//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
 ## 4.5
-  * Detailed description for security problems
-  * Display keyserver status per key
-  * Support for EdDSA
-  * Fix pgp.mit.edu (new certificate)
+  * Gedetailleerde beschrijving voor beveiligingsproblemen
+  * Weergeven van sleutelstatus per sleutel
+  * Ondersteuning voor EdDSA
+  * Oplossing voor pgp.mit.edu (nieuw certificaat)
 
 ## 4.4
   * Nieuw overzicht met gedetailleerde informatie over sleutelstatus, waarom een sleutel beschouwd wordt als onveilig of defect

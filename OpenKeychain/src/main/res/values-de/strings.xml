@@ -524,6 +524,7 @@
     <item quantity="one">Import eines Schlüssels fehlgeschlagen!</item>
     <item quantity="other">Import von %d Schlüsseln fehlgeschlagen!</item>
   </plurals>
+  <string name="import_warn_missing">Schlüssel auf Schlüsselserver nicht gefunden.</string>
   <string name="import_error_nothing">Nichts zu importieren.</string>
   <string name="import_error_nothing_cancelled">Import wurde abgebrochen.</string>
   <!--Delete result toast-->
@@ -583,7 +584,6 @@
   <string name="api_settings_allowed_keys">Erlaubte Schlüssel</string>
   <string name="api_settings_settings">Einstellungen</string>
   <string name="api_register_title">Zugriff auf OpenKeyChain erlauben?</string>
-  <string name="api_register_text">%s erbittet OpenKeychain als Krypto-Anbieter zu verwenden. Sie werden immer noch um die Erlaubnis gebeten, bevor die App einen beliebigen Schlüssel zur Entschlüsselung verwenden kann. \ N \ nSie können den Zugriff später im Bildschirm \"Apps\" widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
   <string name="api_register_error_select_key">Bitte einen Schlüssel auswählen!</string>
@@ -1107,6 +1107,7 @@
   <string name="msg_dc_clear_meta_file">Dateiname: %s</string>
   <string name="msg_dc_clear_meta_mime">MIME-Typ: %s</string>
   <string name="msg_dc_clear_meta_size">Dateigröße: %s</string>
+  <string name="msg_dc_clear_meta_size_unknown">Dateigröße: unbekannt</string>
   <string name="msg_dc_clear_meta_time">Änderungszeit: %s</string>
   <string name="msg_dc_clear_signature_bad">Signaturprüfung NICHT in Ordnung!</string>
   <string name="msg_dc_clear_signature_check">Signaturdaten werden verifiziert</string>
@@ -1221,6 +1222,7 @@
   </plurals>
   <string name="msg_import_fetch_error_decode">Fehler beim Dekodieren des abgerufenen Schlüsselbundes!</string>
   <string name="msg_import_fetch_error">Schlüssel konnte nicht abgerufen werden! (Netzwerkprobleme?)</string>
+  <string name="msg_import_fetch_error_not_found">Schlüssel nicht gefunden!</string>
   <string name="msg_import_fetch_error_keyserver">Schlüssel konnte nicht vom Schlüsselserver abgerufen werden: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">Konnte Schlüssel nicht von Keyserver importieren!</string>
   <string name="msg_import_fetch_keybase">Von Keybase.io wird abgerufen: %s</string>
@@ -1635,4 +1637,12 @@
     <item>50 Euro</item>
     <item>100 Euro</item>
   </string-array>
+  <string name="cap_title_confirm">Andere Schlüssel bestätigen</string>
+  <string name="cap_cert_ok">Dieser Schlüssel kann andere Schlüssel bestätigen.</string>
+  <string name="cap_title_decrypt">Nachrichten entschlüsseln</string>
+  <string name="key_health_expired_title">Abgelaufen</string>
+  <string name="key_health_insecure_title">Unsicher</string>
+  <string name="keyserver_title_unknown">Schlüsselserver Status: unbekannt</string>
+  <string name="keyserver_last_updated">Zuletzt geprüft: %s</string>
+  <string name="keyserver_last_updated_never">Zuletzt geprüft: Nie</string>
 </resources>

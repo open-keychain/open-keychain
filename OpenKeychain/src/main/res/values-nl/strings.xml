@@ -595,7 +595,6 @@
   <string name="api_settings_allowed_keys">Toegestane sleutels</string>
   <string name="api_settings_settings">Instellingen</string>
   <string name="api_register_title">Toegang tot OpenKeychain toestaan?</string>
-  <string name="api_register_text">%s vraagt om OpenKeychain als versleutelingsprovider te gebruiken. Je zal nog steeds toestemming gevraagd worden vooraleer de app je sleutels kan gebruiken voor ontsleuteling.\n\nJe kan later de toestemming weer intrekken via het scherm \'Apps\'.</string>
   <string name="api_register_allow">Toegang toestaan</string>
   <string name="api_register_disallow">Toegang weigeren</string>
   <string name="api_register_error_select_key">Selecteert u a.u.b. een sleutel</string>
@@ -1745,4 +1744,5 @@
   <string name="dialog_insecure_button_undo">Onderdrukking opheffen</string>
   <string name="dialog_insecure_button_view_key">Sleutel bekijken</string>
   <string name="dialog_insecure_button_ok">Begrepen</string>
+  <string name="identity_context_forget">Vergeten</string>
 </resources>

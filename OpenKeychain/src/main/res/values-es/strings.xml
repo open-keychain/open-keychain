@@ -595,7 +595,6 @@
   <string name="api_settings_allowed_keys">Claves permitidas</string>
   <string name="api_settings_settings">Configuración</string>
   <string name="api_register_title">¿Permitir el acceso a OpenKeychain?</string>
-  <string name="api_register_text">%s solicita usar OpenKeychain como proveedor de criptografía. Todavía se le pedirá permiso antes de que la aplicación pueda usar cualquiera de sus claves para descifrado.\n\nMás tarde puede revocar el acceso en la pantalla \'Aplicaciones\'.</string>
   <string name="api_register_allow">Permitir el acceso</string>
   <string name="api_register_disallow">Denegar el acceso</string>
   <string name="api_register_error_select_key">¡Por favor, selecciona una clave!</string>

@@ -595,7 +595,6 @@
   <string name="api_settings_allowed_keys">clés autorisées</string>
   <string name="api_settings_settings">Paramètres</string>
   <string name="api_register_title">Autoriser l\'accès à OpenKeychain ?</string>
-  <string name="api_register_text">%s demande d\'utiliser OpenKeychain comme fournisseur de cryptographie. Une autorisation vous sera encore demandée avant que l\'appli puisse utiliser l\'une de vos clés pour le déchiffrement.\n\nVous pourrez révoquer l\'accès ultérieurement dans l\'écran « Applis ».</string>
   <string name="api_register_allow">Autoriser l\'accès</string>
   <string name="api_register_disallow">Refuser l\'accès</string>
   <string name="api_register_error_select_key">Veuillez choisir une clé !</string>
@@ -1709,6 +1708,11 @@
   <string name="key_health_stripped_subtitle">Cliquer pour plus de détails</string>
   <string name="key_health_partial_stripped_title">Saine (partiellement dépouillée)</string>
   <string name="key_health_partial_stripped_subtitle">Cliquer pour plus de détails</string>
+  <string name="keyserver_title_published">Publiée</string>
+  <string name="keyserver_title_not_published">Non publiée</string>
+  <string name="keyserver_title_unknown">État du serveur de clés : inconnu</string>
+  <string name="keyserver_last_updated">Dernière vérification : %s</string>
+  <string name="keyserver_last_updated_never">Dernière vérification : jamais</string>
   <string name="key_insecure_bitstrength_2048_problem">Cette clé utilise l\'algorithme <b>%1$s</b> avec une robustesse de <b>%2$s bits</b>. Une clé sécurisée devrait avoir une robustesse de 2048 bits.</string>
   <string name="key_insecure_bitstrength_2048_solution">Cette clé ne peut pas être mise à niveau. Pour des communications sécurisées, le propriétaire doit générer une nouvelle clé.</string>
   <string name="key_insecure_unknown_curve_problem">Cette clé utilise l\'algorithme <b>%1$s</b> qui ne fait pas partie de la liste blanche.</string>
@@ -1740,4 +1744,5 @@
   <string name="dialog_insecure_button_undo">Rétablir</string>
   <string name="dialog_insecure_button_view_key">Visualiser la clé</string>
   <string name="dialog_insecure_button_ok">Compris</string>
+  <string name="identity_context_forget">Oublier</string>
 </resources>

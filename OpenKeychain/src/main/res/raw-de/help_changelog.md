@@ -1,9 +1,9 @@
 [//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
 ## 4.5
-  * Detailed description for security problems
+  * Detaillierte Beschreibung von Sicherheits-Problemen
   * Display keyserver status per key
-  * Support for EdDSA
+  * Unterstützung von EdDSA
   * Fix pgp.mit.edu (new certificate)
 
 ## 4.4
@@ -11,7 +11,7 @@
 
 
 ## 4.3
-  * Better support for large keys
+  * Bessere Unterstützung von längeren Schlüsseln
   * Fix import of Gpg4win files with broken encodings
 
 

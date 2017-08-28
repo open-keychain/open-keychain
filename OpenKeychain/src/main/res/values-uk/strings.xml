@@ -616,7 +616,6 @@
   <string name="api_settings_allowed_keys">Дозволені ключі</string>
   <string name="api_settings_settings">Параметри</string>
   <string name="api_register_title">Дозволити доступ до OpenKeychain?</string>
-  <string name="api_register_text">%s запитує доступ використання OpenKeychain як провайдера шифрування. Ви будете отримувати запити перед використанням додатку чи ключів для дешифрування.\n\nВи можете відкликати дозвіл на екрані \'Додатки\'.</string>
   <string name="api_register_allow">Дозволити доступ</string>
   <string name="api_register_disallow">Не дозволити доступ</string>
   <string name="api_register_error_select_key">Будь ласка, виберіть ключ!</string>
@@ -1748,6 +1747,11 @@
   <string name="key_health_stripped_subtitle">Клацніть для подробиць</string>
   <string name="key_health_partial_stripped_title">Придатний (Частково відділений)</string>
   <string name="key_health_partial_stripped_subtitle">Клацніть для подробиць</string>
+  <string name="keyserver_title_published">Опубліковано</string>
+  <string name="keyserver_title_not_published">Не опубліковано</string>
+  <string name="keyserver_title_unknown">Стан сервера ключів: невідомий</string>
+  <string name="keyserver_last_updated">Остання перевірка: %s</string>
+  <string name="keyserver_last_updated_never">Остання перевірка: ніколи</string>
   <string name="key_insecure_bitstrength_2048_problem">Ключ використовує <b>%1$s</b> алгоритм стійкістю <b>%2$s біт</b>. Ключ безпеки повинен мати як мінімум 2048 біт.</string>
   <string name="key_insecure_bitstrength_2048_solution">Цей ключ не може бути модернізованим. Для безпечної комунікації власник має згенерувати новий ключ.</string>
   <string name="key_insecure_unknown_curve_problem">Цей ключ використовує <b>%1$s</b> алгоритм, який не в білому списку.</string>
@@ -1779,4 +1783,5 @@
   <string name="dialog_insecure_button_undo">Не забороняти</string>
   <string name="dialog_insecure_button_view_key">Дивитись ключ</string>
   <string name="dialog_insecure_button_ok">Отримано</string>
+  <string name="identity_context_forget">Забути</string>
 </resources>

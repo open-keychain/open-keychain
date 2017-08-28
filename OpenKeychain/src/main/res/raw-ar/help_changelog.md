@@ -1,9 +1,9 @@
-[//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 ## 4.5
   * Detailed description for security problems
   * Display keyserver status per key
-  * Stöd för EdDSA
+  * Support for EdDSA
   * Fix pgp.mit.edu (new certificate)
 
 ## 4.4
@@ -25,60 +25,60 @@
 
 ## 4.1
 
-  * Bättre detektering av e-post och annat innehåll när den öppnas
+  * Better detection of emails and other content when opened
 
 
 ## 4.0
 
-  * Experimentellt stöd för säkerhetstoken via USB
-  * Tillåt lösenord byte av avskalade nycklar
+  * Experimental support for Security Tokens over USB
+  * Allow password changing of stripped keys
 
 
 ## 3.9
 
-  * Detektering och hantering av textdata
-  * Prestandaförbättringar 
-  * UI-förbättringar för hantering av säkerhetstoken
+  * Detection and handling of text data
+  * Performance improvements
+  * UI improvements for Security Token handling
 
 
 ## 3.8
 
-  * Gjort om nyckelredigering
-  * Välj kom ihåg tid individuellt när du skriver lösenord
-  * Facebook nyckelimport
+  * Redesigned key editing
+  * Choose remember time individually when entering passwords
+  * Facebook key import
 
 
 ## 3.7
 
-  * Förbättrat stöd för Android 6 (behörigheter, integration i textmarkeringen )
+  * Improved Android 6 support (permissions, integration into text selection)
   * API: Version 10
 
 
 ## 3.6
 
-  * Krypterade säkerhetskopior
-  * Säkerhetskorrigeringar baserade på extern säkerhetsrevision
-  * YubiKey NEO-guide för att skapa nyckel
-  * Grundläggande internt MIME-stöd
-  * Automatisk nyckelsynkronisering
-  * Experimentell funktion: länka nycklar till Github- och Twitter-konton
-  * Experimentell funktion: nyckelbekräftelse via fraser
-  * Experimentell funktion: mörkt tema
+  * Encrypted backups
+  * Security fixes based on external security audit
+  * YubiKey NEO key creation wizard
+  * Basic internal MIME support
+  * Automatic key synchronization
+  * Experimental feature: link keys to Github, Twitter accounts
+  * Experimental feature: key confirmation via phrases
+  * Experimental feature: dark theme
   * API: Version 9
 
 
 ## 3.5
 
-  * Nyckelåterkallelse vid nyckelradering
-  * Förbättrade kontroller för osäker kryptografi
+  * Key revocation on key deletion
+  * Improved checks for insecure cryptography
   * Fix: Don't close OpenKeychain after first time wizard succeeds
   * API: Version 8
 
 
 ## 3.4
 
-  * Anonym nyckelhämtning över Tor
-  * Proxy stöd
+  * Anonymous key download over Tor
+  * Proxy support
   * Better YubiKey error handling
 
 
@@ -91,19 +91,19 @@
 
 ## 3.2
 
-  * Första versionen med fullt YubiKey-stöd tillgängligt från användargränssnittet: Redigera nycklar. binda YubiKey till nycklar,...
-  * Materialkonstruktion
-  * Integrering av skanning av QR-kod (Nya behörigheter krävs)
-  * Förbättrade guiden för skapande av nyckel
-  * Fixa kontakter som saknas efter synkronisering
-  * Kräver Android 4
+  * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
+  * Material design
+  * Integration of QR Code Scanning (New permissions required)
+  * Improved key creation wizard
+  * Fix missing contacts after sync
+  * Requires Android 4
   * Redesigned key screen
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...
-  * Korrigering: Vissa giltiga nycklar visades som återkallade eller förfallna
-  * Acceptera inte signaturer av undernycklar som har förfallit eller återkallats
-  * Keybase.io-stöd i avancerad vy
-  * Metod för att uppdatera alla nycklar på en gång
+  * Fix: Some valid keys were shown revoked or expired
+  * Don't accept signatures by expired or revoked subkeys
+  * Keybase.io support in advanced view
+  * Method to update all keys at once
 
 
 ## 3.1.2
@@ -114,13 +114,13 @@
 ## 3.1.1
 
   * Fix key export to files (they were written partially)
-  * Fixa krasch i Android 2.3
+  * Fix crash on Android 2.3
 
 
 ## 3.1
 
-  * Fixa krasch i Android 5
-  Ny certifieringsskärm
+  * Fix crash on Android 5
+  * New certify screen
   * Secure Exchange directly from key list (SafeSlinger library)
   * New QR Code program flow
   * Redesigned decrypt screen
@@ -143,14 +143,14 @@
   * Honor and display key authenticate flags
   * User interface to generate custom keys
   * Fixing user ID revocation certificates
-  * Ny moln sökning (sökningar över traditionella nyckelservrar och keybase.io)
+  * New cloud search (searches over traditional keyservers and keybase.io)
   * Support for stripping keys inside OpenKeychain
   * Experimental YubiKey support: Support for signature generation and decryption
 
 
 ## 2.9.2
 
-  Fixa trasiga nycklar i 2.9.1
+  * Fix keys broken in 2.9.1
   * Experimental YubiKey support: Decryption now working via API
 
 
@@ -181,7 +181,7 @@
   * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
   * New first time screen
   * New key creation screen: autocompletion of name and email based on your personal Android accounts
-  * Filkryptering: maffig ny design, stöd för kryptering av flera filer
+  * File encryption: awesome new design, support for encrypting multiple files
   * New icons to show status of key (by Brennan Novak)
   * Important bug fix: Importing of large key collections from a file is now possible
   * Notification showing cached passphrases
@@ -216,7 +216,7 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
 
   * Fix decryption of symmetric OpenPGP messages/files
   * Refactored key edit screen (thanks to Ash Hughes)
-  * Ny modern design för kryptera/dekryptera skärmar
+  * New modern design for encrypt/decrypt screens
   * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
 
 
@@ -234,7 +234,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Keyserver query based on machine-readable output
   * Lock navigation drawer on tablets
   * Suggestions for emails on creation of keys
-  * Sök i offentliga nyckellistor
+  * Search in public key lists
   * And much more improvements and fixes…
 
 

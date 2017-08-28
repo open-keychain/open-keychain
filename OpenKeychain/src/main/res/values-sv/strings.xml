@@ -8,7 +8,7 @@
   <string name="title_encrypt_files">Kryptera</string>
   <string name="title_decrypt">Dekryptera</string>
   <string name="title_add_subkey">Lägg till undernyckel</string>
-  <string name="title_change_master_key">Ändra masternyckel</string>
+  <string name="title_change_master_key">Ändra huvudnyckel</string>
   <string name="title_edit_key">Redigera nyckel</string>
   <string name="title_linked_create">Skapa en länkad identitet</string>
   <string name="title_preferences">Inställningar</string>
@@ -172,7 +172,7 @@
   <string name="label_verify_keyserver_connection">Pröva anslutning</string>
   <string name="label_only_trusted_keyserver">Endast betrodd nyckelserver</string>
   <string name="label_enter_keyserver_url">URL</string>
-  <string name="label_keyserver_dialog_delete">Radera nyckelserver</string>
+  <string name="label_keyserver_dialog_delete">Ta bort nyckelserver</string>
   <string name="label_theme">Tema</string>
   <string name="pref_keyserver">OpenPGP-nyckelservrar</string>
   <string name="pref_keyserver_summary">Sök nycklar på valda OpenPGP-nyckelservrar (HKP-protokollet)</string>
@@ -183,7 +183,7 @@
   <string name="label_sync_settings_keyserver_title">Automatiska nyckel uppdateringar</string>
   <string name="label_sync_settings_keyserver_summary_on">Var tredje dag, uppdateras nycklar från den föredragna nyckelserver </string>
   <string name="label_sync_settings_keyserver_summary_off">Nycklar uppdateras inte automatiskt</string>
-  <string name="label_sync_settings_wifi_title">Synkronisera endast på Wifi</string>
+  <string name="label_sync_settings_wifi_title">Synkronisera endast över Wi-Fi</string>
   <string name="label_sync_settings_contacts_title">Länka nycklar till kontakter</string>
   <string name="label_sync_settings_contacts_summary_on">Länka nycklar till kontakter baserade på namn och e-postadresser. Detta sker helt offline på enheten.</string>
   <string name="label_sync_settings_contacts_summary_off">Nya nycklar kommer inte att kopplas till kontakter</string>
@@ -302,8 +302,8 @@
   <string name="key_creation_el_gamal_info">Obs: endast undernycklar har stöd för ElGamal.</string>
   <string name="key_not_found">Kunde inte hitta nyckeln %08X.</string>
   <plurals name="bad_keys_encountered">
-    <item quantity="one">%d dålig privat nyckel hoppades över. Du kanske exporterade med alternativet \n --export-secret-subkeys\nSe till att du exporterar med\n --export-secret-keys\nistället.\"</item>
-    <item quantity="other">%d dåliga privata nycklar hoppades över. Du kanske exporterade med alternativet \n --export-secret-subkeys\nSe till att du exporterar med\n --export-secret-keys\nistället.\"</item>
+    <item quantity="one">%d dålig hemlig nyckel hoppades över. Du kanske exporterade med alternativet \n --export-secret-subkeys\nSe till att du exporterar med\n --export-secret-keys\nistället.\"</item>
+    <item quantity="other">%d dåliga hemliga nycklar hoppades över. Du kanske exporterade med alternativet \n --export-secret-subkeys\nSe till att du exporterar med\n --export-secret-keys\nistället.\"</item>
   </plurals>
   <string name="list_empty">Den här listan är tom!</string>
   <string name="nfc_successful">Skickade nyckel med NFC Beam!</string>
@@ -317,7 +317,7 @@
   <string name="error_file_delete_failed">har inte raderats. Radera dem manuellt!</string>
   <string name="error_file_added_already">%s har redan lagts till.</string>
   <string name="error_file_not_found">fil hittades inte</string>
-  <string name="error_no_secret_key_found">ingen passande privat nyckel hittades</string>
+  <string name="error_no_secret_key_found">ingen passande hemlig nyckel hittades</string>
   <string name="error_external_storage_not_ready">extern lagring inte redo</string>
   <string name="error_key_size_minimum512bit">nyckelstorlek måste vara åtminstone 512bit</string>
   <string name="error_unknown_algorithm_choice">okänt val av algoritm</string>
@@ -328,7 +328,7 @@
   <string name="error_invalid_data">Inget giltigt krypterat eller signerat OpenPGP-innehåll!</string>
   <string name="error_integrity_check_failed">integritetskontroll misslyckades! Data har modifierats!</string>
   <string name="error_wrong_passphrase">fel lösenord</string>
-  <string name="error_could_not_extract_private_key">kunde inte extrahera privat nyckel</string>
+  <string name="error_could_not_extract_private_key">kunde inte extrahera hemlig nyckel</string>
   <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Du behöver Android 4.1 för att använda Androids NFC Beam-funktion!</string>
   <string name="error_nfc_needed">NFC måste vara aktiverat!</string>
@@ -655,12 +655,12 @@
   <string name="msg_internal_error">Intern fel!</string>
   <string name="msg_cancelled">Operation avbruten.</string>
   <!--Import Public log entries-->
-  <string name="msg_ip_bad_type_secret">Försökte att importera privat nyckelring som publik. Detta är en bugg, skicka en felrapport!</string>
+  <string name="msg_ip_bad_type_secret">Försökte att importera hemlig nyckelring som öppen. Detta är en bugg, skicka en felrapport!</string>
   <string name="msg_ip_delete_old_fail">Ingen gammal nyckel raderad (skapa en ny?)</string>
   <string name="msg_ip_delete_old_ok">Raderade gammal nyckel från databas</string>
   <string name="msg_ip_error_op_exc">Operationen misslyckades på grund av ett databasfel</string>
   <string name="msg_ip_error_remote_ex">Operationen misslyckades på grund av ett internt fel</string>
-  <string name="msg_ip">Importerar publik nyckelring %s</string>
+  <string name="msg_ip">Importerar öppen nyckelring %s</string>
   <string name="msg_ip_insert_keyring">Kodar nyckelringens data</string>
   <string name="msg_ip_insert_keys">Läser nycklar</string>
   <string name="msg_ip_prepare">Förebereder databasoperationer</string>
@@ -684,7 +684,7 @@
   <string name="msg_ip_master_flags_xxsx">Huvudflaggor: signera</string>
   <string name="msg_ip_master_flags_xxxa">Huvudflaggor: autentisera</string>
   <string name="msg_ip_master_flags_xxxx">Huvudflaggor: ingen</string>
-  <string name="msg_ip_merge_public">Slår ihop importerade data med befintlig publik nyckelring</string>
+  <string name="msg_ip_merge_public">Slår ihop importerade data med befintlig öppen nyckelring</string>
   <string name="msg_ip_subkey">Bearbetar undernyckel %s</string>
   <string name="msg_ip_subkey_expired">Undernyckel gick ut %s</string>
   <string name="msg_ip_subkey_expires">Undernyckel går ut %s</string>
@@ -705,9 +705,9 @@
   <string name="msg_ip_subkey_flags_xxsx">Flaggor för undernyckel: signera</string>
   <string name="msg_ip_subkey_flags_xxxa">Flaggor för undernyckel: autentisera</string>
   <string name="msg_ip_subkey_flags_xxxx">Flaggor för undernyckel: ingen</string>
-  <string name="msg_ip_success">Importade publik nyckelring</string>
+  <string name="msg_ip_success">Importerade öppen nyckelring</string>
   <string name="msg_ip_success_identical">Nyckelringen innehåller ingen ny information, inget att göra</string>
-  <string name="msg_ip_reinsert_secret">Sätter in privat nyckel på nytt</string>
+  <string name="msg_ip_reinsert_secret">Sätter in hemlig nyckel på nytt</string>
   <string name="msg_ip_uid_cert_bad">Stötte på ett dåligt certifikat!</string>
   <string name="msg_ip_uid_cert_error">Fel vid bearbetning av certifikat!</string>
   <string name="msg_ip_uid_cert_nonrevoke">Har redan ett icke-återkalleligt certifikat, hoppar över.</string>
@@ -717,7 +717,7 @@
   <string name="msg_ip_uid_cert_good_revoke">Hittade bra certifikatåterkallning från %1$s</string>
   <plurals name="msg_ip_uid_certs_unknown">
     <item quantity="one">Hoppar över ett certifikat utfärdat av okända publika nycklar</item>
-    <item quantity="other">Hoppar över %s certifikat utfärdade av okända publika nycklar</item>
+    <item quantity="other">Hoppar över %s certifikat utfärdade av okända öppna nycklar</item>
   </plurals>
   <string name="msg_ip_uid_classifying_zero">Klassificerar användar-ID:n (inga tillförlitliga nycklar tillgängliga)</string>
   <plurals name="msg_ip_uid_classifying">
@@ -738,17 +738,17 @@
   <string name="msg_ip_uat_cert_good_revoke">Hittade bra certifikatåterkallning från %1$s</string>
   <plurals name="msg_ip_uat_certs_unknown">
     <item quantity="one">Hoppar över ett certifikat utfärdat av en okänd publik nyckel</item>
-    <item quantity="other">Hoppar över %s certifikat utfärdade av okända publika nycklar</item>
+    <item quantity="other">Hoppar över %s certifikat utfärdade av okända öppna nycklar</item>
   </plurals>
   <string name="msg_ip_uat_classifying">Klassificerar användarattribut</string>
   <string name="msg_ip_uat_revoked">Användarattribut är återkallat</string>
-  <string name="msg_is_bad_type_public">Försökte att importera publik nyckelring som privat. Detta är en bugg, skicka en felrapport!</string>
+  <string name="msg_is_bad_type_public">Försökte att importera öppen nyckelring som hemlig. Detta är en bugg, skicka en felrapport!</string>
   <!--Import Secret log entries-->
-  <string name="msg_is">Importerar privat nyckel %s</string>
+  <string name="msg_is">Importerar hemlig nyckel %s</string>
   <string name="msg_is_db_exception">Databasfel!</string>
-  <string name="msg_is_importing_subkeys">Bearbetar privata undernycklar</string>
+  <string name="msg_is_importing_subkeys">Bearbetar hemliga undernycklar</string>
   <string name="msg_is_error_io_exc">Fel vid kodning av nyckelring</string>
-  <string name="msg_is_merge_public">Slår ihop importerade data med befintlig publik nyckelring</string>
+  <string name="msg_is_merge_public">Slår ihop importerade data med befintlig öppen nyckelring</string>
   <string name="msg_is_pubring_generate">Genererar publik nyckelring från privat nyckelring</string>
   <string name="msg_is_subkey_nonexistent">Undernyckel %s inte tillgänglig i privat nyckelring</string>
   <string name="msg_is_success_identical">Nyckelringen innehåller ingen ny information, inget att göra</string>
@@ -781,8 +781,8 @@
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_heterogeneous">Försökte att slå ihop nyckelringar med olika fingeravtryck!</string>
   <string name="msg_mg_error_encode">Allvarligt fel vid kodning av signatur!</string>
-  <string name="msg_mg_public">Slår ihop till publik nyckelring %s</string>
-  <string name="msg_mg_secret">Slår ihop till privat nyckelring %s</string>
+  <string name="msg_mg_public">Slår ihop till öppen nyckelring %s</string>
+  <string name="msg_mg_secret">Slår ihop till hemlig nyckelring %s</string>
   <string name="msg_mg_new_subkey">Lägger till ny undernyckel %s</string>
   <string name="msg_mg_found_new">Hittade %s nya certifikat i nyckelring</string>
   <string name="msg_mg_unchanged">Inget att slå ihop</string>
@@ -821,25 +821,25 @@
   <!--Consolidate-->
   <string name="msg_con">Konsoliderar databas</string>
   <string name="msg_con_error_bad_state">Konsolidering startade medan ingen databas var cachad! Detta är förmodligen ett programmeringsfel, skicka en buggrapport.</string>
-  <string name="msg_con_save_secret">Sparar privata nyckelringar</string>
-  <string name="msg_con_save_public">Sparar publika nyckelringar</string>
+  <string name="msg_con_save_secret">Sparar hemliga nyckelringar</string>
+  <string name="msg_con_save_public">Sparar öppen nyckelringar</string>
   <string name="msg_con_db_clear">Rensar databas</string>
   <string name="msg_con_success">Konsoliderade databas</string>
-  <string name="msg_con_delete_public">Raderar cache-fil för publik nyckelring</string>
-  <string name="msg_con_delete_secret">Raderar cache-fil för privat nyckelring</string>
+  <string name="msg_con_delete_public">Raderar cache-fil för öppen nyckelring</string>
+  <string name="msg_con_delete_secret">Tar bort cache-fil för hemlig nyckelring</string>
   <string name="msg_con_error_db">Fel när databas skulle öppnas!</string>
-  <string name="msg_con_error_public">Fel när publika nycklar skulle återimporteras!</string>
-  <string name="msg_con_error_secret">Fel när privata nycklar skulle återimporteras!</string>
+  <string name="msg_con_error_public">Fel när öppen nycklar skulle återimporteras!</string>
+  <string name="msg_con_error_secret">Fel när hemliga nycklar skulle återimporteras!</string>
   <plurals name="msg_con_reimport_public">
     <item quantity="one">Återimporterar en publik nyckel</item>
-    <item quantity="other">Återimporterar %d publika nycklar</item>
+    <item quantity="other">Återimporterar %d öppna nycklar</item>
   </plurals>
-  <string name="msg_con_reimport_public_skip">Inga publika nycklar att återimportera, hoppar över…</string>
+  <string name="msg_con_reimport_public_skip">Inga öppna nycklar att återimportera, hoppar över…</string>
   <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Återimporterar en privat nyckel</item>
-    <item quantity="other">Återimporterar %d privata nycklar</item>
+    <item quantity="one">Återimporterar en hemlig nyckel</item>
+    <item quantity="other">Återimporterar %d hemliga nycklar</item>
   </plurals>
-  <string name="msg_con_reimport_secret_skip">Inga privata nycklar att återimportera, hoppar över…</string>
+  <string name="msg_con_reimport_secret_skip">Inga hemliga nycklar att återimportera, hoppar över…</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Utför nyckeloperation</string>
   <string name="msg_ed_caching_new">Cachelagra nytt lösenord</string>
@@ -874,7 +874,7 @@
   <string name="msg_dc">Startar dekrypteringsoperation…</string>
   <string name="msg_dc_sym_skip">Symmetrisk data inte tillåten, hoppar över…</string>
   <string name="msg_dc_sym">Hittade block med symmetriskt krypterad data</string>
-  <string name="msg_dc_unlocking">Låser upp privat nyckel</string>
+  <string name="msg_dc_unlocking">Låser upp hemlig nyckel</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl_clear_meta_file">Filnamn: %s</string>
   <string name="msg_vl_clear_meta_mime">MIME-typ: %s</string>
@@ -885,7 +885,7 @@
   <string name="msg_se">Startar signerings/krypterings procedur</string>
   <string name="msg_se_success">Signering/kryptering lyckades!</string>
   <!--Messages for PgpSignEncrypt operation-->
-  <string name="msg_pse_asymmetric">Förbereder publika nycklar för kryptering</string>
+  <string name="msg_pse_asymmetric">Förbereder öppna nycklar för kryptering</string>
   <string name="msg_pse_compressing">Förbereder komprimering</string>
   <string name="msg_pse_encrypting">Krypterar data</string>
   <string name="msg_pse_error_nfc">NFC datafel!</string>
@@ -924,14 +924,14 @@
     <item quantity="other">Säkerhetskopiering med %d nycklar</item>
   </plurals>
   <string name="msg_backup_all">Säkerhetskopiering med alla nycklar</string>
-  <string name="msg_backup_public">Skapa säkerhetskopia av publik nyckel %s</string>
+  <string name="msg_backup_public">Skapa säkerhetskopia av öppen nyckel %s</string>
   <string name="msg_backup_secret">Skapa säkerhetskopia av hemlig nyckel %s</string>
   <string name="msg_backup_success">Säkerhetskopieringen lyckades</string>
   <string name="msg_upload_proxy_direct">Använder proxy: Ingen</string>
   <string name="msg_upload_proxy_tor">Använder proxy: TOR</string>
   <string name="msg_upload_proxy">Använder proxy: %s</string>
   <string name="msg_del_error_empty">Inget att radera!</string>
-  <string name="msg_del_error_multi_secret">Privata nycklar kan bara raderas var för sig!</string>
+  <string name="msg_del_error_multi_secret">Hemliga nycklar kan bara raderas var för sig!</string>
   <plurals name="msg_del">
     <item quantity="one">Raderar en nyckel</item>
     <item quantity="other">Raderar %d nycklar</item>

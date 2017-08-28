@@ -103,9 +103,9 @@
   <string name="btn_saved">Сохранено!</string>
   <string name="btn_not_matching">Не совпадают</string>
   <!--Content Description-->
-  <string name="cd_encrypt_files">Шифровать файлы</string>
+  <string name="cd_encrypt_files">Зашифровать файлы</string>
   <string name="cd_exchange_keys">Обмен ключами</string>
-  <string name="cd_encrypt_text">Шифровать текст</string>
+  <string name="cd_encrypt_text">Зашифровать текст</string>
   <string name="cd_share_nfc">Отправить через NFC</string>
   <!--menu-->
   <string name="menu_preferences">Настройки</string>
@@ -297,7 +297,7 @@
   <string name="ecc_eddsa_description_html">маленький размер файла, считается безопасным и после 2040 года &lt;br/&gt; &lt;u&gt;экспериментально и поддерживается не всеми реализациями&lt;/u&gt;</string>
   <string name="usage_none">Нет (только привязка доп. ключа)</string>
   <string name="usage_sign">Подписать</string>
-  <string name="usage_encrypt">Шифровать</string>
+  <string name="usage_encrypt">Зашифровать</string>
   <string name="usage_sign_and_encrypt">Подписать и зашифровать</string>
   <string name="error">Ошибка</string>
   <string name="error_message">Ошибка: %s</string>
@@ -330,7 +330,7 @@
   <string name="select_encryption_key">Укажите хотя бы один ключ.</string>
   <string name="error_no_encryption_or_signature_key">Выберите хотя бы один ключ для шифрования или подписи.</string>
   <string name="specify_file_to_encrypt_to">Пожалуйста, укажите, в какой файл произвести шифрование.\nВНИМАНИЕ: Файл будет перезаписан, если он уже существует!</string>
-  <string name="specify_file_to_decrypt_to">Пожалуйста, укажите, в какой файл произвести расшифровку.\nВНИМАНИЕ: Файл будет перезаписан, если он уже существует!</string>
+  <string name="specify_file_to_decrypt_to">Пожалуйста, укажите, в какой файл произвести расшифрование.\nВНИМАНИЕ: Файл будет перезаписан, если он уже существует!</string>
   <string name="specify_backup_dest">Будет произведено резервное копирование без ваших ключей , просьба указать файл назначения.\nВНИМАНИЕ! Файл будет перезаписан, если он существует!</string>
   <string name="specify_backup_dest_single">Этот ключ будет опубликован, пожалуйста, укажите файл назначения.\nВНИМАНИЕ! Файл будет переписан, если он существует!</string>
   <string name="specify_backup_dest_secret_single">Будет произведено полное резервное копирование ваших ключей, просьба указать файл назначения.\nВНИМАНИЕ! Файл будет переписан, если он существует!</string>
@@ -451,7 +451,7 @@
   <string name="progress_extracting_key">извлечение ключа...</string>
   <string name="progress_preparing_streams">подготовка к передаче...</string>
   <string name="progress_encrypting">шифрование данных...</string>
-  <string name="progress_prepare_decryption">Начало расшифровки...</string>
+  <string name="progress_prepare_decryption">Начало расшифрования..</string>
   <string name="progress_decrypting">Расшифровка данных...</string>
   <string name="progress_preparing_signature">подготовка подписи...</string>
   <string name="progress_processing_signature">обработка подписи...</string>
@@ -632,7 +632,6 @@
   <string name="api_settings_allowed_keys">Разрешённые ключи</string>
   <string name="api_settings_settings">Настройки</string>
   <string name="api_register_title">Разрешить доступ к OpenKeychain?</string>
-  <string name="api_register_text">%s запрашивает доступ к OpenKeychain в качестве криптопровайдера. Вы будете получать запрос на разрешение, прежде чем приложение сможет использовать ваши ключи для расшифровки.\n\nВы сможете отменить доступ позже в меню \'Приложения\'.</string>
   <string name="api_register_allow">Разрешить доступ</string>
   <string name="api_register_disallow">Запретить доступ</string>
   <string name="api_register_error_select_key">Пожалуйста, выберите ключ!</string>
@@ -1113,7 +1112,7 @@
   <string name="msg_con_save_secret">Сохранение секретной связки ключей</string>
   <string name="msg_con_save_public">Сохранение публичной связки ключей</string>
   <string name="msg_con_db_clear">Очистка базы данных</string>
-  <string name="msg_con_success">Успешно консолидированная база данных</string>
+  <string name="msg_con_success">База данных успешно консолидирована</string>
   <string name="msg_con_critical_in">Ввод в критическую фазу</string>
   <string name="msg_con_critical_out">Выход из критической фазы</string>
   <string name="msg_con_delete_public">Удаление кэша связки публичных ключей</string>
@@ -1252,7 +1251,7 @@
   <string name="msg_pse_key_ok">Шифрование для ключа: %s</string>
   <string name="msg_pse_key_unknown">Отсутствует ключ для шифрования: %s</string>
   <string name="msg_pse_key_warn">Некорректный ключ для шифрования: %s</string>
-  <string name="msg_pse_ok">Подпись/Шифрование успешно произведены!</string>
+  <string name="msg_pse_ok">Подпись/шифрование успешно произведены!</string>
   <string name="msg_pse_pending_nfc">Требуется NFC-токен, жду действий пользователя...</string>
   <string name="msg_pse_pending_passphrase">Требуется пароль, жду действий пользователя...</string>
   <string name="msg_pse_signing">Подписывание данных (без шифрования)</string>
@@ -1383,10 +1382,10 @@
   <string name="msg_lv_fetch_error_format">Ошибка формата!</string>
   <string name="msg_lv_fetch_error_nothing">Ресурс не найден!</string>
   <string name="msg_bench">Анализ быстродействия некоторых операций…</string>
-  <string name="msg_bench_enc_time">Время шифрования: %ss</string>
-  <string name="msg_bench_enc_time_avg">Среднее время шифрования 5МБ: %ss</string>
-  <string name="msg_bench_dec_time">Время расшифрования: %ss</string>
-  <string name="msg_bench_dec_time_avg">Среднее время расшифрования 5МБ: %ss</string>
+  <string name="msg_bench_enc_time">Время шифрования: %s сек.</string>
+  <string name="msg_bench_enc_time_avg">Среднее время шифрования 5 Мб: %s сек.</string>
+  <string name="msg_bench_dec_time">Время расшифрования: %s сек.</string>
+  <string name="msg_bench_dec_time_avg">Среднее время расшифрования 5 Мб: %s сек.</string>
   <string name="msg_bench_s2k_100ms_its">Количество итераций S2K за 100 мс: %s</string>
   <string name="msg_bench_s2k_for_it">Время для %1$s SHA1 S2K итераций: %2$sms</string>
   <string name="msg_bench_success">Анализ быстродействия завершён!</string>
@@ -1585,8 +1584,8 @@
   <string name="filename_unknown">Неизвестное имя файла (нажмите для открытия)</string>
   <string name="filename_unknown_text">Текст (нажмите для просмотра)</string>
   <string name="filename_keys">Резервный ключ (нажмите для импортирования)</string>
-  <string name="intent_show">Показать Подписанное/Зашифрованное содержимое</string>
-  <string name="intent_share">Отправить Подписанное/Зашифрованное содержимое</string>
+  <string name="intent_show">Показать подписанное/зашифрованное содержимое</string>
+  <string name="intent_share">Отправить подписанное/зашифрованное содержимое</string>
   <string name="view_internal">Смотреть в OpenKeychain</string>
   <string name="error_preparing_data">Ошибка подготовки данных!</string>
   <string name="label_clip_title">Зашифрованные данные</string>
@@ -1782,6 +1781,11 @@
   <string name="key_health_stripped_subtitle">Щёлкните, чтобы узнать подробности</string>
   <string name="key_health_partial_stripped_title">Безопасный (частично отделённый)</string>
   <string name="key_health_partial_stripped_subtitle">Щёлкните, чтобы узнать подробности</string>
+  <string name="keyserver_title_published">Опубликован</string>
+  <string name="keyserver_title_not_published">Не опубликован</string>
+  <string name="keyserver_title_unknown">Статус сервера ключа: неизвестно</string>
+  <string name="keyserver_last_updated">Дата и время последней проверки: %s</string>
+  <string name="keyserver_last_updated_never">Дата и время последней проверки: никогда</string>
   <string name="key_insecure_bitstrength_2048_problem">Этот ключ использует алгоритм <b>%1$s</b> со стойкостью <b>%2$s бит</b>. Безопасный ключ должен иметь стойкость 2048 бит.</string>
   <string name="key_insecure_bitstrength_2048_solution">Этот ключ не может быть обновлён. Для безопасной связи владелец должен сгенерировтаь новый ключ.</string>
   <string name="key_insecure_unknown_curve_problem">Этот ключ использует алгоритм <b>%1$s</b>, которого нет в белом списке.</string>
@@ -1813,4 +1817,5 @@
   <string name="dialog_insecure_button_undo">Раскрыть</string>
   <string name="dialog_insecure_button_view_key">Просмотреть ключ</string>
   <string name="dialog_insecure_button_ok">Понятно</string>
+  <string name="identity_context_forget">Забыть</string>
 </resources>

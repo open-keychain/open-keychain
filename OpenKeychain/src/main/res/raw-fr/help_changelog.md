@@ -1,10 +1,10 @@
 [//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
 ## 4.5
-  * Detailed description for security problems
-  * Display keyserver status per key
-  * Support for EdDSA
-  * Fix pgp.mit.edu (new certificate)
+  * Description détaillée des problèmes de sécurité
+  * Affiche l'état du serveur de clés par clé
+  * Prise en charge d'EdDSA
+  * Correctif - pgp.mit.edu (nouveau certificat)
 
 ## 4.4
   *  Le nouvel état des clé affiche en détail pourquoi une clef est considérée comme non fiable ou défectueuse
@@ -71,7 +71,7 @@
 
   * révocation de la clé lors de la suppression de la clé
   * Vérifications améliorées à la recherche d'une cryptographie non fiable
-  * Correctif : ne pas fermer OpenKeychain après une réussite de l'assistant de première utilisation
+  * Correctif - Ne pas fermer OpenKeychain après une réussite de l'assistant de première utilisation
   * API : version 8
 
 
