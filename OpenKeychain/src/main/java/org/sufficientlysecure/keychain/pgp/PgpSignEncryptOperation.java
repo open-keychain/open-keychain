@@ -330,15 +330,18 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             } else {
                 log.add(LogType.MSG_PSE_ASYMMETRIC, indent);
 
-                // Asymmetric encryption
+                long additionalEncryptId = data.getAdditionalEncryptId();
                 for (long encryptMasterKeyId : data.getEncryptionMasterKeyIds()) {
+                    if (encryptMasterKeyId == additionalEncryptId) {
+                        continue;
+                    }
+
                     boolean success = processEncryptionMasterKeyId(indent, log, data, cPk, encryptMasterKeyId);
                     if (!success) {
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                     }
                 }
 
-                long additionalEncryptId = data.getAdditionalEncryptId();
                 if (additionalEncryptId != Constants.key.none) {
                     boolean success = processEncryptionMasterKeyId(indent, log, data, cPk, additionalEncryptId);
                     if (!success) {
