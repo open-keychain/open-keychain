@@ -344,6 +344,12 @@ public class UncachedPublicKey {
                     continue;
                 }
 
+                // Previous signature had key flags, but new one doesn't
+                if (!sig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)
+                        && mostRecentSig.getHashedSubPackets().hasSubpacket(SignatureSubpacketTags.KEY_FLAGS)) {
+                    continue;
+                }
+
                 // Otherwise, note it down as the new "most recent" one
                 mostRecentSig = sig;
             }
