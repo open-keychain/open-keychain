@@ -1059,11 +1059,7 @@ public class KeychainProvider extends ContentProvider {
 
                     contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(masterKeyId), null);
 
-                    try {
-                        db.replace(Tables.API_AUTOCRYPT_PEERS, null, actualValues);
-                    } finally {
-                        db.close();
-                    }
+                    db.replace(Tables.API_AUTOCRYPT_PEERS, null, actualValues);
                     break;
                 }
                 default: {
