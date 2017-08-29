@@ -316,6 +316,9 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         } else if (frag instanceof BackupRestoreFragment) {
             mToolbar.setTitle(R.string.nav_backup);
             mDrawer.setSelection(mDrawer.getPosition(ID_BACKUP), false);
+        } else if (frag instanceof TransferFragment) {
+            mToolbar.setTitle(R.string.nav_transfer);
+            mDrawer.setSelection(mDrawer.getPosition(ID_TRANSFER), false);
         }
     }
 
