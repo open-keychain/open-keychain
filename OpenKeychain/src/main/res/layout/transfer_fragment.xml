@@ -8,7 +8,7 @@
     android:id="@+id/transfer_animator"
     android:inAnimation="@anim/fade_in_delayed"
     android:outAnimation="@anim/fade_out"
-    custom:initialView="03">
+    custom:initialView="0">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -58,6 +58,17 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/transfer_scan_warning"
+            android:textColor="@color/android_red_dark"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,6 +76,7 @@
             android:gravity="center"
             tools:ignore="ButtonStyle" >
 
+            <!--
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -74,6 +86,7 @@
                 android:drawableLeft="@drawable/ic_live_help_24dp"
                 android:drawableTint="@color/md_black_1000"
                 android:drawablePadding="8dp"/>
+            -->
 
             <Button
                 android:layout_width="wrap_content"
