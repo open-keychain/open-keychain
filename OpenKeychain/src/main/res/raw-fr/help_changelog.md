@@ -1,5 +1,8 @@
 [//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 4.6
+  * Import your keys using our new Secure Wifi Transfer mechanism
+
 ## 4.5
   * Description détaillée des problèmes de sécurité
   * Affiche l'état du serveur de clés par clé

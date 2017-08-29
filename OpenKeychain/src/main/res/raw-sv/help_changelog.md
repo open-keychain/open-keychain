@@ -1,5 +1,8 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
+## 4.6
+  * Import your keys using our new Secure Wifi Transfer mechanism
+
 ## 4.5
   * Detailed description for security problems
   * Display keyserver status per key

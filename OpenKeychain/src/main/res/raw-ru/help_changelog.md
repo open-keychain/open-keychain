@@ -1,5 +1,8 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.6
+  * Import your keys using our new Secure Wifi Transfer mechanism
+
 ## 4.5
   * Детальное описание проблем безопасности
   * Отображение статуса сервера для каждого ключа

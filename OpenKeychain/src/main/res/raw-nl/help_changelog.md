@@ -1,5 +1,8 @@
 [//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
+## 4.6
+  * Import your keys using our new Secure Wifi Transfer mechanism
+
 ## 4.5
   * Gedetailleerde beschrijving voor beveiligingsproblemen
   * Weergeven van sleutelstatus per sleutel

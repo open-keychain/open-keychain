@@ -595,6 +595,7 @@
   <string name="api_settings_allowed_keys">Toegestane sleutels</string>
   <string name="api_settings_settings">Instellingen</string>
   <string name="api_register_title">Toegang tot OpenKeychain toestaan?</string>
+  <string name="api_register_text">%s wil OpenKeychain als versleutelingsaanbieder gebruiken. Je zal nog steeds om toestemming gevraagd worden vooraleer de app een van je sleutels kan gebruiken voor ontsleuteling.\n\nJe kan je toestemming later weer intrekken in het scherm \'Apps\' in OpenKeychain.</string>
   <string name="api_register_allow">Toegang toestaan</string>
   <string name="api_register_disallow">Toegang weigeren</string>
   <string name="api_register_error_select_key">Selecteert u a.u.b. een sleutel</string>
