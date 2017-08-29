@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
+import org.sufficientlysecure.keychain.util.CloseDatabaseCursorFactory;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class KeychainExternalProvider extends ContentProvider implements SimpleContentResolverInterface {
@@ -107,10 +108,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         return true;
     }
 
-    public KeychainDatabase getDb() {
-        return new KeychainDatabase(getContext());
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -146,7 +143,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
         String groupBy = null;
 
-        SQLiteDatabase db = getDb().getReadableDatabase();
+        SQLiteDatabase db = new KeychainDatabase(getContext()).getReadableDatabase();
 
         String callingPackageName = mApiPermissionHelper.getCurrentCallingPackage();
 
@@ -343,6 +340,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         }
 
         Cursor cursor = qb.query(db, projection, selection, null, groupBy, null, orderBy);
+        qb.setCursorFactory(new CloseDatabaseCursorFactory());
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
