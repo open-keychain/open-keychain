@@ -34,12 +34,14 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
 
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
+    private final boolean showAfterLast;
 
     private Drawable mDivider;
 
     private int mOrientation;
 
-    public DividerItemDecoration(Context context, int orientation) {
+    public DividerItemDecoration(Context context, int orientation, boolean showAfterLast) {
+        this.showAfterLast = showAfterLast;
         final TypedArray a = context.obtainStyledAttributes(ATTRS);
         mDivider = a.getDrawable(0);
         a.recycle();
@@ -66,8 +68,11 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         final int left = parent.getPaddingLeft();
         final int right = parent.getWidth() - parent.getPaddingRight();
 
-        final int childCount = parent.getChildCount();
-        for (int i = 0; i < childCount -1; i++) {
+        int childCount = parent.getChildCount();
+        if (!showAfterLast) {
+            childCount -= 1;
+        }
+        for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
             final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child
                     .getLayoutParams();

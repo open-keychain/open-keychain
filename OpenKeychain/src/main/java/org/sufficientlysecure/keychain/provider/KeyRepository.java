@@ -13,12 +13,12 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
@@ -236,19 +236,27 @@ public class KeyRepository {
         }
     }
 
-    private String getKeyRingAsArmoredString(byte[] data) throws IOException, PgpGeneralException {
-        UncachedKeyRing keyRing = UncachedKeyRing.decodeFromData(data);
-
+    private byte[] getKeyRingAsArmoredData(byte[] data) throws IOException, PgpGeneralException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        keyRing.encodeArmored(bos, null);
+        ArmoredOutputStream aos = new ArmoredOutputStream(bos);
 
-        return bos.toString("UTF-8");
+        aos.write(data);
+        aos.close();
+
+        return bos.toByteArray();
     }
 
     public String getPublicKeyRingAsArmoredString(long masterKeyId)
             throws NotFoundException, IOException, PgpGeneralException {
         byte[] data = loadPublicKeyRingData(masterKeyId);
-        return getKeyRingAsArmoredString(data);
+        byte[] armoredData = getKeyRingAsArmoredData(data);
+        return new String(armoredData);
+    }
+
+    public byte[] getSecretKeyRingAsArmoredData(long masterKeyId)
+            throws NotFoundException, IOException, PgpGeneralException {
+        byte[] data = loadSecretKeyRingData(masterKeyId);
+        return getKeyRingAsArmoredData(data);
     }
 
     public ContentResolver getContentResolver() {

@@ -17,23 +17,31 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
+import org.sufficientlysecure.keychain.ui.transfer.view.TransferFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 public class CreateKeyStartFragment extends Fragment {
+    public static final int REQUEST_CODE_IMPORT_KEY = 0x00007012;
+
 
     CreateKeyActivity mCreateKeyActivity;
 
@@ -41,7 +49,8 @@ public class CreateKeyStartFragment extends Fragment {
     View mImportKey;
     View mSecurityToken;
     TextView mSkipOrCancel;
-    public static final int REQUEST_CODE_IMPORT_KEY = 0x00007012;
+    View mSecureDeviceSetup;
+
 
     /**
      * Creates new instance of this fragment
@@ -64,6 +73,7 @@ public class CreateKeyStartFragment extends Fragment {
         mImportKey = view.findViewById(R.id.create_key_import_button);
         mSecurityToken = view.findViewById(R.id.create_key_security_token_button);
         mSkipOrCancel = (TextView) view.findViewById(R.id.create_key_cancel);
+        mSecureDeviceSetup = view.findViewById(R.id.create_key_secure_device_setup);
 
         if (mCreateKeyActivity.mFirstTime) {
             mSkipOrCancel.setText(R.string.first_time_skip);
@@ -95,6 +105,19 @@ public class CreateKeyStartFragment extends Fragment {
                 startActivityForResult(intent, REQUEST_CODE_IMPORT_KEY);
             }
         });
+
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+            mSecureDeviceSetup.setOnClickListener(new OnClickListener() {
+                @TargetApi(VERSION_CODES.LOLLIPOP)
+                @Override
+                public void onClick(View v) {
+                    TransferFragment frag = new TransferFragment();
+                    mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
+                }
+            });
+        } else {
+            mSecureDeviceSetup.setVisibility(View.GONE);
+        }
 
         mSkipOrCancel.setOnClickListener(new View.OnClickListener() {
             @Override

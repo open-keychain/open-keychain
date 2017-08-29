@@ -848,6 +848,7 @@
     <string name="drawer_close">"Close navigation drawer"</string>
     <string name="my_keys">"My Keys"</string>
     <string name="nav_backup">"Backup/Restore"</string>
+    <string name="nav_transfer">"Secure Wifi Transfer"</string>
 
     <!-- hints -->
     <string name="encrypt_content_edit_text_hint">"Type text"</string>
@@ -1887,5 +1888,35 @@
     <string name="dialog_insecure_button_ok">Got it</string>
 
     <string name="identity_context_forget">Forget</string>
+
+    <string name="button_scan">"Scan"</string>
+    <string name="button_more_info">"More Info"</string>
+    <string name="transfer_scan_explanation">"To share or import your key setup, establish a secure connection by scanning with either device."</string>
+    <string name="transfer_scan_warning">Use with your own devices only!</string>
+    <string name="connection_status">"Connection status:"</string>
+    <string name="section_transfer_keys">"Available keys for transfer"</string>
+    <string name="section_received_keys">"Received keys"</string>
+    <string name="transfer_scan_only_wifi">"This feature can only be used on Wifi."</string>
+    <string name="button_import">"Import"</string>
+    <string name="transfer_status_connected">"Connected"</string>
+    <string name="transfer_status_disconnected">"Disconnected!"</string>
+    <string name="transfer_error_read_incoming">"Failed reading incoming key!"</string>
+    <string name="transfer_error_connect">"Connection failed!"</string>
+    <string name="transfer_error_listen">"Error waiting for connection!"</string>
+    <string name="transfer_error_generic">"Unknown communication error!"</string>
+    <string name="transfer_error_generic_msg">"Communication error: %s"</string>
+    <string name="transfer_not_available">"Sorry, this feature can only be used on Android 5 or newer :("</string>
+    <string name="transfer_list_empty">"No keys on this device that could be sent.  Waiting for incoming keys…"</string>
+    <string name="transfer_connecting">"Connecting…"</string>
+    <string name="first_time_secure_wifi_transfer">"Secure Wifi Transfer"</string>
+    <string name="menu_secure_wifi_transfer">"Secure Wifi Transfer"</string>
+    <string name="transfer_confirm_cancel">"Cancel"</string>
+    <string name="transfer_confirm_ok">"Send"</string>
+    <string name="transfer_confirm_title">"Send your key?"</string>
+    <string name="transfer_confirm_text">"This will transfer full access to your key to the connected device. You should never send your own keys to devices you don't own!"</string>
+    <string name="button_scan_again">"Scan Again"</string>
+    <string name="transfer_error_wifi_text">"Connection failed!"</string>
+    <string name="transfer_error_wifi_text_instructions">"Make sure you are on the same network, then scan again."</string>
+    <string name="transfer_error_wifi_text_instructions_ssid">"Make sure you are on the &quot;%s&quot; network, then scan again."</string>
 
 </resources>

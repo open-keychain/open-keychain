@@ -41,6 +41,10 @@ import java.util.Locale;
  */
 public class QrCodeUtils {
 
+    public static Bitmap getQRCodeBitmap(final Uri uri) {
+        return getQRCodeBitmap(uri.toString(), 0);
+    }
+
     public static Bitmap getQRCodeBitmap(final Uri uri, final int size) {
         // for URIs we want alphanumeric encoding to save space, thus make everything upper case!
         // zxing will then select Mode.ALPHANUMERIC internally

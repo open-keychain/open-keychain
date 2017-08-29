@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/transfer_animator"
+    android:inAnimation="@anim/fade_in_delayed"
+    android:outAnimation="@anim/fade_out"
+    custom:initialView="0">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_waiting"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/transfer_scan_explanation"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:weightSum="1">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.75"
+                custom:cardUseCompatPadding="true"
+                custom:cardCornerRadius="4dp"
+                >
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/qr_code_image"
+                    tools:layout_height="240dp"
+                    tools:src="@drawable/ic_qrcode_white_24dp"
+                    tools:tint="@color/md_black_1000"
+                    />
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/transfer_scan_warning"
+            android:textColor="@color/android_red_dark"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            tools:ignore="ButtonStyle" >
+
+            <!--
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:id="@+id/button_help"
+                android:text="@string/button_more_info"
+                android:drawableLeft="@drawable/ic_live_help_24dp"
+                android:drawableTint="@color/md_black_1000"
+                android:drawablePadding="8dp"/>
+            -->
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:id="@+id/button_scan"
+                android:text="@string/button_scan"
+                android:drawableLeft="@drawable/ic_qrcode_white_24dp"
+                android:drawableTint="@color/md_black_1000"
+                android:drawablePadding="8dp"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_connecting"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <org.sufficientlysecure.keychain.ui.widget.ConnectionStatusView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:text="@string/transfer_connecting"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_connected"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <org.sufficientlysecure.keychain.ui.widget.ConnectionStatusView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:id="@+id/connection_status_icon_1"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_toRightOf="@+id/connection_status_icon_1"
+                android:layout_toEndOf="@+id/connection_status_icon_1"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="16dp"
+                android:id="@+id/connection_title_1"
+                android:text="@string/connection_status"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_toRightOf="@+id/connection_status_icon_1"
+                android:layout_toEndOf="@+id/connection_status_icon_1"
+                android:layout_below="@+id/connection_title_1"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:id="@+id/connection_status_1"
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="Connected"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/section_transfer_keys"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="@style/SectionHeader"
+            />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <org.sufficientlysecure.keychain.ui.transfer.view.TransferSecretKeyList
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/transfer_key_list"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_horizontal"
+                    android:padding="12dp"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:id="@+id/transfer_key_list_empty"
+                    android:text="@string/transfer_list_empty"
+                    />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_passive"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <org.sufficientlysecure.keychain.ui.widget.ConnectionStatusView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:id="@+id/connection_status_icon_2"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_toRightOf="@+id/connection_status_icon_2"
+                android:layout_toEndOf="@+id/connection_status_icon_2"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="16dp"
+                android:id="@+id/connection_title_2"
+                android:text="@string/connection_status"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_toRightOf="@+id/connection_status_icon_2"
+                android:layout_toEndOf="@+id/connection_status_icon_2"
+                android:layout_below="@+id/connection_title_2"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:id="@+id/connection_status_2"
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="Connected"
+                />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/section_received_keys"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="@style/SectionHeader"
+            />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <org.sufficientlysecure.keychain.ui.transfer.view.ReceivedSecretKeyList
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/received_key_list"
+                />
+
+        </ScrollView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_no_wifi"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/ic_wifi_off_96dp"
+            android:tint="@color/md_grey_600"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:text="@string/transfer_scan_only_wifi"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/transfer_layout_wifi_error"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/ic_wifi_question_96dp"
+            android:tint="@color/md_grey_600"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/transfer_error_wifi_text"
+            tools:text="Connection failed!"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:gravity="center_horizontal"
+            android:id="@+id/transfer_wifi_error_instructions"
+            android:text="@string/transfer_error_wifi_text_instructions"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/button_scan_again"
+            android:text="@string/button_scan_again"
+            android:drawableLeft="@drawable/ic_qrcode_white_24dp"
+            android:drawableTint="@color/md_black_1000"
+            android:drawablePadding="8dp"
+            />
+
+    </LinearLayout>
+
+</org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>

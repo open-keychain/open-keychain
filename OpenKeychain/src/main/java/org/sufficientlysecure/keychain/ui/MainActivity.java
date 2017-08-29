@@ -20,6 +20,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -41,6 +43,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
+import org.sufficientlysecure.keychain.ui.transfer.view.TransferFragment;
+import org.sufficientlysecure.keychain.ui.transfer.view.TransferNotAvailableFragment;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -50,8 +54,9 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     static final int ID_ENCRYPT_DECRYPT = 2;
     static final int ID_APPS = 3;
     static final int ID_BACKUP = 4;
-    static final int ID_SETTINGS = 5;
-    static final int ID_HELP = 6;
+    public static final int ID_TRANSFER = 5;
+    static final int ID_SETTINGS = 6;
+    static final int ID_HELP = 7;
 
     // both of these are used for instrumentation testing only
     public static final String EXTRA_SKIP_FIRST_TIME = "skip_first_time";
@@ -82,6 +87,11 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                 .withIdentifier(ID_APPS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_backup).withIcon(CommunityMaterial.Icon.cmd_backup_restore)
                                 .withIdentifier(ID_BACKUP).withSelectable(false),
+                        new PrimaryDrawerItem().withName(R.string.nav_transfer)
+                                .withIcon(R.drawable.ic_wifi_lock_24dp)
+                                .withIconColorRes(R.color.md_grey_600)
+                                .withIconTintingEnabled(true)
+                                .withIdentifier(ID_TRANSFER).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(R.string.menu_preferences).withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(ID_SETTINGS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.menu_help).withIcon(CommunityMaterial.Icon.cmd_help_circle).withIdentifier(ID_HELP).withSelectable(false)
@@ -104,6 +114,9 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                     break;
                                 case ID_BACKUP:
                                     onBackupSelected();
+                                    break;
+                                case ID_TRANSFER:
+                                    onTransferSelected();
                                     break;
                                 case ID_SETTINGS:
                                     intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -160,13 +173,36 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                 case ID_APPS:
                     onAppsSelected();
                     break;
+                case ID_TRANSFER:
+                    onTransferSelected();
+                    break;
             }
         }
 
     }
 
-    private void setFragment(Fragment fragment, boolean addToBackStack) {
+    @Override
+    public void onNewIntent(Intent data) {
+        super.onNewIntent(data);
 
+        setIntent(data);
+        if (data != null && data.hasExtra(EXTRA_INIT_FRAG)) {
+            // initialize FragmentLayout with KeyListFragment at first
+            switch (data.getIntExtra(EXTRA_INIT_FRAG, -1)) {
+                case ID_ENCRYPT_DECRYPT:
+                    onEnDecryptSelected();
+                    break;
+                case ID_APPS:
+                    onAppsSelected();
+                    break;
+                case ID_TRANSFER:
+                    onTransferSelected();
+                    break;
+            }
+        }
+    }
+
+    private void setFragment(Fragment fragment, boolean addToBackStack) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
@@ -175,11 +211,12 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         if (addToBackStack) {
             ft.addToBackStack(null);
         }
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
 
     }
 
-    private void onKeysSelected() {
+    public void onKeysSelected() {
         mToolbar.setTitle(R.string.app_name);
         mDrawer.setSelection(ID_KEYS, false);
         Fragment frag = new KeyListFragment();
@@ -205,6 +242,18 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         mDrawer.setSelection(ID_BACKUP, false);
         Fragment frag = new BackupRestoreFragment();
         setFragment(frag, true);
+    }
+
+    private void onTransferSelected() {
+        mToolbar.setTitle(R.string.nav_transfer);
+        mDrawer.setSelection(ID_TRANSFER, false);
+        if (Build.VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
+            Fragment frag = new TransferNotAvailableFragment();
+            setFragment(frag, true);
+        } else {
+            Fragment frag = new TransferFragment();
+            setFragment(frag, true);
+        }
     }
 
     @Override

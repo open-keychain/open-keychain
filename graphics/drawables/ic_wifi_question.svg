@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   fill="#000000"
+   height="24"
+   viewBox="0 0 24 24"
+   width="24"
+   version="1.1"
+   id="svg6"
+   sodipodi:docname="ic_wifi_question.svg"
+   inkscape:version="0.92.1 r15371">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1056"
+     id="namedview8"
+     showgrid="false"
+     inkscape:measure-start="15.5,6.9"
+     inkscape:measure-end="21.5,14.4"
+     inkscape:zoom="39.333333"
+     inkscape:cx="12.121876"
+     inkscape:cy="9.0333709"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg6" />
+  <path
+     d="M0 0h24v24H0V0z"
+     fill="none"
+     id="path2" />
+  <path
+     d="m 15.5,14.5 c 0,-2.8 2.2,-5 5,-5 0.4,0 0.7,0 1,0.1 L 23.6,7 C 23.2,6.7 18.7,3 12,3 5.3,3 0.8,6.7 0.4,7 L 12,21.5 15.5,17.1 Z"
+     id="path4"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ssccscccs" />
+  <g
+     style="fill:none;fill-rule:evenodd;stroke:none;stroke-width:1"
+     id="Page-1"
+     sketch:type="MSPage"
+     transform="matrix(0.14184741,0,0,0.14184741,13.309409,9.1313496)">
+    <g
+       style="fill:#000000"
+       id="signature-unverified"
+       sketch:type="MSArtboardGroup">
+      <path
+         inkscape:connector-curvature="0"
+         d="M 56.359,80.095 H 42.883 V 66.877 H 56.359 Z M 70.222,40.709 c -0.717,1.773 -1.602,3.289 -2.66,4.547 -1.061,1.259 -2.232,2.332 -3.52,3.218 -1.287,0.888 -2.504,1.772 -3.648,2.659 -1.145,0.889 -2.16,1.903 -3.047,3.047 -0.889,1.145 -1.445,2.573 -1.674,4.289 v 3.26 H 44.086 v -3.861 c 0.172,-2.457 0.643,-4.518 1.416,-6.176 0.771,-1.658 1.674,-3.075 2.703,-4.248 1.031,-1.172 2.117,-2.188 3.261,-3.046 1.145,-0.856 2.203,-1.716 3.176,-2.573 0.973,-0.858 1.76,-1.801 2.361,-2.831 0.601,-1.03 0.871,-2.316 0.814,-3.86 0,-2.631 -0.643,-4.576 -1.93,-5.836 -1.289,-1.256 -3.078,-1.887 -5.365,-1.887 -1.545,0 -2.875,0.301 -3.992,0.901 -1.115,0.601 -2.031,1.401 -2.746,2.402 -0.717,1.001 -1.244,2.174 -1.588,3.517 -0.344,1.346 -0.516,2.79 -0.516,4.334 H 29.065 c 0.055,-3.09 0.586,-5.921 1.588,-8.494 1,-2.574 2.402,-4.805 4.205,-6.691 1.803,-1.889 3.977,-3.361 6.523,-4.422 2.547,-1.059 5.395,-1.588 8.541,-1.588 4.062,0 7.453,0.559 10.171,1.674 2.717,1.116 4.906,2.504 6.566,4.164 1.66,1.659 2.846,3.446 3.562,5.362 0.715,1.917 1.072,3.703 1.072,5.362 0.002,2.745 -0.356,5.006 -1.071,6.777 z"
+         sketch:type="MSShapeGroup"
+         id="path8"
+         sodipodi:nodetypes="ccccccccccccccccccsccsccccccccsccccc" />
+    </g>
+  </g>
+</svg>

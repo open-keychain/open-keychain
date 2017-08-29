@@ -122,7 +122,8 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
 
             keyChoiceList = (RecyclerView) view.findViewById(R.id.duplicate_key_list);
             keyChoiceList.setLayoutManager(new LinearLayoutManager(activity));
-            keyChoiceList.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL_LIST));
+            keyChoiceList.addItemDecoration(
+                    new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL_LIST, true));
 
             setupListenersForPresenter();
             mvpView = createMvpView(view, layoutInflater);
