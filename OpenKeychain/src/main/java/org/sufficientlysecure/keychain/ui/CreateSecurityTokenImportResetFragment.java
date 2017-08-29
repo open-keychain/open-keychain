@@ -227,7 +227,7 @@ public class CreateSecurityTokenImportResetFragment
 
     public void importFile() {
         Intent intent = new Intent(getActivity(), ImportKeysActivity.class);
-        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE);
+        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_BIND);
         startActivity(intent);
     }
 
