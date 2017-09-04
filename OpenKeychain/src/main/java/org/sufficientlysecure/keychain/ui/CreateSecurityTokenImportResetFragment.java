@@ -44,7 +44,6 @@ import org.sufficientlysecure.keychain.ui.CreateKeyActivity.SecurityTokenListene
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -72,7 +71,6 @@ public class CreateSecurityTokenImportResetFragment
     private TextView vUserId;
     private TextView mNextButton;
     private RadioButton mRadioImport;
-    private RadioButton mRadioFile;
     private RadioButton mRadioReset;
     private View mResetWarning;
 
@@ -117,7 +115,6 @@ public class CreateSecurityTokenImportResetFragment
         vUserId = (TextView) view.findViewById(R.id.token_userid);
         mNextButton = (TextView) view.findViewById(R.id.create_key_next_button);
         mRadioImport = (RadioButton) view.findViewById(R.id.token_decision_import);
-        mRadioFile = (RadioButton) view.findViewById(R.id.token_decision_file);
         mRadioReset = (RadioButton) view.findViewById(R.id.token_decision_reset);
         mResetWarning = view.findViewById(R.id.token_import_reset_warning);
 
@@ -141,8 +138,6 @@ public class CreateSecurityTokenImportResetFragment
                     resetCard();
                 } else if (mRadioImport.isChecked()){
                     importKey();
-                } else {
-                    importFile();
                 }
             }
         });
@@ -153,17 +148,6 @@ public class CreateSecurityTokenImportResetFragment
                 if (isChecked) {
                     mNextButton.setText(R.string.btn_import);
                     mNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_key_plus_grey600_24dp, 0);
-                    mNextButton.setVisibility(View.VISIBLE);
-                    mResetWarning.setVisibility(View.GONE);
-                }
-            }
-        });
-        mRadioFile.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    mNextButton.setText(R.string.key_list_fab_import);
-                    mNextButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_folder_grey_24dp, 0);
                     mNextButton.setVisibility(View.VISIBLE);
                     mResetWarning.setVisibility(View.GONE);
                 }
@@ -182,7 +166,6 @@ public class CreateSecurityTokenImportResetFragment
         });
 
         setData();
-
 
         return view;
     }
@@ -214,21 +197,9 @@ public class CreateSecurityTokenImportResetFragment
     }
 
     public void importKey() {
-        ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
-        keyList.add(ParcelableKeyRing.createFromReference(mTokenFingerprint, null, null, null));
-        mKeyList = keyList;
-
-        mKeyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
-
-        super.setProgressMessageResource(R.string.progress_importing);
-
-        super.cryptoOperation();
-    }
-
-    public void importFile() {
-        Intent intent = new Intent(getActivity(), ImportKeysActivity.class);
-        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE);
-        startActivity(intent);
+//        Fragment frag = CreateSecurityTokenImportFragment.newInstance(mTokenFingerprints, mTokenAid, mTokenUserId,
+//                keyUdi);
+//        mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
     }
 
     public void resetCard() {

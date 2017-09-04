@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/yubi_icon" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="Gathering information for Security Token…"
+            style="?android:textAppearanceMedium"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:animateLayoutChanges="true"
+            android:id="@+id/status_indicator_layout">
+
+            <!--
+            <include layout="@layout/status_indicator_line" />
+            -->
+
+        </LinearLayout>
+
+        <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/action_animator"
+            android:layout_marginRight="4dp"
+            android:layout_marginLeft="4dp"
+            android:inAnimation="@anim/fade_in_delayed"
+            android:outAnimation="@anim/fade_out"
+            android:clipChildren="false"
+            custom:initialView="01">
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/token_layout_not_found">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:text="Key not found!"
+                    style="?android:textAppearanceLarge"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_retry"
+                    android:drawableLeft="@drawable/ic_repeat_grey_24dp"
+                    android:drawableStart="@drawable/ic_repeat_grey_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/card_view_button"
+                    android:text="Retry Search"
+                    style="?borderlessButtonStyle"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_load_file"
+                    android:drawableLeft="@drawable/ic_folder_grey_24dp"
+                    android:drawableStart="@drawable/ic_folder_grey_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/card_view_button"
+                    android:text="Load from File"
+                    style="?borderlessButtonStyle"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_reset_token_1"
+                    android:drawableLeft="@drawable/ic_bomb_24dp"
+                    android:drawableStart="@drawable/ic_bomb_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/android_red_dark"
+                    android:text="Reset Security Token"
+                    style="?borderlessButtonStyle"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/token_layout_import">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:text="Key found!"
+                    style="?android:textAppearanceLarge"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_import"
+                    android:drawableLeft="@drawable/ic_key_plus_grey600_24dp"
+                    android:drawableStart="@drawable/ic_key_plus_grey600_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/card_view_button"
+                    android:text="Import"
+                    style="?borderlessButtonStyle"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_reset_token_2"
+                    android:drawableLeft="@drawable/ic_bomb_24dp"
+                    android:drawableStart="@drawable/ic_bomb_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/android_red_dark"
+                    android:text="Reset Security Token"
+                    style="?borderlessButtonStyle"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/token_layout_ok">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:text="Ready for use!"
+                    style="?android:textAppearanceLarge"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_view_key"
+                    android:drawableLeft="@drawable/ic_vpn_key_grey_24dp"
+                    android:drawableStart="@drawable/ic_vpn_key_grey_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/card_view_button"
+                    android:text="View Key"
+                    style="?borderlessButtonStyle"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_reset_token_3"
+                    android:drawableLeft="@drawable/ic_bomb_24dp"
+                    android:drawableStart="@drawable/ic_bomb_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/android_red_dark"
+                    android:text="Reset Security Token"
+                    style="?borderlessButtonStyle"
+                    />
+
+            </LinearLayout>
+
+        </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+    </LinearLayout>
+
+</ScrollView>

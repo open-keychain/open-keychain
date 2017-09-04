@@ -1475,9 +1475,9 @@
   <string name="security_token_create">Tenir le jeton de sécurité contre le dos de votre appareil.</string>
   <string name="security_token_reset_or_import">Ce jeton de sécurité contient déjà une clé. Des informations supplémentaires sont requises pour l\'utiliser. Elles peuvent être recherchées sur un serveur de clés ou importer d\'un fichier.</string>
   <string name="btn_reset">Réinitialiser</string>
-  <string name="security_token_import_radio">Rechercher les informations de la clé sur le serveur de clés</string>
+  <string name="security_token_radio_use_existing">Rechercher les informations de la clé sur le serveur de clés</string>
   <string name="security_token_file_radio">Importer les informations de la clé d\'un fichier</string>
-  <string name="security_token_reset_radio">Réinitialiser le jeton de sécurité</string>
+  <string name="security_token_radio_reset">Réinitialiser le jeton de sécurité</string>
   <string name="security_token_reset_warning">La réinitialisation du jeton de sécurité détruit complètement les clés qu\'il contient. Par la suite, vous ne pourrez plus déchiffrer les messages/les fichiers chiffrés avec cette clé !</string>
   <string name="snack_security_token_other">Une clé différente est stockée sur le jeton de sécurité !</string>
   <string name="security_token_error">Erreur : %s</string>

@@ -80,14 +80,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="@string/security_token_import_radio" />
-
-                    <RadioButton
-                        android:id="@+id/token_decision_file"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/security_token_file_radio" />
+                        android:text="@string/security_token_radio_use_existing" />
 
                     <RadioButton
                         android:id="@+id/token_decision_reset"
@@ -95,17 +88,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         android:layout_marginTop="16dp"
-                        android:text="@string/security_token_reset_radio" />
+                        android:text="@string/security_token_radio_reset" />
                 </RadioGroup>
 
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_below="@id/yubikey_decision"
-                android:layout_marginTop="4dp"
-                android:background="?android:attr/listDivider" />
 
             <FrameLayout
                 android:id="@+id/security_token_import_fragment"

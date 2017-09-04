@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.service;
 
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

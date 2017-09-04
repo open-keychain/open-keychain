@@ -77,6 +77,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
     byte[] mScannedFingerprints;
     byte[] mSecurityTokenAid;
     String mSecurityTokenUserId;
+    private String mSecurityTokenUrl;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -162,6 +163,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
         mScannedFingerprints = mSecurityTokenHelper.getFingerprints();
         mSecurityTokenAid = mSecurityTokenHelper.getAid();
         mSecurityTokenUserId = mSecurityTokenHelper.getUserId();
+        mSecurityTokenUrl = mSecurityTokenHelper.getUrl();
     }
 
     @Override
@@ -194,8 +196,8 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
                 finish();
 
             } catch (PgpKeyNotFoundException e) {
-                Fragment frag = CreateSecurityTokenImportResetFragment.newInstance(
-                        mScannedFingerprints, mSecurityTokenAid, mSecurityTokenUserId);
+                Fragment frag = CreateSecurityTokenImportFragment.newInstance(
+                        mScannedFingerprints, mSecurityTokenAid, mSecurityTokenUserId, mSecurityTokenUrl);
                 loadFragment(frag, FragAction.TO_RIGHT);
             }
         } else {

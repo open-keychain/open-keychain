@@ -587,6 +587,11 @@ public class SecurityTokenHelper {
         return getData(0x00, 0x4F);
     }
 
+    public String getUrl() throws IOException {
+        byte[] data = getData(0x5F, 0x50);
+        return new String(data);
+    }
+
     public String getUserId() throws IOException {
         return getHolderName(getData(0x00, 0x65));
     }

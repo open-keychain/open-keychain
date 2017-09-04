@@ -25,9 +25,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -55,6 +57,8 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class CryptoOperationHelper<T extends Parcelable, S extends OperationResult> {
 
+    private long operationStartTime;
+
     public interface Callback<T extends Parcelable, S extends OperationResult> {
         T createOperationInput();
 
@@ -65,6 +69,19 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         void onCryptoOperationError(S result);
 
         boolean onCryptoSetProgress(String msg, int progress, int max);
+    }
+
+    public static abstract class AbstractCallback<T extends Parcelable, S extends OperationResult>
+            implements Callback<T,S> {
+        @Override
+        public void onCryptoOperationCancelled() {
+            throw new UnsupportedOperationException("Unexpectedly cancelled operation!!");
+        }
+
+        @Override
+        public boolean onCryptoSetProgress(String msg, int progress, int max) {
+            return false;
+        }
     }
 
     // request codes from CryptoOperationHelper are created essentially
@@ -85,6 +102,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
     private Integer mProgressMessageResource;
     private boolean mCancellable = false;
+    private Long minimumOperationDelay;
 
     private FragmentActivity mActivity;
     private Fragment mFragment;
@@ -117,6 +135,10 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
     public void setProgressMessageResource(int id) {
         mProgressMessageResource = id;
+    }
+
+    public void setOperationMinimumDelay(Long delay) {
+        this.minimumOperationDelay = delay;
     }
 
     public void setProgressCancellable(boolean cancellable) {
@@ -323,10 +345,11 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     public void cryptoOperation() {
+        operationStartTime = SystemClock.elapsedRealtime();
         cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
     }
 
-    public void onHandleResult(OperationResult result) {
+    private void onHandleResult(final OperationResult result) {
         Log.d(Constants.TAG, "Handling result in OperationHelper success: " + result.success());
 
         if (result instanceof InputPendingResult) {
@@ -340,6 +363,21 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
         dismissProgress();
 
+        long elapsedTime = SystemClock.elapsedRealtime() - operationStartTime;
+        if (minimumOperationDelay == null || elapsedTime > minimumOperationDelay) {
+            returnResultToCallback(result);
+            return;
+        }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                returnResultToCallback(result);
+            }
+        }, minimumOperationDelay - elapsedTime);
+    }
+
+    private void returnResultToCallback(OperationResult result) {
         try {
             if (result.success()) {
                 // noinspection unchecked, because type erasure :(

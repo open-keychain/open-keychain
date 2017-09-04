@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/status_layout1">
+
+    <org.sufficientlysecure.keychain.ui.widget.StatusIndicator
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:id="@+id/status_indicator"
+        android:layout_margin="4dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:id="@+id/status_text"
+        android:text="Searching in key list…"
+        style="?android:textAppearanceMedium"
+        />
+
+</LinearLayout>
+            
+        

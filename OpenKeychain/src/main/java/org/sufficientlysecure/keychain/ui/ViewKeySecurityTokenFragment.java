@@ -99,7 +99,6 @@ public class ViewKeySecurityTokenFragment
         mMasterKeyId = args.getLong(ARG_MASTER_KEY_ID);
 
         getLoaderManager().initLoader(0, null, this);
-
     }
 
     @Override

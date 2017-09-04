@@ -151,7 +151,8 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
 
     private Intent getTrustIdActivityIntentIfResolvable(String packageName, String autocryptPeer) {
         Intent intent = new Intent();
-        intent.setAction(packageName + ".AUTOCRYPT_PEER_ACTION");
+        intent.setAction("org.autocrypt.PEER_ACTION");
+        intent.setPackage(packageName);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID, autocryptPeer);
 

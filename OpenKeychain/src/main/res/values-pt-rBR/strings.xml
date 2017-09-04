@@ -1390,7 +1390,7 @@
   <string name="security_token_status_partly">O Token de Segurança coincide, parcialmente associado à chave</string>
   <string name="security_token_create">Segure o Token de Segurança contra as costas do seu dispositivo.</string>
   <string name="btn_reset">Redefinir</string>
-  <string name="security_token_reset_radio">Redefinir Token de Segurança</string>
+  <string name="security_token_radio_reset">Redefinir Token de Segurança</string>
   <string name="security_token_reset_warning">Resetar o Token de Segurança destrói completamente as chaves nele. Após isto, você não será capaz de decriptar mensagens/arquivos encruiptados com estas chaves!</string>
   <string name="snack_security_token_other">Uma chave diferente está armazenada no Token de Segurança!</string>
   <string name="security_token_error">Erro: %s</string>

@@ -580,7 +580,7 @@
   <string name="nfc_settings">Innstillinger</string>
   <string name="snack_security_token_view">Vis</string>
   <string name="btn_reset">Tilbakestill</string>
-  <string name="security_token_reset_radio">Tilbakestill sikkerhetssymbol</string>
+  <string name="security_token_radio_reset">Tilbakestill sikkerhetssymbol</string>
   <string name="security_token_error">Feil: %s</string>
   <string name="security_token_error_unknown">Ukjent feil</string>
   <string name="security_token_error_try_again">Prøv igjen</string>

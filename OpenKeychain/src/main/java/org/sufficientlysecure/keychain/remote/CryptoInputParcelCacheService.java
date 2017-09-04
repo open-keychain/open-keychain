@@ -76,6 +76,7 @@ public class CryptoInputParcelCacheService extends Service {
         data.setExtrasClassLoader(CryptoInputParcelCacheService.class.getClassLoader());
 
         // And write out the UUID most and least significant bits.
+        data.setExtrasClassLoader(CryptoInputParcelCacheService.class.getClassLoader());
         data.putExtra(OpenPgpApi.EXTRA_CALL_UUID1, mTicket.getMostSignificantBits());
         data.putExtra(OpenPgpApi.EXTRA_CALL_UUID2, mTicket.getLeastSignificantBits());
     }
