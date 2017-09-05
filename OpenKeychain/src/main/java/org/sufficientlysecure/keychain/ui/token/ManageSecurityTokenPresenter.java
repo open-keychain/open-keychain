@@ -96,7 +96,9 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     @Override
     public void onActivityCreated() {
-        continueSearch();
+        if (!searchedLocally || !searchedAtUri || !searchedKeyservers) {
+            continueSearch();
+        }
     }
 
     private void continueSearchAfterError() {
@@ -145,6 +147,10 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
         @Override
         public void onLoadFinished(Loader<KeyRetrievalResult> loader, KeyRetrievalResult data) {
+            if (view == null) {
+                return;
+            }
+
             switch (loader.getId()) {
                 case LOADER_LOCAL: {
                     searchedLocally = true;

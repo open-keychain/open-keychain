@@ -160,6 +160,13 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        presenter.setView(null);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.token_setup, menu);
     }
