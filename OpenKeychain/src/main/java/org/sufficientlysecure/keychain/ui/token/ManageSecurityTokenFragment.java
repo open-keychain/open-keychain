@@ -18,11 +18,16 @@
 package org.sufficientlysecure.keychain.ui.token;
 
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
@@ -73,6 +78,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     private static final String ARG_URL = "key_uri";
     public static final int REQUEST_CODE_OPEN_FILE = 0;
     public static final int REQUEST_CODE_RESET = 1;
+    public static final int PERMISSION_READ_STORAGE = 0;
 
     ManageSecurityTokenMvpPresenter presenter;
     private ViewGroup statusLayoutGroup;
@@ -306,6 +312,27 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
         Intent intent = new Intent(getActivity(), LogDisplayActivity.class);
         intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
         startActivity(intent);
+    }
+
+    @TargetApi(VERSION_CODES.JELLY_BEAN)
+    @Override
+    public void requestStoragePermission() {
+        requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, PERMISSION_READ_STORAGE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+        if (requestCode != PERMISSION_READ_STORAGE) {
+            return;
+        }
+
+        boolean permissionWasGranted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        if (permissionWasGranted) {
+            presenter.onStoragePermissionGranted();
+        } else {
+            presenter.onStoragePermissionDenied();
+        }
     }
 
     @Override

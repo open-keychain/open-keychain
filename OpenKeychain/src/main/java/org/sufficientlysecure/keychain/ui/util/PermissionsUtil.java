@@ -62,7 +62,7 @@ public class PermissionsUtil {
         return result;
     }
 
-    private static boolean checkReadPermission(Context context, Uri uri) {
+    public static boolean checkReadPermission(Context context, Uri uri) {
         if (!ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
             return true;
         }

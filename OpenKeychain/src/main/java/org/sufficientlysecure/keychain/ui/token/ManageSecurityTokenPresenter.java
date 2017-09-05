@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyRetr
 import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyserverRetrievalLoader;
 import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.LocalKeyLookupLoader;
 import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.UriKeyRetrievalLoader;
+import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
 
 
 class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
@@ -65,6 +66,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     private Long masterKeyId;
 
     private OperationLog log;
+    private Uri selectedContentUri;
 
     ManageSecurityTokenPresenter(Context context, byte[] tokenFingerprints, byte[] tokenAid,
             String tokenUserId, String tokenUrl, LoaderManager loaderManager) {
@@ -278,12 +280,35 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     @Override
     public void onFileSelected(Uri contentUri) {
+        boolean hasReadPermission = PermissionsUtil.checkReadPermission(context, contentUri);
+        if (!hasReadPermission) {
+            selectedContentUri = contentUri;
+            view.requestStoragePermission();
+            return;
+        }
+
+        startLoadingFile(contentUri);
+    }
+
+    private void startLoadingFile(Uri contentUri) {
         view.resetStatusLines();
         view.statusLineAdd(StatusLine.SEARCH_CONTENT_URI);
 
         Bundle args = new Bundle();
         args.putParcelable(ARG_CONTENT_URI, contentUri);
         loaderManager.restartLoader(LOADER_CONTENT_URI, args, loaderCallbacks);
+    }
+
+    @Override
+    public void onStoragePermissionGranted() {
+        Uri contentUri = selectedContentUri;
+        selectedContentUri = null;
+        startLoadingFile(contentUri);
+    }
+
+    @Override
+    public void onStoragePermissionDenied() {
+        selectedContentUri = null;
     }
 
     @Override

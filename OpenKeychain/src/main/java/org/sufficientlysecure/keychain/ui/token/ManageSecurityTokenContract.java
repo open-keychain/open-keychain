@@ -43,6 +43,8 @@ class ManageSecurityTokenContract {
 
         void onClickLoadFile();
         void onFileSelected(Uri fileUri);
+        void onStoragePermissionGranted();
+        void onStoragePermissionDenied();
 
         void onClickResetToken();
         void onClickConfirmReset();
@@ -70,5 +72,7 @@ class ManageSecurityTokenContract {
         void showConfirmResetDialog();
 
         void showDisplayLogActivity(OperationResult result);
+
+        void requestStoragePermission();
     }
 }
