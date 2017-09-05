@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui;
+package org.sufficientlysecure.keychain.ui.token;
 
 
 import android.app.Activity;
@@ -47,10 +47,15 @@ import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.CreateSecurityTokenImportPresenter.CreateSecurityTokenImportMvpView;
+import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
+import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
+import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
+import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.AbstractCallback;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
+import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpPresenter;
+import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpView;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator;
@@ -59,7 +64,7 @@ import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
 
-public class CreateSecurityTokenImportFragment extends Fragment implements CreateSecurityTokenImportMvpView,
+public class ManageSecurityTokenFragment extends Fragment implements ManageSecurityTokenMvpView,
         OnClickListener {
     private static final String ARG_FINGERPRINTS = "fingerprint";
     private static final String ARG_AID = "aid";
@@ -68,7 +73,7 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
     public static final int REQUEST_CODE_OPEN_FILE = 0;
     public static final int REQUEST_CODE_RESET = 1;
 
-    CreateSecurityTokenImportPresenter presenter;
+    ManageSecurityTokenMvpPresenter presenter;
     private ViewGroup statusLayoutGroup;
     private ToolableViewAnimator actionAnimator;
 
@@ -84,7 +89,7 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
     }
 
     public static Fragment newInstance(byte[] scannedFingerprints, byte[] nfcAid, String userId, String tokenUrl) {
-        CreateSecurityTokenImportFragment frag = new CreateSecurityTokenImportFragment();
+        ManageSecurityTokenFragment frag = new ManageSecurityTokenFragment();
 
         Bundle args = new Bundle();
         args.putByteArray(ARG_FINGERPRINTS, scannedFingerprints);
@@ -107,7 +112,7 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
         String tokenUserId = args.getString(ARG_USER_ID);
         String tokenUrl = args.getString(ARG_URL);
 
-        presenter = new CreateSecurityTokenImportPresenter(
+        presenter = new ManageSecurityTokenPresenter(
                 getContext(), tokenFingerprints, tokenAid, tokenUserId, tokenUrl, getLoaderManager());
     }
 

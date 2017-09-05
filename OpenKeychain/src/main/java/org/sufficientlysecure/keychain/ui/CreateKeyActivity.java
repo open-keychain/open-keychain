@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
+import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -196,7 +197,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
                 finish();
 
             } catch (PgpKeyNotFoundException e) {
-                Fragment frag = CreateSecurityTokenImportFragment.newInstance(
+                Fragment frag = ManageSecurityTokenFragment.newInstance(
                         mScannedFingerprints, mSecurityTokenAid, mSecurityTokenUserId, mSecurityTokenUrl);
                 loadFragment(frag, FragAction.TO_RIGHT);
             }

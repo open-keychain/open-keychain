@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui;
+package org.sufficientlysecure.keychain.ui.token;
 
 
 import android.content.Context;
@@ -28,31 +28,35 @@ import android.support.v4.content.Loader;
 import org.sufficientlysecure.keychain.operations.results.GenericOperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.ui.CreateSecurityTokenImportFragment.StatusLine;
-import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.ContentUriRetrievalLoader;
-import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.KeyRetrievalResult;
-import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.KeyserverRetrievalLoader;
-import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.LocalKeyLookupLoader;
-import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.UriKeyRetrievalLoader;
+import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpPresenter;
+import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpView;
+import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment.StatusLine;
+import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.ContentUriRetrievalLoader;
+import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyRetrievalResult;
+import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyserverRetrievalLoader;
+import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.LocalKeyLookupLoader;
+import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.UriKeyRetrievalLoader;
 
 
-class CreateSecurityTokenImportPresenter {
+class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     private static final int LOADER_LOCAL = 0;
     private static final int LOADER_URI = 1;
     private static final int LOADER_KEYSERVER = 2;
     private static final int LOADER_CONTENT_URI = 3;
     private static final String ARG_CONTENT_URI = "content_uri";
 
-    private Context context;
 
-    private byte[][] tokenFingerprints;
-    private byte[] tokenAid;
-    private double tokenVersion;
-    private String tokenUserId;
+    private final Context context;
+    private final LoaderManager loaderManager;
+
+    private final byte[][] tokenFingerprints;
+    private final byte[] tokenAid;
+    private final String tokenUserId;
     private final String tokenUrl;
 
-    private LoaderManager loaderManager;
-    private CreateSecurityTokenImportMvpView view;
+
+    private ManageSecurityTokenMvpView view;
+
     private boolean searchedLocally;
     private boolean searchedAtUri;
     private boolean searchedKeyservers;
@@ -62,7 +66,7 @@ class CreateSecurityTokenImportPresenter {
 
     private OperationLog log;
 
-    CreateSecurityTokenImportPresenter(Context context, byte[] tokenFingerprints, byte[] tokenAid,
+    ManageSecurityTokenPresenter(Context context, byte[] tokenFingerprints, byte[] tokenAid,
             String tokenUserId, String tokenUrl, LoaderManager loaderManager) {
         this.context = context.getApplicationContext();
 
@@ -83,10 +87,12 @@ class CreateSecurityTokenImportPresenter {
         this.log = new OperationLog();
     }
 
-    public void setView(CreateSecurityTokenImportMvpView view) {
+    @Override
+    public void setView(ManageSecurityTokenMvpView view) {
         this.view = view;
     }
 
+    @Override
     public void onActivityCreated() {
         continueSearch();
     }
@@ -196,13 +202,15 @@ class CreateSecurityTokenImportPresenter {
         throw new IllegalArgumentException("Method can only be called with successful result!");
     }
 
-    void onClickImport() {
+    @Override
+    public void onClickImport() {
         view.statusLineAdd(StatusLine.IMPORT);
         view.hideAction();
         view.operationImportKey(importKeyData);
     }
 
-    void onImportSuccess(OperationResult result) {
+    @Override
+    public void onImportSuccess(OperationResult result) {
         log.add(result, 0);
 
         view.statusLineOk();
@@ -210,26 +218,30 @@ class CreateSecurityTokenImportPresenter {
         view.operationPromote(masterKeyId, tokenAid);
     }
 
-    void onImportError(OperationResult result) {
+    @Override
+    public void onImportError(OperationResult result) {
         log.add(result, 0);
 
         view.statusLineError();
     }
 
-    void onPromoteSuccess(OperationResult result) {
+    @Override
+    public void onPromoteSuccess(OperationResult result) {
         log.add(result, 0);
 
         view.statusLineOk();
         view.showActionViewKey();
     }
 
-    void onPromoteError(OperationResult result) {
+    @Override
+    public void onPromoteError(OperationResult result) {
         log.add(result, 0);
 
         view.statusLineError();
     }
 
-    void onClickRetry() {
+    @Override
+    public void onClickRetry() {
         searchedLocally = false;
         searchedAtUri = false;
         searchedKeyservers = false;
@@ -239,27 +251,33 @@ class CreateSecurityTokenImportPresenter {
         continueSearch();
     }
 
-    void onClickViewKey() {
+    @Override
+    public void onClickViewKey() {
         view.finishAndShowKey(masterKeyId);
     }
 
-    void onClickResetToken() {
+    @Override
+    public void onClickResetToken() {
         view.showConfirmResetDialog();
     }
 
-    void onClickConfirmReset() {
+    @Override
+    public void onClickConfirmReset() {
         view.operationResetSecurityToken();
     }
 
-    void onSecurityTokenResetSuccess() {
+    @Override
+    public void onSecurityTokenResetSuccess() {
         // TODO
     }
 
-    void onClickLoadFile() {
+    @Override
+    public void onClickLoadFile() {
         view.showFileSelectDialog();
     }
 
-    void onFileSelected(Uri contentUri) {
+    @Override
+    public void onFileSelected(Uri contentUri) {
         view.resetStatusLines();
         view.statusLineAdd(StatusLine.SEARCH_CONTENT_URI);
 
@@ -268,31 +286,9 @@ class CreateSecurityTokenImportPresenter {
         loaderManager.restartLoader(LOADER_CONTENT_URI, args, loaderCallbacks);
     }
 
-    void onClickViewLog() {
+    @Override
+    public void onClickViewLog() {
         OperationResult result = new GenericOperationResult(GenericOperationResult.RESULT_OK, log);
         view.showDisplayLogActivity(result);
-    }
-
-    interface CreateSecurityTokenImportMvpView {
-        void statusLineAdd(StatusLine statusLine);
-        void statusLineOk();
-        void statusLineError();
-        void resetStatusLines();
-
-        void showActionImport();
-        void showActionViewKey();
-        void showActionRetryOrFromFile();
-        void hideAction();
-
-        void operationImportKey(byte[] importKeyData);
-        void operationPromote(long masterKeyId, byte[] cardAid);
-        void operationResetSecurityToken();
-
-        void finishAndShowKey(long masterKeyId);
-
-        void showFileSelectDialog();
-        void showConfirmResetDialog();
-
-        void showDisplayLogActivity(OperationResult result);
     }
 }

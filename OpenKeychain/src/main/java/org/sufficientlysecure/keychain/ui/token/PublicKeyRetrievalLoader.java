@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui;
+package org.sufficientlysecure.keychain.ui.token;
 
 
 import java.io.BufferedInputStream;
@@ -52,7 +52,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.KeyRetrievalResult;
+import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyRetrievalResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -65,7 +65,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
     private KeyRetrievalResult cachedResult;
 
 
-    public PublicKeyRetrievalLoader(Context context) {
+    private PublicKeyRetrievalLoader(Context context) {
         super(context);
     }
 
@@ -87,11 +87,11 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
         return keyRetrievalResult;
     }
 
-    public static class LocalKeyLookupLoader extends PublicKeyRetrievalLoader {
+    static class LocalKeyLookupLoader extends PublicKeyRetrievalLoader {
         private final KeyRepository keyRepository;
         private final byte[][] fingerprints;
 
-        public LocalKeyLookupLoader(Context context, byte[][] fingerprints) {
+        LocalKeyLookupLoader(Context context, byte[][] fingerprints) {
             super(context);
 
             this.fingerprints = fingerprints;
@@ -142,11 +142,11 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
         }
     }
 
-    public static class UriKeyRetrievalLoader extends PublicKeyRetrievalLoader {
-        byte[][] fingerprints;
-        String tokenUri;
+    static class UriKeyRetrievalLoader extends PublicKeyRetrievalLoader {
+        private final byte[][] fingerprints;
+        private final String tokenUri;
 
-        public UriKeyRetrievalLoader(Context context, String tokenUri, byte[][] fingerprints) {
+        UriKeyRetrievalLoader(Context context, String tokenUri, byte[][] fingerprints) {
             super(context);
 
             this.tokenUri = tokenUri;
@@ -199,10 +199,10 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
         }
     }
 
-    public static class KeyserverRetrievalLoader extends PublicKeyRetrievalLoader {
-        byte[] fingerprint;
+    static class KeyserverRetrievalLoader extends PublicKeyRetrievalLoader {
+        private final byte[] fingerprint;
 
-        public KeyserverRetrievalLoader(Context context, byte[] fingerprint) {
+        KeyserverRetrievalLoader(Context context, byte[] fingerprint) {
             super(context);
 
             this.fingerprint = fingerprint;
@@ -244,12 +244,12 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
         }
     }
 
-    public static class ContentUriRetrievalLoader extends PublicKeyRetrievalLoader {
+    static class ContentUriRetrievalLoader extends PublicKeyRetrievalLoader {
         private final ContentResolver contentResolver;
         private final byte[] fingerprint;
         private final Uri uri;
 
-        public ContentUriRetrievalLoader(Context context, byte[] fingerprint, Uri uri) {
+        ContentUriRetrievalLoader(Context context, byte[] fingerprint, Uri uri) {
             super(context);
 
             this.fingerprint = fingerprint;
