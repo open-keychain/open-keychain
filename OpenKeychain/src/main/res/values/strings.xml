@@ -1928,5 +1928,14 @@
     <string name="token_reset_confirm_title">Reset Security Token?</string>
     <string name="token_reset_confirm_message">This will irrecoverably delete the key stored on this Security Token. You will no longer be able to use this key for decryption! Are you sure?</string>
     <string name="token_reset_confirm_ok">Reset</string>
+    <string name="token_status_title">Gathering information for Security Token…</string>
+    <string name="token_status_not_found">Key not found!</string>
+    <string name="token_status_retry">Retry Search</string>
+    <string name="token_status_load_from_file">Load from File</string>
+    <string name="token_status_reset">Reset Security Token</string>
+    <string name="token_status_key_found">Key found!</string>
+    <string name="token_status_import">Import</string>
+    <string name="token_status_token_ok">Ready for use!</string>
+    <string name="token_status_view_key">View Key</string>
 
 </resources>
