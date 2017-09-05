@@ -58,7 +58,7 @@ class CreateSecurityTokenImportPresenter {
     private Long masterKeyId;
 
 
-    public CreateSecurityTokenImportPresenter(Context context, byte[] tokenFingerprints, byte[] tokenAid,
+    CreateSecurityTokenImportPresenter(Context context, byte[] tokenFingerprints, byte[] tokenAid,
             String tokenUserId, String tokenUrl, LoaderManager loaderManager) {
         this.context = context.getApplicationContext();
 
@@ -227,7 +227,15 @@ class CreateSecurityTokenImportPresenter {
         view.finishAndShowKey(masterKeyId);
     }
 
-    public void onClickResetToken() {
+    void onClickResetToken() {
+        view.showConfirmResetDialog();
+    }
+
+    void onClickConfirmReset() {
+        view.operationResetSecurityToken();
+    }
+
+    void onSecurityTokenResetSuccess() {
         // TODO
     }
 
@@ -257,9 +265,11 @@ class CreateSecurityTokenImportPresenter {
 
         void operationImportKey(byte[] importKeyData);
         void operationPromote(long masterKeyId, byte[] cardAid);
+        void operationResetSecurityToken();
 
         void finishAndShowKey(long masterKeyId);
 
         void showFileSelectDialog();
+        void showConfirmResetDialog();
     }
 }

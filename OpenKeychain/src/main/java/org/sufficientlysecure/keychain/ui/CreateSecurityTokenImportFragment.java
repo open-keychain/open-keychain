@@ -19,12 +19,14 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog.Builder;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,11 +43,14 @@ import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateSecurityTokenImportPresenter.CreateSecurityTokenImportMvpView;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.AbstractCallback;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator.Status;
 import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
@@ -59,6 +64,7 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
     private static final String ARG_USER_ID = "user_ids";
     private static final String ARG_URL = "key_uri";
     public static final int REQUEST_CODE_OPEN_FILE = 0;
+    public static final int REQUEST_CODE_RESET = 1;
 
     CreateSecurityTokenImportPresenter presenter;
     private ViewGroup statusLayoutGroup;
@@ -233,8 +239,32 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
     }
 
     @Override
+    public void operationResetSecurityToken() {
+        Intent intent = new Intent(getActivity(), SecurityTokenOperationActivity.class);
+        RequiredInputParcel resetP = RequiredInputParcel.createSecurityTokenReset();
+        intent.putExtra(SecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, resetP);
+        intent.putExtra(SecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, CryptoInputParcel.createCryptoInputParcel());
+        startActivityForResult(intent, REQUEST_CODE_RESET);
+    }
+
+    @Override
     public void showFileSelectDialog() {
         FileHelper.openDocument(this, null, "*/*", false, REQUEST_CODE_OPEN_FILE);
+    }
+
+    @Override
+    public void showConfirmResetDialog() {
+        new Builder(ThemeChanger.getDialogThemeWrapper(getContext()))
+                .setTitle(R.string.token_reset_confirm_title)
+                .setMessage(R.string.token_reset_confirm_message)
+                .setNegativeButton(R.string.button_cancel, null)
+                .setPositiveButton(R.string.token_reset_confirm_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        presenter.onClickConfirmReset();
+                    }
+                }).show();
     }
 
     @Override
@@ -244,6 +274,12 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
                 if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
                     Uri fileUri = data.getData();
                     presenter.onFileSelected(fileUri);
+                }
+                break;
+            }
+            case REQUEST_CODE_RESET: {
+                if (resultCode == Activity.RESULT_OK) {
+                    presenter.onSecurityTokenResetSuccess();
                 }
                 break;
             }
@@ -270,6 +306,7 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
             }
             case R.id.button_load_file: {
                 presenter.onClickLoadFile();
+                break;
             }
             case R.id.button_reset_token_1:
             case R.id.button_reset_token_2:

@@ -1925,5 +1925,8 @@
     <string name="status_token_promote">Setting up key…</string>
     <string name="status_token_check">Checking key setup…</string>
     <string name="status_content_uri">Reading file…</string>
+    <string name="token_reset_confirm_title">Reset Security Token?</string>
+    <string name="token_reset_confirm_message">This will irrecoverably delete the key stored on this Security Token. You will no longer be able to use this key for decryption! Are you sure?</string>
+    <string name="token_reset_confirm_ok">Reset</string>
 
 </resources>
