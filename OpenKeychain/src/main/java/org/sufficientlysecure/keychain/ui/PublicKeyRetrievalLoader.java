@@ -18,16 +18,21 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.google.auto.value.AutoValue;
+import okhttp3.Call;
 import okhttp3.Request.Builder;
 import okhttp3.Response;
 import org.sufficientlysecure.keychain.Constants;
@@ -35,10 +40,9 @@ import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient.QueryFailedException;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
@@ -66,7 +70,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
         KeyRetrievalResult keyRetrievalResult = super.onLoadInBackground();
 
         try {
-            long elapsedTime = startTime - SystemClock.elapsedRealtime();
+            long elapsedTime = SystemClock.elapsedRealtime() - startTime;
             if (elapsedTime < MIN_OPERATION_TIME_MILLIS) {
                 Thread.sleep(MIN_OPERATION_TIME_MILLIS - elapsedTime);
             }
@@ -130,8 +134,8 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
         @Override
         public KeyRetrievalResult loadInBackground() {
             try {
-                Response execute =
-                        OkHttpClientFactory.getSimpleClient().newCall(new Builder().url(yubikeyUri).build()).execute();
+                Call call = OkHttpClientFactory.getSimpleClient().newCall(new Builder().url(yubikeyUri).build());
+                Response execute = call.execute();
                 if (execute.isSuccessful()) {
                     UncachedKeyRing keyRing = UncachedKeyRing.decodeFromData(execute.body().bytes());
                     if (Arrays.equals(fingerprints[0], keyRing.getFingerprint())) {
@@ -162,6 +166,10 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
             HkpKeyserverClient keyserverClient = HkpKeyserverClient.fromHkpKeyserverAddress(preferredKeyserver);
 
+            if (true) {
+                return KeyRetrievalResult.createWithError();
+            }
+
             try {
                 String keyString =
                         keyserverClient.get("0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprint), parcelableProxy);
@@ -169,6 +177,43 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
                 return KeyRetrievalResult.createWithKeyringdata(keyRing.getMasterKeyId(), keyRing.getEncoded());
             } catch (QueryFailedException | IOException | PgpGeneralException e) {
+                Log.e(Constants.TAG, "error retrieving key from keyserver", e);
+            }
+
+            return KeyRetrievalResult.createWithError();
+        }
+    }
+
+    public static class ContentUriRetrievalLoader extends PublicKeyRetrievalLoader {
+        private final ContentResolver contentResolver;
+        private final byte[] fingerprint;
+        private final Uri uri;
+
+        public ContentUriRetrievalLoader(Context context, byte[] fingerprint, Uri uri) {
+            super(context);
+
+            this.fingerprint = fingerprint;
+            this.uri = uri;
+            this.contentResolver = context.getContentResolver();
+        }
+
+        @Override
+        public KeyRetrievalResult loadInBackground() {
+            try {
+                InputStream is = contentResolver.openInputStream(uri);
+                if (is == null) {
+                    return KeyRetrievalResult.createWithError();
+                }
+
+                IteratorWithIOThrow<UncachedKeyRing> uncachedKeyRingIterator = UncachedKeyRing.fromStream(
+                        new BufferedInputStream(is));
+                while (uncachedKeyRingIterator.hasNext()) {
+                    UncachedKeyRing keyRing = uncachedKeyRingIterator.next();
+                    if (Arrays.equals(fingerprint, keyRing.getFingerprint())) {
+                        return KeyRetrievalResult.createWithKeyringdata(keyRing.getMasterKeyId(), keyRing.getEncoded());
+                    }
+                }
+            } catch (IOException e) {
                 Log.e(Constants.TAG, "error retrieving key from keyserver", e);
             }
 

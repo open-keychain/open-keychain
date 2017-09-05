@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -48,6 +49,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator.Status;
 import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
+import org.sufficientlysecure.keychain.util.FileHelper;
 
 
 public class CreateSecurityTokenImportFragment extends Fragment implements CreateSecurityTokenImportMvpView,
@@ -56,6 +58,7 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
     private static final String ARG_AID = "aid";
     private static final String ARG_USER_ID = "user_ids";
     private static final String ARG_URL = "key_uri";
+    public static final int REQUEST_CODE_OPEN_FILE = 0;
 
     CreateSecurityTokenImportPresenter presenter;
     private ViewGroup statusLayoutGroup;
@@ -114,6 +117,7 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
         view.findViewById(R.id.button_reset_token_1).setOnClickListener(this);
         view.findViewById(R.id.button_reset_token_2).setOnClickListener(this);
         view.findViewById(R.id.button_reset_token_3).setOnClickListener(this);
+        view.findViewById(R.id.button_load_file).setOnClickListener(this);
 
         setHasOptionsMenu(true);
 
@@ -229,6 +233,27 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
     }
 
     @Override
+    public void showFileSelectDialog() {
+        FileHelper.openDocument(this, null, "*/*", false, REQUEST_CODE_OPEN_FILE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_OPEN_FILE: {
+                if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+                    Uri fileUri = data.getData();
+                    presenter.onFileSelected(fileUri);
+                }
+                break;
+            }
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_import: {
@@ -242,6 +267,9 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
             case R.id.button_view_key: {
                 presenter.onClickViewKey();
                 break;
+            }
+            case R.id.button_load_file: {
+                presenter.onClickLoadFile();
             }
             case R.id.button_reset_token_1:
             case R.id.button_reset_token_2:
@@ -298,7 +326,8 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
         SEARCH_KEYSERVER (R.string.status_search_keyserver),
         IMPORT (R.string.status_import),
         TOKEN_PROMOTE(R.string.status_token_promote),
-        TOKEN_CHECK (R.string.status_token_check);
+        TOKEN_CHECK (R.string.status_token_check),
+        SEARCH_CONTENT_URI (R.string.status_content_uri);
 
         @StringRes
         private int stringRes;

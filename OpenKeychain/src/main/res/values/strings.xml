@@ -1924,5 +1924,6 @@
     <string name="status_import">Importing key…</string>
     <string name="status_token_promote">Setting up key…</string>
     <string name="status_token_check">Checking key setup…</string>
+    <string name="status_content_uri">Reading file…</string>
 
 </resources>

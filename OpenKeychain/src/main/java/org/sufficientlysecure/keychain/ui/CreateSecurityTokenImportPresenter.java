@@ -19,13 +19,14 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
-import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.ui.CreateSecurityTokenImportFragment.StatusLine;
+import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.ContentUriRetrievalLoader;
 import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.KeyRetrievalResult;
 import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.KeyserverRetrievalLoader;
 import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.LocalKeyLookupLoader;
@@ -36,6 +37,8 @@ class CreateSecurityTokenImportPresenter {
     private static final int LOADER_LOCAL = 0;
     private static final int LOADER_URI = 1;
     private static final int LOADER_KEYSERVER = 2;
+    private static final int LOADER_CONTENT_URI = 3;
+    private static final String ARG_CONTENT_URI = "content_uri";
 
     private Context context;
 
@@ -119,6 +122,9 @@ class CreateSecurityTokenImportPresenter {
                     return new UriKeyRetrievalLoader(context, tokenUrl, tokenFingerprints);
                 case LOADER_KEYSERVER:
                     return new KeyserverRetrievalLoader(context, tokenFingerprints[0]);
+                case LOADER_CONTENT_URI:
+                    return new ContentUriRetrievalLoader(context, tokenFingerprints[0],
+                            args.<Uri>getParcelable(ARG_CONTENT_URI));
             }
             throw new IllegalArgumentException("called with unknown loader id!");
         }
@@ -136,6 +142,10 @@ class CreateSecurityTokenImportPresenter {
                 }
                 case LOADER_KEYSERVER: {
                     searchedKeyservers = true;
+                    break;
+                }
+                case LOADER_CONTENT_URI: {
+                    // nothing to do here
                     break;
                 }
                 default: {
@@ -218,7 +228,20 @@ class CreateSecurityTokenImportPresenter {
     }
 
     public void onClickResetToken() {
+        // TODO
+    }
 
+    void onClickLoadFile() {
+        view.showFileSelectDialog();
+    }
+
+    void onFileSelected(Uri contentUri) {
+        view.resetStatusLines();
+        view.statusLineAdd(StatusLine.SEARCH_CONTENT_URI);
+
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_CONTENT_URI, contentUri);
+        loaderManager.restartLoader(LOADER_CONTENT_URI, args, loaderCallbacks);
     }
 
     interface CreateSecurityTokenImportMvpView {
@@ -236,5 +259,7 @@ class CreateSecurityTokenImportPresenter {
         void operationPromote(long masterKeyId, byte[] cardAid);
 
         void finishAndShowKey(long masterKeyId);
+
+        void showFileSelectDialog();
     }
 }
