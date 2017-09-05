@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.bouncycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
@@ -82,10 +83,23 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     private LayoutInflater layoutInflater;
     private StatusIndicator latestStatusIndicator;
 
-    public static Fragment newInstanceForDebug() {
-//        byte[] scannedFps = KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E");
-        byte[] scannedFps = KeyFormattingUtils.convertFingerprintHexFingerprint("1efdb4845ca242ca6977fddb1f788094fd3b430a");
-        return newInstance(scannedFps, Hex.decode("010203040506"), "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu3.asc");
+    public static Fragment newInstanceDebugKeyserver() {
+        if (!BuildConfig.DEBUG) {
+            throw new UnsupportedOperationException("This operation is only available in debug builds!");
+        }
+        byte[] scannedFps =
+                KeyFormattingUtils.convertFingerprintHexFingerprint("1efdb4845ca242ca6977fddb1f788094fd3b430a");
+        return newInstance(scannedFps, Hex.decode("010203040506"), "yubinu2@mugenguild.com", null);
+    }
+
+    public static Fragment newInstanceDebugUri() {
+        if (!BuildConfig.DEBUG) {
+            throw new UnsupportedOperationException("This operation is only available in debug builds!");
+        }
+        byte[] scannedFps =
+                KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E");
+        return newInstance(scannedFps, Hex.decode("010203040506"), "yubinu2@mugenguild.com",
+                "http://valodim.stratum0.net/mryubinu2.asc");
     }
 
     public static Fragment newInstance(byte[] scannedFingerprints, byte[] nfcAid, String userId, String tokenUrl) {

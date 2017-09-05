@@ -23,14 +23,19 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 
 import org.bouncycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
+import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
@@ -48,6 +53,27 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
         if (this.getActivity() instanceof BaseSecurityTokenActivity) {
             ((BaseSecurityTokenActivity) this.getActivity()).checkDeviceConnection();
         }
+
+        setHasOptionsMenu(BuildConfig.DEBUG);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.token_debug, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_token_debug_uri:
+                mCreateKeyActivity.loadFragment(
+                        ManageSecurityTokenFragment.newInstanceDebugUri(), FragAction.TO_RIGHT);
+                break;
+            case R.id.menu_token_debug_keyserver:
+                mCreateKeyActivity.loadFragment(
+                        ManageSecurityTokenFragment.newInstanceDebugKeyserver(), FragAction.TO_RIGHT);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

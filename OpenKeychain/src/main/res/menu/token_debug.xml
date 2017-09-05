@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="Debug / Token from Keyserver"
+        android:id="@+id/menu_token_debug_keyserver"
+        />
+    <item
+        android:title="Debug / Token from Uri"
+        android:id="@+id/menu_token_debug_uri"
+        />
+</menu>
