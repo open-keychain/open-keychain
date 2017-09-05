@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.operations;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -91,7 +92,7 @@ public class DeleteOperation extends BaseReadWriteOperation<DeleteKeyringParcel>
             }
         }
 
-        if (isSecret && success > 0) {
+        if (!BuildConfig.DEBUG && isSecret && success > 0) {
             log.add(LogType.MSG_DEL_CONSOLIDATE, 1);
             ConsolidateResult sub = mKeyWritableRepository.consolidateDatabaseStep1(mProgressable);
             log.add(sub, 2);
