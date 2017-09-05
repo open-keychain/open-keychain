@@ -589,7 +589,7 @@ public class SecurityTokenHelper {
 
     public String getUrl() throws IOException {
         byte[] data = getData(0x5F, 0x50);
-        return new String(data);
+        return new String(data).trim();
     }
 
     public String getUserId() throws IOException {

@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.auto.value.AutoValue;
@@ -159,7 +160,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
             try {
                 log.add(LogType.MSG_RET_URI_START, 0);
-                if (tokenUri == null) {
+                if (TextUtils.isEmpty(tokenUri)) {
                     log.add(LogType.MSG_RET_URI_NULL, 1);
                     return KeyRetrievalResult.createWithError(log);
                 }
