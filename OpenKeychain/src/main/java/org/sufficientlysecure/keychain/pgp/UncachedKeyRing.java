@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -170,7 +171,8 @@ public class UncachedKeyRing {
 
     }
 
-    public static IteratorWithIOThrow<UncachedKeyRing> fromStream(final InputStream stream) {
+    public static IteratorWithIOThrow<UncachedKeyRing> fromStream(InputStream rawStream) {
+        final InputStream stream = rawStream.markSupported() ? rawStream: new BufferedInputStream(rawStream);
 
         return new IteratorWithIOThrow<UncachedKeyRing>() {
 
@@ -183,9 +185,15 @@ public class UncachedKeyRing {
                 }
 
                 try {
-                    while (stream.available() > 0) {
+                    while (true) {
                         // if there are no objects left from the last factory, create a new one
                         if (mObjectFactory == null) {
+                            stream.mark(1);
+                            if (stream.read() == -1) {
+                                break;
+                            }
+                            stream.reset();
+
                             InputStream in = PGPUtil.getDecoderStream(stream);
                             mObjectFactory = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
                         }
