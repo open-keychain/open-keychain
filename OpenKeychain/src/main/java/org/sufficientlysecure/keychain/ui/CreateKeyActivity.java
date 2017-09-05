@@ -57,6 +57,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
     public static final String EXTRA_SECURITY_TOKEN_USER_ID = "nfc_user_id";
     public static final String EXTRA_SECURITY_TOKEN_AID = "nfc_aid";
     public static final String EXTRA_SECURITY_FINGERPRINTS = "nfc_fingerprints";
+    public static final String EXTRA_SECURITY_TOKEN_URL = "nfc_url";
 
     public static final String FRAGMENT_TAG = "currentFragment";
 
@@ -123,10 +124,11 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
                 byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_SECURITY_FINGERPRINTS);
                 String nfcUserId = intent.getStringExtra(EXTRA_SECURITY_TOKEN_USER_ID);
                 byte[] nfcAid = intent.getByteArrayExtra(EXTRA_SECURITY_TOKEN_AID);
+                String nfcUrl = intent.getStringExtra(EXTRA_SECURITY_TOKEN_URL);
 
                 if (containsKeys(nfcFingerprints)) {
-                    Fragment frag = CreateSecurityTokenImportResetFragment.newInstance(
-                            nfcFingerprints, nfcAid, nfcUserId);
+                    Fragment frag = ManageSecurityTokenFragment.newInstance(
+                            nfcFingerprints, nfcAid, nfcUserId, nfcUrl);
                     loadFragment(frag, FragAction.START);
 
                     setTitle(R.string.title_import_keys);
@@ -183,24 +185,9 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
         }
 
         if (containsKeys(mScannedFingerprints)) {
-            try {
-                long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mScannedFingerprints);
-                CachedPublicKeyRing ring = KeyRepository.createDatabaseInteractor(this).getCachedPublicKeyRing(masterKeyId);
-                ring.getMasterKeyId();
-
-                Intent intent = new Intent(this, ViewKeyActivity.class);
-                intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-                intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
-                intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
-                intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mScannedFingerprints);
-                startActivity(intent);
-                finish();
-
-            } catch (PgpKeyNotFoundException e) {
-                Fragment frag = ManageSecurityTokenFragment.newInstance(
-                        mScannedFingerprints, mSecurityTokenAid, mSecurityTokenUserId, mSecurityTokenUrl);
-                loadFragment(frag, FragAction.TO_RIGHT);
-            }
+            Fragment frag = ManageSecurityTokenFragment.newInstance(
+                    mScannedFingerprints, mSecurityTokenAid, mSecurityTokenUserId, mSecurityTokenUrl);
+            loadFragment(frag, FragAction.TO_RIGHT);
         } else {
             Fragment frag = CreateSecurityTokenBlankFragment.newInstance(mSecurityTokenAid);
             loadFragment(frag, FragAction.TO_RIGHT);

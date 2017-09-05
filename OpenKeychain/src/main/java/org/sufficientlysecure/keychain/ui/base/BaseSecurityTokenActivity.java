@@ -81,6 +81,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     private byte[] mSecurityTokenFingerprints;
     private String mSecurityTokenUserId;
     private byte[] mSecurityTokenAid;
+    private String mSecurityTokenUrl;
 
     /**
      * Override to change UI before SecurityToken handling (UI thread)
@@ -95,33 +96,19 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         mSecurityTokenAid = mSecurityTokenHelper.getAid();
         mSecurityTokenFingerprints = mSecurityTokenHelper.getFingerprints();
         mSecurityTokenUserId = mSecurityTokenHelper.getUserId();
+        mSecurityTokenUrl = mSecurityTokenHelper.getUrl();
     }
 
     /**
      * Override to handle result of SecurityToken operations (UI thread)
      */
     protected void onSecurityTokenPostExecute() {
-
-        final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mSecurityTokenFingerprints);
-
-        try {
-            CachedPublicKeyRing ring = KeyRepository.createDatabaseInteractor(this).getCachedPublicKeyRing(
-                    KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
-            long masterKeyId = ring.getMasterKeyId();
-
-            Intent intent = new Intent(this, ViewKeyActivity.class);
-            intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
-            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
-            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mSecurityTokenFingerprints);
-            startActivity(intent);
-        } catch (PgpKeyNotFoundException e) {
-            Intent intent = new Intent(this, CreateKeyActivity.class);
-            intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
-            intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
-            intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_FINGERPRINTS, mSecurityTokenFingerprints);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, CreateKeyActivity.class);
+        intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_FINGERPRINTS, mSecurityTokenFingerprints);
+        intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
+        intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
+        intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_URL, mSecurityTokenUrl);
+        startActivity(intent);
     }
 
     /**
