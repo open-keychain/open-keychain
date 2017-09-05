@@ -1938,4 +1938,34 @@
     <string name="token_status_token_ok">Ready for use!</string>
     <string name="token_status_view_key">View Key</string>
 
+    <string name="msg_ret_curi_error_io">"Error reading data!"</string>
+    <string name="msg_ret_curi_error_no_match">"No matching key found"</string>
+    <string name="msg_ret_curi_error_not_found">"Couldn't open file!"</string>
+    <string name="msg_ret_curi_found">"Found key: %s"</string>
+    <string name="msg_ret_curi_mismatch">"Key doesn't match"</string>
+    <string name="msg_ret_curi_ok">"Key found"</string>
+    <string name="msg_ret_curi_open">"Opening Uri: %s"</string>
+    <string name="msg_ret_curi_start">"Loading key from file or document…"</string>
+    <string name="msg_ret_ks_error">"Unknown error searching for key!"</string>
+    <string name="msg_ret_ks_error_not_found">"Key not found"</string>
+    <string name="msg_ret_ks_fp_match">"Retrieved key's fingerprint matches"</string>
+    <string name="msg_ret_ks_fp_mismatch">"Retrieved key's fingerprint doesn't match!"</string>
+    <string name="msg_ret_ks_ok">"Key found"</string>
+    <string name="msg_ret_ks_start">"Looking for key on keyservers…"</string>
+    <string name="msg_ret_local_search">"Searching for key: %s"</string>
+    <string name="msg_ret_local_fp_match">"Local key's fingerprint matches"</string>
+    <string name="msg_ret_local_fp_mismatch">"Local key's fingerprint doesn't match!"</string>
+    <string name="msg_ret_local_not_found">"No key found"</string>
+    <string name="msg_ret_local_ok">"Key found"</string>
+    <string name="msg_ret_local_secret">"Local key contains secret key material"</string>
+    <string name="msg_ret_local_start">"Looking for key in local key list…"</string>
+    <string name="msg_ret_uri_error_fetch">"Unknown error fetching Uri!"</string>
+    <string name="msg_ret_uri_error_parse">"Token Uri is malformed!"</string>
+    <string name="msg_ret_uri_error_no_match">"No matching key found at Uri"</string>
+    <string name="msg_ret_uri_fetching">"Fetching Uri: %s"</string>
+    <string name="msg_ret_uri_ok">"Key found"</string>
+    <string name="msg_ret_uri_start">"Looking for key at token Uri…"</string>
+    <string name="msg_ret_uri_null">"No Uri saved on Security Token"</string>
+    <string name="msg_ret_uri_test">"Checking if found key matches: %s"</string>
+
 </resources>

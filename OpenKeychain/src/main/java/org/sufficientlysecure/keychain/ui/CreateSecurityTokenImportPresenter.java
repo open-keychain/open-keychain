@@ -25,6 +25,9 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
+import org.sufficientlysecure.keychain.operations.results.GenericOperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.ui.CreateSecurityTokenImportFragment.StatusLine;
 import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.ContentUriRetrievalLoader;
 import org.sufficientlysecure.keychain.ui.PublicKeyRetrievalLoader.KeyRetrievalResult;
@@ -57,6 +60,7 @@ class CreateSecurityTokenImportPresenter {
     private byte[] importKeyData;
     private Long masterKeyId;
 
+    private OperationLog log;
 
     CreateSecurityTokenImportPresenter(Context context, byte[] tokenFingerprints, byte[] tokenAid,
             String tokenUserId, String tokenUrl, LoaderManager loaderManager) {
@@ -75,6 +79,8 @@ class CreateSecurityTokenImportPresenter {
             this.tokenFingerprints[i] = new byte[20];
             System.arraycopy(tokenFingerprints, i*20, this.tokenFingerprints[i], 0, 20);
         }
+
+        this.log = new OperationLog();
     }
 
     public void setView(CreateSecurityTokenImportMvpView view) {
@@ -153,6 +159,8 @@ class CreateSecurityTokenImportPresenter {
                 }
             }
 
+            log.add(data.getOperationResult(), 0);
+
             if (data.isSuccess()) {
                 processResult(data);
             } else {
@@ -194,22 +202,30 @@ class CreateSecurityTokenImportPresenter {
         view.operationImportKey(importKeyData);
     }
 
-    void onImportSuccess() {
+    void onImportSuccess(OperationResult result) {
+        log.add(result, 0);
+
         view.statusLineOk();
         view.statusLineAdd(StatusLine.TOKEN_PROMOTE);
         view.operationPromote(masterKeyId, tokenAid);
     }
 
-    void onImportError() {
+    void onImportError(OperationResult result) {
+        log.add(result, 0);
+
         view.statusLineError();
     }
 
-    void onPromoteSuccess() {
+    void onPromoteSuccess(OperationResult result) {
+        log.add(result, 0);
+
         view.statusLineOk();
         view.showActionViewKey();
     }
 
-    void onPromoteError() {
+    void onPromoteError(OperationResult result) {
+        log.add(result, 0);
+
         view.statusLineError();
     }
 
@@ -252,6 +268,11 @@ class CreateSecurityTokenImportPresenter {
         loaderManager.restartLoader(LOADER_CONTENT_URI, args, loaderCallbacks);
     }
 
+    void onClickViewLog() {
+        OperationResult result = new GenericOperationResult(GenericOperationResult.RESULT_OK, log);
+        view.showDisplayLogActivity(result);
+    }
+
     interface CreateSecurityTokenImportMvpView {
         void statusLineAdd(StatusLine statusLine);
         void statusLineOk();
@@ -271,5 +292,7 @@ class CreateSecurityTokenImportPresenter {
 
         void showFileSelectDialog();
         void showConfirmResetDialog();
+
+        void showDisplayLogActivity(OperationResult result);
     }
 }

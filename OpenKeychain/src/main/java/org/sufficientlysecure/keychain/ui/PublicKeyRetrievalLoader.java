@@ -33,16 +33,22 @@ import android.util.Log;
 
 import com.google.auto.value.AutoValue;
 import okhttp3.Call;
+import okhttp3.HttpUrl;
 import okhttp3.Request.Builder;
 import okhttp3.Response;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient.QueryFailedException;
+import org.sufficientlysecure.keychain.keyimport.KeyserverClient.QueryNotFoundException;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
+import org.sufficientlysecure.keychain.operations.results.GenericOperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
@@ -94,59 +100,102 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
         @Override
         public KeyRetrievalResult loadInBackground() {
+            OperationLog log = new OperationLog();
             try {
+                log.add(LogType.MSG_RET_LOCAL_START, 0);
+
                 // TODO check other fingerprints
                 long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(fingerprints[0]);
+                log.add(LogType.MSG_RET_LOCAL_SEARCH, 1, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
                 CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
+
+                if (!Arrays.equals(fingerprints[0], cachedPublicKeyRing.getFingerprint())) {
+                    log.add(LogType.MSG_RET_LOCAL_FP_MISMATCH, 1);
+                    return KeyRetrievalResult.createWithError(log);
+                } else {
+                    log.add(LogType.MSG_RET_LOCAL_FP_MATCH, 1);
+                }
+
                 switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
                     case PASSPHRASE:
                     case PASSPHRASE_EMPTY: {
-                        return KeyRetrievalResult.createWithMasterKeyIdAndSecretAvailable(masterKeyId);
+                        log.add(LogType.MSG_RET_LOCAL_SECRET, 1);
+                        log.add(LogType.MSG_RET_LOCAL_OK, 1);
+                        return KeyRetrievalResult.createWithMasterKeyIdAndSecretAvailable(log, masterKeyId);
                     }
 
                     case GNU_DUMMY:
                     case DIVERT_TO_CARD:
                     case UNAVAILABLE: {
-                        return KeyRetrievalResult.createWithMasterKeyId(masterKeyId);
+                        log.add(LogType.MSG_RET_LOCAL_OK, 1);
+                        return KeyRetrievalResult.createWithMasterKeyId(log, masterKeyId);
                     }
 
                     default: {
                         throw new IllegalStateException("Unhandled SecretKeyType!");
                     }
                 }
-            } catch (NotFoundException e) {
-                return KeyRetrievalResult.createWithError();
+            } catch (PgpKeyNotFoundException | NotFoundException e) {
+                log.add(LogType.MSG_RET_LOCAL_NOT_FOUND, 1);
+                return KeyRetrievalResult.createWithError(log);
             }
         }
     }
 
     public static class UriKeyRetrievalLoader extends PublicKeyRetrievalLoader {
         byte[][] fingerprints;
-        String yubikeyUri;
+        String tokenUri;
 
-        public UriKeyRetrievalLoader(Context context, String yubikeyUri, byte[][] fingerprints) {
+        public UriKeyRetrievalLoader(Context context, String tokenUri, byte[][] fingerprints) {
             super(context);
 
-            this.yubikeyUri = yubikeyUri;
+            this.tokenUri = tokenUri;
             this.fingerprints = fingerprints;
         }
 
         @Override
         public KeyRetrievalResult loadInBackground() {
+            OperationLog log = new OperationLog();
+
             try {
-                Call call = OkHttpClientFactory.getSimpleClient().newCall(new Builder().url(yubikeyUri).build());
+                log.add(LogType.MSG_RET_URI_START, 0);
+                if (tokenUri == null) {
+                    log.add(LogType.MSG_RET_URI_NULL, 1);
+                    return KeyRetrievalResult.createWithError(log);
+                }
+
+                log.add(LogType.MSG_RET_URI_FETCHING, 1, tokenUri);
+
+                HttpUrl httpUrl = HttpUrl.parse(tokenUri);
+                if (httpUrl == null) {
+                    log.add(LogType.MSG_RET_URI_ERROR_PARSE, 1);
+                    return KeyRetrievalResult.createWithError(log);
+                }
+
+                Call call = OkHttpClientFactory.getSimpleClient().newCall(new Builder().url(httpUrl).build());
                 Response execute = call.execute();
-                if (execute.isSuccessful()) {
-                    UncachedKeyRing keyRing = UncachedKeyRing.decodeFromData(execute.body().bytes());
+                if (!execute.isSuccessful()) {
+                    log.add(LogType.MSG_RET_URI_ERROR_FETCH, 1);
+                }
+
+                IteratorWithIOThrow<UncachedKeyRing> uncachedKeyRingIterator = UncachedKeyRing.fromStream(
+                        new BufferedInputStream(execute.body().byteStream()));
+                while (uncachedKeyRingIterator.hasNext()) {
+                    UncachedKeyRing keyRing = uncachedKeyRingIterator.next();
+                    log.add(LogType.MSG_RET_URI_TEST, 1, KeyFormattingUtils.convertKeyIdToHex(keyRing.getMasterKeyId()));
                     if (Arrays.equals(fingerprints[0], keyRing.getFingerprint())) {
-                        return KeyRetrievalResult.createWithKeyringdata(keyRing.getMasterKeyId(), keyRing.getEncoded());
+                        log.add(LogType.MSG_RET_URI_OK, 1);
+                        return KeyRetrievalResult.createWithKeyringdata(log, keyRing.getMasterKeyId(), keyRing.getEncoded());
                     }
                 }
-            } catch (IOException | PgpGeneralException e) {
+
+                log.add(LogType.MSG_RET_URI_ERROR_NO_MATCH, 1);
+            } catch (IOException e) {
+                log.add(LogType.MSG_RET_URI_ERROR_FETCH, 1);
                 Log.e(Constants.TAG, "error retrieving key from uri", e);
             }
 
-            return KeyRetrievalResult.createWithError();
+            return KeyRetrievalResult.createWithError(log);
         }
     }
 
@@ -161,26 +210,37 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
         @Override
         public KeyRetrievalResult loadInBackground() {
+            OperationLog log = new OperationLog();
+
             HkpKeyserverAddress preferredKeyserver = Preferences.getPreferences(getContext()).getPreferredKeyserver();
             ParcelableProxy parcelableProxy = Preferences.getPreferences(getContext()).getParcelableProxy();
 
             HkpKeyserverClient keyserverClient = HkpKeyserverClient.fromHkpKeyserverAddress(preferredKeyserver);
 
-            if (true) {
-                return KeyRetrievalResult.createWithError();
-            }
-
             try {
-                String keyString =
-                        keyserverClient.get("0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprint), parcelableProxy);
+                log.add(LogType.MSG_RET_KS_START, 0);
+
+                String keyString = keyserverClient.get(
+                        "0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprint), parcelableProxy);
                 UncachedKeyRing keyRing = UncachedKeyRing.decodeFromData(keyString.getBytes());
 
-                return KeyRetrievalResult.createWithKeyringdata(keyRing.getMasterKeyId(), keyRing.getEncoded());
+                if (!Arrays.equals(fingerprint, keyRing.getFingerprint())) {
+                    log.add(LogType.MSG_RET_KS_FP_MISMATCH, 1);
+                    return KeyRetrievalResult.createWithError(log);
+                } else {
+                    log.add(LogType.MSG_RET_KS_FP_MATCH, 1);
+                }
+
+                log.add(LogType.MSG_RET_KS_OK, 1);
+                return KeyRetrievalResult.createWithKeyringdata(log, keyRing.getMasterKeyId(), keyRing.getEncoded());
+            } catch (QueryNotFoundException e) {
+                log.add(LogType.MSG_RET_KS_ERROR_NOT_FOUND, 1);
             } catch (QueryFailedException | IOException | PgpGeneralException e) {
+                log.add(LogType.MSG_RET_KS_ERROR, 1);
                 Log.e(Constants.TAG, "error retrieving key from keyserver", e);
             }
 
-            return KeyRetrievalResult.createWithError();
+            return KeyRetrievalResult.createWithError(log);
         }
     }
 
@@ -199,25 +259,37 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
         @Override
         public KeyRetrievalResult loadInBackground() {
+            OperationLog log = new OperationLog();
+
             try {
+                log.add(LogType.MSG_RET_CURI_START, 0);
+
+                log.add(LogType.MSG_RET_CURI_OPEN, 1, uri.toString());
                 InputStream is = contentResolver.openInputStream(uri);
                 if (is == null) {
-                    return KeyRetrievalResult.createWithError();
+                    log.add(LogType.MSG_RET_CURI_ERROR_NOT_FOUND, 1);
+                    return KeyRetrievalResult.createWithError(log);
                 }
 
                 IteratorWithIOThrow<UncachedKeyRing> uncachedKeyRingIterator = UncachedKeyRing.fromStream(
                         new BufferedInputStream(is));
                 while (uncachedKeyRingIterator.hasNext()) {
                     UncachedKeyRing keyRing = uncachedKeyRingIterator.next();
+                    log.add(LogType.MSG_RET_CURI_FOUND, 1, KeyFormattingUtils.convertKeyIdToHex(keyRing.getMasterKeyId()));
                     if (Arrays.equals(fingerprint, keyRing.getFingerprint())) {
-                        return KeyRetrievalResult.createWithKeyringdata(keyRing.getMasterKeyId(), keyRing.getEncoded());
+                        log.add(LogType.MSG_RET_CURI_OK, 1);
+                        return KeyRetrievalResult.createWithKeyringdata(log, keyRing.getMasterKeyId(), keyRing.getEncoded());
+                    } else {
+                        log.add(LogType.MSG_RET_CURI_MISMATCH, 1);
                     }
                 }
+                log.add(LogType.MSG_RET_CURI_ERROR_NO_MATCH, 1);
             } catch (IOException e) {
-                Log.e(Constants.TAG, "error retrieving key from keyserver", e);
+                Log.e(Constants.TAG, "error reading keyring from file", e);
+                log.add(LogType.MSG_RET_CURI_ERROR_IO, 1);
             }
 
-            return KeyRetrievalResult.createWithError();
+            return KeyRetrievalResult.createWithError(log);
         }
     }
 
@@ -243,6 +315,8 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
     @AutoValue
     static abstract class KeyRetrievalResult {
+        abstract GenericOperationResult getOperationResult();
+
         @Nullable
         abstract Long getMasterKeyId();
         @Nullable
@@ -253,20 +327,28 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
             return getMasterKeyId() != null || getKeyData() != null;
         }
 
-        static KeyRetrievalResult createWithError() {
-            return new AutoValue_PublicKeyRetrievalLoader_KeyRetrievalResult(null, null, false);
+        static KeyRetrievalResult createWithError(OperationLog log) {
+            return new AutoValue_PublicKeyRetrievalLoader_KeyRetrievalResult(
+                    new GenericOperationResult(GenericOperationResult.RESULT_ERROR, log),
+                    null, null, false);
         }
 
-        static KeyRetrievalResult createWithKeyringdata(long masterKeyId, byte[] keyringData) {
-            return new AutoValue_PublicKeyRetrievalLoader_KeyRetrievalResult(masterKeyId, keyringData, false);
+        static KeyRetrievalResult createWithKeyringdata(OperationLog log, long masterKeyId, byte[] keyringData) {
+            return new AutoValue_PublicKeyRetrievalLoader_KeyRetrievalResult(
+                    new GenericOperationResult(GenericOperationResult.RESULT_OK, log),
+                    masterKeyId, keyringData, false);
         }
 
-        static KeyRetrievalResult createWithMasterKeyIdAndSecretAvailable(long masterKeyId) {
-            return new AutoValue_PublicKeyRetrievalLoader_KeyRetrievalResult(masterKeyId, null, true);
+        static KeyRetrievalResult createWithMasterKeyIdAndSecretAvailable(OperationLog log, long masterKeyId) {
+            return new AutoValue_PublicKeyRetrievalLoader_KeyRetrievalResult(
+                    new GenericOperationResult(GenericOperationResult.RESULT_OK, log),
+                    masterKeyId, null, true);
         }
 
-        static KeyRetrievalResult createWithMasterKeyId(long masterKeyId) {
-            return new AutoValue_PublicKeyRetrievalLoader_KeyRetrievalResult(masterKeyId, null, false);
+        static KeyRetrievalResult createWithMasterKeyId(OperationLog log, long masterKeyId) {
+            return new AutoValue_PublicKeyRetrievalLoader_KeyRetrievalResult(
+                    new GenericOperationResult(GenericOperationResult.RESULT_OK, log),
+                    masterKeyId, null, false);
         }
     }
 }

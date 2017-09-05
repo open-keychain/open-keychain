@@ -30,6 +30,7 @@ import android.support.v7.app.AlertDialog.Builder;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
@@ -135,6 +137,19 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.token_setup, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.view_log: {
+                presenter.onClickViewLog();
+                return true;
+            }
+            default: {
+                return super.onOptionsItemSelected(item);
+            }
+        }
     }
 
     @Override
@@ -268,6 +283,13 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
     }
 
     @Override
+    public void showDisplayLogActivity(OperationResult result) {
+        Intent intent = new Intent(getActivity(), LogDisplayActivity.class);
+        intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
+        startActivity(intent);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CODE_OPEN_FILE: {
@@ -327,13 +349,13 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
                 @Override
                 public void onCryptoOperationSuccess(ImportKeyResult result) {
                     currentImportKeyringParcel = null;
-                    presenter.onImportSuccess();
+                    presenter.onImportSuccess(result);
                 }
 
                 @Override
                 public void onCryptoOperationError(ImportKeyResult result) {
                     currentImportKeyringParcel = null;
-                    presenter.onImportError();
+                    presenter.onImportError(result);
                 }
             }, null);
 
@@ -347,13 +369,13 @@ public class CreateSecurityTokenImportFragment extends Fragment implements Creat
                 @Override
                 public void onCryptoOperationSuccess(PromoteKeyResult result) {
                     currentPromoteKeyringParcel = null;
-                    presenter.onPromoteSuccess();
+                    presenter.onPromoteSuccess(result);
                 }
 
                 @Override
                 public void onCryptoOperationError(PromoteKeyResult result) {
                     currentPromoteKeyringParcel = null;
-                    presenter.onPromoteError();
+                    presenter.onPromoteError(result);
                 }
             }, null);
 
