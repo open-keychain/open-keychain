@@ -31,15 +31,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.TaskStackBuilder;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
-import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -54,10 +49,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
     public static final String EXTRA_SECURITY_TOKEN_PIN = "yubi_key_pin";
     public static final String EXTRA_SECURITY_TOKEN_ADMIN_PIN = "yubi_key_admin_pin";
 
-    public static final String EXTRA_SECURITY_TOKEN_USER_ID = "nfc_user_id";
-    public static final String EXTRA_SECURITY_TOKEN_AID = "nfc_aid";
-    public static final String EXTRA_SECURITY_FINGERPRINTS = "nfc_fingerprints";
-    public static final String EXTRA_SECURITY_TOKEN_URL = "nfc_url";
+    public static final String EXTRA_SECURITY_TOKEN_INFO = "token_info";
 
     public static final String FRAGMENT_TAG = "currentFragment";
 
@@ -75,11 +67,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
 
     Fragment mCurrentFragment;
 
-
-    byte[] mScannedFingerprints;
-    byte[] mSecurityTokenAid;
-    String mSecurityTokenUserId;
-    private String mSecurityTokenUrl;
+    SecurityTokenInfo tokenInfo;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,7 +94,6 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
             mPassphrase = savedInstanceState.getParcelable(EXTRA_PASSPHRASE);
             mFirstTime = savedInstanceState.getBoolean(EXTRA_FIRST_TIME);
             mCreateSecurityToken = savedInstanceState.getBoolean(EXTRA_CREATE_SECURITY_TOKEN);
-            mSecurityTokenAid = savedInstanceState.getByteArray(EXTRA_SECURITY_TOKEN_AID);
             mSecurityTokenPin = savedInstanceState.getParcelable(EXTRA_SECURITY_TOKEN_PIN);
             mSecurityTokenAdminPin = savedInstanceState.getParcelable(EXTRA_SECURITY_TOKEN_ADMIN_PIN);
 
@@ -120,20 +107,16 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
             mFirstTime = intent.getBooleanExtra(EXTRA_FIRST_TIME, false);
             mCreateSecurityToken = intent.getBooleanExtra(EXTRA_CREATE_SECURITY_TOKEN, false);
 
-            if (intent.hasExtra(EXTRA_SECURITY_FINGERPRINTS)) {
-                byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_SECURITY_FINGERPRINTS);
-                String nfcUserId = intent.getStringExtra(EXTRA_SECURITY_TOKEN_USER_ID);
-                byte[] nfcAid = intent.getByteArrayExtra(EXTRA_SECURITY_TOKEN_AID);
-                String nfcUrl = intent.getStringExtra(EXTRA_SECURITY_TOKEN_URL);
+            if (intent.hasExtra(EXTRA_SECURITY_TOKEN_INFO)) {
+                SecurityTokenInfo tokenInfo = intent.getParcelableExtra(EXTRA_SECURITY_TOKEN_INFO);
 
-                if (containsKeys(nfcFingerprints)) {
-                    Fragment frag = ManageSecurityTokenFragment.newInstance(
-                            nfcFingerprints, nfcAid, nfcUserId, nfcUrl);
+                if (!tokenInfo.isEmpty()) {
+                    Fragment frag = ManageSecurityTokenFragment.newInstance(tokenInfo);
                     loadFragment(frag, FragAction.START);
 
                     setTitle(R.string.title_import_keys);
                 } else {
-                    Fragment frag = CreateSecurityTokenBlankFragment.newInstance(nfcAid);
+                    Fragment frag = CreateSecurityTokenBlankFragment.newInstance();
                     loadFragment(frag, FragAction.START);
                     setTitle(R.string.title_manage_my_keys);
                 }
@@ -163,10 +146,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
             return;
         }
 
-        mScannedFingerprints = mSecurityTokenHelper.getFingerprints();
-        mSecurityTokenAid = mSecurityTokenHelper.getAid();
-        mSecurityTokenUserId = mSecurityTokenHelper.getUserId();
-        mSecurityTokenUrl = mSecurityTokenHelper.getUrl();
+        tokenInfo = mSecurityTokenHelper.getTokenInfo();
     }
 
     @Override
@@ -184,28 +164,13 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
             CreateSecurityTokenWaitFragment.sDisableFragmentAnimations = false;
         }
 
-        if (containsKeys(mScannedFingerprints)) {
-            Fragment frag = ManageSecurityTokenFragment.newInstance(
-                    mScannedFingerprints, mSecurityTokenAid, mSecurityTokenUserId, mSecurityTokenUrl);
+        if (!tokenInfo.isEmpty()) {
+            Fragment frag = ManageSecurityTokenFragment.newInstance(tokenInfo);
             loadFragment(frag, FragAction.TO_RIGHT);
         } else {
-            Fragment frag = CreateSecurityTokenBlankFragment.newInstance(mSecurityTokenAid);
+            Fragment frag = CreateSecurityTokenBlankFragment.newInstance();
             loadFragment(frag, FragAction.TO_RIGHT);
         }
-    }
-
-    private boolean containsKeys(byte[] scannedFingerprints) {
-        if (scannedFingerprints == null) {
-            return false;
-        }
-
-        // If all fingerprint bytes are 0, the card contains no keys.
-        for (byte b : scannedFingerprints) {
-            if (b != 0) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -218,7 +183,6 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
         outState.putParcelable(EXTRA_PASSPHRASE, mPassphrase);
         outState.putBoolean(EXTRA_FIRST_TIME, mFirstTime);
         outState.putBoolean(EXTRA_CREATE_SECURITY_TOKEN, mCreateSecurityToken);
-        outState.putByteArray(EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
         outState.putParcelable(EXTRA_SECURITY_TOKEN_PIN, mSecurityTokenPin);
         outState.putParcelable(EXTRA_SECURITY_TOKEN_ADMIN_PIN, mSecurityTokenAdminPin);
     }

@@ -100,7 +100,7 @@ public class CreateSecurityTokenAlgorithmFragment extends Fragment {
         choices.add(new Choice<>(SupportedKeyType.RSA_4096, getResources().getString(
                 R.string.rsa_4096), getResources().getString(R.string.rsa_4096_description_html)));
 
-        final double version = SecurityTokenHelper.parseOpenPgpVersion(mCreateKeyActivity.mSecurityTokenAid);
+        final double version = SecurityTokenHelper.parseOpenPgpVersion(mCreateKeyActivity.tokenInfo.getAid());
 
         if (version >= 3.0) {
             choices.add(new Choice<>(SupportedKeyType.ECC_P256, getResources().getString(

@@ -28,6 +28,7 @@ import android.support.v4.content.Loader;
 import org.sufficientlysecure.keychain.operations.results.GenericOperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpPresenter;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpView;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment.StatusLine;
@@ -49,11 +50,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     private final Context context;
     private final LoaderManager loaderManager;
-
-    private final byte[][] tokenFingerprints;
-    private final byte[] tokenAid;
-    private final String tokenUserId;
-    private final String tokenUrl;
+    private final SecurityTokenInfo tokenInfo;
 
 
     private ManageSecurityTokenMvpView view;
@@ -68,23 +65,10 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     private OperationLog log;
     private Uri selectedContentUri;
 
-    ManageSecurityTokenPresenter(Context context, byte[] tokenFingerprints, byte[] tokenAid,
-            String tokenUserId, String tokenUrl, LoaderManager loaderManager) {
+    ManageSecurityTokenPresenter(Context context, LoaderManager loaderManager, SecurityTokenInfo tokenInfo) {
         this.context = context.getApplicationContext();
-
-        this.tokenAid = tokenAid;
-        this.tokenUserId = tokenUserId;
-        this.tokenUrl = tokenUrl;
         this.loaderManager = loaderManager;
-
-        if (tokenFingerprints.length % 20 != 0) {
-            throw new IllegalArgumentException("fingerprints must be multiple of 20 bytes!");
-        }
-        this.tokenFingerprints = new byte[tokenFingerprints.length / 20][];
-        for (int i = 0; i < tokenFingerprints.length / 20; i++) {
-            this.tokenFingerprints[i] = new byte[20];
-            System.arraycopy(tokenFingerprints, i*20, this.tokenFingerprints[i], 0, 20);
-        }
+        this.tokenInfo = tokenInfo;
 
         this.log = new OperationLog();
     }
@@ -133,13 +117,13 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
         public Loader<KeyRetrievalResult> onCreateLoader(int id, Bundle args) {
             switch (id) {
                 case LOADER_LOCAL:
-                    return new LocalKeyLookupLoader(context, tokenFingerprints);
+                    return new LocalKeyLookupLoader(context, tokenInfo.getAllFingerprints());
                 case LOADER_URI:
-                    return new UriKeyRetrievalLoader(context, tokenUrl, tokenFingerprints);
+                    return new UriKeyRetrievalLoader(context, tokenInfo.getUrl(), tokenInfo.getAllFingerprints());
                 case LOADER_KEYSERVER:
-                    return new KeyserverRetrievalLoader(context, tokenFingerprints[0]);
+                    return new KeyserverRetrievalLoader(context, tokenInfo.getFingerprintSign());
                 case LOADER_CONTENT_URI:
-                    return new ContentUriRetrievalLoader(context, tokenFingerprints[0],
+                    return new ContentUriRetrievalLoader(context, tokenInfo.getFingerprintSign(),
                             args.<Uri>getParcelable(ARG_CONTENT_URI));
             }
             throw new IllegalArgumentException("called with unknown loader id!");
@@ -203,7 +187,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
         if (masterKeyId != null) {
             this.masterKeyId = masterKeyId;
             view.statusLineAdd(StatusLine.TOKEN_CHECK);
-            view.operationPromote(masterKeyId, tokenAid);
+            view.operationPromote(masterKeyId, tokenInfo.getAid());
             return;
         }
 
@@ -223,7 +207,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
         view.statusLineOk();
         view.statusLineAdd(StatusLine.TOKEN_PROMOTE);
-        view.operationPromote(masterKeyId, tokenAid);
+        view.operationPromote(masterKeyId, tokenInfo.getAid());
     }
 
     @Override

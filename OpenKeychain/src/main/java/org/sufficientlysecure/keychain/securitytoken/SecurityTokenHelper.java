@@ -956,6 +956,25 @@ public class SecurityTokenHelper {
         return mOpenPgpCapabilities;
     }
 
+    public SecurityTokenInfo getTokenInfo() throws IOException {
+        byte[] fingerprints = getFingerprints();
+
+        byte[] fpSign = new byte[20];
+        byte[] fpDecrypt = new byte[20];
+        byte[] fpAuth = new byte[20];
+        ByteBuffer buf = ByteBuffer.wrap(fingerprints);
+        buf.get(fpSign);
+        buf.get(fpDecrypt);
+        buf.get(fpAuth);
+
+        byte[] aid = getAid();
+        String userId = getUserId();
+        String url = getUrl();
+        byte[] pwInfo = getPwStatusBytes();
+
+        return SecurityTokenInfo.create(fpSign, fpDecrypt, fpAuth, aid, userId, url, pwInfo[4], pwInfo[6]);
+    }
+
     private static class LazyHolder {
         private static final SecurityTokenHelper SECURITY_TOKEN_HELPER = new SecurityTokenHelper();
     }

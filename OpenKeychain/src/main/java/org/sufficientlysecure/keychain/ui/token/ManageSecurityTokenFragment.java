@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -72,10 +73,7 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 
 public class ManageSecurityTokenFragment extends Fragment implements ManageSecurityTokenMvpView,
         OnClickListener {
-    private static final String ARG_FINGERPRINTS = "fingerprint";
-    private static final String ARG_AID = "aid";
-    private static final String ARG_USER_ID = "user_ids";
-    private static final String ARG_URL = "key_uri";
+    private static final String ARG_TOKEN_INFO = "token_info";
     public static final int REQUEST_CODE_OPEN_FILE = 0;
     public static final int REQUEST_CODE_RESET = 1;
     public static final int PERMISSION_READ_STORAGE = 0;
@@ -93,29 +91,29 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
         if (!BuildConfig.DEBUG) {
             throw new UnsupportedOperationException("This operation is only available in debug builds!");
         }
-        byte[] scannedFps =
-                KeyFormattingUtils.convertFingerprintHexFingerprint("1efdb4845ca242ca6977fddb1f788094fd3b430a");
-        return newInstance(scannedFps, Hex.decode("010203040506"), "yubinu2@mugenguild.com", null);
+        SecurityTokenInfo securityTokenInfo = SecurityTokenInfo.create(
+                KeyFormattingUtils.convertFingerprintHexFingerprint("1efdb4845ca242ca6977fddb1f788094fd3b430a"),
+                new byte[20], new byte[20], Hex.decode("010203040506"),
+                "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 3, 3);
+        return newInstance(securityTokenInfo);
     }
 
     public static Fragment newInstanceDebugUri() {
         if (!BuildConfig.DEBUG) {
             throw new UnsupportedOperationException("This operation is only available in debug builds!");
         }
-        byte[] scannedFps =
-                KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E");
-        return newInstance(scannedFps, Hex.decode("010203040506"), "yubinu2@mugenguild.com",
-                "http://valodim.stratum0.net/mryubinu2.asc");
+        SecurityTokenInfo securityTokenInfo = SecurityTokenInfo.create(
+                KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E"),
+                new byte[20], new byte[20], Hex.decode("010203040506"),
+                "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 3, 3);
+        return newInstance(securityTokenInfo);
     }
 
-    public static Fragment newInstance(byte[] scannedFingerprints, byte[] nfcAid, String userId, String tokenUrl) {
+    public static Fragment newInstance(SecurityTokenInfo tokenInfo) {
         ManageSecurityTokenFragment frag = new ManageSecurityTokenFragment();
 
         Bundle args = new Bundle();
-        args.putByteArray(ARG_FINGERPRINTS, scannedFingerprints);
-        args.putByteArray(ARG_AID, nfcAid);
-        args.putString(ARG_USER_ID, userId);
-        args.putString(ARG_URL, tokenUrl);
+        args.putParcelable(ARG_TOKEN_INFO, tokenInfo);
         frag.setArguments(args);
 
         return frag;
@@ -126,14 +124,9 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
+        SecurityTokenInfo tokenInfo = args.getParcelable(ARG_TOKEN_INFO);
 
-        byte[] tokenFingerprints = args.getByteArray(ARG_FINGERPRINTS);
-        byte[] tokenAid = args.getByteArray(ARG_AID);
-        String tokenUserId = args.getString(ARG_USER_ID);
-        String tokenUrl = args.getString(ARG_URL);
-
-        presenter = new ManageSecurityTokenPresenter(
-                getContext(), tokenFingerprints, tokenAid, tokenUserId, tokenUrl, getLoaderManager());
+        presenter = new ManageSecurityTokenPresenter(getContext(), getLoaderManager(), tokenInfo);
     }
 
     @Override

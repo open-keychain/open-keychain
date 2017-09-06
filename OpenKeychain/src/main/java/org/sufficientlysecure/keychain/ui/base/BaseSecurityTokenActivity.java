@@ -41,13 +41,10 @@ import nordpol.android.TagDispatcher;
 import nordpol.android.TagDispatcherBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.NfcTransport;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.securitytoken.UsbConnectionDispatcher;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
@@ -56,10 +53,8 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
-import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.dialog.FidesmoInstallDialog;
 import org.sufficientlysecure.keychain.ui.dialog.FidesmoPgpInstallDialog;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Log;
@@ -78,10 +73,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     protected UsbConnectionDispatcher mUsbDispatcher;
     private boolean mTagHandlingEnabled;
 
-    private byte[] mSecurityTokenFingerprints;
-    private String mSecurityTokenUserId;
-    private byte[] mSecurityTokenAid;
-    private String mSecurityTokenUrl;
+    private SecurityTokenInfo tokenInfo;
 
     /**
      * Override to change UI before SecurityToken handling (UI thread)
@@ -93,10 +85,8 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
      * Override to implement SecurityToken operations (background thread)
      */
     protected void doSecurityTokenInBackground() throws IOException {
-        mSecurityTokenAid = mSecurityTokenHelper.getAid();
-        mSecurityTokenFingerprints = mSecurityTokenHelper.getFingerprints();
-        mSecurityTokenUserId = mSecurityTokenHelper.getUserId();
-        mSecurityTokenUrl = mSecurityTokenHelper.getUrl();
+        tokenInfo = mSecurityTokenHelper.getTokenInfo();
+        Log.d(Constants.TAG, "Security Token: " + tokenInfo);
     }
 
     /**
@@ -104,10 +94,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
      */
     protected void onSecurityTokenPostExecute() {
         Intent intent = new Intent(this, CreateKeyActivity.class);
-        intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_FINGERPRINTS, mSecurityTokenFingerprints);
-        intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
-        intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
-        intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_URL, mSecurityTokenUrl);
+        intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_INFO, tokenInfo);
         startActivity(intent);
     }
 
