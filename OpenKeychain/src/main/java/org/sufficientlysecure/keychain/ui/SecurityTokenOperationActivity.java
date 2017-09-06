@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -65,6 +66,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
     public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
     public static final String RESULT_CRYPTO_INPUT = "result_data";
+    public static final String RESULT_TOKEN_INFO = "token_info";
 
     public ViewAnimator vAnimator;
     public TextView vErrorText;
@@ -74,6 +76,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
     private RequiredInputParcel mRequiredInput;
 
     private CryptoInputParcel mInputParcel;
+    private SecurityTokenInfo mResultTokenInfo;
 
     @Override
     protected void initTheme() {
@@ -277,6 +280,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
             }
             case SECURITY_TOKEN_RESET_CARD: {
                 mSecurityTokenHelper.resetAndWipeToken();
+                mResultTokenInfo = mSecurityTokenHelper.getTokenInfo();
 
                 break;
             }
@@ -334,6 +338,9 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
         Intent result = new Intent();
         // send back the CryptoInputParcel we received
         result.putExtra(RESULT_CRYPTO_INPUT, inputParcel);
+        if (mResultTokenInfo != null) {
+            result.putExtra(RESULT_TOKEN_INFO, mResultTokenInfo);
+        }
         setResult(RESULT_OK, result);
     }
 
@@ -348,7 +355,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
     }
 
     @Override
-    public void onSecurityTokenPinError(String error) {
+    public void onSecurityTokenPinError(String error, SecurityTokenInfo tokeninfo) {
         onSecurityTokenError(error);
 
         // clear (invalid) passphrase

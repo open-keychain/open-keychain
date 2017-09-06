@@ -147,7 +147,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     @Override
     public void onClickUnlockToken() {
-        // TODO
+        view.showAdminPinDialog();
     }
 
     private LoaderCallbacks<KeyRetrievalResult> loaderCallbacks = new LoaderCallbacks<KeyRetrievalResult>() {

@@ -217,6 +217,28 @@ public class SecurityTokenHelper {
 
     }
 
+    public void resetPin(String newPinStr) throws IOException {
+        if (!mPw3Validated) {
+            verifyPin(0x83); // (Verify PW1 with mode 82 for decryption)
+        }
+
+        byte[] newPin = newPinStr.getBytes();
+
+        final int MAX_PW1_LENGTH_INDEX = 1;
+        byte[] pwStatusBytes = getPwStatusBytes();
+        if (newPin.length < 6 || newPin.length > pwStatusBytes[MAX_PW1_LENGTH_INDEX]) {
+            throw new IOException("Invalid PIN length");
+        }
+
+        // Command APDU for RESET RETRY COUNTER command (page 33)
+        CommandAPDU changePin = new CommandAPDU(0x00, 0x2C, 0x02, 0x81, newPin);
+        ResponseAPDU response = communicate(changePin);
+
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Failed to change PIN", response.getSW());
+        }
+    }
+
     /**
      * Modifies the user's PW1 or PW3. Before sending, the new PIN will be validated for
      * conformance to the token's requirements for key length.

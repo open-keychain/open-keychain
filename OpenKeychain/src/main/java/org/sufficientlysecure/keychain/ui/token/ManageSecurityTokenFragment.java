@@ -54,10 +54,12 @@ import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.service.input.SecurityTokenChangePinParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
+import org.sufficientlysecure.keychain.ui.SecurityTokenChangePinOperationActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.AbstractCallback;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
@@ -76,6 +78,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     private static final String ARG_TOKEN_INFO = "token_info";
     public static final int REQUEST_CODE_OPEN_FILE = 0;
     public static final int REQUEST_CODE_RESET = 1;
+    public static final int REQUEST_CODE_CHANGE_PIN = 2;
     public static final int PERMISSION_READ_STORAGE = 0;
 
     ManageSecurityTokenMvpPresenter presenter;
@@ -301,6 +304,15 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
         intent.putExtra(SecurityTokenOperationActivity.EXTRA_REQUIRED_INPUT, resetP);
         intent.putExtra(SecurityTokenOperationActivity.EXTRA_CRYPTO_INPUT, CryptoInputParcel.createCryptoInputParcel());
         startActivityForResult(intent, REQUEST_CODE_RESET);
+    }
+
+    @Override
+    public void operationChangePinSecurityToken(String adminPin, String newPin) {
+        Intent intent = new Intent(getActivity(), SecurityTokenChangePinOperationActivity.class);
+        SecurityTokenChangePinParcel changePinParcel =
+                SecurityTokenChangePinParcel.createSecurityTokenUnlock(adminPin, newPin);
+        intent.putExtra(SecurityTokenChangePinOperationActivity.EXTRA_CHANGE_PIN_PARCEL, changePinParcel);
+        startActivityForResult(intent, REQUEST_CODE_CHANGE_PIN);
     }
 
     @Override
