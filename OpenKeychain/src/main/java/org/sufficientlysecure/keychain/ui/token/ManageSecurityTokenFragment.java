@@ -81,6 +81,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     ManageSecurityTokenMvpPresenter presenter;
     private ViewGroup statusLayoutGroup;
     private ToolableViewAnimator actionAnimator;
+    private TextView unlockSubtitle;
 
     ImportKeyringParcel currentImportKeyringParcel;
     PromoteKeyringParcel currentPromoteKeyringParcel;
@@ -136,6 +137,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
 
         statusLayoutGroup = (ViewGroup) view.findViewById(R.id.status_indicator_layout);
         actionAnimator = (ToolableViewAnimator) view.findViewById(R.id.action_animator);
+        unlockSubtitle = (TextView) view.findViewById(R.id.button_unlock_subtitle);
 
         view.findViewById(R.id.button_import).setOnClickListener(this);
         view.findViewById(R.id.button_view_key).setOnClickListener(this);
@@ -143,6 +145,8 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
         view.findViewById(R.id.button_reset_token_1).setOnClickListener(this);
         view.findViewById(R.id.button_reset_token_2).setOnClickListener(this);
         view.findViewById(R.id.button_reset_token_3).setOnClickListener(this);
+        view.findViewById(R.id.button_reset_token_4).setOnClickListener(this);
+        view.findViewById(R.id.button_unlock).setOnClickListener(this);
         view.findViewById(R.id.button_load_file).setOnClickListener(this);
 
         setHasOptionsMenu(true);
@@ -248,6 +252,18 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     @Override
     public void showActionRetryOrFromFile() {
         actionAnimator.setDisplayedChildId(R.id.token_layout_not_found);
+    }
+
+    @Override
+    public void showActionLocked(int attemptsLeft) {
+        actionAnimator.setDisplayedChildId(R.id.token_layout_locked);
+        if (attemptsLeft > 0) {
+            String unlockAttemptsText = getResources().getQuantityString(
+                    R.plurals.token_unlock_attempts, attemptsLeft, attemptsLeft);
+            unlockSubtitle.setText(unlockAttemptsText);
+        } else {
+            unlockSubtitle.setText(R.string.token_unlock_attempts_none);
+        }
     }
 
     @Override
@@ -378,8 +394,14 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
             }
             case R.id.button_reset_token_1:
             case R.id.button_reset_token_2:
-            case R.id.button_reset_token_3: {
+            case R.id.button_reset_token_3:
+            case R.id.button_reset_token_4: {
                 presenter.onClickResetToken();
+                break;
+            }
+
+            case R.id.button_unlock: {
+                presenter.onClickUnlockToken();
                 break;
             }
         }
@@ -426,6 +448,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
             }, null);
 
     enum StatusLine {
+        CHECK_KEY (R.string.status_check_key),
         SEARCH_LOCAL (R.string.status_search_local),
         SEARCH_URI (R.string.status_search_uri),
         SEARCH_KEYSERVER (R.string.status_search_keyserver),

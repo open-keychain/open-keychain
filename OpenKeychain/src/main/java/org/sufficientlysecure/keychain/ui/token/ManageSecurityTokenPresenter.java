@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.ui.token;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -55,6 +56,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     private ManageSecurityTokenMvpView view;
 
+    private boolean checkedKeyStatus;
     private boolean searchedLocally;
     private boolean searchedAtUri;
     private boolean searchedKeyservers;
@@ -80,7 +82,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     @Override
     public void onActivityCreated() {
-        if (!searchedLocally || !searchedAtUri || !searchedKeyservers) {
+        if (!checkedKeyStatus || !searchedLocally || !searchedAtUri || !searchedKeyservers) {
             continueSearch();
         }
     }
@@ -91,6 +93,12 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     }
 
     private void continueSearch() {
+        if (!checkedKeyStatus) {
+            view.statusLineAdd(StatusLine.CHECK_KEY);
+            delayPerformKeyCheck();
+            return;
+        }
+
         if (!searchedLocally) {
             view.statusLineAdd(StatusLine.SEARCH_LOCAL);
             loaderManager.restartLoader(LOADER_LOCAL, null, loaderCallbacks);
@@ -110,6 +118,36 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
         }
 
         view.showActionRetryOrFromFile();
+    }
+
+    private void delayPerformKeyCheck() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                performKeyCheck();
+            }
+        }, 1000);
+    }
+
+    private void performKeyCheck() {
+        boolean isLocked = tokenInfo.getVerifyRetries() == 0;
+        if (!isLocked) {
+            view.statusLineOk();
+
+            checkedKeyStatus = true;
+            continueSearch();
+            return;
+        }
+
+        view.statusLineError();
+
+        int unlockAttemptsLeft = tokenInfo.getVerifyAdminRetries();
+        view.showActionLocked(unlockAttemptsLeft);
+    }
+
+    @Override
+    public void onClickUnlockToken() {
+        // TODO
     }
 
     private LoaderCallbacks<KeyRetrievalResult> loaderCallbacks = new LoaderCallbacks<KeyRetrievalResult>() {

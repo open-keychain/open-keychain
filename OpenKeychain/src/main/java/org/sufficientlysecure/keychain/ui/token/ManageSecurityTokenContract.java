@@ -49,6 +49,8 @@ class ManageSecurityTokenContract {
         void onClickResetToken();
         void onClickConfirmReset();
         void onSecurityTokenResetSuccess();
+
+        void onClickUnlockToken();
     }
 
     interface ManageSecurityTokenMvpView {
@@ -60,6 +62,7 @@ class ManageSecurityTokenContract {
         void showActionImport();
         void showActionViewKey();
         void showActionRetryOrFromFile();
+        void showActionLocked(int unlockAttempts);
         void hideAction();
 
         void operationImportKey(byte[] importKeyData);

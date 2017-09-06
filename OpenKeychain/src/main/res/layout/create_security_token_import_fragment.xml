@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -49,7 +50,7 @@
             android:inAnimation="@anim/fade_in_delayed"
             android:outAnimation="@anim/fade_out"
             android:clipChildren="false"
-            custom:initialView="01">
+            custom:initialView="04">
 
             <Space
                 android:layout_width="wrap_content"
@@ -180,6 +181,80 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/button_reset_token_3"
+                    android:drawableLeft="@drawable/ic_bomb_24dp"
+                    android:drawableStart="@drawable/ic_bomb_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/android_red_dark"
+                    android:text="@string/token_status_reset"
+                    style="?borderlessButtonStyle"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/token_layout_locked">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:text="Token is locked!"
+                    style="?android:textAppearanceLarge"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp"
+                    android:id="@+id/button_unlock"
+                    android:background="?selectableItemBackground"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_centerVertical="true"
+                        android:id="@+id/button_unlock_drawable"
+                        android:src="@drawable/ic_vpn_key_grey_24dp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/button_unlock_drawable"
+                        android:layout_toRightOf="@+id/button_unlock_drawable"
+                        android:id="@+id/button_unlock_title"
+                        android:textColor="@color/card_view_button"
+                        android:textAllCaps="true"
+                        android:textStyle="bold"
+                        android:text="Unlock using admin pin"
+                        android:padding="0dp"
+                        android:minHeight="0dp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/button_unlock_drawable"
+                        android:layout_toRightOf="@+id/button_unlock_drawable"
+                        android:layout_below="@+id/button_unlock_title"
+                        android:id="@+id/button_unlock_subtitle"
+                        tools:text="3 attempts left"
+                        style="?android:textAppearanceSmall"
+                        />
+
+                </RelativeLayout>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_reset_token_4"
                     android:drawableLeft="@drawable/ic_bomb_24dp"
                     android:drawableStart="@drawable/ic_bomb_24dp"
                     android:drawablePadding="12dp"
