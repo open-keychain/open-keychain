@@ -264,6 +264,9 @@ public class EncryptTextFragment
 
             data.setEncryptionMasterKeyIds(encryptionKeyIds);
             data.setSignatureMasterKeyId(signingKeyId);
+            if (signingKeyId != Constants.key.none) {
+                data.setAdditionalEncryptId(signingKeyId);
+            }
         } else {
             Passphrase passphrase = modeFragment.getSymmetricPassphrase();
             if (passphrase == null) {
