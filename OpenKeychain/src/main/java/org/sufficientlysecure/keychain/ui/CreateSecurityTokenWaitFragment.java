@@ -72,6 +72,14 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
                 mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
                         SecurityTokenInfo.newInstanceDebugKeyserver()), FragAction.TO_RIGHT);
                 break;
+            case R.id.menu_token_debug_locked:
+                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                        SecurityTokenInfo.newInstanceDebugLocked()), FragAction.TO_RIGHT);
+                break;
+            case R.id.menu_token_debug_locked_hard:
+                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                        SecurityTokenInfo.newInstanceDebugLockedHard()), FragAction.TO_RIGHT);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

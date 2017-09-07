@@ -67,4 +67,25 @@ public abstract class SecurityTokenInfo implements Parcelable {
                 new byte[20], new byte[20], Hex.decode("010203040506"),
                 "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 3, 3);
     }
+
+    public static SecurityTokenInfo newInstanceDebugLocked() {
+        if (!BuildConfig.DEBUG) {
+            throw new UnsupportedOperationException("This operation is only available in debug builds!");
+        }
+        return SecurityTokenInfo.create(
+                KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E"),
+                new byte[20], new byte[20], Hex.decode("010203040506"),
+                "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 0, 3);
+    }
+
+    public static SecurityTokenInfo newInstanceDebugLockedHard() {
+        if (!BuildConfig.DEBUG) {
+            throw new UnsupportedOperationException("This operation is only available in debug builds!");
+        }
+        return SecurityTokenInfo.create(
+                KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E"),
+                new byte[20], new byte[20], Hex.decode("010203040506"),
+                "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 0, 0);
+    }
+
 }
