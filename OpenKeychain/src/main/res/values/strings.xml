@@ -1926,6 +1926,7 @@
     <string name="status_token_promote">Setting up key…</string>
     <string name="status_token_check">Checking key setup…</string>
     <string name="status_content_uri">Reading file…</string>
+
     <string name="token_reset_confirm_title">Reset Security Token?</string>
     <string name="token_reset_confirm_message">This will irrecoverably delete the key stored on this Security Token. You will no longer be able to use this key for decryption! Are you sure?</string>
     <string name="token_reset_confirm_ok">Reset</string>
@@ -1938,11 +1939,24 @@
     <string name="token_status_import">Import</string>
     <string name="token_status_token_ok">Ready for use!</string>
     <string name="token_status_view_key">View Key</string>
+    <string name="token_action_unlock">Unlock using admin pin</string>
     <string name="token_unlock_attempts_none">"No unlock attempts left"</string>
     <plurals name="token_unlock_attempts">
         <item quantity="one">"1 attempt left"</item>
         <item quantity="other">"%d attempts left"</item>
     </plurals>
+    <string name="token_error_locked_indefinitely">Too many reset attempts. Token is locked irrecoverably!</string>
+
+    <string name="token_menu_change_pin">Change Pin</string>
+    <string name="token_menu_view_log">View Log</string>
+
+    <string name="token_unlock_ok">Unlock</string>
+    <string name="token_hint_admin_pin">Admin Pin</string>
+    <string name="token_hint_new_pin">New Pin</string>
+    <string name="token_hint_new_pin_repeat">New Pin (repeat)</string>
+    <string name="token_error_admin_min8">Admin pin must be 8 characters or longer!</string>
+    <string name="token_error_pin_min6">New pin must be 6 characters or longer!</string>
+    <string name="token_error_pin_repeat">Doesn\'t match pin!</string>
 
     <string name="msg_ret_curi_error_io">"Error reading data!"</string>
     <string name="msg_ret_curi_error_no_match">"No matching key found"</string>

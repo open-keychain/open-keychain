@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.ui.token;
 import android.net.Uri;
 
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment.StatusLine;
 
 
@@ -31,7 +32,7 @@ class ManageSecurityTokenContract {
 
         void onClickRetry();
         void onClickViewKey();
-        void onClickViewLog();
+        void onMenuClickViewLog();
 
         void onClickImport();
         void onImportSuccess(OperationResult result);
@@ -41,6 +42,10 @@ class ManageSecurityTokenContract {
         void onPromoteError(OperationResult result);
 
 
+        void onSecurityTokenChangePinSuccess(SecurityTokenInfo tokenInfo);
+
+        void onSecurityTokenChangePinCanceled(SecurityTokenInfo tokenInfo);
+
         void onClickLoadFile();
         void onFileSelected(Uri fileUri);
         void onStoragePermissionGranted();
@@ -48,9 +53,14 @@ class ManageSecurityTokenContract {
 
         void onClickResetToken();
         void onClickConfirmReset();
-        void onSecurityTokenResetSuccess();
+        void onSecurityTokenResetSuccess(SecurityTokenInfo tokenInfo);
+        void onSecurityTokenResetCanceled(SecurityTokenInfo tokenInfo);
 
         void onClickUnlockToken();
+        void onMenuClickChangePin();
+        void onInputAdminPin(String adminPin, String newPin);
+
+        void onClickUnlockTokenImpossible();
     }
 
     interface ManageSecurityTokenMvpView {
@@ -74,9 +84,12 @@ class ManageSecurityTokenContract {
 
         void showFileSelectDialog();
         void showConfirmResetDialog();
+        void showAdminPinDialog();
 
         void showDisplayLogActivity(OperationResult result);
 
         void requestStoragePermission();
+
+        void showErrorCannotUnlock();
     }
 }

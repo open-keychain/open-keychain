@@ -8,4 +8,12 @@
         android:title="Debug / Token from Uri"
         android:id="@+id/menu_token_debug_uri"
         />
+    <item
+        android:title="Debug / Locked Token"
+        android:id="@+id/menu_token_debug_locked"
+        />
+    <item
+        android:title="Debug / Hard Locked Token"
+        android:id="@+id/menu_token_debug_locked_hard"
+        />
 </menu>

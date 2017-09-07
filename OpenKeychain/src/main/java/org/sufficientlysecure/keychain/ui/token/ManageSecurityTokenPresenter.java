@@ -51,7 +51,8 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     private final Context context;
     private final LoaderManager loaderManager;
-    private final SecurityTokenInfo tokenInfo;
+
+    private SecurityTokenInfo tokenInfo;
 
 
     private ManageSecurityTokenMvpView view;
@@ -92,11 +93,28 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
         continueSearch();
     }
 
+    private void resetAndContinueSearch() {
+        checkedKeyStatus = false;
+        searchedLocally = false;
+        searchedAtUri = false;
+        searchedKeyservers = false;
+
+        view.hideAction();
+        view.resetStatusLines();
+        continueSearch();
+    }
+
     private void continueSearch() {
         if (!checkedKeyStatus) {
-            view.statusLineAdd(StatusLine.CHECK_KEY);
-            delayPerformKeyCheck();
-            return;
+            boolean keyIsLocked = tokenInfo.getVerifyRetries() == 0;
+            if (keyIsLocked) {
+                // the "checking key status" is fake: we only do it if we already know the key is locked
+                view.statusLineAdd(StatusLine.CHECK_KEY);
+                delayPerformKeyCheck();
+                return;
+            } else {
+                checkedKeyStatus = true;
+            }
         }
 
         if (!searchedLocally) {
@@ -148,6 +166,30 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     @Override
     public void onClickUnlockToken() {
         view.showAdminPinDialog();
+    }
+
+    @Override
+    public void onMenuClickChangePin() {
+        if (!checkedKeyStatus) {
+            return;
+        }
+
+        if (tokenInfo.getVerifyAdminRetries() == 0) {
+            view.showErrorCannotUnlock();
+            return;
+        }
+
+        view.showAdminPinDialog();
+    }
+
+    @Override
+    public void onInputAdminPin(String adminPin, String newPin) {
+        view.operationChangePinSecurityToken(adminPin, newPin);
+    }
+
+    @Override
+    public void onClickUnlockTokenImpossible() {
+        view.showErrorCannotUnlock();
     }
 
     private LoaderCallbacks<KeyRetrievalResult> loaderCallbacks = new LoaderCallbacks<KeyRetrievalResult>() {
@@ -272,13 +314,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     @Override
     public void onClickRetry() {
-        searchedLocally = false;
-        searchedAtUri = false;
-        searchedKeyservers = false;
-
-        view.hideAction();
-        view.resetStatusLines();
-        continueSearch();
+        resetAndContinueSearch();
     }
 
     @Override
@@ -297,8 +333,31 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     }
 
     @Override
-    public void onSecurityTokenResetSuccess() {
-        // TODO
+    public void onSecurityTokenResetSuccess(SecurityTokenInfo tokenInfo) {
+        this.tokenInfo = tokenInfo;
+        resetAndContinueSearch();
+    }
+
+    @Override
+    public void onSecurityTokenResetCanceled(SecurityTokenInfo tokenInfo) {
+        if (tokenInfo != null) {
+            this.tokenInfo = tokenInfo;
+            resetAndContinueSearch();
+        }
+    }
+
+    @Override
+    public void onSecurityTokenChangePinSuccess(SecurityTokenInfo tokenInfo) {
+        this.tokenInfo = tokenInfo;
+        resetAndContinueSearch();
+    }
+
+    @Override
+    public void onSecurityTokenChangePinCanceled(SecurityTokenInfo tokenInfo) {
+        if (tokenInfo != null) {
+            this.tokenInfo = tokenInfo;
+            resetAndContinueSearch();
+        }
     }
 
     @Override
@@ -340,7 +399,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     }
 
     @Override
-    public void onClickViewLog() {
+    public void onMenuClickViewLog() {
         OperationResult result = new GenericOperationResult(GenericOperationResult.RESULT_OK, log);
         view.showDisplayLogActivity(result);
     }

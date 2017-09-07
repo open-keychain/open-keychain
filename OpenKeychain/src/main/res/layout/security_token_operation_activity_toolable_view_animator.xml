@@ -10,7 +10,7 @@
     android:measureAllChildren="false"
     android:minHeight="?listPreferredItemHeightSmall"
     android:outAnimation="@anim/fade_out"
-    custom:initialView="3"
+    custom:initialView="4"
     tools:showIn="@layout/security_token_operation_activity">
 
     <LinearLayout
@@ -121,6 +121,36 @@
                 android:layout_height="48dp"
                 android:layout_margin="8dp"
                 android:text="@string/security_token_error_try_again" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <ScrollView
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/security_token_activity_4_error_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="24dp"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:textColor="@color/android_red_dark"
+                tools:text="Error text" />
+
+            <Button
+                android:id="@+id/security_token_activity_4_back"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_margin="8dp"
+                android:text="Back" />
 
         </LinearLayout>
 

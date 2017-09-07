@@ -31,6 +31,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,8 +42,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.bouncycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
@@ -65,7 +64,8 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.AbstractCal
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpPresenter;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpView;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator.Status;
@@ -149,7 +149,9 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
         view.findViewById(R.id.button_reset_token_2).setOnClickListener(this);
         view.findViewById(R.id.button_reset_token_3).setOnClickListener(this);
         view.findViewById(R.id.button_reset_token_4).setOnClickListener(this);
+        view.findViewById(R.id.button_reset_token_5).setOnClickListener(this);
         view.findViewById(R.id.button_unlock).setOnClickListener(this);
+        view.findViewById(R.id.button_unlock_impossible).setOnClickListener(this);
         view.findViewById(R.id.button_load_file).setOnClickListener(this);
 
         setHasOptionsMenu(true);
@@ -175,7 +177,11 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.view_log: {
-                presenter.onClickViewLog();
+                presenter.onMenuClickViewLog();
+                return true;
+            }
+            case R.id.change_pin: {
+                presenter.onMenuClickChangePin();
                 return true;
             }
             default: {
@@ -259,13 +265,14 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
 
     @Override
     public void showActionLocked(int attemptsLeft) {
-        actionAnimator.setDisplayedChildId(R.id.token_layout_locked);
         if (attemptsLeft > 0) {
+            actionAnimator.setDisplayedChildId(R.id.token_layout_locked);
+
             String unlockAttemptsText = getResources().getQuantityString(
                     R.plurals.token_unlock_attempts, attemptsLeft, attemptsLeft);
             unlockSubtitle.setText(unlockAttemptsText);
         } else {
-            unlockSubtitle.setText(R.string.token_unlock_attempts_none);
+            actionAnimator.setDisplayedChildId(R.id.token_layout_locked_hard);
         }
     }
 
@@ -329,10 +336,21 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
                 .setPositiveButton(R.string.token_reset_confirm_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
                         presenter.onClickConfirmReset();
                     }
                 }).show();
+    }
+
+    @Override
+    public void showAdminPinDialog() {
+        AlertDialog adminPinDialog = ChangePinDialogHelper.createAdminPinDialog(getContext(), presenter);
+
+        adminPinDialog.show();
+    }
+
+    @Override
+    public void showErrorCannotUnlock() {
+        Notify.create(getActivity(), R.string.token_error_locked_indefinitely, Style.ERROR).show();
     }
 
     @Override
@@ -374,8 +392,22 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
                 break;
             }
             case REQUEST_CODE_RESET: {
+                SecurityTokenInfo tokenInfo = data == null ? null :
+                        data.<SecurityTokenInfo>getParcelableExtra(SecurityTokenOperationActivity.RESULT_TOKEN_INFO);
                 if (resultCode == Activity.RESULT_OK) {
-                    presenter.onSecurityTokenResetSuccess();
+                    presenter.onSecurityTokenResetSuccess(tokenInfo);
+                } else {
+                    presenter.onSecurityTokenResetCanceled(tokenInfo);
+                }
+                break;
+            }
+            case REQUEST_CODE_CHANGE_PIN: {
+                SecurityTokenInfo tokenInfo = data == null ? null :
+                        data.<SecurityTokenInfo>getParcelableExtra(SecurityTokenOperationActivity.RESULT_TOKEN_INFO);
+                if (resultCode == Activity.RESULT_OK) {
+                    presenter.onSecurityTokenChangePinSuccess(tokenInfo);
+                } else {
+                    presenter.onSecurityTokenChangePinCanceled(tokenInfo);
                 }
                 break;
             }
@@ -407,13 +439,18 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
             case R.id.button_reset_token_1:
             case R.id.button_reset_token_2:
             case R.id.button_reset_token_3:
-            case R.id.button_reset_token_4: {
+            case R.id.button_reset_token_4:
+            case R.id.button_reset_token_5: {
                 presenter.onClickResetToken();
                 break;
             }
 
             case R.id.button_unlock: {
                 presenter.onClickUnlockToken();
+                break;
+            }
+            case R.id.button_unlock_impossible: {
+                presenter.onClickUnlockTokenImpossible();
                 break;
             }
         }

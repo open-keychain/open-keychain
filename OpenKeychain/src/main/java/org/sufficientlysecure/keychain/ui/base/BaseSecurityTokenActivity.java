@@ -108,7 +108,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     /**
      * Override to do something when PIN is wrong, e.g., clear passphrases (UI thread)
      */
-    protected void onSecurityTokenPinError(String error) {
+    protected void onSecurityTokenPinError(String error, SecurityTokenInfo tokeninfo) {
         onSecurityTokenError(error);
     }
 
@@ -242,8 +242,16 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         // https://github.com/Yubico/ykneo-openpgp/commit/90c2b91e86fb0e43ee234dd258834e75e3416410
         if ((status & (short) 0xFFF0) == 0x63C0) {
             int tries = status & 0x000F;
+
+            SecurityTokenInfo tokeninfo = null;
+            try {
+                tokeninfo = mSecurityTokenHelper.getTokenInfo();
+            } catch (IOException e2) {
+                // don't care
+            }
             // hook to do something different when PIN is wrong
-            onSecurityTokenPinError(getResources().getQuantityString(R.plurals.security_token_error_pin, tries, tries));
+            onSecurityTokenPinError(
+                    getResources().getQuantityString(R.plurals.security_token_error_pin, tries, tries), tokeninfo);
             return;
         }
 
@@ -256,8 +264,15 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             PW not checked (command not allowed), Secure messaging incorrect (checksum and/or cryptogram) */
             // NOTE: Used in ykneo-openpgp >= 1.0.11 for wrong PIN
             case 0x6982: {
+                SecurityTokenInfo tokeninfo = null;
+                try {
+                    tokeninfo = mSecurityTokenHelper.getTokenInfo();
+                } catch (IOException e2) {
+                    // don't care
+                }
+
                 // hook to do something different when PIN is wrong
-                onSecurityTokenPinError(getString(R.string.security_token_error_security_not_satisfied));
+                onSecurityTokenPinError(getString(R.string.security_token_error_security_not_satisfied), tokeninfo);
                 break;
             }
             /* OpenPGP Card Spec: Selected file in termination state */
@@ -270,14 +285,14 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             // https://github.com/Yubico/ykneo-openpgp/commit/b49ce8241917e7c087a4dab7b2c755420ff4500f
             case 0x6700: {
                 // hook to do something different when PIN is wrong
-                onSecurityTokenPinError(getString(R.string.security_token_error_wrong_length));
+                onSecurityTokenPinError(getString(R.string.security_token_error_wrong_length), null);
                 break;
             }
             /* OpenPGP Card Spec: Incorrect parameters in the data field */
             // NOTE: Used in ykneo-openpgp >= 1.0.11 for too short PIN
             case 0x6A80: {
                 // hook to do something different when PIN is wrong
-                onSecurityTokenPinError(getString(R.string.security_token_error_bad_data));
+                onSecurityTokenPinError(getString(R.string.security_token_error_bad_data), null);
                 break;
             }
             /* OpenPGP Card Spec: Authentication method blocked, PW blocked (error counter zero) */
