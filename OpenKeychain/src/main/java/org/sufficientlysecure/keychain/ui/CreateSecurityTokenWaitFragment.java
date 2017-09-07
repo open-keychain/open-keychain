@@ -17,9 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -30,13 +30,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
 public class CreateSecurityTokenWaitFragment extends Fragment {
@@ -66,12 +65,13 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_token_debug_uri:
-                mCreateKeyActivity.loadFragment(
-                        ManageSecurityTokenFragment.newInstanceDebugUri(), FragAction.TO_RIGHT);
+                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                        SecurityTokenInfo.newInstanceDebugUri()), FragAction.TO_RIGHT);
                 break;
             case R.id.menu_token_debug_keyserver:
-                mCreateKeyActivity.loadFragment(
-                        ManageSecurityTokenFragment.newInstanceDebugKeyserver(), FragAction.TO_RIGHT);
+                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                        SecurityTokenInfo.newInstanceDebugKeyserver()), FragAction.TO_RIGHT);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -91,28 +91,6 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     private LayoutInflater layoutInflater;
     private StatusIndicator latestStatusIndicator;
 
-    public static Fragment newInstanceDebugKeyserver() {
-        if (!BuildConfig.DEBUG) {
-            throw new UnsupportedOperationException("This operation is only available in debug builds!");
-        }
-        SecurityTokenInfo securityTokenInfo = SecurityTokenInfo.create(
-                KeyFormattingUtils.convertFingerprintHexFingerprint("1efdb4845ca242ca6977fddb1f788094fd3b430a"),
-                new byte[20], new byte[20], Hex.decode("010203040506"),
-                "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 3, 3);
-        return newInstance(securityTokenInfo);
-    }
-
-    public static Fragment newInstanceDebugUri() {
-        if (!BuildConfig.DEBUG) {
-            throw new UnsupportedOperationException("This operation is only available in debug builds!");
-        }
-        SecurityTokenInfo securityTokenInfo = SecurityTokenInfo.create(
-                KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E"),
-                new byte[20], new byte[20], Hex.decode("010203040506"),
-                "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 3, 3);
-        return newInstance(securityTokenInfo);
-    }
-
     public static Fragment newInstance(SecurityTokenInfo tokenInfo) {
         ManageSecurityTokenFragment frag = new ManageSecurityTokenFragment();
 
