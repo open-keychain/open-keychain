@@ -73,8 +73,7 @@ import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
 
-public class ManageSecurityTokenFragment extends Fragment implements ManageSecurityTokenMvpView,
-        OnClickListener {
+public class ManageSecurityTokenFragment extends Fragment implements ManageSecurityTokenMvpView, OnClickListener {
     private static final String ARG_TOKEN_INFO = "token_info";
     public static final int REQUEST_CODE_OPEN_FILE = 0;
     public static final int REQUEST_CODE_RESET = 1;

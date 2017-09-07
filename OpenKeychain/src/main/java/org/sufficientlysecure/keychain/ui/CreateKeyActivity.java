@@ -166,7 +166,11 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
 
         if (!tokenInfo.isEmpty()) {
             Fragment frag = ManageSecurityTokenFragment.newInstance(tokenInfo);
-            loadFragment(frag, FragAction.TO_RIGHT);
+            if (mCurrentFragment instanceof ManageSecurityTokenFragment) {
+                loadFragment(frag, FragAction.REPLACE);
+            } else {
+                loadFragment(frag, FragAction.TO_RIGHT);
+            }
         } else {
             Fragment frag = CreateSecurityTokenBlankFragment.newInstance();
             loadFragment(frag, FragAction.TO_RIGHT);
@@ -195,7 +199,8 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
     public enum FragAction {
         START,
         TO_RIGHT,
-        TO_LEFT
+        TO_LEFT,
+        REPLACE
     }
 
     public void loadFragment(Fragment fragment, FragAction action) {
@@ -212,6 +217,10 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
                 break;
             case TO_LEFT:
                 getSupportFragmentManager().popBackStackImmediate();
+                break;
+            case REPLACE:
+                transaction.replace(R.id.create_key_fragment_container, fragment, FRAGMENT_TAG)
+                        .commit();
                 break;
             case TO_RIGHT:
                 transaction.setCustomAnimations(R.anim.frag_slide_in_from_right, R.anim.frag_slide_out_to_left,
