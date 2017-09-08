@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
@@ -161,7 +162,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
 
-    private String mQrCodeLoaded;
+    private byte[] mQrCodeLoaded;
 
     private static final int LOADER_ID_UNIFIED = 0;
 
@@ -181,7 +182,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private long mMasterKeyId;
     private byte[] mFingerprint;
-    private String mFingerprintString;
 
     private byte[] mSecurityTokenFingerprints;
     private String mSecurityTokenUserId;
@@ -603,12 +603,12 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     return;
                 }
 
-                String fp = data.getStringExtra(ImportKeysProxyActivity.EXTRA_FINGERPRINT);
-                if (fp == null) {
+                byte[] fingerprint = data.getByteArrayExtra(ImportKeysProxyActivity.EXTRA_FINGERPRINT);
+                if (fingerprint == null) {
                     Notify.create(this, R.string.error_scan_fp, Notify.LENGTH_LONG, Style.ERROR).show();
                     return;
                 }
-                if (mFingerprintString.equalsIgnoreCase(fp)) {
+                if (Arrays.equals(mFingerprint, fingerprint)) {
                     certifyImmediate();
                 } else {
                     Notify.create(this, R.string.error_scan_match, Notify.LENGTH_LONG, Style.ERROR).show();
@@ -662,8 +662,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             byte[] candidateFp = ring.getFingerprint();
 
             // if the master key of that key matches this one, just show the token dialog
-            if (KeyFormattingUtils.convertFingerprintToHex(candidateFp).equals(mFingerprintString)) {
-                showSecurityTokenFragment(mSecurityTokenFingerprints, mSecurityTokenUserId, mSecurityTokenAid, mSecurityTokenVersion);
+            if (Arrays.equals(candidateFp, mFingerprint)) {
+                showSecurityTokenFragment(
+                        mSecurityTokenFingerprints, mSecurityTokenUserId, mSecurityTokenAid, mSecurityTokenVersion);
                 return;
             }
 
@@ -795,13 +796,14 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     /**
      * Load QR Code asynchronously and with a fade in animation
      */
-    private void loadQrCode(final String fingerprint) {
+    private void loadQrCode(final byte[] fingerprint) {
         AsyncTask<Void, Void, Bitmap> loadTask =
                 new AsyncTask<Void, Void, Bitmap>() {
                     protected Bitmap doInBackground(Void... unused) {
+                        String fingerprintStr = KeyFormattingUtils.convertFingerprintToHex(fingerprint);
                         Uri uri = new Uri.Builder()
                                 .scheme(Constants.FINGERPRINT_SCHEME)
-                                .opaquePart(fingerprint)
+                                .opaquePart(fingerprintStr)
                                 .build();
                         // render with minimal size
                         return QrCodeUtils.getQRCodeBitmap(uri, 0);
@@ -915,7 +917,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
                     mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                     mFingerprint = data.getBlob(INDEX_FINGERPRINT);
-                    mFingerprintString = KeyFormattingUtils.convertFingerprintToHex(mFingerprint);
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                     mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
                     mIsRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
@@ -1017,8 +1018,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         // noinspection deprecation, fix requires api level 23
                         color = getResources().getColor(R.color.key_flag_green);
                         // reload qr code only if the fingerprint changed
-                        if (!mFingerprintString.equals(mQrCodeLoaded)) {
-                            loadQrCode(mFingerprintString);
+                        if (!Arrays.equals(mFingerprint, mQrCodeLoaded)) {
+                            loadQrCode(mFingerprint);
                         }
                         photoTask.execute(mMasterKeyId);
                         mQrCodeLayout.setVisibility(View.VISIBLE);
