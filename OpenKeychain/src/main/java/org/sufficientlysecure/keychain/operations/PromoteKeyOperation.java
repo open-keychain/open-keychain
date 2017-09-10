@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.operations;
 
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
@@ -77,6 +78,11 @@ public class PromoteKeyOperation extends BaseReadWriteOperation<PromoteKeyringPa
                     // sort for binary search
                     for (CanonicalizedPublicKey key : pubRing.publicKeyIterator()) {
                         long subKeyId = key.getKeyId();
+
+                        // we ignore key ids from empty fingerprints here
+                        if (subKeyId == 0L) {
+                            continue;
+                        }
                         if (naiveIndexOf(subKeyIds, subKeyId) != null) {
                             log.add(LogType.MSG_PR_SUBKEY_MATCH, 1,
                                     KeyFormattingUtils.convertKeyIdToHex(subKeyId));

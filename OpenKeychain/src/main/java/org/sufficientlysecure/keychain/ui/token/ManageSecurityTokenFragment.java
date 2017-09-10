@@ -277,12 +277,12 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     }
 
     @Override
-    public void operationPromote(long masterKeyId, byte[] cardAid) {
+    public void operationPromote(long masterKeyId, byte[] cardAid, long[] subkeys) {
         if (currentImportKeyringParcel != null) {
             throw new IllegalStateException("Cannot trigger import operation twice!");
         }
 
-        currentPromoteKeyringParcel = PromoteKeyringParcel.createPromoteKeyringParcel(masterKeyId, cardAid, null);
+        currentPromoteKeyringParcel = PromoteKeyringParcel.createPromoteKeyringParcel(masterKeyId, cardAid, subkeys);
         cryptoPromoteOperationHelper.setOperationMinimumDelay(1000L);
         cryptoPromoteOperationHelper.cryptoOperation();
     }

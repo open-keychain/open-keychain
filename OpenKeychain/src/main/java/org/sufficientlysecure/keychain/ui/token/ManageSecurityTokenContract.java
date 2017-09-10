@@ -79,7 +79,7 @@ class ManageSecurityTokenContract {
         void hideAction();
 
         void operationImportKey(byte[] importKeyData);
-        void operationPromote(long masterKeyId, byte[] cardAid);
+        void operationPromote(long masterKeyId, byte[] cardAid, long[] subKeyIds);
         void operationResetSecurityToken();
         void operationChangePinSecurityToken(String adminPin, String newPin);
 

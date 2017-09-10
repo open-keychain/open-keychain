@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyRetr
 import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyserverRetrievalLoader;
 import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.LocalKeyLookupLoader;
 import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.UriKeyRetrievalLoader;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
 
 
@@ -276,11 +277,19 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
         if (masterKeyId != null) {
             this.masterKeyId = masterKeyId;
             view.statusLineAdd(StatusLine.TOKEN_CHECK);
-            view.operationPromote(masterKeyId, tokenInfo.getAid());
+
+            promoteKeyWithTokenInfo(masterKeyId);
             return;
         }
 
         throw new IllegalArgumentException("Method can only be called with successful result!");
+    }
+
+    private void promoteKeyWithTokenInfo(Long masterKeyId) {
+        long signKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(tokenInfo.getFingerprintSign());
+        long decryptKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(tokenInfo.getFingerprintDecrypt());
+        long authKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(tokenInfo.getFingerprintAuth());
+        view.operationPromote(masterKeyId, tokenInfo.getAid(), new long[] { signKeyId, decryptKeyId, authKeyId });
     }
 
     @Override
@@ -296,7 +305,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
         view.statusLineOk();
         view.statusLineAdd(StatusLine.TOKEN_PROMOTE);
-        view.operationPromote(masterKeyId, tokenInfo.getAid());
+        promoteKeyWithTokenInfo(masterKeyId);
     }
 
     @Override
